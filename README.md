@@ -1,8 +1,12 @@
-# Smart Site（SS）— 工业组态与数据可视化平台
+# Smart Site（SS）— 开源 SCADA 组态软件与工业数据可视化平台
 
-Smart Site 是一套面向工业场景的**组态编辑器 + 数据中台 + 后端服务**一体化平台，支持拖拽式监控画面编辑、设备数据采集（Modbus / OPC UA / MQTT / S7）、数据标签与模板、报警引擎、脚本引擎与多语言国际化。
+Smart Site 是一套面向工业场景的开源 SCADA 平台：**组态编辑器（HMI / SCADA Editor）+ 数据中台 + 后端服务**一体化，支持拖拽式监控画面编辑、设备数据采集（Modbus / OPC UA / MQTT / Siemens S7）、数据标签与模板、报警引擎、脚本引擎、InfluxDB 时序存储与多语言国际化。
 
 > 开发协作与编码规范详见仓库内的 [`AGENTS.md`](./AGENTS.md)（面向 AI 编码助手与开发者的导航索引）。
+
+## English Summary
+
+**Smart Site (SS)** is an open-source SCADA and industrial IoT data management platform: a drag-and-drop HMI/SCADA editor, a data middle platform, and backend services in one solution. It covers industrial device acquisition (Modbus, OPC UA, MQTT, Siemens S7), data tags and device templates, an alarm engine, a script engine, InfluxDB time-series storage, reporting, and i18n. Licensed under Apache-2.0.
 
 ---
 

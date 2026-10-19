@@ -19,7 +19,11 @@ dist-ssr
 build/**
 dist/**
 .next/**
-
+.codebuddy/**
+.github/**
+.qoder/**
+.trae/**
+    
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -93,3 +97,10 @@ _tmp_*.cjs
 verify_fixes.js
 tmp-check-db.js
 
+# AI tool directories (not uploaded to git)
+.codebuddy/
+.github/
+.qoder/
+.trae/
+
+docs-e/**
