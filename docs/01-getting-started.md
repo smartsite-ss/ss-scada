@@ -126,7 +126,7 @@ pnpm --filter scada-editor-web preview
 ## 6. 目录速览
 
 ```
-smart-site-o/
+ss-scada/
 ├─ bin/                 启动 / 安装脚本
 ├─ docs/                本文档
 ├─ ss-editor/           前端工作区（pnpm workspace）

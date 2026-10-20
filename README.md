@@ -285,8 +285,8 @@ ss-o/
 
 本项目同时托管于以下两个平台，内容保持一致（互为镜像）：
 
-- **Gitee（主仓库）**：<https://gitee.com/stuhu/smart-site-o>
-- **GitHub（镜像）**：<https://github.com/smartsite-ss/smart-site-o>
+- **Gitee（主仓库）**：<https://gitee.com/stuhu/ss-scada>
+- **GitHub（镜像）**：<https://github.com/smartsite-ss/ss-scada>
 
 ---
 
