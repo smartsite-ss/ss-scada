@@ -53,6 +53,18 @@ jest.mock('fs', () => {
     writeFileSync: jest.fn((p: string, data: string) => {
       addFile(p, data);
     }),
+    renameSync: jest.fn((oldPath: string, newPath: string) => {
+      const nOld = oldPath.replace(/\\/g, '/');
+      const nNew = newPath.replace(/\\/g, '/');
+      const content = virtualFs.get(nOld);
+      if (content === undefined) {
+        const err: any = new Error(`ENOENT: no such file or directory, rename '${nOld}'`);
+        err.code = 'ENOENT';
+        throw err;
+      }
+      virtualFs.delete(nOld);
+      addFile(nNew, content as string);
+    }),
     readdirSync: jest.fn((p: string, _opts?: any) => {
       const np = p.replace(/\\/g, '/');
       const entries: any[] = [];
@@ -319,6 +331,7 @@ import { PathResolverService } from '@ss-node/ss-core';
 import { ConfigService } from '@nestjs/config';
 import { I18nService } from '@ss-node/ss-i18n';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { ProjectFsService } from '../services/project-fs.service';
 
 function createMockConfigService() {
   return {
@@ -422,6 +435,7 @@ describe('ProjectService', () => {
       new PathResolverService() as any,
       mockDeviceService as any,
       mockAlarmStatsService as any,
+      new ProjectFsService(),
     );
   });
 
@@ -874,13 +888,12 @@ describe('ProjectService', () => {
           {
             isDirectory: false,
             entryName: `${projectName}/projectinfo.json`,
+            // 安全解压（extractZipSafely）逐条目取内容
+            getData: jest
+              .fn()
+              .mockReturnValue(Buffer.from(JSON.stringify(projectInfo), 'utf-8')),
           },
         ]),
-        extractAllTo: jest.fn().mockImplementation((tmpDir: string) => {
-          const projectDir = path.join(tmpDir, projectName);
-          addDir(projectDir);
-          addFile(path.join(projectDir, 'projectinfo.json'), JSON.stringify(projectInfo));
-        }),
       };
       (AdmZip as jest.Mock).mockImplementation(() => mockZip);
       return Buffer.from('mock-zip-data');
@@ -988,6 +1001,27 @@ describe('ProjectService', () => {
       await expect(service.importProjectZip(zipBuffer, userId)).rejects.toThrow(
         BadRequestException,
       );
+    });
+
+    it('【P0-2】应拒绝 projectId 越出项目根的 ZIP（路径穿越）', async () => {
+      const zipBuffer = createMockZipBuffer('evil-project', {
+        pid: 'pid-evil',
+        tid: '../../evil',
+        name: 'Evil Project',
+        description: '',
+        version: '1.0.0',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        createdBy: 'user',
+        updatedBy: 'user',
+        config: {},
+      });
+
+      await expect(service.importProjectZip(zipBuffer, userId)).rejects.toThrow(
+        BadRequestException,
+      );
+      // 越界目录绝不能被创建/删除
+      expect(fs.existsSync(path.join(projectsBaseDir, 'evil'))).toBe(false);
     });
 
     it('should overwrite project when overwrite option is true', async () => {

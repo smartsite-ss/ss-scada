@@ -9,6 +9,7 @@ import { PageSaveService } from '../page-save.service';
 import { ConfigService } from '@nestjs/config';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { PathResolverService } from '@ss-node/ss-core';
+import { ProjectFsService } from '../services/project-fs.service';
 
 jest.mock('@ss-node/ss-core', () => {
   const actual = jest.requireActual('@ss-node/ss-core');
@@ -51,7 +52,11 @@ describe('PageSaveService', () => {
       get: jest.fn().mockReturnValue(tempDir),
     } as unknown as ConfigService;
 
-    service = new PageSaveService(mockConfigService, new PathResolverService() as any);
+    service = new PageSaveService(
+      mockConfigService,
+      new PathResolverService() as any,
+      new ProjectFsService(),
+    );
   });
 
   afterEach(() => {
@@ -224,6 +229,25 @@ describe('PageSaveService', () => {
       expect(savedData.name).toBe('MainPage');
       expect(savedData.widgets).toEqual([]);
       expect(savedData.updatedAt).toBeDefined();
+    });
+
+    it('【P0-1】保存 page.json 采用原子写：不残留 .tmp 临时文件，覆盖保存后内容仍完整可解析', () => {
+      const pageData = { id: 'page1', name: 'MainPage', widgets: [] };
+      service.savePage(testProjectName, 'MainPage', pageData);
+
+      const pageDir = pagePath(p('MainPage'));
+      const leftoverTmpFiles = fs.readdirSync(pageDir).filter((f) => f.endsWith('.tmp'));
+      expect(leftoverTmpFiles).toEqual([]);
+
+      // 二次保存（覆盖已存在的 page.json）后内容仍完整
+      service.savePage(testProjectName, 'MainPage', {
+        ...pageData,
+        widgets: [{ type: 'label' }],
+      });
+      const savedAgain = JSON.parse(
+        fs.readFileSync(pagePath(p('MainPage'), 'page.json'), 'utf-8'),
+      );
+      expect(savedAgain.widgets).toEqual([{ type: 'label' }]);
     });
 
     it('【要求3】保存页面时应将运行态截图 preview.png 保存到文件夹中', () => {

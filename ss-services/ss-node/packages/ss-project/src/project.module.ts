@@ -13,6 +13,7 @@ import { PageSaveService } from './page-save.service';
 import { PageSaveController } from './page-save.controller';
 import { DbMigrationService } from './services/db-migration.service';
 import { ProjectRepositoryService } from './services/project-repository.service';
+import { ProjectFsService } from './services/project-fs.service';
 import { DataMigrationService } from './services/data-migration.service';
 import { EventCleanupService } from './services/event-cleanup.service';
 import { InfluxdbProjectIsolationService } from './services/influxdb-project-isolation.service';
@@ -31,6 +32,7 @@ import { WidgetTemplateController, ProjectWidgetTemplateController } from './wid
     WidgetTemplateService,
     DbMigrationService,
     ProjectRepositoryService,
+    ProjectFsService,
     DataMigrationService,
     EventCleanupService,
     InfluxdbProjectIsolationService,
@@ -41,6 +43,7 @@ import { WidgetTemplateController, ProjectWidgetTemplateController } from './wid
     CanvasTemplateService,
     DbMigrationService,
     ProjectRepositoryService,
+    ProjectFsService,
     DataMigrationService,
     EventCleanupService,
     InfluxdbProjectIsolationService,

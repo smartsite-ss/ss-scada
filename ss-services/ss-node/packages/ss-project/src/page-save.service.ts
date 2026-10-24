@@ -10,6 +10,7 @@ import * as os from 'os';
 import archiver from 'archiver';
 import AdmZip from 'adm-zip';
 import { PathResolverService } from '@ss-node/ss-core';
+import { ProjectFsService } from './services/project-fs.service';
 
 export interface SavePageResult {
   pageId: string;
@@ -180,6 +181,7 @@ export class PageSaveService {
   constructor(
     private readonly configService: ConfigService,
     private readonly pathResolver: PathResolverService,
+    private readonly projectFs: ProjectFsService,
   ) {}
 
   getProjectsDir(): string {
@@ -634,7 +636,8 @@ export class PageSaveService {
       }
     }
 
-    fs.writeFileSync(filePath, JSON.stringify(dataToSave, null, 2), 'utf-8');
+    // 原子写：临时文件 + rename，避免写一半崩溃导致 page.json 损坏（P0-1）
+    this.projectFs.atomicWriteJson(filePath, dataToSave);
     this.logger.log(`Page saved: ${projectName}/pages/${safeName}/page.json`);
 
     if (previewBuffer) {
@@ -713,7 +716,8 @@ export class PageSaveService {
         }
       }
 
-      fs.writeFileSync(filePath, JSON.stringify(pageData, null, 2), 'utf-8');
+      // 原子写：临时文件 + rename，避免写一半崩溃导致 page.json 损坏（P0-1）
+      this.projectFs.atomicWriteJson(filePath, pageData);
       this.logger.log(`Page saved: ${projectName}/pages/${safeName}/page.json`);
 
       // 同步落盘预览图（如有）
@@ -1045,8 +1049,8 @@ export class PageSaveService {
         throw new BadRequestException('ZIP 文件为空');
       }
 
-      // 解压到临时目录
-      zip.extractAllTo(tmpDir, true);
+      // 安全解压：逐条目校验目标路径在临时目录内，杜绝 Zip Slip（P0-2）
+      this.projectFs.extractZipSafely(zip, tmpDir);
 
       const pagesDir = this.getPagesDir(projectName);
       this.ensureDir(pagesDir);
@@ -1108,7 +1112,7 @@ export class PageSaveService {
 
             this.ensureDir(pageFolder);
             const content = fs.readFileSync(srcPath, 'utf-8');
-            fs.writeFileSync(path.join(pageFolder, 'page.json'), content, 'utf-8');
+            this.projectFs.atomicWriteFileSync(path.join(pageFolder, 'page.json'), content);
             importedCount++;
             this.logger.log(`Page imported from JSON: ${projectName}/pages/${safeName}`);
           }

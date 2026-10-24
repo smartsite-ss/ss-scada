@@ -31,6 +31,7 @@ import {
 } from '@ss-node/ss-core';
 import { DeviceService, DeviceStats } from '@ss-node/ss-device';
 import { AlarmStatisticsService } from '@ss-node/ss-alarm';
+import { ProjectFsService } from './services/project-fs.service';
 
 const PROJECT_INFO_FILE = 'projectinfo.json';
 const DEFAULT_PROJECT_FILE = '.default-project.json';
@@ -52,6 +53,7 @@ export class ProjectService {
     private readonly deviceService: DeviceService,
     @Inject(forwardRef(() => AlarmStatisticsService))
     private readonly alarmStatsService: AlarmStatisticsService,
+    private readonly projectFs: ProjectFsService,
   ) {
     this.err = new ErrorFactory(this.i18nService);
   }
@@ -776,6 +778,9 @@ export class ProjectService {
         throw new BadRequestException('无法从 ZIP 文件中解析项目名称');
       }
 
+      // ZIP 根目录名将参与路径拼接，先做段级校验（拒绝 .. / 分隔符 / 盘符等）
+      this.projectFs.assertSafeSegment(extractedDirName, 'ZIP 根目录名');
+
       const hasProjectInfo = entries.some(
         (entry) =>
           !entry.isDirectory &&
@@ -786,8 +791,8 @@ export class ProjectService {
         throw new BadRequestException('ZIP 文件缺少 projectinfo.json，项目数据不完整');
       }
 
-      // 解压以获取 projectinfo.json
-      zip.extractAllTo(tmpDir, true);
+      // 安全解压：逐条目校验解压目标位于临时目录内，杜绝 Zip Slip（P0-2）
+      this.projectFs.extractZipSafely(zip, tmpDir);
       const sourceDir = path.join(tmpDir, extractedDirName);
       if (!fs.existsSync(sourceDir)) {
         throw new BadRequestException('ZIP 文件解压后未找到项目目录');
@@ -808,8 +813,14 @@ export class ProjectService {
         projectName = extractedDirName;
       }
 
+      // projectId 来自 ZIP 内的 projectinfo.json（用户可控），先做段级校验，
+      // 拒绝 `..` / 路径分隔符 / 盘符等，防止 rmSync/copyDirSync 越出项目根（P0-2）
+      this.projectFs.assertSafeSegment(projectId, 'projectId');
+
       this.ensureProjectsDir();
       const targetDir = this.getProjectDir(projectId);
+      // 纵深防御：确认最终目标目录确实位于 projects 根内
+      this.projectFs.assertPathWithin(this.getProjectsDir(), targetDir);
       const existsLocally = fs.existsSync(targetDir);
 
       if (existsLocally) {
