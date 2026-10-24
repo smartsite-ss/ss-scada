@@ -7,7 +7,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import AdmZip from 'adm-zip';
-import { ProjectFsService } from './project-fs.service';
+import { ProjectFsService } from '../services/project-fs.service';
 
 /**
  * ProjectFsService 单元测试（P0-1 原子写 / P0-2 路径安全）
@@ -145,12 +145,27 @@ describe('ProjectFsService', () => {
     });
 
     it('应拒绝 Zip Slip 条目（../ 穿越）且不写出目标目录', () => {
-      const zip = new AdmZip();
-      zip.addFile('proj/projectinfo.json', Buffer.from('{}', 'utf-8'));
-      zip.addFile('../evil.txt', Buffer.from('malicious', 'utf-8'));
+      // 说明：adm-zip 的 addFile 会消毒条目名（../、前导 / 被清洗），
+      // 无法通过它构造真实恶意 ZIP，因此用鸭子类型 mock 提供原始危险条目名。
+      const maliciousZip = {
+        getEntries: () => [
+          {
+            isDirectory: false,
+            entryName: 'proj/projectinfo.json',
+            getData: () => Buffer.from('{}', 'utf-8'),
+          },
+          {
+            isDirectory: false,
+            entryName: '../evil.txt',
+            getData: () => Buffer.from('malicious', 'utf-8'),
+          },
+        ],
+      } as unknown as AdmZip;
 
       const targetDir = path.join(tempDir, 'extract');
-      expect(() => service.extractZipSafely(zip, targetDir)).toThrow(BadRequestException);
+      expect(() => service.extractZipSafely(maliciousZip, targetDir)).toThrow(
+        BadRequestException,
+      );
 
       // 越界文件绝不能被写出（无论在目标目录内还是其父目录）
       expect(fs.existsSync(path.join(targetDir, 'evil.txt'))).toBe(false);
@@ -158,11 +173,20 @@ describe('ProjectFsService', () => {
     });
 
     it('应拒绝绝对路径条目', () => {
-      const zip = new AdmZip();
-      zip.addFile('/abs/evil.txt', Buffer.from('malicious', 'utf-8'));
+      const maliciousZip = {
+        getEntries: () => [
+          {
+            isDirectory: false,
+            entryName: '/abs/evil.txt',
+            getData: () => Buffer.from('malicious', 'utf-8'),
+          },
+        ],
+      } as unknown as AdmZip;
 
       const targetDir = path.join(tempDir, 'extract');
-      expect(() => service.extractZipSafely(zip, targetDir)).toThrow(BadRequestException);
+      expect(() => service.extractZipSafely(maliciousZip, targetDir)).toThrow(
+        BadRequestException,
+      );
       expect(fs.existsSync(path.join(tempDir, 'abs'))).toBe(false);
     });
   });
