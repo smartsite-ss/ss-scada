@@ -9,6 +9,16 @@ overrides:
   '@nestjs/core': 10.4.22
   '@nestjs/config': 3.3.0
   '@nestjs/event-emitter': 3.0.1
+# pnpm 11 不再读取 .npmrc 的 public-hoist-pattern，迁移至此：
+# 将 @nestjs/typeorm 与 typeorm 等提升到根 node_modules，保证全工作区单实例，
+# 防止 DI token mismatch（class reference !==），ss-datasource 等未显式声明的包也依赖此提升
+publicHoistPattern:
+  - '@nestjs/typeorm'
+  - '@nestjs/core'
+  - '@nestjs/common'
+  - '@nestjs/config'
+  - '@nestjs/event-emitter'
+  - 'typeorm'
 allowBuilds:
   '@nestjs/core': true
   better-sqlite3: true
