@@ -70,6 +70,8 @@ ss-run/ss/data/faq/
 ss-run/ss/data/models/
 ss-run/ss/data/logs/
 ss-run/ss/data/db/
+# Windows 单包发布产物（publish-smart-site.cjs 输出，含 269MB zip 与运行库）
+ss-run/ss-win/
 
 # 采集器子进程隔离 — 运行时复制的 node.exe 副本
 **/.ss-collector-isolation/
