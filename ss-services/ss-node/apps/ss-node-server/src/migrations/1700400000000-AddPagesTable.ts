@@ -1,4 +1,4 @@
-// Copyright (c) 2025 Smart Site Team
+﻿// Copyright (c) 2025 Smart Site Team
 // https://smartsite.top/
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
@@ -8,6 +8,10 @@ export class AddPagesTable1700400000000 implements MigrationInterface {
   name = 'AddPagesTable1700400000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
+    // 存在性防御：InitialSchema 已建全量权威 schema，表已存在则跳过（幂等）
+    const existing = await queryRunner.getTable('prj_pages');
+    if (existing) return;
+
     await queryRunner.createTable(
       new Table({
         name: 'prj_pages',
@@ -15,7 +19,7 @@ export class AddPagesTable1700400000000 implements MigrationInterface {
           { name: 'id', type: 'varchar', length: '36', isPrimary: true },
           { name: 'name', type: 'varchar', length: '200' },
           { name: 'content', type: 'text', isNullable: true },
-          { name: 'config', type: 'simple-json', isNullable: true },
+          { name: 'config', type: 'text', isNullable: true },
           { name: 'order_index', type: 'integer', default: '0' },
           { name: 'project_id', type: 'varchar', length: '36' },
           { name: 'created_at', type: 'datetime', default: "datetime('now')" },

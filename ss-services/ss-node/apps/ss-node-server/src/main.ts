@@ -12,7 +12,10 @@ import * as winston from 'winston';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as crypto from 'crypto';
+import * as express from 'express';
+import { IncomingMessage, ServerResponse } from 'http';
 import { json, urlencoded, Request, Response, NextFunction } from 'express';
+import { DataSource } from 'typeorm';
 import compression from 'compression';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
@@ -199,6 +202,32 @@ async function bootstrap() {
     }),
   });
   endPhase1();
+
+  // ──────── Phase 1.5: 数据库 migration（表结构变更的权威入口） ────────
+  // CODE-08: 生产环境 synchronize=false，表结构变更完全依赖 migration；
+  // 开发环境 synchronize 虽会自动改表，migration 仍需执行以补齐版本记录。
+  // runMigrations 基于 migrations 表做增量，天然幂等；各 migration 内部
+  // 另有列/索引存在性防御，兼容「由 synchronize 建表、从未跑过 migration」的存量库。
+  const endPhase15 = startPhase('Phase 1.5: 数据库 migration');
+  try {
+    const dataSource = app.get(DataSource);
+    const executed = await dataSource.runMigrations();
+    if (executed.length > 0) {
+      console.log(
+        `[${STARTUP_TAG}] ✅ 执行了 ${executed.length} 个 migration: ${executed
+          .map((m) => m.name)
+          .join(', ')}`,
+      );
+    } else {
+      console.log(`[${STARTUP_TAG}] ✅ 数据库 migration 已是最新`);
+    }
+  } catch (err) {
+    console.error(
+      `[${STARTUP_TAG}] ❌ 数据库 migration 失败: ${err instanceof Error ? err.message : err}`,
+    );
+    // 不中断启动：开发环境 synchronize 兜底；生产环境应排查后重试
+  }
+  endPhase15();
 
   // ──────── Phase 2: 中间件与管道配置 ────────
   const endPhase2 = startPhase('Phase 2: 中间件/管道/拦截器/安全配置');
@@ -406,6 +435,74 @@ async function bootstrap() {
         '  如需启用，请在 .env.pro 中配置 SWAGGER_USER 和 SWAGGER_PASSWORD。',
     );
     endPhase3();
+  }
+
+  // ──────── S1 单进程：后端托管前端 SPA（可选，单包发布；见 docs/00-全局/发布/单包发布方案.md）────────
+  // 启用条件：显式配置 WEB_DIST_DIR，且该目录下存在 index.html；否则行为与现状完全一致（前端由 Nginx 托管）。
+  //
+  // ⚠️ 为什么不用 `app.use()` / `app.get()`：
+  //   1) Nest 在 init() 阶段（NestFactory.create 内部）就已注册「未匹配即抛 NotFoundException」的
+  //      404 处理器，create() 之后再追加的中间件永远收不到未匹配请求；
+  //   2) `app.get(...)` 在 Nest 应用对象上是 **DI 查询**（container.get），传路由参数会直接抛错并
+  //      被 ExceptionsZone 捕获 → process.exit(1)（表现为"Phase 3 后静默退出"）。
+  //   故改为在 HTTP server 的 request 监听链**最前面**插入前端托管：
+  //   命中静态文件 → 直接返回；未命中 → 回落 index.html；其余（API/WS/非 GET）原样交回 Nest。
+  //   注意：本段必须在 app.listen() 之前执行 —— Socket.IO 会在 listen() 内 attach，
+  //   届时它会包装我们这段 handler，天然保证 /socket.io 仍由 engine.io 优先处理。
+  const webDistDir = path.resolve(projectRoot, process.env.WEB_DIST_DIR || 'web');
+  const webIndexHtml = path.join(webDistDir, 'index.html');
+  if (process.env.WEB_DIST_DIR && fs.existsSync(webIndexHtml)) {
+    const httpServerForSpa = app.getHttpServer();
+    const nestRequestHandler = httpServerForSpa.listeners('request')[0] as
+      ((req: unknown, res: unknown) => void) | undefined;
+    if (typeof nestRequestHandler !== 'function') {
+      Logger.warn(
+        `WEB_DIST_DIR 已配置但未能取得 HTTP request 处理器，跳过 SPA 托管（前端需由 Nginx 提供）`,
+        'Bootstrap',
+      );
+    } else {
+      const compress = compression();
+      // redirect:false —— 否则 serve-static 遇到同名目录会发 301（并进入非 express 环境下
+      // 不可用的 res.redirect 分支）；这里统一交给 SPA 回落处理。
+      const serveStatic = express.static(webDistDir, {
+        index: false,
+        maxAge: '7d',
+        redirect: false,
+      });
+      // ⚠️ 此处的 res 是**裸 http.ServerResponse**（未经 express 包装）：
+      //    没有 res.sendFile / res.redirect 等方法 ⇒ 直接输出预读的 index.html。
+      const indexHtml = fs.readFileSync(webIndexHtml);
+      const serveIndexHtml = (req: IncomingMessage, res: ServerResponse): void => {
+        try {
+          res.writeHead(200, {
+            'Content-Type': 'text/html; charset=utf-8',
+            'Content-Length': String(indexHtml.length),
+            'Cache-Control': 'no-cache',
+          });
+          res.end(req.method === 'HEAD' ? undefined : indexHtml);
+        } catch {
+          nestRequestHandler(req, res);
+        }
+      };
+      /** API / WebSocket / 文档前缀：一律交回 Nest，避免被 SPA 回落吞掉 */
+      const NEST_OWNED_PREFIX = /^\/(?:api\/|socket\.io\/?|docs\/?)/;
+      httpServerForSpa.removeAllListeners('request');
+      httpServerForSpa.on('request', (req: IncomingMessage, res: ServerResponse) => {
+        const url = req.url || '/';
+        const isStaticCandidate =
+          (req.method === 'GET' || req.method === 'HEAD') && !NEST_OWNED_PREFIX.test(url);
+        if (!isStaticCandidate) return nestRequestHandler(req, res);
+        // gzip 由 compression 提供（等价于 Nginx gzip）；静态未命中则回落 index.html
+        compress(req as unknown as Request, res as unknown as Response, () =>
+          serveStatic(req as unknown as Request, res as unknown as Response, () => {
+            if (res.writableEnded) return;
+            if (res.headersSent) return void res.end();
+            serveIndexHtml(req, res);
+          }),
+        );
+      });
+      Logger.log(`🖥️  SPA hosting enabled (single-process, no Nginx): ${webDistDir}`, 'Bootstrap');
+    }
   }
 
   // ──────── Phase 4: HTTP 监听启动 ────────

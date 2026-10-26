@@ -8,6 +8,10 @@ export class AddAuditLogsAndSystemTables1700300000000 implements MigrationInterf
   name = 'AddAuditLogsAndSystemTables1700300000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
+    // 存在性防御：InitialSchema 已建全量权威 schema，表已存在则跳过（幂等）
+    const existing = await queryRunner.getTable('sys_operation_logs');
+    if (existing) return;
+
     await queryRunner.createTable(
       new Table({
         name: 'sys_operation_logs',

@@ -196,6 +196,10 @@ function getDatabaseConfig(configService: ConfigService): TypeOrmModuleOptions {
     database: absoluteDbPath,
     autoLoadEntities: true,
     synchronize: !isProduction,
+    // 表结构变更的权威入口：glob 与 data-source.ts（TypeORM CLI 用）保持一致，
+    // 保证 `npm run migration:*` 与启动时 runMigrations 看到同一批 migration
+    migrations: [path.resolve(__dirname, 'migrations', '*{.ts,.js}')],
+    migrationsTableName: 'migrations',
     logging: false,
     extra: {
       busyTimeout: 10000,

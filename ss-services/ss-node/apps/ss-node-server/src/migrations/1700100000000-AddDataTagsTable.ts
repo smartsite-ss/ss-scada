@@ -1,4 +1,4 @@
-// Copyright (c) 2025 Smart Site Team
+﻿// Copyright (c) 2025 Smart Site Team
 // https://smartsite.top/
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
@@ -8,6 +8,10 @@ export class AddDataTagsTable1700100000000 implements MigrationInterface {
   name = 'AddDataTagsTable1700100000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
+    // 存在性防御：InitialSchema 已建全量权威 schema，表已存在则跳过（幂等）
+    const existing = await queryRunner.getTable('dev_data_tags');
+    if (existing) return;
+
     await queryRunner.createTable(
       new Table({
         name: 'dev_data_tags',
@@ -43,7 +47,7 @@ export class AddDataTagsTable1700100000000 implements MigrationInterface {
           { name: 'deadband_percent', type: 'double', isNullable: true },
           { name: 'deadband_time', type: 'integer', isNullable: true },
           { name: 'conversion_type', type: 'varchar', length: '20', default: "'none'" },
-          { name: 'conversion_config', type: 'simple-json', isNullable: true },
+          { name: 'conversion_config', type: 'text', isNullable: true },
           { name: 'alarm_high_high', type: 'double', isNullable: true },
           { name: 'alarm_high', type: 'double', isNullable: true },
           { name: 'alarm_low', type: 'double', isNullable: true },
@@ -59,9 +63,9 @@ export class AddDataTagsTable1700100000000 implements MigrationInterface {
           { name: 'priority', type: 'integer', default: '0' },
           { name: 'group_id', type: 'varchar', length: '36', isNullable: true },
           { name: 'category', type: 'varchar', length: '100', isNullable: true },
-          { name: 'tags', type: 'simple-json', isNullable: true },
+          { name: 'tags', type: 'text', isNullable: true },
           { name: 'simulation_enabled', type: 'boolean', default: '0' },
-          { name: 'simulation_config', type: 'simple-json', isNullable: true },
+          { name: 'simulation_config', type: 'text', isNullable: true },
           { name: 'device_id', type: 'varchar', length: '36' },
           { name: 'created_at', type: 'datetime', default: "datetime('now')" },
           { name: 'updated_at', type: 'datetime', default: "datetime('now')" },
