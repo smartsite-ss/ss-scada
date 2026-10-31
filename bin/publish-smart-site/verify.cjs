@@ -39,8 +39,11 @@ if (opt.withServices) {
   checks.push(['base_services/redis/redis-server.exe', 'Redis 二进制']);
   checks.push(['base_services/influxdb2-2.7.8/influxd.exe', 'InfluxDB 二进制']);
   checks.push(['base_services/influxdb2-2.7.8/config.yaml', 'InfluxDB 配置（engine-path → ../../rtdb）']);
+  checks.push(['base_services/nanomq/bin/nanomq.exe', 'NanoMQ 二进制']);
+  checks.push(['base_services/nanomq/config/nanomq.conf', 'NanoMQ 配置']);
   checks.push(['rtdb/influxdb2', '时序数据落点（空目录）']);
   checks.push(['_start-services.bat', '基础服务引导脚本']);
+  checks.push(['init-influxdb.bat', 'InfluxDB 一次性初始化脚本']);
 }
 if (opt.withNode) checks.push(['node/node.exe', `随包 Node（${process.version}）`]);
 if (opt.service) {

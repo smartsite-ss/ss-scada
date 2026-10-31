@@ -53,7 +53,7 @@ const DATA_USER_DIRS = ['db', 'projects', 'plugin-configs', 'graphic-plugins'];
 /** 运行期文件：WAL / 日志 / RDB 不进包（WAL 帧由目标机重建，避免跨机 SQLite 状态错乱） */
 const DATA_EXCLUDE_FILES = ['*.db-wal', '*.db-shm', '*.db-journal', '*.log', 'dump.rdb'];
 /** 随包基础服务：influxdb3 / TDengine / nanomq 体积大且可选 ⇒ 默认不带 */
-const BASE_SERVICE_ITEMS = ['redis', 'influxdb2-2.7.8'];
+const BASE_SERVICE_ITEMS = ['redis', 'influxdb2-2.7.8', 'nanomq'];
 const BASE_SERVICE_EXCLUDE_DIRS = ['logs', 'data'];
 const BASE_SERVICE_EXCLUDE_FILES = ['*.log', '*.rdb', '*.aof'];
 

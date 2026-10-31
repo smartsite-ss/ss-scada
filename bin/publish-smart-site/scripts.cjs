@@ -67,10 +67,19 @@ function writeStartBat(pkg, fileName = 'start.bat') {
 
   if (pkg.withServices) {
     writeStartServicesBat(pkg);
+    // InfluxDB 一次性初始化（幂等）：setup 创建 org/bucket 并把 token 写回 .env（v7 同款模板）
+    const tplDir = path.join(__dirname, 'templates');
+    for (const f of ['init-influxdb.bat', 'init-influxdb.cjs']) {
+      const src = path.join(tplDir, f);
+      if (fs.existsSync(src)) fs.copyFileSync(src, path.join(pkg.dir, f));
+      else info(C.warn(`! 缺少模板 ${f}，InfluxDB 初始化脚本未生成`));
+    }
     lines.push(
       '',
-      'REM ---- bundled base services (redis :6379 / influxdb :8086) ----',
+      'REM ---- bundled base services (redis :6379 / influxdb :8086 / nanomq :1883) ----',
       'if exist "%~dp0_start-services.bat" call "%~dp0_start-services.bat"',
+      'REM ---- one-time InfluxDB initialization (skipped automatically when already initialized) ----',
+      'if exist "%~dp0init-influxdb.bat" call "%~dp0init-influxdb.bat" auto',
     );
   }
 
@@ -223,6 +232,18 @@ function writeStartServicesBat(pkg) {
     'popd',
     'call :ss_wait_port 8086 60',
     ':ss_skip_influx',
+    '',
+    'if not exist "base_services\\nanomq\\bin\\nanomq.exe" goto :ss_skip_nanomq',
+    'findstr /r /c:"^NANOMQ_PORT=1883" ".env" >nul 2>&1',
+    'if errorlevel 1 goto :ss_skip_nanomq',
+    'netstat -ano | findstr ":1883 " | findstr LISTENING >nul 2>&1',
+    'if not errorlevel 1 goto :ss_skip_nanomq',
+    'echo [INFO] starting NanoMQ (:1883) from base_services\\nanomq ...',
+    'pushd "base_services\\nanomq\\bin"',
+    'start "ss-nanomq" /min nanomq.exe start --conf ..\\config\\nanomq.conf',
+    'popd',
+    'call :ss_wait_port 1883 30',
+    ':ss_skip_nanomq',
     'exit /b 0',
     '',
     'REM ---- helper: wait for a listening port (%%1=port, %%2=max seconds) ----',
@@ -457,7 +478,7 @@ function writeServiceScripts(pkg) {
 /** stop.bat：只停「本包」的 node/redis/influxd（按可执行文件所在目录匹配，避免误杀其它实例） */
 function writeStopBat(pkg) {
   const names = pkg.withServices
-    ? "@('node.exe','redis-server.exe','influxd.exe')"
+    ? "@('node.exe','redis-server.exe','influxd.exe','nanomq.exe')"
     : "@('node.exe')";
   const psCmd = [
     "$root='%~dp0';",
@@ -493,15 +514,16 @@ function writeStatusBat(pkg) {
     'echo   Smart Site status',
     'echo ============================================================',
     'echo [1] processes owned by this package:',
-    `powershell -NoProfile -Command "$root='%~dp0'; $names=@('node.exe'${pkg.withServices ? ",'redis-server.exe','influxd.exe'" : ''}); Get-CimInstance Win32_Process | Where-Object { $names -contains $_.Name -and (($_.Name -eq 'node.exe' -and $_.CommandLine -like ('*'+$root+'*')) -or ($_.Name -ne 'node.exe' -and $_.ExecutablePath -like ($root+'*'))) } | ForEach-Object { Write-Host ('    PID ' + $_.ProcessId + '  ' + $_.Name) }"`,
+    `powershell -NoProfile -Command "$root='%~dp0'; $names=@('node.exe'${pkg.withServices ? ",'redis-server.exe','influxd.exe','nanomq.exe'" : ''}); Get-CimInstance Win32_Process | Where-Object { $names -contains $_.Name -and (($_.Name -eq 'node.exe' -and $_.CommandLine -like ('*'+$root+'*')) -or ($_.Name -ne 'node.exe' -and $_.ExecutablePath -like ($root+'*'))) } | ForEach-Object { Write-Host ('    PID ' + $_.ProcessId + '  ' + $_.Name) }"`,
     `echo [2] port ${port}:`,
     `netstat -ano | findstr ":${port} " | findstr LISTENING`,
   ];
   if (pkg.withServices) {
     lines.push(
-      'echo [2b] base service ports 6379 / 8086:',
+      'echo [2b] base service ports 6379 / 8086 / 1883:',
       'netstat -ano | findstr ":6379 " | findstr LISTENING',
       'netstat -ano | findstr ":8086 " | findstr LISTENING',
+      'netstat -ano | findstr ":1883 " | findstr LISTENING',
     );
   }
   lines.push(

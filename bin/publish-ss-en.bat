@@ -34,7 +34,7 @@ echo.
 echo %CYAN%===========================================================%NC%
 echo %CYAN%   Smart Site - Publish English Edition (open source)      %NC%
 echo %CYAN%   Target: ss-run\ss-win\05-win-ss-en                      %NC%
-echo %CYAN%   Tier: lite (SQLite, zero external services)             %NC%
+echo %CYAN%   Tier: standard (bundled services redis/influxdb/nanomq) %NC%
 echo %CYAN%   Default account: admin / admin (reset on every build)   %NC%
 echo %CYAN%===========================================================%NC%
 echo.
@@ -60,7 +60,7 @@ REM Strip IDE-injected NODE_OPTIONS hooks - they wrap fs.rmSync with a
 REM bulk-delete guard that crashes the publisher when cleaning staging dirs.
 set "NODE_OPTIONS="
 
-node "%PUBLISHER%" --target="%TARGET%" --lang=en --port=8080 --with-data --data-exclude=images,images-lg,faq --with-node --service --self-test --zip --reset-admin %*
+node "%PUBLISHER%" --target="%TARGET%" --lang=en --port=8080 --with-data --data-exclude=images,images-lg,faq --with-services --with-node --service --self-test --zip --reset-admin %*
 if !ERRORLEVEL! NEQ 0 (
     echo %RED%[ERROR]%NC% Publish failed
     pause & exit /b 1
@@ -77,6 +77,7 @@ echo %YELLOW%  Quick Start (on the target machine):%NC%
 echo     Double-click: 05-win-ss-en\start.bat
 echo     URL:          http://localhost:8080
 echo     Login:        admin / admin
+echo     Services:     Redis :6379 / InfluxDB :8086 / NanoMQ :1883 (auto-start)
 echo.
 echo %YELLOW%  Manual Control:%NC%
 echo     Status:          05-win-ss-en\status.bat
