@@ -1,41 +1,163 @@
-# Smart Site（SS）— 开源 SCADA 组态软件与工业数据可视化平台
+📖 简体中文 | 📖 [English](#-english-summary)
 
-Smart Site 是一套面向工业场景的开源 SCADA 平台：**组态编辑器（HMI / SCADA Editor）+ 数据中台 + 后端服务**一体化，支持拖拽式监控画面编辑、设备数据采集（Modbus / OPC UA / MQTT / Siemens S7）、数据标签与模板、报警引擎、脚本引擎、InfluxDB 时序存储与多语言国际化。
+# 🌈 Smart Site — 开源 SCADA 组态软件与工业数据可视化平台
 
-> 开发协作与编码规范详见仓库内的 [`AGENTS.md`](./AGENTS.md)（面向 AI 编码助手与开发者的导航索引）。
+Smart Site 是一套面向工业场景的开源 SCADA 平台：**组态编辑器（HMI / SCADA Editor）+ 数据中台 + 后端服务**一体化。支持拖拽式监控画面编辑、设备数据采集（Modbus / OPC UA / MQTT / Siemens S7）、数据标签与模板、报警引擎、脚本引擎、报表、时序数据存储与多语言国际化。
 
-## English Summary
-
-**Smart Site (SS)** is an open-source SCADA and industrial IoT data management platform: a drag-and-drop HMI/SCADA editor, a data middle platform, and backend services in one solution. It covers industrial device acquisition (Modbus, OPC UA, MQTT, Siemens S7), data tags and device templates, an alarm engine, a script engine, InfluxDB time-series storage, reporting, and i18n. Licensed under Apache-2.0.
-
----
-
-## 在线体验（演示站点）
-
-不想本地部署，可直接访问已上线运行的演示环境，快速体验平台全部能力：
-
-- **访问地址**：<https://smartsite.top/>
-- **测试账号**：用户名 `test` ／ 密码 `test`
-- 登录后即可使用组态编辑器（拖拽式画面编辑、图元绑定、数据联动）与数据中台（设备管理、数据标签、报警、报表）等功能。
-
-> 演示站点为公开共享实例，仅用于功能体验，请勿写入重要业务数据。
+> ✨✨✨ **在线演示** ✨✨✨
 >
-> 所有组态页面均为演示用途，不涉及相关工艺及真实数据，页面中的工艺与数据均为模拟产生，仅用于展示组态功能。
+> - **访问地址**：<https://smartsite.top/>
+> - **测试账号**：`test` / `test`（登录即可体验组态编辑器与数据中台全部功能）
+>
+> 演示站点为公开共享实例，工艺画面与数据均为模拟产生，仅用于功能体验，请勿写入重要业务数据。
+
+如果这个项目对您有帮助，欢迎点一个 **Star** ⭐️ 支持，您的关注是我们持续更新的动力 🚀
 
 ---
 
-## 下载与本地验证（Windows）
+## 🎯 Smart Site 想解决什么？
 
-不想从源码构建，可直接下载已打包的 Windows 版进行产品验证：
+针对传统组态软件的五大痛点，逐一给出答案：
 
-- **下载地址**：<https://smartsite.top/downloads/ss-win.zip>
-- **使用方式**：下载后解压，即可直接运行并体验全部功能（组态编辑器、数据中台等），无需安装依赖与编译。
+| 传统组态软件的痛点 | Smart Site 的答案 |
+| --- | --- |
+| **点位授权**：按点数收费，项目越大成本越高 | 开源免费（Apache-2.0），**无点位数限制**，无授权锁 |
+| **信创支持**：依赖 Windows + IE / ActiveX，国产化适配困难 | 全栈 Web 技术栈（Node.js + Vue3），支持 **Linux 部署与国产化环境**，浏览器即用，无 ActiveX 依赖 |
+| **使用复杂**：工程管理器、IO 服务器、组态编辑器、组态运行器、历史数据服务器……多进程多组件，安装运维成本高 | **单包一体化**：采集、组态、运行、历史库融为一体，解压即用（Windows 单包 / Docker），双击 `start.bat` 上线 |
+| **Web 能力不完整**：仅客户端所见即所得，Web 端发布效果打折 | **原生 Web 架构**：编辑器与运行端均基于浏览器，**所见即所得**，桌面 / 移动端一致体验 |
+| **扩展性封闭**：闭源黑盒，AI 时代难以集成与二次开发 | 面向 AGI 时代的模块化设计——**统一为先、简单至上**：数据采集插件化 + 进程隔离化，显示图元插件化 + 目录化，前后端脚本分离化，每个环节皆可独立扩展 |
 
-> 该安装包用于快速产品验证与演示，数据均为本地模拟，请勿用于生产环境。
+同时覆盖组态工程的日常场景：
+
+- 工厂 / 水厂 / 电厂 / 泵站等**监控大屏与 HMI 画面**的零代码组态搭建
+- Modbus、OPC UA、MQTT、S7 等**多协议设备数据采集**与统一管理
+- 设备数据的**实时监测、历史曲线与报警**（确认 / 恢复 / 分析）
+- 行业模板与画布模板**复用**，快速复制同类工程
+
+## ✨ 为什么选择 Smart Site？
+
+| 能力亮点 | 说明 |
+| --- | --- |
+| 🎨 拖拽式组态 | 图元库（工业 / 电力 / SVG / 3D / 图表等）+ 画布模板 + 布局模板，所见即所得 |
+| 🔌 多协议采集 | Modbus TCP/RTU、OPC UA、MQTT、Siemens S7、Virtual 模拟器，插件化扩展 |
+| 📈 实时 + 历史一体 | WebSocket 实时推送、InfluxDB / SQLite 时序存储、历史曲线与聚合查询 |
+| 🚨 完整报警引擎 | 报警规则 / 延迟消抖 / 确认清除 / 屏蔽 / 事件中心 / 告警数据分析 |
+| 🧩 开放扩展 | 图元插件 SDK、脚本引擎（Monaco）、外部数据源、REST API + WebSocket |
+| 📦 开箱即用 | Windows 单包发布（免安装免编译）、Docker 化部署、初始化向导 |
+
+## ✨ 核心功能
+
+| 功能模块 | 描述 |
+| --- | --- |
+| 组态编辑器 | 拖拽式画面编辑、图元数据绑定、动画 / 轮播 / 运行预览、多页面管理 |
+| 图元与素材库 | 工业图元插件（分类启停）、动图 / PNG / 指示灯 / 开关按钮图库、画布 / 布局模板 |
+| 数据中台 | 项目管理、页面管理、设备管理（设备树 / 分组 / 状态）、系统概览 |
+| 设备采集 | 采集器插件管理、Pipeline 指标监控、设备模板点表库（DCS / PLC 行业模板） |
+| 数据标签 | 点表配置、量程 / 死区 / 换算、数据类型与读写方向、实时值与质量 |
+| 报警与事件 | 报警规则、报警记录（确认 / 清除 / 屏蔽）、事件历史、告警变量分析 |
+| 脚本引擎 | Monaco 在线编辑、定时 / 事件触发、运行监控与审计 |
+| 报表系统 | 报表方案、汇总与明细（行列透视）、Excel 导出 |
+| 历史数据 | 多变量历史曲线、聚合间隔、查询方案保存 |
+| 系统管理 | 用户 / 角色权限、菜单、审计日志、数据库运维、基础服务管理（启停 / 健康检查） |
+| 国际化 | 中 / 英 / 繁多语言、明暗主题 |
+
+## 🛠️ 技术栈
+
+| 分层 | 技术 |
+| --- | --- |
+| 前端 | Vue 3 · TypeScript · Vite · Pinia · Konva（画布渲染）· vue-i18n · Naive UI |
+| 后端 | NestJS · TypeORM · SQLite / InfluxDB · Socket.IO · JWT + RBAC |
+| 协议采集 | modbus-serial · node-opcua · mqtt · snap7 类 S7 驱动 · 虚拟模拟器 |
+| 工程 | pnpm monorepo · Vitest / Jest · Playwright E2E · Windows 单包发布器 |
+
+## 🏗️ 环境要求
+
+| 环境 | 要求 | 说明 |
+| --- | --- | --- |
+| Node.js | ≥ 18（建议 20 LTS） | 前后端构建与运行 |
+| pnpm | ≥ 8 | 包管理器（monorepo 工作区） |
+| 操作系统 | Windows / Linux | 开发与部署均支持 |
+| InfluxDB 2.7+ | 可选 | 时序数据存储（不装则回落 SQLite） |
+| Redis | 可选 | 实时数据缓存（不装则回落内存） |
+
+## 🚀 快速开始
+
+- **免安装体验（Windows）**：下载已打包版本，解压直接运行 → <https://smartsite.top/downloads/ss-win.zip>
+- **源码部署**：完整的安装、启动、构建与部署指南 👉 [`docs/01-getting-started.md`](./docs/01-getting-started.md)（开发规范见 [`AGENTS.md`](./AGENTS.md)）
+
+```powershell
+# 源码启动（推荐使用 bin/ 脚本，勿直接 pnpm dev）
+.\bin\start.bat        # 全栈：编辑器 5173 + 后端 3000
+.\bin\start-data.bat   # 仅数据中台（前端 5175 / 后端 4000）
+.\bin\start-scada.bat  # 仅组态编辑器（前端 5174 / 后端 4100）
+```
+
+## 🚨 版本说明：开源版与商业版
+
+Smart Site 采用 **开源版 + 商业版** 双轨模式：
+
+| | 开源版（本仓库） | 商业版 |
+| --- | --- | --- |
+| 授权 | Apache-2.0，免费商用（保留版权声明） | 商业授权，含品牌定制 / 去 Logo 授权 |
+| 组态与采集 | 组态编辑器 + 数据中台 + 多协议采集，**全部核心功能** | 在开源版基础上按需扩展 |
+| RAG 知识库 | — | ✅ 内置 RAG 知识库：工程文档 / 手册 / FAQ 的智能检索与问答 |
+| 脚本能力 | 基础脚本（定时触发、在线编辑） | ✅ 前后端完整脚本能力：更丰富的 API 与触发方式、服务端任务编排 |
+| AI 能力 | — | ✅ AI 接入深度集成：生成与优化工程数据（设备 / 点表 / 报警规则）、AI 生成组态页面 |
+| 多语言 | 中 / 英文基础支持 | ✅ 多语言深度支持：语种扩展、术语库与翻译管理 |
+| 服务 | 社区支持（Gitee / GitHub Issue） | 专属技术支持与 SLA、培训、定制开发 |
+| 适用 | 个人学习、中小项目、产品验证 | 企业级交付、批量部署、行业深度定制 |
+
+**商业合作 / 技术咨询联系方式**：
+
+<table>
+  <tr>
+    <td align="center"><img src="docs/contact/official-account.jpg" width="258"/><br/><strong>微信公众号</strong><br/>产品动态与更新通知</td>
+    <td align="center"><img src="docs/contact/video-account.jpg" width="258"/><br/><strong>视频号</strong><br/>产品演示与使用教程</td>
+    <td align="center"><img src="docs/contact/developer-wechat.png" width="258"/><br/><strong>开发者微信</strong><br/>技术交流与商务咨询</td>
+  </tr>
+</table>
+
+**联系电话**：15116488853（技术咨询与商务合作）
+
+> 如果本项目对您有帮助，欢迎 **关注公众号与视频号**，并帮忙 **点赞、转发** 给更多有需要的朋友。
 
 ---
 
-## 界面预览
+## 📖 English Summary
+
+**Smart Site (SS)** is an open-source SCADA and industrial data visualization platform: a drag-and-drop HMI/SCADA editor, a data middle platform, and backend services in one solution.
+
+**What problems it solves** (vs. traditional SCADA/HMI software):
+
+1. **No point-count licensing** — free and open source, unlimited tags
+2. **Xinchuang (domestic IT) ready** — full web stack (Node.js + Vue3), runs on Linux/browsers, no ActiveX/IE dependency
+3. **Dramatically simpler** — acquisition, configuration, runtime and historian unified in one single package instead of multiple components (project manager / IO server / runtime / historian); unzip and run
+4. **True web & WYSIWYG** — editor and runtime are both browser-native, consistent on desktop and mobile
+5. **AGI-era extensibility** — modular by design ("unified first, simplicity first"): pluggable & process-isolated data collection, directory-based pluggable graphics primitives, separated front/back-end scripting
+
+- **Online demo**: <https://smartsite.top/> (account `test` / password `test`)
+- **Device acquisition**: Modbus TCP/RTU, OPC UA, MQTT, Siemens S7, plugin-based collectors
+- **Core features**: HMI editor, data tags & device templates, alarm engine, script engine, reporting, historical trends, i18n (zh/en/zh-TW), light/dark themes
+- **Tech stack**: Vue 3 + Vite + Konva / NestJS + TypeORM + SQLite/InfluxDB + Socket.IO
+- **Quick start**: download the prebuilt Windows package (<https://smartsite.top/downloads/ss-win.zip>) and run `start.bat`, or build from source — see [`docs/01-getting-started.md`](./docs/01-getting-started.md)
+
+### Editions: Open Source vs Commercial
+
+| | Open Source (this repo) | Commercial |
+| --- | --- | --- |
+| License | Apache-2.0, free for commercial use (keep copyright notice) | Commercial license incl. white-label / logo removal |
+| HMI & acquisition | Full core features (editor + data platform + multi-protocol acquisition) | Enterprise extensions on demand |
+| RAG knowledge base | — | ✅ Built-in RAG: intelligent retrieval & Q&A over engineering docs / manuals / FAQ |
+| Scripting | Basic scripts (timer triggers, online editing) | ✅ Full front & back-end scripting: richer APIs & triggers, server-side task orchestration |
+| AI integration | — | ✅ Deep AI integration: generate & refine engineering data (devices / tags / alarm rules), AI-generated HMI pages |
+| Multi-language | Basic zh / en support | ✅ Extended languages, terminology base & translation management |
+| Support | Community (Gitee / GitHub issues) | Dedicated support & SLA, training, custom development |
+
+**Contact**: 15116488853 · WeChat QR codes below · <https://smartsite.top/>
+
+---
+
+## 🖼️ 系统截图
 
 以下为系统运行界面截图（图片位于仓库 `docs/screenshots/` 目录，对应线上演示站点 <https://smartsite.top/> 的实际界面，在 Gitee 上可直接查看），每张截图前附对应功能说明。
 
@@ -181,292 +303,6 @@ Smart Site 是一套面向工业场景的开源 SCADA 平台：**组态编辑器
 
 ---
 
-## 技术栈
-
-### 前端（`ss-editor`）
-
-| 技术 | 版本 | 用途 |
-| --- | --- | --- |
-| Vue 3 | 3.x | Composition API + `<script setup>` |
-| TypeScript | 5.2 | 严格模式 |
-| Vite | 5.x | 构建 / 开发服务器 |
-| Pinia | — | 状态管理 |
-| Konva（vue-konva） | — | 画布渲染 |
-| vue-i18n | — | 国际化 |
-| Vue Router | 4.x | 路由 |
-| Vitest | 1.6 | 单元测试 |
-| Playwright | 1.60 | E2E 测试 |
-
-### 后端（`ss-services/ss-node`）
-
-| 技术 | 版本 | 用途 |
-| --- | --- | --- |
-| NestJS | 10.4 | 应用框架 |
-| TypeScript | 5.2 | 严格模式 |
-| TypeORM | 0.3 | ORM |
-| SQLite（better-sqlite3） | — | 元数据存储（按项目独立 DB） |
-| InfluxDB | 2.7+ | 时序数据存储（可选） |
-| Socket.IO | 4.x | WebSocket 实时通信 |
-| @nestjs/jwt + passport | — | JWT 认证 + RBAC |
-| Jest / ts-jest | 29.7 | 单元测试 |
-| Supertest | 7.2 | HTTP 集成测试 |
-| node-opcua / modbus-serial / mqtt | — | 工业协议采集 |
-
----
-
-## 仓库结构
-
-本仓库是一个 **pnpm 多包（monorepo）**，由三大部分组成：
-
-```
-ss-o/
-├── ss-editor/                  # 前端 monorepo（独立的 pnpm workspace）
-│   ├── apps/
-│   │   ├── web/                # Web 应用入口（Vite dev server）
-│   │   ├── desktop/            # Electron 桌面应用
-│   │   └── desktop-tauri/      # Tauri 桌面应用
-│   └── packages/
-│       ├── core/               # 核心库：图元模型、存储、服务、i18n
-│       ├── editor/             # 编辑器 UI：布局、菜单、工具栏
-│       ├── system/             # 数据中台：视图、路由、API、stores
-│       ├── shared/             # 共享 Vue 组件
-│       ├── plugins/            # 图元插件包（basic / chart / industrial / electric …）
-│       ├── plugin-sdk/         # 插件开发 SDK
-│       ├── create-plugin/      # 插件脚手架
-│       └── tools/              # 构建工具
-│
-├── ss-services/ss-node/        # 后端 monorepo（NestJS + pnpm workspace）
-│   ├── apps/ss-node-server/    # 主应用入口
-│   └── packages/
-│       ├── ss-core/            # 基础设施：Auth、EventBus、Pipeline、WebSocket
-│       ├── ss-device/          # 设备管理
-│       ├── ss-project/         # 项目管理
-│       ├── ss-datatag/         # 数据标签
-│       ├── ss-alarm/           # 报警管理
-│       ├── ss-system/          # 系统管理（配置、菜单、终端）
-│       ├── ss-report/          # 报表
-│       ├── ss-script/          # 脚本引擎
-│       ├── ss-datasource/      # 外部数据源
-│       ├── ss-storage/         # 存储引擎（InfluxDB 等）
-│       ├── ss-collector/       # 工业协议采集器（modbus/mqtt/opcua/s7/virtual）
-│       ├── ss-i18n/            # 后端国际化
-│       └── ss-cli/             # CLI 工具
-│
-├── ss-run/ss/data/             # 运行时数据目录（默认整体 gitignore）
-│   └── ……                      # 已纳入版本控制的配置/静态数据：
-│                                 #   canvas-templates / templates / init /
-│                                 #   dicts / plugin-configs / graphic-plugins /
-│                                 #   menu / rtdb / realtime / exports / logs-data / images
-│
-├── bin/                        # 启动 / 调试脚本（见下方"快速开始"）
-├── types/                      # 全局共享类型
-├── AGENTS.md                   # 开发协作与编码规范导航
-├── pnpm-workspace.yaml         # pnpm 工作区配置（后端）
-├── package.json                # 根聚合脚本
-└── LICENSE                     # Apache-2.0
-```
-
-> **运行时数据目录 `ss-run/`**：默认整体被 `.gitignore` 忽略，仅其中的配置/静态数据子目录纳入版本控制；运行时产生的大文件（数据库 `*.db`、日志 `logs/`、AI 索引 `faq/`、模型 `models/`、采集报告 `ai-workspace/` 等）不入库，避免仓库体积膨胀。
-
----
-
-## 文档
-
-完整的上手、使用、开发与部署文档位于 [`docs/`](./docs/README.md)：
-
-- [快速开始](./docs/01-getting-started.md) — 环境搭建、依赖安装、首次运行、生产构建
-- [用户手册](./docs/用户手册.md) — 组态编辑器与数据中台的使用操作
-- [开发指引](./docs/README.md) — 架构、后端/前端开发、插件机制
-- [部署运维](./docs/部署运维.md) — 生产部署、配置、备份、升级、监控
-
----
-
-## 代码仓库
-
-本项目同时托管于以下两个平台，内容保持一致（互为镜像）：
-
-- **Gitee（主仓库）**：<https://gitee.com/stuhu/ss-scada>
-- **GitHub（镜像）**：<https://github.com/smartsite-ss/ss-scada>
-
----
-
-## 环境要求
-
-- **Node.js** ≥ 18（建议 20 LTS）
-- **pnpm** ≥ 8（根 `package.json` 已锁定 `pnpm@11`）
-- （可选）**InfluxDB 2.7+**：用于时序数据存储
-- （可选）**Redis**：用于实时数据缓存
-
----
-
-## 快速开始
-
-### 1. 安装依赖
-
-前端与后端是两个独立的 pnpm 工作区，需分别安装：
-
-```bash
-# 后端（仓库根目录）
-pnpm install
-
-# 前端
-cd ss-editor
-pnpm install
-cd ..
-```
-
-### 2. 启动（推荐使用 `bin/` 脚本）
-
-项目提供三种产品模式的启动脚本，封装了依赖安装、workspace 编译、环境变量与缓存清理，**日常启动/重启/切换模式请优先使用这些脚本，而不是直接 `pnpm dev`**。
-
-| 模式 | 脚本 | 前端端口 | 后端端口 | 适用场景 |
-| --- | --- | --- | --- | --- |
-| 全栈（默认） | `.\bin\start.bat` | 5173 | 3000 | 同时开发编辑器 + 数据中台 |
-| data 模式 | `.\bin\start-data.bat` | 5175 | 4000 | 仅数据中台（禁用 `/editor`、`/preview`） |
-| scada 模式 | `.\bin\start-scada.bat` | 5174 | 4100 | 仅组态编辑器（禁用 `/system/*`） |
-
-调试单个端 / 重试：
-
-```powershell
-.\bin\start-backend.bat     # 仅启动后端
-.\bin\start-frontend.bat    # 仅启动前端（Vite dev）
-.\bin\run-desktop.bat       # 启动 Electron 桌面应用
-.\bin\kill-node.bat         # 杀掉残留 Node 进程
-.\bin\clear-vite-cache.bat  # 清理前端缓存 + 重新编译 workspace 包
-```
-
-启动后访问：
-
-- 组态编辑器：`http://localhost:5173/editor`
-- 数据中台：`http://localhost:5173/system`
-- 后端 API（Swagger）：`http://localhost:<后端端口>/api-docs`
-
----
-
-## 开发与构建命令
-
-### 前端（`ss-editor`）
-
-```bash
-cd ss-editor
-
-pnpm dev:web:full     # 全栈模式开发（编辑器 + 数据中台）
-pnpm dev:web:scada    # 仅组态编辑器
-pnpm dev:web:data     # 仅数据中台
-
-pnpm build:web:full   # 全量构建（core → editor → system → web）
-pnpm build:web:scada
-pnpm build:web:data
-pnpm build:desktop    # 构建 Electron 桌面应用
-pnpm build:tauri      # 构建 Tauri 桌面应用
-
-pnpm test:core        # core 包单测
-pnpm test:ui          # editor 包单测
-pnpm test:all         # 全部单测
-pnpm test:e2e         # Playwright E2E
-pnpm typecheck        # 类型检查
-pnpm lint             # 代码风格
-```
-
-### 后端（`ss-services/ss-node`）
-
-```bash
-cd ss-services/ss-node
-
-pnpm dev              # 开发模式（自动编译 workspace 包 + 热重载）
-pnpm build            # 构建全部包
-pnpm start:prod       # 生产模式
-
-pnpm --filter ss-node-server dev        # 仅启动主应用
-pnpm --filter @ss-node/ss-device build  # 构建单个包（workspace 包改后需重编）
-
-pnpm test             # 全部测试
-pnpm typecheck        # 类型检查
-pnpm lint             # 代码风格
-```
-
-### 根目录聚合脚本
-
-```bash
-pnpm build:server        # 构建后端主应用
-pnpm build:web:full      # 全量构建前端
-pnpm build:all           # 后端 + 前端全量构建
-```
-
----
-
-## 配置
-
-### 后端环境变量
-
-后端配置位于 `ss-services/ss-node`（参考 `.env.example` 复制为 `.env`）：
-
-```env
-NODE_ENV=development
-PORT=4000                 # 后端端口（各启动模式由 bin 脚本预检/覆盖）
-JWT_SECRET=change-me      # 生产环境务必修改
-INFLUXDB_URL=http://localhost:8086   # 时序数据（可选）
-INFLUXDB_TOKEN=...
-INFLUXDB_ORG=ss-org
-INFLUXDB_BUCKET=ss_node_data
-LOG_LEVEL=debug
-```
-
-数据库：全局元数据存于 `ss-node.db`，各项目数据按项目隔离存于 `{项目目录}/db/system.db`，首次启动自动建库。
-
-### 前端环境变量
-
-前端由 Vite 注入（参考 `ss-editor/apps/web` 下的 `.env*`）：
-
-```env
-VITE_API_BASE_URL=http://localhost:4000   # 后端 API 地址
-VITE_WS_URL=ws://localhost:4000           # WebSocket 地址
-VITE_DEBUG_SKIP_AUTH=true                 # 仅开发：跳过登录鉴权
-```
-
----
-
-## 测试
-
-```bash
-# 前端
-cd ss-editor && pnpm test:all && pnpm test:e2e
-
-# 后端
-cd ss-services/ss-node && pnpm test
-```
-
-门禁流程：**编写代码 → typecheck → lint → test → Code Review → 提交**。
-
----
-
-## 编码规范（摘要）
-
-详细规范见 [`AGENTS.md`](./AGENTS.md)，要点：
-
-- **主题样式**：所有颜色必须用 CSS 变量（`--primary`、`--surface`、`--text`、`--border` 等），禁止硬编码颜色。
-- **国际化**：新增 UI 文本必须使用 `$t('...')` 并同步 `zh-CN.json` / `en-US.json`。
-- **TypeScript 严格模式**：禁止 `any`，优先具体类型或泛型。
-- **命名**：禁止缩写，领域标识符使用全称（`projectId` / `deviceId` / `tagId` / `userId` 等，禁用 `pid`/`did`/`tid`/`uid`）。
-- **提交信息**：简易中文 + 模块前缀，例如 `feat: 设备管理-分组支持拖拽排序`、`fix: 系统-菜单配置缺失`。
-- **启动脚本**：启动/重启/切换模式/重试必须使用 `bin/` 脚本。
-
----
-
-## 联系与关注
-
-<table>
-  <tr>
-    <td align="center"><img src="docs/contact/official-account.jpg" width="258"/><br/><strong>微信公众号</strong><br/>扫码关注，获取产品动态与更新通知</td>
-    <td align="center"><img src="docs/contact/video-account.jpg" width="258"/><br/><strong>视频号</strong><br/>扫码关注，观看产品演示与使用教程</td>
-    <td align="center"><img src="docs/contact/developer-wechat.png" width="258"/><br/><strong>开发者微信</strong><br/>扫码添加，进行技术交流与问题咨询</td>
-  </tr>
-</table>
-
-**联系电话**：15116488853（技术咨询与商务合作）
-
-> 如果本项目对您有帮助，欢迎 **关注公众号与视频号**，并帮忙 **点赞、转发** 给更多有需要的朋友；您的关注与支持是我们持续更新与完善的动力。也欢迎添加开发者微信交流反馈问题或建议。
-
-## 许可证
+## 许可证 / License
 
 [Apache-2.0](./LICENSE)
