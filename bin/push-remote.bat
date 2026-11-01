@@ -78,7 +78,7 @@ if not errorlevel 1 (
     echo [ OK ] GitHub updated.
 ) else (
     echo.
-    echo [WARN] GitHub push FAILED (network/443). Continuing with Gitee.
+    echo [WARN] GitHub push FAILED (network/443^). Continuing with Gitee.
 )
 
 echo.
