@@ -1,4 +1,4 @@
-# Smart Site O · 开发指引
+# Smart Site · 开发指引
 
 本仓库是 Smart SCADA （ss-scada），采用 pnpm 多工作区（monorepo）结构，包含两大独立工作区：
 
