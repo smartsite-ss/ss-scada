@@ -85,14 +85,9 @@ ss-run/ss/base_services/
 docs/*
 !docs/screenshots/
 !docs/contact/
-!docs/README.md
-!docs/01-getting-started.md
-!docs/02-backend.md
-!docs/03-frontend.md
-!docs/04-troubleshooting.md
-!docs/开发环境搭建手册.md
-!docs/用户手册.md
-!docs/部署运维.md
+!docs/zh-CN/
+!docs/en/
+!docs/images/
 docs-optimization-report/
 
 # temp / build artifacts (cleanup)
