@@ -83,7 +83,7 @@ Smart Site 是一套面向工业场景的开源 SCADA 平台：**组态编辑器
 ## 🚀 快速开始
 
 - **免安装体验（Windows）**：下载已打包版本，解压直接运行 → <https://smartsite.top/downloads/05-win-ss-en.7z>
-- **源码部署**：完整的安装、启动、构建与部署指南 👉 [`docs/01-getting-started.md`](./docs/01-getting-started.md)（开发规范见 [`AGENTS.md`](./AGENTS.md)）
+- **源码部署**：完整的安装、启动、构建与部署指南 👉 [`docs/zh-CN/01-getting-started.md`](./docs/zh-CN/01-getting-started.md)（开发规范见 [`AGENTS.md`](./AGENTS.md)）
 
 ```powershell
 # 源码启动（推荐使用 bin/ 脚本，勿直接 pnpm dev）
@@ -139,7 +139,7 @@ Smart Site 采用 **开源版 + 商业版** 双轨模式：
 - **Device acquisition**: Modbus TCP/RTU, OPC UA, MQTT, Siemens S7, plugin-based collectors
 - **Core features**: HMI editor, data tags & device templates, alarm engine, script engine, reporting, historical trends, i18n (zh/en/zh-TW), light/dark themes
 - **Tech stack**: Vue 3 + Vite + Konva / NestJS + TypeORM + SQLite/InfluxDB + Socket.IO
-- **Quick start**: download the prebuilt Windows package (<https://smartsite.top/downloads/05-win-ss-en.7z>) and run `start.bat`, or build from source — see [`docs/01-getting-started.md`](./docs/01-getting-started.md)
+- **Quick start**: download the prebuilt Windows package (<https://smartsite.top/downloads/05-win-ss-en.7z>) and run `start.bat`, or build from source — see [`docs/zh-CN/01-getting-started.md`](./docs/zh-CN/01-getting-started.md)
 
 ### Editions: Open Source vs Commercial
 
