@@ -3,15 +3,15 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * TriggerMatcher 单元测试 — P1-T06
+ * TriggerMatcher unit tests — P1-T06
  *
- * 覆盖:
- *   - dataChange 触发匹配（精确 + 宽松）
- *   - timer 触发匹配（秒/分/Cron）
- *   - event 触发匹配（点击/双击）
- *   - manual 触发匹配
- *   - unknown 回退
- *   - 工业量关键词 → tagId 映射
+ * Covers:
+ *   - dataChange trigger matching (exact + loose)
+ *   - timer trigger matching (seconds/minutes/Cron)
+ *   - event trigger matching (click/double click)
+ *   - manual trigger matching
+ *   - unknown fallback
+ *   - Industrial quantity keyword → tagId mapping
  */
 
 import { describe, it, expect } from 'vitest';
@@ -20,7 +20,7 @@ import { TriggerMatcher } from '../../ai/trigger-matcher';
 describe('TriggerMatcher', () => {
   const matcher = new TriggerMatcher();
 
-  // ────── dataChange 触发 ──────
+  // ────── dataChange triggers ──────
 
   describe('dataChange 触发匹配', () => {
     it('应匹配 "当温度超过80度时触发告警" → dataChange', () => {
@@ -73,7 +73,7 @@ describe('TriggerMatcher', () => {
     });
   });
 
-  // ────── timer 触发 ──────
+  // ────── timer triggers ──────
 
   describe('timer 触发匹配', () => {
     it('应匹配 "每5秒执行一次" → timer', () => {
@@ -108,7 +108,7 @@ describe('TriggerMatcher', () => {
     });
   });
 
-  // ────── event 触发 ──────
+  // ────── event triggers ──────
 
   describe('event 触发匹配', () => {
     it('应匹配 "点击确认按钮时" → event', () => {
@@ -132,7 +132,7 @@ describe('TriggerMatcher', () => {
     });
   });
 
-  // ────── manual 触发 ──────
+  // ────── manual triggers ──────
 
   describe('manual 触发匹配', () => {
     it('应匹配 "手动执行" → manual', () => {
@@ -142,7 +142,7 @@ describe('TriggerMatcher', () => {
     });
   });
 
-  // ────── 边界与回退 ──────
+  // ────── Edge cases and fallback ──────
 
   describe('边界与回退', () => {
     it('无法识别时应返回 unknown', () => {
@@ -157,13 +157,13 @@ describe('TriggerMatcher', () => {
     });
 
     it('匹配优先级: timer > event > dataChange', () => {
-      // "每5秒点击按钮超过80度" 应先匹配到 timer
+      // "every 5 seconds when the button value exceeds 80" should match timer first
       const result = matcher.match('每5秒点击启动按钮时');
       expect(result.type).toBe('timer');
     });
   });
 
-  // ────── 工业量关键词映射 ──────
+  // ────── Industrial quantity keyword mapping ──────
 
   describe('工业量关键词 → tagId 映射', () => {
     const mappings = [

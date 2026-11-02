@@ -3,19 +3,20 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 设备管理 E2E 测试（基于 NestJS 测试模块 + Supertest）
+ * Device management E2E tests (based on the NestJS testing module + Supertest)
  *
- * 覆盖：
- *   1. 分组管理 — 创建分组、多级分组、查询、更新、删除
- *   2. 设备管理 — 创建不同类型/模板/插件的设备
- *   3. 分组-设备关联 — 分组添加设备、设备树查询
- *   4. 多项目 — 跨项目设备隔离
- *   5. 删除管理 — 删除分组（子分组上移）、删除设备
+ * Coverage:
+ *   1. Group management - create groups, multi-level groups, query, update, delete
+ *   2. Device management - create devices of different types/templates/plugins
+ *   3. Group-device association - add devices to a group, query the device tree
+ *   4. Multiple projects - cross-project device isolation
+ *   5. Deletion management - delete groups (promote child groups), delete devices
  *
- * 策略：使用 NestJS TestingModule 加载 DeviceController，mock 所有底层服务，
- *       通过 Supertest 发送 HTTP 请求验证路由、参数解析、响应格式。
+ * Strategy: load DeviceController via the NestJS TestingModule, mock all underlying
+ *   services, and send HTTP requests through Supertest to verify routing, parameter
+ *   parsing and response format.
  *
- * 运行方式：
+ * How to run:
  *   npx jest --config apps/ss-data-server/jest.config.js --testPathPattern="device.e2e"
  */
 import { Test, TestingModule } from '@nestjs/testing';
@@ -41,7 +42,7 @@ describe('Device Management E2E', () => {
   const projectIdB = 'e2e-proj-002';
 
   // ============================================================
-  // 辅助工厂函数
+  // Helper factory functions
   // ============================================================
   function makeGroup(overrides: Record<string, any> = {}) {
     return {
@@ -200,7 +201,7 @@ describe('Device Management E2E', () => {
   });
 
   // ============================================================
-  // 一、分组管理 E2E — 创建分组、多级分组、查询、更新、删除
+  // 1. Group management E2E - create groups, multi-level groups, query, update, delete
   // ============================================================
   describe('分组管理', () => {
     describe('E2E-GROUP-001: 创建平级分组', () => {
@@ -398,7 +399,7 @@ describe('Device Management E2E', () => {
   });
 
   // ============================================================
-  // 二、设备管理 E2E — 不同类型/模板/采集插件
+  // 2. Device management E2E - different types/templates/collector plugins
   // ============================================================
   describe('设备管理 — 不同类型/模板/采集插件', () => {
     describe('E2E-DEV-001: 创建 Modbus TCP 设备', () => {
@@ -712,7 +713,7 @@ describe('Device Management E2E', () => {
   });
 
   // ============================================================
-  // 三、分组与设备关联 E2E
+  // 3. Group-device association E2E
   // ============================================================
   describe('分组与设备关联', () => {
     describe('E2E-LINK-001: 分组添加设备', () => {
@@ -795,7 +796,7 @@ describe('Device Management E2E', () => {
   });
 
   // ============================================================
-  // 四、多项目设备隔离 E2E
+  // 4. Cross-project device isolation E2E
   // ============================================================
   describe('多项目设备隔离', () => {
     describe('E2E-PROJ-001: 不同项目创建不同设备', () => {
@@ -889,7 +890,7 @@ describe('Device Management E2E', () => {
   });
 
   // ============================================================
-  // 五、删除管理 E2E
+  // 5. Deletion management E2E
   // ============================================================
   describe('删除管理', () => {
     describe('E2E-DEL-001: 删除设备', () => {

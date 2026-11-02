@@ -11,16 +11,16 @@ import {
   type ApiMethodDef,
 } from '../rules/script-api-registry';
 
-// ── API 分类分组：从规则注册表生成 ──
+// ── API category grouping: generated from the rule registry ──
 
 interface ApiGroupItem {
-  /** 下拉显示文本 */
+  /** Dropdown display text */
   label: string;
-  /** 插入代码 */
+  /** Inserted code */
   code: string;
-  /** 方法名（用于查找详情） */
+  /** Method name (used to look up details) */
   name: string;
-  /** 分类 */
+  /** Category */
   category: ApiCategory;
 }
 
@@ -29,7 +29,7 @@ interface ApiGroup {
   items: ApiGroupItem[];
 }
 
-/** 从 API_REGISTRY 生成分类分组 */
+/** Generate category groups from API_REGISTRY */
 function getApiGroups(): ApiGroup[] {
   const categoryMap = new Map<ApiCategory, ApiGroupItem[]>();
 
@@ -51,12 +51,12 @@ function getApiGroups(): ApiGroup[] {
   }));
 }
 
-/** 获取 API 详情（来自规则注册表） */
+/** Get API details (from the rule registry) */
 function getApiDetail(name: string): ApiMethodDef | undefined {
   return getApiByName(name);
 }
 
-/** 按分类获取 API 列表（含完整详情） */
+/** Get API list by category (with full details) */
 function getApisByCategory(): Array<{ category: string; label: string; apis: ApiMethodDef[] }> {
   const categoryMap = new Map<ApiCategory, ApiMethodDef[]>();
   for (const api of API_REGISTRY) {
@@ -72,15 +72,15 @@ function getApisByCategory(): Array<{ category: string; label: string; apis: Api
   }));
 }
 
-/** 获取所有 API（含完整详情） */
+/** Get all APIs (with full details) */
 function getAllApis(): ApiMethodDef[] {
   return API_REGISTRY;
 }
 
-// ── 基础模板 ──
+// ── Basic templates ──
 
 const templates: Record<string, string> = {
-  // filter 模式模板
+  // filter mode template
   'filter:basic': `// 数据过滤脚本
 // 可用变量：data（当前数据点）
 // 示例：当数值大于阈值时改变颜色
@@ -91,7 +91,7 @@ if (data.number > 80) {
 }
 return data;`,
 
-  // driver 模式模板
+  // driver mode template
   'driver:basic': `// 图元驱动脚本
 // 可用变量：api（图元操作API）、data（数据点）、context（上下文）
 api.setText(data.number + data.unit);
@@ -101,7 +101,7 @@ if (data.number > 80) {
   api.triggerAlarm({ tagId: context.graphicId, level: 'warning', message: '数值过高' });
 }`,
 
-  // interaction 模式模板
+  // interaction mode template
   'interaction:basic': `// 图元交互脚本
 // 可用变量：api（图元操作API）、event（事件数据）、graphic（图元信息）
 api.showGraphic('popup-' + event.graphicId);
@@ -111,7 +111,7 @@ api.setGraphicProps('popup-' + event.graphicId, {
   visible: true,
 });`,
 
-  // timer 模式模板
+  // timer mode template
   'timer:basic': `// 页面定时器脚本
 // 可用变量：page（页面API）、utils（工具函数）、data（数据）、timer（定时器信息）
 const allGraphics = page.getGraphics();
@@ -133,17 +133,17 @@ export function useScriptTemplates(mode: ScriptEditorMode) {
     return getApiGroups();
   }
 
-  /** 获取 API 详情（用于展示完整文档） */
+  /** Get API details (for displaying full documentation) */
   function getApiDetailFromRegistry(name: string): ApiMethodDef | undefined {
     return getApiDetail(name);
   }
 
-  /** 获取分类 API 列表（含完整详情，用于 API 参考面板） */
+  /** Get API list by category (with full details, for the API reference panel) */
   function getApiCategoriesFromRegistry(): Array<{ category: string; label: string; apis: ApiMethodDef[] }> {
     return getApisByCategory();
   }
 
-  /** 获取所有 API（含完整详情） */
+  /** Get all APIs (with full details) */
   function getAllApisFromRegistry(): ApiMethodDef[] {
     return getAllApis();
   }
@@ -173,7 +173,7 @@ export function useScriptTemplates(mode: ScriptEditorMode) {
     getDefaultTemplate,
     getQuickSnippets,
     getApiGroups: getApiGroupsFromDefs,
-    // 新增：来自规则注册表的丰富 API 数据
+    // Added: rich API data from the rule registry
     getApiDetail: getApiDetailFromRegistry,
     getApiCategories: getApiCategoriesFromRegistry,
     getAllApis: getAllApisFromRegistry,

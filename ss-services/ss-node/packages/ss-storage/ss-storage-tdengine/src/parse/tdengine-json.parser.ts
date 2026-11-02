@@ -4,26 +4,26 @@
 
 import { DataPoint } from '@ss-node/ss-storage';
 
-/** TDengine REST SQL 响应（/rest/sql） */
+/** TDengine REST SQL response (/rest/sql) */
 interface TdengineRestResponse {
   status: string;
   code: number;
   message?: string;
-  /** 列元信息：[[列名, 类型, 字节数], ...] */
+  /** Column metadata: [[name, type, bytes], ...] */
   column_meta?: [string, string, number][];
-  /** 行数据：与 column_meta 顺序一致 */
+  /** Row data: order matches column_meta */
   data?: unknown[][];
   rows?: number;
 }
 
 /**
- * TDengine REST SQL 结果 JSON 解析器（结果归一化）。
+ * TDengine REST SQL result JSON parser (result normalization).
  *
- * - 原始返回：{ status, code, column_meta(列名数组), data(行数组), rows }；
- * - status !== 'succ' 时抛错（携带 code/message）；
- * - 列映射：ts/window_start → timestamp，value/value_text → value（数值优先）；
- * - FILL(NULL) 产生的空窗行（value 为 null）跳过，与 v2 raw「空窗跳过」语义对齐；
- * - 聚合结果不含 quality（§6.3 质量聚合语义），归一化时 quality 置 0。
+ * - Raw response: { status, code, column_meta (column name array), data (row array), rows };
+ * - throws when status !== 'succ' (carrying code/message);
+ * - column mapping: ts/window_start → timestamp, value/value_text → value (numeric first);
+ * - empty-window rows produced by FILL(NULL) (value null) are skipped, aligned with the v2 raw "skip empty windows" semantics;
+ * - aggregated results do not contain quality (§6.3 quality aggregation semantics); quality is set to 0 during normalization.
  */
 export class TdengineJsonParser {
   parse(rawText: string): DataPoint[] {
@@ -56,7 +56,7 @@ export class TdengineJsonParser {
       .filter((dataPoint) => dataPoint !== null);
   }
 
-  // ──────────── 内部方法 ────────────
+  // ──────────── Internal methods ────────────
 
   private normalizeRecord(record: Record<string, unknown>): DataPoint | null {
     const timestampValue = record['ts'] ?? record['window_start'];
@@ -64,7 +64,7 @@ export class TdengineJsonParser {
       return null;
     }
 
-    // FILL(NULL) 空窗行：value/value_text 均为空 → 跳过（对齐 v2 raw 空窗跳过语义）
+    // FILL(NULL) empty-window row: value/value_text both empty → skip (aligned with v2 raw's skip-empty-window semantics)
     const numericValue = record['value'];
     const textValue = record['value_text'];
     if (
@@ -74,7 +74,7 @@ export class TdengineJsonParser {
       return null;
     }
 
-    // value 数值优先，缺失时回退 value_text（§5.1 非数值分流约定）
+    // value takes numeric first; falls back to value_text when missing (§5.1 non-numeric split convention)
     let value: number | string;
     if (typeof numericValue === 'number') {
       value = numericValue;

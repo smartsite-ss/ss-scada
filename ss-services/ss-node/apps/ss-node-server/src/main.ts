@@ -28,23 +28,23 @@ import {
 } from '@ss-node/ss-core';
 
 // ============================================================
-//  启动计时工具
-//  记录每个启动阶段的耗时，输出到控制台便于诊断
+//  Startup timing utilities
+//  Record the duration of each startup phase and print to console for diagnostics
 // ============================================================
 
 const STARTUP_TAG = 'Startup';
 
-/** 辅助函数：格式化毫秒为可读字符串 */
+/** Helper: format milliseconds into a human-readable string */
 function formatMs(ms: number): string {
   if (ms < 1000) return `${ms.toFixed(0)}ms`;
   if (ms < 60000) return `${(ms / 1000).toFixed(2)}s`;
   return `${(ms / 60000).toFixed(2)}min`;
 }
 
-/** 阶段计时器：记录开始时间，返回结束函数（调用后打印耗时日志） */
+/** Phase timer: record the start time and return a stop function (prints elapsed time when called) */
 function startPhase(name: string): () => void {
   const t0 = performance.now();
-  // 使用 console.log 而非 Logger，因为 Logger 在 NestFactory.create 之后才可用
+  // Use console.log instead of Logger because Logger is only available after NestFactory.create
   console.log(`[${STARTUP_TAG}] ⏳ ${name} ...`);
   return () => {
     const elapsed = performance.now() - t0;
@@ -53,20 +53,20 @@ function startPhase(name: string): () => void {
 }
 
 /**
- * S-C01: JWT_SECRET 启动时强制校验
+ * S-C01: enforce JWT_SECRET validation at startup
  *
- * 校验规则：
- *   1. 必须设置（不能为空）
- *   2. 长度至少 32 字符（防止暴力破解）
- *   3. 生产环境不能是代码库默认密钥（开发环境允许但警告）
+ * Rules:
+ *   1. Must be set (non-empty)
+ *   2. At least 32 characters long (to resist brute-force)
+ *   3. In production must not be a repository default key (allowed in dev but warns)
  *
- * 若校验失败，拒绝启动并打印明确错误信息。
+ * If validation fails, refuse to start and print a clear error message.
  */
 function validateJwtSecret(): void {
   const secret = process.env.JWT_SECRET;
   const isProduction = process.env.NODE_ENV === 'production';
-  // CODE-09: 代码库中已知的默认/占位密钥（含 .env.base 与 .env 中的占位值）
-  // 补充 smart_scada_secret_key_change_this_in_production（原 .env 占位值，长度 47 通过长度校验但仍是占位）
+  // CODE-09: known default/placeholder keys in the repo (including placeholders in .env.base and .env)
+  // Also smart_scada_secret_key_change_this_in_production (original .env placeholder; length 47 passes the length check but is still a placeholder)
   const KNOWN_DEFAULT_SECRETS = [
     'your-secret-key',
     'your-super-secret-jwt-key-change-this-in-production',
@@ -79,8 +79,8 @@ function validateJwtSecret(): void {
     'smart_scada_secret_key',
     'ss-node-secret-key-change-this-in-production',
   ];
-  // CODE-09: 占位特征子串 — 含这些词的密钥视为占位值（生产禁用）
-  // 仅当长度也 < 64 时才判定（避免误伤含 "secret" 的合法长随机串）
+  // CODE-09: placeholder signature substrings - keys containing these words are treated as placeholders (forbidden in production)
+  // Only flag when length is also < 64 (avoids false positives on legitimate long random strings containing "secret")
   const PLACEHOLDER_PATTERNS = [
     'change-this',
     'change_this',
@@ -106,7 +106,7 @@ function validateJwtSecret(): void {
   }
 
   const isDefaultSecret = KNOWN_DEFAULT_SECRETS.includes(secret);
-  // CODE-09: 启发式检测占位特征（仅对未达 64 字符的密钥判定，降低误伤）
+  // CODE-09: heuristic placeholder detection (only for keys shorter than 64 chars, to reduce false positives)
   const hasPlaceholderPattern =
     secret.length < 64 && PLACEHOLDER_PATTERNS.some((p) => secret.toLowerCase().includes(p));
   const isWeakSecret = isDefaultSecret || hasPlaceholderPattern;
@@ -134,48 +134,48 @@ function validateJwtSecret(): void {
 async function bootstrap() {
   const totalStart = performance.now();
 
-  // ──────── Phase -1: 安全启动校验 ────────
-  // S-C01: JWT_SECRET 强度校验，拒绝弱密钥启动
+  // ──────── Phase -1: secure startup validation ────────
+  // S-C01: JWT_SECRET strength check; reject weak keys at startup
   validateJwtSecret();
-  // ──────── Phase 0: 环境准备 ────────
+  // ──────── Phase 0: environment preparation ────────
   const endPhase0 = startPhase('Phase 0: 环境准备（日志目录/项目根解析）');
 
-  // 解析项目根目录：与 app.module.ts initProjectRoot() 逻辑保持一致
-  // - dev 模式：__dirname 上溯 3 级 = ss-services/ss-node（本文件位于 apps/ss-node-server/src/ 或 dist/）
-  // - 生产模式：process.cwd() = ss-run/ss/services/ss-node
+  // Resolve project root: consistent with initProjectRoot() in app.module.ts
+  // - dev mode:  __dirname up 3 levels = ss-services/ss-node (this file is in apps/ss-node-server/src/ or dist/)
+  // - prod mode: process.cwd() = ss-run/ss/services/ss-node
   const projectRoot =
     process.env.NODE_ENV === 'production'
       ? process.cwd()
       : path.resolve(__dirname, '..', '..', '..');
 
-  // 提前设置 SS_NODE_ROOT，供 PathResolverService 等 packages 下服务使用。
-  // 必须在 NestFactory.create 之前设置，确保 LogViewerService 读取的日志路径
-  // 与 main.ts 写入路径一致（否则 process.cwd() 不同会导致写入/读取路径不匹配）。
+  // Set SS_NODE_ROOT early for use by services under packages such as PathResolverService.
+  // Must be set before NestFactory.create so the log path read by LogViewerService
+  // matches the path written here (otherwise differing process.cwd() causes write/read path mismatch).
   if (!process.env.SS_NODE_ROOT) {
     process.env.SS_NODE_ROOT = projectRoot;
   }
 
-  // 解析统一日志配置：LOG_DIR / LOG_MAX_SIZE / LOG_MAX_FILES / LOG_LEVEL
-  // getLogConfig 内部基于 SS_NODE_ROOT 解析 LOG_DIR 相对路径，与 PathResolverService 一致
+  // Resolve unified logging config: LOG_DIR / LOG_MAX_SIZE / LOG_MAX_FILES / LOG_LEVEL
+  // getLogConfig resolves LOG_DIR relative path based on SS_NODE_ROOT, consistent with PathResolverService
   const logConfig = getLogConfig();
   if (!fs.existsSync(logConfig.logDir)) {
     fs.mkdirSync(logConfig.logDir, { recursive: true });
   }
   endPhase0();
 
-  // ──────── Phase 1: NestFactory.create（模块加载 + DI 容器初始化 + onModuleInit） ────────
+  // ──────── Phase 1: NestFactory.create (module load + DI container init + onModuleInit) ────────
   const endPhase1 = startPhase('Phase 1: NestFactory.create（模块加载/DI/onModuleInit）');
 
   const app = await NestFactory.create(AppModule, {
     logger: WinstonModule.createLogger({
       transports: [
-        // P1优化：生产环境关闭 Console transport，仅保留文件 transport
-        // 消除 Winston Console（内部 process.stdout.write 同步阻塞）导致的日志暂停卡顿
+        // P1 optimization: disable the Console transport in production, keep only the file transport
+        // Eliminates the log stalling caused by Winston's Console (internal synchronous process.stdout.write)
         ...(process.env.NODE_ENV !== 'production'
           ? [
               new winston.transports.Console({
-                // 受 LOG_LEVEL 环境变量控制（默认 'info'）
-                // 调试时设 LOG_LEVEL=warn 只看 warn+error，设 LOG_LEVEL=error 只看 error
+                // Controlled by the LOG_LEVEL env var (default 'info')
+                // Set LOG_LEVEL=warn to see only warn+error, or LOG_LEVEL=error to see only error while debugging
                 level: process.env.LOG_LEVEL || 'info',
                 format: winston.format.combine(
                   winston.format.timestamp(),
@@ -194,20 +194,20 @@ async function bootstrap() {
               }),
             ]
           : []),
-        // 错误日志 transport：error/error-%DATE%.log（按天+按大小轮转，gzip 压缩）
+        // Error-log transport: error/error-%DATE%.log (daily + size rotation, gzip-compressed)
         createErrorFileTransport(logConfig),
-        // 应用日志 transport：app/app-%DATE%.log（按天+按大小轮转，gzip 压缩）
+        // Application-log transport: app/app-%DATE%.log (daily + size rotation, gzip-compressed)
         createAppFileTransport(logConfig),
       ],
     }),
   });
   endPhase1();
 
-  // ──────── Phase 1.5: 数据库 migration（表结构变更的权威入口） ────────
-  // CODE-08: 生产环境 synchronize=false，表结构变更完全依赖 migration；
-  // 开发环境 synchronize 虽会自动改表，migration 仍需执行以补齐版本记录。
-  // runMigrations 基于 migrations 表做增量，天然幂等；各 migration 内部
-  // 另有列/索引存在性防御，兼容「由 synchronize 建表、从未跑过 migration」的存量库。
+  // ──────── Phase 1.5: database migration (authoritative entry for schema changes) ────────
+  // CODE-08: in production synchronize=false; schema changes rely entirely on migrations;
+  // In dev, synchronize auto-alters tables, but migrations must still run to complete the version record.
+  // runMigrations applies incrementally based on the migrations table and is naturally idempotent; each migration also
+  // has column/index existence guards, supporting legacy databases built by synchronize that never ran migrations.
   const endPhase15 = startPhase('Phase 1.5: 数据库 migration');
   try {
     const dataSource = app.get(DataSource);
@@ -225,20 +225,20 @@ async function bootstrap() {
     console.error(
       `[${STARTUP_TAG}] ❌ 数据库 migration 失败: ${err instanceof Error ? err.message : err}`,
     );
-    // 不中断启动：开发环境 synchronize 兜底；生产环境应排查后重试
+    // Do not abort startup: dev falls back to synchronize; in production investigate then retry
   }
   endPhase15();
 
-  // ──────── Phase 2: 中间件与管道配置 ────────
+  // ──────── Phase 2: middleware and pipe configuration ────────
   const endPhase2 = startPhase('Phase 2: 中间件/管道/拦截器/安全配置');
 
-  // ── 全局异常过滤器 ──
+  // ── global exception filter ──
   app.useGlobalFilters(new GlobalExceptionFilter());
 
-  // ── 响应格式标准化拦截器 ──
+  // ── response-format normalization interceptor ──
   app.useGlobalInterceptors(new TransformInterceptor());
 
-  // ── 全局验证管道 ──
+  // ── global validation pipe ──
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -248,7 +248,7 @@ async function bootstrap() {
     }),
   );
 
-  // ── gzip 压缩（仅压缩 > 1KB 的响应） ──
+  // ── gzip compression (only compress responses > 1KB) ──
   app.use(
     compression({
       threshold: 1024,
@@ -256,14 +256,14 @@ async function bootstrap() {
     }),
   );
 
-  // ── S-H01: Helmet 安全头（CSP / X-Content-Type-Options / X-Frame-Options 等） ──
+  // ── S-H01: Helmet security headers (CSP / X-Content-Type-Options / X-Frame-Options, etc.) ──
   app.use(
     helmet({
       contentSecurityPolicy: {
         directives: {
           defaultSrc: ["'self'"],
-          // Vue 开发模式需要 inline script；生产构建后可收紧
-          // 微信扫码登录需要加载 open.weixin.qq.com 的 QR JS SDK
+          // Vue dev mode needs inline scripts; can be tightened after production build
+          // WeChat QR-code login needs to load the QR JS SDK from open.weixin.qq.com
           scriptSrc: [
             "'self'",
             "'unsafe-inline'",
@@ -272,29 +272,29 @@ async function bootstrap() {
             'https://res.wx.qq.com',
           ],
           styleSrc: ["'self'", "'unsafe-inline'"],
-          // 微信头像 CDN（thirdwx.qlogo.cn）需放行图片加载
+          // WeChat avatar CDN (thirdwx.qlogo.cn) must be allowed to load images
           imgSrc: ["'self'", 'data:', 'blob:', 'https://*.qlogo.cn', 'https://wx.qlogo.cn'],
           fontSrc: ["'self'", 'data:'],
           connectSrc: ["'self'", 'ws:', 'wss:'],
-          // 微信扫码二维码以 iframe 形式嵌入（open.weixin.qq.com/connect/qrconnect）
+          // WeChat QR code is embedded as an iframe (open.weixin.qq.com/connect/qrconnect)
           frameSrc: ["'self'", 'https://open.weixin.qq.com'],
-          // 微信 SDK 可能从其 CDN 加载 worker/frame 子资源
+          // The WeChat SDK may load worker/frame sub-resources from its CDN
           childSrc: ["'self'", 'https://open.weixin.qq.com'],
         },
       },
-      // 允许 CORS 场景下加载资源
+      // Allow resource loading under CORS
       crossOriginEmbedderPolicy: false,
       crossOriginResourcePolicy: { policy: 'cross-origin' },
     }),
   );
 
-  // ── cookie-parser（S-C03 Token HttpOnly Cookie 依赖） ──
+  // ── cookie-parser (S-C03 Token relies on HttpOnly Cookie) ──
   app.use(cookieParser());
 
-  // ── 隐藏 X-Powered-By（Helmet 已覆盖，此处保留兜底） ──
+  // ── hide X-Powered-By (Helmet already covers it; kept here as a fallback) ──
   app.getHttpAdapter().getInstance().disable('x-powered-by');
 
-  // ── Cache-Control 缓存策略 ──
+  // ── Cache-Control caching policy ──
   app.use((req: Request, res: Response, next: NextFunction) => {
     if (req.path.startsWith('/api/docs')) {
       res.setHeader('Cache-Control', 'public, max-age=300');
@@ -313,18 +313,18 @@ async function bootstrap() {
       'http://localhost:3000',
     ],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    // X-Request-Id 为前端请求拦截器注入的日志关联头，缺失会导致桌面端（Tauri，跨源）
-    // CORS 预检失败，所有请求被浏览器拦截且无报错（登录页表现为点登录无反应）
+    // X-Request-Id is the correlation header injected by the frontend request interceptor; its absence breaks the desktop (Tauri, cross-origin)
+    // CORS preflight, and all requests are blocked by the browser with no error (login page appears unresponsive when clicked)
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-Request-Id'],
     credentials: true,
     maxAge: 86400,
   });
 
-  // ── S-H05: 请求体大小限制分级（防止超大 body DoS） ──
-  // 按路由设置不同限制：
-  //   - /api/v1/projects：50mb（项目导入/页面保存需要大 body）
-  //   - /api/v1/devices/import：10mb（设备批量导入）
-  //   - 默认（含 AI 对话）：2mb
+  // ── S-H05: tiered request-body size limits (prevent oversized-body DoS) ──
+  // Set different limits per route:
+  //   - /api/v1/projects: 50mb (project import / page save need a large body)
+  //   - /api/v1/devices/import: 10mb (batch device import)
+  //   - default (incl. AI chat): 2mb
   app.use('/api/v1/projects', json({ limit: '50mb' }));
   app.use('/api/v1/projects', urlencoded({ limit: '50mb', extended: true }));
   app.use('/api/v1/devices', json({ limit: '10mb' }));
@@ -332,17 +332,17 @@ async function bootstrap() {
   app.use(json({ limit: '2mb' }));
   app.use(urlencoded({ limit: '2mb', extended: true }));
 
-  // ── API 版本前缀 ──
+  // ── API version prefix ──
   app.setGlobalPrefix('api/v1');
   endPhase2();
 
-  // ──────── Phase 3: Swagger 文档 ────────
+  // ──────── Phase 3: Swagger docs ────────
   const endPhase3 = startPhase('Phase 3: Swagger 文档生成');
 
-  // S-M04: Swagger 文档环境隔离
-  // - 开发环境：正常暴露 /api/docs
-  // - 生产环境：仅当配置了 SWAGGER_USER + SWAGGER_PASSWORD 时暴露（HTTP Basic Auth 保护）
-  //             未配置则完全禁用，防止 API 结构泄露
+  // S-M04: Swagger docs environment isolation
+  // - dev:  normally expose /api/docs
+  // - prod: only expose when SWAGGER_USER + SWAGGER_PASSWORD are set (protected by HTTP Basic Auth)
+  //            if unset, disable entirely to prevent API structure leakage
   const isProductionEnv = process.env.NODE_ENV === 'production';
   const swaggerUser = process.env.SWAGGER_USER;
   const swaggerPassword = process.env.SWAGGER_PASSWORD;
@@ -379,7 +379,7 @@ async function bootstrap() {
 
     const document = SwaggerModule.createDocument(app, config);
 
-    // 生产环境：用 HTTP Basic Auth 保护 /api/docs 及其 JSON 端点
+    // prod: protect /api/docs and its JSON endpoint with HTTP Basic Auth
     if (isProductionEnv && swaggerUser && swaggerPassword) {
       const swaggerAuthRealm = 'Smart SCADA API Docs';
       app.use(
@@ -403,7 +403,7 @@ async function bootstrap() {
           const separatorIndex = decoded.indexOf(':');
           const user = separatorIndex >= 0 ? decoded.slice(0, separatorIndex) : '';
           const pass = separatorIndex >= 0 ? decoded.slice(separatorIndex + 1) : '';
-          // 使用常量时间比较防止计时攻击
+          // Use constant-time comparison to prevent timing attacks
           if (
             user.length !== swaggerUser.length ||
             pass.length !== swaggerPassword.length ||
@@ -437,18 +437,18 @@ async function bootstrap() {
     endPhase3();
   }
 
-  // ──────── S1 单进程：后端托管前端 SPA（可选，单包发布；见 docs/00-全局/发布/单包发布方案.md）────────
-  // 启用条件：显式配置 WEB_DIST_DIR，且该目录下存在 index.html；否则行为与现状完全一致（前端由 Nginx 托管）。
+  // ──────── S1 single-process: backend serves the frontend SPA (optional, single-package release; see the single-package release doc) ────────
+  // Enabled when WEB_DIST_DIR is explicitly set and index.html exists in that dir; otherwise behavior is unchanged (frontend served by Nginx).
   //
-  // ⚠️ 为什么不用 `app.use()` / `app.get()`：
-  //   1) Nest 在 init() 阶段（NestFactory.create 内部）就已注册「未匹配即抛 NotFoundException」的
-  //      404 处理器，create() 之后再追加的中间件永远收不到未匹配请求；
-  //   2) `app.get(...)` 在 Nest 应用对象上是 **DI 查询**（container.get），传路由参数会直接抛错并
-  //      被 ExceptionsZone 捕获 → process.exit(1)（表现为"Phase 3 后静默退出"）。
-  //   故改为在 HTTP server 的 request 监听链**最前面**插入前端托管：
-  //   命中静态文件 → 直接返回；未命中 → 回落 index.html；其余（API/WS/非 GET）原样交回 Nest。
-  //   注意：本段必须在 app.listen() 之前执行 —— Socket.IO 会在 listen() 内 attach，
-  //   届时它会包装我们这段 handler，天然保证 /socket.io 仍由 engine.io 优先处理。
+  // ⚠️ Why not use `app.use()` / `app.get()`:
+  //   1) Nest registers a "throw NotFoundException on no match" handler during init() (inside NestFactory.create), so any
+  //      404 handler added after create() never receives unmatched requests;
+  //   2) `app.get(...)` on the Nest app object is a **DI lookup** (container.get); passing a route param throws and
+  //      is caught by ExceptionsZone -> process.exit(1) (appears as "silent exit after Phase 3").
+  //   So instead we insert frontend hosting at the **front** of the HTTP server's request listener chain:
+  //   hit static file -> return directly; miss -> fall back to index.html; everything else (API/WS/non-GET) -> hand back to Nest.
+  //   Note: this must run before app.listen() -- Socket.IO attaches inside listen(),
+  //   and will wrap this handler, naturally ensuring /socket.io is still handled first by engine.io.
   const webDistDir = path.resolve(projectRoot, process.env.WEB_DIST_DIR || 'web');
   const webIndexHtml = path.join(webDistDir, 'index.html');
   if (process.env.WEB_DIST_DIR && fs.existsSync(webIndexHtml)) {
@@ -462,15 +462,15 @@ async function bootstrap() {
       );
     } else {
       const compress = compression();
-      // redirect:false —— 否则 serve-static 遇到同名目录会发 301（并进入非 express 环境下
-      // 不可用的 res.redirect 分支）；这里统一交给 SPA 回落处理。
+      // redirect:false -- otherwise serve-static issues a 301 on same-named dirs (and enters the
+      // unavailable res.redirect branch); here we leave it to SPA fallback.
       const serveStatic = express.static(webDistDir, {
         index: false,
         maxAge: '7d',
         redirect: false,
       });
-      // ⚠️ 此处的 res 是**裸 http.ServerResponse**（未经 express 包装）：
-      //    没有 res.sendFile / res.redirect 等方法 ⇒ 直接输出预读的 index.html。
+      // ⚠️ the res here is a **bare http.ServerResponse** (not express-wrapped):
+      //    it has no res.sendFile / res.redirect methods => output the pre-read index.html directly.
       const indexHtml = fs.readFileSync(webIndexHtml);
       const serveIndexHtml = (req: IncomingMessage, res: ServerResponse): void => {
         try {
@@ -484,7 +484,7 @@ async function bootstrap() {
           nestRequestHandler(req, res);
         }
       };
-      /** API / WebSocket / 文档前缀：一律交回 Nest，避免被 SPA 回落吞掉 */
+      /** API / WebSocket / docs prefixes: always hand back to Nest, so SPA fallback won't swallow them */
       const NEST_OWNED_PREFIX = /^\/(?:api\/|socket\.io\/?|docs\/?)/;
       httpServerForSpa.removeAllListeners('request');
       httpServerForSpa.on('request', (req: IncomingMessage, res: ServerResponse) => {
@@ -492,7 +492,7 @@ async function bootstrap() {
         const isStaticCandidate =
           (req.method === 'GET' || req.method === 'HEAD') && !NEST_OWNED_PREFIX.test(url);
         if (!isStaticCandidate) return nestRequestHandler(req, res);
-        // gzip 由 compression 提供（等价于 Nginx gzip）；静态未命中则回落 index.html
+        // gzip is provided by compression (equivalent to Nginx gzip); static miss falls back to index.html
         compress(req as unknown as Request, res as unknown as Response, () =>
           serveStatic(req as unknown as Request, res as unknown as Response, () => {
             if (res.writableEnded) return;
@@ -505,20 +505,20 @@ async function bootstrap() {
     }
   }
 
-  // ──────── Phase 4: HTTP 监听启动 ────────
+  // ──────── Phase 4: HTTP listen start ────────
   const endPhase4 = startPhase('Phase 4: HTTP 服务监听（app.listen）');
 
   const port = process.env.PORT || 3000;
   await app.listen(port);
   endPhase4();
 
-  // ──────── Phase 5: HTTP keep-alive 调优 ────────
+  // ──────── Phase 5: HTTP keep-alive tuning ────────
   // CODE-06: SQLite PRAGMA（journal_mode/synchronous/cache_size/temp_store）
-  // 已迁移至 app.module.ts getDatabaseConfig() 的 extra.pragma，作用于连接池中所有连接
-  // （原 ds.query('PRAGMA ...') 仅作用于单个连接，cache_size 优化实测未生效）。
+  // Moved to extra.pragma in getDatabaseConfig() of app.module.ts, applying to all connections in the pool
+  // (the original ds.query('PRAGMA ...') only affected a single connection, so the cache_size optimization had no real effect).
   const endPhase5 = startPhase('Phase 5: HTTP keep-alive 调优');
 
-  // ── Keep-Alive 超时延长到 65s（略大于 Nginx 默认 60s） ──
+  // ── Extend Keep-Alive timeout to 65s (slightly above Nginx's default 60s) ──
   const httpServer = app.getHttpServer();
   httpServer.keepAliveTimeout = 65000;
   httpServer.headersTimeout = 66000;
@@ -533,15 +533,15 @@ async function bootstrap() {
   logger.log(`⚙️ Product Mode: ${productMode}`);
   logger.log(`⏱️ Total startup time: ${formatMs(totalElapsed)}`);
 
-  // ASCII Art banner — 使用 console.log 确保在所有模式下可见（不受 Winston Console transport 控制）
-  // 从 docs/00-全局/slogo/logo.txt 读取 3D ASCII 艺术字
+  // ASCII Art banner -- use console.log so it is visible in all modes (not controlled by Winston's Console transport)
+  // Read the 3D ASCII art from the slogo/logo.txt logo file (under the docs directory)
   const logoPath = path.resolve(__dirname, 'assets/logo.txt');
   try {
     const logo = fs.readFileSync(logoPath, 'utf-8');
     console.log('');
     console.log(logo);
   } catch {
-    // 文件不存在时回退到简单横幅
+    // Fall back to a simple banner when the file does not exist
     console.log('');
     console.log('  ╔══════════════════════════════════════╗');
     console.log('  ║          Smart Site  v7              ║');

@@ -3,15 +3,15 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 后端连接状态监控
+ * Backend connection status monitoring
  *
- * 通过定时探测健康检查端点维护连接状态机：
+ * Maintains a connection state machine by probing the health check endpoint on a timer:
  *   online → offline → recovering → online
  *
- * - 请求拦截器在 Network Error 时调用 markOffline()
- * - offline 状态下每 5s 探测 GET /api/v1/system/health
- * - 探测成功 → recovering → 触发 RequestQueue.flush()
- * - 连续成功 → online → 停止轮询
+ * - The request interceptor calls markOffline() on Network Error
+ * - In offline state, probes GET /api/v1/system/health every 5s
+ * - Probe success → recovering → triggers RequestQueue.flush()
+ * - Consecutive successes → online → stops polling
  */
 
 export type ConnectionStatus = 'online' | 'offline' | 'recovering';
@@ -19,8 +19,8 @@ export type ConnectionStatus = 'online' | 'offline' | 'recovering';
 type StatusChangeListener = (status: ConnectionStatus) => void;
 type RecoverListener = () => void;
 
-const POLL_INTERVAL = 5000; // 5 秒探测一次
-const PROBE_TIMEOUT = 3000; // 探测超时 3 秒
+const POLL_INTERVAL = 5000; // probe every 5 seconds
+const PROBE_TIMEOUT = 3000; // probe timeout 3 seconds
 const HEALTH_URL = '/api/v1/system/health';
 
 export class ConnectionMonitor {
@@ -29,17 +29,17 @@ export class ConnectionMonitor {
   private statusListeners: StatusChangeListener[] = [];
   private recoverListeners: RecoverListener[] = [];
 
-  /** 当前状态 */
+  /** Current state */
   getStatus(): ConnectionStatus {
     return this.status;
   }
 
-  /** 是否离线 */
+  /** Whether offline */
   isOffline(): boolean {
     return this.status === 'offline';
   }
 
-  /** 标记为离线（由请求拦截器在 Network Error 时调用） */
+  /** Mark as offline (called by the request interceptor on Network Error) */
   markOffline(): void {
     if (this.status !== 'offline') {
       this.setStatus('offline');
@@ -47,7 +47,7 @@ export class ConnectionMonitor {
     }
   }
 
-  /** 标记为在线（由成功请求触发） */
+  /** Mark as online (triggered by a successful request) */
   markOnline(): void {
     if (this.status !== 'online') {
       this.setStatus('online');
@@ -55,25 +55,25 @@ export class ConnectionMonitor {
     }
   }
 
-  /** 注册状态变更监听 */
+  /** Register a state change listener */
   onStatusChange(cb: StatusChangeListener): void {
     this.statusListeners.push(cb);
   }
 
-  /** 注册恢复监听（状态变为 recovering 时触发，用于触发队列刷新） */
+  /** Register a recovery listener (fires when the state becomes recovering, used to trigger queue flush) */
   onRecover(cb: RecoverListener): void {
     this.recoverListeners.push(cb);
   }
 
-  /** 启动健康检查轮询 */
+  /** Start the health check polling */
   startPolling(): void {
     if (this.pollTimer !== null) return;
     this.pollTimer = setInterval(() => this.probe(), POLL_INTERVAL);
-    // 立即探测一次
+    // Probe once immediately
     this.probe();
   }
 
-  /** 停止轮询 */
+  /** Stop polling */
   stopPolling(): void {
     if (this.pollTimer !== null) {
       clearInterval(this.pollTimer);
@@ -81,7 +81,7 @@ export class ConnectionMonitor {
     }
   }
 
-  /** 探测后端健康检查端点 */
+  /** Probe the backend health check endpoint */
   private async probe(): Promise<void> {
     try {
       const controller = new AbortController();
@@ -94,16 +94,16 @@ export class ConnectionMonitor {
       clearTimeout(timeoutId);
 
       if (response.ok) {
-        // 探测成功 → recovering → 通知恢复
+        // Probe success → recovering → notify recovery
         if (this.status === 'offline') {
           this.setStatus('recovering');
           this.notifyRecover();
-          // recovering 后短暂等待再切回 online
+          // After recovering, wait briefly before switching back to online
           setTimeout(() => this.setStatus('online'), 1000);
         }
       }
     } catch {
-      // 探测失败，保持当前状态
+      // Probe failed, keep the current state
       if (this.status === 'recovering') {
         this.setStatus('offline');
       }
@@ -117,7 +117,7 @@ export class ConnectionMonitor {
       try {
         cb(status);
       } catch {
-        // 忽略监听器错误
+        // Ignore listener errors
       }
     });
   }
@@ -127,12 +127,12 @@ export class ConnectionMonitor {
       try {
         cb();
       } catch {
-        // 忽略恢复监听器错误
+        // Ignore recovery listener errors
       }
     });
   }
 
-  /** 销毁（清理定时器和监听器） */
+  /** Destroy (clear timers and listeners) */
   destroy(): void {
     this.stopPolling();
     this.statusListeners = [];
@@ -140,5 +140,5 @@ export class ConnectionMonitor {
   }
 }
 
-/** 全局单例 */
+/** Global singleton */
 export const connectionMonitor = new ConnectionMonitor();

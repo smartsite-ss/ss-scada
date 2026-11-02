@@ -22,7 +22,7 @@ jest.mock('@nestjs/swagger', () => {
   };
 });
 
-// Mock 外部服务包，避免加载真实源码的依赖链
+// Mock external service packages, avoiding the dependency chain of loading real source
 jest.mock('@ss-node/ss-datatag', () => ({
   DataTagService: jest.fn().mockImplementation(() => ({ findById: jest.fn() })),
   DatatagModule: class {},

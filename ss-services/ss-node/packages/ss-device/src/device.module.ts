@@ -35,9 +35,9 @@ const persistWriterProviders = [
 ] as any[];
 
 /**
- * @deprecated 使用 @ss-node/ss-core 的 REDIS_CLIENT_DEFAULT 替代。
- * 保留导出仅为兼容外部引用，内部不再创建独立 Redis client。
- * 实际 client 由 RedisModule 全局提供。
+ * @deprecated Use @ss-node/ss-core's REDIS_CLIENT_DEFAULT instead.
+ * Kept exported only for external-reference compatibility; no independent Redis client is created internally.
+ * The actual client is provided globally by RedisModule.
  */
 export const PERSIST_REDIS_CLIENT = 'REDIS_CLIENT_DEFAULT';
 
@@ -68,8 +68,8 @@ export const PERSIST_REDIS_CLIENT = 'REDIS_CLIENT_DEFAULT';
     DeviceStatusSubscribeNotifier,
     RedisLatestValuePersistWriter,
     ...persistWriterProviders,
-    // Redis client 由全局 RedisModule（@ss-node/ss-core）提供，注入 token 为 REDIS_CLIENT_DEFAULT
-    // RedisLatestValuePersistWriter 通过 @Inject(REDIS_CLIENT_DEFAULT) 直接获取
+    // The Redis client is provided by the global RedisModule (@ss-node/ss-core); the injection token is REDIS_CLIENT_DEFAULT
+    // RedisLatestValuePersistWriter gets it directly via @Inject(REDIS_CLIENT_DEFAULT)
   ],
   exports: [
     DeviceService,
@@ -91,8 +91,8 @@ export class DeviceModule implements OnModuleInit {
   constructor(private readonly projectDbService: ProjectDatabaseService) {}
 
   onModuleInit(): void {
-    // 向全局 ProjectDatabaseService 注册设备模块的实体
-    // 当项目数据库初始化时，这些实体会自动建表
+    // Register the device module's entities with the global ProjectDatabaseService
+    // When project databases are initialized, these entities are auto-created as tables
     this.projectDbService.registerSystemEntities([
       Device,
       DataTag,

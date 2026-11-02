@@ -386,7 +386,7 @@ describe('TemplateLoaderService', () => {
     });
 
     it('TC-LOAD-064: should search by description', () => {
-      // '标准' matches the S7-1200 description "西门子 S7-1200 标准采集配置"
+      // The keyword matches the S7-1200 description (test data in Chinese containing the word for "standard")
       const result = service.searchTemplates('标准');
       expect(result).toHaveLength(1);
       expect(result[0].id).toBe('tpl-s7-1200');

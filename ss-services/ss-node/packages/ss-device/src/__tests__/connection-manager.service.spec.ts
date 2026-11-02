@@ -3,7 +3,7 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 jest.mock('@ss-node/ss-core', () => ({
-  // ProjectScopedEntity 被 device.entity.ts 继承，必须提供否则类声明时抛错
+  // ProjectScopedEntity is inherited by device.entity.ts and must be provided, otherwise the class declaration throws
   ProjectScopedEntity: class {},
   BaseEntity: class {},
   EventBusService: jest.fn().mockImplementation(() => ({

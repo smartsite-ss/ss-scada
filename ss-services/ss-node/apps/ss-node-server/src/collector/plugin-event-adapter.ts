@@ -11,22 +11,23 @@ import { TaskRegistrationService } from './task-registration.service';
 import { DevicePersistenceService } from './device-persistence.service';
 
 /**
- * 插件事件适配器
+ * Plugin event adapter
  *
- * 负责订阅和处理插件生命周期事件（注册/激活/停用）以及设备状态变更事件，
- * 协调各子服务完成设备重载、任务注册和状态持久化。
+ * Subscribes to and handles plugin lifecycle events (register/activate/deactivate) and
+ * device-state-change events, coordinating the sub-services to reload devices, register
+ * tasks and persist state.
  */
 @Injectable()
 export class PluginEventAdapter {
   private readonly logger = new Logger(PluginEventAdapter.name);
 
-  /** 可用项目列表（由 Bootstrap 更新） */
+  /** Available project list (updated by the Bootstrap) */
   private availableProjects: string[] = [];
 
-  /** 插件就绪回调 */
+  /** Plugin-ready callback */
   private onPluginsReady?: () => void;
 
-  /** 插件是否已就绪 */
+  /** Whether the plugin is ready */
   private pluginsReady = false;
   private registeredPluginCount = 0;
 
@@ -40,24 +41,24 @@ export class PluginEventAdapter {
     @Optional() private readonly pluginRegistry?: PluginRegistry,
   ) {}
 
-  /** 更新可用项目列表 */
+  /** Update the available project list */
   setAvailableProjects(projects: string[]): void {
     this.availableProjects = projects;
   }
 
   /**
-   * 监听插件注册完成，就绪后触发回调
+   * Listen for plugin registration completion and trigger the callback when ready
    *
-   * @param onReady 插件就绪回调
+   * @param onReady the plugin-ready callback
    */
   listenForPluginsReady(onReady: () => void): void {
     this.onPluginsReady = onReady;
 
-    // 若 PluginRegistry 未注入，直接触发回调
+    // If PluginRegistry is not injected, trigger the callback directly
     if (!this.pluginRegistry) {
       this.logger.warn('PluginRegistry not available, loading devices without plugin filtering');
       this.pluginsReady = true;
-      // 延迟 100ms 启动设备加载，让 HTTP 服务器先就绪，避免阻塞 app.listen()
+      // Delay device loading by 100ms so the HTTP server is ready first, avoiding a block on app.listen()
       setTimeout(() => this.onPluginsReady?.(), 100);
       return;
     }
@@ -65,32 +66,32 @@ export class PluginEventAdapter {
     const currentPlugins = this.pluginRegistry.listPlugins();
     this.registeredPluginCount = currentPlugins.length;
 
-    // 监听后续的 plugin.registered 事件
+    // Listen for subsequent plugin.registered events
     this.eventBus.on('plugin.registered', (event: PluginLifecycleEvent) => {
       this.registeredPluginCount++;
       this.logger.log(`Plugin registered (${this.registeredPluginCount}): ${event.protocol}`);
 
-      // 一旦至少有一个插件，就开始加载设备
+      // Once at least one plugin exists, start loading devices
       if (!this.pluginsReady && this.registeredPluginCount >= 1) {
         this.pluginsReady = true;
         this.onPluginsReady?.();
       }
     });
 
-    // 如果已有插件，直接开始
+    // If plugins already exist, start directly
     if (currentPlugins.length > 0) {
       this.pluginsReady = true;
-      // 延迟 100ms 启动设备加载，让 HTTP 服务器先就绪，避免阻塞 app.listen()
+      // Delay device loading by 100ms so the HTTP server is ready first, avoiding a block on app.listen()
       setTimeout(() => this.onPluginsReady?.(), 100);
     }
   }
 
   /**
-   * 订阅插件生命周期事件和设备状态变更事件
+   * Subscribe to plugin lifecycle events and device-state-change events
    */
   subscribeToPluginEvents(): void {
-    // DeviceStateManager 统一发射 device:statusChanged 事件
-    // 监听取 dirty 标记用于持久化
+    // DeviceStateManager uniformly emits the device:statusChanged event
+    // Listen for the dirty flag to drive persistence
     this.eventBus.on(
       'device:statusChanged',
       (event: { deviceId: string; previousStatus: string }) => {
@@ -98,18 +99,18 @@ export class PluginEventAdapter {
       },
     );
 
-    // 插件激活后重新扫描设备，拾取匹配该协议的设备
+    // After plugin activation, re-scan devices to pick up those matching the protocol
     this.eventBus.on('plugin.activated', (event: PluginLifecycleEvent) => {
       this.logger.log(`Plugin activated: ${event.protocol} — reloading devices`);
       this.handlePluginActivated(event.protocol.toLowerCase());
     });
 
-    // 插件停用时将该协议所有在线设备标记为离线
+    // On plugin deactivation, mark all online devices of that protocol as offline
     this.eventBus.on('plugin.deactivated', (event: PluginLifecycleEvent) => {
       this.handlePluginDeactivated(event.protocol.toLowerCase());
     });
 
-    // 插件隔离体崩溃：将该协议所有设备标记为错误，携带崩溃详情
+    // Plugin-isolate crash: mark all devices of that protocol as errored, carrying crash details
     this.eventBus.on(
       'plugin.isolation.crash',
       (event: { protocol: string; error: string; mode: string }) => {
@@ -121,7 +122,7 @@ export class PluginEventAdapter {
   }
 
   /**
-   * 处理插件激活事件：重新加载匹配协议的设备并注册采集任务
+   * Handle plugin-activation events: reload devices matching the protocol and register collection tasks
    */
   private async handlePluginActivated(protocol: string): Promise<void> {
     try {
@@ -132,7 +133,7 @@ export class PluginEventAdapter {
         skipDeviceIds,
       );
 
-      // 为新设备注册采集任务
+      // Register collection tasks for the new devices
       for (const device of newDevices) {
         const ds = await this.projectDbService.getSystemDb(
           this.deviceStateManager.getState(device.id)?.projectId || '',
@@ -159,7 +160,7 @@ export class PluginEventAdapter {
   }
 
   /**
-   * 处理插件停用事件：将该协议所有设备标记为离线
+   * Handle plugin-deactivation events: mark all devices of that protocol as offline
    */
   private handlePluginDeactivated(protocol: string): void {
     const deviceIds = this.deviceStateManager.getDeviceIdsByProtocol(protocol);
@@ -174,7 +175,7 @@ export class PluginEventAdapter {
   }
 
   /**
-   * 处理插件隔离体崩溃事件：将该协议所有设备标记为错误
+   * Handle plugin-isolate crash events: mark all devices of that protocol as errored
    */
   private handlePluginIsolationCrash(protocol: string, errorMsg: string, mode: string): void {
     const deviceIds = this.deviceStateManager.getDeviceIdsByProtocol(protocol);

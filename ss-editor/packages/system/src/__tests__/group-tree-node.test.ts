@@ -76,13 +76,13 @@ describe('GroupTreeNode', () => {
     it('应渲染分组名称', async () => {
       const wrapper = await mountTreeNode(makeProps());
       const labels = wrapper.findAll('.node-label');
-      // 第一个 .node-label 是当前分组名
+      // The first .node-label is the current group name
       expect(labels[0].text()).toBe('测试分组1');
     });
 
     it('应渲染文件夹图标 SVG', async () => {
       const wrapper = await mountTreeNode(makeProps());
-      // 检查 HTML 中包含文件夹图标 path（svg 的 path 元素在 jsdom 中查找受 SVG namespace 影响）
+      // Check the HTML contains the folder icon path (svg path elements are affected by the SVG namespace when queried in jsdom)
       expect(wrapper.html()).toContain('M22 19a2');
     });
 
@@ -129,7 +129,7 @@ describe('GroupTreeNode', () => {
       const groupNodes = wrapper.findAll('.group-node');
       expect(groupNodes.length).toBeGreaterThanOrEqual(2); // parent + at least 1 child
       const labels = wrapper.findAll('.node-label');
-      // 第二个 label 是第一个子分组
+      // The second label is the first child group
       const childLabels = labels.filter(l => l.text() === '子分组1-1');
       expect(childLabels.length).toBe(1);
     });
@@ -139,11 +139,11 @@ describe('GroupTreeNode', () => {
         expandedGroups: new Set(['group-1', 'group-1-1']),
       });
       const wrapper = await mountTreeNode(props);
-      // 递归渲染后，应有父分组和子分组节点
+      // After recursive rendering, there should be parent and child group nodes
       const groupNodes = wrapper.findAll('.group-node');
       expect(groupNodes.length).toBe(3); // parent + 2 children
 
-      // 3 个分组节点，每个都应有文件夹图标的 path（计数 M22 19a2 出现次数）
+      // 3 group nodes, each should have the folder icon path (count occurrences of M22 19a2)
       const html = wrapper.html();
       const matches = html.match(/M22 19a2/g);
       expect(matches).toBeTruthy();
@@ -156,7 +156,7 @@ describe('GroupTreeNode', () => {
       });
       const wrapper = await mountTreeNode(props);
       const nodeLabels = wrapper.findAll('.node-label');
-      // 应有 3 个分组名：测试分组1、子分组1-1、子分组1-2
+      // There should be 3 group names
       expect(nodeLabels.length).toBeGreaterThanOrEqual(3);
       expect(nodeLabels.some(l => l.text() === '子分组1-1')).toBe(true);
       expect(nodeLabels.some(l => l.text() === '子分组1-2')).toBe(true);
@@ -167,7 +167,7 @@ describe('GroupTreeNode', () => {
         expandedGroups: new Set(['group-1', 'group-1-2']),
       });
       const wrapper = await mountTreeNode(props);
-      // group-1-2 是空子分组，应有 placeholder
+      // group-1-2 is an empty child group and should have a placeholder
       const groupNodes = wrapper.findAll('.group-node');
       const childGroupNodes = groupNodes.filter(n => {
         const label = n.find('.node-label');
@@ -181,7 +181,7 @@ describe('GroupTreeNode', () => {
     it('未展开时不应显示子分组', async () => {
       const wrapper = await mountTreeNode(makeProps());
       const groupNodes = wrapper.findAll('.group-node');
-      expect(groupNodes.length).toBe(1); // 仅父分组
+      expect(groupNodes.length).toBe(1); // parent group only
     });
   });
 
@@ -194,7 +194,7 @@ describe('GroupTreeNode', () => {
       expect(wrapper.find('.group-children').exists()).toBe(true);
       const groupNodes = wrapper.findAll('.group-node');
       expect(groupNodes.length).toBe(3); // parent + 2 child groups
-      // 设备列表在右侧表格中展示，不在此树中显示
+      // The device list is shown in the right-side table, not in this tree
       const deviceNodes = wrapper.findAll('.device-node');
       expect(deviceNodes.length).toBe(0);
     });
@@ -207,7 +207,7 @@ describe('GroupTreeNode', () => {
     it('点击分组节点应触发 selectGroup 与 toggleGroup 事件', async () => {
       const wrapper = await mountTreeNode(makeProps());
       await wrapper.find('.group-node').trigger('click');
-      // 有可展开内容，应先触发 selectGroup，再触发 toggleGroup
+      // With expandable content, selectGroup should fire first, then toggleGroup
       expect(wrapper.emitted('selectGroup')).toBeTruthy();
       expect(wrapper.emitted('selectGroup')![0]).toEqual(['proj-1', 'group-1']);
       expect(wrapper.emitted('toggleGroup')).toBeTruthy();
@@ -236,7 +236,7 @@ describe('GroupTreeNode', () => {
       const wrapper = await mountTreeNode(props);
       await wrapper.find('.group-node').trigger('click');
       expect(wrapper.emitted('selectGroup')).toBeTruthy();
-      // 无子内容，不触发 toggleGroup
+      // No child content, toggleGroup is not triggered
       expect(wrapper.emitted('toggleGroup')).toBeFalsy();
     });
   });
@@ -290,7 +290,7 @@ describe('GroupTreeNode', () => {
       const wrapper = await mountTreeNode(props);
       const groupNodes = wrapper.findAll('.group-node');
       expect(groupNodes.length).toBe(3);
-      // 设备列表在右侧表格中展示，不在此树中显示
+      // The device list is shown in the right-side table, not in this tree
       const deviceNodes = wrapper.findAll('.device-node');
       expect(deviceNodes.length).toBe(0);
     });
@@ -352,7 +352,7 @@ describe('GroupTreeNode', () => {
         groupTreeCache: new Map([['proj-1', tree]]),
       });
       const wrapper = await mountTreeNode(props);
-      // 3 个分组节点，每个都应有文件夹图标（计数 M22 19a2 出现次数）
+      // 3 group nodes, each should have the folder icon (count occurrences of M22 19a2)
       const matches = wrapper.html().match(/M22 19a2/g);
       expect(matches).toBeTruthy();
       expect(matches!.length).toBe(3);

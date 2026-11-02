@@ -5,7 +5,7 @@
 import client from '../client';
 import type { ApiResponse } from '../types/api';
 
-/** 知识库模块元数据 */
+/** Knowledge base module metadata */
 export interface KbModule {
   id: string;
   name: string;
@@ -13,13 +13,13 @@ export interface KbModule {
   icon?: string;
   order: number;
   routePath?: string;
-  /** 是否为全局章节（系统概述/操作手册） */
+  /** Whether it is a global chapter (system overview / operation manual) */
   isGlobal?: boolean;
-  /** 全局章节类型 */
+  /** Global chapter type */
   globalType?: 'overview' | 'manual';
 }
 
-/** 路由映射 */
+/** Route mapping */
 export interface KbRouteMapping {
   routePattern: string;
   knowledgePath: string;
@@ -27,7 +27,7 @@ export interface KbRouteMapping {
   hintDismissible?: boolean;
 }
 
-/** 单个产品的知识库定义 */
+/** Knowledge base definition of a single product */
 export interface KbProduct {
   id: string;
   name: string;
@@ -38,13 +38,13 @@ export interface KbProduct {
   routeMap: KbRouteMapping[];
 }
 
-/** manifest.json 结构（v2.0 多产品） */
+/** manifest.json structure (v2.0 multi-product) */
 export interface KbManifest {
   version: string;
   products: KbProduct[];
 }
 
-/** 产品列表项（精简） */
+/** Product list item (compact) */
 export interface KbProductListItem {
   id: string;
   name: string;
@@ -54,18 +54,18 @@ export interface KbProductListItem {
   moduleCount: number;
 }
 
-/** 产品列表响应 */
+/** Product list response */
 export interface KbProductsResponse {
   products: KbProductListItem[];
   defaultProduct: string;
 }
 
-/** 文章完整内容 */
+/** Full article content */
 export interface KbArticle {
   id: string;
   title: string;
   lang: string;
-  /** 产品 ID（v2.0 新增） */
+  /** Product ID (added in v2.0) */
   product: string;
   module: string;
   category: string;
@@ -74,25 +74,25 @@ export interface KbArticle {
   updatedAt: string;
   updatedBy?: string;
   status: string;
-  /** Markdown 正文（不含 frontmatter） */
+  /** Markdown body (without frontmatter) */
   content: string;
-  /** 相对于 {KB_ROOT}/{lang}/{product} 的路径 */
+  /** Path relative to {KB_ROOT}/{lang}/{product} */
   filePath: string;
-  /** 是否为 Fallback 命中 */
+  /** Whether it was a fallback hit */
   fallback: boolean;
-  /** Fallback 时的原始请求语言 */
+  /** The originally requested language when fallback occurred */
   requestedLang?: string;
 }
 
-/** 目录树节点 */
+/** Table-of-contents tree node */
 export interface KbTreeNode {
   id: string;
   title: string;
   type: 'folder' | 'article';
   lang: string;
-  /** 产品 ID（v2.0 新增） */
+  /** Product ID (added in v2.0) */
   product?: string;
-  /** 是否为全局章节 */
+  /** Whether it is a global chapter */
   isGlobal?: boolean;
   globalType?: 'overview' | 'manual';
   fallback: boolean;
@@ -101,31 +101,31 @@ export interface KbTreeNode {
   children?: KbTreeNode[];
 }
 
-/** 路由匹配结果 */
+/** Route match result */
 export interface KbRouteMatch {
   knowledgePath: string;
   hintTextKey?: string;
   articleId?: string;
   lang: string;
-  /** 产品 ID（v2.0 新增） */
+  /** Product ID (added in v2.0) */
   product: string;
   fallback: boolean;
   requestedLang?: string;
 }
 
-/** 搜索结果 */
+/** Search result */
 export interface KbSearchResult {
   id: string;
   title: string;
   module: string;
-  /** 产品 ID（v2.0 新增） */
+  /** Product ID (added in v2.0) */
   product: string;
   filePath: string;
   snippet: string;
   lang: string;
 }
 
-/** 语言统计 */
+/** Language statistics */
 export interface KbLangStat {
   lang: string;
   products: Array<{
@@ -143,27 +143,27 @@ export interface KbLangsResponse {
   stats: KbLangStat[];
 }
 
-/** 图片上传响应 */
+/** Image upload response */
 export interface KbUploadImageResult {
   url: string;
 }
 
-/** 默认产品 ID */
+/** Default product ID */
 export const DEFAULT_PRODUCT = 'ss-data';
 
 export const kbApi = {
-  /** 获取所有产品列表 */
+  /** Get the list of all products */
   getProducts(): Promise<ApiResponse<KbProductsResponse>> {
     return client.get('/kb/products').then((res) => res.data);
   },
 
-  /** 获取支持的语言列表及统计 */
+  /** Get the list of supported languages and statistics */
   getLangs(product?: string): Promise<ApiResponse<KbLangsResponse>> {
     const params = product ? { product } : {};
     return client.get('/kb/langs', { params }).then((res) => res.data);
   },
 
-  /** 获取知识库目录树 */
+  /** Get the knowledge base table-of-contents tree */
   getTree(product?: string, lang?: string): Promise<ApiResponse<KbTreeNode[]>> {
     const params: Record<string, string> = {};
     if (product) params.product = product;
@@ -171,7 +171,7 @@ export const kbApi = {
     return client.get('/kb/tree', { params }).then((res) => res.data);
   },
 
-  /** 路由匹配知识库路径 */
+  /** Route-match a knowledge base path */
   matchRoute(
     routePath: string,
     product?: string,
@@ -183,7 +183,7 @@ export const kbApi = {
     return client.get('/kb/route-match', { params }).then((res) => res.data);
   },
 
-  /** 全文搜索 */
+  /** Full-text search */
   search(query: string, product?: string, lang?: string): Promise<ApiResponse<KbSearchResult[]>> {
     const params: Record<string, string> = { q: query };
     if (product) params.product = product;
@@ -191,7 +191,7 @@ export const kbApi = {
     return client.get('/kb/search', { params }).then((res) => res.data);
   },
 
-  /** 获取单篇文章 */
+  /** Get a single article */
   getArticle(id: string, product?: string, lang?: string): Promise<ApiResponse<KbArticle>> {
     const params: Record<string, string> = {};
     if (product) params.product = product;
@@ -201,7 +201,7 @@ export const kbApi = {
       .then((res) => res.data);
   },
 
-  /** 更新文章内容（admin，lang 必填） */
+  /** Update article content (admin, lang required) */
   updateArticle(
     id: string,
     content: string,
@@ -215,7 +215,7 @@ export const kbApi = {
       .then((res) => res.data);
   },
 
-  /** 上传图片（admin，base64） */
+  /** Upload an image (admin, base64) */
   uploadImage(
     filename: string,
     base64: string,
@@ -235,11 +235,11 @@ export const kbApi = {
   },
 
   /**
-   * 构造图片访问 URL（后端 GET /kb/image 端点）
-   * @param relativePath uploadImage 返回的相对路径，如 "03-device/images/foo.png"
-   * @param lang 语言
-   * @param product 产品 ID
-   */
+     * Construct the image access URL (backend GET /kb/image endpoint)
+     * @param relativePath The relative path returned by uploadImage, e.g. "03-device/images/foo.png"
+     * @param lang Language
+     * @param product Product ID
+     */
   buildImageUrl(relativePath: string, lang: string, product?: string): string {
     let url = `${client.defaults.baseURL}/kb/image?path=${encodeURIComponent(relativePath)}&lang=${encodeURIComponent(lang)}`;
     if (product) url += `&product=${encodeURIComponent(product)}`;

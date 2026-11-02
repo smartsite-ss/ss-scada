@@ -9,9 +9,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 
-// Mock sqlite3 (异步回调 API)
-// 使用 process.nextTick 延迟回调，避免 "Cannot access 'db' before initialization" TDZ 错误
-// 原因：const db = new Database(path, cb) 中 cb 若同步执行，此时 db 尚未赋值（TDZ）
+// Mock sqlite3 (async callback API)
+// Uses process.nextTick to defer callbacks, avoiding the "Cannot access 'db' before initialization" TDZ error
+// Reason: in const db = new Database(path, cb), if cb runs synchronously, db has not been assigned yet (TDZ)
 const mockDb = {
   get: jest.fn().mockImplementation((sql: string, cb: (err: Error | null, row?: any) => void) => {
     process.nextTick(() => {
@@ -44,10 +44,10 @@ const mockDb = {
 jest.mock('sqlite3', () => {
   return {
     Database: jest.fn().mockImplementation((dbPath: string, ...args: any[]) => {
-      // 兼容两种构造签名：
+      // Support both constructor signatures:
       //   new Database(path, cb)  /  new Database(path, mode, cb)
       const cb = typeof args[args.length - 1] === 'function' ? args[args.length - 1] : null;
-      // 必须异步调用 cb，否则 const db = new Database(...) 会触发 TDZ
+      // cb must be invoked asynchronously, otherwise const db = new Database(...) triggers TDZ
       if (cb) process.nextTick(() => cb(null));
       return mockDb;
     }),
@@ -67,20 +67,20 @@ describe('DatabaseService', () => {
   let projectsDir: string;
 
   beforeAll(() => {
-    // setup.ts 全局启用了 jest.useFakeTimers()，会拦截 process.nextTick，
-    // 导致 sqlite3 mock 的异步回调永远不触发，测试超时。
-    // 本测试文件需要真实定时器来驱动 sqlite3 的异步回调。
+    // setup.ts globally enables jest.useFakeTimers(), which intercepts process.nextTick,
+    // so the sqlite3 mock's async callbacks never fire and the test times out.
+    // This test file needs real timers to drive sqlite3's async callbacks.
     jest.useRealTimers();
 
     tempDir = path.join(os.tmpdir(), `db-service-test-${Date.now()}`);
 
-    // 创建系统数据库
+    // Create the system database
     const dbDir = path.join(tempDir, 'data');
     systemDbPath = path.join(dbDir, 'database.sqlite');
     fs.mkdirSync(dbDir, { recursive: true });
     fs.writeFileSync(systemDbPath, 'SQLite format 3\x00' + 'test-data'.repeat(100));
 
-    // 创建项目数据库
+    // Create the project database
     projectsDir = path.join(tempDir, 'projects');
     const projectDbDir = path.join(projectsDir, 'test-project', 'db');
     fs.mkdirSync(projectDbDir, { recursive: true });
@@ -119,7 +119,7 @@ describe('DatabaseService', () => {
     jest.clearAllMocks();
   });
 
-  // ==================== 数据库状态 ====================
+  // ==================== Database status ====================
 
   describe('getSystemDatabaseStatus', () => {
     it('TC-DB-001: should return system database status with ISO date string', async () => {
@@ -130,11 +130,11 @@ describe('DatabaseService', () => {
       expect(status.sizeBytes).toBeGreaterThan(0);
       expect(status.sizeFormatted).toBeDefined();
       expect(status.tableCount).toBeGreaterThanOrEqual(0);
-      // lastModified 应为 ISO 格式字符串
+      // lastModified should be an ISO-format string
       expect(status.lastModified).toBeTruthy();
       expect(typeof status.lastModified).toBe('string');
       expect(new Date(status.lastModified!).getTime()).not.toBeNaN();
-      // 正常数据库不应有 errorMessage
+      // A healthy database should have no errorMessage
       expect(status.errorMessage).toBeUndefined();
     });
 
@@ -165,10 +165,10 @@ describe('DatabaseService', () => {
       expect(projectDb!.type).toBe('project');
       expect(projectDb!.exists).toBe(true);
       expect(projectDb!.sizeBytes).toBeGreaterThan(0);
-      // lastModified 应为 ISO 格式字符串
+      // lastModified should be an ISO-format string
       expect(typeof projectDb!.lastModified).toBe('string');
       expect(new Date(projectDb!.lastModified!).getTime()).not.toBeNaN();
-      // 正常数据库不应有 errorMessage
+      // A healthy database should have no errorMessage
       expect(projectDb!.errorMessage).toBeUndefined();
     });
 
@@ -184,7 +184,7 @@ describe('DatabaseService', () => {
     });
 
     it('TC-DB-003b: should return errorMessage for non-existent project db', async () => {
-      // 创建一个空目录模拟不存在的项目数据库
+      // Create an empty directory to simulate a missing project database
       const emptyProjectDir = path.join(projectsDir, 'empty-project');
       fs.mkdirSync(emptyProjectDir, { recursive: true });
 
@@ -211,11 +211,11 @@ describe('DatabaseService', () => {
     });
   });
 
-  // ==================== 路径解析（v1.3 新增） ====================
+  // ==================== Path resolution (added in v1.3) ====================
 
   describe('Path Resolution (v1.3)', () => {
     it('TC-DB-PATH-001: should resolve relative DATABASE_PATH to absolute path', async () => {
-      // 模拟 .env.ss 中的相对路径配置
+      // Simulate the relative-path config from .env.ss
       mockConfigService.get.mockImplementation((key: string) => {
         if (key === 'DATABASE_PATH') return '../../ss-run/ss/data/db/ss-node.db';
         if (key === 'PROJECTS_DIR') return projectsDir;
@@ -224,17 +224,17 @@ describe('DatabaseService', () => {
 
       const status = await service.getSystemDatabaseStatus();
 
-      // 期望：返回的 path 是绝对路径
+      // Expected: the returned path is absolute
       expect(path.isAbsolute(status.path)).toBe(true);
-      // 期望：路径以 ss-run/ss/data/db/ss-node.db 结尾
+      // Expected: the path ends with ss-run/ss/data/db/ss-node.db
       expect(status.path).toContain(path.normalize('ss-run/ss/data/db/ss-node.db'));
-      // 期望：路径不依赖 process.cwd()，基于 ss-services/ss-node 解析
+      // Expected: the path does not depend on process.cwd(), resolved against ss-services/ss-node
       // ss-services/ss-node + ../../ss-run/ss/data/db/ss-node.db = ss-v7/ss-run/ss/data/db/ss-node.db
       expect(status.path).not.toContain('apps/ss-node-server');
     });
 
     it('TC-DB-PATH-002: should resolve relative PROJECTS_DIR to absolute path', async () => {
-      // 模拟 .env.ss 中的相对路径配置
+      // Simulate the relative-path config from .env.ss
       mockConfigService.get.mockImplementation((key: string) => {
         if (key === 'DATABASE_PATH') return systemDbPath;
         if (key === 'PROJECTS_DIR') return '../../ss-project';
@@ -243,14 +243,14 @@ describe('DatabaseService', () => {
 
       const statuses = await service.getProjectDatabasesStatus();
 
-      // 即使目录不存在，也期望返回空数组（不抛错）
+      // Even if the directory does not exist, an empty array is expected (no throw)
       expect(Array.isArray(statuses)).toBe(true);
-      // 由于 ../../ss-project 在测试环境下不存在（相对 ss-services/ss-node），
-      // 返回空数组是正确的
+      // Since ../../ss-project does not exist in the test environment (relative to ss-services/ss-node),
+      // returning an empty array is correct
     });
 
     it('TC-DB-PATH-003: should return absolute path in status response for existing project', async () => {
-      // 使用绝对路径的 projectsDir（已在 beforeAll 中创建）
+      // Use an absolute-path projectsDir (created in beforeAll)
       mockConfigService.get.mockImplementation((key: string) => {
         if (key === 'DATABASE_PATH') return systemDbPath;
         if (key === 'PROJECTS_DIR') return projectsDir;
@@ -261,30 +261,30 @@ describe('DatabaseService', () => {
       const projectDb = statuses.find((s) => s.name === 'test-project');
 
       expect(projectDb).toBeDefined();
-      // 期望：返回的 path 是绝对路径（不再依赖 process.cwd()）
+      // Expected: the returned path is absolute (no longer depending on process.cwd())
       expect(path.isAbsolute(projectDb!.path)).toBe(true);
       expect(projectDb!.path).toBe(path.join(projectsDir, 'test-project', 'db', 'system.db'));
     });
 
     it('TC-DB-PATH-004: getProjectRoot should return ss-services/ss-node directory', () => {
-      // 通过反射访问私有方法验证项目根目录计算
+      // Access the private method via reflection to verify the project-root computation
       const getProjectRoot = (service as any).getProjectRoot.bind(service);
       const projectRoot = getProjectRoot();
 
       expect(path.isAbsolute(projectRoot)).toBe(true);
-      // 项目根目录应包含 ss-services/ss-node 路径段
+      // The project root should contain the ss-services/ss-node path segment
       expect(projectRoot).toContain('ss-services');
       expect(projectRoot).toContain('ss-node');
-      // 不应包含 apps/ss-node-server（这是 process.cwd() 的位置）
+      // It should not contain apps/ss-node-server (that is where process.cwd() is)
       expect(projectRoot).not.toContain('apps');
       expect(projectRoot).not.toContain('ss-node-server');
-      // 不应包含 packages/ss-system（dist 所在）
+      // It should not contain packages/ss-system (where dist lives)
       expect(projectRoot).not.toContain('packages');
       expect(projectRoot).not.toContain('ss-system');
     });
   });
 
-  // ==================== 完整性检查 ====================
+  // ==================== Integrity check ====================
 
   describe('checkSystemIntegrity', () => {
     it('TC-DB-010: should return ok for valid database', async () => {
@@ -337,7 +337,7 @@ describe('DatabaseService', () => {
     });
   });
 
-  // ==================== 空间回收 ====================
+  // ==================== Space reclaim ====================
 
   describe('vacuumSystem', () => {
     it('TC-DB-020: should execute VACUUM successfully', async () => {
@@ -375,13 +375,13 @@ describe('DatabaseService', () => {
     });
   });
 
-  // ==================== better-sqlite3 → sqlite3 迁移（v1.4） ====================
+  // ==================== better-sqlite3 → sqlite3 migration (v1.4) ====================
 
   describe('sqlite3 migration (v1.4)', () => {
     it('TC-DB-MIG-001: should use sqlite3 (async) instead of better-sqlite3', async () => {
-      // 验证 sqlite3 模块被加载（通过 mock）
-      // 由于 jest.mock 替换了 require('sqlite3')，如果 service 能正常调用，
-      // 说明 sqlite3 被正确使用
+      // Verify the sqlite3 module is loaded (via the mock)
+      // Since jest.mock replaced require('sqlite3'), if the service calls it normally,
+      // it means sqlite3 is being used correctly
       const status = await service.getSystemDatabaseStatus();
       expect(status.exists).toBe(true);
       expect(mockDb.get).toHaveBeenCalled();
@@ -390,8 +390,8 @@ describe('DatabaseService', () => {
     it('TC-DB-MIG-002: countTables should use sqlite3 OPEN_READONLY', async () => {
       await service.getSystemDatabaseStatus();
 
-      // 验证 Database 构造时使用了 OPEN_READONLY
-      // mockDb 已经被调用过
+      // Verify that Database was constructed with OPEN_READONLY
+      // mockDb has already been called
       expect(mockDb.get).toHaveBeenCalledWith(
         expect.stringContaining('COUNT(*)'),
         expect.any(Function),

@@ -26,7 +26,7 @@ interface CanvasKeyboardOptions {
   getCanvasContainer: () => HTMLElement | null;
 }
 
-/** 判断当前焦点是否位于编辑区（画布容器）内 */
+/** Determine whether the current focus is inside the editing area (canvas container) */
 function isFocusInsideCanvas(container: HTMLElement | null): boolean {
   const active = document.activeElement;
   if (!active || !container) return false;

@@ -135,7 +135,7 @@ describe('Canvas2DBackend', () => {
     /* Simulate stretch mode: X scale = 1.0, Y scale = 0.5 (container is wider than page) */
     backend!.setScaleXY(1.0, 0.5);
     backend!.render(graphic);
-    /* 在 jsdom 环境下 ctx 可能为 null，仅验证不抛出异常 */
+    /* Under jsdom ctx may be null; only verify it does not throw */
     expect(() => backend!.renderAll()).not.toThrow();
   });
 

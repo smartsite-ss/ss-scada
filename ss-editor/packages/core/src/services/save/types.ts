@@ -3,21 +3,21 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 项目数据结构
+ * Project data structure
  */
 export interface ProjectData {
   version: string;
   savedAt: number;
   currentPageId: string;
   pages: PageData[];
-  /** 页面 ID → 分组名映射（按需加载时使用） */
+  /** Page ID → group name map (used for on-demand loading) */
   pageGroups?: Record<string, string>;
-  /** 分组名 → 分组显示名映射 */
+  /** Group name → group display name map */
   groupNames?: Record<string, string>;
 }
 
 /**
- * 页面数据结构
+ * Page data structure
  */
 export interface PageData {
   id: string;
@@ -26,58 +26,58 @@ export interface PageData {
   height: number;
   backgroundColor: string;
   graphics: any[];
-  /** 页面背景图片 */
+  /** Page background image */
   backgroundImage?: string;
-  /** 标记为延迟加载（仅含大纲信息，graphics 为空） */
+  /** Marked as lazily loaded (only outline info; graphics empty) */
   _lazy?: boolean;
-  /** 模板引用 ID（引用模式） */
+  /** Template reference ID (reference mode) */
   templateId?: string;
-  /** 模板应用模式 */
+  /** Template apply mode */
   templateMode?: 'reference' | 'copy';
 }
 
 /**
- * 保存服务接口
- * 不同实现（localStorage/mock/server）需实现此接口
+ * Save service interface
+ * Different implementations (localStorage/mock/server) must implement this interface
  */
 export interface ISaveService {
   /**
-   * 保存项目数据
+   * Save project data
    */
   save(data: ProjectData): Promise<void>;
 
   /**
-   * 加载项目数据
+   * Load project data
    */
   load(): Promise<ProjectData | null>;
 
   /**
-   * 删除项目数据
+   * Delete project data
    */
   delete(): Promise<void>;
 
   /**
-   * 检查是否有已保存的数据
+   * Check whether saved data exists
    */
   hasSavedData(): Promise<boolean>;
 }
 
 /**
- * 保存服务配置
+ * Save service config
  */
 export interface SaveServiceConfig {
   /**
-   * 服务类型：local/mock/server
+   * Service type: local/mock/server
    */
   type: 'local' | 'mock' | 'server';
 
   /**
-   * API 基础路径（仅 server 模式需要）
+   * API base path (server mode only)
    */
   apiBaseUrl?: string;
 }
 
 /**
- * 保存状态
+ * Save status
  */
 export type SaveStatus = 'idle' | 'saving' | 'success' | 'error';

@@ -6,7 +6,7 @@ export { AuthModule } from './core/auth/auth.module';
 export { AuthService } from './core/auth/auth.service';
 export { WechatAuthModule } from './core/auth/wechat/wechat-auth.module';
 export { WechatAuthService } from './core/auth/wechat/wechat-auth.service';
-// --- 微信小程序订阅消息（10 模块） ---
+// --- WeChat mini-program subscribe messages (Module 10) ---
 export { WechatSubscribeMessageModule } from './core/subscribe-message/wechat-subscribe-message.module';
 export {
   WechatSubscribeMessageChannel,
@@ -83,8 +83,8 @@ export type {
   CachedMessage,
   CacheStats as WsOfflineCacheStats,
 } from './websocket/offline-message-cache.service';
-// --- Plugin & Diagnostics 已迁移至 @ss-node/ss-collector-sdk ---
-// --- Protocol 接口 (IProtocolAdapter/IDeviceContext/ITagContext/ChannelValidationResult/FieldError) 已迁移至 @ss-node/ss-collector-sdk ---
+// --- Plugin & Diagnostics have migrated to @ss-node/ss-collector-sdk ---
+// --- Protocol interfaces (IProtocolAdapter/IDeviceContext/ITagContext/ChannelValidationResult/FieldError) have migrated to @ss-node/ss-collector-sdk ---
 
 export { RolesGuard } from './core/auth/guards/roles.guard';
 export { Roles } from './core/auth/decorators/roles.decorator';
@@ -99,7 +99,7 @@ export { EventBusService } from './event-bus/event-bus.service';
 export type { EmitHook } from './event-bus/event-bus.service';
 export * from './event-bus/event-bus.types';
 
-// --- Event Log (事件日志，配置变更可追溯) ---
+// --- Event Log (event log, config changes are traceable) ---
 export { EventLogModule } from './event-log/event-log.module';
 export { EventLogService } from './event-log/event-log.service';
 export { EventLogController } from './event-log/event-log.controller';
@@ -107,7 +107,7 @@ export { EventLogQueryDto } from './event-log/event-log-query.dto';
 export { EventLog } from './event-log/entities/event-log.entity';
 export type { SubscriberRecord, EventLogStatus } from './event-log/entities/event-log.entity';
 
-// --- Database (项目级数据库管理) ---
+// --- Database (project-level database management) ---
 export { DatabaseModule } from './database/database.module';
 export { ProjectDatabaseService } from './database/project-database.service';
 export { PathModule } from './path/path.module';
@@ -124,7 +124,7 @@ export { DataPointCacheService } from './cache/data-point-cache.service';
 export { DataPointRepository } from './cache/data-point.repository';
 export * from './cache/cache.types';
 
-// --- Redis（全局共享 Redis 客户端） ---
+// --- Redis (globally shared Redis client) ---
 export { RedisModule } from './redis/redis.module';
 export {
   REDIS_CLIENT_DEFAULT,
@@ -164,7 +164,7 @@ export {
   createPluginLogger,
 } from './logger/logger-factory';
 export type { LogConfig } from './logger/logger-factory';
-// S-M02: 审计日志独立通道（哈希链防篡改）
+// S-M02: dedicated audit-log channel (hash-chain tamper protection)
 export { AuditLoggerModule } from './logger/audit-logger.module';
 export { AuditLoggerService } from './logger/audit-logger.service';
 export { AuditLogController } from './logger/audit-log.controller';
@@ -199,7 +199,7 @@ export type {
 } from './common/api-response.interface';
 export { ThrottleExceptionFilter } from './common/throttle-exception.filter';
 
-// --- Device State (统一设备状态管理) ---
+// --- Device State (unified device-state management) ---
 export { DeviceStateModule } from './device/device-state.module';
 export { DeviceStateManager } from './device/device-state-manager.service';
 export type {
@@ -246,7 +246,7 @@ export {
 } from './ai/scene-creator-agent';
 export type { GraphicTypeEntry } from './ai/scene-creator-agent';
 
-// P2-T08: 对话持久化 + Prompt版本 + 成本监控
+// P2-T08: conversation persistence + Prompt versions + cost monitoring
 export { AiConversation, AiMessage } from './ai/entities/ai-conversation.entity';
 export { AiPrompt, AiPromptVersion } from './ai/entities/ai-prompt.entity';
 export type { PromptVersionStatus } from './ai/entities/ai-prompt.entity';

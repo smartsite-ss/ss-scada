@@ -50,7 +50,7 @@ export const useTemplateStore = defineStore('template', () => {
     deviceType?: string,
     status?: string,
     keyword?: string,
-    locale?: string,  // ✨ 新增
+    locale?: string,  // new
   ) {
     loading.value = true;
     error.value = null;

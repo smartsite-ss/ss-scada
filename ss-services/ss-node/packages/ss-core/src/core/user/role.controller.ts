@@ -33,7 +33,7 @@ export class RoleController {
     return this.roleService.findAll();
   }
 
-  // ──────── 权限审计日志（必须在 :id 路由之前） ────────
+  // ──────── Permission audit logs (must come before the :id route) ────────
 
   @Get('audit-logs')
   @Roles(UserRole.ADMIN)
@@ -97,7 +97,7 @@ export class RoleController {
     return { ok: true };
   }
 
-  // ──────── 项目授权 ────────
+  // ──────── Project authorization ────────
 
   @Get(':id/project-auths')
   @ApiOperation({ summary: '获取角色项目授权' })
@@ -113,7 +113,7 @@ export class RoleController {
     return { ok: true };
   }
 
-  // ──────── 设备授权 ────────
+  // ──────── Device authorization ────────
 
   @Get(':id/device-auths')
   @ApiOperation({ summary: '获取角色在项目下的设备授权' })
@@ -135,7 +135,7 @@ export class RoleController {
     return { ok: true };
   }
 
-  // ──────── 设备分组 ID 推导（v8.0：从设备授权推导，废弃独立分组授权表） ────────
+  // ──────── Device-group ID derivation (v8.0: derived from device authorizations; standalone group-authorization table deprecated) ────────
 
   @Get(':id/device-group-ids')
   @ApiOperation({ summary: '获取角色在项目下可见的设备分组 ID（从设备授权推导）' })

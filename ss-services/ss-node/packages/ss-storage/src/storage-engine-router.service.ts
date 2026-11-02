@@ -24,7 +24,7 @@ export class StorageEngineRouterService {
   // ──────────── getAdapterForEngine ────────────
 
   getAdapterForEngine(engine: StorageEngineType): StorageAdapter {
-    // 兼容存量 'influxdb' 别名（归一化为 'influxdb2'）
+    // Compatibility with the legacy 'influxdb' alias (normalized to 'influxdb2')
     const resolvedEngine = resolveStorageEngineType(engine) ?? engine;
     const adapter = this.adapterMap.get(resolvedEngine);
     if (!adapter) {

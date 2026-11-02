@@ -11,16 +11,16 @@ export interface SelectOption {
 }
 
 /**
- * useDict — 响应式字典查询 Composable
+ * useDict — reactive dictionary query composable
  *
- * 封装字典数据的懒加载、缓存、标签解析、选项生成等通用逻辑。
- * 组件销毁时自动中止未完成的请求。
+ * Encapsulates common logic such as lazy loading, caching, label resolution and option generation for dictionary data.
+ * Unfinished requests are automatically aborted when the component unmounts.
  *
  * @example
  * ```ts
  * const { loadDict, getLabel, getOptions } = useDict();
  * await loadDict('priority');
- * const label = getLabel('priority', 'high'); // "高优先级"
+ * const label = getLabel('priority', 'high'); // "High priority"
  * const opts = getOptions('tagDataType');     // [{ value, label }, ...]
  * ```
  */
@@ -31,20 +31,20 @@ export function useDict() {
   const loadingDicts = new Set<string>();
   let aborted = false;
 
-  /** 清理标志，组件卸载时中止后续操作 */
+  /** Cleanup flag; aborts subsequent operations when the component unmounts */
   onUnmounted(() => {
     aborted = true;
   });
 
   /**
-   * 加载单个字典表（缓存存在时不重复请求）
-   * @param dictId 字典标识
-   * @param locale 语言环境，默认从当前 i18n 获取或 'zh-CN'
+   * Load a single dictionary (skips the request when a cache exists)
+   * @param dictId Dictionary identifier
+   * @param locale Locale; defaults to the current i18n locale or 'zh-CN'
    */
   async function loadDict(dictId: string, locale?: string): Promise<DictTable> {
     if (dicts[dictId]) return dicts[dictId];
     if (loadingDicts.has(dictId)) {
-      // 正在加载中，等待轮询完成
+      // Already loading; wait for the polling to finish
       return new Promise((resolve, reject) => {
         const check = setInterval(() => {
           if (aborted) {
@@ -83,24 +83,24 @@ export function useDict() {
   }
 
   /**
-   * 批量加载多个字典表
+   * Load multiple dictionaries in batch
    */
   async function loadDicts(dictIds: string[], locale?: string): Promise<void> {
     await Promise.all(dictIds.map((id) => loadDict(id, locale)));
   }
 
   /**
-   * 从缓存获取字典表
+   * Get a dictionary from cache
    */
   function getDict(dictId: string): DictTable | undefined {
     return dicts[dictId];
   }
 
   /**
-   * 根据 value 获取对应 label
-   * @param dictId 字典标识
-   * @param value 字典条目 value
-   * @param fallback 未匹配时显示的兜底文字，默认显示 value 本身
+   * Get the label corresponding to a value
+   * @param dictId Dictionary identifier
+   * @param value Dictionary entry value
+   * @param fallback Fallback text when unmatched; defaults to the value itself
    */
   function getLabel(dictId: string, value: string, fallback?: string): string {
     const dict = dicts[dictId];
@@ -110,7 +110,7 @@ export function useDict() {
   }
 
   /**
-   * 获取下拉选项列表（按 sortOrder 排序）
+   * Get the dropdown option list (sorted by sortOrder)
    */
   function getOptions(dictId: string): SelectOption[] {
     const dict = dicts[dictId];
@@ -121,8 +121,8 @@ export function useDict() {
   }
 
   /**
-   * 重新加载所有已加载的字典
-   * @param locale 语言环境，不传则使用上次加载时的 locale
+   * Reload all loaded dictionaries
+   * @param locale Locale; when omitted, the locale used at last load is reused
    */
   async function reloadAll(locale?: string): Promise<void> {
     const ids = Object.keys(dicts);
@@ -131,32 +131,32 @@ export function useDict() {
   }
 
   /**
-   * 清空缓存
+   * Clear the cache
    */
   function clearCache(): void {
     Object.keys(dicts).forEach((key) => delete dicts[key]);
   }
 
   return {
-    /** 已加载的字典表缓存，key 为 dictId */
+    /** Cache of loaded dictionaries, keyed by dictId */
     dicts,
-    /** 是否正在加载 */
+    /** Whether loading is in progress */
     loading,
-    /** 错误信息 */
+    /** Error message */
     error,
-    /** 加载单个字典表 */
+    /** Load a single dictionary */
     loadDict,
-    /** 批量加载多个字典表 */
+    /** Load multiple dictionaries in batch */
     loadDicts,
-    /** 从缓存获取字典表 */
+    /** Get a dictionary from cache */
     getDict,
-    /** 根据 value 获取 label */
+    /** Get the label for a value */
     getLabel,
-    /** 获取下拉选项列表 */
+    /** Get the dropdown option list */
     getOptions,
-    /** 重新加载所有已加载字典 */
+    /** Reload all loaded dictionaries */
     reloadAll,
-    /** 清空缓存 */
+    /** Clear the cache */
     clearCache,
   };
 }

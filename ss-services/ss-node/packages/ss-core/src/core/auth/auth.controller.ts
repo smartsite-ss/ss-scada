@@ -33,10 +33,11 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   /**
-   * 获取登录功能开关（公开接口，登录前调用）
+   * Get the login feature switch (public endpoint, called before login)
    *
-   * 前端 LoginView 初始化时查询此接口，根据 wechatLoginEnabled 决定是否显示微信扫码 tab。
-   * 关闭时后端不注册 WechatAuthModule（app.module.ts 条件注册），前端也不显示入口。
+   * The frontend LoginView queries this endpoint during initialization and decides whether to show the
+   * WeChat QR-code tab based on wechatLoginEnabled. When off, the backend does not register WechatAuthModule
+   * (conditional registration in app.module.ts) and the frontend does not show the entry either.
    */
   @Get('features')
   @Public()
@@ -44,13 +45,13 @@ export class AuthController {
   getLoginFeatures() {
     return {
       wechatLoginEnabled: process.env.WECHAT_LOGIN_ENABLED === 'true',
-      // 为 §2.7 短信验证码登录预留（当前固定 false，短信登录实现后读取 SMS_LOGIN_ENABLED）
+      // Reserved for SMS verification-code login in §2.7 (currently fixed false; read SMS_LOGIN_ENABLED once SMS login is implemented)
       smsLoginEnabled: process.env.SMS_LOGIN_ENABLED === 'true',
     };
   }
 
   /**
-   * 从请求中提取客户端 IP（支持代理转发场景）
+   * Extract the client IP from the request (supports proxy-forwarding scenarios)
    */
   private getClientIp(req: Request): string {
     return (
@@ -62,7 +63,7 @@ export class AuthController {
   }
 
   /**
-   * 检查请求中 Cookie 和 Authorization Header 的存在性（用于日志诊断，不泄露值）
+   * Check the presence of Cookie and Authorization Header in the request (for log diagnosis, without leaking values)
    */
   private describeAuthSources(req: Request): string {
     const parts: string[] = [];
@@ -77,20 +78,21 @@ export class AuthController {
   }
 
   /**
-   * S-C03: 设置 HttpOnly + Secure + SameSite=Strict 的认证 Cookie
+   * S-C03: set HttpOnly + Secure + SameSite=Strict auth Cookies
    *
-   * accessToken Cookie：path=/，所有 API 端点可用
-   * refreshToken Cookie：path=/api/v1/auth，仅认证端点可用（缩小攻击面）
+   * accessToken Cookie: path=/, available to all API endpoints
+   * refreshToken Cookie: path=/api/v1/auth, available only to auth endpoints (smaller attack surface)
    *
-   * Secure 标志策略（CODE-10 修复）：
-   *   - 生产环境默认 secure=true（要求 HTTPS 部署）
-   *   - HTTP 部署（如 http://ip）必须通过环境变量 COOKIE_SECURE=false 显式关闭，
-   *     否则浏览器会丢弃 Secure Cookie，导致登录会话无法维持（表象：登录后立即 401、反复重试超时）
-   *   - 开发环境默认 secure=false
+   * Secure flag strategy (CODE-10 fix):
+   *   - Production defaults to secure=true (requires HTTPS deployment)
+   *   - HTTP deployment (e.g. http://ip) must explicitly disable it via env var COOKIE_SECURE=false,
+   *     otherwise the browser drops the Secure Cookie, preventing the login session from persisting
+   *     (symptom: immediate 401 after login, repeated retries time out)
+   *   - Dev environment defaults to secure=false
    */
   private setAuthCookies(res: Response, accessToken: string, refreshToken: string): void {
     const isProduction = process.env.NODE_ENV === 'production';
-    // COOKIE_SECURE 显式配置优先；未配置时生产默认 true（HTTPS），开发默认 false
+    // Explicit COOKIE_SECURE config takes priority; when unset, production defaults to true (HTTPS), dev defaults to false
     const cookieSecure =
       process.env.COOKIE_SECURE !== undefined ? process.env.COOKIE_SECURE === 'true' : isProduction;
     const cookieBase = {
@@ -101,13 +103,13 @@ export class AuthController {
 
     res.cookie('accessToken', accessToken, {
       ...cookieBase,
-      maxAge: 15 * 60 * 1000, // 15 分钟
+      maxAge: 15 * 60 * 1000, // 15 minutes
       path: '/',
     });
 
     res.cookie('refreshToken', refreshToken, {
       ...cookieBase,
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 天
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       path: '/api/v1/auth',
     });
 
@@ -117,8 +119,8 @@ export class AuthController {
   }
 
   /**
-   * S-C03: 清除认证 Cookie
-   * clearCookie 需与设置时的 path 一致才能正确清除；secure 标志不影响清除。
+   * S-C03: clear auth Cookies
+   * clearCookie must match the path used when setting to clear correctly; the secure flag does not affect clearing.
    */
   private clearAuthCookies(res: Response): void {
     res.clearCookie('accessToken', { path: '/' });
@@ -126,10 +128,10 @@ export class AuthController {
   }
 
   /**
-   * 桌面端（Tauri）检测：页面源为 tauri.localhost，与后端跨站，
-   * SameSite=Strict 的 HttpOnly Cookie 无法随跨站 XHR 发送，
-   * 因此改为 Bearer Token 模式：token 通过响应体下发，前端存内存走 Authorization 头。
-   * Web 端（同源）不受影响，仍使用 Cookie 模式。
+   * Desktop (Tauri) detection: page origin is tauri.localhost, cross-site with the backend,
+   * so SameSite=Strict HttpOnly Cookies cannot be sent with cross-site XHR;
+   * therefore switch to Bearer Token mode: token delivered via response body, frontend stores in memory and sends via Authorization header.
+   * Web (same-origin) is unaffected and still uses Cookie mode.
    */
   private isTauriClient(req: Request): boolean {
     const origin = req.headers.origin || '';
@@ -137,9 +139,9 @@ export class AuthController {
   }
 
   /**
-   * 小程序客户端检测：微信小程序请求无 Origin 头，且 UA 含 miniProgram 标识，
-   * 无 Cookie 能力，同样改为 Bearer 模式：token 通过响应体下发。
-   * 仅在无 Origin 时判断（避免误伤 Web 端；Web 同源请求带 Origin 且有 Cookie）。
+   * Mini-program client detection: WeChat mini-program requests have no Origin header and UA contains miniProgram,
+   * has no Cookie capability, and also switches to Bearer mode: token delivered via response body.
+   * Only judged when there is no Origin (to avoid mis-hitting Web; Web same-origin requests carry Origin and have Cookies).
    */
   private isWechatMpClient(req: Request): boolean {
     const origin = req.headers.origin || '';
@@ -147,7 +149,7 @@ export class AuthController {
     return !origin && /miniProgram/i.test(userAgent);
   }
 
-  /** 非浏览器客户端（桌面端/小程序）：Cookie 不可用，Token 走响应体下发 */
+  /** Non-browser clients (desktop / mini-program): cookies unavailable, tokens delivered via response body */
   private isBearerTokenClient(req: Request): boolean {
     return this.isTauriClient(req) || this.isWechatMpClient(req);
   }
@@ -172,7 +174,7 @@ export class AuthController {
       userAgent: req.headers['user-agent'],
     });
 
-    // 非浏览器客户端（桌面端 Tauri / 小程序）：Cookie 不可用，改为响应体下发 token（Bearer 模式）
+    // Non-browser clients (desktop Tauri / mini-program): cookies unavailable, switched to response-body token delivery (Bearer mode)
     if (this.isBearerTokenClient(req)) {
       this.logger.log(
         `[POST /auth/login] 登录响应（桌面端/小程序 Bearer 模式） | userId="${result.user.id}" username="${result.user.username}" role="${result.user.role}"`,
@@ -184,7 +186,7 @@ export class AuthController {
       };
     }
 
-    // S-C03: Token 写入 HttpOnly Cookie，响应体仅返回 user 信息
+    // S-C03: token written into HttpOnly Cookie; response body returns only user info
     this.setAuthCookies(res, result.accessToken, result.refreshToken);
 
     this.logger.log(
@@ -203,7 +205,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const result = await this.authService.register(registerDto);
-    // 非浏览器客户端（桌面端 Tauri / 小程序）：Cookie 不可用，改为响应体下发 token（Bearer 模式）
+    // Non-browser clients (desktop Tauri / mini-program): cookies unavailable, switched to response-body token delivery (Bearer mode)
     if (this.isBearerTokenClient(req)) {
       return {
         user: result.user,
@@ -227,7 +229,7 @@ export class AuthController {
     const authSources = this.describeAuthSources(req);
     this.logger.log(`[POST /auth/refresh] 收到刷新请求 | ip=${clientIp} | ${authSources}`);
 
-    // S-C03: 优先从 Cookie 读取 refreshToken，兼容 body 传参（Swagger 调试 / Bearer 客户端）
+    // S-C03: prefer reading refreshToken from Cookie, also accept body param (Swagger debugging / Bearer clients)
     const refreshTokenFromBody = body?.refreshToken;
     const refreshToken = req.cookies?.refreshToken || refreshTokenFromBody;
     if (!refreshToken) {
@@ -237,7 +239,7 @@ export class AuthController {
       return { message: '无 refresh token' };
     }
 
-    // 标识 refreshToken 来源（Cookie 还是 Body），方便排查 Cookie 传输问题
+    // Mark the refreshToken source (Cookie or Body) for troubleshooting cookie transmission issues
     const tokenSource = req.cookies?.refreshToken ? 'cookie' : 'body';
     this.logger.debug(`[POST /auth/refresh] refreshToken 来源=${tokenSource} | ip=${clientIp}`);
 
@@ -246,10 +248,10 @@ export class AuthController {
       userAgent: req.headers['user-agent'],
     });
 
-    // 非浏览器客户端（桌面端 / 小程序 / H5）：新 token 对通过响应体下发（前端持久化后用于会话恢复）。
-    // H5 浏览器请求带 Origin，isTauriClient / isWechatMpClient 均不命中；但 H5 无 Cookie 会话
-    // （token 由 login-password 等接口经响应体下发），refresh 时必然通过 body 提交 refreshToken，
-    // 因此 body 提供 refreshToken 即视为 Bearer 模式，避免响应体缺 token 对导致前端会话恢复失败。
+    // Non-browser clients (desktop / mini-program / H5): new token pairs delivered via response body (persisted by frontend for session recovery)
+    // H5 browser requests carry Origin, so isTauriClient / isWechatMpClient do not match; but H5 has no cookie session
+    // (token delivered via response body by login-password etc.); on refresh it must submit refreshToken via body,
+    // so providing refreshToken in body is treated as Bearer mode, avoiding frontend session-recovery failure due to missing token in response.
     if (this.isBearerTokenClient(req) || !!refreshTokenFromBody) {
       this.logger.log(
         `[POST /auth/refresh] 刷新成功（Bearer 模式：桌面端/小程序/H5） | ip=${clientIp}`,
@@ -311,11 +313,11 @@ export class AuthController {
       ip: clientIp,
       userAgent: req.headers['user-agent'],
     });
-    // 密码修改后旧 Token 已撤销，需重新生成并下发
-    // changePassword 内部已撤销旧 refresh token，这里重新生成
+    // After password change the old token is revoked; regenerate and deliver
+    // changePassword already revoked the old refresh token internally; regenerate here
     const { password: _pw, ...userWithoutPw } = req.user;
     const tokens = await this.authService.generateTokensForUser(userWithoutPw);
-    // 非浏览器客户端（桌面端 / 小程序）：新 token 对通过响应体下发，否则维持 Cookie 模式
+    // Non-browser clients (desktop / mini-program): new token pairs delivered via response body, otherwise keep Cookie mode
     if (this.isBearerTokenClient(req)) {
       return { ...result, accessToken: tokens.accessToken, refreshToken: tokens.refreshToken };
     }

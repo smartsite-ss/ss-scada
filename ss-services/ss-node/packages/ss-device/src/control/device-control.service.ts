@@ -45,33 +45,33 @@ export class DeviceControlService {
   ) {}
 
   /**
-   * 写入设备标签值（核心反控接口）
+   * Write a device tag value (core reverse-control endpoint)
    */
   async writeTagValue(params: WriteTagParams): Promise<WriteTagResult> {
     const startTime = Date.now();
 
     try {
-      // 1. 获取设备信息
+      // 1. Get device info
       const device = await this.deviceService.findOne(params.deviceId, params.projectId);
       if (!device) {
         throw new BadRequestException(`设备不存在: ${params.deviceId}`);
       }
 
-      // 2. 获取标签信息
+      // 2. Get tag info
       const tag = await this.getDataTag(params.tagId, params.projectId);
       if (!tag) {
         throw new BadRequestException(`标签不存在: ${params.tagId}`);
       }
 
-      // 3. 校验 direction（必须是 write 或 read-write）
+      // 3. Validate direction (must be write or read-write)
       if (!tag.direction || tag.direction === 'read') {
         throw new BadRequestException('此变量为只读，不可写入');
       }
 
-      // 4. 值校验
+      // 4. Value validation
       this.validateValue(tag, params.value);
 
-      // 5. 记录写入前的值（用于审计）
+      // 5. Record the value before writing (for audit)
       let previousValue: string | null = null;
       try {
         const prevData = await this.deviceDataService.getDeviceLatestValues(
@@ -83,10 +83,10 @@ export class DeviceControlService {
           previousValue = String(prevEntry.value ?? 'null');
         }
       } catch {
-        // 非关键，忽略查询错误
+        // Non-critical; ignore query errors
       }
 
-      // 6. 获取协议适配器并执行写入（driver 优先，与采集层一致）
+      // 6. Get the protocol adapter and execute the write (driver first, consistent with the collection layer)
       const protocol = device.driver || device.type;
       if (!protocol) {
         throw new BadRequestException('设备类型未配置');
@@ -97,7 +97,7 @@ export class DeviceControlService {
         throw new BadRequestException(`协议适配器未找到: ${protocol}`);
       }
 
-      // 7. 建立设备连接（临时连接，写入后断开）
+      // 7. Establish the device connection (temporary; disconnected after writing)
       let client: any;
       try {
         const deviceConfig = device.connection || {};
@@ -112,7 +112,7 @@ export class DeviceControlService {
         throw new BadRequestException(`设备连接失败: ${(err as Error).message}`);
       }
 
-      // 8. 构造 ITagContext 并执行写入
+      // 8. Build ITagContext and execute the write
       const tagContext = {
         id: tag.id,
         name: tag.name,
@@ -128,7 +128,7 @@ export class DeviceControlService {
       try {
         await adapter.writeTag(client, tagContext, params.value);
       } catch (err) {
-        // 写入失败也记录审计日志
+        // Write failures also record an audit log
         await this.logOperation({
           projectId: params.projectId,
           deviceId: params.deviceId,
@@ -148,7 +148,7 @@ export class DeviceControlService {
         throw err;
       }
 
-      // 9. 断开临时连接
+      // 9. Disconnect the temporary connection
       try {
         await adapter.disconnect(client);
       } catch {
@@ -157,7 +157,7 @@ export class DeviceControlService {
 
       const latencyMs = Date.now() - startTime;
 
-      // 9. 更新最新值缓存
+      // 9. Update the latest-value cache
       try {
         await this.deviceDataService.updateLatestValue(
           params.tagId,
@@ -170,7 +170,7 @@ export class DeviceControlService {
         this.logger.warn(`更新最新值缓存失败: ${(err as Error).message}`);
       }
 
-      // 10. 记录操作审计日志
+      // 10. Record the operation audit log
       await this.logOperation({
         projectId: params.projectId,
         deviceId: params.deviceId,
@@ -187,7 +187,7 @@ export class DeviceControlService {
         latencyMs,
       });
 
-      // 11. 发送事件通知（供 WebSocket 等订阅方）
+      // 11. Emit an event notification (for WebSocket etc. subscribers)
       try {
         this.eventBus?.emit('device.tag_written' as any, {
           projectId: params.projectId,
@@ -199,7 +199,7 @@ export class DeviceControlService {
           timestamp: new Date().toISOString(),
         });
       } catch {
-        // 事件发送失败不阻塞主流程
+        // Event-send failure does not block the main flow
       }
 
       this.logger.log(
@@ -229,14 +229,14 @@ export class DeviceControlService {
   }
 
   /**
-   * 值校验：数据类型 + 范围
+   * Value validation: data type + range
    */
   private validateValue(tag: DataTag, value: any): void {
     if (value === null || value === undefined) {
       throw new BadRequestException('写入值不能为空');
     }
 
-    // 范围校验（如果配置了 minValue / maxValue）
+    // Range validation (when minValue / maxValue are configured)
     const numValue = Number(value);
     if (!isNaN(numValue)) {
       if (tag.minValue !== null && tag.minValue !== undefined) {
@@ -253,7 +253,7 @@ export class DeviceControlService {
   }
 
   /**
-   * 获取 DataTag（从项目级数据库）
+   * Get a DataTag (from the project-level database)
    */
   private async getDataTag(tagId: string, projectId: string): Promise<DataTag | null> {
     try {
@@ -267,7 +267,7 @@ export class DeviceControlService {
   }
 
   /**
-   * 记录操作审计日志
+   * Record the operation audit log
    */
   private async logOperation(params: {
     projectId: string;
@@ -311,9 +311,9 @@ export class DeviceControlService {
   }
 
   /**
-   * 查询操作日志（分页 + 筛选）
-   * @param projectId 项目ID
-   * @param deviceId 可选：设备ID，不传则查询项目下所有设备的操作日志
+   * Query operation logs (pagination + filtering)
+   * @param projectId project ID
+   * @param deviceId optional: device ID; when omitted, queries all devices' operation logs in the project
    */
   async queryLogs(
     projectId: string,

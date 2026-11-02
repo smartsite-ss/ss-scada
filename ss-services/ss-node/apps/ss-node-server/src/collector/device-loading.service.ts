@@ -11,7 +11,7 @@ import { Device } from '@ss-node/ss-device';
 import { DeviceStatus } from '@ss-node/ss-sdk';
 import { DataSource } from 'typeorm';
 
-/** 设备加载结果 */
+/** Device-loading result */
 export interface DeviceLoadingResult {
   totalDevices: number;
   loadedByProtocol: Record<string, Device[]>;
@@ -19,16 +19,16 @@ export interface DeviceLoadingResult {
 }
 
 /**
- * 设备加载服务
+ * Device loading service
  *
- * 负责从项目数据库中扫描和加载设备，按协议分组，
- * 并将设备注册到 DeviceStateManager 进行状态追踪。
+ * Scans and loads devices from project databases, groups them by protocol,
+ * and registers them with DeviceStateManager for state tracking.
  */
 @Injectable()
 export class DeviceLoadingService {
   private readonly logger = new Logger(DeviceLoadingService.name);
 
-  /** 设备名称映射（供 IActiveDeviceTracker 查询） */
+  /** Device-name map (queried by IActiveDeviceTracker) */
   private readonly deviceNameMap = new Map<string, string>();
 
   constructor(
@@ -38,10 +38,10 @@ export class DeviceLoadingService {
   ) {}
 
   /**
-   * 从所有项目中加载设备
+   * Load devices from all projects
    *
-   * @param projectsDir 项目目录路径
-   * @returns 按协议分组的设备加载结果
+   * @param projectsDir path to the projects directory
+   * @returns device-loading results grouped by protocol
    */
   async loadAllDevices(projectsDir: string): Promise<DeviceLoadingResult> {
     const projectDirs = this.scanProjectDirectories(projectsDir);
@@ -53,7 +53,7 @@ export class DeviceLoadingService {
       skippedDevices: 0,
     };
 
-    // 并行加载所有项目数据库（不限制并发数）
+    // Load all project databases in parallel (no concurrency limit)
     const projectResults = await Promise.all(
       projectDirs.map((projectName) => this.loadDevicesFromProject(projectName)),
     );
@@ -66,10 +66,10 @@ export class DeviceLoadingService {
   }
 
   /**
-   * 加载单个启用项目的设备（运行时启用项目时调用）
+   * Load devices of a single enabled project (called when a project is enabled at runtime)
    *
-   * @param projectId 项目 ID
-   * @returns 按协议分组的设备列表
+   * @param projectId the project ID
+   * @returns device list grouped by protocol
    */
   async loadProjectDevices(projectId: string): Promise<Record<string, Device[]>> {
     const result = await this.loadDevicesFromProject(projectId);
@@ -80,12 +80,12 @@ export class DeviceLoadingService {
   }
 
   /**
-   * 为特定协议重新加载设备（插件激活后调用）
+   * Reload devices for a specific protocol (called after a plugin is activated)
    *
-   * @param protocol 协议名称
-   * @param availableProjects 可用项目列表
-   * @param skipDeviceIds 需要跳过的设备 ID 集合
-   * @returns 需要注册任务的设备列表
+   * @param protocol the protocol name
+   * @param availableProjects the list of available projects
+   * @param skipDeviceIds the set of device IDs to skip
+   * @returns the list of devices whose tasks need registering
    */
   async reloadDevicesForProtocol(
     protocol: string,
@@ -149,7 +149,7 @@ export class DeviceLoadingService {
           continue;
         }
 
-        // 注册设备到状态管理器
+        // Register the device with the state manager
         this.ensureDeviceTracked(device, protocol, projectName);
         newDevices.push(device);
       }
@@ -161,11 +161,11 @@ export class DeviceLoadingService {
   }
 
   /**
-   * 补偿已激活的插件：检查哪些活跃插件在状态管理器中没有设备记录
+   * Compensate already-active plugins: find active plugins with no device records in the state manager
    *
-   * @param availableProjects 可用项目列表
-   * @param skipDeviceIds 需要跳过的设备 ID 集合
-   * @returns 需要注册任务的设备列表
+   * @param availableProjects the list of available projects
+   * @param skipDeviceIds the set of device IDs to skip
+   * @returns the list of devices whose tasks need registering
    */
   async compensateActivePlugins(
     availableProjects: string[],
@@ -176,7 +176,7 @@ export class DeviceLoadingService {
     const activePlugins = this.pluginRegistry.listPlugins().filter((p) => p.status === 'active');
     if (activePlugins.length === 0) return [];
 
-    // 收集已加载设备所覆盖的协议
+    // Collect the protocols covered by loaded devices
     const loadedProtocols = new Set<string>();
     for (const [, state] of this.deviceStateManager!.getAllStates()) {
       loadedProtocols.add(state.protocol);
@@ -209,23 +209,23 @@ export class DeviceLoadingService {
     return results;
   }
 
-  /** 获取设备名称 */
+  /** Get device name */
   getDeviceName(deviceId: string): string {
     return this.deviceNameMap.get(deviceId) || deviceId;
   }
 
-  /** 设置设备名称 */
+  /** Set device name */
   setDeviceName(deviceId: string, name: string): void {
     this.deviceNameMap.set(deviceId, name);
   }
 
-  /** 清除设备名称映射（项目停用时调用，避免内存泄漏） */
+  /** Clear the device-name map (called when a project is disabled, to avoid memory leaks) */
   deleteDeviceName(deviceId: string): void {
     this.deviceNameMap.delete(deviceId);
   }
 
   /**
-   * 从单个项目的 system.db 中加载设备
+   * Load devices from a single project's system.db
    */
   private async loadDevicesFromProject(projectName: string): Promise<DeviceLoadingResult> {
     let ds: DataSource;
@@ -296,7 +296,7 @@ export class DeviceLoadingService {
         continue;
       }
 
-      // 注册设备到状态管理器
+      // Register the device with the state manager
       this.ensureDeviceTracked(device, protocol, projectName);
 
       if (!loadedByProtocol[protocol]) {
@@ -322,7 +322,7 @@ export class DeviceLoadingService {
   }
 
   /**
-   * 确保设备已加入内存状态追踪（委托给 DeviceStateManager）
+   * Ensure the device is added to in-memory state tracking (delegated to DeviceStateManager)
    */
   private ensureDeviceTracked(device: Device, protocol: string, projectName: string): void {
     this.deviceStateManager!.registerDevice({
@@ -348,7 +348,7 @@ export class DeviceLoadingService {
       .filter((e) => e.isDirectory())
       .map((e) => e.name)
       .filter((projectName) => {
-        // 跳过未启用项目：读 projectinfo.json 的 enabled 字段
+        // Skip disabled projects: read the enabled field of projectinfo.json
         try {
           const infoPath = path.join(projectsDir, projectName, 'projectinfo.json');
           if (!fs.existsSync(infoPath)) return false;

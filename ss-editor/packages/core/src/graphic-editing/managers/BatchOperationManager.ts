@@ -5,7 +5,7 @@
 import { IGraphic } from '@scada-editor/plugin-sdk';
 import { v4 as uuidv4 } from 'uuid';
 
-// ==================== 类型定义 ====================
+// ==================== Type Definitions ====================
 
 export interface BatchOperation {
   type: 'move' | 'scale' | 'rotate' | 'style' | 'property';
@@ -34,7 +34,7 @@ export interface BatchStyleOptions {
   strokeColor?: string;
   strokeWidth?: number;
   opacity?: number;
-  // 其他样式属性
+  // Other style properties
   [key: string]: any;
 }
 
@@ -45,8 +45,8 @@ export interface SmartPasteOptions {
 }
 
 /**
- * 批量操作管理器
- * 处理图形的批量移动、缩放、旋转、样式应用等
+ * Batch operation manager
+ * Handles batch move, scale, rotate, and style application of graphics
  */
 export class BatchOperationManager {
   private operations: BatchOperation[] = [];
@@ -68,7 +68,7 @@ export class BatchOperationManager {
   }
 
   /**
-   * 批量移动
+   * Batch move
    */
   batchMove(graphics: IGraphic[], deltaX: number, deltaY: number): void {
     for (const graphic of graphics) {
@@ -76,14 +76,14 @@ export class BatchOperationManager {
       if (geometry) {
         geometry.x += deltaX;
         geometry.y += deltaY;
-        // 使用 IGraphic 接口的方法替代直接操作
+        // Use IGraphic interface methods instead of direct manipulation
         graphic.setPosition(geometry.x, geometry.y);
       }
     }
   }
 
   /**
-   * 批量缩放
+   * Batch scale
    */
   batchScale(
     graphics: IGraphic[],
@@ -93,7 +93,7 @@ export class BatchOperationManager {
   ): void {
     if (graphics.length === 0) return;
 
-    // 如果没有指定原点，计算所有图形的中心点作为原点
+    // If no origin is given, use the center point of all graphics as the origin
     if (!origin) {
       origin = this.calculateGroupCenter(graphics);
     }
@@ -104,7 +104,7 @@ export class BatchOperationManager {
 
       const { x, y, width, height } = geometry;
 
-      // 以原点为中心进行缩放
+      // Scale around the origin
       const relativeX = x - origin.x;
       const relativeY = y - origin.y;
 
@@ -113,14 +113,14 @@ export class BatchOperationManager {
       geometry.width = width * scaleX;
       geometry.height = height * scaleY;
 
-      // 使用 IGraphic 接口的方法替代直接操作
+      // Use IGraphic interface methods instead of direct manipulation
       graphic.setPosition(geometry.x, geometry.y);
       graphic.setSize(geometry.width, geometry.height);
     }
   }
 
   /**
-   * 批量旋转
+   * Batch rotate
    */
   batchRotate(
     graphics: IGraphic[],
@@ -156,14 +156,14 @@ export class BatchOperationManager {
       geometry.y = newCenterY - height / 2;
       geometry.rotation = (geometry.rotation || 0) + degrees;
 
-      // 使用 IGraphic 接口的方法替代直接操作
+      // Use IGraphic interface methods instead of direct manipulation
       graphic.setPosition(geometry.x, geometry.y);
       graphic.setRotation(geometry.rotation);
     }
   }
 
   /**
-   * 批量应用样式
+   * Apply style in batch
    */
   batchApplyStyle(graphics: IGraphic[], styleProperties: BatchStyleOptions): void {
     for (const graphic of graphics) {
@@ -172,7 +172,7 @@ export class BatchOperationManager {
   }
 
   /**
-   * 批量设置属性
+   * Set property in batch
    */
   batchSetProperty(graphics: IGraphic[], propertyPath: string, value: any): void {
     for (const graphic of graphics) {
@@ -181,7 +181,7 @@ export class BatchOperationManager {
   }
 
   /**
-   * 智能粘贴（带间距批量粘贴）
+   * Smart paste (batch paste with spacing)
    */
   smartPaste(
     graphics: IGraphic[],
@@ -220,12 +220,12 @@ export class BatchOperationManager {
   }
 
   /**
-   * 批量相同间距（水平）
+   * Even spacing in batch (horizontal)
    */
   spaceEvenlyHorizontal(graphics: IGraphic[], spacing: number = 20): void {
     if (graphics.length < 2) return;
 
-    // 按 X 坐标排序
+    // Sort by X coordinate
     const sorted = [...graphics].sort((a, b) => {
       const geoA = this.getSafeGeometry(a);
       const geoB = this.getSafeGeometry(b);
@@ -240,18 +240,18 @@ export class BatchOperationManager {
 
       geometry.x = currentX;
       currentX += geometry.width + spacing;
-      // 使用 IGraphic 接口的方法替代直接操作
+      // Use IGraphic interface methods instead of direct manipulation
       graphic.setPosition(geometry.x, geometry.y);
     }
   }
 
   /**
-   * 批量相同间距（垂直）
+   * Even spacing in batch (vertical)
    */
   spaceEvenlyVertical(graphics: IGraphic[], spacing: number = 20): void {
     if (graphics.length < 2) return;
 
-    // 按 Y 坐标排序
+    // Sort by Y coordinate
     const sorted = [...graphics].sort((a, b) => {
       const geoA = this.getSafeGeometry(a);
       const geoB = this.getSafeGeometry(b);
@@ -266,12 +266,12 @@ export class BatchOperationManager {
 
       geometry.y = currentY;
       currentY += geometry.height + spacing;
-      // 使用 IGraphic 接口的方法替代直接操作
+      // Use IGraphic interface methods instead of direct manipulation
       graphic.setPosition(geometry.x, geometry.y);
     }
   }
 
-  // ==================== 内部辅助方法 ====================
+  // ==================== Internal Helper Methods ====================
 
   private getSafeGeometry(graphic: IGraphic): any {
     if (!graphic || !graphic.config) {

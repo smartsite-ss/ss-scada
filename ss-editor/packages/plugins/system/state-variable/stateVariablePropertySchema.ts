@@ -5,10 +5,10 @@
 import { type PluginPropertySchema } from '@scada-editor/plugin-sdk';
 
 /**
- * 状态变量组件的图片渲染样式 schema。
- * 仅包含「图片适应 + 不透明度 + 缩放/旋转 + 边框/阴影」，字段复用 image 组件对应字段。
- * 变量绑定字段、状态规则（states）、默认图片（defaultImage）由 StateVariableConfig
- * 以自定义 section 管理，不进入本 schema。
+ * Image rendering style schema of the state variable component.
+ * Contains only image fit + opacity + scale/rotation + border/shadow; fields reuse the corresponding image component fields.
+ * Variable binding fields, state rules (states) and the default image (defaultImage) are managed
+ * by StateVariableConfig as a custom section and are not part of this schema.
  */
 export const stateVariablePropertySchema: PluginPropertySchema = {
   name: '状态变量',
@@ -16,7 +16,7 @@ export const stateVariablePropertySchema: PluginPropertySchema = {
   columns: 2,
   propsPath: 'customProps',
   fields: [
-    // ── 图片显示（复用 image） ──
+    // ── Image display (reuses image) ──
     {
       name: 'imageFit',
       label: '适应模式',
@@ -37,7 +37,7 @@ export const stateVariablePropertySchema: PluginPropertySchema = {
     { name: 'imageScale', label: '缩放比例', labelKey: 'image.properties.imageScale', type: 'number', min: 0.01, max: 10, step: 0.1, defaultValue: 1, group: 'basic' },
     { name: 'imageRotation', label: '旋转角度', labelKey: 'image.properties.imageRotation', type: 'number', min: -360, max: 360, step: 1, defaultValue: 0, group: 'basic' },
 
-    // ── 边框 ──
+    // ── Border ──
     { name: 'borderColor', label: '边框颜色', labelKey: 'image.properties.borderColor', type: 'color', defaultValue: '#00000000', group: 'style' },
     { name: 'borderWidth', label: '边框宽度', labelKey: 'image.properties.borderWidth', type: 'number', min: 0, step: 1, defaultValue: 0, group: 'style' },
     {
@@ -55,7 +55,7 @@ export const stateVariablePropertySchema: PluginPropertySchema = {
     },
     { name: 'borderRadius', label: '圆角', labelKey: 'image.properties.borderRadius', type: 'number', min: 0, step: 1, defaultValue: 0, group: 'style' },
 
-    // ── 阴影 ──
+    // ── Shadow ──
     { name: 'shadowColor', label: '阴影颜色', labelKey: 'image.properties.shadowColor', type: 'color', defaultValue: '#00000000', group: 'shadow' },
     { name: 'shadowOffsetX', label: '阴影偏移X', labelKey: 'image.properties.shadowOffsetX', type: 'number', step: 1, defaultValue: 0, group: 'shadow' },
     { name: 'shadowOffsetY', label: '阴影偏移Y', labelKey: 'image.properties.shadowOffsetY', type: 'number', step: 1, defaultValue: 0, group: 'shadow' },

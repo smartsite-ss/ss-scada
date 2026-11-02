@@ -3,15 +3,16 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 跨端接口契约共享解包器（单一来源）
+ * Cross-platform interface contract unwrap utilities (single source of truth)
  *
- * 后端统一经 TransformInterceptor 包装列表接口为：
+ * The backend uniformly wraps list endpoints via TransformInterceptor as:
  *   { code, data: { data: [...], pagination }, message, timestamp }
- * 部分历史/扁平接口直接返回数组或 { data: [...] }。
- * 本模块提供统一的提取入口，消除各前端重复编写兼容分支。
+ * Some legacy/flat endpoints return an array or { data: [...] } directly.
+ * This module provides a unified extraction entry point, eliminating duplicated
+ * compatibility branches across frontends.
  */
 
-/** 标准分页结构（来自 TransformInterceptor） */
+/** Standard pagination structure (from TransformInterceptor) */
 export interface StandardPagination {
   page: number;
   pageSize: number;
@@ -19,7 +20,7 @@ export interface StandardPagination {
   totalPages?: number;
 }
 
-/** 标准包装响应 */
+/** Standard wrapped response */
 export interface StandardListEnvelope<T> {
   code?: number;
   message?: string;
@@ -32,13 +33,13 @@ function isPlainObject(v: unknown): v is Record<string, unknown> {
 }
 
 /**
- * 从响应中提取列表数组。
- * 兼容以下几种结构：
- *   - 标准包装：{ data: { data: [...], pagination } }
- *   - 半包装：{ data: [...] }
- *   - 直接数组：[...]
- *   - 包装在 data 上的对象：{ data: [...] }
- * 提取不到时返回空数组，绝不抛错。
+ * Extracts the list array from a response.
+ * Compatible with the following shapes:
+ *   - Standard wrapper: { data: { data: [...], pagination } }
+ *   - Half wrapper: { data: [...] }
+ *   - Bare array: [...]
+ *   - Object wrapped in data: { data: [...] }
+ * Returns an empty array when nothing can be extracted; never throws.
  */
 export function extractListData<T = any>(payload: unknown): T[] {
   if (payload == null) return [];
@@ -48,20 +49,20 @@ export function extractListData<T = any>(payload: unknown): T[] {
 
   const data = (payload as Record<string, unknown>).data;
 
-  // 标准包装：data 是 { data: [...], pagination }
+  // Standard wrapper: data is { data: [...], pagination }
   if (isPlainObject(data)) {
     const inner = (data as Record<string, unknown>).data;
     if (Array.isArray(inner)) return inner as T[];
   }
 
-  // 半包装：data 直接是数组
+  // Half wrapper: data is directly an array
   if (Array.isArray(data)) return data as T[];
 
   return [];
 }
 
 /**
- * 从响应中提取分页信息（若不存在则返回 undefined）。
+ * Extracts pagination info from a response (returns undefined when absent).
  */
 export function extractPagination(
   payload: unknown,

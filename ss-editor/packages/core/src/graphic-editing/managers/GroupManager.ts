@@ -35,7 +35,7 @@ export class GroupManager {
     constructor() {
         this.graphicMap = new Map();
     }
-    
+
     updateReferences(_graphics: IGraphic[], graphicMap: Map<string, IGraphic>): void {
         this.graphicMap = graphicMap;
     }
@@ -68,7 +68,7 @@ export class GroupManager {
         };
 
         this.groups.set(id, group);
-        
+
         if (parentId && this.groups.has(parentId)) {
             const parentGroup = this.groups.get(parentId)!;
             if (!parentGroup.children.includes(id)) {
@@ -77,7 +77,7 @@ export class GroupManager {
         }
 
         eventBus.emit(Events.GROUP_CREATED, { group });
-        
+
         return group;
     }
 
@@ -99,7 +99,7 @@ export class GroupManager {
 
         this.groups.delete(groupId);
         eventBus.emit(Events.GROUP_DELETED, { groupId, keepGraphics });
-        
+
         return true;
     }
 
@@ -167,7 +167,7 @@ export class GroupManager {
         const group = this.groups.get(groupId);
         if (group) {
             group.locked = locked;
-            
+
             if (locked) {
                 group.children.forEach(childId => {
                     if (this.graphicMap.has(childId)) {
@@ -201,7 +201,7 @@ export class GroupManager {
             group.children.forEach(childId => {
                 if (this.graphicMap.has(childId)) {
                     const graphic = this.graphicMap.get(childId)!;
-                    // 使用 IGraphic 接口的方法替代直接操作
+                    // Use IGraphic interface methods instead of direct manipulation
                     graphic.setVisible(visible);
                 }
             });
@@ -269,7 +269,7 @@ export class GroupManager {
 
         let children: string[] = [...(group.children || [])];
         const childGroups = this.getChildGroups(groupId);
-        
+
         childGroups.forEach(childId => {
             children = [...children, ...this.getGroupChildrenRecursive(childId)];
         });
@@ -306,57 +306,57 @@ export class GroupManager {
             this.groups.set(group.id, group);
         });
     }
-    
-    // 兼容旧接口的方法
+
+    // Method compatible with the old interface
     getGroupMembers(groupId: string): IGraphic[] {
         const group = this.groups.get(groupId);
         if (!group) return [];
-        
+
         const members: IGraphic[] = [];
         const children = group.children || [];
-        
+
         children.forEach(childId => {
             if (this.graphicMap.has(childId)) {
                 members.push(this.graphicMap.get(childId)!);
             } else if (this.groups.has(childId)) {
-                // 如果是子分组，递归获取所有子成员
+                // If it is a child group, recursively get all sub-members
                 members.push(...this.getGroupMembers(childId));
             }
         });
-        
+
         return members;
     }
-    
+
     ungroup(groupId: string): IGraphic[] {
         const group = this.groups.get(groupId);
         if (!group) return [];
-        
-        // 获取所有成员图元
+
+        // Get all member graphics
         const members = this.getGroupMembers(groupId);
-        
-        // 删除分组（保留图元）
+
+        // Delete the group (keep graphics)
         this.deleteGroup(groupId, true);
-        
+
         return members;
     }
-    
-    // 旧版本兼容性方法（单个图元从分组中移除）
+
+    // Old-version compatibility method (remove a single graphic from a group)
     removeFromGroup(graphicId: string): void {
         const group = this.getGroupForGraphic(graphicId);
         if (group) {
             this.removeGraphicsFromGroup(group.id, [graphicId]);
         }
     }
-    
-    // 旧版本兼容性方法（单个图元添加到分组）
+
+    // Old-version compatibility method (add a single graphic to a group)
     addToGroup(graphicId: string, groupId: string): void {
         this.addGraphicsToGroup(groupId, [graphicId]);
     }
-    
-    // 旧版本兼容性方法（更新分组边界）
+
+    // Old-version compatibility method (update group bounds)
   updateGroupBounds(_groupId: string): void {
-    // 实体分组系统不需要手动更新边界
-    // 这个方法保留仅用于向后兼容
+    // The entity group system does not require manual bounds updates
+    // This method is retained only for backward compatibility
   }
 
   getGroupBounds(groupId: string): { x: number; y: number; width: number; height: number } {

@@ -3,63 +3,63 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * AI 供应商预置模板 — 国内外常用 LLM 厂家默认配置
+ * AI provider preset templates - default configs for common domestic/international LLM vendors
  *
- * 用户在前端创建供应商配置时，只需选择厂家并填写 API Key，
- * 其余配置（apiBase、默认模型、模型列表等）均从此预置表自动填充。
+ * When users create a provider config in the frontend, they only select a vendor and fill in the API key;
+ * the rest (apiBase, default model, model list, etc.) is auto-filled from this preset table.
  *
- * 所有列出的供应商均支持 OpenAI 兼容 API 格式（/chat/completions、/embeddings），
- * 由统一的 OpenAICompatibleProvider 处理。
+ * All listed providers support the OpenAI-compatible API format (/chat/completions, /embeddings),
+ * handled by the unified OpenAICompatibleProvider.
  *
- * 关联决策：
- *   - D-001 云端 API 优先（多供应商选择）
- *   - D-002 LLM 模型选型（国内外常用模型）
+ * Related decisions:
+ *   - D-001 cloud API first (multi-provider selection)
+ *   - D-002 LLM model selection (common domestic/international models)
  */
 
-/** 供应商区域 */
+/** Provider region */
 export type ProviderRegion = 'domestic' | 'international';
 
-/** 供应商预置模板 */
+/** Provider preset template */
 export interface ProviderPreset {
-  /** 供应商 ID（唯一标识，用于数据库存储和路由） */
+  /** Provider ID (unique identifier, used for DB storage and routing) */
   providerId: string;
-  /** 显示名称 */
+  /** Display name */
   name: string;
-  /** 区域：国内 / 国际 */
+  /** Region: domestic / international */
   region: ProviderRegion;
-  /** API 基础地址（OpenAI 兼容格式） */
+  /** API base URL (OpenAI-compatible format) */
   apiBase: string;
-  /** 默认对话模型 */
+  /** Default chat model */
   defaultModel: string;
-  /** 可用模型列表 */
+  /** Available model list */
   models: string[];
-  /** 代码生成模型（可选，适合 codegen 任务） */
+  /** Code-generation model (optional, for codegen tasks) */
   codegenModel?: string;
-  /** 轻量模型（可选，适合健康检查和低成本场景） */
+  /** Lightweight model (optional, for health checks and low-cost scenarios) */
   liteModel?: string;
-  /** 嵌入模型（可选，用于 RAG 向量化） */
+  /** Embedding model (optional, for RAG vectorization) */
   embeddingModel?: string;
-  /** 嵌入维度（可选） */
+  /** Embedding dimension (optional) */
   embeddingDim?: number;
-  /** 请求超时（毫秒） */
+  /** Request timeout (ms) */
   timeout: number;
-  /** 最大重试次数 */
+  /** Max retry count */
   maxRetries: number;
-  /** API Key 申请地址 */
+  /** API key application URL */
   apiKeyUrl: string;
-  /** 是否支持嵌入 */
+  /** Whether embedding is supported */
   supportsEmbedding: boolean;
-  /** 厂家描述 */
+  /** Vendor description */
   description: string;
 }
 
 /**
- * 预置供应商列表
+ * Preset provider list
  *
- * 国内供应商（5 家）+ 国际供应商（4 家）+ 自定义（1 项）
+ * Domestic providers (5) + international providers (4) + custom (1)
  */
 export const PROVIDER_PRESETS: ProviderPreset[] = [
-  // ==================== 国内供应商 ====================
+  // ==================== Domestic providers ====================
   {
     providerId: 'deepseek',
     name: 'DeepSeek',
@@ -140,7 +140,7 @@ export const PROVIDER_PRESETS: ProviderPreset[] = [
     description: '百度出品，中文理解强、生态完善',
   },
 
-  // ==================== 国际供应商 ====================
+  // ==================== International providers ====================
   {
     providerId: 'openai',
     name: 'OpenAI',
@@ -216,7 +216,7 @@ export const PROVIDER_PRESETS: ProviderPreset[] = [
     description: '欧洲领先 AI 公司，开源生态活跃、代码生成强',
   },
 
-  // ==================== 自定义 ====================
+  // ==================== Custom ====================
   {
     providerId: 'custom',
     name: '自定义供应商',
@@ -232,12 +232,12 @@ export const PROVIDER_PRESETS: ProviderPreset[] = [
   },
 ];
 
-/** 按 providerId 查找预置模板 */
+/** Find preset template by providerId */
 export function findPreset(providerId: string): ProviderPreset | undefined {
   return PROVIDER_PRESETS.find((p) => p.providerId === providerId);
 }
 
-/** 获取所有预置模板（按区域分组） */
+/** Get all preset templates (grouped by region) */
 export function getPresetsByRegion(): {
   domestic: ProviderPreset[];
   international: ProviderPreset[];

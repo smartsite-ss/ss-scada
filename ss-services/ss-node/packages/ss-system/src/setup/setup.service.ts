@@ -48,7 +48,7 @@ export class SetupService {
     private readonly userRepo: Repository<User>,
   ) {}
 
-  /** 检测是否已初始化 */
+  /** Detect whether initialization is complete */
   async getSetupStatus(): Promise<SetupStatus> {
     const adminCount = await this.userRepo.count({ where: { role: UserRole.ADMIN } });
     const initialized = this.setupCompleted || adminCount > 0;
@@ -65,7 +65,7 @@ export class SetupService {
     };
   }
 
-  /** Step 1: 创建管理员账户 */
+  /** Step 1: create the admin account */
   async createAdminAccount(data: SetupStep1Data): Promise<{ success: boolean; userId: string }> {
     if (!data.username || !data.password || !data.email) {
       throw new BadRequestException('用户名、密码和邮箱是必填项');
@@ -93,7 +93,7 @@ export class SetupService {
     return { success: true, userId: saved.id };
   }
 
-  /** Step 2: 基本配置 */
+  /** Step 2: basic configuration */
   async setupBasicConfig(data: SetupStep2Data): Promise<{ success: boolean }> {
     if (!data.appName || !data.timezone) {
       throw new BadRequestException('应用名称和时区是必填项');
@@ -105,7 +105,7 @@ export class SetupService {
     return { success: true };
   }
 
-  /** Step 3: 数据配置 */
+  /** Step 3: data configuration */
   async setupDataConfig(data: SetupStep3Data): Promise<{ success: boolean }> {
     this.setupData.dataConfig = data;
     this.logger.log(`Data config set: ${JSON.stringify(data)}`);
@@ -113,7 +113,7 @@ export class SetupService {
     return { success: true };
   }
 
-  /** Step 4: 完成初始化 */
+  /** Step 4: finish initialization */
   async completeSetup(): Promise<{ success: boolean; summary: SetupStatus }> {
     const adminCount = await this.userRepo.count({ where: { role: UserRole.ADMIN } });
     if (adminCount === 0) {

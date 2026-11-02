@@ -37,19 +37,19 @@ export class BatchProtocolReadStep implements PipelineStep {
 
   private readonly logger = new Logger(BatchProtocolReadStep.name);
 
-  // 待处理队列（按设备分组）
+  // Pending queue (grouped by device)
   private pendingBatches = new Map<string, BatchItem[]>();
 
-  // 批量执行Promise（用于等待）
+  // Batch-execution promises (for awaiting)
   private batchPromises = new Map<string, Promise<void>>();
 
-  // 配置
+  // Config
   private config: BatchConfig = DEFAULT_BATCH_CONFIG;
 
-  // 连接缓存（按 deviceKey → client）
+  // Connection cache (deviceKey -> client)
   private clientCache = new Map<string, any>();
 
-  // 统计
+  // Stats
   private stats = {
     totalBatches: 0,
     mergedRequests: 0,
@@ -67,11 +67,11 @@ export class BatchProtocolReadStep implements PipelineStep {
   async process(ctx: PipelineContext): Promise<PipelineContext> {
     const deviceKey = ctx.deviceId || 'default';
 
-    // 添加到批次队列
+    // Add to the batch queue
     if (!this.pendingBatches.has(deviceKey)) {
       this.pendingBatches.set(deviceKey, []);
 
-      // 设置延迟执行
+      // Schedule delayed execution
       const batchPromise = this.delayedFlush(deviceKey);
       this.batchPromises.set(deviceKey, batchPromise);
     }
@@ -85,12 +85,12 @@ export class BatchProtocolReadStep implements PipelineStep {
       context: ctx,
     });
 
-    // 如果达到批量大小，立即执行
+    // Execute immediately if the batch size is reached
     if (batch.length >= this.config.maxBatchSize) {
       await this.flushBatch(deviceKey);
     }
 
-    // 等待当前批次完成
+    // Wait for the current batch to finish
     await (this.batchPromises.get(deviceKey) || Promise.resolve());
 
     return ctx;
@@ -126,12 +126,12 @@ export class BatchProtocolReadStep implements PipelineStep {
     const batch = this.pendingBatches.get(deviceKey);
     if (!batch || batch.length === 0) return;
 
-    // 清空队列并移除Promise
+    // Clear the queue and remove the promise
     this.pendingBatches.set(deviceKey, []);
     this.batchPromises.delete(deviceKey);
 
     try {
-      // 尝试智能合并（如果启用）
+      // Try smart merging (if enabled)
       let results: Array<{ tagId: string; value: any; quality: string; error?: string }>;
 
       if (this.config.enableAddressMerging && this.canMergeAddresses(batch)) {
@@ -141,13 +141,13 @@ export class BatchProtocolReadStep implements PipelineStep {
         results = await this.executeRegularBatch(deviceKey, batch);
       }
 
-      // 更新统计
+      // Update stats
       this.stats.totalBatches++;
       this.stats.avgBatchSize =
         (this.stats.avgBatchSize * (this.stats.totalBatches - 1) + batch.length) /
         this.stats.totalBatches;
 
-      // 将结果回填到各个context
+      // Write results back into each context
       for (let i = 0; i < batch.length; i++) {
         const result = results[i];
         if (result) {
@@ -166,12 +166,12 @@ export class BatchProtocolReadStep implements PipelineStep {
     } catch (error) {
       this.logger.error(`Batch read failed for ${deviceKey}: ${(error as Error).message}`);
 
-      // 回退到逐个读取
+      // Fall back to reading one by one
       if (this.config.fallbackToSingle) {
         await this.fallbackToSingleReads(batch);
         this.stats.fallbackCount++;
       } else {
-        // 标记所有为失败
+        // Mark all as failed
         for (const item of batch) {
           item.context.rawValue = null;
           item.context.quality = 'bad';
@@ -185,7 +185,7 @@ export class BatchProtocolReadStep implements PipelineStep {
   }
 
   private canMergeAddresses(batch: BatchItem[]): boolean {
-    // 检查是否所有标签都有地址信息且是数字类型
+    // Check whether all tags have address info and a numeric type
     return batch.every(
       (item) => item.tagConfig?.address && !isNaN(parseInt(item.tagConfig.address)),
     );
@@ -195,14 +195,14 @@ export class BatchProtocolReadStep implements PipelineStep {
     deviceKey: string,
     batch: BatchItem[],
   ): Promise<Array<{ tagId: string; value: any; quality: string; error?: string }>> {
-    // 按地址排序
+    // Sort by address
     const sortedBatch = [...batch].sort(
       (a, b) => parseInt(a.tagConfig.address) - parseInt(b.tagConfig.address),
     );
 
     const results: Array<{ tagId: string; value: any; quality: string; error?: string }> = [];
 
-    // 合并连续地址后逐组读取
+    // Merge contiguous addresses then read group by group
     let i = 0;
     while (i < sortedBatch.length) {
       const currentGroup: BatchItem[] = [sortedBatch[i]];
@@ -218,7 +218,7 @@ export class BatchProtocolReadStep implements PipelineStep {
         j++;
       }
 
-      // 逐项读取（adapter 接口目前只有 readTag，无原生 readBatch）
+      // Read one by one (the adapter interface currently exposes only readTag, no native readBatch)
       for (const groupItem of currentGroup) {
         try {
           const { value, quality, error } = await this.readSingleTag(deviceKey, groupItem);
@@ -251,7 +251,7 @@ export class BatchProtocolReadStep implements PipelineStep {
   ): Promise<Array<{ tagId: string; value: any; quality: string; error?: string }>> {
     const results: Array<{ tagId: string; value: any; quality: string; error?: string }> = [];
 
-    // 并发读取（限制并发数以避免过载）
+    // Concurrent reads (limit concurrency to avoid overload)
     const concurrency = Math.min(batch.length, 10);
 
     for (let i = 0; i < batch.length; i += concurrency) {
@@ -263,7 +263,7 @@ export class BatchProtocolReadStep implements PipelineStep {
         }),
       );
 
-      // 处理结果
+      // Process results
       for (const settledResult of chunkResults) {
         if (settledResult.status === 'fulfilled') {
           results.push(settledResult.value);
@@ -306,7 +306,7 @@ export class BatchProtocolReadStep implements PipelineStep {
   }
 
   /**
-   * 通过 PluginRegistry adapter 读取单个标签
+   * Read a single tag via the PluginRegistry adapter
    */
   private async readSingleTag(
     deviceKey: string,
@@ -325,7 +325,7 @@ export class BatchProtocolReadStep implements PipelineStep {
 
     const adapter = this.pluginRegistry.getAdapter(deviceType);
 
-    // 获取或创建连接
+    // Get or create a connection
     let client = this.clientCache.get(deviceKey);
     if (!client) {
       const deviceCtx: IDeviceContext = {

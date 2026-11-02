@@ -65,7 +65,7 @@ export class LabelPlugin extends BasePlugin<InferSchemaProps<typeof labelPropert
     }
 
     const displayText = this.formatDisplayText(props.text, Number(props.decimalPlaces ?? 2));
-    // 诊断：验证 Label 渲染时读取到的数据值
+    // Diagnostics: verify the data value read during Label rendering
     if ((window as any).__labelRenderLog === undefined) (window as any).__labelRenderLog = {};
     const cnt = ((window as any).__labelRenderLog[this.id] || 0) + 1;
     (window as any).__labelRenderLog[this.id] = cnt;
@@ -85,7 +85,7 @@ export class LabelPlugin extends BasePlugin<InferSchemaProps<typeof labelPropert
     ctx.shadowOffsetY = 0;
   }
 
-  /** 按小数位数格式化值：若为有效数字则截断，否则原样返回 */
+  /** Format a value by decimal places: truncate if it is a valid number, otherwise return as-is */
   private formatDisplayText(raw: string | number, decimalPlaces: number): string {
     const text = String(raw);
     const numValue = Number(text);
@@ -95,7 +95,7 @@ export class LabelPlugin extends BasePlugin<InferSchemaProps<typeof labelPropert
     return text;
   }
 
-  /** 单行文本 + 单位渲染 */
+  /** Single-line text + unit rendering */
   private _drawSinglelineText(
     ctx: CanvasRenderingContext2D,
     text: string,
@@ -106,12 +106,12 @@ export class LabelPlugin extends BasePlugin<InferSchemaProps<typeof labelPropert
     const align = String(props.textAlign);
     const padding = 10;
 
-    // 测量主文本宽度
+    // Measure the main text width
     const textFontStr = `${props.fontStyle} ${props.fontWeight} ${Number(props.fontSize)}px Arial`;
     ctx.font = textFontStr;
     const textWidth = ctx.measureText(String(text)).width;
 
-    // 测量单位文本宽度
+    // Measure the unit text width
     const unitText = String(props.unit ?? '');
     let unitWidth = 0;
     let unitFontStr = '';
@@ -124,7 +124,7 @@ export class LabelPlugin extends BasePlugin<InferSchemaProps<typeof labelPropert
     const unitGap = Number(props.unitGap ?? 4);
     const totalWidth = textWidth + (unitText ? unitGap + unitWidth : 0);
 
-    // 根据对齐计算起始 x
+    // Calculate the starting x based on alignment
     let startX: number;
     if (align === 'center') {
       startX = Math.max(0, (width - totalWidth) / 2);
@@ -138,12 +138,12 @@ export class LabelPlugin extends BasePlugin<InferSchemaProps<typeof labelPropert
     ctx.textAlign = 'left';
     ctx.textBaseline = props.verticalAlignment as CanvasTextBaseline;
 
-    // 绘制主文本
+    // Draw the main text
     ctx.font = textFontStr;
     ctx.fillStyle = String(props.textColor);
     ctx.fillText(String(text), startX, textY);
 
-    // 绘制单位
+    // Draw the unit
     if (unitText) {
       ctx.font = unitFontStr;
       ctx.fillStyle = String(props.unitFontColor);
@@ -168,7 +168,7 @@ export class LabelPlugin extends BasePlugin<InferSchemaProps<typeof labelPropert
     const unitText = String(props.unit ?? '');
     const unitGap = Number(props.unitGap ?? 4);
 
-    // 预留最后一行单位空间
+    // Reserve space for the unit on the last line
     let unitReservedWidth = 0;
     if (unitText) {
       const unitFontStr = `${props.fontStyle} ${props.fontWeight} ${Number(props.unitFontSize)}px Arial`;
@@ -193,7 +193,7 @@ export class LabelPlugin extends BasePlugin<InferSchemaProps<typeof labelPropert
     }
     const isLastLine = Number(props.maxLines) <= 0 || lines.length < Number(props.maxLines);
     if (line.length > 0 && isLastLine) {
-      // 最后一行：截断以容纳单位
+      // Last line: truncate to make room for the unit
       if (unitText && unitReservedWidth > 0) {
         ctx.font = fontStr;
         while (ctx.measureText(line).width + unitReservedWidth > maxWidth && line.length > 0) {
@@ -203,14 +203,14 @@ export class LabelPlugin extends BasePlugin<InferSchemaProps<typeof labelPropert
       lines.push(line);
     }
 
-    // 绘制非最后一行
+    // Draw non-last lines
     ctx.font = fontStr;
     ctx.fillStyle = String(props.textColor);
     for (let i = 0; i < lines.length - 1; i++) {
       ctx.fillText(lines[i], padding, padding + i * lineHeight);
     }
 
-    // 最后一行：主文本 + 单位（独立字体/颜色）
+    // Last line: main text + unit (independent font/color)
     const lastIdx = lines.length - 1;
     if (lastIdx >= 0) {
       const lastLine = lines[lastIdx];

@@ -5,7 +5,7 @@
 import type { ScriptEditorMode } from '../ScriptEditor.types';
 import { API_DEFINITIONS, API_CATEGORY_LABELS, type ApiCategory } from '../utils/api-definitions';
 
-// ── API 分类分组：从静态定义文件生成 ──
+// ── API category grouping: generated from the static definition file ──
 
 interface ApiGroup {
   label: string;
@@ -31,10 +31,10 @@ function getApiGroups(): ApiGroup[] {
   }));
 }
 
-// ── 基础模板 ──
+// ── Basic templates ──
 
 const templates: Record<string, string> = {
-  // filter 模式模板
+  // filter mode template
   'filter:basic': `// 数据过滤脚本
 // 可用变量：data（当前数据点）
 // 示例：当数值大于阈值时改变颜色
@@ -45,7 +45,7 @@ if (data.number > 80) {
 }
 return data;`,
 
-  // driver 模式模板
+  // driver mode template
   'driver:basic': `// 图元驱动脚本
 // 可用变量：api（图元操作API）、data（数据点）、context（上下文）
 api.setText(data.number + data.unit);
@@ -55,7 +55,7 @@ if (data.number > 80) {
   api.triggerAlarm({ tagId: context.graphicId, level: 'warning', message: '数值过高' });
 }`,
 
-  // interaction 模式模板
+  // interaction mode template
   'interaction:basic': `// 图元交互脚本
 // 可用变量：api（图元操作API）、event（事件数据）、graphic（图元信息）
 api.showGraphic('popup-' + event.graphicId);
@@ -65,7 +65,7 @@ api.setGraphicProps('popup-' + event.graphicId, {
   visible: true,
 });`,
 
-  // timer 模式模板
+  // timer mode template
   'timer:basic': `// 页面定时器脚本
 // 可用变量：page（页面API）、utils（工具函数）、data（数据）、timer（定时器信息）
 const allGraphics = page.getGraphics();

@@ -67,7 +67,7 @@ import {
   ERROR_CODE_I18N_KEY,
 } from '../errors';
 
-// ==================== 领域类型枚举 ====================
+// ==================== Domain type enums ====================
 describe('Domain Type Enums', () => {
   describe('DataQuality', () => {
     it('TC-SDK-001: should have all expected quality values', () => {
@@ -153,7 +153,7 @@ describe('Domain Type Enums', () => {
   });
 });
 
-// ==================== ID 生成器 ====================
+// ==================== ID generator ====================
 describe('ID Generator', () => {
   describe('generateId', () => {
     it('TC-SDK-010: should generate a valid UUID v4 string', () => {
@@ -222,7 +222,7 @@ describe('ID Generator', () => {
   });
 });
 
-// ==================== 分页响应构建 ====================
+// ==================== Paged response building ====================
 describe('Pagination', () => {
   describe('buildPaginatedResponse', () => {
     it('TC-SDK-020: should build correct paginated response', () => {
@@ -255,7 +255,7 @@ describe('Pagination', () => {
   });
 });
 
-// ==================== 敏感数据脱敏 ====================
+// ==================== Sensitive data masking ====================
 describe('Sensitive Data Masking', () => {
   describe('maskSensitive', () => {
     it('TC-SDK-030: should mask value showing last 4 chars by default', () => {
@@ -336,7 +336,7 @@ describe('Sensitive Data Masking', () => {
   });
 });
 
-// ==================== 通用工具函数 ====================
+// ==================== Common utility functions ====================
 describe('Utility Functions', () => {
   describe('deepFreeze', () => {
     it('TC-SDK-050: should freeze object', () => {
@@ -399,7 +399,7 @@ describe('Utility Functions', () => {
   });
 });
 
-// ==================== 日期工具函数 ====================
+// ==================== Date utility functions ====================
 describe('Date Utilities', () => {
   describe('formatDate', () => {
     it('TC-SDK-060: should format date to YYYY-MM-DD', () => {
@@ -456,7 +456,7 @@ describe('Date Utilities', () => {
   });
 });
 
-// ==================== 校验工具函数 ====================
+// ==================== Validation utility functions ====================
 describe('Validation Utilities', () => {
   describe('isValidEmail', () => {
     it('TC-SDK-070: should validate correct email', () => {
@@ -493,7 +493,7 @@ describe('Validation Utilities', () => {
   });
 });
 
-// ==================== 加密工具函数 ====================
+// ==================== Crypto utility functions ====================
 describe('Crypto Utilities', () => {
   describe('createHash256', () => {
     it('TC-SDK-080: should create SHA-256 hash', () => {
@@ -529,7 +529,7 @@ describe('Crypto Utilities', () => {
   });
 });
 
-// ==================== 文件路径工具 ====================
+// ==================== File path utilities ====================
 describe('File Utilities', () => {
   describe('getFileExtension', () => {
     it('TC-SDK-090: should extract extension', () => {
@@ -553,7 +553,7 @@ describe('File Utilities', () => {
   });
 });
 
-// ==================== 错误处理 ====================
+// ==================== Error handling ====================
 describe('Error Handling', () => {
   describe('ScadaError base class', () => {
     it('TC-SDK-100: should have getHttpStatus method', () => {

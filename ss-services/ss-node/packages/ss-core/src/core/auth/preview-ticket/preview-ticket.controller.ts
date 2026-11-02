@@ -22,16 +22,16 @@ import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { Public } from '../decorators/public.decorator';
 
 /**
- * 组态运行态预览票据端点（06 方案路线 B #2 ticket 鉴权桥）
+ * Config runtime preview-ticket endpoints (06 Plan Route B #2 ticket auth bridge)
  *
- * - POST /auth/preview-ticket：已认证客户端（移动端 Bearer Token）签发一次性票据；
- * - POST /auth/preview-ticket-exchange：H5 运行态壳以票据兑换会话凭证（公开端点，票据本身即凭证）。
+ * - POST /auth/preview-ticket: an authenticated client (mobile Bearer Token) issues a one-time ticket;
+ * - POST /auth/preview-ticket-exchange: the H5 runtime shell exchanges the ticket for a session credential (public endpoint, the ticket itself is the credential).
  *
- * 鉴权模式：Bearer Token（响应体返回）。
- * 历史背景：原本设置 HttpOnly Cookie（SameSite=Strict），仅适用于「壳与 H5 同源部署」场景。
- * 现 H5 iframe 改为直连远程 8080 壳（跨源），浏览器会把 SameSite=Strict Cookie 视为第三方
- * Cookie 拦截 → 壳内所有 API 401。改用 Bearer 后，壳内 axios 注入 `Authorization` 头，
- * `JwtStrategy` 已支持从该头取 token（见 jwt.strategy.ts `extractJwtFromRequest`）。
+ * Auth mode: Bearer Token (returned in response body).
+ * Background: originally set HttpOnly Cookie (SameSite=Strict), only suitable for "shell and H5 same-origin deployment".
+ * Now the H5 iframe connects directly to the remote 8080 shell (cross-origin); the browser treats SameSite=Strict Cookie as third-party
+ * Cookie and blocks it -> all API calls inside the shell get 401. After switching to Bearer, the shell's axios injects the `Authorization` header,
+ * and `JwtStrategy` already supports reading the token from that header (see jwt.strategy.ts `extractJwtFromRequest`).
  */
 @ApiTags('认证')
 @Controller('auth')
@@ -54,7 +54,7 @@ export class PreviewTicketController {
   ): Promise<{ previewTicket: string; previewUrl?: string }> {
     const user = (request as Request & { user: { id: string } }).user;
     const previewTicket = this.previewTicketService.issuePreviewTicket(user.id);
-    // 方案 C：后端按 SCADA_SHELL_BASE_URL 拼装完整壳 URL；未配置时为 undefined，前端回退本地拼接
+    // Plan C: backend assembles the full shell URL by SCADA_SHELL_BASE_URL; when unset it is undefined and the frontend falls back to local assembly
     const previewUrl = this.previewTicketService.buildPreviewUrl(previewTicket, previewTicketIssueDto);
     return { previewTicket, previewUrl };
   }

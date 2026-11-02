@@ -7,26 +7,26 @@ import { resolveAssetPath } from '@scada-editor/core';
 const TOKEN_KEY = 'scada_access_token';
 
 /**
- * S-C03: Token 通过 HttpOnly Cookie 传输，getToken() 仅用于兼容回退。
- * 认证主要依赖 fetch 的 credentials: 'include'。
+ * S-C03: Tokens are transported via HttpOnly Cookie; getToken() is kept only for compatibility fallback.
+ * Authentication primarily relies on fetch's credentials: 'include'.
  */
 function getToken(): string | null {
   return localStorage.getItem(TOKEN_KEY);
 }
 
 /**
- * 使用认证令牌加载图片资源（统一解决 401 授权问题）
+ * Load an image resource with an auth token (unified solution for 401 authorization issues)
  *
- * S-C03: 通过 credentials: 'include' 携带 HttpOnly Cookie 认证，
- * 同时保留 Bearer Header 兼容回退。
+ * S-C03: Carries HttpOnly Cookie authentication via credentials: 'include',
+ * while keeping the Bearer header as a compatibility fallback.
  *
- * @param src - 原始图片路径（相对路径 / API 路径 / blob URL / data URL）
- * @returns 加载完成的 HTMLImageElement，加载失败时 reject
+ * @param src - Original image path (relative path / API path / blob URL / data URL)
+ * @returns A fully loaded HTMLImageElement; rejects on load failure
  */
 export async function loadImageWithAuth(src: string): Promise<HTMLImageElement> {
   const resolvedSrc = resolveAssetPath(src);
 
-  // blob / data URL 无需认证，直接加载
+  // blob / data URLs need no authentication, load directly
   if (resolvedSrc.startsWith('blob:') || resolvedSrc.startsWith('data:')) {
     return loadImageFromUrl(resolvedSrc);
   }
@@ -37,7 +37,7 @@ export async function loadImageWithAuth(src: string): Promise<HTMLImageElement> 
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  // S-C03: 携带 HttpOnly Cookie 凭证
+  // S-C03: carry HttpOnly Cookie credentials
   const response = await fetch(resolvedSrc, { credentials: 'include', headers });
   if (!response.ok) {
     throw new Error(`Failed to load image (${response.status}): ${resolvedSrc}`);
@@ -62,7 +62,7 @@ export async function loadImageWithAuth(src: string): Promise<HTMLImageElement> 
 }
 
 /**
- * 从 URL 加载图片（用于 blob/data URL，无需认证）
+ * Load an image from a URL (used for blob/data URLs, no authentication needed)
  */
 function loadImageFromUrl(url: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {

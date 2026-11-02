@@ -7,14 +7,14 @@ import { EventBusService, SystemEventService } from '@ss-node/ss-core';
 import { AlarmLevel } from '@ss-node/ss-sdk';
 
 /**
- * 系统健康告警订阅器
+ * System-health alarm subscriber
  *
- * 监听 health_degraded / health_recovered 事件：
- * - 核心服务（SQLite/InfluxDB/Redis 等）健康检查失败 → 写入全局 sys_events 表
- * - 核心服务恢复 → 标记对应事件为 RECOVERED
+ * Listens for health_degraded / health_recovered events:
+ * - Core services (SQLite/InfluxDB/Redis, etc.) fail their health check -> written to the global sys_events table
+ * - Core services recover -> mark the corresponding event as RECOVERED
  *
- * 系统健康事件是全局事件，不归属任何项目，统一存储在全局 ss-node.db 的 sys_events 表中。
- * 事件 ID 格式：`sys-health-{checkName}`（确定性 ID，便于去重和恢复时查找）。
+ * System-health events are global events that belong to no project; they are stored centrally in the sys_events table
+ * of the global ss-node.db. Event ID format: `sys-health-{checkName}` (deterministic ID, easy to dedupe and find on recovery).
  */
 @Injectable()
 export class SystemHealthAlarmSubscriber implements OnModuleInit, OnModuleDestroy {
@@ -48,7 +48,7 @@ export class SystemHealthAlarmSubscriber implements OnModuleInit, OnModuleDestro
   }
 
   /**
-   * 系统健康劣化 → 写入全局 sys_events 表
+   * System-health degradation -> write to the global sys_events table
    */
   private async handleHealthDegraded(event: {
     checks: Array<{ name: string; status: string; error?: string; latency?: number }>;
@@ -92,7 +92,7 @@ export class SystemHealthAlarmSubscriber implements OnModuleInit, OnModuleDestro
   }
 
   /**
-   * 系统健康恢复 → 标记对应事件为 RECOVERED
+   * System-health recovery -> mark the corresponding event as RECOVERED
    */
   private async handleHealthRecovered(event: {
     checks: Array<{ name: string; status: string }>;

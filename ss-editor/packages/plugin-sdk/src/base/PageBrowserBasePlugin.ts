@@ -7,28 +7,28 @@ import type { Component, App } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
 
 /**
- * PageBrowserBasePlugin - 页面浏览器图元基类
+ * PageBrowserBasePlugin - Page browser graphic base class
  *
- * 借鉴 VueComponentPlugin 的 mount() 模式，通过创建 Vue App 挂载 PageBrowser 控件。
- * 插件只负责传入 geometry（位置/宽高）和配置（pageName、displayMode 等），
- * 控件内部自行处理页面数据加载和多后端渲染。
+ * Follows the mount() pattern of VueComponentPlugin, mounting the PageBrowser control by creating a Vue App.
+ * The plugin only passes in geometry (position/size) and configuration (pageName, displayMode, etc.);
+ * the control internally handles page data loading and multi-backend rendering on its own.
  *
- * 架构分层：
- *   plugin-sdk（基类） → editor（PageBrowser.vue 控件） → plugins（具体实现）
+ * Architecture layers:
+ *   plugin-sdk (base class) → editor (PageBrowser.vue control) → plugins (concrete implementations)
  */
 export abstract class PageBrowserBasePlugin<TProps extends Record<string, any> = Record<string, any>> {
   readonly type: string;
   id: string;
   version?: string;
 
-  /** 组件名称（供 VueComponentsContainer 识别和 GraphicFactory 前缀拼接） */
+  /** Component name (used by VueComponentsContainer for recognition and GraphicFactory prefix concatenation) */
   readonly componentName = 'page-browser';
 
-  /** 默认宽高（供 GraphicFactory 使用） */
+  /** Default width/height (used by GraphicFactory) */
   static defaultWidth = 400;
   static defaultHeight = 300;
 
-  /** 图元配置（兼容 BaseGraphic 的 JSON 序列化结构） */
+  /** Graphic config (compatible with BaseGraphic's JSON serialization structure) */
   config: {
     id: string;
     type: string;
@@ -90,7 +90,7 @@ export abstract class PageBrowserBasePlugin<TProps extends Record<string, any> =
 
   setDefaultProps(props: TProps): void {
     this._props = { ...props };
-    // 同步到 config.customProps，确保持久化
+    // Sync to config.customProps to ensure persistence
     this.config.customProps = { ...props };
   }
 
@@ -98,7 +98,7 @@ export abstract class PageBrowserBasePlugin<TProps extends Record<string, any> =
     const keys = Object.keys(partial) as Array<keyof TProps>;
     for (const k of keys) {
       (this._props as Record<string, any>)[k as string] = partial[k];
-      // 同步到 config.customProps，确保属性面板修改能持久化
+      // Sync to config.customProps so property panel changes are persisted
       this.config.customProps[k as string] = partial[k];
     }
     if (this._mountPoint) {
@@ -110,12 +110,12 @@ export abstract class PageBrowserBasePlugin<TProps extends Record<string, any> =
     return { width: this._width, height: this._height };
   }
 
-  /** 获取图元位置（兼容 BaseGraphic 交互接口） */
+  /** Get the graphic position (compatible with BaseGraphic interaction interface) */
   getPosition(): { x: number; y: number } {
     return { x: this._x, y: this._y };
   }
 
-  /** 设置图元位置（兼容 BaseGraphic 交互接口） */
+  /** Set the graphic position (compatible with BaseGraphic interaction interface) */
   setPosition(x: number, y: number): void {
     this._x = x;
     this._y = y;
@@ -124,7 +124,7 @@ export abstract class PageBrowserBasePlugin<TProps extends Record<string, any> =
     this.config.updatedAt = Date.now();
   }
 
-  /** 设置图元尺寸（兼容 BaseGraphic 交互接口） */
+  /** Set the graphic size (compatible with BaseGraphic interaction interface) */
   setSize(width: number, height: number): void {
     this._width = width;
     this._height = height;
@@ -133,53 +133,53 @@ export abstract class PageBrowserBasePlugin<TProps extends Record<string, any> =
     this.config.updatedAt = Date.now();
   }
 
-  /** 判断点是否在图元内（兼容 BaseGraphic 交互接口） */
+  /** Determine whether a point is inside the graphic (compatible with BaseGraphic interaction interface) */
   containsPoint(x: number, y: number): boolean {
     const g = this.config.geometry;
     if (!g) return false;
     return x >= g.x && x <= g.x + g.width && y >= g.y && y <= g.y + g.height;
   }
 
-  /** 判断区域是否与图元相交（兼容 BaseGraphic 框选接口） */
+  /** Determine whether a region intersects the graphic (compatible with BaseGraphic rubber-band selection interface) */
   intersectsRegion(x: number, y: number, width: number, height: number): boolean {
     const g = this.config.geometry;
     if (!g) return false;
     return g.x < x + width && g.x + g.width > x && g.y < y + height && g.y + g.height > y;
   }
 
-  /** 获取锁定状态（兼容 BaseGraphic 交互接口） */
+  /** Get the lock state (compatible with BaseGraphic interaction interface) */
   getLocked(): boolean {
     return this.config.locked;
   }
 
-  /** 获取可见性（兼容 BaseGraphic 交互接口） */
+  /** Get visibility (compatible with BaseGraphic interaction interface) */
   getVisible(): boolean {
     return this.config.visible;
   }
 
-  /** 获取旋转角度（兼容 BaseGraphic 交互接口） */
+  /** Get the rotation angle (compatible with BaseGraphic interaction interface) */
   getRotation(): number {
     return this.config.geometry.rotation;
   }
 
-  /** 获取层级（兼容 BaseGraphic 交互接口） */
+  /** Get the z-order (compatible with BaseGraphic interaction interface) */
   getZIndex(): number {
     return this.config.zIndex;
   }
 
-  /** 设置锁定状态（兼容 BaseGraphic 交互接口） */
+  /** Set the lock state (compatible with BaseGraphic interaction interface) */
   setLocked(v: boolean): void {
     this.config.locked = v;
   }
 
-  /** 设置可见性（兼容 BaseGraphic 交互接口） */
+  /** Set visibility (compatible with BaseGraphic interaction interface) */
   setVisible(v: boolean): void {
     this.config.visible = v;
   }
 
-  /** 注入页面上下文（兼容 BaseGraphic 接口） */
+  /** Inject page context (compatible with BaseGraphic interface) */
   _setPageContext(_ctx: any): void {
-    // PageBrowser 不需要页面上下文，空实现
+    // PageBrowser does not need page context, empty implementation
   }
 
   updateGeometry(x: number, y: number, w: number, h: number): void {
@@ -214,7 +214,7 @@ export abstract class PageBrowserBasePlugin<TProps extends Record<string, any> =
 
     const component = this.getComponent();
 
-    // 响应式尺寸：页面数据加载后自动调整，使选择框与实际内容匹配
+    // Reactive sizing: automatically adjusts after page data loads so the selection box matches the actual content
     const dynamicSize = reactive({ width: this._width, height: this._height });
 
     this._app = createApp({
@@ -231,7 +231,7 @@ export abstract class PageBrowserBasePlugin<TProps extends Record<string, any> =
           width: dynamicSize.width,
           height: dynamicSize.height,
           onPageLoaded: (pageWidth: number, pageHeight: number) => {
-            // 自动将 PageBrowser 尺寸调整为目标页面尺寸
+            // Automatically adjust the PageBrowser size to the target page size
             dynamicSize.width = pageWidth;
             dynamicSize.height = pageHeight;
             this.updateGeometry(this._x, this._y, pageWidth, pageHeight);
@@ -256,8 +256,8 @@ export abstract class PageBrowserBasePlugin<TProps extends Record<string, any> =
   }
 
   update(props: any): void {
-    // PropertyPanel 传入的 props 包含 config/events/dataSource/animation 等完整结构，
-    // 需要从中提取 customProps 来更新 PageBrowser 专有属性
+    // The props passed in by PropertyPanel contain the full structure of config/events/dataSource/animation,
+    // customProps must be extracted from them to update PageBrowser-specific properties
     if (props.config?.customProps) {
       this.setPluginProps(props.config.customProps);
     } else {
@@ -266,8 +266,8 @@ export abstract class PageBrowserBasePlugin<TProps extends Record<string, any> =
   }
 
   getComponentProps(): Record<string, any> {
-    // 优先从 config.customProps 读取（属性面板直接修改此对象），
-    // 回退到 _props（兼容 mount() 路径）
+    // Prefer reading from config.customProps (the property panel modifies this object directly),
+    // fall back to _props (compatible with the mount() path)
     const cp = this.config.customProps || {};
     const p = this._props || {};
     return {
@@ -290,21 +290,21 @@ export abstract class PageBrowserBasePlugin<TProps extends Record<string, any> =
   onUnmounted(): void {}
   onPropertyChanged(_changes: Record<string, any>): void {}
 
-  /** 子类实现：返回 PageBrowser.vue 控件 */
+  /** Subclass implementation: return the PageBrowser.vue control */
   abstract getComponent(): Component;
 
-  /** 从 JSON 反序列化图元状态（兼容 BaseGraphic.fromJSON） */
+  /** Deserialize the graphic state from JSON (compatible with BaseGraphic.fromJSON) */
   fromJSON(data: any): void {
     if (data.version) this.version = data.version;
 
     if (data.config) {
       this.config = this._deepClone(data.config);
       this.config.id = this.id;
-      // 同步 customProps 到 _props
+      // Sync customProps to _props
       if (this.config.customProps) {
         this._props = { ...this._props, ...this.config.customProps } as TProps;
       }
-      // 同步 geometry
+      // Sync geometry
       if (this.config.geometry) {
         this._x = this.config.geometry.x;
         this._y = this.config.geometry.y;
@@ -316,7 +316,7 @@ export abstract class PageBrowserBasePlugin<TProps extends Record<string, any> =
     this.id = this.config.id;
   }
 
-  /** 序列化为 JSON（兼容 BaseGraphic.toJSON） */
+  /** Serialize to JSON (compatible with BaseGraphic.toJSON) */
   toJSON(): any {
     const result: any = {
       id: this.id,

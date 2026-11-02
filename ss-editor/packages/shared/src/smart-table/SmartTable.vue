@@ -1,6 +1,6 @@
 <template>
   <div class="smart-table-root">
-    <!-- 工具栏 -->
+    <!-- Toolbar -->
     <div
       v-if="showToolbar"
       class="smart-table-toolbar"
@@ -9,7 +9,7 @@
         <slot name="toolbar-left" />
       </div>
       <div class="toolbar-right">
-        <!-- 刷新 -->
+        <!-- Refresh -->
         <button
           v-if="showRefresh"
           class="smart-table-toolbar-btn refresh-btn"
@@ -33,7 +33,7 @@
           </svg>
           <span v-if="showRefreshLabel">刷新</span>
         </button>
-        <!-- 列配置 -->
+        <!-- Column config -->
         <SmartTableColumnToggle
           v-if="showColumnToggle"
           :show="showColumnToggle"
@@ -44,7 +44,7 @@
           @reset-to-default="resetToDefault"
           @update:dropdown-visible="(v: boolean) => colDropdownVisible = v"
         />
-        <!-- 导出 -->
+        <!-- Export -->
         <SmartTableExport
           v-if="showExport"
           v-model:dropdown-visible="exportDropdownVisible"
@@ -55,14 +55,14 @@
       </div>
     </div>
 
-    <!-- 加载骨架 -->
+    <!-- Loading skeleton -->
     <SmartTableLoading
       v-if="loading"
       :loading="loading"
       :columns="visibleColumns.length"
     />
 
-    <!-- 核心表格 -->
+    <!-- Core table -->
     <SmartTableCore
       v-else
       :ref="(el: any) => tableCoreRef = el"
@@ -91,7 +91,7 @@
       @tree-expand="(p: any) => $emit('tree-expand', p)"
       @tree-collapse="(p: any) => $emit('tree-collapse', p)"
     >
-      <!-- 透传所有 slots -->
+      <!-- Forward all slots -->
       <template
         v-for="(_, slotName) in $slots"
         :key="slotName"
@@ -104,7 +104,7 @@
       </template>
     </SmartTableCore>
 
-    <!-- 分页 -->
+    <!-- Pagination -->
     <SmartTablePagination
       v-if="enablePagination && paginationState"
       :current-page="paginationState.currentPage"
@@ -150,18 +150,18 @@ const props = withDefaults(defineProps<{
   showRefreshLabel?: boolean;
   enablePagination?: boolean;
   sortConfig?: SortConfig | null;
-  // 虚拟滚动
+  // Virtual scroll
   virtualScroll?: boolean;
   rowHeight?: number;
   visibleRows?: number;
-  // 行编辑
+  // Row editing
   editable?: boolean;
   editingRowId?: string | number | null;
-  // 树形
+  // Tree
   tree?: boolean;
   childrenField?: string;
   expandedRowKeys?: Array<string | number>;
-  // 合并单元格
+  // Merged cells
   spanMethod?: (row: T, column: SmartTableColumn<T>, rowIndex: number, columnIndex: number) => CellSpan;
 }>(), {
   loading: false,
@@ -203,7 +203,7 @@ const emit = defineEmits<{
 const PAGE_SIZES = [10, 20, 50, 100];
 const pageSizes = PAGE_SIZES;
 
-// 分页
+// Pagination
 const paginationFn = () => props.pagination;
 const totalCountFn = () => props.data.length;
 const paginationResult = usePagination(paginationFn, totalCountFn, (_evt, payload) => emit('page-change', payload));
@@ -229,7 +229,7 @@ const displayRows = computed(() => {
   return paginationResult.slicedData(props.data) as T[];
 });
 
-// 列配置
+// Column config
 const tableIdFn = () => props.tableId || 'default';
 const columnsRef = toRef(props, 'columns');
 const columnConfig = useColumnConfig(tableIdFn, columnsRef);
@@ -242,7 +242,7 @@ const {
   resetToDefault,
 } = columnConfig;
 
-// 导出
+// Export
 const exportDropdownVisible = ref(false);
 const tableCoreRef = ref<any>(null);
 

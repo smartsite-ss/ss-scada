@@ -51,7 +51,7 @@ export class InputPlugin extends BasePlugin<InputProps> {
   };
 
   protected render(_dc: DrawContext): void {
-    // Vue SFC 模式：主渲染由 Vue DOM 层完成
+    // Vue SFC mode: main rendering is done by the Vue DOM layer
   }
 
   constructor(x = 0, y = 0, w = 160, h = 36) {

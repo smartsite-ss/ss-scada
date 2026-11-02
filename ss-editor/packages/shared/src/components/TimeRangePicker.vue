@@ -4,7 +4,7 @@
     class="trp"
     :class="[`trp--${size}`, `trp--${mode}`]"
   >
-    <!-- 固定窗口模式：简单下拉 -->
+    <!-- Fixed-window mode: simple dropdown -->
     <select
       v-if="mode === 'window'"
       :value="modelValue"
@@ -20,7 +20,7 @@
       </option>
     </select>
 
-    <!-- 日期/日期时间模式：触发按钮 + 弹出面板 -->
+    <!-- Date/datetime mode: trigger button + popup panel -->
     <template v-else>
       <button
         class="trp-trigger"
@@ -94,7 +94,7 @@
           class="trp-popover"
           :style="popoverStyle"
         >
-          <!-- 预设快捷 -->
+          <!-- Presets -->
           <div
             v-if="effectivePresets.length"
             class="trp-presets"
@@ -113,7 +113,7 @@
           </div>
 
           <div class="trp-body">
-            <!-- 开始 -->
+            <!-- Start -->
             <div class="trp-field">
               <label class="trp-label">{{ _startLabel }}</label>
               <input
@@ -126,7 +126,7 @@
 
             <span class="trp-sep">—</span>
 
-            <!-- 结束 -->
+            <!-- End -->
             <div class="trp-field">
               <label class="trp-label">{{ _endLabel }}</label>
               <input
@@ -175,34 +175,34 @@ import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue';
 import { useI18n } from '@scada-editor/core';
 import type { TimeRange } from './TimeRangePicker.types';
 
-/** 时间范围值 */
+/** Time range value */
 export type { TimeRange } from './TimeRangePicker.types';
 
 const { t } = useI18n();
 
 const props = withDefaults(
   defineProps<{
-    /** 模式 */
+    /** Mode */
     mode: 'date' | 'datetime' | 'window';
-    /** v-model: date/datetime 模式为 { start, end }，window 模式为 number(分钟) */
+    /** v-model: { start, end } for date/datetime mode, number (minutes) for window mode */
     modelValue: TimeRange | number;
-    /** 预设选项（date/datetime 模式；未传入时按 mode 自动生成默认快捷项） */
+    /** Preset options (date/datetime mode; auto-generated defaults when omitted) */
     presets?: { label: string; value: string }[];
-    /** 窗口选项（仅 window 模式） */
+    /** Window options (window mode only) */
     windowOptions?: { label: string; value: number }[];
-    /** 开始标签 */
+    /** Start label */
     startLabel?: string;
-    /** 结束标签 */
+    /** End label */
     endLabel?: string;
-    /** 应用按钮文本 */
+    /** Apply button text */
     applyLabel?: string;
-    /** 取消按钮文本 */
+    /** Cancel button text */
     cancelLabel?: string;
-    /** 清除按钮文本 */
+    /** Clear button text */
     clearLabel?: string;
-    /** 尺寸 */
+    /** Size */
     size?: 'sm' | 'md';
-    /** 占位文本 */
+    /** Placeholder text */
     placeholder?: string;
   }>(),
   {
@@ -218,7 +218,7 @@ const props = withDefaults(
   },
 );
 
-// 计算最终标签：优先使用 prop，否则使用 i18n 默认值
+// Resolve final labels: prefer the prop, otherwise fall back to the i18n default
 const _startLabel = computed(() => props.startLabel || (props.mode === 'datetime' ? t('timeRange.startTime') : t('timeRange.startDate')));
 const _endLabel = computed(() => props.endLabel || (props.mode === 'datetime' ? t('timeRange.endTime') : t('timeRange.endDate')));
 const _applyLabel = computed(() => props.applyLabel || t('timeRange.apply'));
@@ -227,13 +227,14 @@ const _clearLabel = computed(() => props.clearLabel || t('timeRange.clear'));
 const _placeholder = computed(() => props.placeholder || t('timeRange.placeholder'));
 
 /**
- * 生效的预设列表 — 优先使用外部传入的 presets，未传入时按 mode 自动生成默认快捷项
+ * Effective preset list — prefer externally-provided presets; when none are given,
+ * auto-generate defaults by mode.
  *
- * - datetime 模式：含小时级精度（最近1/6/24小时）+ 今天/昨天/本周/本月
- * - date 模式：仅日期级精度（今天/昨天/本周/本月/最近7天/最近30天）
- * - window 模式：无预设（下拉选择即可）
+ * - datetime mode: hour-level precision (last 1/6/24 hours) + today/yesterday/thisWeek/thisMonth
+ * - date mode: date-level precision only (today/yesterday/thisWeek/thisMonth/last7Days/last30Days)
+ * - window mode: no presets (just use the dropdown)
  *
- * 外部传入 presets 时完全覆盖默认值，保持灵活性。
+ * Externally-provided presets fully override the defaults, keeping flexibility.
  */
 const effectivePresets = computed<{ label: string; value: string }[]>(() => {
   if (props.presets.length) return props.presets;
@@ -324,7 +325,7 @@ function positionPopover() {
   const trigger = rootRef.value.querySelector('.trp-trigger') as HTMLElement;
   if (!trigger) return;
   const rect = trigger.getBoundingClientRect();
-  // 面板宽度约 320px，确保不超出右侧
+  // Popover width ~320px; keep it from overflowing the right edge
   const popoverW = 320;
   let left = rect.left;
   if (left + popoverW > window.innerWidth - 12) {
@@ -363,8 +364,8 @@ function applyPreset(value: string) {
     default: break;
   }
 
-  // 使用本地时间格式化（与 <input type="datetime-local"> 一致），
-  // toISOString() 会转 UTC，在非 UTC 时区导致时间偏移
+  // Format using local time (consistent with <input type="datetime-local">);
+  // toISOString() converts to UTC, causing offset in non-UTC timezones
   const fmt = props.mode === 'datetime'
     ? (d: Date) => {
         const y = d.getFullYear();
@@ -449,14 +450,14 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* ===== 基础 ===== */
+/* ===== Base ===== */
 .trp {
   position: relative;
   display: inline-flex;
   flex-shrink: 0;
 }
 
-/* ===== window 模式 ===== */
+/* ===== Window mode ===== */
 .trp-select {
   padding: 4px 8px;
   border: 1px solid var(--border);
@@ -478,7 +479,7 @@ onUnmounted(() => {
   border-color: var(--primary);
 }
 
-/* ===== 触发按钮 ===== */
+/* ===== Trigger button ===== */
 .trp-trigger {
   display: inline-flex;
   align-items: center;
@@ -531,7 +532,7 @@ onUnmounted(() => {
   transform: rotate(180deg);
 }
 
-/* ===== 弹出面板 ===== */
+/* ===== Popup panel ===== */
 .trp-overlay {
   position: fixed;
   top: 0;
@@ -556,7 +557,7 @@ onUnmounted(() => {
   to { opacity: 1; transform: scale(1); }
 }
 
-/* ===== 预设区 ===== */
+/* ===== Presets ===== */
 .trp-presets {
   display: flex;
   flex-wrap: wrap;
@@ -597,7 +598,7 @@ onUnmounted(() => {
   color: #fff;
 }
 
-/* ===== 输入区 ===== */
+/* ===== Input area ===== */
 .trp-body {
   display: flex;
   align-items: center;
@@ -648,7 +649,7 @@ onUnmounted(() => {
   opacity: 0.6;
 }
 
-/* ===== 底部 ===== */
+/* ===== Footer ===== */
 .trp-footer {
   display: flex;
   align-items: center;
@@ -719,7 +720,7 @@ onUnmounted(() => {
   opacity: 0.85;
 }
 
-/* ===== 尺寸 ===== */
+/* ===== Size ===== */
 .trp--sm .trp-trigger { padding: 3px 6px; font-size: 11px; }
 .trp--sm .trp-icon { width: 12px; height: 12px; }
 .trp--sm .trp-select { padding: 2px 6px; font-size: 11px; padding-right: 20px; background-size: 14px; }

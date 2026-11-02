@@ -3,45 +3,45 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * Pipeline 指标相关类型定义
- * 与后端 ss-core/src/pipeline 对齐
+ * Pipeline metrics type definitions
+ * Aligned with the backend ss-core/src/pipeline
  */
 
-/** Pipeline 指标快照（JSON 格式） */
+/** Pipeline metrics snapshot (JSON format) */
 export interface PipelineMetricsSnapshot {
-  /** Pipeline 执行总次数 */
+  /** Total pipeline executions */
   pipeline_executions_total: number;
-  /** Pipeline 执行成功次数 */
+  /** Successful pipeline executions */
   pipeline_executions_success: number;
-  /** Pipeline 执行失败次数 */
+  /** Failed pipeline executions */
   pipeline_executions_error: number;
-  /** 最近一次 Pipeline 执行耗时（毫秒） */
+  /** Duration of the most recent pipeline execution (ms) */
   pipeline_duration_ms: number;
-  /** 当前 Pipeline 队列深度 */
+  /** Current pipeline queue depth */
   pipeline_queue_depth: number;
-  /** 当前活跃任务数 */
+  /** Current active task count */
   pipeline_active_tasks: number;
-  /** 各步骤最近一次耗时（毫秒） */
+  /** Duration of the most recent execution per step (ms) */
   step_duration_ms: Record<string, number>;
-  /** 各步骤错误累计数 */
+  /** Cumulative error count per step */
   step_error_count: Record<string, number>;
-  /** 协议读取总次数 */
+  /** Total protocol read count */
   protocol_read_total: number;
-  /** 协议读取错误次数 */
+  /** Protocol read error count */
   protocol_read_errors: number;
-  /** 死区过滤总次数 */
+  /** Total deadband filter count */
   deadband_filtered_total: number;
-  /** 缓存命中次数 */
+  /** Cache hit count */
   cache_hit_total: number;
-  /** 缓存未命中次数 */
+  /** Cache miss count */
   cache_miss_total: number;
-  /** 持久化写入总次数 */
+  /** Total persistence write count */
   persist_write_total: number;
-  /** 持久化写入错误次数 */
+  /** Persistence write error count */
   persist_write_errors: number;
 }
 
-/** 单步执行耗时记录（用于火焰图） */
+/** Single-step duration record (for the flame graph) */
 export interface StepTimingRecord {
   stepName: string;
   durationMs: number;
@@ -51,7 +51,7 @@ export interface StepTimingRecord {
   deviceId: string;
 }
 
-/** Pipeline 整体耗时分解 */
+/** Pipeline overall duration breakdown */
 export interface PipelineTimingBreakdown {
   pipelineTotalMs: number;
   steps: StepTimingRecord[];
@@ -60,7 +60,7 @@ export interface PipelineTimingBreakdown {
   timestamp: number;
 }
 
-/** 步骤耗时统计（含 P50/P95/P99） */
+/** Step duration statistics (including P50/P95/P99) */
 export interface StepTimingStats {
   stepName: string;
   order: number;
@@ -75,7 +75,7 @@ export interface StepTimingStats {
   errorRate: number;
 }
 
-/** 按协议维度的指标（与后端 ProtocolMetrics 对齐） */
+/** Metrics by protocol dimension (aligned with the backend ProtocolMetrics) */
 export interface ProtocolMetrics {
   totalReads: number;
   totalErrors: number;
@@ -85,7 +85,7 @@ export interface ProtocolMetrics {
   lastActivity: Date | null;
 }
 
-/** 协议列表项（供筛选下拉框） */
+/** Protocol list item (for the filter dropdown) */
 export interface ProtocolSummary {
   protocol: string;
   totalReads: number;

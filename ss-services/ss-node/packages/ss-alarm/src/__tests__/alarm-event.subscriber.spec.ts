@@ -22,7 +22,7 @@ jest.mock('@ss-node/ss-sdk', () => ({
 }));
 
 // ============================================================
-// Mock @ss-node/ss-device — entity 文件中 import DataTag 需要
+// Mock @ss-node/ss-device -- its entity file imports DataTag
 // ============================================================
 jest.mock('@ss-node/ss-device', () => ({
   DataTag: class {},
@@ -36,7 +36,7 @@ jest.mock('@ss-node/ss-device', () => ({
 }));
 
 // ============================================================
-// Mock @ss-node/ss-collector-sdk — device module 链式依赖
+// Mock @ss-node/ss-collector-sdk -- chained dependency of the device module
 // ============================================================
 jest.mock('@ss-node/ss-collector-sdk', () => ({
   PluginRegistry: class {},
@@ -142,9 +142,9 @@ describe('AlarmEventSubscriber', () => {
           message: 'Temperature too high',
           triggerValue: '95',
           status: AlarmStatus.ACTIVE,
-          // limit 类型 → alarmType 自动映射为 overlimit
+          // limit type -> alarmType is auto-mapped to overlimit
           alarmType: 'overlimit',
-          // 产生时处置类型初始化为 alarm.triggered
+          // On creation, the disposition type is initialized to alarm.triggered
           dispositionType: 'alarm.triggered',
         }),
       );
@@ -173,7 +173,7 @@ describe('AlarmEventSubscriber', () => {
         expect.objectContaining({
           ruleId: 'rule-001',
           level: 'critical',
-          // 告警类型从匹配规则复制
+          // The alarm type is copied from the matching rule
           alarmType: 'device',
           dispositionType: 'alarm.triggered',
         }),
@@ -206,7 +206,7 @@ describe('AlarmEventSubscriber', () => {
 
       expect(existingRecord.triggerValue).toBe('95');
       expect(existingRecord.message).toBe('New message');
-      // 重新触发时重置处置类型为 alarm.triggered
+      // On re-trigger, reset the disposition type to alarm.triggered
       expect(existingRecord.dispositionType).toBe('alarm.triggered');
       expect(mockRecordRepo.save).toHaveBeenCalledWith(existingRecord);
       expect(mockRecordRepo.create).not.toHaveBeenCalled();

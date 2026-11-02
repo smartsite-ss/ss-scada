@@ -47,7 +47,7 @@ export interface SyncResult {
   errors: Array<{ deviceId: string; message: string }>;
 }
 
-/** JSON 文件模板格式（与 data/templates/ 中的文件格式一致） */
+/** JSON file template format (identical to the file format in data/templates/) */
 export interface TemplateJsonFile {
   schemaVersion: string;
   templateType: string;
@@ -74,7 +74,7 @@ export interface TemplateJsonFile {
   };
 }
 
-/** 返回给控制器的模板对象格式（兼容旧的 DeviceTagTemplate 接口） */
+/** Template object format returned to controllers (compatible with the legacy DeviceTagTemplate interface) */
 export interface TemplateResponse {
   id: string;
   name: string;
@@ -108,21 +108,21 @@ export class DeviceTemplateService {
     this.templatesDir = this.indexService.getBasePath();
   }
 
-  // ===== 项目库访问助手 =====
+  // ===== Project-database access helpers =====
 
-  /** 获取项目级 DataTag Repository（读写项目库 system.db） */
+  /** Get the project-level DataTag Repository (reads/writes the project's system.db) */
   private async getTagRepo(projectId: string): Promise<Repository<DataTag>> {
     const ds = await this.projectDbService.getSystemDb(projectId);
     return ds.getRepository(DataTag);
   }
 
-  /** 获取项目级 Device Repository（读写项目库 system.db） */
+  /** Get the project-level Device Repository (reads/writes the project's system.db) */
   private async getDeviceRepo(projectId: string): Promise<Repository<Device>> {
     const ds = await this.projectDbService.getSystemDb(projectId);
     return ds.getRepository(Device);
   }
 
-  /** 解析 PROJECTS_DIR 为绝对路径 */
+  /** Resolve PROJECTS_DIR to an absolute path */
   private resolveProjectsDir(): string {
     const rawDir = this.configService.get<string>('PROJECTS_DIR') || path.join('data', 'projects');
     if (path.isAbsolute(rawDir)) return rawDir;
@@ -133,7 +133,7 @@ export class DeviceTemplateService {
     return path.resolve(projectRoot, rawDir);
   }
 
-  /** 发现所有项目名称（扫描项目目录） */
+  /** Discover all project names (scan the project directories) */
   private discoverProjects(): string[] {
     const dir = this.resolveProjectsDir();
     if (!fs.existsSync(dir)) return [];
@@ -143,13 +143,13 @@ export class DeviceTemplateService {
       .map((e) => e.name);
   }
 
-  /** 按 projectId + deviceId 在项目库中查找设备 */
+  /** Find a device in the project database by projectId + deviceId */
   private async findDeviceInProject(projectId: string, deviceId: string): Promise<Device | null> {
     const repo = await this.getDeviceRepo(projectId);
     return repo.findOne({ where: { id: deviceId } });
   }
 
-  /** 跨项目查找：按 templateId 查找所有关联设备 */
+  /** Cross-project lookup: find all devices associated with a templateId */
   private async findDevicesByTemplateId(templateId: string): Promise<Device[]> {
     const projects = this.discoverProjects();
     const results: Device[] = [];
@@ -159,19 +159,19 @@ export class DeviceTemplateService {
         const devices = await repo.find({ where: { templateId } });
         results.push(...devices);
       } catch {
-        // 跳过无法连接的 project DB
+        // Skip project DBs that cannot be connected to
       }
     }
     return results;
   }
 
-  /** 跨项目查找：按 deviceIds + projectId 查找设备 */
+  /** Cross-project lookup: find devices by deviceIds + projectId */
   private async findDevicesByIds(projectId: string, deviceIds: string[]): Promise<Device[]> {
     const repo = await this.getDeviceRepo(projectId);
     return repo.find({ where: { id: In(deviceIds) } });
   }
 
-  // ===== JSON 文件操作助手 =====
+  // ===== JSON file operation helpers =====
 
   private ensureDir(dirPath: string): void {
     if (!fs.existsSync(dirPath)) {
@@ -184,7 +184,7 @@ export class DeviceTemplateService {
   }
 
   /**
-   * 从 LoadedTemplate 转换为 TemplateResponse
+   * Convert from LoadedTemplate to TemplateResponse
    */
   private loadedToResponse(loaded: LoadedTemplate): TemplateResponse {
     return {
@@ -207,7 +207,7 @@ export class DeviceTemplateService {
   }
 
   /**
-   * 从 TemplateResponse 转换为 JSON 文件格式
+   * Convert from TemplateResponse to the JSON file format
    */
   private responseToJson(template: TemplateResponse): TemplateJsonFile {
     return {
@@ -238,7 +238,7 @@ export class DeviceTemplateService {
   }
 
   /**
-   * 写入模板 JSON 文件（原子写入：先写临时文件再重命名）
+   * Write the template JSON file (atomic write: temp file first, then rename)
    */
   private writeTemplateFile(template: TemplateResponse, locale?: string): void {
     const jsonData = this.responseToJson(template);
@@ -257,7 +257,7 @@ export class DeviceTemplateService {
   }
 
   /**
-   * 删除模板 JSON 文件
+   * Delete the template JSON file
    */
   private deleteTemplateFile(id: string): void {
     const loaded = this.templateLoader.getTemplate(id);
@@ -268,7 +268,7 @@ export class DeviceTemplateService {
   }
 
   /**
-   * 写操作后刷新索引和缓存
+   * Refresh the index and cache after write operations
    */
   private async refreshAfterWrite(): Promise<void> {
     this.indexService.rebuildIndex();
@@ -276,14 +276,14 @@ export class DeviceTemplateService {
   }
 
   /**
-   * 检查模板名称是否已存在
+   * Check whether a template name already exists
    */
   private checkNameExists(name: string, excludeId?: string): boolean {
     const allTemplates = this.templateLoader.getAllTemplates();
     return allTemplates.some((t) => t.name === name && t.id !== excludeId);
   }
 
-  // ===== 模板 CRUD =====
+  // ===== Template CRUD =====
 
   async create(dto: CreateDeviceTemplateDto, authorId: string): Promise<TemplateResponse> {
     if (this.checkNameExists(dto.name)) {
@@ -327,7 +327,7 @@ export class DeviceTemplateService {
       .getAllTemplates(query?.locale)
       .map((t) => this.loadedToResponse(t));
 
-    // 过滤
+    // Filter
     if (query?.deviceType) {
       templates = templates.filter((t) => t.deviceType === query.deviceType);
     }
@@ -342,10 +342,10 @@ export class DeviceTemplateService {
       );
     }
 
-    // 排序（按更新时间倒序）
+    // Sort (by update time descending)
     templates.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
 
-    // 分页
+    // Paginate
     const page = query?.page ?? 1;
     const pageSize = query?.pageSize ?? 20;
     const total = templates.length;
@@ -471,7 +471,7 @@ export class DeviceTemplateService {
     return cloned;
   }
 
-  // ===== 模板应用/同步（仍使用数据库） =====
+  // ===== Template apply/sync (still database-backed) =====
 
   async apply(templateId: string, dto: ApplyTemplateDto): Promise<ApplyResult> {
     const template = await this.findById(templateId);
@@ -593,16 +593,16 @@ export class DeviceTemplateService {
   }
 
   /**
-   * ★ 存量迁移：按 templateId + name 匹配回填已有标签的 templateVariableGuid
+   * ★ Legacy migration: backfill templateVariableGuid for existing tags matched by templateId + name
    *
-   * 背景：引入 GUID 前创建的标签 templateVariableGuid 为 NULL，
-   * sync() 使用 Not(IsNull()) 过滤，这些存量标签会被排除在外。
-   * 此方法通过 name 匹配模板变量，为存量标签补填 GUID。
+   * Background: tags created before GUIDs were introduced have templateVariableGuid = NULL;
+   * sync() filters with Not(IsNull()), so these legacy tags are excluded.
+   * This method matches template variables by name and fills in the GUID for legacy tags.
    *
-   * 幂等性：已填过 GUID 的标签会被跳过（只更新 templateVariableGuid IS NULL 的标签）
+   * Idempotency: tags that already have a GUID are skipped (only tags with templateVariableGuid IS NULL are updated)
    *
-   * @param options.dryRun 仅统计不执行写入（默认 false）
-   * @param options.templateId 仅迁移指定模板关联的设备（不传则全量迁移）
+   * @param options.dryRun count only, no writes (default false)
+   * @param options.templateId migrate only devices associated with the given template (all when omitted)
    */
   async migrateTemplateGuids(options?: {
     templateId?: string;
@@ -616,7 +616,7 @@ export class DeviceTemplateService {
   }> {
     const dryRun = options?.dryRun ?? false;
 
-    // 跨项目查找设备
+    // Cross-project device lookup
     let devices: Device[];
     if (options?.templateId) {
       devices = await this.findDevicesByTemplateId(options.templateId);

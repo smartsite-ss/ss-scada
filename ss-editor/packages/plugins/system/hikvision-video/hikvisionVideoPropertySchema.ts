@@ -5,9 +5,9 @@
 import { type PluginPropertySchema } from '@scada-editor/plugin-sdk';
 
 /**
- * 海康视频组件的视频墙样式 schema。
- * 仅包含「布局 + 播放行为 + 通道名显示 + 容器样式」，字段复用 image 组件对应字段。
- * 通道列表（channels）由 HikvisionVideoConfig 以自定义 section 管理，不进入本 schema。
+ * Video wall style schema of the Hikvision video component.
+ * Contains only layout + playback behavior + channel name display + container style; fields reuse the corresponding image component fields.
+ * The channel list (channels) is managed by HikvisionVideoConfig as a custom section and is not part of this schema.
  */
 export const hikvisionVideoPropertySchema: PluginPropertySchema = {
   name: '海康视频',
@@ -15,7 +15,7 @@ export const hikvisionVideoPropertySchema: PluginPropertySchema = {
   columns: 2,
   propsPath: 'customProps',
   fields: [
-    // ── 布局 ──
+    // ── Layout ──
     {
       name: 'layout',
       label: '视频布局',
@@ -30,7 +30,7 @@ export const hikvisionVideoPropertySchema: PluginPropertySchema = {
       group: 'basic',
     },
 
-    // ── 播放行为 ──
+    // ── Playback behavior ──
     { name: 'autoPlay', label: '自动播放', labelKey: 'hikvisionVideo.properties.autoPlay', type: 'boolean', defaultValue: true, group: 'basic' },
     { name: 'muted', label: '静音', labelKey: 'hikvisionVideo.properties.muted', type: 'boolean', defaultValue: true, group: 'basic' },
     {
@@ -47,13 +47,13 @@ export const hikvisionVideoPropertySchema: PluginPropertySchema = {
       group: 'basic',
     },
 
-    // ── 通道名显示 ──
+    // ── Channel name display ──
     { name: 'showChannelName', label: '显示通道名', labelKey: 'hikvisionVideo.properties.showChannelName', type: 'boolean', defaultValue: true, group: 'basic' },
     { name: 'nameColor', label: '通道名颜色', labelKey: 'hikvisionVideo.properties.nameColor', type: 'color', defaultValue: '#FFFFFF', group: 'basic' },
     { name: 'nameFontSize', label: '通道名字号', labelKey: 'hikvisionVideo.properties.nameFontSize', type: 'number', min: 8, max: 48, step: 1, defaultValue: 12, group: 'basic' },
     { name: 'nameBackgroundColor', label: '通道名背景', labelKey: 'hikvisionVideo.properties.nameBackgroundColor', type: 'color', defaultValue: '#00000080', group: 'basic' },
 
-    // ── 容器样式 ──
+    // ── Container style ──
     { name: 'backgroundColor', label: '背景色', labelKey: 'hikvisionVideo.properties.backgroundColor', type: 'color', defaultValue: '#000000', group: 'visual' },
     { name: 'gap', label: '通道间距', labelKey: 'hikvisionVideo.properties.gap', type: 'number', min: 0, max: 20, step: 1, defaultValue: 2, group: 'visual' },
     { name: 'borderColor', label: '边框颜色', labelKey: 'image.properties.borderColor', type: 'color', defaultValue: '#00000000', group: 'style' },

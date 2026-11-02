@@ -5,7 +5,7 @@
 import { VariableSimulator } from './variable-simulator.interface';
 import { VariableSimulationConfig, FixedValueParams } from '../simulation-config.types';
 
-/** 固定值仿真器 */
+/** Fixed-value simulator */
 export class FixedValueSimulator implements VariableSimulator {
   private value: number;
   private config: VariableSimulationConfig;

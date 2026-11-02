@@ -27,7 +27,7 @@ const mockJwtService = {
   sign: jest.fn(),
 };
 
-// Mock AuditLoggerService（S-M02: 审计日志，无需实际写入文件）
+// Mock AuditLoggerService (S-M02: audit log, no actual file write needed)
 const mockAuditLoggerService = {
   logSecurityEvent: jest.fn(),
 };
@@ -280,7 +280,7 @@ describe('AuthService', () => {
       expect(result.accessToken).toBe('access');
       expect(result.refreshToken).toBe('refresh');
       expect(result.user.id).toBe('user-new');
-      // 运行时安全检查：确保 password 字段已被剥离（类型层已 Omit，但需防止实现回归）
+      // Runtime safety check: ensure the password field has been stripped (omitted at the type level, but guard against implementation regression)
       expect((result.user as any).password).toBeUndefined();
     });
 
@@ -322,13 +322,13 @@ describe('AuthService', () => {
   // refreshToken
   // ============================================================
   describe('refreshToken', () => {
-    /** 通过直接调用私有 generateTokens 方法在 refreshTokenStore 中预置 token */
+    /** Pre-seed the token in refreshTokenStore by directly calling the private generateTokens method */
     function seedRefreshToken(userId: string, username: string, role: string): string {
       let callCount = 0;
       mockJwtService.sign.mockImplementationOnce(() => `access-${userId}-${++callCount}`);
       mockJwtService.sign.mockImplementationOnce(() => `refresh-${userId}-${++callCount}`);
       (authService as any).generateTokens({ id: userId, username, role });
-      // 返回生成的 refresh token
+      // Return the generated refresh token
       return `refresh-${userId}-2`;
     }
 

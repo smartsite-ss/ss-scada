@@ -48,13 +48,13 @@ export class OfflineCacheService implements OnModuleInit, OnModuleDestroy {
   private readonly bufferMap = new Map<string, OfflineDataPoint>();
   private readonly config: OfflineCacheConfig;
 
-  /** dump 限流：上次 dump 时间戳，防止高频同步 I/O */
+  /** Dump throttle: timestamp of the last dump, to prevent high-frequency synchronous I/O */
   private lastDumpTime = 0;
-  /** dump 限流间隔（毫秒） */
+  /** Dump throttle interval (ms) */
   private readonly dumpThrottleMs = 5000;
-  /** 警告日志限流 */
+  /** Warning-log throttle */
   private lastWarnTime = 0;
-  /** 异步 dump 定时器句柄，用于 debounce */
+  /** Async dump timer handle, used for debounce */
   private dumpTimer: NodeJS.Timeout | null = null;
 
   constructor(
@@ -85,22 +85,22 @@ export class OfflineCacheService implements OnModuleInit, OnModuleDestroy {
 
     const now = Date.now();
 
-    // 超过容量时触发限流 dump
+    // Trigger a throttled dump when capacity is exceeded
     if (this.bufferMap.size >= this.config.maxCapacity) {
-      // 警告日志限流：30s 最多一次
+      // Warning-log throttle: at most once per 30s
       if (now - this.lastWarnTime > 30000) {
         this.lastWarnTime = now;
         this.logger.warn(`Buffer full (${this.bufferMap.size}/${this.config.maxCapacity})`);
       }
 
-      // dump 限流：5s 最多一次异步写盘，避免每次 buffer() 都触发同步 I/O
+      // Dump throttle: at most one async disk write per 5s, to avoid synchronous I/O on every buffer()
       if (now - this.lastDumpTime > this.dumpThrottleMs) {
         this.lastDumpTime = now;
         this.scheduleAsyncDump();
       }
     }
 
-    // 硬上限保护：超过 2 倍容量时丢弃最旧 25% 数据，防止内存无限增长
+    // Hard-cap protection: when exceeding 2x capacity, drop the oldest 25% of data to prevent unbounded memory growth
     const hardCap = this.config.maxCapacity * 2;
     if (this.bufferMap.size > hardCap) {
       const dropCount = Math.floor(this.bufferMap.size - this.config.maxCapacity * 1.5);
@@ -132,7 +132,7 @@ export class OfflineCacheService implements OnModuleInit, OnModuleDestroy {
 
     this.logger.log(`Flushing ${batch.length} buffered items`);
 
-    // 通过 PersistWriterRegistry 写回各存储后端
+    // Write back to each storage backend via PersistWriterRegistry
     let allSucceeded = true;
     if (this.writerRegistry) {
       const dataPoints: DataPoint[] = batch.map((item) => ({
@@ -167,7 +167,7 @@ export class OfflineCacheService implements OnModuleInit, OnModuleDestroy {
       return [];
     }
 
-    // 全部 Writer 写入成功，从缓冲区移除
+    // All writers succeeded; remove from the buffer
     for (const item of batch) {
       const key = `${item.tagId}:${item.bufferedAt}`;
       this.bufferMap.delete(key);
@@ -203,7 +203,7 @@ export class OfflineCacheService implements OnModuleInit, OnModuleDestroy {
         dumpFileSize = fs.statSync(dumpPath).size;
       }
     } catch {
-      // 忽略 stat 错误
+      // Ignore stat errors
     }
 
     return {
@@ -246,11 +246,11 @@ export class OfflineCacheService implements OnModuleInit, OnModuleDestroy {
   }
 
   private scheduleAsyncDump(): void {
-    if (this.dumpTimer) return; // 已有待执行的 dump
+    if (this.dumpTimer) return; // a dump is already pending
     this.dumpTimer = setTimeout(() => {
       this.dumpTimer = null;
       this.dumpToDiskAsync();
-    }, 1000); // 1s debounce：合并短时间内的多次写入
+    }, 1000); // 1s debounce: coalesce multiple writes within a short period
   }
 
   private async dumpToDiskAsync(): Promise<void> {
@@ -270,7 +270,7 @@ export class OfflineCacheService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 丢弃 buffer 中最旧的 N 条数据（按 bufferedAt 排序），防止内存无限增长
+   * Drop the N oldest entries in the buffer (ordered by bufferedAt) to prevent unbounded memory growth
    */
   private dropOldest(count: number): void {
     const entries = Array.from(this.bufferMap.entries());
@@ -293,7 +293,7 @@ export class OfflineCacheService implements OnModuleInit, OnModuleDestroy {
       const items: OfflineDataPoint[] = JSON.parse(raw);
 
       if (items.length > 0) {
-        // 最多加载 maxCapacity 条到内存，超出部分保留在磁盘文件中
+        // Load at most maxCapacity entries into memory; keep the rest in the disk file
         const toLoad = items.slice(-this.config.maxCapacity);
         const dropped = items.length - toLoad.length;
         for (const item of toLoad) {
@@ -305,7 +305,7 @@ export class OfflineCacheService implements OnModuleInit, OnModuleDestroy {
           `Loaded ${toLoad.length} items from disk dump` +
             (dropped > 0 ? ` (dropped ${dropped} oldest items exceeding maxCapacity)` : ''),
         );
-        // 如果截断了，更新磁盘文件
+        // If truncated, update the disk file
         if (dropped > 0) {
           fs.writeFileSync(dumpPath, JSON.stringify(toLoad), 'utf-8');
         }

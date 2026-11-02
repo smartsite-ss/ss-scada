@@ -79,7 +79,7 @@ export class UserService {
     }
     const hashedPassword = await bcrypt.hash(registerDto.password, 10);
 
-    // 查找 user 角色作为新注册用户的默认角色
+    // Find the user role as the default role for newly registered users
     let roleId: string | null = null;
     const userRole = await this.roleRepository.findOne({ where: { code: 'user' } });
     if (userRole) {
@@ -136,9 +136,9 @@ export class UserService {
     return this.userRepository.save(user);
   }
 
-  // ──────── 管理员用户管理（v6.0 新增） ────────
+  // ──────── Admin user management (added in v6.0) ────────
 
-  /** 查询所有用户（管理员） */
+  /** Query all users (admin) */
   async findAll(): Promise<User[]> {
     return this.userRepository.find({
       relations: ['roleEntity', 'position'],
@@ -146,7 +146,7 @@ export class UserService {
     });
   }
 
-  /** 管理员创建用户（含角色/岗位分配） */
+  /** Admin creates a user (with role/position assignment) */
   async adminCreateUser(dto: CreateUserDto): Promise<User> {
     const existing = await this.findByUsernameOrEmail(dto.username, dto.email);
     if (existing) {
@@ -164,7 +164,7 @@ export class UserService {
       positionId: dto.positionId || null,
     });
 
-    // 同步 role 快照字段
+    // Sync the role snapshot field
     if (dto.roleId) {
       const role = await this.roleRepository.findOne({ where: { id: dto.roleId } });
       if (role) {
@@ -175,7 +175,7 @@ export class UserService {
     return this.userRepository.save(user);
   }
 
-  /** 管理员更新用户 */
+  /** Admin updates a user */
   async adminUpdateUser(id: string, dto: UpdateUserDto): Promise<User> {
     const user = await this.findById(id);
     if (!user) throw new NotFoundException('用户不存在');
@@ -190,7 +190,7 @@ export class UserService {
     if (dto.avatar !== undefined) user.avatar = dto.avatar;
     if (dto.isActive !== undefined) user.isActive = dto.isActive;
 
-    // 同步 role 快照字段
+    // Sync the role snapshot field
     if (dto.roleId !== undefined) {
       user.roleId = dto.roleId || null;
       if (dto.roleId) {
@@ -205,7 +205,7 @@ export class UserService {
     return this.userRepository.save(user);
   }
 
-  /** 分配角色 */
+  /** Assign a role */
   async assignRole(userId: string, roleId: string): Promise<User> {
     const user = await this.findById(userId);
     if (!user) throw new NotFoundException('用户不存在');
@@ -218,7 +218,7 @@ export class UserService {
     return this.userRepository.save(user);
   }
 
-  /** 分配岗位 */
+  /** Assign a position */
   async assignPosition(userId: string, positionId: string): Promise<User> {
     const user = await this.findById(userId);
     if (!user) throw new NotFoundException('用户不存在');
@@ -227,25 +227,25 @@ export class UserService {
     return this.userRepository.save(user);
   }
 
-  // ──────── 微信扫码登录用户管理 ────────
+  // ──────── WeChat scan-login user management ────────
 
-  /** 按 wechatOpenId 查询用户（扫码登录查找已有账号） */
+  /** Query a user by wechatOpenId (scan login looks up an existing account) */
   async findByWechatOpenId(wechatOpenId: string): Promise<User | null> {
     return this.userRepository.findOne({ where: { wechatOpenId } });
   }
 
-  /** 按 wechatUnionId 查询用户（跨应用识别同一用户） */
+  /** Query a user by wechatUnionId (identify the same user across apps) */
   async findByWechatUnionId(wechatUnionId: string): Promise<User | null> {
     return this.userRepository.findOne({ where: { wechatUnionId } });
   }
 
   /**
-   * 创建微信扫码登录用户
+   * Create a WeChat scan-login user
    *
-   * - username: wechat_{openid前8位}，冲突时追加随机后缀
-   * - password: 随机 32 字符（bcrypt 哈希），用户不可知，仅满足 NOT NULL 约束
-   * - email: {openid}@wechat.local 占位（满足 unique 约束，管理员后续可让用户补全真实邮箱）
-   * - role: viewer（只读）
+   * - username: wechat_{first 8 chars of openid}, with a random suffix appended on conflict
+   * - password: random 32 chars (bcrypt hashed), unknown to the user, only to satisfy the NOT NULL constraint
+   * - email: {openid}@wechat.local placeholder (satisfies the unique constraint; admin can later have the user fill a real email)
+   * - role: viewer (read-only)
    * - authProvider: wechat
    */
   async createWechatUser(params: {
@@ -257,11 +257,11 @@ export class UserService {
     const { wechatOpenId, wechatUnionId, nickname, avatarUrl } = params;
     const usernameSeed = `wechat_${wechatOpenId.slice(0, 8)}`;
     let username = usernameSeed;
-    // 用户名冲突时追加随机后缀
+    // Append a random suffix on username conflict
     while (await this.userRepository.findOne({ where: { username } })) {
       username = `${usernameSeed}_${crypto.randomBytes(2).toString('hex')}`;
     }
-    // email 冲突兜底
+    // Email-conflict fallback
     let email = `${wechatOpenId}@wechat.local`;
     while (await this.userRepository.findOne({ where: { email } })) {
       email = `${wechatOpenId}_${crypto.randomBytes(2).toString('hex')}@wechat.local`;
@@ -270,7 +270,7 @@ export class UserService {
     const randomPassword = crypto.randomBytes(32).toString('hex');
     const hashedPassword = await bcrypt.hash(randomPassword, 10);
 
-    // 查找 viewer 角色，设置 roleId + role 快照
+    // Find the viewer role, set roleId + role snapshot
     let roleId: string | null = null;
     let roleCode: UserRole = UserRole.VIEWER;
     const viewerRole = await this.roleRepository.findOne({ where: { code: 'viewer' } });
@@ -297,7 +297,7 @@ export class UserService {
     return this.userRepository.save(user);
   }
 
-  /** 更新微信用户资料（昵称/头像/unionId，扫码后刷新） */
+  /** Update a WeChat user's profile (nickname/avatar/unionId, refreshed after scanning) */
   async updateWechatProfile(
     userId: string,
     profile: {
@@ -321,19 +321,19 @@ export class UserService {
     await this.userRepository.update(userId, patch);
   }
 
-  // ──────── 微信小程序登录用户管理 ────────
+  // ──────── WeChat mini-program login user management ────────
 
-  /** 按小程序 openid 查询已绑定用户（小程序授权登录查找系统账号） */
+  /** Query a bound user by mini-program openid (mini-program authorized login looks up the system account) */
   async findByWechatMpOpenId(wechatMpOpenId: string): Promise<User | null> {
     return this.userRepository.findOne({ where: { wechatMpOpenId } });
   }
 
-  /** 绑定小程序 openid 到系统账号（首次微信登录绑定流程） */
+  /** Bind a mini-program openid to a system account (first WeChat-login binding flow) */
   async bindWechatMpOpenId(userId: string, wechatMpOpenId: string): Promise<void> {
     await this.userRepository.update(userId, { wechatMpOpenId });
   }
 
-  /** 解绑小程序 openid（清空绑定关系） */
+  /** Unbind a mini-program openid (clear the binding relation) */
   async unbindWechatMpOpenId(userId: string): Promise<void> {
     await this.userRepository.update(userId, { wechatMpOpenId: null });
   }

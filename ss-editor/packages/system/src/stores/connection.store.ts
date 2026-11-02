@@ -9,10 +9,10 @@ import { connectionMonitor } from '../api/connection-monitor';
 import { requestQueue } from '../api/request-queue';
 
 /**
- * 连接状态 Store
+ * Connection state store
  *
- * 全局管理后端连接状态和待重试请求计数。
- * 由 ConnectionMonitor 驱动状态变更，ConnectionBanner 消费状态展示 UI。
+ * Globally manages the backend connection state and the pending-retry request count.
+ * State changes are driven by ConnectionMonitor; ConnectionBanner consumes the state to render the UI.
  */
 export const useConnectionStore = defineStore('connection', () => {
   const status = ref<ConnectionStatus>('online');
@@ -34,12 +34,12 @@ export const useConnectionStore = defineStore('connection', () => {
     pendingRequests.value = n;
   }
 
-  // 初始化：监听 ConnectionMonitor 状态变更
+  // Initialization: listen to ConnectionMonitor state changes
   connectionMonitor.onStatusChange((s) => {
     setStatus(s);
   });
 
-  // 监听队列大小变更
+  // Listen to queue size changes
   requestQueue.onSizeChange((stats) => {
     setPendingCount(stats.size);
   });

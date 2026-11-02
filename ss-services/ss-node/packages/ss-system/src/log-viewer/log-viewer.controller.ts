@@ -41,14 +41,15 @@ export class LogViewerController {
   }
 
   /**
-   * 下载日志文件。
+   * Download a log file.
    *
-   * 文件名通过 query 参数 `filename` 传递（支持子目录路径，如 `app/app-2026-07-29.log`），
-   * 因为新的日志目录结构下文件分布在 app/ error/ plugins/{protocol}/ 子目录中，
-   * 单段路径参数 `:filename` 无法匹配含 `/` 的路径。
+   * The file name is passed via the `filename` query parameter (supports subdirectory paths,
+   * e.g. `app/app-2026-07-29.log`), because under the new log directory layout files are spread across
+   * the app/ error/ plugins/{protocol}/ subdirectories, and a single-segment `:filename` path parameter
+   * cannot match paths containing `/`.
    *
-   * 使用 `@Res()`（无 passthrough）+ 手动 pipe，绕过全局 TransformInterceptor
-   * 对响应体的包装，避免 StreamableFile 被错误地 JSON 序列化。
+   * Uses `@Res()` (without passthrough) + manual pipe to bypass the global TransformInterceptor's
+   * response wrapping, avoiding StreamableFile being incorrectly JSON-serialized.
    */
   @Get('download')
   @ApiOperation({ summary: '下载日志文件' })
@@ -68,7 +69,7 @@ export class LogViewerController {
       return;
     }
 
-    // 下载文件名只取 basename，避免 Content-Disposition 携带路径
+    // The download file name takes only the basename, avoiding a path in Content-Disposition
     const downloadName = path.basename(filename);
     res.set({
       'Content-Type': 'text/plain; charset=utf-8',

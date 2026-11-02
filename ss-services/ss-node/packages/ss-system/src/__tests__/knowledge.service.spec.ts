@@ -13,21 +13,21 @@ import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { DEFAULT_PRODUCT_ID } from '../knowledge/knowledge.manifest';
 
 /**
- * KnowledgeService 单元测试 — v2.0 多产品架构
+ * KnowledgeService unit tests — v2.0 multi-product architecture
  *
- * 覆盖场景：
- *  1. 服务初始化（自动创建多产品目录 + manifest.json）
- *  2. getProducts（产品列表）
- *  3. getLangs（按产品的语言统计）
- *  4. getTree（目录树构建 + 产品过滤 + Fallback 降级）
- *  5. getArticle（读取 + 产品隔离 + Fallback + frontmatter 解析）
- *  6. updateArticle（更新 + 产品参数 + frontmatter 写入）
- *  7. matchRoute（精确匹配 + 通配符 + 产品隔离 + Fallback）
- *  8. search（全文搜索 + 产品+语言隔离）
- *  9. uploadImage（图片上传 + 产品+语言隔离）
- * 10. 路径遍历防护（assertSafeId）
- * 11. resolveImagePath（图片路径解析 + 产品隔离）
- * 12. manifest 缓存 + v1.0 兼容
+ * Covered scenarios:
+ *  1. Service initialization (auto-creates per-product directories + manifest.json)
+ *  2. getProducts (product list)
+ *  3. getLangs (per-product language statistics)
+ *  4. getTree (directory-tree building + product filtering + fallback degradation)
+ *  5. getArticle (read + product isolation + fallback + frontmatter parsing)
+ *  6. updateArticle (update + product parameter + frontmatter write)
+ *  7. matchRoute (exact match + wildcards + product isolation + fallback)
+ *  8. search (full-text search + product+language isolation)
+ *  9. uploadImage (image upload + product+language isolation)
+ * 10. Path-traversal protection (assertSafeId)
+ * 11. resolveImagePath (image path resolution + product isolation)
+ * 12. manifest cache + v1.0 compatibility
  */
 describe('KnowledgeService', () => {
   let service: KnowledgeService;
@@ -57,7 +57,7 @@ describe('KnowledgeService', () => {
   });
 
   beforeEach(async () => {
-    // 每个测试前清理 kbRoot（保留目录本身）
+    // Clean up kbRoot before each test (keeping the directory itself)
     if (fs.existsSync(kbRoot)) {
       fs.rmSync(kbRoot, { recursive: true, force: true });
     }
@@ -89,12 +89,12 @@ describe('KnowledgeService', () => {
     await service.onModuleInit();
   });
 
-  // ==================== 1. 初始化 ====================
+  // ==================== 1. Initialization ====================
 
   describe('onModuleInit', () => {
     it('应创建 KB_ROOT 目录和各语言+产品子目录', () => {
       expect(fs.existsSync(kbRoot)).toBe(true);
-      // v2.0: 每个语言下有产品目录
+      // v2.0: product directories under each language
       expect(fs.existsSync(path.join(kbRoot, 'zh-CN', 'ss-data'))).toBe(true);
       expect(fs.existsSync(path.join(kbRoot, 'zh-CN', 'ss-scada'))).toBe(true);
       expect(fs.existsSync(path.join(kbRoot, 'en-US', 'ss-data'))).toBe(true);
@@ -109,11 +109,11 @@ describe('KnowledgeService', () => {
       expect(manifest.products).toBeDefined();
       expect(Array.isArray(manifest.products)).toBe(true);
       expect(manifest.products.length).toBe(2);
-      // ss-data 产品应有 19 个模块（17 功能 + 2 全局章节）
+      // The ss-data product should have 19 modules (17 feature + 2 global sections)
       const ssData = manifest.products.find((p: any) => p.id === 'ss-data');
       expect(ssData.modules.length).toBe(19);
       expect(ssData.routeMap.length).toBe(10);
-      // ss-scada 产品应有 10 个模块（8 功能 + 2 全局章节）
+      // The ss-scada product should have 10 modules (8 feature + 2 global sections)
       const ssScada = manifest.products.find((p: any) => p.id === 'ss-scada');
       expect(ssScada.modules.length).toBe(10);
     });
@@ -195,7 +195,7 @@ describe('KnowledgeService', () => {
 
   describe('getLangs', () => {
     beforeEach(() => {
-      // 在 ss-data 产品的 zh-CN 下创建 03-device 模块
+      // Create the 03-device module under the ss-data product's zh-CN
       const modDir = path.join(kbRoot, 'zh-CN', 'ss-data', '03-device');
       fs.mkdirSync(modDir, { recursive: true });
       fs.writeFileSync(
@@ -237,7 +237,7 @@ describe('KnowledgeService', () => {
 
   describe('getTree', () => {
     beforeEach(() => {
-      // ss-data 产品 zh-CN 有 03-device 模块
+      // The ss-data product's zh-CN has the 03-device module
       const modDir = path.join(kbRoot, 'zh-CN', 'ss-data', '03-device');
       const opsDir = path.join(modDir, 'operations');
       fs.mkdirSync(opsDir, { recursive: true });
@@ -272,11 +272,11 @@ describe('KnowledgeService', () => {
     });
 
     it('不同产品的目录树应隔离', async () => {
-      // ss-scada 产品无内容
+      // The ss-scada product has no content
       const scadaTree = await service.getTree('ss-scada', 'zh-CN');
       const dataTree = await service.getTree('ss-data', 'zh-CN');
       expect(dataTree.length).toBeGreaterThan(0);
-      // ss-scada 目录为空（模块目录未创建）
+      // The ss-scada directory is empty (module directories not created)
       const scadaHasContent = scadaTree.some((n) => n.children && n.children.length > 0);
       expect(scadaHasContent).toBe(false);
     });
@@ -307,7 +307,7 @@ describe('KnowledgeService', () => {
     });
 
     it('全局章节节点应标记 isGlobal 和 globalType', async () => {
-      // 创建 00-overview 目录
+      // Create the 00-overview directory
       const overviewDir = path.join(kbRoot, 'zh-CN', 'ss-data', '00-overview');
       fs.mkdirSync(overviewDir, { recursive: true });
       fs.writeFileSync(
@@ -394,7 +394,7 @@ describe('KnowledgeService', () => {
       expect(article.title).toBe('测试文章');
       expect(article.updatedBy).toBe('admin');
       expect(article.product).toBe('ss-data');
-      // 验证文件写入到 ss-data 产品目录
+      // Verify the file was written into the ss-data product directory
       const filePath = path.join(kbRoot, 'zh-CN', 'ss-data', '03-device', 'test-article.md');
       expect(fs.existsSync(filePath)).toBe(true);
       const raw = fs.readFileSync(filePath, 'utf-8');
@@ -470,11 +470,11 @@ describe('KnowledgeService', () => {
     });
 
     it('不同产品的路由映射应隔离', async () => {
-      // ss-scada 有 /editor 路由
+      // The ss-scada product has the /editor route
       const scadaResult = await service.matchRoute('/editor', 'ss-scada', 'zh-CN');
       expect(scadaResult).not.toBeNull();
       expect(scadaResult?.product).toBe('ss-scada');
-      // ss-data 无 /editor 路由
+      // The ss-data product has no /editor route
       const dataResult = await service.matchRoute('/editor', 'ss-data', 'zh-CN');
       expect(dataResult).toBeNull();
     });
@@ -489,7 +489,7 @@ describe('KnowledgeService', () => {
 
   describe('search', () => {
     beforeEach(() => {
-      // ss-data zh-CN 有"设备"关键词
+      // The ss-data zh-CN index contains a CJK keyword (the test data itself is Chinese)
       const zhDir = path.join(kbRoot, 'zh-CN', 'ss-data', '03-device');
       fs.mkdirSync(zhDir, { recursive: true });
       fs.writeFileSync(
@@ -499,7 +499,7 @@ describe('KnowledgeService', () => {
         }),
         'utf-8',
       );
-      // ss-data en-US 有"device"关键词
+      // The ss-data en-US has the "device" keyword
       const enDir = path.join(kbRoot, 'en-US', 'ss-data', '03-device');
       fs.mkdirSync(enDir, { recursive: true });
       fs.writeFileSync(
@@ -541,7 +541,7 @@ describe('KnowledgeService', () => {
       const buffer = Buffer.from('fake-image-data');
       const url = await service.uploadImage(buffer, 'test.png', '03-device', 'zh-CN', 'ss-data');
       expect(url).toBe('03-device/images/test.png');
-      // 文件应在 ss-data 产品目录下
+      // The file should be under the ss-data product directory
       const filePath = path.join(kbRoot, 'zh-CN', 'ss-data', '03-device', 'images', 'test.png');
       expect(fs.existsSync(filePath)).toBe(true);
       expect(fs.readFileSync(filePath)).toEqual(buffer);
@@ -587,9 +587,9 @@ describe('KnowledgeService', () => {
     });
 
     it('应过滤路径遍历字符（.. 被移除，路径被清理）', async () => {
-      // 服务设计为过滤 .. 片段，而非拒绝
+      // The service is designed to filter .. segments rather than reject
       const abs = await service.resolveImagePath('../../../etc/passwd', 'zh-CN', 'ss-data');
-      // .. 被过滤，结果为 kbRoot/zh-CN/ss-data/etc/passwd（仍在产品根下）
+      // .. is filtered; the result is kbRoot/zh-CN/ss-data/etc/passwd (still under the product root)
       const expected = path.join(kbRoot, 'zh-CN', 'ss-data', 'etc', 'passwd');
       expect(abs).toBe(expected);
     });
@@ -600,7 +600,7 @@ describe('KnowledgeService', () => {
         'zh-CN',
         'ss-data',
       );
-      // .. 被过滤，结果为 kbRoot/zh-CN/ss-data/03-device/etc/passwd
+      // .. is filtered; the result is kbRoot/zh-CN/ss-data/03-device/etc/passwd
       const expected = path.join(kbRoot, 'zh-CN', 'ss-data', '03-device', 'etc', 'passwd');
       expect(abs).toBe(expected);
     });
@@ -618,7 +618,7 @@ describe('KnowledgeService', () => {
     });
   });
 
-  // ==================== 11. 路径遍历防护 ====================
+  // ==================== 11. Path-traversal protection ====================
 
   describe('路径遍历防护', () => {
     it('应拒绝包含 .. 的文章 ID', async () => {
@@ -634,7 +634,7 @@ describe('KnowledgeService', () => {
     });
   });
 
-  // ==================== 12. manifest 缓存 + v1.0 兼容 ====================
+  // ==================== 12. manifest cache + v1.0 compatibility ====================
 
   describe('manifest 缓存', () => {
     it('1 分钟内应使用缓存', async () => {
@@ -646,14 +646,14 @@ describe('KnowledgeService', () => {
         'utf-8',
       );
       await service.getTree('ss-data', 'zh-CN');
-      // 修改 manifest
+      // Modify the manifest
       const manifestPath = path.join(kbRoot, 'manifest.json');
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
       const ssData = manifest.products.find((p: any) => p.id === 'ss-data');
       const permModule = ssData.modules.find((m: any) => m.id === '01-permission');
       permModule.name = '已修改的名称';
       fs.writeFileSync(manifestPath, JSON.stringify(manifest), 'utf-8');
-      // 立即读取（应返回缓存）
+      // Read immediately (should return the cache)
       const tree = await service.getTree('ss-data', 'zh-CN');
       const permNode = tree.find((n) => n.id === '01-permission');
       expect(permNode?.title).not.toBe('已修改的名称');
@@ -662,14 +662,14 @@ describe('KnowledgeService', () => {
 
   describe('v1.0 manifest 兼容', () => {
     it('应自动迁移 v1.0 manifest 到 v2.0 结构', async () => {
-      // 写入 v1.0 格式的 manifest
+      // Write a v1.0-format manifest
       const v1Manifest = {
         version: '1.0',
         modules: [{ id: 'legacy-mod', name: 'Legacy', order: 1 }],
         routeMap: [{ routePattern: '/legacy', knowledgePath: 'legacy-mod' }],
       };
       fs.writeFileSync(path.join(kbRoot, 'manifest.json'), JSON.stringify(v1Manifest), 'utf-8');
-      // 创建 legacy-mod 目录在旧位置（无产品目录）
+      // Create the legacy-mod directory at the old location (no product directory)
       const modDir = path.join(kbRoot, 'zh-CN', 'legacy-mod');
       fs.mkdirSync(modDir, { recursive: true });
       fs.writeFileSync(
@@ -677,7 +677,7 @@ describe('KnowledgeService', () => {
         matterString('legacy-mod', 'Legacy Module', 'zh-CN', DEFAULT_PRODUCT_ID, 'legacy-mod'),
         'utf-8',
       );
-      // 重新初始化服务（触发迁移）
+      // Re-initialize the service (triggers migration)
       const module2: TestingModule = await Test.createTestingModule({
         providers: [
           KnowledgeService,
@@ -687,10 +687,10 @@ describe('KnowledgeService', () => {
       }).compile();
       const service2 = module2.get<KnowledgeService>(KnowledgeService);
       await service2.onModuleInit();
-      // getProducts 应返回迁移后的产品
+      // getProducts should return the migrated products
       const products = await service2.getProducts();
       expect(products.products.length).toBeGreaterThanOrEqual(1);
-      // 默认产品应包含 legacy-mod 模块
+      // The default product should include the legacy-mod module
       const defaultProduct = products.products.find((p) => p.id === DEFAULT_PRODUCT_ID);
       expect(defaultProduct).toBeDefined();
       expect(defaultProduct?.moduleCount).toBeGreaterThanOrEqual(1);
@@ -698,10 +698,10 @@ describe('KnowledgeService', () => {
   });
 });
 
-// ==================== 辅助函数 ====================
+// ==================== Helper functions ====================
 
 /**
- * 生成带 frontmatter 的 Markdown 字符串（v2.0 含 product 字段）
+ * Generate a Markdown string with frontmatter (v2.0 includes the product field)
  */
 function matterString(
   id: string,

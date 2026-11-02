@@ -4,7 +4,7 @@
 
 import client from '../client';
 
-/** 趋势查询方案 */
+/** Trend query scheme */
 export interface TrendQueryScheme {
   id: string;
   name: string;
@@ -34,28 +34,28 @@ export interface CreateTrendQuerySchemeDto {
 }
 
 export const trendQuerySchemeApi = {
-  /** 获取项目下的所有查询方案 */
+  /** Get all query schemes under a project */
   list(projectId: string): Promise<TrendQueryScheme[]> {
     return client
       .get('/trend-query-schemes', { params: { projectId } })
       .then((res) => res.data?.data ?? res.data);
   },
 
-  /** 创建查询方案 */
+  /** Create a query scheme */
   create(dto: CreateTrendQuerySchemeDto): Promise<TrendQueryScheme> {
     return client
       .post('/trend-query-schemes', dto)
       .then((res) => res.data?.data ?? res.data);
   },
 
-  /** 更新查询方案 */
+  /** Update a query scheme */
   update(id: string, dto: Partial<CreateTrendQuerySchemeDto>): Promise<TrendQueryScheme> {
     return client
       .patch(`/trend-query-schemes/${id}`, dto)
       .then((res) => res.data?.data ?? res.data);
   },
 
-  /** 删除查询方案 */
+  /** Delete a query scheme */
   delete(id: string): Promise<{ success: boolean }> {
     return client
       .delete(`/trend-query-schemes/${id}`)

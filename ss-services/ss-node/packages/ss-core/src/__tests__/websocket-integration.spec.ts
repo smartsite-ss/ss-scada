@@ -3,19 +3,20 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * WebSocket 模块集成测试
+ * WebSocket module integration tests
  *
- * 测试 WebSocket 模块各服务之间的端到端协作流程。
- * 使用真实服务实例（不 mock 服务本身），只 mock 框架对象（Socket、Server、JwtService、I18nService、EventEmitter2）。
+ * Tests the end-to-end collaboration flow between WebSocket module services.
+ * Uses real service instances (services themselves are not mocked); only framework objects are mocked
+ * (Socket, Server, JwtService, I18nService, EventEmitter2).
  *
- * 覆盖场景：
- * 1. 连接限制端到端流程
- * 2. 连接监控端到端流程
- * 3. 空闲连接检测
- * 4. 离线消息缓存与重连补发（OfflineMessageService）
- * 5. 离线缓存服务（OfflineMessageCacheService）
- * 6. Gateway + 服务集成流程
- * 7. 连接配置动态更新
+ * Covered scenarios:
+ * 1. connection limit end-to-end flow
+ * 2. connection monitor end-to-end flow
+ * 3. idle connection detection
+ * 4. offline message caching and reconnect re-delivery (OfflineMessageService)
+ * 5. offline cache service (OfflineMessageCacheService)
+ * 6. Gateway + service integration flow
+ * 7. dynamic connection config update
  */
 
 import { ScadaWebSocketGateway } from '../websocket/websocket.gateway';
@@ -30,7 +31,7 @@ import { WebSocketMetricsService } from '../websocket/websocket-metrics.service'
 import { EventBusService } from '../event-bus/event-bus.service';
 import { I18nService } from '@ss-node/ss-i18n';
 
-// ── Helper: 创建 mock Socket ──
+// ── Helper: create mock Socket ──
 function createMockSocket(id: string, ip: string = '127.0.0.1', token?: string): any {
   const socket: any = {
     id,
@@ -56,7 +57,7 @@ function createMockSocket(id: string, ip: string = '127.0.0.1', token?: string):
   return socket;
 }
 
-// ── Helper: 创建 mock Server ──
+// ── Helper: create mock Server ──
 function createMockServer(): Partial<Server> {
   return {
     to: jest.fn().mockReturnThis(),
@@ -69,7 +70,7 @@ function createMockServer(): Partial<Server> {
   } as any;
 }
 
-// ── Helper: 创建 mock I18nService ──
+// ── Helper: create mock I18nService ──
 function createMockI18n(): jest.Mocked<I18nService> {
   return {
     tSync: jest.fn().mockImplementation((key: string, args?: Record<string, unknown>) => {
@@ -87,7 +88,7 @@ function createMockI18n(): jest.Mocked<I18nService> {
   } as any;
 }
 
-// ── Helper: 创建 mock EventEmitter2 ──
+// ── Helper: create mock EventEmitter2 ──
 function createMockEventEmitter(): any {
   return {
     emit: jest.fn(),
@@ -99,7 +100,7 @@ function createMockEventEmitter(): any {
 }
 
 describe('WebSocket Module Integration', () => {
-  // 真实服务实例
+  // real service instances
   let connectionLimiter: ConnectionLimiterService;
   let connectionMonitor: ConnectionMonitorService;
   let offlineMessageService: OfflineMessageService;
@@ -107,7 +108,7 @@ describe('WebSocket Module Integration', () => {
   let metricsService: WebSocketMetricsService;
   let gateway: ScadaWebSocketGateway;
 
-  // Mock 框架对象
+  // mock framework objects
   let mockJwtService: jest.Mocked<JwtService>;
   let mockI18n: jest.Mocked<I18nService>;
   let mockEventBus: EventBusService;
@@ -115,27 +116,27 @@ describe('WebSocket Module Integration', () => {
   let mockServer: Partial<Server>;
 
   beforeEach(() => {
-    // 静默所有日志
+    // silence all logs
     jest.spyOn(Logger.prototype, 'log').mockImplementation();
     jest.spyOn(Logger.prototype, 'warn').mockImplementation();
     jest.spyOn(Logger.prototype, 'error').mockImplementation();
     jest.spyOn(Logger.prototype, 'debug').mockImplementation();
 
-    // 创建 mock 依赖
+    // create mock dependencies
     mockI18n = createMockI18n();
     mockEventEmitter = createMockEventEmitter();
     mockEventBus = new EventBusService(mockEventEmitter);
     mockJwtService = { verify: jest.fn() } as any;
     mockServer = createMockServer();
 
-    // 创建真实服务实例
+    // create real service instances
     connectionLimiter = new ConnectionLimiterService(mockI18n);
     connectionMonitor = new ConnectionMonitorService(mockI18n, mockEventBus);
     offlineMessageService = new OfflineMessageService(mockI18n);
     offlineCacheService = new OfflineMessageCacheService();
     metricsService = new WebSocketMetricsService();
 
-    // 创建真实 Gateway 实例，注入真实服务
+    // create a real Gateway instance, injecting the real services
     gateway = new ScadaWebSocketGateway(
       mockJwtService,
       offlineCacheService,
@@ -147,7 +148,7 @@ describe('WebSocket Module Integration', () => {
   });
 
   afterEach(() => {
-    // 清理 Gateway 的定时器（idleCheckTimer 在构造函数中创建）
+    // clean up the Gateway's timers (idleCheckTimer is created in the constructor)
     const gw = gateway as any;
     if (gw.idleCheckTimer) {
       clearInterval(gw.idleCheckTimer);
@@ -160,7 +161,7 @@ describe('WebSocket Module Integration', () => {
     jest.restoreAllMocks();
   });
 
-  // ==================== 1. 连接限制端到端流程 ====================
+  // ==================== 1. connection-limit end-to-end flow ====================
   describe('Connection Limiter End-to-End', () => {
     it('should allow 5 connections for a single user (default limit)', () => {
       for (let i = 0; i < 5; i++) {
@@ -229,10 +230,10 @@ describe('WebSocket Module Integration', () => {
       expect(record).toBeDefined();
 
       const originalActivity = record!.lastActivityAt;
-      // 模拟旧的活动时间
+      // simulate an old activity time
       (record as any).lastActivityAt = originalActivity - 60000;
 
-      // 记录新活动
+      // record new activity
       connectionLimiter.recordActivity('socket-1');
 
       const updated = connectionLimiter.getConnection('socket-1');
@@ -240,7 +241,7 @@ describe('WebSocket Module Integration', () => {
     });
   });
 
-  // ==================== 2. 连接监控端到端流程 ====================
+  // ==================== 2. connection-monitor end-to-end flow ====================
   describe('Connection Monitor End-to-End', () => {
     it('should return correct connection count in getStats after registration', () => {
       connectionMonitor.registerConnection('s1', 'u1', 'user1', '10.0.0.1');
@@ -304,7 +305,7 @@ describe('WebSocket Module Integration', () => {
 
     it('should detect abnormal high message rate', () => {
       connectionMonitor.registerConnection('s1', 'u1', 'user1', '10.0.0.1');
-      // 设置异常速率阈值为 0（任何消息都算异常）
+      // set the anomaly-rate threshold to 0 (any message counts as anomaly)
       connectionMonitor.setAbnormalThresholds(0, undefined);
 
       connectionMonitor.recordMessage('s1');
@@ -324,13 +325,13 @@ describe('WebSocket Module Integration', () => {
     });
   });
 
-  // ==================== 3. 空闲连接检测 ====================
+  // ==================== 3. idle connection detection ====================
   describe('Idle Connection Detection', () => {
     it('should detect idle connections after timeout exceeded', () => {
       connectionLimiter.updateConfig({ idleTimeoutMinutes: 1 });
       connectionLimiter.registerConnection('s1', 'u1', '10.0.0.1');
 
-      // 模拟 2 分钟前的活动时间
+      // simulate an activity time 2 minutes ago
       const record = connectionLimiter.getConnection('s1');
       (record as any).lastActivityAt = Date.now() - 2 * 60 * 1000;
 
@@ -342,7 +343,7 @@ describe('WebSocket Module Integration', () => {
       connectionLimiter.updateConfig({ idleTimeoutMinutes: 1 });
       connectionLimiter.registerConnection('s1', 'u1', '10.0.0.1');
 
-      // 刚注册，lastActivityAt 是当前时间
+      // just registered, lastActivityAt is the current time
       const idle = connectionLimiter.checkIdleConnections();
       expect(idle).not.toContain('s1');
     });
@@ -351,11 +352,11 @@ describe('WebSocket Module Integration', () => {
       connectionLimiter.updateConfig({ idleTimeoutMinutes: 1 });
       connectionLimiter.registerConnection('s1', 'u1', '10.0.0.1');
 
-      // 设置旧的活动时间
+      // set an old activity time
       const record = connectionLimiter.getConnection('s1');
       (record as any).lastActivityAt = Date.now() - 2 * 60 * 1000;
 
-      // 记录新活动，刷新 lastActivityAt
+      // record new activity to refresh lastActivityAt
       connectionLimiter.recordActivity('s1');
 
       const idle = connectionLimiter.checkIdleConnections();
@@ -363,7 +364,7 @@ describe('WebSocket Module Integration', () => {
     });
   });
 
-  // ==================== 4. 离线消息缓存与重连补发 ====================
+  // ==================== 4. offline message caching & reconnect re-delivery ====================
   describe('Offline Message Service End-to-End', () => {
     it('should cache a message and return it in getUnreadMessages', () => {
       const msg = offlineMessageService.cacheMessage('u1', 'alarm_trigger', 'p1', {
@@ -412,7 +413,7 @@ describe('WebSocket Module Integration', () => {
       offlineMessageService.updateConfig({ expireAfterMs: 100 });
       offlineMessageService.cacheMessage('u1', 'alarm_trigger', 'p1', { alarmId: 'a1' });
 
-      // 推进时间使消息过期
+      // advance time to expire the messages
       jest.advanceTimersByTime(200);
 
       const cleaned = offlineMessageService.cleanupExpiredMessages();
@@ -433,12 +434,12 @@ describe('WebSocket Module Integration', () => {
     });
   });
 
-  // ==================== 5. 离线缓存服务（OfflineMessageCacheService） ====================
+  // ==================== 5. offline cache service (OfflineMessageCacheService) ====================
   describe('Offline Message Cache Service End-to-End', () => {
     it('should register a client', () => {
       offlineCacheService.registerClient('client-1');
 
-      // 没有在线客户端时，client-1 应在离线列表中
+      // when no client is online, client-1 should be in the offline list
       const offline = offlineCacheService.getOfflineClientIds(new Set());
       expect(offline).toContain('client-1');
     });
@@ -455,7 +456,7 @@ describe('WebSocket Module Integration', () => {
     it('should return pending messages excluding expired', () => {
       offlineCacheService.cacheMessage('client-1', 'test:event', { data: 'hello' });
 
-      // 推进时间超过 TTL（5 分钟）
+      // advance time beyond the TTL (5 minutes)
       jest.advanceTimersByTime(6 * 60 * 1000);
 
       const pending = offlineCacheService.getPendingMessages('client-1');
@@ -487,7 +488,7 @@ describe('WebSocket Module Integration', () => {
       offlineCacheService.registerClient('client-2');
       offlineCacheService.registerClient('client-3');
 
-      // client-2 在线
+      // client-2 is online
       const offline = offlineCacheService.getOfflineClientIds(new Set(['client-2']));
       expect(offline).toContain('client-1');
       expect(offline).toContain('client-3');
@@ -495,7 +496,7 @@ describe('WebSocket Module Integration', () => {
     });
   });
 
-  // ==================== 6. Gateway + 服务集成流程 ====================
+  // ==================== 6. Gateway + service integration flow ====================
   describe('Gateway + Services Integration', () => {
     it('should register connection in limiter and monitor on connect with valid JWT', () => {
       const payload = { sub: 'user-1', username: 'testuser', role: 'user' };
@@ -504,16 +505,16 @@ describe('WebSocket Module Integration', () => {
 
       gateway.handleConnection(socket);
 
-      // 验证连接限制器记录了连接
+      // verify the connection limiter recorded the connection
       expect(connectionLimiter.getConnection('socket-001')).toBeDefined();
-      // 验证连接监控记录了连接
+      // verify the connection monitor recorded the connection
       const snapshot = connectionMonitor.getConnectionSnapshot('socket-001');
       expect(snapshot).toBeDefined();
       expect(snapshot!.userId).toBe('user-1');
       expect(snapshot!.username).toBe('testuser');
-      // 验证 socket 被加入用户专属房间
+      // verify the socket was joined to the user's room
       expect(socket.join).toHaveBeenCalledWith('user:user-1');
-      // 验证发出了连接成功事件
+      // verify the connection-success event was emitted
       expect(socket.emit).toHaveBeenCalledWith(
         'connection',
         expect.objectContaining({ authenticated: true }),
@@ -521,7 +522,7 @@ describe('WebSocket Module Integration', () => {
     });
 
     it('should reject connection when limiter denies (user limit exceeded)', () => {
-      // 用同一用户填满连接限制（默认 5）
+      // fill the connection limit with the same user (default 5)
       mockJwtService.verify.mockReturnValue({
         sub: 'user-1',
         username: 'u',
@@ -532,7 +533,7 @@ describe('WebSocket Module Integration', () => {
         gateway.handleConnection(s);
       }
 
-      // 第 6 个连接应被拒绝
+      // the 6th connection should be rejected
       const socket = createMockSocket('socket-5', '10.0.0.5', 'token');
       gateway.handleConnection(socket);
 
@@ -541,7 +542,7 @@ describe('WebSocket Module Integration', () => {
         expect.objectContaining({ reason: expect.any(String) }),
       );
       expect(socket.disconnect).toHaveBeenCalledWith(true);
-      // 验证被拒绝的连接未进入限制器
+      // verify the rejected connection did not enter the limiter
       expect(connectionLimiter.getConnection('socket-5')).toBeUndefined();
     });
 
@@ -553,9 +554,9 @@ describe('WebSocket Module Integration', () => {
 
       const snapshot = connectionMonitor.getConnectionSnapshot('socket-001');
       expect(snapshot!.projectRooms).toContain('project:p1');
-      // 验证 socket.join 被调用
+      // verify socket.join was called
       expect(socket.join).toHaveBeenCalledWith('project:p1');
-      // 验证发出了 room:joined 事件
+      // verify the room:joined event was emitted
       expect(socket.emit).toHaveBeenCalledWith('room:joined', {
         room: 'project:p1',
         projectId: 'p1',
@@ -575,23 +576,23 @@ describe('WebSocket Module Integration', () => {
     });
 
     it('should replay pending offline messages on reconnect', () => {
-      // 先缓存离线消息
+      // cache the offline message first
       offlineCacheService.registerClient('user-1');
       offlineCacheService.cacheMessage('user-1', 'alarm:trigger', { alarmId: 'a1' });
       offlineCacheService.cacheMessage('user-1', 'alarm:cleared', { alarmId: 'a2' });
 
-      // 模拟重连
+      // simulate a reconnect
       const payload = { sub: 'user-1', username: 'testuser', role: 'user' };
       mockJwtService.verify.mockReturnValue(payload);
       const socket = createMockSocket('socket-reconnect', '10.0.0.1', 'token');
 
       gateway.handleConnection(socket);
 
-      // 验证补发了缓存的消息
+      // verify the cached message was re-delivered
       expect(socket.emit).toHaveBeenCalledWith('alarm:trigger', { alarmId: 'a1' });
       expect(socket.emit).toHaveBeenCalledWith('alarm:cleared', { alarmId: 'a2' });
 
-      // 验证补发后缓存被清除
+      // verify the cache was cleared after re-delivery
       const pending = offlineCacheService.getPendingMessages('user-1');
       expect(pending).toHaveLength(0);
     });
@@ -600,29 +601,29 @@ describe('WebSocket Module Integration', () => {
       offlineCacheService.registerClient('user-1');
       offlineCacheService.cacheMessage('user-1', 'alarm:trigger', { alarmId: 'a1' });
 
-      // 无 token 的匿名连接
+      // anonymous connection without a token
       const socket = createMockSocket('socket-anon', '10.0.0.1');
       gateway.handleConnection(socket);
 
-      // 不应补发 alarm:trigger 事件（只应发出 connection 事件）
+      // should not re-deliver alarm:trigger events (only connection events should be emitted)
       expect(socket.emit).not.toHaveBeenCalledWith('alarm:trigger', expect.anything());
-      // 缓存应保留
+      // the cache should be retained
       const pending = offlineCacheService.getPendingMessages('user-1');
       expect(pending).toHaveLength(1);
     });
 
     it('should cache messages for offline clients on system broadcast', () => {
-      // 注册一个客户端（模拟曾经连接过）
+      // register a client (simulate a previous connection)
       offlineCacheService.registerClient('user-1');
 
-      // 当前没有客户端通过 Gateway 连接，user-1 处于离线状态
+      // no client is currently connected through the Gateway; user-1 is offline
       gateway.broadcastSystem('System maintenance', { type: 'warning' });
 
-      // 验证为离线客户端缓存了消息
+      // verify the message was cached for the offline client
       const pending = offlineCacheService.getPendingMessages('user-1');
       expect(pending).toHaveLength(1);
       expect(pending[0].event).toBe('system:broadcast');
-      // 验证也通过 Server 向所有在线客户端广播
+      // verify it was also broadcast to all online clients via Server
       expect(mockServer.emit).toHaveBeenCalledWith(
         'system:broadcast',
         expect.objectContaining({ message: 'System maintenance' }),
@@ -630,7 +631,7 @@ describe('WebSocket Module Integration', () => {
     });
   });
 
-  // ==================== 7. 连接配置动态更新 ====================
+  // ==================== 7. dynamic connection config update ====================
   describe('Connection Config Dynamic Update', () => {
     it('should apply new maxConnectionsPerUser immediately', () => {
       connectionLimiter.updateConfig({ maxConnectionsPerUser: 2 });
@@ -660,17 +661,17 @@ describe('WebSocket Module Integration', () => {
     });
 
     it('should apply new idleTimeoutMinutes immediately', () => {
-      // 初始超时 5 分钟
+      // initial timeout 5 minutes
       connectionLimiter.updateConfig({ idleTimeoutMinutes: 5 });
       connectionLimiter.registerConnection('s1', 'u1', '10.0.0.1');
       const record = connectionLimiter.getConnection('s1');
-      // 设置活动时间为 3 分钟前（在 5 分钟超时内）
+      // set activity time 3 minutes ago (within the 5-minute timeout)
       (record as any).lastActivityAt = Date.now() - 3 * 60 * 1000;
 
       let idle = connectionLimiter.checkIdleConnections();
       expect(idle).not.toContain('s1');
 
-      // 更新超时为 2 分钟（3 分钟 > 2 分钟，应检测为空闲）
+      // update timeout to 2 minutes (3 minutes > 2 minutes, should be detected as idle)
       connectionLimiter.updateConfig({ idleTimeoutMinutes: 2 });
       idle = connectionLimiter.checkIdleConnections();
       expect(idle).toContain('s1');

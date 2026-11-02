@@ -11,7 +11,7 @@ import * as path from 'path';
 const DEFAULT_LOCALE = 'zh-CN';
 const LOCALE_PATTERN = /^[a-z]{2}-[A-Z]{2}$/;
 
-/** 菜单国际化条目 */
+/** Menu i18n entry */
 export interface MenuI18nItem {
   labelKey: string;
   label: string;
@@ -19,7 +19,7 @@ export interface MenuI18nItem {
   description: string;
 }
 
-/** 菜单国际化表定义（对标 DictTable） */
+/** Menu i18n table definition (modeled on DictTable) */
 export interface MenuI18nTable {
   menuId: string;
   menuName: string;
@@ -37,7 +37,7 @@ export class MenuI18nService implements OnModuleInit {
 
   /** locale → (menuId → MenuI18nTable) */
   private cache = new Map<string, Map<string, MenuI18nTable>>();
-  /** 支持的语言列表 */
+  /** Supported language list */
   private supportedLocales: string[] = [];
 
   constructor(
@@ -55,7 +55,7 @@ export class MenuI18nService implements OnModuleInit {
   }
 
   /**
-   * 重新加载所有语言的所有菜单国际化数据
+   * Reload all menu i18n data for all languages
    */
   async reloadAll(): Promise<void> {
     this.cache.clear();
@@ -88,7 +88,7 @@ export class MenuI18nService implements OnModuleInit {
   }
 
   /**
-   * 重新加载指定语言的菜单数据
+   * Reload the menu data for a given language
    */
   async reloadLocale(locale: string): Promise<void> {
     const localePath = path.join(this.menuBasePath, locale);
@@ -128,7 +128,7 @@ export class MenuI18nService implements OnModuleInit {
   }
 
   /**
-   * 获取指定菜单的国际化数据
+   * Get the i18n data for a given menu
    */
   getMenuI18n(menuId: string, locale: string = DEFAULT_LOCALE): MenuI18nTable | undefined {
     const localeCache = this.cache.get(locale);
@@ -140,7 +140,7 @@ export class MenuI18nService implements OnModuleInit {
   }
 
   /**
-   * 获取所有菜单国际化数据
+   * Get all menu i18n data
    */
   getAllMenuI18n(locale: string = DEFAULT_LOCALE): MenuI18nTable[] {
     const localeCache = this.cache.get(locale) || this.cache.get(DEFAULT_LOCALE);
@@ -148,7 +148,7 @@ export class MenuI18nService implements OnModuleInit {
   }
 
   /**
-   * 根据 labelKey 获取单个翻译文本
+   * Get a single translation text by labelKey
    */
   getLabel(labelKey: string, locale: string = DEFAULT_LOCALE): string | undefined {
     const localeCache = this.cache.get(locale) || this.cache.get(DEFAULT_LOCALE);
@@ -161,29 +161,29 @@ export class MenuI18nService implements OnModuleInit {
   }
 
   /**
-   * 获取支持的语言列表
+   * Get the supported language list
    */
   getSupportedLocales(): string[] {
     return [...this.supportedLocales];
   }
 
   /**
-   * 获取菜单数据基础路径
+   * Get the base path of the menu data
    */
   getBasePath(): string {
     return this.menuBasePath;
   }
 
-  // ==================== 写操作 ====================
+  // ==================== Write operations ====================
 
-  /** 获取某个菜单表文件路径 */
+  /** Get a menu table file's path */
   private getTablePath(locale: string, menuId: string): string {
     const fileName = menuId.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
     return path.join(this.menuBasePath, locale, `${fileName}.json`);
   }
 
   /**
-   * 更新菜单国际化数据（覆盖 JSON 文件）
+   * Update menu i18n data (overwrites the JSON file)
    */
   updateMenuI18n(locale: string, menuId: string, table: Partial<MenuI18nTable>): void {
     const localeDir = path.join(this.menuBasePath, locale);
@@ -214,12 +214,12 @@ export class MenuI18nService implements OnModuleInit {
     fs.writeFileSync(filePath, JSON.stringify(merged, null, 2), 'utf-8');
     this.logger.log(`更新菜单国际化数据: ${locale}/${menuId}`);
 
-    // 重新加载当前语言缓存
+    // Reload the current language's cache
     this.reloadLocale(locale);
   }
 
   /**
-   * 批量更新菜单条目（只更新 items，保持其他字段不变）
+   * Batch update menu entries (only updates items, keeping other fields unchanged)
    */
   updateMenuItems(locale: string, menuId: string, items: MenuI18nItem[]): void {
     const localeDir = path.join(this.menuBasePath, locale);
@@ -250,14 +250,14 @@ export class MenuI18nService implements OnModuleInit {
     fs.writeFileSync(filePath, JSON.stringify(merged, null, 2), 'utf-8');
     this.logger.log(`更新菜单条目: ${locale}/${menuId} (${items.length} 条)`);
 
-    // 重新加载当前语言缓存
+    // Reload the current language's cache
     this.reloadLocale(locale);
   }
 
   /**
-   * 同步菜单国际化数据到 vue-i18n locale JSON 文件
-   * 将 data/menu/{locale}/ 下的所有 labelKey → label 映射
-   * 同步写入到 ss-editor/packages/system/src/locales/{locale}.json 中
+   * Sync menu i18n data into the vue-i18n locale JSON files
+   * Writes all labelKey → label mappings under data/menu/{locale}
+   * into ss-editor/packages/system/src/locales/{locale}.json
    */
   syncToLocaleFiles(locale: string): { synced: number; errors: string[] } {
     const allTables = this.getAllMenuI18n(locale);
@@ -268,7 +268,7 @@ export class MenuI18nService implements OnModuleInit {
     const errors: string[] = [];
     let synced = 0;
 
-    // 确定 locale 文件路径
+    // Determine the locale file path
     const projectRoot = this.pathResolver.getProjectRoot();
     const localeFilePath = path.resolve(
       projectRoot,
@@ -291,13 +291,13 @@ export class MenuI18nService implements OnModuleInit {
       if (content.charCodeAt(0) === 0xfeff) content = content.slice(1);
       const localeData = JSON.parse(content);
 
-      // 确保 system.nav 路径存在
+      // Ensure the system.nav path exists
       if (!localeData.system) localeData.system = {};
       if (!localeData.system.nav) localeData.system.nav = {};
       if (!localeData.system.settings) localeData.system.settings = {};
       if (!localeData.system.routes) localeData.system.routes = {};
 
-      // 遍历所有菜单表的 items，写入对应路径
+      // Walk all menu tables' items and write them to the corresponding paths
       for (const table of allTables) {
         for (const item of table.items) {
           const keys = item.labelKey.split('.');

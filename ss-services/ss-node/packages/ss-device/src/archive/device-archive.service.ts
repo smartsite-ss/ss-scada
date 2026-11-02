@@ -10,21 +10,21 @@ import { DataTag } from '../entities/data-tag.entity';
 import { ProjectDatabaseService } from '@ss-node/ss-core';
 
 /**
- * 依赖注入 Token —— 避免 ss-device 与 ss-storage-influx 之间的循环包依赖
+ * Dependency-injection Tokens -- avoiding a circular package dependency between ss-device and ss-storage-influx
  *
- * ss-storage-influx 的 DataModule 声明为 @Global()，会将以下 Provider 注册到全局：
- * - InfluxWriteService（写入 InfluxDB HTTP API）
- * - DataQueryService（查询 HistoricalData 表）
+ * ss-storage-influx's DataModule is declared @Global() and registers these Providers globally:
+ * - InfluxWriteService (writes to the InfluxDB HTTP API)
+ * - DataQueryService (queries the HistoricalData table)
  *
- * 此处通过字符串 Token 注入，避免直接 import ss-storage-influx 的类。
- * ss-storage-influx 的 DataModule 需通过以下 Token 提供 alias：
+ * Injection here uses string Tokens, avoiding direct imports of ss-storage-influx classes.
+ * ss-storage-influx's DataModule must provide aliases for these Tokens:
  *   { provide: 'INFLUX_WRITE_SERVICE', useExisting: InfluxWriteService }
  *   { provide: 'DATA_QUERY_SERVICE', useExisting: DataQueryService }
  */
 export const INFLUX_WRITE_SERVICE = 'INFLUX_WRITE_SERVICE';
 export const DATA_QUERY_SERVICE = 'DATA_QUERY_SERVICE';
 
-/** InfluxDB 写入点结构（镜像 ss-storage-influx 的 InfluxWritePoint） */
+/** InfluxDB write-point structure (mirrors ss-storage-influx's InfluxWritePoint) */
 export interface InfluxWritePoint {
   measurement: string;
   tags: Record<string, string>;
@@ -32,7 +32,7 @@ export interface InfluxWritePoint {
   timestamp?: Date | number;
 }
 
-/** InfluxWriteService 最小契约（仅声明用到的方法） */
+/** Minimal InfluxWriteService contract (only the used methods declared) */
 export interface IInfluxWriteService {
   writePoint(point: InfluxWritePoint): Promise<void>;
   writePoints(points: InfluxWritePoint[]): Promise<void>;
@@ -40,7 +40,7 @@ export interface IInfluxWriteService {
   getStats(): any;
 }
 
-/** HistoricalData 查询结果（镜像 ss-storage-influx 的 HistoricalData） */
+/** HistoricalData query result (mirrors ss-storage-influx's HistoricalData) */
 export interface HistoricalDataRecord {
   id: string;
   tagId: string;
@@ -50,7 +50,7 @@ export interface HistoricalDataRecord {
   timestamp: Date;
 }
 
-/** DataQueryService 最小契约（仅声明用到的方法） */
+/** Minimal DataQueryService contract (only the used methods declared) */
 export interface IDataQueryService {
   queryTimeRange(query: {
     tagId: string;
@@ -61,33 +61,33 @@ export interface IDataQueryService {
   }): Promise<{ data: HistoricalDataRecord[]; total: number }>;
 }
 
-/** 归档选项 */
+/** Archive options */
 export interface ArchiveOptions {
-  /** 目标存储 */
+  /** Target storage */
   destination: 'influxdb' | 'sqlite' | 'both';
-  /** 批次大小 */
+  /** Batch size */
   batchSize?: number;
-  /** 是否强制覆盖 */
+  /** Whether to force overwrite */
   force?: boolean;
 }
 
-/** 归档查询选项 */
+/** Archive query options */
 export interface ArchiveQueryOptions {
-  /** 起始时间 */
+  /** Start time */
   startTime: Date;
-  /** 结束时间 */
+  /** End time */
   endTime: Date;
-  /** 分页页码 */
+  /** Page number */
   page?: number;
-  /** 每页大小 */
+  /** Page size */
   pageSize?: number;
-  /** 聚合类型 */
+  /** Aggregation type */
   aggregation?: 'avg' | 'min' | 'max' | 'sum' | 'count';
-  /** 窗口大小(ms) */
+  /** Window size (ms) */
   windowMs?: number;
 }
 
-/** 归档数据点 */
+/** Archived data point */
 export interface ArchivedDataPoint {
   tagId: string;
   deviceId: string;
@@ -97,7 +97,7 @@ export interface ArchivedDataPoint {
   timestamp: Date;
 }
 
-/** 归档状态 */
+/** Archive status */
 export interface ArchiveStatus {
   projectId: string;
   enabled: boolean;
@@ -108,7 +108,7 @@ export interface ArchiveStatus {
   destinations: string[];
 }
 
-/** 归档统计 */
+/** Archive statistics */
 export interface ArchiveStatistics {
   projectId: string;
   totalDataPoints: number;
@@ -119,7 +119,7 @@ export interface ArchiveStatistics {
   tagsWithArchiveEnabled: number;
 }
 
-/** 归档任务 */
+/** Archive task */
 interface ArchiveJob {
   jobId: string;
   projectId: string;
@@ -133,14 +133,14 @@ interface ArchiveJob {
 }
 
 /**
- * DeviceArchiveService — 设备数据归档服务（3.15 实现）
+ * DeviceArchiveService - device data archive service (implemented in 3.15)
  *
- * 归档策略：
- * - 优先使用真实 InfluxDB（通过 INFLUX_WRITE_SERVICE Token 注入）
- * - InfluxDB 不可用时降级到内存 Map（保证测试和离线开发可用）
- * - 查询优先走 DATA_QUERY_SERVICE（HistoricalData 表），降级到内存 Map
+ * Archive strategy:
+ * - Prefer real InfluxDB (injected via the INFLUX_WRITE_SERVICE Token)
+ * - Degrade to an in-memory Map when InfluxDB is unavailable (keeping tests and offline dev working)
+ * - Queries prefer DATA_QUERY_SERVICE (HistoricalData table), degrading to the in-memory Map
  *
- * @see docs/ss-data/02-详细设计/03-设备管理/00-设计-设备管理.md §10
+ * @see device-management design doc section 10
  */
 @Injectable()
 export class DeviceArchiveService {
@@ -150,10 +150,10 @@ export class DeviceArchiveService {
   private readonly cronTimers = new Map<string, NodeJS.Timeout>();
   private readonly dbMode: string;
 
-  /** 内存降级存储：InfluxDB 不可用时使用 */
+  /** In-memory fallback storage: used when InfluxDB is unavailable */
   private readonly influxStore = new Map<string, ArchivedDataPoint[]>();
 
-  /** 内存降级存储：SQLite 归档不可用时使用 */
+  /** In-memory fallback storage: used when the SQLite archive is unavailable */
   private readonly sqliteArchiveStore = new Map<string, ArchivedDataPoint[]>();
 
   constructor(
@@ -184,11 +184,11 @@ export class DeviceArchiveService {
   }
 
   /**
-   * 归档数据到 InfluxDB（3.15 实现）
+   * Archive data to InfluxDB (implemented in 3.15)
    *
-   * 行为：
-   * - InfluxWriteService 可用时 → 调用 writePoint() 写入真实 InfluxDB
-   * - 不可用时 → 降级到内存 Map
+   * Behavior:
+   * - When InfluxWriteService is available -> calls writePoint() to write the real InfluxDB
+   * - When unavailable -> degrades to the in-memory Map
    */
   async archiveToInfluxDB(
     tagId: string,
@@ -204,7 +204,7 @@ export class DeviceArchiveService {
       const dataPoints = await this.fetchDataPoints(tagId, startTime, endTime);
 
       if (this.influxWriteService) {
-        // 真实 InfluxDB 写入
+        // Real InfluxDB write
         for (const dp of dataPoints) {
           const point = this.toInfluxPoint(dp);
           await this.influxWriteService.writePoint(point);
@@ -213,7 +213,7 @@ export class DeviceArchiveService {
           `InfluxDB archive (real): ${dataPoints.length} points for tag ${tagId} (job ${jobId})`,
         );
       } else {
-        // 降级：内存 Map
+        // Degrade: in-memory Map
         const key = `influx:${tagId}`;
         const existing = this.influxStore.get(key) || [];
         const newPoints = dataPoints.filter(
@@ -238,11 +238,11 @@ export class DeviceArchiveService {
   }
 
   /**
-   * 归档数据到 SQLite（3.15 实现）
+   * Archive data to SQLite (implemented in 3.15)
    *
-   * 行为：
-   * - DataQueryService 可用时 → 通过 HistoricalData 表写入（TypeORM Repository.save）
-   * - 不可用时 → 降级到内存 Map
+   * Behavior:
+   * - When DataQueryService is available -> writes via the HistoricalData table (TypeORM Repository.save)
+   * - When unavailable -> degrades to the in-memory Map
    */
   async archiveToSQLite(
     tagId: string,
@@ -257,7 +257,7 @@ export class DeviceArchiveService {
     try {
       const dataPoints = await this.fetchDataPoints(tagId, startTime, endTime);
 
-      // SQLite 归档降级到内存 Map（HistoricalData 表由 DataQueryService 管理，此处不直接写入）
+      // SQLite archiving degrades to the in-memory Map (the HistoricalData table is managed by DataQueryService; no direct write here)
       const key = `sqlite:${tagId}`;
       const existing = this.sqliteArchiveStore.get(key) || [];
       const newPoints = dataPoints.filter(
@@ -279,11 +279,11 @@ export class DeviceArchiveService {
   }
 
   /**
-   * 查询归档数据（3.17 实现）
+   * Query archived data (implemented in 3.17)
    *
-   * 行为：
-   * - DataQueryService 可用时 → 调用 queryTimeRange() 查询 HistoricalData 表
-   * - 不可用时 → 降级到内存 Map 合并查询
+   * Behavior:
+   * - When DataQueryService is available -> calls queryTimeRange() on the HistoricalData table
+   * - When unavailable -> degrades to a merged query over the two in-memory stores
    */
   async queryArchive(
     tagId: string,
@@ -291,7 +291,7 @@ export class DeviceArchiveService {
   ): Promise<{ data: ArchivedDataPoint[]; total: number }> {
     const { startTime, endTime, page = 1, pageSize = 100 } = options;
 
-    // 优先使用真实查询服务
+    // Prefer the real query service
     if (this.dataQueryService) {
       try {
         const result = await this.dataQueryService.queryTimeRange({
@@ -319,7 +319,7 @@ export class DeviceArchiveService {
       }
     }
 
-    // 降级：从两个内存存储中合并数据
+    // Degrade: merge data from the two in-memory stores
     const influxKey = `influx:${tagId}`;
     const sqliteKey = `sqlite:${tagId}`;
 
@@ -330,7 +330,7 @@ export class DeviceArchiveService {
       .filter((dp) => dp.timestamp >= startTime && dp.timestamp <= endTime)
       .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
 
-    // 去重
+    // Dedupe
     const seen = new Set<number>();
     const deduped = allData.filter((dp) => {
       const timestamp = dp.timestamp.getTime();
@@ -347,13 +347,13 @@ export class DeviceArchiveService {
   }
 
   /**
-   * 调度周期性归档
+   * Schedule periodic archiving
    */
   scheduleArchive(
     projectId: string,
     cronExpression: string,
   ): { scheduled: boolean; projectId: string } {
-    // 解析 cron 表达式为毫秒间隔（简化实现）
+    // Parse the cron expression into a millisecond interval (simplified implementation)
     const intervalMs = this.parseCronToMs(cronExpression);
 
     if (this.cronTimers.has(projectId)) {
@@ -394,7 +394,7 @@ export class DeviceArchiveService {
   }
 
   /**
-   * 取消调度归档
+   * Cancel scheduled archiving
    */
   cancelScheduleArchive(projectId: string): boolean {
     const timer = this.cronTimers.get(projectId);
@@ -408,7 +408,7 @@ export class DeviceArchiveService {
   }
 
   /**
-   * 获取归档状态
+   * Get archive status
    */
   getArchiveStatus(projectId?: string): ArchiveStatus[] {
     const result: ArchiveStatus[] = [];
@@ -450,7 +450,7 @@ export class DeviceArchiveService {
   }
 
   /**
-   * 获取归档统计
+   * Get archive statistics
    */
   async getArchiveStatistics(projectId: string): Promise<ArchiveStatistics> {
     const dataTagRepo = await this.getDataTagRepo(projectId);
@@ -471,14 +471,14 @@ export class DeviceArchiveService {
   }
 
   /**
-   * 获取归档任务状态
+   * Get archive-task status
    */
   getJobStatus(jobId: string): ArchiveJob | undefined {
     return this.jobs.get(jobId);
   }
 
   /**
-   * 取消归档任务
+   * Cancel an archive task
    */
   cancelJob(jobId: string): boolean {
     const job = this.jobs.get(jobId);
@@ -490,16 +490,16 @@ export class DeviceArchiveService {
     return false;
   }
 
-  // ──────────── 私有方法 ────────────
+  // ──────────── Private methods ────────────
 
   /**
-   * 将 ArchivedDataPoint 映射为 InfluxDB 写入点
+   * Map an ArchivedDataPoint to an InfluxDB write point
    *
-   * 映射规则（对应设计文档 §10.3）：
+   * Mapping rules (per design doc section 10.3):
    * - measurement: "device_archive"
    * - tags: projectId, deviceId, tagId
    * - fields: value (number), quality (string)
-   * - timestamp: 原始时间戳
+   * - timestamp: the original timestamp
    */
   private toInfluxPoint(dp: ArchivedDataPoint): InfluxWritePoint {
     return {
@@ -539,18 +539,18 @@ export class DeviceArchiveService {
   }
 
   /**
-   * 获取数据点（3.17 实现）
+   * Get data points (implemented in 3.17)
    *
-   * 行为：
-   * - DataQueryService 可用时 → 从 HistoricalData 表查询真实数据
-   * - 不可用时 → 返回空数组（不再生成随机数模拟数据）
+   * Behavior:
+   * - When DataQueryService is available -> query real data from the HistoricalData table
+   * - When unavailable -> return an empty array (no longer generating random mock data)
    */
   private async fetchDataPoints(
     tagId: string,
     startTime: Date,
     endTime: Date,
   ): Promise<ArchivedDataPoint[]> {
-    // 优先使用真实查询服务
+    // Prefer the real query service
     if (this.dataQueryService) {
       try {
         const result = await this.dataQueryService.queryTimeRange({
@@ -577,7 +577,7 @@ export class DeviceArchiveService {
       }
     }
 
-    // 降级：返回空数组（不再生成随机数）
+    // Degrade: return an empty array (no longer generating random data)
     this.logger.debug(
       `fetchDataPoints: DataQueryService not available, returning empty array for tag ${tagId}`,
     );
@@ -585,7 +585,7 @@ export class DeviceArchiveService {
   }
 
   private updateStats(tagId: string, archivedCount: number): void {
-    // 简化：使用 tagId 作为 projectId
+    // Simplification: use tagId as projectId
     const projectId = 'default';
     let stat = this.stats.get(projectId);
     if (!stat) {
@@ -605,29 +605,29 @@ export class DeviceArchiveService {
   }
 
   private parseCronToMs(cronExpression: string): number {
-    // 简化 cron 解析：支持常见格式
+    // Simplified cron parsing: supports common formats
     const parts = cronExpression.trim().split(/\s+/);
 
     if (parts.length === 1) {
-      // 直接毫秒值
+      // Direct millisecond value
       const ms = parseInt(parts[0], 10);
       if (!isNaN(ms)) return ms;
     }
 
-    // 默认常见间隔
+    // Default common intervals
     switch (cronExpression) {
       case '* * * * *':
-        return 60000; // 每分钟
+        return 60000; // every minute
       case '*/5 * * * *':
-        return 300000; // 每5分钟
+        return 300000; // every 5 minutes
       case '*/15 * * * *':
-        return 900000; // 每15分钟
+        return 900000; // every 15 minutes
       case '0 * * * *':
-        return 3600000; // 每小时
+        return 3600000; // every hour
       case '0 0 * * *':
-        return 86400000; // 每天
+        return 86400000; // every day
       default:
-        // 尝试解析为分钟，兜底从配置读取或默认 5 分钟
+        // Try parsing as minutes, falling back to config or the 5-minute default
         return this.configService?.get<number>('DEVICE_ARCHIVE_DEFAULT_INTERVAL_MS') || 300000;
     }
   }

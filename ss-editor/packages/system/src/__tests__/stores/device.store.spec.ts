@@ -276,7 +276,7 @@ describe('useDeviceStore', () => {
   });
 });
 
-// ==================== 新增测试：多级分组树 ====================
+// ==================== New tests: multi-level group tree ====================
 
 describe('useDeviceStore - multi-level group tree', () => {
   beforeEach(() => {
@@ -371,7 +371,7 @@ describe('useDeviceStore - multi-level group tree', () => {
   });
 });
 
-// ==================== 新增测试：设备创建 - 不同驱动类型 ====================
+// ==================== New tests: device creation - different driver types ====================
 
 describe('useDeviceStore - create device with different drivers', () => {
   beforeEach(() => {
@@ -465,7 +465,7 @@ describe('useDeviceStore - create device with different drivers', () => {
   });
 });
 
-// ==================== 新增测试：设备创建 - 分配分组 ====================
+// ==================== New tests: device creation - group assignment ====================
 
 describe('useDeviceStore - create device with group assignment', () => {
   beforeEach(() => {
@@ -508,7 +508,7 @@ describe('useDeviceStore - create device with group assignment', () => {
   });
 });
 
-// ==================== 新增测试：设备创建 - 错误处理 ====================
+// ==================== New tests: device creation - error handling ====================
 
 describe('useDeviceStore - create device error handling', () => {
   beforeEach(() => {
@@ -552,7 +552,7 @@ describe('useDeviceStore - create device error handling', () => {
   });
 });
 
-// ==================== 新增测试：分组CRUD详细 ====================
+// ==================== New tests: group CRUD details ====================
 
 describe('useDeviceStore - group CRUD details', () => {
   beforeEach(() => {

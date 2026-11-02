@@ -7,32 +7,32 @@ import { randomUUID } from 'crypto';
 import { AuthService } from '../auth.service';
 import { UserService } from '../../user/user.service';
 
-/** 一次性预览票据条目：绑定签发用户与过期时刻 */
+/** One-time preview-ticket entry: bound to the issuing user and expiration time */
 interface PreviewTicketEntry {
   userId: string;
   expiresAtTimestamp: number;
 }
 
-/** 票据生成结果 */
+/** Ticket generation result */
 export interface PreviewTicketTokenPair {
   accessToken: string;
   refreshToken: string;
 }
 
-/** 票据有效期（毫秒）：足够 H5 运行态壳加载并完成兑换，又足够短以降低 URL 泄露风险 */
+/** Ticket validity (ms): long enough for the H5 runtime shell to load and complete exchange, short enough to lower URL-leak risk */
 const PREVIEW_TICKET_TTL_MS = 60 * 1000;
 
-/** 票据存储上限：防止恶意高频签发撑爆内存（超限清理最旧条目） */
+/** Ticket storage cap: prevent malicious high-frequency issuance from exhausting memory (evict oldest entries when exceeded) */
 const MAX_PREVIEW_TICKET_COUNT = 1000;
 
 /**
- * 组态运行态预览一次性票据服务（06 方案路线 B #2 ticket 鉴权桥）
+ * Config runtime preview one-time ticket service (06 Plan Route B #2 ticket auth bridge)
  *
- * 场景：移动端（uni-app H5/App/小程序）以 Bearer Token 持有会话，而 Web 组态运行态壳
- * （ss-editor /preview）依赖 HttpOnly Cookie 会话。票据桥接两种会话形态：
- *   1. 移动端携带 Bearer Token 调 POST /auth/preview-ticket 签发一次性票据；
- *   2. 票据经 URL 传入 H5 运行态壳，壳内调 POST /auth/preview-ticket-exchange
- *      兑换为 HttpOnly Cookie 会话（兑换即销毁，防重放）。
+ * Scenario: the mobile end (uni-app H5/App/mini-program) holds the session via Bearer Token, while the Web config runtime shell
+ * (ss-editor /preview) relies on the HttpOnly Cookie session. The ticket bridges the two session forms:
+ *   1. The mobile end carries the Bearer Token and calls POST /auth/preview-ticket to issue a one-time ticket;
+ *   2. The ticket is passed via URL into the H5 runtime shell, which calls POST /auth/preview-ticket-exchange
+ *      to exchange it for an HttpOnly Cookie session (destroyed on exchange, preventing replay).
  */
 @Injectable()
 export class PreviewTicketService {
@@ -45,11 +45,11 @@ export class PreviewTicketService {
   ) {}
 
   /**
-   * 组装运行态壳完整预览 URL（方案 C：后端下发，前端零拼接）。
-   * 壳基地址由后端环境变量 SCADA_SHELL_BASE_URL 配置：
-   * - 本地调试：http://localhost:5173（full 壳 dev，跨端口由后端显式给出）；
-   * - 生产：/scada-preview（H5 同源相对路径，浏览器按当前 origin 解析，天然同源免跨域）。
-   * 未配置时返回 undefined，调用方回退本地拼接兜底（VITE_WEB_PREVIEW_BASE_URL）。
+   * Assemble the full preview URL of the runtime shell (Plan C: backend issues it, frontend does zero assembly).
+   * The shell base URL is configured by the backend env var SCADA_SHELL_BASE_URL:
+   * - Local debug: http://localhost:5173 (full shell dev, cross-port explicitly given by backend);
+   * - Production: /scada-preview (H5 same-origin relative path, resolved by the browser against the current origin, naturally same-origin).
+   * When unset, returns undefined and the caller falls back to local assembly (VITE_WEB_PREVIEW_BASE_URL).
    */
   buildPreviewUrl(
     previewTicket: string,
@@ -72,7 +72,7 @@ export class PreviewTicketService {
     return `${shellBaseUrl.replace(/\/+$/, '')}/preview?${queryParts.join('&')}`;
   }
 
-  /** 为指定用户签发一次性预览票据（60 秒有效，兑换后立即销毁） */
+  /** Issue a one-time preview ticket for the specified user (valid 60s, destroyed immediately on exchange) */
   issuePreviewTicket(userId: string): string {
     this.purgeExpiredPreviewTickets();
     if (this.previewTicketStore.size >= MAX_PREVIEW_TICKET_COUNT) {
@@ -93,8 +93,8 @@ export class PreviewTicketService {
   }
 
   /**
-   * 兑换票据为 Token 对（一次性消费：无论有效与否先移除，防止重放）。
-   * 无效/过期/用户不存在一律抛 401，不泄露具体原因差异给调用方。
+   * Exchange a ticket for a token pair (one-time consumption: remove first regardless of validity, preventing replay).
+   * Invalid/expired/nonexistent user all throw 401 without leaking the specific reason difference to the caller.
    */
   async consumePreviewTicket(previewTicket: string): Promise<PreviewTicketTokenPair> {
     this.purgeExpiredPreviewTickets();
@@ -119,7 +119,7 @@ export class PreviewTicketService {
     });
   }
 
-  /** 清理过期票据（签发/兑换时顺带执行，无需独立定时器） */
+  /** Clean up expired tickets (run opportunistically on issue/exchange, no separate timer needed) */
   private purgeExpiredPreviewTickets(): void {
     const nowTimestamp = Date.now();
     for (const [ticketKey, ticketEntry] of this.previewTicketStore) {

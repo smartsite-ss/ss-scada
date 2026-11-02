@@ -14,11 +14,11 @@ import { extractTagIds } from './DataSourceReader';
 export type { TagValueChangeHandler };
 
 export interface PageDataSourceInput {
-  /** v3.0: pageId 用于标识当前页面，dataSources 来自页面 JSON 的 dataSource 字段 */
+  /** v3.0: pageId identifies the current page; dataSources comes from the page JSON's dataSource field */
   pageId: string;
-  /** v4.5: 运行态项目标识，用于 WebSocketDriver 建立连接、订阅标签 */
+  /** v4.5: runtime project identifier, used by WebSocketDriver to establish connections and subscribe tags */
   projectId?: string;
-  /** v3.0: 页面 dataSource 集合，直接从页面 JSON 反序列化，不再从独立数据库查询 */
+  /** v3.0: page dataSource collection, deserialized directly from the page JSON, no longer queried from a separate database */
   dataSources: Array<{
     id: string;
     name: string;
@@ -40,7 +40,7 @@ export interface PageDataSourceInput {
     alarmLowLow?: number;
     decimalPlaces?: number;
   }>;
-  /** @deprecated v3.0 — graphicBindings 正逐步迁移至各图元的 graphicData 字段。运行时建议从图元自己的 graphicData 读取绑定信息。 */
+  /** @deprecated v3.0 — graphicBindings are gradually migrating to each graphic's graphicData field. At runtime prefer reading binding info from the graphic's own graphicData. */
   graphicBindings: Array<{
     graphicId: string;
     graphicName: string;
@@ -48,7 +48,7 @@ export interface PageDataSourceInput {
     tagId: string;
     filterScript?: string;
     driverScript?: string;
-    /** 图元属性路径；缺省 'config.customProps.text' */
+    /** Graphic property path; defaults to 'config.customProps.text' */
     propertyPath?: string;
   }>;
 }
@@ -58,10 +58,12 @@ interface EventBusLike {
 }
 
 /**
- * DataSourceManager — 页面数据源集中管理窗口（组合 DriverRegistry / TagCache / SubscriptionManager）
+ * DataSourceManager — centralized management window for page data sources (composes DriverRegistry / TagCache / SubscriptionManager)
  *
- * **v3.0 定位**：本管理器是页面内所有数据源的集中管理窗口，提供统一查看、修改、调试能力。
- * 它不是持久化层——数据源集合随页面 JSON 一同序列化，页面加载时从页面配置直接反序列化。
+ * **v3.0 positioning**: this manager is the centralized management window for all data sources in a page,
+ * providing unified viewing, modification and debugging capabilities.
+ * It is not a persistence layer — the data source collection is serialized with the page JSON and
+ * deserialized directly from the page config at load time.
  */
 export class DataSourceManager {
   private _driverRegistry = new DriverRegistry();
@@ -72,7 +74,7 @@ export class DataSourceManager {
   private _projectId = '';
   private _activeTimers: Set<ReturnType<typeof setInterval>> = new Set();
   private _initialized = false;
-  /** 轮询数据源连续失败次数（用于熔断判断） */
+  /** Consecutive failure count of polling data sources (used for circuit-breaker decisions) */
   private _refreshErrorCounts = new Map<string, number>();
   private static readonly MAX_CONSECUTIVE_ERRORS = 3;
 
@@ -84,18 +86,18 @@ export class DataSourceManager {
     return this._initialized;
   }
 
-  /** 运行态项目标识，供 WebSocketDriver 等 driver 读取 */
+  /** Runtime project identifier, read by WebSocketDriver and other drivers */
   getProjectId(): string {
     return this._projectId;
   }
 
-  // ── 驱动注册 ──────────────────────────────────────
+  // ── Driver registration ──────────────────────────────────────
 
   registerDriverFactory(type: string, factory: () => IDataSourceDriver): void {
     this._driverRegistry.registerDriverFactory(type, factory);
   }
 
-  // ── 页面生命周期 ─────────────────────────────────
+  // ── Page lifecycle ─────────────────────────────────
 
   async init(pageGroup: PageDataSourceInput): Promise<void> {
     if (this._initialized) await this.destroy();
@@ -120,19 +122,19 @@ export class DataSourceManager {
       let tagIds = pageGroup.variables
         .filter((v) => v.dataSourceId === ds.id || v.dataSourceId === sourceId)
         .map((v) => v.tagId);
-      // 兜底：variables 为空时从 ds.config / ds.properties 提取 tagIds
+      // Fallback: when variables is empty, extract tagIds from ds.config / ds.properties
       if (tagIds.length === 0) {
         tagIds = extractTagIds((ds as any).config || ds);
       }
       if (tagIds.length > 0) this._subscriptionManager.subscribeToSource(driver, tagIds);
       try {
-        // 注入 projectId 上下文供 WebSocketDriver 等驱动读取（不修改原 config）
+        // Inject the projectId context for WebSocketDriver and other drivers (does not modify the original config)
         const connectConfig = this._projectId
           ? { ...info.config, projectId: this._projectId } as any
           : info.config;
         await driver.connect(connectConfig);
-        // connect() 在某些预期场景（如未登录）可能不抛异常但也未实际连接，
-        // 必须通过 getStatus() 校准状态，不能盲信无异常=已连接
+        // connect() may not throw in some expected scenarios (e.g. not logged in) without actually connecting,
+        // so the status must be calibrated via getStatus(); never assume no-exception = connected
         const driverStatus = driver.getStatus();
         info.status = driverStatus;
         if (driverStatus === 'connected') {
@@ -143,7 +145,7 @@ export class DataSourceManager {
           statusEntry.errorMessage = info.lastError || 'Connection failed';
           this._eventBus.emit('sourceError', { sourceId, error: info.lastError || 'Connection failed' });
         } else {
-          // disconnected / connecting 等非错误状态 —— 面板显示"已断开"而非"错误"
+          // Non-error states such as disconnected/connecting — the panel shows "disconnected" rather than "error"
           statusEntry.status = 'idle';
           console.log(`[DataSourceManager.init] driver "${ds.name}" status=${driverStatus} at ${Date.now()}`);
         }
@@ -188,7 +190,7 @@ export class DataSourceManager {
     this._eventBus.emit('dataSourceManagerDestroyed', { pageId });
   }
 
-  // ── 数据拉取 ─────────────────────────────────────
+  // ── Data fetch ─────────────────────────────────────
 
   async fetchAll(): Promise<void> {
     for (const { id } of this._driverRegistry.getAllSources()) await this._fetchSource(id);
@@ -198,7 +200,7 @@ export class DataSourceManager {
     if (this._driverRegistry.getSource(dataSourceId)) await this._fetchSource(dataSourceId);
   }
 
-  // ── 状态查询 ─────────────────────────────────────
+  // ── Status queries ─────────────────────────────────────
 
   getStatus(): DataSourceManagerStatus {
     return this._driverRegistry.buildStatus(this._pageId, this._subscriptionManager.getBindings().length);
@@ -208,7 +210,7 @@ export class DataSourceManager {
     return this._subscriptionManager.getBindings();
   }
 
-  /** 按 tagId 检索绑定（供 DataPipelineBridge 执行 filter/driver 脚本） */
+  /** Retrieve bindings by tagId (for DataPipelineBridge to run filter/driver scripts) */
   getBindingsByTagId(tagId: string): BindingInfo[] {
     return this._subscriptionManager.getBindingsByTagId(tagId);
   }
@@ -217,13 +219,13 @@ export class DataSourceManager {
     return this._subscriptionManager.getVariableMeta(tagId) as PageDataSourceInput['variables'][0] | undefined;
   }
 
-  // ── 标签变更监听 ─────────────────────────────────
+  // ── Tag change listeners ─────────────────────────────────
 
   onTagValueChanged(handler: TagValueChangeHandler): () => void {
     return this._subscriptionManager.onTagValueChanged(handler);
   }
 
-  // ── 数据源注册/注销 ──────────────────────────────
+  // ── Data source register/unregister ──────────────────────────────
 
   async registerSource(config: DataSourceConfig): Promise<string> {
     const { sourceId, driver, info } = this._driverRegistry.createDriver(
@@ -253,7 +255,7 @@ export class DataSourceManager {
     this._tagCache.clearCachedTags(sourceId);
   }
 
-  // ── 启停控制 ─────────────────────────────────────
+  // ── Start/stop control ─────────────────────────────────────
 
   async start(): Promise<void> {
     for (const { id } of this._driverRegistry.getAllSources()) {
@@ -290,7 +292,7 @@ export class DataSourceManager {
     this._driverRegistry.updateStatusEntry(sourceId, { status: 'active' });
   }
 
-  // ── 数据读取 ─────────────────────────────────────
+  // ── Data reading ─────────────────────────────────────
 
   subscribeToSource(sourceId: string, tagIds: string[]): void {
     this._subscriptionManager.subscribeToSource(this._driverRegistry.getDriver(sourceId), tagIds);
@@ -325,7 +327,7 @@ export class DataSourceManager {
     if (driver) await driver.write(tagId, value);
   }
 
-  // ── 内部方法 ─────────────────────────────────────
+  // ── Internal methods ─────────────────────────────────────
 
   private _connectDriverCallback(sourceId: string, driver: IDataSourceDriver): void {
     driver.onData(this._createOnDataCallback(sourceId));
@@ -338,7 +340,7 @@ export class DataSourceManager {
   private _onDataReceived(sourceId: string, values: TagValue[]): void {
     const now = Date.now();
     this._driverRegistry.updateStatusEntry(sourceId, { lastFetchTime: now });
-    // 熔断器：根据本次推送的数据质量更新错误计数（替代原双层轮询中的 _fetchSource 错误捕获）
+    // Circuit breaker: update the error count based on the pushed data quality (replacing the _fetchSource error capture in the old double-layer polling)
     this._updateCircuitBreaker(sourceId, values);
     const changes = this._tagCache.processReceivedData(sourceId, values);
     if (changes.length > 0) {
@@ -352,8 +354,8 @@ export class DataSourceManager {
   }
 
   /**
-   * 熔断器：driver 推送 stale/bad 质量数据时计数，连续达到阈值则 emit sourceError。
-   * 推送 good 数据时重置计数。替代原 _applyRefreshStrategy 中的 _fetchSource 错误捕获逻辑。
+   * Circuit breaker: count when a driver pushes stale/bad quality data; on reaching the threshold consecutively, emit sourceError.
+   * Resets the count on good data. Replaces the _fetchSource error capture logic in the old _applyRefreshStrategy.
    */
   private _updateCircuitBreaker(sourceId: string, values: TagValue[]): void {
     const hasBadQuality = values.some((v) => v.quality === 'stale' || v.quality === 'bad');
@@ -389,14 +391,14 @@ export class DataSourceManager {
   }
 
   /**
-   * 刷新策略：driver 自治轮询，DSM 不再启动定时器（消除双层轮询）。
-   * - static/tag/websocket：无轮询
-   * - api/polling/sql：driver 内部 _startPolling 自管定时器
-   * - 熔断器逻辑已迁移到 _onDataReceived → _updateCircuitBreaker
+   * Refresh strategy: drivers poll autonomously; DSM no longer starts timers (eliminating double-layer polling).
+   * - static/tag/websocket: no polling
+   * - api/polling/sql: the driver's internal _startPolling manages its own timer
+   * - The circuit-breaker logic has moved to _onDataReceived → _updateCircuitBreaker
    *
-   * 保留此方法作为扩展点（未来可在此挂载按需刷新、健康检查等策略）。
+   * Kept as an extension point (future on-demand refresh, health checks and other strategies can hook here).
    */
   private _applyRefreshStrategy(_sourceId: string, _dsType: string, _dsConfig: Record<string, unknown>): void {
-    // no-op: driver 自管轮询，DSM 通过 _onDataReceived 的熔断器监控数据质量
+    // no-op: drivers self-manage polling; DSM monitors data quality via the _onDataReceived circuit breaker
   }
 }

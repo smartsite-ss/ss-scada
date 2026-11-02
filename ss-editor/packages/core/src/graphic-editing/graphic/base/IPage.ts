@@ -18,16 +18,16 @@ import type { GraphicGroup, GroupManager } from '../../managers/GroupManager';
 import type { FitMode } from '../../../canvas-page/managers/ZoomManager';
 
 /**
- * 页面接口
+ * Page interface
  */
 export interface IPage {
-  // 基本属性
+  // Basic properties
   id: string;
   name: string;
   width: number;
   height: number;
   scale: number;
-  fitMode: FitMode;           // 当前适配模式
+  fitMode: FitMode;           // Current fit mode
   backgroundColor: string;
   backgroundImage?: string;
   themeColors: IThemeColors;
@@ -36,7 +36,7 @@ export interface IPage {
   markDirty?: () => void;
   clearDirty?: () => void;
 
-  mode?: 'edit' | 'preview';  // 页面模式：编辑态 / 运行态
+  mode?: 'edit' | 'preview';  // Page mode: edit / runtime
 
   layout: ILayout;
   graphics: IGraphic[];
@@ -44,14 +44,14 @@ export interface IPage {
   groups: GraphicGroup[];
   guideLines: GuideLine[];
   dataSource?: any;
-  templateId?: string;     // 模板引用 ID（引用模式）
-  templateMode?: 'reference' | 'copy';  // 模板应用模式
+  templateId?: string;     // Template reference ID (reference mode)
+  templateMode?: 'reference' | 'copy';  // Template application mode
 
-  // 选择属性（通过SelectionManager）
+  // Selection properties (via SelectionManager)
   selectedGraphicId: string | null;
   selectedGraphicIds: string[];
 
-  // ==================== 管理器访问方法 ====================
+  // ==================== Manager Access Methods ====================
   getSelectionManager(): SelectionManager;
   getLayerManager(): LayerManager;
   getHistoryManager(): HistoryManager;
@@ -62,15 +62,15 @@ export interface IPage {
   getBatchOperationManager(): BatchOperationManager;
   getGroupManager(): GroupManager;
 
-  // ==================== 基础方法 ====================
+  // ==================== Basic Methods ====================
   getSize(): { width: number; height: number };
   getGraphics(): IGraphic[];
   clone(): IPage;
   toJSON(): any;
-  toJSONAsync(): Promise<any>;  // 异步版本，会将 Blob URL 转换为 Base64
+  toJSONAsync(): Promise<any>;  // Async version, converts Blob URLs to Base64
   fromJSON(data: any): void;
 
-  // 图形管理方法
+  // Graphic management methods
   findGraphicById(id: string): IGraphic | null;
   getGraphicById(id: string): IGraphic | null;
   addGraphic(graphic: IGraphic, autoZIndex?: boolean, recordHistory?: boolean): void;
@@ -91,14 +91,14 @@ export interface IPage {
   importGraphics(data: any[]): void;
   exportGraphics(): any[];
 
-  // 选择管理方法
+  // Selection management methods
   selectGraphic(id: string | null): void;
   selectMultipleGraphics(ids: string[]): void;
   addToSelection(id: string): void;
   removeFromSelection(id: string): void;
   clearSelection(): void;
 
-  // 图层管理方法
+  // Layer management methods
   bringToFront(id: string): void;
   sendToBack(id: string): void;
   bringForward(id: string): void;
@@ -106,7 +106,7 @@ export interface IPage {
   reorderGraphic(id: string, newIndex: number): void;
   getSortedGraphics(): IGraphic[];
 
-  // 组合管理方法
+  // Group management methods
   createGroup(ids: string[], groupId?: string): any;
   ungroup(groupId: string): IGraphic[];
   isGroup(id: string): boolean;
@@ -118,24 +118,24 @@ export interface IPage {
   groupGraphics(ids: string[]): any;
   ungroupGraphic(groupId: string): IGraphic[];
 
-  // 历史记录方法
+  // History methods
   undo(): void;
   redo(): void;
   canUndo(): boolean;
   canRedo(): boolean;
-  /** 开始批量历史记录（将后续 saveChange 合并到一个 CompositeChange） */
+  /** Start batch history recording (merges subsequent saveChange calls into one CompositeChange) */
   startBatch(description: string): void;
-  /** 结束批量历史记录 */
+  /** End batch history recording */
   endBatch(): void;
-  /** 跳转到指定历史位置（-1 表示清空所有历史） */
+  /** Jump to a specific history position (-1 clears all history) */
   jumpToHistory(index: number): void;
 
-  // 布局管理方法
+  // Layout management methods
   setLayout(layout: LayoutType): void;
   getCurrentLayout(): LayoutType;
   applyGridLayout(config: GridLayoutConfig): void;
 
-  // 其他方法
+  // Other methods
   adjustSpacing(spacing: number, direction: 'horizontal' | 'vertical'): void;
   batchEdit(properties: Partial<IGraphic>): void;
   autoLayout(layoutType: 'grid' | 'flow' | 'circle'): void;
@@ -144,13 +144,13 @@ export interface IPage {
   hasMultipleSelectedGraphics(): boolean;
   hasSelectedGraphics(): boolean;
 
-  // ==================== 网格吸附方法 ====================
+  // ==================== Grid Snap Methods ====================
   setGridSnapConfig(config: Partial<GridSnapConfig>): void;
   getGridSnapConfig(): GridSnapConfig;
   snapPosition(x: number, y: number, referenceGraphics?: IGraphic[]): SnapResult;
   getGridLines(bounds: { x: number; y: number; width: number; height: number }): any;
 
-  // ==================== 智能对齐方法 ====================
+  // ==================== Smart Align Methods ====================
   setAlignDistance(distance: number): void;
   detectAlignTargets(draggingGraphic: IGraphic, otherGraphics: IGraphic[]): any;
   addGuideLine(position: number, direction: 'horizontal' | 'vertical'): string;
@@ -165,7 +165,7 @@ export interface IPage {
   alignToPageEdge(graphics: IGraphic[], type: 'left' | 'right' | 'top' | 'bottom', margin?: number): void;
   centerOnPage(graphics: IGraphic[], direction?: 'horizontal' | 'vertical' | 'both'): void;
 
-  // ==================== 批量操作方法 ====================
+  // ==================== Batch Operation Methods ====================
   batchMove(deltaX: number, deltaY: number): void;
   batchScale(scaleX: number, scaleY: number, origin?: { x: number; y: number }): void;
   batchRotate(degrees: number, origin?: { x: number; y: number }): void;
@@ -175,7 +175,7 @@ export interface IPage {
   spaceEvenlyHorizontal(spacing?: number): void;
   spaceEvenlyVertical(spacing?: number): void;
 
-  // ==================== 定时器管理方法 ====================
+  // ==================== Timer Management Methods ====================
   addTimer(timer: Omit<ITimerConfig, 'id' | 'lastExecuteTime' | 'executeCount'>): ITimerConfig;
   updateTimer(id: string, config: Partial<ITimerConfig>): void;
   removeTimer(id: string): void;
@@ -183,17 +183,17 @@ export interface IPage {
   getAllTimers(): ITimerConfig[];
   enableTimer(id: string): void;
   disableTimer(id: string): void;
-  
-  // ==================== 定时器运行控制 ====================
+
+  // ==================== Timer Run Control ====================
   startTimers(): void;
   stopTimers(): void;
   startTimer(id: string): void;
   stopTimer(id: string): void;
-  
-  // ==================== 脚本执行 ====================
+
+  // ==================== Script Execution ====================
   executeTimerScript(timer: ITimerConfig): ITimerExecutionResult;
 
-  // ==================== 窗口适配方法 ====================
+  // ==================== Window Fit Methods ====================
   setFitMode(mode: FitMode): void;
   getFitMode(): FitMode;
   autoFit(viewportWidth: number, viewportHeight: number): void;

@@ -8,15 +8,15 @@ import { Repository } from 'typeorm';
 import { Menu, MenuButton } from '../entities/system.entity';
 
 /**
- * 系统菜单配置服务（v7.1 — DB 唯一数据源方案）
+ * System menu config service (v7.1 — DB as the single source of truth)
  *
- * 菜单数据仅存储于 sys_menus 表，代码内置 DEFAULT_SYSTEM_MENU 仅作为
- * 首次初始化与版本同步的种子数据，不再作为运行时 fallback。
- * 启动时 syncDefaultMenus() 会补增缺失项并同步已有项字段，
- * 确保代码默认值变更能自动反映到 DB。
+ * Menu data lives only in the sys_menus table; the code-embedded DEFAULT_SYSTEM_MENU serves
+ * solely as seed data for first-time initialization and version sync, not as a runtime fallback.
+ * At startup, syncDefaultMenus() inserts missing items and syncs fields of existing ones,
+ * ensuring code default changes are automatically reflected in the DB.
  */
 
-/** 系统菜单项接口（与前端对齐） */
+/** System menu item interface (aligned with the frontend) */
 export interface SystemMenuItem {
   id: string;
   labelKey: string;
@@ -28,11 +28,11 @@ export interface SystemMenuItem {
   showInSidebar?: boolean;
   isDetail?: boolean;
   order?: number;
-  /** 子系统标识，NULL/undefined 表示全局菜单 */
+  /** Subsystem identifier; NULL/undefined means a global menu */
   subsystem?: string | null;
 }
 
-/** 菜单按钮接口 */
+/** Menu button interface */
 export interface SystemMenuButton {
   id: string;
   menuId: string;
@@ -41,7 +41,7 @@ export interface SystemMenuButton {
   sortOrder: number;
 }
 
-/** 代码内置默认菜单（DB 不可用时使用） */
+/** Code-embedded default menus (used when the DB is unavailable) */
 const DEFAULT_SYSTEM_MENU: SystemMenuItem[] = [
   { id: 'overview', labelKey: 'system.nav.overview', path: '', icon: 'overview', order: 0 },
   {
@@ -340,9 +340,9 @@ const DEFAULT_SYSTEM_MENU: SystemMenuItem[] = [
   },
 ];
 
-/** 默认按钮权限（按菜单关联） */
+/** Default button permissions (associated by menu) */
 const DEFAULT_MENU_BUTTONS: SystemMenuButton[] = [
-  // 设备管理
+  // Device management
   {
     id: 'btn-device-create',
     menuId: 'devices',
@@ -378,7 +378,7 @@ const DEFAULT_MENU_BUTTONS: SystemMenuButton[] = [
     permissionCode: 'device:export',
     sortOrder: 40,
   },
-  // 采集管理
+  // Collection management
   {
     id: 'btn-plugin-create',
     menuId: 'plugins',
@@ -400,7 +400,7 @@ const DEFAULT_MENU_BUTTONS: SystemMenuButton[] = [
     permissionCode: 'plugin:delete',
     sortOrder: 20,
   },
-  // 报警中心
+  // Alarm center
   {
     id: 'btn-alarm-ack',
     menuId: 'alarms',
@@ -415,7 +415,7 @@ const DEFAULT_MENU_BUTTONS: SystemMenuButton[] = [
     permissionCode: 'alarm:configure',
     sortOrder: 10,
   },
-  // 脚本管理
+  // Script management
   {
     id: 'btn-script-create',
     menuId: 'scripts',
@@ -444,7 +444,7 @@ const DEFAULT_MENU_BUTTONS: SystemMenuButton[] = [
     permissionCode: 'script:execute',
     sortOrder: 30,
   },
-  // 项目管理
+  // Project management
   {
     id: 'btn-project-create',
     menuId: 'projects',
@@ -466,7 +466,7 @@ const DEFAULT_MENU_BUTTONS: SystemMenuButton[] = [
     permissionCode: 'project:delete',
     sortOrder: 20,
   },
-  // 模板管理
+  // Template management
   {
     id: 'btn-tmpl-create',
     menuId: 'templates',
@@ -521,9 +521,9 @@ export class SystemMenuConfigService implements OnModuleInit {
   }
 
   /**
-   * 获取系统菜单（树形结构）— DB 唯一数据源
-   * @param subsystem 可选子系统过滤，优先级：参数 > env.SUBSYSTEM > 不过滤
-   * @returns DB 中的菜单树；DB 为空时返回空数组（由 syncDefaultMenus 保证启动时已写入）
+   * Get the system menu (tree structure) — DB as the single source of truth
+   * @param subsystem optional subsystem filter; priority: parameter > env.SUBSYSTEM > no filter
+   * @returns the menu tree from the DB; an empty array when the DB is empty (syncDefaultMenus guarantees it is seeded at startup)
    */
   async getMenu(subsystem?: string): Promise<SystemMenuItem[]> {
     const currentSubsystem = subsystem || process.env.SUBSYSTEM || undefined;
@@ -545,18 +545,18 @@ export class SystemMenuConfigService implements OnModuleInit {
   }
 
   /**
-   * 更新系统菜单（接收树形结构，扁平化后 upsert 到 menus 表）
-   * 同时删除 menus 表中不在新数据里的记录
+   * Update the system menu (accepts a tree structure, flattened and upserted into the menus table)
+   * Also deletes records in the menus table absent from the new data
    */
   async updateMenu(items: SystemMenuItem[]): Promise<void> {
     const flatRows = this.flattenTree(items);
     const ids = new Set(flatRows.map((r) => r.id));
 
-    // 不使用 manager.transaction()：sqlite3 驱动在 TypeORM 事务包装下存在
-    // TransactionNotStartedError 已知问题（事务未启动即提交/回滚）。
-    // delete + upsert 模式本身是幂等的，SQLite 写操作天然串行，无需显式事务。
+    // manager.transaction() is not used: the sqlite3 driver under TypeORM transaction wrapping has a
+    // known TransactionNotStartedError issue (commit/rollback on a not-yet-started transaction).
+    // The delete + upsert pattern is idempotent by itself and SQLite writes are naturally serial; no explicit transaction is needed.
 
-    // 删除不在新数据中的旧记录
+    // Delete old records absent from the new data
     await this.menuRepo
       .createQueryBuilder()
       .delete()
@@ -564,7 +564,7 @@ export class SystemMenuConfigService implements OnModuleInit {
       .where('id NOT IN (:...ids)', { ids: ids.size > 0 ? [...ids] : ['__none__'] })
       .execute();
 
-    // Upsert 每条记录
+    // Upsert each record
     for (const row of flatRows) {
       await this.menuRepo
         .createQueryBuilder()
@@ -588,12 +588,12 @@ export class SystemMenuConfigService implements OnModuleInit {
     this.logger.log(`Menu updated: ${flatRows.length} items`);
   }
 
-  /** 将扁平 rows 组装成树形结构 */
+  /** Assemble flat rows into a tree structure */
   private buildTree(rows: Menu[]): SystemMenuItem[] {
     const map = new Map<string, SystemMenuItem>();
     const roots: SystemMenuItem[] = [];
 
-    // 第一遍：创建所有节点
+    // First pass: create all nodes
     for (const row of rows) {
       const item: SystemMenuItem = {
         id: row.id,
@@ -607,7 +607,7 @@ export class SystemMenuConfigService implements OnModuleInit {
       map.set(row.id, item);
     }
 
-    // 第二遍：建立父子关系
+    // Second pass: establish parent-child relations
     for (const row of rows) {
       const item = map.get(row.id)!;
       if (row.parentId && map.has(row.parentId)) {
@@ -619,7 +619,7 @@ export class SystemMenuConfigService implements OnModuleInit {
       }
     }
 
-    // 按 order / sortOrder 排序以保障显示顺序
+    // Sort by order / sortOrder to guarantee display order
     roots.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     for (const item of map.values()) {
       if (item.children && item.children.length > 1) {
@@ -630,7 +630,7 @@ export class SystemMenuConfigService implements OnModuleInit {
     return roots;
   }
 
-  /** 将树形菜单扁平化为 DB rows */
+  /** Flatten the menu tree into DB rows */
   private flattenTree(items: SystemMenuItem[], parentId: string | null = null): Partial<Menu>[] {
     const result: Partial<Menu>[] = [];
     for (const item of items) {
@@ -653,11 +653,11 @@ export class SystemMenuConfigService implements OnModuleInit {
     return result;
   }
 
-  // ──────── 按钮权限 ────────
+  // ──────── Button permissions ────────
 
   /**
-   * 获取所有菜单按钮 — DB 唯一数据源
-   * @returns DB 中的按钮列表；DB 为空时返回空数组
+   * Get all menu buttons — DB as the single source of truth
+   * @returns the button list from the DB; an empty array when the DB is empty
    */
   async getMenuButtons(): Promise<SystemMenuButton[]> {
     try {
@@ -675,19 +675,19 @@ export class SystemMenuConfigService implements OnModuleInit {
     }
   }
 
-  /** 获取指定菜单的按钮 */
+  /** Get the buttons of a given menu */
   async getMenuButtonsByMenu(menuId: string): Promise<SystemMenuButton[]> {
     const all = await this.getMenuButtons();
     return all.filter((b) => b.menuId === menuId);
   }
 
-  /** 更新菜单按钮 */
+  /** Update menu buttons */
   async updateMenuButtons(buttons: SystemMenuButton[]): Promise<void> {
     const ids = new Set(buttons.map((b) => b.id));
 
-    // 不使用 manager.transaction()：sqlite3 驱动在 TypeORM 事务包装下存在
-    // TransactionNotStartedError 已知问题（事务未启动即提交/回滚）。
-    // delete + upsert 模式本身是幂等的，SQLite 写操作天然串行，无需显式事务。
+    // manager.transaction() is not used: the sqlite3 driver under TypeORM transaction wrapping has a
+    // known TransactionNotStartedError issue (commit/rollback on a not-yet-started transaction).
+    // The delete + upsert pattern is idempotent by itself and SQLite writes are naturally serial; no explicit transaction is needed.
 
     await this.buttonRepo
       .createQueryBuilder()
@@ -716,24 +716,24 @@ export class SystemMenuConfigService implements OnModuleInit {
   }
 
   /**
-   * 同步默认菜单到 DB（启动时调用）
-   * - 空表：全量写入 DEFAULT_SYSTEM_MENU
-   * - 非空表：补增缺失项 + 更新已有项字段（parent_id、label_key、path、icon、roles、is_detail、subsystem）
-   *   确保 DB 数据始终与代码默认值保持一致，避免旧数据脱节。
-   *   注意：sort_order 属于用户运行时自定义数据（菜单管理页可调整），不参与同步，
-   *   仅新插入项使用代码默认 order 作为初始值，避免重启后覆盖用户调整的顺序。
+   * Sync default menus into the DB (called at startup)
+   * - Empty table: write all of DEFAULT_SYSTEM_MENU
+   * - Non-empty table: insert missing items + update fields of existing ones (parent_id, label_key, path, icon, roles, is_detail, subsystem)
+   *   ensuring the DB always matches code defaults and old data never drifts.
+   *   Note: sort_order is user-defined runtime data (adjustable on the menu management page) and is not synced;
+   *   only newly inserted items use the code default order as the initial value, avoiding overwriting the user's ordering after a restart.
    */
   async syncDefaultMenus(): Promise<void> {
     try {
       const count = await this.menuRepo.count();
       if (count === 0) {
-        // 空表：全量写入
+        // Empty table: full write
         await this.updateMenu(DEFAULT_SYSTEM_MENU);
         this.logger.log('Default menus initialized (empty DB)');
       } else {
-        // 非空表：清理重命名/废弃的旧菜单项
+        // Non-empty table: clean up renamed/deprecated legacy menu items
         await this.cleanupStaleMenuIds();
-        // 补增 + 同步字段
+        // Insert missing + sync fields
         const synced = await this.upsertDefaultMenus(DEFAULT_SYSTEM_MENU);
         if (synced > 0) {
           this.logger.log(`Menus synced: ${synced} items inserted/updated`);
@@ -745,20 +745,20 @@ export class SystemMenuConfigService implements OnModuleInit {
   }
 
   /**
-   * 清理已知的重命名/废弃的旧菜单项 ID（启动同步时调用）
-   * 避免旧 ID 残留导致 i18n key 不匹配（如 audit-logs → operation-logs）
+   * Clean up known renamed/deprecated legacy menu item IDs (called during startup sync)
+   * Avoids i18n key mismatches from stale IDs (e.g. audit-logs → operation-logs)
    */
   private async cleanupStaleMenuIds(): Promise<void> {
     const staleIds = [
-      'audit-logs', // 已重命名为 operation-logs
-      'system-config', // 已废弃：与 系统管理→系统设置 重复，改为 settings-general
+      'audit-logs', // renamed to operation-logs
+      'system-config', // deprecated: duplicates System Management > System Settings, replaced by settings-general
     ];
     for (const id of staleIds) {
       const existing = await this.menuRepo.findOne({ where: { id } });
       if (existing) {
-        // 级联删除子节点
+        // Cascade-delete child nodes
         await this.menuRepo.delete({ parentId: id } as any);
-        // 删除关联按钮
+        // Delete associated buttons
         await this.buttonRepo.delete({ menuId: id } as any);
         await this.menuRepo.delete(id);
         this.logger.log(`Cleaned up stale menu item: ${id}`);
@@ -767,8 +767,8 @@ export class SystemMenuConfigService implements OnModuleInit {
   }
 
   /**
-   * 递归同步菜单项：不存在则插入，存在则更新字段
-   * @returns 插入或更新的记录数
+   * Recursively sync menu items: insert when absent, update fields when present
+   * @returns the number of records inserted or updated
    */
   private async upsertDefaultMenus(
     items: SystemMenuItem[],
@@ -779,7 +779,7 @@ export class SystemMenuConfigService implements OnModuleInit {
       const existing = await this.menuRepo.findOne({ where: { id: item.id } });
       const roles = item.roles || null;
       if (!existing) {
-        // 插入新项
+        // Insert new item
         await this.menuRepo
           .createQueryBuilder()
           .insert()
@@ -800,10 +800,10 @@ export class SystemMenuConfigService implements OnModuleInit {
         synced++;
         this.logger.log(`Inserted missing menu item: ${item.id}`);
       } else {
-        // 更新已有项字段（检测是否有变更）
-        // 注意：sortOrder 是用户运行时自定义数据（菜单管理页可拖拽调整），
-        // 启动同步不应覆盖用户调整的顺序，故不参与 needsUpdate 判断与 update set。
-        // 仅新插入项使用 item.order 作为初始顺序（见上方 insert 分支）。
+        // Update fields of existing items (detecting whether anything changed)
+        // Note: sortOrder is user-defined runtime data (draggable on the menu management page),
+        // so startup sync must not overwrite the user's ordering; it is excluded from needsUpdate and the update set.
+        // Only newly inserted items use item.order as the initial ordering (see the insert branch above).
         const needsUpdate =
           existing.parentId !== parentId ||
           existing.labelKey !== item.labelKey ||
@@ -840,9 +840,9 @@ export class SystemMenuConfigService implements OnModuleInit {
   }
 
   /**
-   * 同步默认按钮到 DB（启动时调用）
-   * - 空表：全量写入
-   * - 非空表：补增缺失项 + 更新已有项字段
+   * Sync default buttons into the DB (called at startup)
+   * - Empty table: full write
+   * - Non-empty table: insert missing items + update fields of existing ones
    */
   async syncDefaultButtons(): Promise<void> {
     try {
@@ -851,7 +851,7 @@ export class SystemMenuConfigService implements OnModuleInit {
         await this.updateMenuButtons(DEFAULT_MENU_BUTTONS);
         this.logger.log('Default menu buttons initialized (empty DB)');
       } else {
-        // 补增 + 同步
+        // Insert missing + sync
         let synced = 0;
         for (const btn of DEFAULT_MENU_BUTTONS) {
           const existing = await this.buttonRepo.findOne({ where: { id: btn.id } });
@@ -902,9 +902,9 @@ export class SystemMenuConfigService implements OnModuleInit {
     }
   }
 
-  // ──────── 单项 CRUD ────────
+  // ──────── Single-item CRUD ────────
 
-  /** 创建单个菜单项 */
+  /** Create a single menu item */
   async createMenuItem(item: SystemMenuItem, parentId?: string | null): Promise<Menu> {
     const entity = this.menuRepo.create({
       id: item.id,
@@ -920,13 +920,13 @@ export class SystemMenuConfigService implements OnModuleInit {
     return this.menuRepo.save(entity);
   }
 
-  /** 更新单个菜单项 */
+  /** Update a single menu item */
   async updateMenuItem(id: string, item: SystemMenuItem, parentId?: string | null): Promise<Menu> {
     const existing = await this.menuRepo.findOne({ where: { id } });
     if (!existing) {
       throw new Error(`菜单项不存在: ${id}`);
     }
-    // 更新字段
+    // Update fields
     if (parentId !== undefined) existing.parentId = parentId;
     existing.labelKey = item.labelKey;
     existing.path = item.path;
@@ -939,20 +939,20 @@ export class SystemMenuConfigService implements OnModuleInit {
     return this.menuRepo.save(existing);
   }
 
-  /** 删除单个菜单项（含子节点级联删除） */
+  /** Delete a single menu item (with cascading child deletion) */
   async deleteMenuItem(id: string): Promise<void> {
-    // 级联删除所有子节点
+    // Cascade-delete all child nodes
     const children = await this.menuRepo.find({ where: { parentId: id } });
     for (const child of children) {
       await this.deleteMenuItem(child.id);
     }
-    // 删除关联按钮
+    // Delete associated buttons
     await this.buttonRepo.delete({ menuId: id } as any);
     await this.menuRepo.delete(id);
     this.logger.log(`Menu item deleted: ${id}`);
   }
 
-  /** 创建单个菜单按钮 */
+  /** Create a single menu button */
   async createMenuButton(btn: SystemMenuButton): Promise<MenuButton> {
     const entity = this.buttonRepo.create({
       id: btn.id,
@@ -964,31 +964,31 @@ export class SystemMenuConfigService implements OnModuleInit {
     return this.buttonRepo.save(entity);
   }
 
-  /** 删除单个菜单按钮 */
+  /** Delete a single menu button */
   async deleteMenuButton(id: string): Promise<void> {
     await this.buttonRepo.delete(id);
     this.logger.log(`Menu button deleted: ${id}`);
   }
 
-  // ──────── 权限码注册表（v8.0） ────────
+  // ──────── Permission code registry (v8.0) ────────
 
   /**
-   * 获取权限码注册表
+   * Get the permission code registry
    *
-   * 数据来源：
-   * 1. 权限码列表 → sys_menu_buttons.permission_code（运行时真实数据）
-   * 2. 分类与标签 → PERMISSION_CATEGORIES（从 @ss-node/ss-core 导入，仅作 UI 元数据）
-   * 3. 不匹配分类的权限码归入「未分类」
+   * Data sources:
+   * 1. Permission code list → sys_menu_buttons.permission_code (real runtime data)
+   * 2. Categories and labels → PERMISSION_CATEGORIES (imported from @ss-node/ss-core, UI metadata only)
+   * 3. Permission codes not matching a category are grouped under "uncategorized"
    *
-   * 替代前端硬编码 ROLE_PERMISSIONS 和 PERMISSION_CATEGORIES。
+   * Replaces the frontend's hard-coded ROLE_PERMISSIONS and PERMISSION_CATEGORIES.
    */
   async getPermissionsRegistry(): Promise<{
     categories: { module: string; label: string; codes: { code: string; label: string }[] }[];
   }> {
-    // 动态导入避免 ss-system → ss-core 的模块级循环依赖（@Injectable 级别是安全的）
+    // Dynamic import avoids a module-level circular dependency ss-system → ss-core (the @Injectable level is safe)
     const { PERMISSION_CATEGORIES } = await import('@ss-node/ss-core');
 
-    // 从 sys_menu_buttons 聚合去重权限码
+    // Aggregate and deduplicate permission codes from sys_menu_buttons
     let allCodes: { code: string; label: string }[] = [];
     try {
       const rows: { permission_code: string }[] = await this.menuRepo.manager.query(
@@ -999,7 +999,7 @@ export class SystemMenuConfigService implements OnModuleInit {
       this.logger.warn('Failed to query sys_menu_buttons for permission codes');
     }
 
-    // 为每个权限码匹配分类
+    // Match a category for each permission code
     const codeToCategory = new Map<string, string>();
     for (const cat of PERMISSION_CATEGORIES) {
       for (const code of cat.codes) {
@@ -1007,7 +1007,7 @@ export class SystemMenuConfigService implements OnModuleInit {
       }
     }
 
-    // 按分类分组
+    // Group by category
     const categoryMap = new Map<string, { module: string; label: string; codes: { code: string; label: string }[] }>();
     const unmatched: { code: string; label: string }[] = [];
 
@@ -1031,7 +1031,7 @@ export class SystemMenuConfigService implements OnModuleInit {
     }
 
     const categories = [...categoryMap.values()];
-    // 补充 PERMISSION_CATEGORIES 中定义了但 sys_menu_buttons 中没有的分类（空 codes）
+    // Add categories defined in PERMISSION_CATEGORIES but absent from sys_menu_buttons (empty codes)
     for (const catDef of PERMISSION_CATEGORIES) {
       if (!categoryMap.has(catDef.module)) {
         categories.push({

@@ -3,28 +3,28 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * S-M02: 审计日志类型定义
+ * S-M02: audit-log type definitions
  *
- * 安全事件独立通道，支持哈希链防篡改和合规审查。
- * 每条审计日志包含 prevHash + hash 形成哈希链，任何篡改都会导致链断裂。
+ * Dedicated security-event channel, supporting hash-chain tamper protection and compliance review.
+ * Each audit log contains prevHash + hash forming a hash chain; any tampering breaks the chain.
  */
 
 /**
- * 审计事件严重级别
- * - info: 常规安全事件（登录成功、登出等）
- * - warning: 可疑事件（登录失败、密码验证失败等）
- * - critical: 严重安全事件（账户锁定、Token 被撤销后仍尝试使用等）
+ * Audit-event severity
+ * - info: routine security events (login success, logout, etc.)
+ * - warning: suspicious events (login failure, password verification failure, etc.)
+ * - critical: severe security events (account lockout, token used after revocation, etc.)
  */
 export type AuditSeverity = 'info' | 'warning' | 'critical';
 
 /**
- * 审计事件类型
+ * Audit-event types
  *
- * 命名规范：{模块}.{动作}.{结果}
- * 例如 auth.login.success、auth.password.failed
+ * Naming convention: {module}.{action}.{result}
+ * e.g. auth.login.success, auth.password.failed
  */
 export type AuditEventType =
-  // 认证事件
+  // Authentication events
   | 'auth.login.success'
   | 'auth.login.failed'
   | 'auth.login.locked'
@@ -33,11 +33,11 @@ export type AuditEventType =
   | 'auth.logout'
   | 'auth.password.changed'
   | 'auth.password.failed'
-  // 微信扫码登录事件
+  // WeChat scan-login events
   | 'auth.wechat.login.success'
   | 'auth.wechat.login.failed'
   | 'auth.wechat.user_created'
-  // 小程序微信登录事件（01-账号与认证）
+  // Mini-program WeChat login events (01 - account & auth)
   | 'auth.wechat_mp.login.success'
   | 'auth.wechat_mp.login.failed'
   | 'auth.wechat_mp.login.binding_required'
@@ -46,117 +46,117 @@ export type AuditEventType =
   | 'auth.wechat_mp.password_login.success'
   | 'auth.wechat_mp.password_login.failed'
   | 'auth.wechat_mp.unbind'
-  // 用户管理事件
+  // User-management events
   | 'user.created'
   | 'user.deleted'
   | 'user.role_changed'
-  // 权限事件
+  // Permission events
   | 'permission.denied'
   | 'permission.granted'
-  // 系统事件
+  // System events
   | 'system.config_changed'
   | 'system.data_exported';
 
 /**
- * 审计事件 — 调用方传入的数据
+ * Audit event - data passed in by the caller
  */
 export interface AuditEvent {
-  /** 事件类型 */
+  /** Event type */
   type: AuditEventType;
-  /** 严重级别 */
+  /** Severity */
   severity: AuditSeverity;
-  /** 用户 ID */
+  /** User ID */
   userId?: string;
-  /** 用户名 */
+  /** Username */
   username?: string;
-  /** 客户端 IP */
+  /** Client IP */
   ip?: string;
   /** User-Agent */
   userAgent?: string;
-  /** 事件详情（任意结构化数据，用于合规审查） */
+  /** Event details (arbitrary structured data, for compliance review) */
   details?: Record<string, any>;
 }
 
 /**
- * 审计日志条目 — 写入磁盘的完整记录（含哈希链字段）
+ * Audit-log entry - the complete record written to disk (with hash-chain fields)
  */
 export interface AuditLogEntry extends AuditEvent {
-  /** ISO 8601 时间戳 */
+  /** ISO 8601 timestamp */
   timestamp: string;
-  /** 哈希链：前一条记录的 hash（创世记录为 64 个 '0'） */
+  /** Hash chain: the previous record's hash (64 '0's for the genesis record) */
   prevHash: string;
-  /** 哈希链：当前记录的 hash = SHA256(prevHash + canonical_json(entry_without_hash)) */
+  /** Hash chain: the current record's hash = SHA256(prevHash + canonical_json(entry_without_hash)) */
   hash: string;
 }
 
 /**
- * 哈希链验证结果
+ * Hash-chain verification result
  */
 export interface AuditChainVerificationResult {
-  /** 哈希链是否完整（未被篡改） */
+  /** Whether the hash chain is intact (not tampered) */
   valid: boolean;
-  /** 验证的日志条目总数 */
+  /** Total number of log entries verified */
   totalEntries: number;
-  /** 首次断裂位置（1-based 索引），valid=true 时为 null */
+  /** First break position (1-based index); null when valid=true */
   brokenAtIndex: number | null;
-  /** 断裂原因描述 */
+  /** Break-reason description */
   brokenReason?: string;
-  /** 验证的日期（YYYY-MM-DD） */
+  /** Verified date (YYYY-MM-DD) */
   date: string;
 }
 
 /**
- * 审计日志查询筛选条件
+ * Audit-log query filter conditions
  */
 export interface AuditLogQueryFilter {
-  /** 日期（YYYY-MM-DD），默认今天 */
+  /** Date (YYYY-MM-DD), defaults to today */
   date?: string;
-  /** 开始时间（YYYY-MM-DD 或 ISO 8601），与 date 互斥（优先使用 startTime/endTime） */
+  /** Start time (YYYY-MM-DD or ISO 8601), mutually exclusive with date (startTime/endTime take priority) */
   startTime?: string;
-  /** 结束时间（YYYY-MM-DD 或 ISO 8601） */
+  /** End time (YYYY-MM-DD or ISO 8601) */
   endTime?: string;
-  /** 事件类型筛选 */
+  /** Event-type filter */
   type?: string;
-  /** 严重级别筛选（info/warning/critical） */
+  /** Severity filter (info/warning/critical) */
   severity?: string;
-  /** 用户 ID 筛选 */
+  /** User ID filter */
   userId?: string;
-  /** 用户名筛选 */
+  /** Username filter */
   username?: string;
-  /** 页码（默认 1） */
+  /** Page number (default 1) */
   page?: number;
-  /** 每页条数（默认 20，最大 100） */
+  /** Items per page (default 20, max 100) */
   pageSize?: number;
 }
 
 /**
- * 审计日志查询结果（分页）
+ * Audit-log query result (paginated)
  */
 export interface AuditLogQueryResult {
-  /** 当前页的审计条目列表（倒序，最新在前） */
+  /** The current page's audit entries (descending, newest first) */
   items: AuditLogEntry[];
-  /** 符合筛选条件的总条目数 */
+  /** Total number of entries matching the filter */
   total: number;
-  /** 当前页码 */
+  /** Current page number */
   page: number;
-  /** 每页条数 */
+  /** Items per page */
   pageSize: number;
-  /** 查询的日期（YYYY-MM-DD） */
+  /** Queried date (YYYY-MM-DD) */
   date: string;
 }
 
 /**
- * 审计日志统计信息
+ * Audit-log statistics
  */
 export interface AuditLogStats {
-  /** 当天审计日志总条目数 */
+  /** Total audit-log entries for the day */
   total: number;
-  /** 按事件类型统计 */
+  /** Statistics by event type */
   byType: Record<string, number>;
-  /** 按严重级别统计 */
+  /** Statistics by severity */
   bySeverity: Record<string, number>;
-  /** 哈希链是否完整 */
+  /** Whether the hash chain is intact */
   chainValid: boolean;
-  /** 统计的日期（YYYY-MM-DD） */
+  /** Statistics date (YYYY-MM-DD) */
   date: string;
 }

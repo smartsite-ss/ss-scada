@@ -4,12 +4,12 @@
 
 import { usePageStore, useGraphicStore } from '@scada-editor/core';
 
-// 布局相关的组合式 API
+// Layout-related composables
 export function useLayout() {
   const pageStore = usePageStore();
   const graphicStore = useGraphicStore();
 
-  // 应用布局
+  // Apply layout
   const applyLayout = () => {
     const currentPage = pageStore.currentPage;
     if (currentPage) {
@@ -17,7 +17,7 @@ export function useLayout() {
     }
   };
 
-  // 设置页面布局
+  // Set page layout
   const setPageLayout = (layoutType: string) => {
     const currentPage = pageStore.currentPage;
     if (currentPage) {
@@ -26,7 +26,7 @@ export function useLayout() {
     }
   };
 
-  // 更新布局属性
+  // Update layout properties
   const updateLayoutProperties = (properties: Partial<Record<string, any>>) => {
     const currentPage = pageStore.currentPage;
     if (currentPage) {

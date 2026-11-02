@@ -7,9 +7,9 @@ import { GalleryController } from './gallery.controller';
 import { GalleryService } from './gallery.service';
 
 /**
- * 图库模块 — 纯文件方案
+ * Gallery module — pure-file approach
  *
- * 不依赖 TypeORM/数据库，仅通过文件系统管理图元图片资源。
+ * No TypeORM/database dependency; gallery image resources are managed via the file system only.
  */
 @Module({
   controllers: [GalleryController],

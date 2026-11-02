@@ -13,7 +13,7 @@ import { IsolationFactory } from './isolation/isolation-factory';
 import { PluginConfigService } from './plugin-config.service';
 
 /**
- * 插件探索器 — 扫描所有 @CollectorPlugin 装饰的 NestJS Provider 并自动注册
+ * Plugin explorer - scans all NestJS Providers decorated with @CollectorPlugin and auto-registers them
  */
 @Injectable()
 export class PluginExplorerService implements OnModuleInit {
@@ -54,17 +54,17 @@ export class PluginExplorerService implements OnModuleInit {
   }
 
   /**
-   * 注册插件并应用持久化配置
+   * Register the plugin and apply the persisted configuration
    *
-   * - 从 PluginConfigService 读取已有配置，覆盖装饰器默认值
-   * - 然后调用 registry.register() 和 isolationFactory.prepare()
+   * - read the existing config from PluginConfigService, overriding decorator defaults
+   * - then call registry.register() and isolationFactory.prepare()
    */
   private async registerPlugin(
     meta: CollectorPluginMeta,
     adapter: IProtocolAdapter,
   ): Promise<void> {
     try {
-      // 加载持久化配置并覆盖 isolationMode
+      // Load persisted config and override isolationMode
       const persistedMode = this.configService.getIsolationMode(meta.protocol);
       if (persistedMode) {
         this.logger.log(
@@ -78,9 +78,9 @@ export class PluginExplorerService implements OnModuleInit {
 
       this.emitDiscovered(meta);
 
-      // 决定是否自动激活，优先级：
-      // 1. 持久化配置 activated=true  → 恢复之前的激活状态
-      // 2. enabledByDefault=true       → 装饰器声明的默认启用
+      // Decide whether to auto-activate, priority:
+      // 1. persisted config activated=true  -> restore previous activation state
+      // 2. enabledByDefault=true       -> default-enabled as declared by the decorator
       const persistedActivated = this.configService.getActivated(meta.protocol);
       if (persistedActivated === true) {
         this.logger.log(
@@ -94,7 +94,7 @@ export class PluginExplorerService implements OnModuleInit {
         this.logger.log(`Plugin "${meta.protocol}": auto-activated successfully`);
       }
 
-      // 按隔离模式预热 Worker/子进程
+      // Pre-warm Worker/child process according to isolation mode
       if (this.isolationFactory) {
         await this.isolationFactory.prepare(meta.protocol);
       }
@@ -117,7 +117,7 @@ export class PluginExplorerService implements OnModuleInit {
       };
       this.eventBus?.emit('plugin.discovered', event);
     } catch {
-      // 事件发射失败不应影响插件注册核心逻辑
+      // Event dispatch failure must not affect the core plugin registration logic
     }
   }
 }

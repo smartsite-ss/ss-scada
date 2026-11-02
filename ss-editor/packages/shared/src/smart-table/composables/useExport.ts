@@ -38,7 +38,7 @@ export function useExport(
     const cols = columns().filter((c) => !c.excludeFromExport);
     const allData = data();
 
-    // 先尝试 emit 给父组件处理
+    // First try emitting to the parent component for handling
     emit('export', { format, columns: cols, data: allData });
   }
 

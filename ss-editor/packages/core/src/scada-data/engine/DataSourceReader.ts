@@ -3,10 +3,11 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * DataSourceReader — 数据源值读取统一工具
+ * DataSourceReader — unified tool for reading data source values
  *
- * 为编辑态（DataSourceConfigDialog）和运行态（PreviewCanvas / RuntimeDataPanel）
- * 提供统一的数据源标签值读取、摘要构建能力，消除各处重复的 tagId 提取和 wsStore 读取模式。
+ * Provides unified data source tag value reading and summary building for both edit mode
+ * (DataSourceConfigDialog) and runtime mode (PreviewCanvas / RuntimeDataPanel),
+ * eliminating duplicated tagId extraction and wsStore reading patterns everywhere.
  */
 
 export interface TagValueSnapshot {
@@ -27,11 +28,11 @@ export interface WsStoreLike {
   tagValues: Map<string, { value: unknown; quality?: string; timestamp?: number }>;
 }
 
-// ── tagId 提取：统一从数据源配置中提取标签 ID ────────────────────────
+// ── tagId extraction: uniformly extract tag IDs from data source configs ────────────────────────
 
 /**
- * 从数据源配置中提取标签 ID（统一兜底链）。
- * 优先级：ds.properties.tagIds > ds.config.tagIds > ds.tags > ds.properties.tags
+ * Extract tag IDs from a data source config (unified fallback chain).
+ * Priority: ds.properties.tagIds > ds.config.tagIds > ds.tags > ds.properties.tags
  */
 export function extractTagIds(ds: Record<string, unknown> | null | undefined): string[] {
   if (!ds) return [];
@@ -44,11 +45,11 @@ export function extractTagIds(ds: Record<string, unknown> | null | undefined): s
   return Array.isArray(tagIds) ? tagIds : [];
 }
 
-// ── 标签值读取 ──────────────────────────────────────────────────────
+// ── Tag value reading ──────────────────────────────────────────────────────
 
 /**
- * 从 wsStore 读取单个标签的实时值快照。
- * 返回 TagValueSnapshot（始终有值，无 WS 数据时 value/quality/ts 为 undefined）。
+ * Read a single tag's live value snapshot from wsStore.
+ * Returns a TagValueSnapshot (always present; value/quality/ts are undefined without WS data).
  */
 export function readTagSnapshot(
   tagId: string,
@@ -66,9 +67,9 @@ export function readTagSnapshot(
 }
 
 /**
- * 批量读取标签值快照。
- * @param tagIds  - 标签 ID 列表
- * @param tagNames - 标签名称列表（与 tagIds 等长，缺失时用 tagId 兜底）
+ * Batch read tag value snapshots.
+ * @param tagIds  - list of tag IDs
+ * @param tagNames - tag name list (same length as tagIds; falls back to tagId when missing)
  */
 export function readTagSnapshots(
   tagIds: string[],
@@ -78,11 +79,11 @@ export function readTagSnapshots(
   return tagIds.map((tagId, i) => readTagSnapshot(tagId, tagNames[i] || tagId, wsStore));
 }
 
-// ── 数据源摘要构建 ──────────────────────────────────────────────────
+// ── Data source summary building ──────────────────────────────────────────────────
 
 /**
- * 为单个数据源构建摘要（最新值、更新时间、质量）。
- * 根据数据源 type 生成不同的 lastValue 格式。
+ * Build a summary for a single data source (latest value, update time, quality).
+ * Generates different lastValue formats depending on the data source type.
  */
 export function buildSourceSummary(
   ds: { type?: string; name?: string; url?: string; properties?: Record<string, unknown> },
@@ -105,7 +106,7 @@ export function buildSourceSummary(
         .map((t) => `${t.tagName}: ${t.currentValue ?? '—'}`)
         .join('; ');
       lastValue = lastValue.length > maxLen ? lastValue.substring(0, maxLen - 3) + '...' : lastValue;
-      // 空值回退
+      // Empty value fallback
       if (!lastValue || lastValue === '') lastValue = null;
       break;
     }
@@ -126,7 +127,7 @@ export function buildSourceSummary(
       lastValue = null;
   }
 
-  // updatedAt：取所有标签中最新的 lastUpdate
+  // updatedAt: take the newest lastUpdate among all tags
   let updatedAt: number | null = null;
   for (const s of snapshots) {
     if (s.lastUpdate && (updatedAt === null || s.lastUpdate > updatedAt)) {
@@ -134,15 +135,14 @@ export function buildSourceSummary(
     }
   }
 
-  // quality：取所有标签中最差的
+  // quality: take the worst among all tags
   let quality: string | null = null;
   for (const s of snapshots) {
     if (!s.quality) continue;
     if (quality === null) {
       quality = s.quality;
     } else if (s.quality !== 'good') {
-      quality = s.quality;
-      break; // 最差已找到，无需继续
+      break; // worst candidate already found, no need to continue
     }
   }
 

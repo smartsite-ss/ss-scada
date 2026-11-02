@@ -302,10 +302,10 @@ describe('SystemMenuConfigService (v7.1 — DB 唯一数据源)', () => {
 
     it('TC-SYNC-002: should upsert menus when table already has data', async () => {
       menuRepo.count.mockResolvedValue(5);
-      // 所有项已存在且字段一致 → 不触发更新
+      // All items already exist with identical fields → no update triggered
       menuRepo.findOne.mockImplementation(async (criteria?: any) => {
         const id = criteria?.where?.id;
-        // 返回一个与 DEFAULT_SYSTEM_MENU 中某项匹配的已存在记录
+        // Return an existing record matching some item in DEFAULT_SYSTEM_MENU
         return {
           id,
           parentId: null,
@@ -321,9 +321,9 @@ describe('SystemMenuConfigService (v7.1 — DB 唯一数据源)', () => {
 
       await service.syncDefaultMenus();
 
-      // 非空表不调用全量 updateMenu（不触发 createQueryBuilder 的 delete/insert）
-      // 但 upsertDefaultMenus 可能调用 createQueryBuilder 做单项 upsert
-      // 此处仅验证不抛异常即可
+      // A non-empty table does not call the full updateMenu (no createQueryBuilder delete/insert)
+      // But upsertDefaultMenus may call createQueryBuilder for single-item upserts
+      // Here we only verify that no exception is thrown
       expect(service).toBeDefined();
     });
   });
@@ -339,7 +339,7 @@ describe('SystemMenuConfigService (v7.1 — DB 唯一数据源)', () => {
     });
   });
 
-  // ──────── 单项 CRUD ────────
+  // ──────── Single-item CRUD ────────
   describe('createMenuItem()', () => {
     it('TC-CRUD-001: should create a new menu item', async () => {
       const newItem: SystemMenuItem = {

@@ -4,7 +4,7 @@
 
 import { TdengineJsonParser } from '../parse/tdengine-json.parser';
 
-/** 构造 TDengine REST 响应报文（column_meta: [列名, 类型, 字节数]） */
+/** Construct a TDengine REST response payload (column_meta: [name, type, bytes]) */
 const buildResponse = (columns: [string, string, number][], rows: unknown[][]): string =>
   JSON.stringify({ status: 'succ', code: 0, column_meta: columns, data: rows, rows: rows.length });
 

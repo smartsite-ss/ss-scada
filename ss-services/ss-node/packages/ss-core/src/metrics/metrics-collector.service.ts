@@ -96,18 +96,18 @@ export class MetricsCollectorService implements OnModuleInit, OnModuleDestroy {
 
   private config: MetricsConfig = DEFAULT_CONFIG;
 
-  // 指标存储
+  // Metric storage
   private counters = new Map<string, CounterMetric>();
   private gauges = new Map<string, GaugeMetric>();
   private histograms = new Map<string, HistogramMetric>();
 
-  // 原始数据时间序列
+  // Raw data time series
   private timeSeriesData = new Map<string, TimeSeriesPoint[]>();
 
-  // 聚合数据
+  // Aggregated data
   private aggregatedData = new Map<string, AggregatedMetrics[]>();
 
-  // 清理定时器
+  // Cleanup timer
   private cleanupInterval: NodeJS.Timeout | null = null;
 
   onModuleInit(): void {
@@ -241,7 +241,7 @@ export class MetricsCollectorService implements OnModuleInit, OnModuleDestroy {
     histogram.max = Math.max(histogram.max!, value);
     histogram.lastUpdated = new Date();
 
-    // 更新bucket计数
+    // Update bucket counts
     for (const bucket of histogram.buckets) {
       if (value <= bucket.upperBound) {
         bucket.count++;
@@ -409,8 +409,8 @@ export class MetricsCollectorService implements OnModuleInit, OnModuleDestroy {
       value,
     });
 
-    // 限制数据点数量（保留最近的数据）
-    const maxPoints = Math.floor(this.config.retentionPeriodMs / 1000); // 每秒一个点
+    // Limit the number of data points (keep the most recent)
+    const maxPoints = Math.floor(this.config.retentionPeriodMs / 1000); // one point per second
     if (series.length > maxPoints) {
       series.splice(0, series.length - maxPoints);
     }
@@ -469,7 +469,7 @@ export class MetricsCollectorService implements OnModuleInit, OnModuleDestroy {
     const cutoff = new Date(Date.now() - this.config.retentionPeriodMs);
     let cleaned = 0;
 
-    // 清理时间序列数据
+    // Clean up time-series data
     for (const [key, data] of this.timeSeriesData.entries()) {
       const beforeLength = data.length;
       const filtered = data.filter((point) => point.timestamp > cutoff);
@@ -484,7 +484,7 @@ export class MetricsCollectorService implements OnModuleInit, OnModuleDestroy {
       }
     }
 
-    // 清理过期的计数器（长时间未更新）
+    // Clean up stale counters (not updated for a long time)
     for (const [key, counter] of this.counters.entries()) {
       if (counter.updatedAt < cutoff && counter.value === 0) {
         this.counters.delete(key);
@@ -501,7 +501,7 @@ export class MetricsCollectorService implements OnModuleInit, OnModuleDestroy {
     let bytes = 0;
 
     for (const [, counter] of this.counters) {
-      bytes += JSON.stringify(counter).length * 2; // 粗略估算
+      bytes += JSON.stringify(counter).length * 2; // rough estimate
     }
 
     for (const [, gauge] of this.gauges) {
@@ -513,7 +513,7 @@ export class MetricsCollectorService implements OnModuleInit, OnModuleDestroy {
     }
 
     for (const [, data] of this.timeSeriesData) {
-      bytes += data.length * 64; // 每个点约64字节
+      bytes += data.length * 64; // about 64 bytes per point
     }
 
     return Math.round((bytes / 1024 / 1024) * 100) / 100; // MB

@@ -13,19 +13,19 @@ import {
 import { Reflector } from '@nestjs/core';
 
 /**
- * 数据访问守卫 — v7.0 完善
+ * Data-access guard - refined in v7.0
  *
- * 配合 @DataAccess() 装饰器使用，检查用户对具体资源的访问权限。
- * 依赖 AuthorizationService 进行实际权限校验。
+ * Used with the @DataAccess() decorator to check a user's access to specific resources.
+ * Relies on AuthorizationService for the actual permission check.
  *
- * 用法:
+ * Usage:
  *   @UseGuards(JwtAuthGuard, DataAccessGuard)
  *   @DataAccess('project')
  *   async updateProject(@Param('projectId') projectId: string) { ... }
  */
 @Injectable()
 export class DataAccessGuard implements CanActivate {
-  /** 资源参数名映射 */
+  /** Resource-param name mapping */
   private static readonly PARAM_MAP: Record<string, string> = {
     project: 'projectId',
     device: 'deviceId',
@@ -72,29 +72,29 @@ export class DataAccessGuard implements CanActivate {
       throw new ForbiddenException('未登录');
     }
 
-    // admin 角色直接放行
+    // admin role passes directly
     const role = user.role;
     if (role === 'admin') {
       return true;
     }
 
-    // 检查是否声明了数据访问装饰器
+    // Check whether a data-access decorator is declared
     const resources = this.reflector.getAllAndOverride<string[]>('data_access', [
       context.getHandler(),
       context.getClass(),
     ]);
 
-    // 无装饰器声明则放行
+    // Pass through when no decorator is declared
     if (!resources || resources.length === 0) {
       return true;
     }
 
-    // 读取操作（GET/HEAD）目前全部放行
+    // Read operations (GET/HEAD) all pass for now
     if (request.method === 'GET' || request.method === 'HEAD') {
       return true;
     }
 
-    // 如果没有注入 authService，回退到基本角色检查
+    // Fall back to basic role checks when authService is not injected
     if (!this.authService) {
       return this.checkByRole(user, context);
     }
@@ -102,18 +102,18 @@ export class DataAccessGuard implements CanActivate {
     const roleId = user.roleId || user.id;
     const params = request.params || {};
 
-    // 按资源类型逐个检查
+    // Check each resource type in turn
     for (const resource of resources) {
       const paramName = DataAccessGuard.PARAM_MAP[resource] || `${resource}Id`;
       const resourceId = params[paramName];
 
       if (!resourceId) {
-        // 如果参数中没有对应资源 ID，尝试从 body 获取
+        // If the params lack the resource ID, try to get it from the body
         const bodyResourceId = request.body?.[paramName];
         if (!bodyResourceId) {
-          continue; // 无资源 ID，跳过检查（可能是不需要数据权限的操作）
+          continue; // no resource ID; skip the check (operation may not need data permissions)
         }
-        // 使用 body 中的 ID
+        // Use the ID from the body
         const projectId = params['projectId'] || request.body['projectId'];
         if (!projectId) {
           throw new ForbiddenException('缺少项目 ID 参数');
@@ -130,7 +130,7 @@ export class DataAccessGuard implements CanActivate {
         continue;
       }
 
-      // 对于设备、分组和标签级别，还需要 projectId
+      // Device, group, and tag levels also need projectId
       if (resource === 'device' || resource === 'deviceGroup' || resource === 'dataTag') {
         const projectId = params['projectId'] || request.body['projectId'];
         if (!projectId) {
@@ -146,7 +146,7 @@ export class DataAccessGuard implements CanActivate {
           throw new ForbiddenException(`无权限操作此${resource}`);
         }
       } else {
-        // 项目级别检查
+        // Project-level check
         const hasPermission = await this.authService.checkProjectPermission(
           roleId,
           resourceId,
@@ -162,7 +162,7 @@ export class DataAccessGuard implements CanActivate {
   }
 
   /**
-   * 回退到基本角色检查（authService 不可用时）
+   * Fall back to basic role checks (when authService is unavailable)
    */
   private checkByRole(user: any, context: ExecutionContext): boolean {
     const roles = this.reflector.get<string[]>('roles', context.getHandler()) || [];
@@ -177,7 +177,7 @@ export class DataAccessGuard implements CanActivate {
   }
 
   /**
-   * 检查资源权限
+   * Check resource permissions
    */
   private async checkResourcePermission(
     roleId: string,
@@ -195,8 +195,8 @@ export class DataAccessGuard implements CanActivate {
       case 'deviceGroup':
         return this.authService.checkDeviceGroupPermission(roleId, projectId, resourceId, 'write');
       case 'dataTag':
-        // 标签级权限检查（3.6 实现）
-        // 如果 authService.checkTagPermission 不可用或返回 false，回退到允许（避免阻断正常操作）
+        // Tag-level permission check (implemented in 3.6)
+        // If authService.checkTagPermission is unavailable or returns false, fall back to allowing (avoiding blocking normal operations)
         if (this.authService.checkTagPermission) {
           const hasTagPermission = await this.authService.checkTagPermission(
             roleId,
@@ -205,8 +205,8 @@ export class DataAccessGuard implements CanActivate {
             'write',
           );
           if (hasTagPermission) return true;
-          // 显式标签授权不存在时回退到设备级权限检查（调用方应自行确保设备级检查覆盖）
-          // 此处返回 true 允许通过，避免标签级检查阻断无显式授权的场景
+          // When no explicit tag authorization exists, fall back to device-level permission checks (the caller must ensure device-level coverage)
+          // Return true here to allow through, avoiding tag-level checks blocking scenarios without explicit authorization
           return true;
         }
         return true;

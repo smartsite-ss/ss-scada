@@ -43,7 +43,7 @@ describe('Influxdb3AdapterService', () => {
     delete process.env.INFLUXDB3_DATABASE;
   });
 
-  // ──────────── 引擎标识与能力 ────────────
+  // ──────────── Engine identity and capabilities ────────────
 
   it('TC-IV3-AD-001: should declare influxdb3 engine type and capabilities', () => {
     expect(adapter.engineType).toBe(STORAGE_ENGINE_TYPES.INFLUXDB3);
@@ -67,7 +67,7 @@ describe('Influxdb3AdapterService', () => {
 
     const [url, init] = fetchSpy.mock.calls[0];
     expect(url).toContain('http://influx3-test:8181/api/v3/write_lp');
-    // 按项目分库：projectId=proj-1 → ss-node-data-proj-1
+    // Per-project database: projectId=proj-1 → ss-node-data-proj-1
     expect(url).toContain('db=ss-node-data-proj-1');
     expect(url).toContain('precision=ns');
     expect(init.method).toBe('POST');
@@ -77,7 +77,7 @@ describe('Influxdb3AdapterService', () => {
   });
 
   it('TC-IV3-AD-013: should split write batches per project (per-project database routing)', async () => {
-    // 跨项目批次：按 projectId 分组，逐库写入
+    // Cross-project batch: group by projectId and write per database
     const points = Array.from({ length: 1000 }, (_, index) =>
       createPoint({ value: index, projectId: index < 500 ? 'proj-1' : 'proj-2' }),
     );
@@ -94,8 +94,8 @@ describe('Influxdb3AdapterService', () => {
   });
 
   it('TC-IV3-AD-011: should skip non-numeric values (v3 does not support string fields)', async () => {
-    // P0 实测：v3 Core 不支持字符串 field（整行写入失败），
-    // 非数值 value 的点整点跳过，其余正常写入项目 database
+    // P0 test: v3 Core does not support string fields (the whole line fails to write),
+    // points with non-numeric values are skipped entirely, the rest are written to the project database normally
     const points = Array.from({ length: 1000 }, (_, index) =>
       createPoint({ value: index === 0 ? 'OPEN' : index }),
     );
@@ -107,12 +107,12 @@ describe('Influxdb3AdapterService', () => {
 
     const [, init] = fetchSpy.mock.calls[0];
     const body = String(init.body);
-    // 全部写入行均不含 value_text / metadata 字符串 field
+    // No written line contains the value_text / metadata string fields
     expect(body).not.toContain('value_text');
     expect(body).not.toContain('metadata');
-    // 跳过 1 个非数值点后剩余 999 行
+    // After skipping 1 non-numeric point, 999 lines remain
     expect(body.split('\n')).toHaveLength(999);
-    // 元数据 JSON field 同样跳过（P0 实测字符串 field 整行失败）
+    // The metadata JSON field is skipped as well (P0 test: string fields fail the whole line)
     const metadataPoints = Array.from({ length: 1000 }, (_, index) =>
       createPoint({ value: index, metadata: { unit: 'C' } }),
     );
@@ -133,7 +133,7 @@ describe('Influxdb3AdapterService', () => {
   // ──────────── read ────────────
 
   it('TC-IV3-AD-020: should query via /api/v3/query_sql with {db, q} body and normalize JSON response', async () => {
-    // P0 实测：query_sql body 必须为 {"db","q"}；响应为稀疏对象数组
+    // P0 test: the query_sql body must be {"db","q"}; the response is a sparse array of objects
     fetchSpy.mockResolvedValue(
       createResponse({
         text: () =>
@@ -170,7 +170,7 @@ describe('Influxdb3AdapterService', () => {
   });
 
   it('TC-IV3-AD-022: should route read to per-project database by projectId', async () => {
-    // 按项目分库：options.projectId → ss-node-data-proj-9（兜底路径，无 databaseService）
+    // Per-project database: options.projectId → ss-node-data-proj-9 (fallback path, no databaseService)
     fetchSpy.mockResolvedValue(
       createResponse({ text: () => Promise.resolve(JSON.stringify([])) }),
     );
@@ -181,7 +181,7 @@ describe('Influxdb3AdapterService', () => {
     expect(url).toContain('db=ss-node-data-proj-9');
     const requestBody = JSON.parse(String(init.body));
     expect(requestBody.db).toBe('ss-node-data-proj-9');
-    // 查询条件仍保留 "projectId" 过滤（纵深防御）
+    // The query conditions still keep the "projectId" filter (defense in depth)
     expect(requestBody.q).toContain("\"projectId\" = 'proj-9'");
   });
 
@@ -204,7 +204,7 @@ describe('Influxdb3AdapterService', () => {
   // ──────────── health ────────────
 
   it('TC-IV3-AD-040: should return healthy when /health responds ok with Bearer auth', async () => {
-    // P0 实测：/health 需要 Bearer 鉴权（无 token 401），响应体为纯文本 "OK"
+    // P0 test: /health requires Bearer auth (401 without a token); the response body is plain text "OK"
     fetchSpy.mockResolvedValue(createResponse({ text: () => Promise.resolve('OK') }));
 
     const health = await adapter.health();

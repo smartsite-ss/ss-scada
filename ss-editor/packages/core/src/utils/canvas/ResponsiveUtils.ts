@@ -3,7 +3,7 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 断点类型
+ * Breakpoint type
  */
 export interface Breakpoint {
   name: string;
@@ -12,7 +12,7 @@ export interface Breakpoint {
 }
 
 /**
- * 响应式工具类
+ * Responsive utility class
  */
 export class ResponsiveUtils {
   private static breakpoints: Breakpoint[] = [
@@ -25,8 +25,8 @@ export class ResponsiveUtils {
   ];
 
   /**
-   * 获取当前断点
-   * @returns 当前断点名称
+   * Get the current breakpoint
+   * @returns Current breakpoint name
    */
   public static getCurrentBreakpoint(): string {
     const width = window.innerWidth;
@@ -39,18 +39,18 @@ export class ResponsiveUtils {
   }
 
   /**
-   * 检查是否在指定断点范围内
-   * @param breakpoint 断点名称
-   * @returns 是否在指定断点范围内
+   * Check whether inside a given breakpoint range
+   * @param breakpoint Breakpoint name
+   * @returns Whether inside the given breakpoint range
    */
   public static isBreakpoint(breakpoint: string): boolean {
     return this.getCurrentBreakpoint() === breakpoint;
   }
 
   /**
-   * 检查是否大于等于指定断点
-   * @param breakpoint 断点名称
-   * @returns 是否大于等于指定断点
+   * Check whether greater than or equal to a given breakpoint
+   * @param breakpoint Breakpoint name
+   * @returns Whether greater than or equal to the given breakpoint
    */
   public static isBreakpointUp(breakpoint: string): boolean {
     const currentBreakpoint = this.getCurrentBreakpoint();
@@ -60,9 +60,9 @@ export class ResponsiveUtils {
   }
 
   /**
-   * 检查是否小于等于指定断点
-   * @param breakpoint 断点名称
-   * @returns 是否小于等于指定断点
+   * Check whether less than or equal to a given breakpoint
+   * @param breakpoint Breakpoint name
+   * @returns Whether less than or equal to the given breakpoint
    */
   public static isBreakpointDown(breakpoint: string): boolean {
     const currentBreakpoint = this.getCurrentBreakpoint();
@@ -72,10 +72,10 @@ export class ResponsiveUtils {
   }
 
   /**
-   * 检查是否在指定断点范围内
-   * @param minBreakpoint 最小断点
-   * @param maxBreakpoint 最大断点
-   * @returns 是否在指定断点范围内
+   * Check whether inside a given breakpoint range
+   * @param minBreakpoint Minimum breakpoint
+   * @param maxBreakpoint Maximum breakpoint
+   * @returns Whether inside the given breakpoint range
    */
   public static isBreakpointBetween(minBreakpoint: string, maxBreakpoint: string): boolean {
     const currentBreakpoint = this.getCurrentBreakpoint();
@@ -86,9 +86,9 @@ export class ResponsiveUtils {
   }
 
   /**
-   * 获取断点的最小宽度
-   * @param breakpoint 断点名称
-   * @returns 最小宽度
+   * Get the minimum width of a breakpoint
+   * @param breakpoint Breakpoint name
+   * @returns Minimum width
    */
   public static getBreakpointMinWidth(breakpoint: string): number | undefined {
     const bp = this.breakpoints.find(bp => bp.name === breakpoint);
@@ -96,9 +96,9 @@ export class ResponsiveUtils {
   }
 
   /**
-   * 获取断点的最大宽度
-   * @param breakpoint 断点名称
-   * @returns 最大宽度
+   * Get the maximum width of a breakpoint
+   * @param breakpoint Breakpoint name
+   * @returns Maximum width
    */
   public static getBreakpointMaxWidth(breakpoint: string): number | undefined {
     const bp = this.breakpoints.find(bp => bp.name === breakpoint);
@@ -106,10 +106,10 @@ export class ResponsiveUtils {
   }
 
   /**
-   * 监听窗口大小变化
-   * @param callback 回调函数
-   * @param debounceDelay 防抖延迟（毫秒）
-   * @returns 取消监听的函数
+   * Listen for window resize
+   * @param callback Callback function
+   * @param debounceDelay Debounce delay (milliseconds)
+   * @returns Function to cancel the listener
    */
   public static onResize(callback: () => void, debounceDelay: number = 250): () => void {
     const debouncedCallback = this.debounce(callback, debounceDelay);
@@ -118,10 +118,10 @@ export class ResponsiveUtils {
   }
 
   /**
-   * 防抖函数
-   * @param func 要防抖的函数
-   * @param wait 等待时间（毫秒）
-   * @returns 防抖后的函数
+   * Debounce function
+   * @param func Function to debounce
+   * @param wait Wait time (milliseconds)
+   * @returns Debounced function
    */
   private static debounce<T extends (...args: any[]) => any>(func: T, wait: number): (...args: Parameters<T>) => void {
     let timeout: ReturnType<typeof setTimeout>;
@@ -132,10 +132,10 @@ export class ResponsiveUtils {
   }
 
   /**
-   * 节流函数
-   * @param func 要节流的函数
-   * @param limit 时间限制（毫秒）
-   * @returns 节流后的函数
+   * Throttle function
+   * @param func Function to throttle
+   * @param limit Time limit (milliseconds)
+   * @returns Throttled function
    */
   public static throttle<T extends (...args: any[]) => any>(func: T, limit: number): (...args: Parameters<T>) => void {
     let inThrottle: boolean;
@@ -149,16 +149,16 @@ export class ResponsiveUtils {
   }
 
   /**
-   * 注册自定义断点
-   * @param breakpoints 断点数组
+   * Register custom breakpoints
+   * @param breakpoints Breakpoint array
    */
   public static registerBreakpoints(breakpoints: Breakpoint[]): void {
     this.breakpoints = breakpoints;
   }
 
   /**
-   * 获取所有断点
-   * @returns 所有断点
+   * Get all breakpoints
+   * @returns All breakpoints
    */
   public static getAllBreakpoints(): Breakpoint[] {
     return [...this.breakpoints];

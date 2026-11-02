@@ -3,20 +3,20 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * Script Generator Agent — P1-T06 智能脚本助手
+ * Script Generator Agent — P1-T06 intelligent script assistant
  *
- * 统一 AI 助手面板的 `script-dev` 任务类型后端逻辑：
- *   1. 解析用户的自然语言脚本需求
- *   2. 匹配触发事件类型（dataChange/timer/event/manual）
- *   3. 构造 LLM System Prompt（含 26 ScriptAPI 完整知识）
- *   4. LLM 生成符合 ScriptAPI 规范的脚本代码
- *   5. 前端提供"插入 ScriptEditor"快捷操作
+ * Backend logic for the unified AI assistant panel's `script-dev` task type:
+ *   1. Parse the user's natural-language script requirements
+ *   2. Match the trigger event type (dataChange/timer/event/manual)
+ *   3. Build the LLM System Prompt (with the full 26 ScriptAPI knowledge)
+ *   4. LLM generates script code conforming to the ScriptAPI spec
+ *   5. Frontend provides an "insert into ScriptEditor" quick action
  *
- * 关联决策：D-005 混合模式、D-016 Session 委托
+ * Related decisions: D-005 hybrid mode, D-016 Session delegation
  *
- * 用法:
+ * Usage:
  *   const agent = new ScriptGeneratorAgent();
- *   const result = agent.analyze('当温度超过 80 度时触发告警');
+ *   const result = agent.analyze('Trigger an alarm when the temperature exceeds 80');
  */
 
 import { ChatMessage } from './ai-client';
@@ -24,27 +24,27 @@ import type { TriggerMatchResult } from './trigger-matcher';
 import { triggerMatcher } from './trigger-matcher';
 
 // ============================================================
-// 类型定义
+// Type definitions
 // ============================================================
 
 export interface ScriptGenInput {
-  /** 用户原始输入 */
+  /** User's raw input */
   userInput: string;
-  /** 匹配的触发事件 */
+  /** Matched trigger event */
   trigger: TriggerMatchResult;
 }
 
 export interface ScriptGenResult {
-  /** 完整的 System Prompt（含 ScriptAPI 知识） */
+  /** Full System Prompt (with ScriptAPI knowledge) */
   systemPrompt: string;
-  /** 用于发送给 LLM 的消息列表 */
+  /** Message list to send to the LLM */
   messages: ChatMessage[];
-  /** 匹配的触发配置 */
+  /** Matched trigger config */
   trigger: TriggerMatchResult;
 }
 
 // ============================================================
-// 常量：26 ScriptAPI 完整文档（注入到 System Prompt）
+// Constants: full 26 ScriptAPI documentation (injected into the System Prompt)
 // ============================================================
 
 const SCRIPT_API_DOCS = `## ScriptAPI 参考（26 个 API）
@@ -113,7 +113,7 @@ const SCRIPT_API_DOCS = `## ScriptAPI 参考（26 个 API）
 `;
 
 // ============================================================
-// 常量：触发方式 → 代码模板
+// Constants: trigger type → code template
 // ============================================================
 
 const TRIGGER_TEMPLATES: Record<string, string> = {
@@ -140,7 +140,7 @@ if (currentValue {condition} {threshold}) {
 
 export class ScriptGeneratorAgent {
   /**
-   * 分析用户输入，匹配触发事件并生成 LLM System Prompt
+   * Analyze user input, match the trigger event and generate the LLM System Prompt
    */
   analyze(userInput: string): ScriptGenResult {
     const trigger = triggerMatcher.match(userInput);
@@ -153,13 +153,13 @@ export class ScriptGeneratorAgent {
   }
 
   /**
-   * 构建包含完整 ScriptAPI 知识的 System Prompt
+   * Build a System Prompt containing the full ScriptAPI knowledge
    */
   buildSystemPrompt(trigger: TriggerMatchResult): string {
     return this._buildSystemPrompt(trigger);
   }
 
-  // ─── 私有方法 ───
+  // ─── Private methods ───
 
   private _buildSystemPrompt(trigger: TriggerMatchResult): string {
     const triggerSection = trigger.type !== 'unknown'
@@ -216,5 +216,5 @@ ${triggerSection}
   }
 }
 
-/** 单例 */
+/** Singleton */
 export const scriptGeneratorAgent = new ScriptGeneratorAgent();

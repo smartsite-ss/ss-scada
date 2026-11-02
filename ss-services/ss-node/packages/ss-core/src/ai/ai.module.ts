@@ -3,21 +3,21 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * AI Module — 后端 AI 服务网关
+ * AI Module - backend AI service gateway
  *
- * 聚合：
- *   - LLM Provider（统一 OpenAICompatibleProvider，为每个预置供应商创建实例）
- *   - LLMProxyService（路由 + 降级 + 健康检查）
- *   - AI Controller（REST API + SSE 端点 + Provider CRUD + 预置模板查询）
- *   - AiProviderConfigService（数据库 CRUD + AES 加密 + 预置种子）
+ * Aggregates:
+ *   - LLM Provider (unified OpenAICompatibleProvider, one instance per preset vendor)
+ *   - LLMProxyService (routing + fallback + health check)
+ *   - AI Controller (REST API + SSE endpoints + Provider CRUD + preset template query)
+ *   - AiProviderConfigService (DB CRUD + AES encryption + preset seeding)
  *
- * 使用方式：
+ * Usage:
  *   import { AiModule } from '@ss-node/ss-core';
  *   @Module({ imports: [AiModule] })
  *
- * 关联决策：
- *   - D-010 多供应商路由 + 降级
- *   - D-012 Feature Flag（AI_ENABLED）
+ * Related decisions:
+ *   - D-010 multi-vendor routing + fallback
+ *   - D-012 Feature Flag (AI_ENABLED)
  */
 
 import { Module } from '@nestjs/common';
@@ -70,18 +70,18 @@ import { Phase2FeaturesService } from './phase2-features.service';
     RAGQAService,
     LLMProxyService,
     AiProviderConfigService,
-    // P2-T08: 对话持久化 + Prompt 版本管理 + 成本监控
+    // P2-T08: conversation persistence + Prompt version management + cost monitoring
     ConversationService,
     PromptVersionService,
     CostMonitorService,
-    // Phase 2 智能功能（A004/A005/C002/C003/E003）
+    // Phase 2 smart features (A004/A005/C002/C003/E003)
     Phase2FeaturesService,
     /**
-     * LLM Provider 工厂
+     * LLM Provider factory
      *
-     * 为每个预置供应商创建独立的 OpenAICompatibleProvider 实例。
-     * 实例通过 providerId 区分（deepseek/zhipu/qwen/moonshot/ernie/openai/claude/gemini/mistral/custom）。
-     * 'custom' 实例用于处理用户自定义的 OpenAI 兼容端点。
+     * Creates an independent OpenAICompatibleProvider instance for each preset vendor.
+     * Instances are distinguished by providerId (deepseek/zhipu/qwen/moonshot/ernie/openai/claude/gemini/mistral/custom).
+     * The 'custom' instance handles user-defined OpenAI-compatible endpoints.
      */
     {
       provide: LLM_PROVIDERS,

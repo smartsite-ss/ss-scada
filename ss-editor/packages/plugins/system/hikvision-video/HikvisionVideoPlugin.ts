@@ -7,13 +7,13 @@ import { i18n, registerLocaleModules } from '@scada-editor/core';
 import { hikvisionVideoPropertySchema } from './hikvisionVideoPropertySchema';
 import type { VideoChannel } from './videoPlayer';
 
-// 动态扫描 locales 目录，新增语言只需添加对应 json 文件，无需改动本文件
+// Dynamically scan the locales directory; adding a new language only requires adding the corresponding json file, no changes to this file needed
 registerLocaleModules(import.meta.glob('./locales/*.json', { eager: true }));
 
 import pkg from './package.json';
 
 export type HikvisionVideoProps = InferSchemaProps<typeof hikvisionVideoPropertySchema> & {
-  /** 视频通道列表，数组顺序即网格槽位顺序（左上→右下） */
+  /** Video channel list; array order is the grid slot order (top-left → bottom-right) */
   channels: VideoChannel[];
 };
 
@@ -49,7 +49,7 @@ export class HikvisionVideoPlugin extends BasePlugin<HikvisionVideoProps> {
   };
 
   protected render(_dc: DrawContext): void {
-    // Vue SFC 模式：主渲染由 Vue DOM 层完成
+    // Vue SFC mode: main rendering is done by the Vue DOM layer
   }
 
   constructor(x = 0, y = 0, w = 640, h = 360) {

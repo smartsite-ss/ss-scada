@@ -19,7 +19,7 @@ export class InterpageTransferService {
     private idCounter: number = 0;
 
     /**
-     * 序列化单个图形（与 toJSON 格式完全兼容）
+     * Serialize a single graphic (fully compatible with the toJSON format)
      */
     serializeGraphic(graphic: IGraphic): ITransferableData {
         const graphicData = graphic.toJSON();
@@ -35,37 +35,37 @@ export class InterpageTransferService {
     }
 
     /**
-     * 批量序列化图形
+     * Serialize graphics in batch
      */
     serializeGraphics(graphics: IGraphic[]): ITransferableData[] {
         return graphics.map(g => this.serializeGraphic(g));
     }
 
     /**
-     * 反序列化单个图形（与 GraphicFactory 完全兼容）
+     * Deserialize a single graphic (fully compatible with GraphicFactory)
      */
     deserializeGraphic(data: ITransferableData): IGraphic {
-        // 重构为与 toJSON 格式一致的结构
+        // Rebuild into a structure consistent with the toJSON format
         const jsonData = {
             id: data.id,
             type: data.type,
             config: data.config
         };
-        
-        // 使用 GraphicFactory 创建图形
+
+        // Create the graphic via GraphicFactory
         const graphic = GraphicFactory.createGraphicFromJSON(jsonData);
         return graphic;
     }
 
     /**
-     * 批量反序列化图形
+     * Deserialize graphics in batch
      */
     deserializeGraphics(data: ITransferableData[]): IGraphic[] {
         return data.map(d => this.deserializeGraphic(d));
     }
 
     /**
-     * 坐标转换
+     * Coordinate transform
      */
     transformCoordinates(graphic: IGraphic, offsetX: number, offsetY: number): void {
         if (graphic.config.geometry) {
@@ -75,7 +75,7 @@ export class InterpageTransferService {
     }
 
     /**
-     * 生成新 ID
+     * Generate a new ID
      */
     generateNewId(existingIds: string[]): string {
         let newId: string;
@@ -86,12 +86,12 @@ export class InterpageTransferService {
     }
 
     /**
-     * 重新分配 ID（避免冲突）
+     * Reassign IDs (avoid conflicts)
      */
     reassignIds(graphics: IGraphic[], existingIds: string[]): IGraphic[] {
         return graphics.map(graphic => {
             const newId = this.generateNewId(existingIds);
-            // 更新 ID
+            // Update ID
             graphic.id = newId;
             graphic.config.id = newId;
             existingIds.push(newId);

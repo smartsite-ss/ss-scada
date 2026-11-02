@@ -6,97 +6,97 @@ import { Entity, Column, Index } from 'typeorm';
 import { BaseEntity } from '../../core/entities/base.entity';
 
 /**
- * 订阅者处理记录 — 嵌入在 EventLog.subscribers 数组中
+ * Subscriber processing record - embedded in the EventLog.subscribers array
  */
 export interface SubscriberRecord {
-  /** 订阅者类名（如 'DeviceConfigWatcher'） */
+  /** Subscriber class name (e.g. 'DeviceConfigWatcher') */
   name: string;
-  /** 处理状态 */
+  /** Processing status */
   status: 'pending' | 'processing' | 'processed' | 'failed' | 'skipped';
-  /** 开始处理时间（ISO 字符串） */
+  /** Processing start time (ISO string) */
   startedAt?: string;
-  /** 完成时间（ISO 字符串） */
+  /** Completion time (ISO string) */
   completedAt?: string;
-  /** 处理耗时（ms） */
+  /** Processing duration (ms) */
   duration?: number;
-  /** 错误信息（status=failed 时填充） */
+  /** Error message (filled when status=failed) */
   error?: string;
-  /** 业务效果（如 { connectionId, tagsLoaded, tasksRegistered }） */
+  /** Business effect (e.g. { connectionId, tagsLoaded, tasksRegistered }) */
   result?: Record<string, any>;
 }
 
 /**
- * 事件日志状态枚举
+ * Event-log status enum
  */
 export type EventLogStatus =
-  | 'emitted'        // 已发射，等待订阅者处理
-  | 'processing'     // 订阅者处理中
-  | 'processed'     // 所有订阅者处理完成
-  | 'partial'       // 部分订阅者成功，部分失败
-  | 'failed'        // 所有订阅者失败
-  | 'no_subscribers'; // 无订阅者
+  | 'emitted'        // emitted, waiting for subscribers to process
+  | 'processing'     // subscribers processing
+  | 'processed'     // all subscribers processed
+  | 'partial'       // some subscribers succeeded, some failed
+  | 'failed'        // all subscribers failed
+  | 'no_subscribers'; // no subscribers
 
 /**
- * 事件日志实体 — 配置变更类事件持久化 + 订阅者追踪
+ * Event-log entity - config-change event persistence + subscriber tracing
  *
- * 存储在全局 ss-node.db（参考 SystemEvent 模式），不按项目隔离。
- * 仅存储配置变更类事件（21 个），高频数据事件（data_point_changed）不入库。
+ * Stored in the global ss-node.db (following the SystemEvent pattern), not isolated per project.
+ * Stores only config-change events (21 types); high-frequency data events (data_point_changed) are not persisted.
  *
- * 设计要点：
- * 1. 继承 BaseEntity（含 id / createdAt / updatedAt，不含 projectId）
- * 2. projectId 为可选字段，系统级事件可为 null
- * 3. subscribers 字段记录每个订阅者的处理状态和业务效果
- * 4. status 字段标识事件整体生命周期
+ * Design points:
+ * 1. Extends BaseEntity (with id / createdAt / updatedAt, no projectId)
+ * 2. projectId is optional; system-level events may be null
+ * 3. The subscribers field records each subscriber's processing status and business effect
+ * 4. The status field marks the event's overall lifecycle
  */
 @Entity('evt_event_log')
-@Index(['projectId', 'createdAt'])   // 按项目+时间倒序查询（最常用）
-@Index(['eventType', 'createdAt'])   // 按类型+时间筛选
-@Index(['emittedBy', 'createdAt'])    // 按操作者筛选（用户审计）
-@Index(['status', 'createdAt'])      // 按状态筛选（找失败的）
-@Index(['traceId'])                   // 按 traceId 查询事件链（#7 预留）
+@Index(['projectId', 'createdAt'])   // query by project + time descending (most common)
+@Index(['eventType', 'createdAt'])   // filter by type + time
+@Index(['emittedBy', 'createdAt'])    // filter by operator (user audit)
+@Index(['status', 'createdAt'])      // filter by status (find failures)
+@Index(['traceId'])                   // query the event chain by traceId (reserved for #7)
 export class EventLog extends BaseEntity {
-  /** 事件类型（如 'device.created'、'project:enabled'） */
+  /** Event type (e.g. 'device.created', 'project:enabled') */
   @Column({ type: 'varchar', length: 64 })
   eventType: string;
 
-  /** 项目 ID（可选：系统级事件为 null，项目级事件携带 projectId 便于筛选） */
+  /** Project ID (optional: null for system-level events; project-level events carry projectId for filtering) */
   @Column({ name: 'project_id', type: 'varchar', length: 36, nullable: true })
   projectId?: string | null;
 
-  /** 事件负载（simple-json 序列化，保留完整 payload） */
+  /** Event payload (simple-json serialization, keeps the full payload) */
   @Column({ type: 'simple-json' })
   payload: Record<string, any>;
 
-  /** 事件发起者（用户 ID / 系统服务名）
-   * 来源优先级：payload.userId > payload.emittedBy > payload.sourceInstance > null */
+  /** Event initiator (user ID / system service name)
+   * Source priority: payload.userId > payload.emittedBy > payload.sourceInstance > null */
   @Column({ name: 'emitted_by', type: 'varchar', length: 64, nullable: true })
   emittedBy?: string | null;
 
-  /** 事件来源（rest_api / pipeline / scheduler / system / websocket） */
+  /** Event source (rest_api / pipeline / scheduler / system / websocket) */
   @Column({ type: 'varchar', length: 20, default: 'rest_api' })
   source: string;
 
-  /** 事件本身的 timestamp（统一转为 datetime 存储） */
+  /** The event's own timestamp (uniformly stored as datetime) */
   @Column({ name: 'event_timestamp', type: 'datetime' })
   eventTimestamp: Date;
 
-  /** 订阅者处理记录（JSON 数组，每个元素记录一个订阅者的处理结果） */
+  /** Subscriber processing records (JSON array; each element records one subscriber's result) */
   @Column({ type: 'simple-json', nullable: true })
   subscribers: SubscriberRecord[];
 
-  /** 事件整体状态 */
+  /** Event overall status */
   @Column({ type: 'varchar', length: 20, default: 'emitted' })
   status: EventLogStatus;
 
-  /** 订阅者成功数 / 总数（如 "2/3"），便于快速查询部分失败的事件 */
+  /** Subscriber success count / total (e.g. "2/3"), for quickly querying partially failed events */
   @Column({ name: 'success_ratio', type: 'varchar', length: 10, nullable: true })
   successRatio?: string | null;
 
-  /** 错误信息（status=failed/partial 时填充） */
+  /** Error message (filled when status=failed/partial) */
   @Column({ type: 'text', nullable: true })
   errorMessage?: string | null;
 
-  /** 事件追踪 ID（#7 优化预留，当前可为 null） */
+  /** Event trace ID (reserved for #7 optimization; currently may be null) */
   @Column({ name: 'trace_id', type: 'varchar', length: 36, nullable: true })
   traceId?: string | null;
 }

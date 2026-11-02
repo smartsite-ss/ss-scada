@@ -5,11 +5,11 @@
 import type { IGraphic } from '@scada-editor/plugin-sdk';
 
 /**
- * 对齐工具函数
+ * Alignment utility functions
  */
 export class AlignmentUtils {
   /**
-   * 获取多个图形的边界框
+   * Get the bounding box of multiple graphics
    */
   static getBounds(graphics: IGraphic[]): {
     minX: number;
@@ -56,7 +56,7 @@ export class AlignmentUtils {
   }
 
   /**
-   * 对齐到左边
+   * Align to the left
    */
   static alignLeft(graphics: IGraphic[]): void {
     if (graphics.length < 2) return;
@@ -72,7 +72,7 @@ export class AlignmentUtils {
   }
 
   /**
-   * 对齐到右边
+   * Align to the right
    */
   static alignRight(graphics: IGraphic[]): void {
     if (graphics.length < 2) return;
@@ -89,7 +89,7 @@ export class AlignmentUtils {
   }
 
   /**
-   * 对齐到顶部
+   * Align to the top
    */
   static alignTop(graphics: IGraphic[]): void {
     if (graphics.length < 2) return;
@@ -105,7 +105,7 @@ export class AlignmentUtils {
   }
 
   /**
-   * 对齐到底部
+   * Align to the bottom
    */
   static alignBottom(graphics: IGraphic[]): void {
     if (graphics.length < 2) return;
@@ -122,7 +122,7 @@ export class AlignmentUtils {
   }
 
   /**
-   * 水平居中对齐
+   * Align to horizontal center
    */
   static alignCenter(graphics: IGraphic[]): void {
     if (graphics.length < 2) return;
@@ -140,7 +140,7 @@ export class AlignmentUtils {
   }
 
   /**
-   * 垂直居中对齐
+   * Align to vertical middle
    */
   static alignMiddle(graphics: IGraphic[]): void {
     if (graphics.length < 2) return;
@@ -158,12 +158,12 @@ export class AlignmentUtils {
   }
 
   /**
-   * 水平等间距分布
+   * Distribute with equal horizontal spacing
    */
   static distributeHorizontal(graphics: IGraphic[]): void {
     if (graphics.length < 3) return;
 
-    // 按 x 坐标排序
+    // Sort by x coordinate
     const sortedGraphics = [...graphics].sort(
       (a, b) => a.getPosition().x - b.getPosition().x
     );
@@ -171,17 +171,17 @@ export class AlignmentUtils {
     const bounds = this.getBounds(sortedGraphics);
     const totalWidth = bounds.width;
 
-    // 计算所有图形的总宽度
+    // Compute the total width of all graphics
     let allGraphicsWidth = 0;
     for (const graphic of sortedGraphics) {
       allGraphicsWidth += graphic.getSize().width;
     }
 
-    // 计算间距
+    // Compute the spacing
     const gapCount = sortedGraphics.length - 1;
     const gap = (totalWidth - allGraphicsWidth) / gapCount;
 
-    // 重新放置图形
+    // Reposition the graphics
     let currentX = bounds.minX;
     for (const graphic of sortedGraphics) {
       if (!graphic.getLocked()) {
@@ -193,12 +193,12 @@ export class AlignmentUtils {
   }
 
   /**
-   * 垂直等间距分布
+   * Distribute with equal vertical spacing
    */
   static distributeVertical(graphics: IGraphic[]): void {
     if (graphics.length < 3) return;
 
-    // 按 y 坐标排序
+    // Sort by y coordinate
     const sortedGraphics = [...graphics].sort(
       (a, b) => a.getPosition().y - b.getPosition().y
     );
@@ -206,17 +206,17 @@ export class AlignmentUtils {
     const bounds = this.getBounds(sortedGraphics);
     const totalHeight = bounds.height;
 
-    // 计算所有图形的总高度
+    // Compute the total height of all graphics
     let allGraphicsHeight = 0;
     for (const graphic of sortedGraphics) {
       allGraphicsHeight += graphic.getSize().height;
     }
 
-    // 计算间距
+    // Compute the spacing
     const gapCount = sortedGraphics.length - 1;
     const gap = (totalHeight - allGraphicsHeight) / gapCount;
 
-    // 重新放置图形
+    // Reposition the graphics
     let currentY = bounds.minY;
     for (const graphic of sortedGraphics) {
       if (!graphic.getLocked()) {
@@ -228,7 +228,7 @@ export class AlignmentUtils {
   }
 
   /**
-   * 执行对齐操作
+   * Execute an alignment operation
    */
   static executeAlign(
     graphics: IGraphic[],
@@ -257,7 +257,7 @@ export class AlignmentUtils {
   }
 
   /**
-   * 执行分布操作
+   * Execute a distribution operation
    */
   static executeDistribute(
     graphics: IGraphic[],
@@ -274,7 +274,7 @@ export class AlignmentUtils {
   }
 }
 
-// 导出独立函数
+// Export standalone functions
 export function alignLeft(graphics: IGraphic[]): void {
   AlignmentUtils.alignLeft(graphics);
 }

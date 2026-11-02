@@ -37,8 +37,8 @@ export class OperationLogInterceptor implements NestInterceptor {
     const request = context.switchToHttp().getRequest();
     const startTime = Date.now();
 
-    // CODE-01: GET 请求为只读操作，审计意义低，跳过操作日志写入以避免每个 API 请求
-    // 都触发一次 SQLite INSERT（在 swap/IO 受限服务器上放大所有 GET 延迟）
+    // CODE-01: GET requests are read-only; auditing them has low value, so skip writing operation logs to avoid one SQLite INSERT per API request
+    // (which amplifies the latency of all GET requests on IO-constrained swap servers)
     const isReadOperation = request.method === 'GET';
 
     const logEntry: OperationLogEntity = {
@@ -58,20 +58,20 @@ export class OperationLogInterceptor implements NestInterceptor {
     return next.handle().pipe(
       tap({
         next: () => {
-          if (isReadOperation) return; // GET 跳过
+          if (isReadOperation) return; // skip GET
           logEntry.status = 'success';
           const duration = `${Date.now() - startTime}ms`;
-          // 保留已捕获的请求体，末尾追加耗时
+          // Keep the captured request body, append elapsed time at the end
           logEntry.details = logEntry.details
             ? `${logEntry.details} | Duration: ${duration}`
             : `Duration: ${duration}`;
           void this.saveOperationLog(logEntry);
         },
         error: (error) => {
-          if (isReadOperation) return; // GET 错误也跳过（避免错误风暴放大 IO）
+          if (isReadOperation) return; // skip GET errors too (avoid error-storm IO amplification)
           logEntry.status = 'error';
           const errInfo = `${error.message || 'Unknown error'} (${Date.now() - startTime}ms)`;
-          // 保留已捕获的请求体，末尾追加错误信息
+          // Keep the captured request body, append error info at the end
           logEntry.details = logEntry.details
             ? `${logEntry.details} | Error: ${errInfo}`
             : `Error: ${errInfo}`;
@@ -82,9 +82,9 @@ export class OperationLogInterceptor implements NestInterceptor {
   }
 
   /**
-   * CODE-01: 异步保存操作日志。
-   * - 使用 void + .catch 捕获异步拒绝（原实现 save() 未 await 且 try/catch 无法捕获 Promise 拒绝）
-   * - 不阻塞主请求响应（fire-and-forget），但确保异常被吞掉并记录，不产生 unhandledRejection
+   * CODE-01: save operation logs asynchronously.
+   * - Use void + .catch to capture async rejections (the original save() was not awaited and try/catch could not catch Promise rejections)
+   * - Do not block the main request response (fire-and-forget), but ensure exceptions are swallowed and logged without producing unhandledRejection
    */
   private saveOperationLog(entry: OperationLogEntity): Promise<void> {
     if (!this.operationLogRepo) return Promise.resolve();

@@ -5,7 +5,7 @@
 import { ref } from 'vue';
 
 /**
- * 字典条目
+ * Dictionary item
  */
 export interface DictItem {
   value: string;
@@ -15,7 +15,7 @@ export interface DictItem {
 }
 
 /**
- * 字典表
+ * Dictionary table
  */
 export interface DictTable {
   dictId: string;
@@ -28,27 +28,27 @@ export interface DictTable {
 }
 
 /**
- * 下拉选项
+ * Dropdown option
  */
 export interface DictOption {
   label: string;
   value: string;
 }
 
-// ===== 模块级缓存（跨组件共享，避免重复请求） =====
+// ===== Module-level cache (shared across components to avoid duplicate requests) =====
 
-/** dictId → 字典条目列表 */
+/** dictId → dictionary item list */
 const dictCache = new Map<string, DictItem[]>();
 
-/** dictId → 正在进行中的加载 Promise（防止并发重复请求） */
+/** dictId → in-flight loading Promise (prevents concurrent duplicate requests) */
 const loadingPromises = new Map<string, Promise<DictItem[]>>();
 
 const API_BASE = '/api/v1';
 const TOKEN_KEY = 'scada_access_token';
 
 /**
- * 从后端加载字典表数据
- * 已缓存时直接返回，正在加载时复用同一 Promise
+ * Load dictionary table data from the backend.
+ * Returns cached data directly when available; reuses the same Promise while loading.
  */
 function fetchDict(dictId: string): Promise<DictItem[]> {
   if (dictCache.has(dictId)) {
@@ -93,16 +93,17 @@ function fetchDict(dictId: string): Promise<DictItem[]> {
 }
 
 /**
- * useDict — 响应式字典查询 Composable
+ * useDict — reactive dictionary query composable
  *
- * 封装字典数据的懒加载、缓存、标签解析、选项生成。
- * 使用模块级 Map 缓存，多个组件共享同一份字典数据，避免重复请求。
+ * Wraps lazy loading, caching, label resolution, and option generation for dictionary data.
+ * Uses a module-level Map cache so multiple components share the same dictionary data
+ * and avoid duplicate requests.
  *
  * @example
  * ```ts
  * const { loadDict, getDictLabel, getDictOptions } = useDict();
  * await loadDict('priority');
- * const label = await getDictLabel('priority', 'high'); // "高优先级"
+ * const label = await getDictLabel('priority', 'high'); // "High priority"
  * const opts = await getDictOptions('priority');        // [{ label, value }, ...]
  * ```
  */
@@ -111,9 +112,9 @@ export function useDict() {
   const error = ref<string | null>(null);
 
   /**
-   * 加载字典表数据（带缓存）
-   * @param dictId 字典标识
-   * @returns 字典条目列表
+   * Load dictionary table data (with cache)
+   * @param dictId Dictionary identifier
+   * @returns Dictionary item list
    */
   async function loadDict(dictId: string): Promise<DictItem[]> {
     loading.value = true;
@@ -130,10 +131,10 @@ export function useDict() {
   }
 
   /**
-   * 获取单个值对应的标签文本
-   * @param dictId 字典标识
-   * @param value 字典条目 value
-   * @returns 对应的 label，未匹配时返回 value 本身
+   * Get the label text for a single value
+   * @param dictId Dictionary identifier
+   * @param value Dictionary item value
+   * @returns The matching label; returns the value itself when no match
    */
   async function getDictLabel(dictId: string, value: string): Promise<string> {
     const items = await fetchDict(dictId);
@@ -142,9 +143,9 @@ export function useDict() {
   }
 
   /**
-   * 获取下拉选项列表（按 sortOrder 升序排列）
-   * @param dictId 字典标识
-   * @returns 选项数组 [{ label, value }]
+   * Get the dropdown option list (sorted by sortOrder ascending)
+   * @param dictId Dictionary identifier
+   * @returns Option array [{ label, value }]
    */
   async function getDictOptions(dictId: string): Promise<DictOption[]> {
     const items = await fetchDict(dictId);
@@ -154,7 +155,7 @@ export function useDict() {
   }
 
   /**
-   * 清空指定字典缓存（不传则清空全部）
+   * Clear the cache for a specific dictionary (or all when omitted)
    */
   function clearCache(dictId?: string): void {
     if (dictId) {
@@ -165,17 +166,17 @@ export function useDict() {
   }
 
   return {
-    /** 是否正在加载 */
+    /** Whether loading is in progress */
     loading,
-    /** 错误信息 */
+    /** Error message */
     error,
-    /** 加载字典表数据（带缓存） */
+    /** Load dictionary table data (with cache) */
     loadDict,
-    /** 获取单个标签文本 */
+    /** Get a single label text */
     getDictLabel,
-    /** 获取下拉选项列表 */
+    /** Get the dropdown option list */
     getDictOptions,
-    /** 清空缓存 */
+    /** Clear the cache */
     clearCache,
   };
 }

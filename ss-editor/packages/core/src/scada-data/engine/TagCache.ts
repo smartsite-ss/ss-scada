@@ -5,13 +5,13 @@
 import type { TagValue } from '../types/data-source.types';
 
 /**
- * TagCache — 标签值缓存与失效策略
+ * TagCache — tag value cache and invalidation strategy
  *
- * 职责：
- * - 缓存所有标签的最新值（_tagCache）
- * - 缓存每个数据源的原始数据（_sourceRawData）
- * - 处理驱动推送的数据，检测变更，返回变更列表
- * - 支持按数据源清除缓存
+ * Responsibilities:
+ * - Cache the latest value of all tags (_tagCache)
+ * - Cache each data source's raw data (_sourceRawData)
+ * - Process driver-pushed data, detect changes, return the change list
+ * - Support clearing the cache per data source
  */
 export class TagCache {
   private _tagCache: Map<string, TagValue> = new Map();
@@ -43,11 +43,11 @@ export class TagCache {
   }
 
   /**
-   * 处理驱动推送的数据：
-   * - 更新 _sourceRawData
-   * - 比较缓存值，检测变更
-   * - 更新 _tagCache
-   * - 返回所有发生变更的条目（含 previousValue）
+   * Process driver-pushed data:
+   * - Update _sourceRawData
+   * - Compare cached values, detect changes
+   * - Update _tagCache
+   * - Return all changed entries (with previousValue)
    */
   processReceivedData(
     sourceId: string,

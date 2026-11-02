@@ -5,8 +5,8 @@
 import { i18n, registerLocaleModules } from '@scada-editor/core';
 import { createPlugin } from '@scada-editor/plugin-sdk';
 import pkg from './package.json';
-// ★ 必须在 NavigationButtonPlugin 导入前 merge locale，
-// 否则 @Graphic 装饰器中的 i18n.global.t() 会找不到 key
+// ★ Locale must be merged before importing the plugin,
+// otherwise i18n.global.t() inside the @Graphic decorator will not find the key
 registerLocaleModules(import.meta.glob('./locales/*.json', { eager: true }));
 import { NavigationButtonPlugin } from './NavigationButtonPlugin';
 import { navigationButtonPropertySchema } from './navigationButtonPropertySchema';

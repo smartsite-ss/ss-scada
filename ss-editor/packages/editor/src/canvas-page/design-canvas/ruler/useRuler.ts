@@ -3,40 +3,40 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * useRuler - 标尺核心逻辑 Composable
- * 
- * 抽取 VerticalRuler / HorizontalRuler 的共享逻辑：
- * - RAF 节流鼠标追踪
- * - 鼠标离开处理  
- * - 辅助线拖拽创建（含错误处理）
- * - 生命周期事件绑定/清理
+ * useRuler - core ruler logic Composable
+ *
+ * Extracts the shared logic of VerticalRuler / HorizontalRuler:
+ * - RAF-throttled mouse tracking
+ * - Mouse-leave handling
+ * - Guide-line drag creation (with error handling)
+ * - Lifecycle event binding/cleanup
  * - mousePosition prop watch
  */
 import { ref, computed, watch, onMounted, onUnmounted, type Ref, type ComputedRef } from 'vue';
 
 export interface UseRulerOptions {
-  /** 标尺方向 */
+  /** Ruler direction */
   orientation: 'vertical' | 'horizontal';
-  /** 画布尺寸（垂直=height，水平=width） */
+  /** Canvas size (vertical=height, horizontal=width) */
   canvasSize: number;
-  /** 滚动偏移量 */
+  /** Scroll offset */
   scrollOffset: number;
-  /** 缩放比例 */
+  /** Zoom ratio */
   scale: number;
-  /** 外部鼠标位置（可为null） */
+  /** External mouse position (may be null) */
   mousePosition: { x: number; y: number } | null;
-  /** 创建辅助线回调 */
+  /** Guide-line creation callback */
   onCreateGuideLine: (position: number) => void;
-  /** 更新鼠标位置回调 */
+  /** Mouse position update callback */
   onUpdateMousePosition: (position: { x: number; y: number } | null) => void;
-  /** 删除最后一条辅助线回调 */
+  /** Delete-last-guide-line callback */
   onDeleteLastGuideLine: () => void;
 }
 
 export interface UseRulerReturn {
   rulerRef: Ref<HTMLElement | null>;
   rulerTrack: Ref<HTMLElement | null>;
-  /** 当前坐标轴值（垂直=Y，水平=X） */
+  /** Current axis value (vertical=Y, horizontal=X) */
   axisValue: Ref<number>;
   showMouseIndicator: Ref<boolean>;
   isDraggingNewGuide: Ref<boolean>;
@@ -45,9 +45,9 @@ export interface UseRulerReturn {
 }
 
 /**
- * 标尺核心逻辑 Composable
- * @param options 配置选项
- * @returns 标尺状态和计算属性
+ * Core ruler logic Composable
+ * @param options config options
+ * @returns ruler state and computed properties
  */
 export function useRuler(options: UseRulerOptions): UseRulerReturn {
   const {
@@ -67,7 +67,7 @@ export function useRuler(options: UseRulerOptions): UseRulerReturn {
   const isDraggingNewGuide = ref(false);
   const dragPosition = ref(0);
 
-  // ===== RAF 节流鼠标追踪 =====
+  // ===== RAF-throttled mouse tracking =====
   let rafId: number | null = null;
   let pendingPosition = { x: 0, y: 0 };
 
@@ -80,7 +80,7 @@ export function useRuler(options: UseRulerOptions): UseRulerReturn {
       y: event.clientY - rect.top + scrollOffset,
     };
 
-    // RAF节流：合并多次调用为一帧
+    // RAF throttle: coalesces multiple calls into one frame
     if (!rafId) {
       rafId = requestAnimationFrame(() => {
         onUpdateMousePosition(pendingPosition);
@@ -89,14 +89,14 @@ export function useRuler(options: UseRulerOptions): UseRulerReturn {
     }
   };
 
-  // ===== 鼠标离开处理 =====
+  // ===== Mouse-leave handling =====
   const handleMouseLeave = () => {
     if (!isDraggingNewGuide.value) {
       onUpdateMousePosition(null);
     }
   };
 
-  // ===== 辅助线拖拽创建（含增强错误处理）=====
+  // ===== Guide-line drag creation (with enhanced error handling) =====
   const handleMouseDown = (event: MouseEvent) => {
     event.preventDefault();
 
@@ -112,7 +112,7 @@ export function useRuler(options: UseRulerOptions): UseRulerReturn {
         return;
       }
 
-      // 提取对应轴的坐标
+      // Extract the coordinate of the corresponding axis
       const coord = isVertical
         ? event.clientY - rect.top + scrollOffset
         : event.clientX - rect.left + scrollOffset;
@@ -170,7 +170,7 @@ export function useRuler(options: UseRulerOptions): UseRulerReturn {
     }
   };
 
-  // ===== 监听外部 mousePosition 变化 =====
+  // ===== Watch external mousePosition changes =====
   watch(
     () => mousePosition,
     (newPosition) => {
@@ -181,16 +181,16 @@ export function useRuler(options: UseRulerOptions): UseRulerReturn {
         showMouseIndicator.value = false;
       }
     },
-    // P1优化：添加防抖判断，避免无变化时重赋值
+    // P1 optimization: add a debounce check to avoid redundant assignment when unchanged
     { flush: 'sync' },
   );
 
-  // ===== 辅助线预览样式 =====
+  // ===== Guide-line preview style =====
   const guideLinePreviewStyle = computed<Record<string, string>>(() => ({
     [isVertical ? 'top' : 'left']: `${dragPosition.value - scrollOffset}px`,
   }));
 
-  // ===== 生命周期：事件绑定/清理 =====
+  // ===== Lifecycle: event binding/cleanup =====
   onMounted(() => {
     if (rulerRef.value) {
       rulerRef.value.addEventListener('mousemove', handleMouseMove);

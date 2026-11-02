@@ -60,6 +60,6 @@ export class ValvePlugin extends BasePlugin<ValveProps> {
   }
 
   protected render(_dc: DrawContext): void {
-    // Vue SFC 模式：主渲染由 Vue DOM 层完成（见 ValveGraphic.vue）
+    // Vue SFC mode: main rendering is done by the Vue DOM layer (see ValveGraphic.vue)
   }
 }

@@ -5,51 +5,51 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, Index } from 'typeorm';
 
 /**
- * 权限变更审计日志表 — v7.0 新增
- * 记录角色权限修改、授权变更等操作
+ * Permission-change audit-log table - added in v7.0
+ * Records role-permission modifications, authorization changes, etc.
  */
 @Entity('sys_permission_audit_logs')
 export class PermissionAuditLog {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  /** 操作人 ID */
+  /** Operator ID */
   @Column({ name: 'operator_id' })
   @Index('idx_pal_operator')
   operatorId: string;
 
-  /** 操作人用户名 */
+  /** Operator username */
   @Column({ name: 'operator_name' })
   operatorName: string;
 
   /**
-   * 操作类型：
-   *   grant_role     — 授予角色
-   *   revoke_role    — 撤销角色
-   *   update_permissions — 更新权限码
-   *   update_auth    — 更新数据授权
+   * Operation type:
+   *   grant_role     - grant a role
+   *   revoke_role    - revoke a role
+   *   update_permissions - update permission codes
+   *   update_auth    - update data authorization
    */
   @Column()
   @Index('idx_pal_action')
   action: string;
 
   /**
-   * 目标类型：
+   * Target type:
    *   role / user / project_auth / group_auth / device_auth
    */
   @Column({ name: 'target_type' })
   targetType: string;
 
-  /** 目标 ID */
+  /** Target ID */
   @Column({ name: 'target_id' })
   @Index('idx_pal_target')
   targetId: string;
 
-  /** 变更详情 (JSON)，如 { before: [...], after: [...] } */
+  /** Change details (JSON), e.g. { before: [...], after: [...] } */
   @Column({ type: 'simple-json', nullable: true })
   changes: Record<string, unknown> | null;
 
-  /** 操作 IP */
+  /** Operation IP */
   @Column({ name: 'ip_address', nullable: true })
   ipAddress: string;
 

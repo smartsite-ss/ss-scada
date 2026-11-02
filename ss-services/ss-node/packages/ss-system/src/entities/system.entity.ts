@@ -101,7 +101,7 @@ export class OperationLog {
   createdAt: Date;
 }
 
-/** 备份日志表 — 记录每次备份操作，区分全局/项目、自动/手动 */
+/** Backup log table — records each backup operation, distinguishing global/project and automatic/manual */
 @Entity('sys_backup_logs')
 export class BackupLog {
   @PrimaryGeneratedColumn('uuid')
@@ -141,7 +141,7 @@ export class BackupLog {
   createdAt: Date;
 }
 
-/** 菜单项表 — 每行为独立菜单项，通过 parent_id 构建层级 */
+/** Menu item table — each row is an independent menu item, with hierarchy built via parent_id */
 @Entity('sys_menus')
 export class Menu {
   @PrimaryColumn({ type: 'varchar', length: 64 })
@@ -159,18 +159,18 @@ export class Menu {
   @Column({ type: 'varchar', length: 64, default: '' })
   icon: string;
 
-  /** JSON 数组字符串，如 '["admin","user"]'；NULL 表示所有角色可访问 */
+  /** JSON array string, e.g. '["admin","user"]'; NULL means all roles can access */
   @Column({ type: 'simple-json', nullable: true })
   roles: string[] | null;
 
   @Column({ name: 'sort_order', type: 'integer', default: 0 })
   sortOrder: number;
 
-  /** 是否为详情路由（不在菜单中显示） */
+  /** Whether this is a detail route (not shown in the menu) */
   @Column({ name: 'is_detail', type: 'integer', default: 0 })
   isDetail: number;
 
-  /** 子系统标识，NULL 表示全局菜单（所有子系统可见） */
+  /** Subsystem identifier; NULL means a global menu (visible in all subsystems) */
   @Column({ type: 'varchar', length: 64, nullable: true })
   subsystem: string | null;
 
@@ -181,7 +181,7 @@ export class Menu {
   updatedAt: Date;
 }
 
-/** 菜单按钮表 — 菜单项关联的操作按钮及权限码 */
+/** Menu button table — operation buttons and permission codes associated with menu items */
 @Entity('sys_menu_buttons')
 export class MenuButton {
   @PrimaryColumn({ type: 'varchar', length: 64 })

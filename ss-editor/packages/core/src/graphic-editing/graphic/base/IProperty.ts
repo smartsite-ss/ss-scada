@@ -25,48 +25,48 @@ export interface IGeometry {
 }
 
 export interface IGraphicStyle {
-  // ==================== 图形相关属性 ====================
-  backgroundColor?: string; // 背景颜色，支持 hex/rgba 格式
-  color?: string;           // 前景颜色，支持 hex/rgba 格式
-  opacity?: number;         // 透明度，取值范围 0-1
+  // ==================== Graphic-related Properties ====================
+  backgroundColor?: string; // Background color, supports hex/rgba format
+  color?: string;           // Foreground color, supports hex/rgba format
+  opacity?: number;         // Opacity, range 0-1
 
-  // ==================== 文本相关属性 ====================
-  fontColor?: string;       // 字体颜色，支持 hex/rgba 格式
-  fontSize?: number;        // 字体大小（像素）
-  fontFamily?: string;      // 字体名称，如 'Arial', 'Microsoft YaHei'
-  fontStyle?: string;       // 字体样式：normal | italic | oblique
-  fontWeight?: string;      // 字体粗细：normal | bold | 100-900
-  textAlign?: 'left' | 'center' | 'right'; // 文本对齐方式
-  letterSpacing?: number;   // 字间距（像素）
-  lineHeight?: number;      // 行高（像素）
+  // ==================== Text-related Properties ====================
+  fontColor?: string;       // Font color, supports hex/rgba format
+  fontSize?: number;        // Font size (pixels)
+  fontFamily?: string;      // Font name, e.g. 'Arial', 'Microsoft YaHei'
+  fontStyle?: string;       // Font style: normal | italic | oblique
+  fontWeight?: string;      // Font weight: normal | bold | 100-900
+  textAlign?: 'left' | 'center' | 'right'; // Text alignment
+  letterSpacing?: number;   // Letter spacing (pixels)
+  lineHeight?: number;      // Line height (pixels)
 
-  // ==================== 边框相关属性 ====================
-  borderColor?: string;     // 边框颜色，支持 hex/rgba 格式
-  borderWidth?: number;     // 边框宽度（像素）
-  borderRadius?: number;    // 边框圆角（像素）
-  borderStyle?: string;     // 边框样式：solid | dashed | dotted
+  // ==================== Border-related Properties ====================
+  borderColor?: string;     // Border color, supports hex/rgba format
+  borderWidth?: number;     // Border width (pixels)
+  borderRadius?: number;    // Border radius (pixels)
+  borderStyle?: string;     // Border style: solid | dashed | dotted
 
-  // ==================== 阴影相关属性 ====================
-  shadowBlur?: number;      // 阴影模糊程度（像素）
-  shadowOffsetX?: number;   // 阴影水平偏移（像素）
-  shadowOffsetY?: number;   // 阴影垂直偏移（像素）
-  shadowColor?: string;     // 阴影颜色，支持 hex/rgba 格式
-  shadowSpread?: number;    // 阴影扩展距离（像素）
+  // ==================== Shadow-related Properties ====================
+  shadowBlur?: number;      // Shadow blur amount (pixels)
+  shadowOffsetX?: number;   // Shadow horizontal offset (pixels)
+  shadowOffsetY?: number;   // Shadow vertical offset (pixels)
+  shadowColor?: string;     // Shadow color, supports hex/rgba format
+  shadowSpread?: number;    // Shadow spread distance (pixels)
 
-  // ==================== 布局相关属性 ====================
-  padding?: string;         // 内边距，支持 CSS 格式如 '10px' 或 '10px 20px'
-  margin?: string;          // 外边距，支持 CSS 格式如 '10px' 或 '10px 20px'
+  // ==================== Layout-related Properties ====================
+  padding?: string;         // Inner padding, supports CSS format e.g. '10px' or '10px 20px'
+  margin?: string;          // Outer margin, supports CSS format e.g. '10px' or '10px 20px'
 
-  [key: string]: any;       // 动态扩展属性
+  [key: string]: any;       // Dynamically extensible properties
 }
 
 export interface IGraphicConfig {
   id: string;
   type: string;
   name: string;
-  // 图形基本配置
+  // Basic graphic configuration
   geometry: IGeometry;
-  // 图形样式配置
+  // Graphic style configuration
   style: IGraphicStyle;
   data?: any;
 
@@ -75,22 +75,22 @@ export interface IGraphicConfig {
   disabled: boolean;
 
   zIndex: number;
-  // 组合相关属性
+  // Group-related properties
   isGroup: boolean;
   groupId: string | null;
   groupMembers: string[];
-  // 子图形
+  // Child graphics
   children?: IGraphicConfig[];
 
-  // 图形差异化属性
+  // Graphic-specific properties
   customProps: Record<string, any>;
-  // 创建时间
+  // Creation time
   createdAt: number;
-  // 更新时间
+  // Update time
   updatedAt: number;
 }
 
-// 事件
+// Events
 export interface IEvent {
   id: string;
   eventType: string; // click, hover, focus, blur, etc.
@@ -118,7 +118,7 @@ export interface IGraphicEvent {
 
 export type IGraphicProps = IGraphicConfig;
 
-// 数据验证规则
+// Data validation rules
 export interface IDataValidation {
   required: boolean;
   min: any;
@@ -128,7 +128,7 @@ export interface IDataValidation {
   message: string;
 }
 
-// 数据源
+// Data source
 export interface IDataSource {
   type: string;
   target: IGraphicConfig;
@@ -146,7 +146,7 @@ export interface IDataSource {
   }>;
 }
 
-// 动画
+// Animation
 export interface IAnimation {
   enabled: boolean;
   type: string; // AnimationType: fade-in, slide-right-in, rotate-in, etc.
@@ -154,7 +154,7 @@ export interface IAnimation {
   delay: number;
   easing: string; // EasingType: linear, ease, ease-in, ease-out, bounce, etc.
   properties: Record<string, any>;
-  // 循环动画
+  // Loop animation
   loopEnabled?: boolean;
   loopType?: string; // LoopAnimationType
   loopDuration?: number;

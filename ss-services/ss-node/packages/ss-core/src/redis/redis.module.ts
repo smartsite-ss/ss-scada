@@ -10,21 +10,21 @@ import { REDIS_CLIENT_DEFAULT, REDIS_CLIENT_OFFLINE, RedisClientToken } from './
 import { LatestValueRedisService } from './latest-value-redis.service';
 
 /**
- * Redis 模块 — 全局共享 Redis 客户端 Provider
+ * Redis module - globally shared Redis client Providers
  *
- * 设计动机：
- * 原先 DeviceModule 与 WebSocketModule 各自通过 useFactory 创建独立的
- * ioredis 实例（PERSIST_REDIS_CLIENT / OFFLINE_REDIS_CLIENT），存在以下问题：
- * 1. 连接数翻倍，资源浪费
- * 2. 配置代码重复（retryStrategy / maxRetriesPerRequest 等）
- * 3. 故障时各 client 独立重试，无法统一观测
+ * Design motivation:
+ * DeviceModule and WebSocketModule previously each created their own ioredis instances via
+ * useFactory (PERSIST_REDIS_CLIENT / OFFLINE_REDIS_CLIENT), which had these problems:
+ * 1. Doubled connection count, wasteful resources
+ * 2. Duplicated config code (retryStrategy / maxRetriesPerRequest etc.)
+ * 3. On failure each client retried independently, impossible to observe uniformly
  *
- * 改造后：
- * - 所有 Redis client 在 RedisModule 中统一创建，按 token 区分用途
- * - DeviceModule / WebSocketModule 仅需 imports RedisModule 即可使用
- * - 配置一处修改，全局生效
+ * After the rework:
+ * - All Redis clients are created centrally in RedisModule, distinguished by token
+ * - DeviceModule / WebSocketModule only need to import RedisModule
+ * - One config change takes effect globally
  *
- * 全局模块（@Global）：避免每个业务模块都需 Imports RedisModule。
+ * Global module (@Global): avoids every business module having to import RedisModule.
  */
 @Global()
 @Module({

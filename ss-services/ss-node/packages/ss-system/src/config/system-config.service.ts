@@ -23,7 +23,7 @@ const ENCRYPTION_KEY =
   process.env.SYSTEM_CONFIG_ENCRYPTION_KEY || 'ss-v7-default-encryption-key-32b';
 const SENSITIVE_PREFIX = 'ENC:';
 
-/** 配置项展示视图（含元数据 + 当前值） */
+/** Config item display view (metadata + current value) */
 export interface ConfigItemView {
   key: string;
   category: ConfigCategory;
@@ -38,13 +38,13 @@ export interface ConfigItemView {
   restartRequired: boolean;
   envFile: boolean;
   validation?: { min?: number; max?: number; pattern?: string };
-  /** 当前生效值（敏感字段脱敏） */
+  /** Current effective value (sensitive fields masked) */
   value: string;
-  /** 值来源：env / db / default / null */
+  /** Value source: env / db / default / null */
   source: 'env' | 'db' | 'default' | 'null';
 }
 
-/** 配置更新结果 */
+/** Config update result */
 export interface ConfigUpdateResult {
   key: string;
   value: string;
@@ -71,28 +71,28 @@ export class SystemConfigService {
     await this.refreshCache();
   }
 
-  /** 获取配置值（环境变量优先） */
+  /** Get a config value (environment variables take precedence) */
   async get(key: string): Promise<string | null> {
-    // 环境变量优先
+    // Environment variables take precedence
     const envKey = key.toUpperCase().replace(/\./g, '_');
     if (process.env[envKey] !== undefined) {
       return process.env[envKey]!;
     }
 
-    // 缓存查询
+    // Cache lookup
     if (this.cache.has(key)) {
       const cached = this.cache.get(key)!;
       return this.decryptIfNeeded(cached.value);
     }
 
-    // 数据库查询
+    // Database lookup
     const config = await this.configRepo.findOne({ where: { key } });
     if (config) {
       this.cache.set(key, { value: config.value, type: config.type });
       return this.decryptIfNeeded(config.value);
     }
 
-    // 元数据默认值兜底
+    // Fall back to the metadata default value
     const meta = ConfigMetadataHelper.getByKey(key);
     if (meta?.defaultValue !== undefined) {
       return meta.defaultValue;
@@ -101,7 +101,7 @@ export class SystemConfigService {
     return null;
   }
 
-  /** 设置配置值 */
+  /** Set a config value */
   async set(
     key: string,
     value: string,
@@ -133,7 +133,7 @@ export class SystemConfigService {
     const saved = await this.configRepo.save(config);
     this.cache.set(key, { value: storedValue, type: config.type });
 
-    // 热更新通知
+    // Hot-reload notification
     this.eventBusService.emitConfigChanged({
       configType: 'system',
       targetId: key,
@@ -144,13 +144,13 @@ export class SystemConfigService {
     return saved;
   }
 
-  /** 删除配置 */
+  /** Delete a config */
   async delete(key: string): Promise<void> {
     await this.configRepo.delete({ key });
     this.cache.delete(key);
   }
 
-  /** 获取所有配置（仅数据库中的，敏感字段脱敏） */
+  /** Get all configs (DB ones only, sensitive fields masked) */
   async getAll(): Promise<SystemConfig[]> {
     const configs = await this.configRepo.find();
     return configs.map((c) => {
@@ -161,7 +161,7 @@ export class SystemConfigService {
     });
   }
 
-  /** 刷新缓存 */
+  /** Refresh the cache */
   async refreshCache(): Promise<void> {
     try {
       const configs = await this.configRepo.find();
@@ -176,19 +176,19 @@ export class SystemConfigService {
     }
   }
 
-  // ==================== 元数据相关方法 ====================
+  // ==================== Metadata-related methods ====================
 
-  /** 获取所有配置项元数据 */
+  /** Get all config item metadata */
   getMetadata(): ConfigMetadata[] {
     return ConfigMetadataHelper.getAll();
   }
 
-  /** 按分类分组获取元数据 */
+  /** Get metadata grouped by category */
   getMetadataByCategory(): Record<ConfigCategory, ConfigMetadata[]> {
     return ConfigMetadataHelper.groupByCategory();
   }
 
-  /** 获取所有配置项（含元数据 + 当前值）— 用于前端展示 */
+  /** Get all config items (metadata + current value) — for frontend display */
   async getAllWithMeta(): Promise<ConfigItemView[]> {
     const result: ConfigItemView[] = [];
     const dbConfigs = await this.configRepo.find();
@@ -202,7 +202,7 @@ export class SystemConfigService {
     return result;
   }
 
-  /** 获取单个配置项（含元数据 + 当前值） */
+  /** Get a single config item (metadata + current value) */
   async getWithMeta(key: string): Promise<ConfigItemView | null> {
     const meta = ConfigMetadataHelper.getByKey(key);
     if (!meta) return null;
@@ -211,7 +211,7 @@ export class SystemConfigService {
     return this.buildConfigItemView(meta, dbConfig);
   }
 
-  /** 更新配置（带元数据校验，可选回写 env 文件） */
+  /** Update a config (with metadata validation, optionally writes back to the env file) */
   async setWithMeta(
     key: string,
     value: string,
@@ -222,25 +222,25 @@ export class SystemConfigService {
       throw new BadRequestException(`配置项 ${key} 不在元数据注册表中`);
     }
 
-    // 校验
+    // Validate
     const validation = ConfigMetadataHelper.validateValue(meta, value);
     if (!validation.valid) {
       throw new BadRequestException(validation.error);
     }
 
-    // 写入数据库
+    // Write to the database
     await this.set(key, value, options.description, meta.type, meta.sensitive);
 
-    // 同步更新 process.env（保证热更新立即生效）
+    // Also update process.env (so hot reload takes effect immediately)
     process.env[key] = value;
 
-    // 回写 env 文件
+    // Write back to the env file
     let envFileUpdated = false;
     if (options.writeEnv && meta.envFile) {
       envFileUpdated = this.writeEnvFile(key, value);
     }
 
-    // 加入待重启清单（如需重启）
+    // Add to the pending-restart list (if a restart is required)
     let addedToPendingRestart = false;
     if (meta.restartRequired && !meta.hotReloadable) {
       await this.addToPendingRestart(key);
@@ -262,7 +262,7 @@ export class SystemConfigService {
     };
   }
 
-  /** 获取待重启清单 */
+  /** Get the pending-restart list */
   async getRestartRequired(): Promise<string[]> {
     const raw = await this.get(PENDING_RESTART_KEY);
     if (!raw) return [];
@@ -274,25 +274,25 @@ export class SystemConfigService {
     }
   }
 
-  /** 从待重启清单中移除指定 key */
+  /** Remove the given key from the pending-restart list */
   async removeFromPendingRestart(keys: string[]): Promise<void> {
     const current = await this.getRestartRequired();
     const remaining = current.filter((k) => !keys.includes(k));
     await this.set(PENDING_RESTART_KEY, JSON.stringify(remaining));
   }
 
-  /** 清空待重启清单 */
+  /** Clear the pending-restart list */
   async clearPendingRestart(): Promise<void> {
     await this.set(PENDING_RESTART_KEY, '[]');
   }
 
-  // ==================== 私有方法 ====================
+  // ==================== Private methods ====================
 
   private async buildConfigItemView(
     meta: ConfigMetadata,
     dbConfig?: SystemConfig,
   ): Promise<ConfigItemView> {
-    // 值优先级：env > db > default > null
+    // Value priority: env > db > default > null
     const envKey = meta.key.toUpperCase();
     let value: string;
     let source: 'env' | 'db' | 'default' | 'null';
@@ -311,7 +311,7 @@ export class SystemConfigService {
       source = 'null';
     }
 
-    // 敏感字段脱敏
+    // Mask sensitive fields
     const displayValue = meta.sensitive && value ? '***' : value;
 
     return {
@@ -341,7 +341,7 @@ export class SystemConfigService {
     }
   }
 
-  /** 回写 env 文件（保留注释 + 备份） */
+  /** Write back to the env file (preserves comments + backup) */
   private writeEnvFile(key: string, value: string): boolean {
     try {
       const envFilePath = this.resolveEnvFilePath();
@@ -350,10 +350,10 @@ export class SystemConfigService {
         return false;
       }
 
-      // 备份
+      // Backup
       this.backupEnvFile(envFilePath);
 
-      // 读取并按行处理
+      // Read and process line by line
       const content = fs.readFileSync(envFilePath, 'utf-8');
       const lines = content.split(/\r?\n/);
       let found = false;
@@ -361,13 +361,13 @@ export class SystemConfigService {
 
       for (const line of lines) {
         const trimmed = line.trim();
-        // 保留注释与空行
+        // Preserve comments and blank lines
         if (trimmed.startsWith('#') || trimmed === '') {
           newLines.push(line);
           continue;
         }
 
-        // 解析 KEY=VALUE
+        // Parse KEY=VALUE
         const eqIdx = trimmed.indexOf('=');
         if (eqIdx === -1) {
           newLines.push(line);
@@ -383,7 +383,7 @@ export class SystemConfigService {
         }
       }
 
-      // 未找到对应 KEY → 末尾追加
+      // Key not found → append at the end
       if (!found) {
         newLines.push(`${key}=${value}`);
       }
@@ -397,15 +397,15 @@ export class SystemConfigService {
     }
   }
 
-  /** 解析 env 文件路径（与 buildEnvFilePaths() 加载链对齐） */
+  /** Resolve the env file path (aligned with the buildEnvFilePaths() load chain) */
   private resolveEnvFilePath(): string | null {
-    // 生产环境：写入 cwd/.env
+    // Production: write to cwd/.env
     if (process.env.NODE_ENV === 'production') {
       const cwdEnv = path.resolve(process.cwd(), '.env');
       if (fs.existsSync(cwdEnv)) return cwdEnv;
     }
 
-    // 开发环境：写入与启动加载链一致的 .env.{APP_ENV|dev}
+    // Development: write to .env.{APP_ENV|dev} consistent with the startup load chain
     const projectRoot = this.pathResolver.getProjectRoot();
     const envTarget = `.env.${process.env.APP_ENV || 'dev'}`;
     const targetPath = path.join(projectRoot, envTarget);
@@ -414,7 +414,7 @@ export class SystemConfigService {
     return null;
   }
 
-  /** 备份 env 文件（保留最近 10 个） */
+  /** Back up the env file (keeps the 10 most recent) */
   private backupEnvFile(envFilePath: string): void {
     try {
       const dir = path.dirname(envFilePath);
@@ -425,7 +425,7 @@ export class SystemConfigService {
 
       fs.copyFileSync(envFilePath, backupPath);
 
-      // 清理超过 10 个的旧备份
+      // Clean up backups beyond the 10 most recent
       const backups = fs
         .readdirSync(dir)
         .filter((f) => f.startsWith(`${base}.bak.`) && f.endsWith(ext))
@@ -439,7 +439,7 @@ export class SystemConfigService {
     }
   }
 
-  /** AES-256-GCM 加密 */
+  /** AES-256-GCM encryption */
   private encrypt(value: string): string {
     try {
       const key = Buffer.from(ENCRYPTION_KEY.slice(0, 32), 'utf-8');
@@ -455,7 +455,7 @@ export class SystemConfigService {
     }
   }
 
-  /** AES-256-GCM 解密 */
+  /** AES-256-GCM decryption */
   private decrypt(encryptedValue: string): string {
     try {
       const parts = encryptedValue.replace(SENSITIVE_PREFIX, '').split(':');

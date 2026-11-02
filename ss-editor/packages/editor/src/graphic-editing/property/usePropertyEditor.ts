@@ -3,23 +3,23 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * usePropertyEditor - 属性面板核心逻辑 Composable
+ * usePropertyEditor - Property panel core logic composable
  *
- * 抽取自 StylePanel.vue，提供：
- * - config/geometry/style computed 引用
- * - style 属性默认值自动注入
- * - 分组折叠状态管理
- * - 防抖更新（150ms）
- * - 自定义属性增删
- * - 图元 ID 复制
+ * Extracted from StylePanel.vue, providing:
+ * - config/geometry/style computed references
+ * - Automatic injection of style property default values
+ * - Group collapse state management
+ * - Debounced updates (150ms)
+ * - Custom property add/remove
+ * - Graphic ID copy
  *
- * 用法：
+ * Usage:
  *   const { config, geometry, style, expandedGroups, ... } = usePropertyEditor(props, emit);
  */
 import { ref, reactive, computed, watch, type ComputedRef } from 'vue';
 import { usePageStore, type IGraphicConfig, type IGeometry, type IGraphicStyle } from '@scada-editor/core';
 
-// ==================== 类型导出 ====================
+// ==================== Type exports ====================
 
 export interface GraphicPropertiesData {
   config: IGraphicConfig;
@@ -36,7 +36,7 @@ interface GroupKey {
   [key: string]: boolean;
 }
 
-// ==================== 常量 ====================
+// ==================== Constants ====================
 
 const TEXT_RELEVANT_TYPES = ['label', 'text', 'button', 'input-text', 'textarea', 'link'];
 
@@ -94,7 +94,7 @@ export function usePropertyEditor(
     }
   }
 
-  // ---- 核心引用 ----
+  // ---- Core references ----
   const config: ComputedRef<IGraphicConfig | undefined> = computed(
     () => graphicProperties()?.config,
   );
@@ -105,12 +105,12 @@ export function usePropertyEditor(
   const hasGeometry = computed(() => !!geometry.value);
   const hasStyleConfig = computed(() => !!style.value);
 
-  // ---- 文字样式显隐 ----
+  // ---- Text style visibility ----
   const showTextStyle = computed(() =>
     config.value ? TEXT_RELEVANT_TYPES.includes(config.value.type) : false,
   );
 
-  // ---- style 默认值注入 ----
+  // ---- style default value injection ----
   watch(config, (newConfig) => {
     if (!newConfig?.style) return;
     const s = newConfig.style;
@@ -121,7 +121,7 @@ export function usePropertyEditor(
     }
   }, { immediate: true });
 
-  // ---- 分组折叠 ----
+  // ---- Group collapse ----
   const expandedGroups = reactive<GroupKey>({ ...DEFAULT_EXPANDED });
 
   function toggleGroup(key: string, event: MouseEvent) {
@@ -130,7 +130,7 @@ export function usePropertyEditor(
     }
   }
 
-  // ---- 防抖更新 ----
+  // ---- Debounced updates ----
   let updateTimer: ReturnType<typeof setTimeout> | null = null;
 
   function commitUpdate() {
@@ -154,7 +154,7 @@ export function usePropertyEditor(
     }, DEBOUNCE_MS);
   }
 
-  /** 所有输入/变更事件统一走防抖 */
+  /** All input/change events go through the unified debounce */
   function onFieldChange() {
     debouncedUpdate();
   }
@@ -170,7 +170,7 @@ export function usePropertyEditor(
     }
   }
 
-  // ---- 自定义属性 ----
+  // ---- Custom properties ----
   const newPropKey = ref('');
   const newPropValue = ref('');
 
@@ -179,18 +179,18 @@ export function usePropertyEditor(
       config.value.customProps[newPropKey.value] = newPropValue.value;
       newPropKey.value = '';
       newPropValue.value = '';
-      commitUpdate(); // 立即提交，不走防抖
+      commitUpdate(); // commit immediately, bypassing the debounce
     }
   }
 
   function removeProp(key: string) {
     if (config.value) {
       delete config.value.customProps[key];
-      commitUpdate(); // 立即提交
+      commitUpdate(); // commit immediately
     }
   }
 
-  // ---- 复制 ID ----
+  // ---- Copy ID ----
   function copyGraphicId() {
     if (config.value) {
       navigator.clipboard.writeText(config.value.id).catch(err => {
@@ -199,7 +199,7 @@ export function usePropertyEditor(
     }
   }
 
-  // ---- 安全数值属性访问器 ----
+  // ---- Safe numeric property accessors ----
   function styleNum(key: keyof IGraphicStyle): number {
     return (style.value?.[key] as number) ?? 0;
   }
@@ -211,28 +211,28 @@ export function usePropertyEditor(
   }
 
   return {
-    // 核心引用
+    // Core references
     config,
     geometry,
     style,
     hasGeometry,
     hasStyleConfig,
     showTextStyle,
-    // 分组折叠
+    // Group collapse
     expandedGroups,
     toggleGroup,
-    // 更新
+    // Updates
     onFieldChange,
     commitUpdate,
     previewAnimation,
-    // 自定义属性
+    // Custom properties
     newPropKey,
     newPropValue,
     addProp,
     removeProp,
-    // 复制 ID
+    // Copy ID
     copyGraphicId,
-    // 安全数值属性
+    // Safe numeric properties
     styleNum,
     setStyleNum,
   };

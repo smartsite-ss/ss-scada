@@ -5,79 +5,79 @@
 import { Injectable, Logger } from '@nestjs/common';
 
 /**
- * WebSocket 消息指标快照
+ * WebSocket message-metrics snapshot
  */
 export interface WebSocketMetricsSnapshot {
-  // ── 按事件类型统计 ──
+  // ── By event type ──
   broadcastCounts: Record<string, number>;
   broadcastErrors: Record<string, number>;
-  // ── 按推送目标统计 ──
+  // ── By push target ──
   roomHitStats: Record<string, { broadcasts: number; totalRecipients: number }>;
-  // ── 离线缓存统计 ──
+  // ── Offline-cache statistics ──
   offlineCacheHits: number;
   offlineCacheMisses: number;
-  // ── 耗时统计 ──
+  // ── Latency statistics ──
   bridgeLatencyMs: { count: number; totalMs: number; avgMs: number; maxMs: number };
-  // ── 全局计数 ──
+  // ── Global counters ──
   totalBroadcasts: number;
   totalRecipients: number;
-  // ── 时间信息 ──
+  // ── Time info ──
   startedAt: number;
   snapshotAt: number;
 }
 
 /**
- * WebSocket 指标收集服务
+ * WebSocket metrics-collection service
  *
- * 监控消息的"来去过程"与"消息效率"：
- * - 来：DataPushBridge 收到 EventBus 事件 → 记录事件类型、来源、耗时
- * - 去：Gateway 广播到房间 → 记录目标房间、接收人数
+ * Monitors the message "incoming/outgoing" process and "message efficiency":
+ * - Incoming: DataPushBridge receives an EventBus event -> record event type, source, elapsed time
+ * - Outgoing: Gateway broadcasts to rooms -> record target room, recipient count
  *
- * 通过 /api/v1/ws/metrics 端点暴露。
+ * Exposed via the /api/v1/ws/metrics endpoint.
  */
 @Injectable()
 export class WebSocketMetricsService {
   private readonly logger = new Logger(WebSocketMetricsService.name);
 
-  // ── 按事件类型统计 ──
+  // ── By event type ──
   private readonly broadcastCounts = new Map<string, number>();
   private readonly broadcastErrors = new Map<string, number>();
 
-  // ── 按推送目标房间统计 ──
+  // ── By target room ──
   private readonly roomHitStats = new Map<
     string,
     { broadcasts: number; totalRecipients: number }
   >();
 
-  // ── 离线缓存统计 ──
+  // ── Offline-cache statistics ──
   private offlineCacheHits = 0;
   private offlineCacheMisses = 0;
 
-  // ── DataPushBridge 处理耗时 ──
+  // ── DataPushBridge processing latency ──
   private bridgeLatencyCount = 0;
   private bridgeLatencyTotalMs = 0;
   private bridgeLatencyMaxMs = 0;
 
-  // ── 全局计数 ──
+  // ── Global counters ──
   private totalBroadcasts = 0;
   private totalRecipients = 0;
 
   private readonly startedAt = Date.now();
 
   /**
-   * 记录一次广播（由 ScadaWebSocketGateway 调用）
-   * @param event WebSocket 事件名（如 data:update, alarm:trigger）
-   * @param room 目标房间名
-   * @param recipientCount 接收客户端数
+   * Record one broadcast (called by ScadaWebSocketGateway)
+   * @param event WebSocket event name (e.g. data:update, alarm:trigger)
+   * @param room target room name
+   * @param recipientCount number of receiving clients
    */
   recordBroadcast(event: string, room: string, recipientCount: number): void {
     this.totalBroadcasts++;
     this.totalRecipients += recipientCount;
 
-    // 按事件类型计数
+    // Count by event type
     this.broadcastCounts.set(event, (this.broadcastCounts.get(event) || 0) + 1);
 
-    // 按房间统计命中率
+    // Track room hit statistics
     const roomStat = this.roomHitStats.get(room) || { broadcasts: 0, totalRecipients: 0 };
     roomStat.broadcasts++;
     roomStat.totalRecipients += recipientCount;
@@ -85,14 +85,14 @@ export class WebSocketMetricsService {
   }
 
   /**
-   * 记录一次广播错误
+   * Record one broadcast error
    */
   recordBroadcastError(event: string): void {
     this.broadcastErrors.set(event, (this.broadcastErrors.get(event) || 0) + 1);
   }
 
   /**
-   * 记录 DataPushBridge 处理耗时（从 EventBus 收到事件到调用 gateway 广播）
+   * Record DataPushBridge processing latency (from receiving the EventBus event to calling gateway broadcast)
    */
   recordBridgeLatency(event: string, durationMs: number): void {
     this.bridgeLatencyCount++;
@@ -103,21 +103,21 @@ export class WebSocketMetricsService {
   }
 
   /**
-   * 记录离线缓存命中
+   * Record an offline-cache hit
    */
   recordOfflineCacheHit(): void {
     this.offlineCacheHits++;
   }
 
   /**
-   * 记录离线缓存未命中（无离线客户端）
+   * Record an offline-cache miss (no offline clients)
    */
   recordOfflineCacheMiss(): void {
     this.offlineCacheMisses++;
   }
 
   /**
-   * 获取指标快照
+   * Get the metrics snapshot
    */
   getSnapshot(): WebSocketMetricsSnapshot {
     const avgMs =
@@ -145,7 +145,7 @@ export class WebSocketMetricsService {
   }
 
   /**
-   * 获取 Prometheus 文本格式指标
+   * Get Prometheus text-format metrics
    */
   getPrometheusMetrics(): string {
     const lines: string[] = [];
@@ -212,7 +212,7 @@ export class WebSocketMetricsService {
   }
 
   /**
-   * 重置所有指标（主要用于测试）
+   * Reset all metrics (mainly for testing)
    */
   reset(): void {
     this.broadcastCounts.clear();

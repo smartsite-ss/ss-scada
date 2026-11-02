@@ -7,8 +7,8 @@ import { PipelineStep, PipelineContext, isBooleanDataType, isStringDataType } fr
 import { SimulatorFactory } from './simulator-factory';
 
 /**
- * VirtualReadStep — Pipeline 第一步（order=0），
- * 为虚拟设备生成模拟数据，替代真实设备的 ProtocolReadStep。
+ * VirtualReadStep - the first step of the Pipeline (order=0),
+ * generates simulated data for virtual devices, replacing the real device's ProtocolReadStep.
  */
 @Injectable()
 export class VirtualReadStep implements PipelineStep {
@@ -27,7 +27,7 @@ export class VirtualReadStep implements PipelineStep {
       ctx.rawTimestamp = new Date();
       ctx.quality = 'good';
 
-      // 为虚拟设备注入默认报警条件（如未配置），确保 AlarmCheckStep 能触发报警
+      // Inject default alarm conditions for virtual devices (if not configured) so AlarmCheckStep can fire alarms
       this.injectDefaultAlarms(ctx);
     } catch (error) {
       ctx.rawValue = null;
@@ -46,17 +46,17 @@ export class VirtualReadStep implements PipelineStep {
   }
 
   /**
-   * 为未配置报警条件的虚拟设备标签注入默认限值报警。
-   * 仅对数值类型（非 bool/string/enum）生效，模拟 0-100 范围随机游走数据时：
-   *   - 值 > 80 或 < 20 → warning
-   *   - 值 > 95 或 < 5  → critical
+   * Inject default threshold alarms for virtual device tags without configured alarm conditions.
+   * Only effective for numeric types (non bool/string/enum); when simulating 0-100 range random-walk data:
+   *   - value > 80 or < 20 -> warning
+   *   - value > 95 or < 5  -> critical
    */
   private injectDefaultAlarms(ctx: PipelineContext): void {
     const tagConfig = ctx.tagConfig || {};
     if (tagConfig.alarms && tagConfig.alarms.length > 0) return;
 
     const dataType = tagConfig.dataType || 'float32';
-    // 仅数值类型注入限值报警（兼容点表规范字符串 'boolean'）
+    // Only inject threshold alarms for numeric types (also handles the point-table spec string 'boolean')
     if (isBooleanDataType(dataType) || isStringDataType(dataType)) return;
 
     if (!ctx.tagConfig) {

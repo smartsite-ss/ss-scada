@@ -14,8 +14,8 @@ import {
 import { Role } from './role.entity';
 
 /**
- * 设备分组授权表 — v7.0 新增
- * 控制角色对设备分组的访问权限
+ * Device-group authorization table - added in v7.0
+ * Controls a role's access to device groups
  */
 @Entity('sys_device_group_authorizations')
 @Index('idx_dga_role_group', ['roleId', 'projectId', 'groupId'], { unique: true })
@@ -23,7 +23,7 @@ export class DeviceGroupAuthorization {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  /** 授权给哪个角色 */
+  /** Which role is authorized */
   @Column({ name: 'role_id' })
   roleId: string;
 
@@ -31,15 +31,15 @@ export class DeviceGroupAuthorization {
   @JoinColumn({ name: 'role_id' })
   role: Role;
 
-  /** 所属项目 */
+  /** Owning project */
   @Column({ name: 'project_id' })
   projectId: string;
 
-  /** 设备分组 ID */
+  /** Device-group ID */
   @Column({ name: 'group_id' })
   groupId: string;
 
-  /** 权限级别：read | write */
+  /** Permission level: read | write */
   @Column({ default: 'read' })
   permission: string;
 

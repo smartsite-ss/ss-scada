@@ -6,7 +6,7 @@
 /// <reference types="vue-i18n" />
 /// <reference types="vue-router" />
 
-// 确保文件是模块（非脚本），避免 declare module 遮蔽原有类型
+// Ensure the file is a module (not a script), preventing declare module from shadowing existing types
 export {};
 
 declare global {

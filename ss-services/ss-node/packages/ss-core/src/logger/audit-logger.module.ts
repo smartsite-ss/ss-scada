@@ -7,17 +7,17 @@ import { AuditLoggerService } from './audit-logger.service';
 import { AuditLogController } from './audit-log.controller';
 
 /**
- * S-M02: 审计日志独立通道模块
+ * S-M02: dedicated audit-log channel module
  *
- * 全局模块，提供 AuditLoggerService 供所有模块注入。
+ * Global module providing AuditLoggerService for injection by all modules.
  *
- * 审计日志写入 {LOG_DIR}/audit/audit-%DATE%.log，独立于应用日志和错误日志，
- * 保留 365 天（合规要求），使用哈希链防篡改。
+ * Audit logs are written to {LOG_DIR}/audit/audit-%DATE%.log, separate from app and error logs,
+ * retained for 365 days (compliance requirement), with hash-chain tamper protection.
  *
- * AuditLogController 提供 REST API：
- * - GET /system/audit-logs — 分页查询审计日志
- * - GET /system/audit-logs/verify — 验证哈希链完整性
- * - GET /system/audit-logs/stats — 审计日志统计概览
+ * AuditLogController provides REST APIs:
+ * - GET /system/audit-logs -- paginated audit-log query
+ * - GET /system/audit-logs/verify -- verify hash-chain integrity
+ * - GET /system/audit-logs/stats -- audit-log statistics overview
  */
 @Global()
 @Module({

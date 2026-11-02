@@ -3,34 +3,34 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 脚本引擎规则文件 — 统一导出入口
+ * Script engine rules file — unified export entry
  *
- * === 文件结构 ===
+ * === File structure ===
  * rules/
- * ├── index.ts                       ← 本文件（统一导出）
- * ├── types.ts                       ← 类型定义
- * ├── script-api-registry.ts         ← API 接口注册表（26 个方法）
+ * ├── index.ts                       ← this file (unified exports)
+ * ├── types.ts                       ← type definitions
+ * ├── script-api-registry.ts         ← API registry (26 methods)
  * └── examples/
- *     ├── data-driven.examples.ts     ← 数据驱动示例
- *     ├── scheduled-task.examples.ts  ← 定时任务示例
- *     ├── event-driven.examples.ts    ← 事件驱动示例
- *     ├── multi-tag-linking.examples.ts ← 多标签联动示例
- *     ├── graphic-operation.examples.ts ← 图元操作示例
- *     └── alarm-management.examples.ts  ← 告警管理示例
+ *     ├── data-driven.examples.ts     ← data-driven examples
+ *     ├── scheduled-task.examples.ts  ← scheduled task examples
+ *     ├── event-driven.examples.ts    ← event-driven examples
+ *     ├── multi-tag-linking.examples.ts ← multi-tag linking examples
+ *     ├── graphic-operation.examples.ts ← graphic operation examples
+ *     └── alarm-management.examples.ts  ← alarm management examples
  *
- * === 使用方式 ===
- * 在 Vue 组件中导入：
+ * === Usage ===
+ * Import in a Vue component:
  *   import { API_REGISTRY, getApiGroupedByCategory, ALL_EXAMPLES, getExamplesByCategory } from '../rules';
  *
- * === 更新流程 ===
- * 1. 新增 API：修改 script-api-registry.ts 中的 API_REGISTRY 数组
- * 2. 新增示例：在对应分类的 examples/*.ts 文件中添加
- * 3. 新增分类：创建新的 examples/*.ts，在下面的 ALL_EXAMPLES 中导入
- * 4. 无需修改任何 Vue 组件代码
+ * === Update process ===
+ * 1. Add an API: modify the API_REGISTRY array in script-api-registry.ts
+ * 2. Add an example: append in the corresponding category's examples/*.ts file
+ * 3. Add a category: create a new examples/*.ts and import it into ALL_EXAMPLES below
+ * 4. No Vue component code needs to be modified
  */
 
 // ═══════════════════════════════════════════════════════════════
-// 导出类型
+// Export types
 // ═══════════════════════════════════════════════════════════════
 export type {
   ApiCategory,
@@ -56,7 +56,7 @@ export {
 } from './types';
 
 // ═══════════════════════════════════════════════════════════════
-// 导出 API 注册表
+// Export API registry
 // ═══════════════════════════════════════════════════════════════
 export {
   API_REGISTRY,
@@ -69,7 +69,7 @@ export {
 } from './script-api-registry';
 
 // ═══════════════════════════════════════════════════════════════
-// 导出所有示例
+// Export all examples
 // ═══════════════════════════════════════════════════════════════
 import { dataDrivenExamples } from './examples/data-driven.examples';
 import { scheduledTaskExamples } from './examples/scheduled-task.examples';
@@ -80,7 +80,7 @@ import { alarmManagementExamples } from './examples/alarm-management.examples';
 import type { ScriptExample, ExampleGroup, ExampleCategory } from './types';
 import { EXAMPLE_CATEGORY_LABELS, EXAMPLE_CATEGORY_ICONS } from './types';
 
-/** 所有示例的扁平列表 */
+/** Flat list of all examples */
 export const ALL_EXAMPLES: ScriptExample[] = [
   ...dataDrivenExamples,
   ...scheduledTaskExamples,
@@ -90,7 +90,7 @@ export const ALL_EXAMPLES: ScriptExample[] = [
   ...alarmManagementExamples,
 ];
 
-/** 按分类分组的示例 */
+/** Examples grouped by category */
 export const ALL_EXAMPLE_GROUPS: ExampleGroup[] = [
   { category: 'data-driven', label: EXAMPLE_CATEGORY_LABELS['data-driven'], icon: EXAMPLE_CATEGORY_ICONS['data-driven'], examples: dataDrivenExamples },
   { category: 'scheduled-task', label: EXAMPLE_CATEGORY_LABELS['scheduled-task'], icon: EXAMPLE_CATEGORY_ICONS['scheduled-task'], examples: scheduledTaskExamples },
@@ -100,27 +100,27 @@ export const ALL_EXAMPLE_GROUPS: ExampleGroup[] = [
   { category: 'alarm-management', label: EXAMPLE_CATEGORY_LABELS['alarm-management'], icon: EXAMPLE_CATEGORY_ICONS['alarm-management'], examples: alarmManagementExamples },
 ];
 
-/** 按分类获取示例 */
+/** Get examples by category */
 export function getExamplesByCategory(category: ExampleCategory): ScriptExample[] {
   return ALL_EXAMPLES.filter((e) => e.category === category);
 }
 
-/** 按难度获取示例 */
+/** Get examples by difficulty */
 export function getExamplesByDifficulty(difficulty: 'easy' | 'medium' | 'hard'): ScriptExample[] {
   return ALL_EXAMPLES.filter((e) => e.difficulty === difficulty);
 }
 
-/** 按标签筛选示例 */
+/** Filter examples by tag */
 export function getExamplesByTag(tag: string): ScriptExample[] {
   return ALL_EXAMPLES.filter((e) => e.tags.includes(tag));
 }
 
-/** 获取示例总数 */
+/** Get the total number of examples */
 export function getExampleCount(): number {
   return ALL_EXAMPLES.length;
 }
 
-/** 获取所有标签列表 */
+/** Get the list of all tags */
 export function getAllExampleTags(): string[] {
   const tagSet = new Set<string>();
   for (const example of ALL_EXAMPLES) {

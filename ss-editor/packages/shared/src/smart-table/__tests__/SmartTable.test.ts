@@ -225,7 +225,7 @@ describe('SmartTable', () => {
   });
 
   // ============================================================
-  // 虚拟滚动
+  // Virtual scroll
   // ============================================================
   describe('virtual scroll', () => {
     it('TC-TBL-VS-001: renders only visible rows when data > 100', () => {
@@ -246,9 +246,9 @@ describe('SmartTable', () => {
       const dataRows = wrapper.findAll('tbody tr.data-row');
       // 20 visible + 2*5 buffer = 30
       expect(dataRows.length).toBe(30);
-      // 不应渲染全部 200 行
+      // Should not render all 200 rows
       expect(dataRows.length).toBeLessThan(200);
-      // 首行应包含 name-1
+      // First row should contain name-1
       expect(dataRows[0].text()).toContain('name-1');
     });
 
@@ -288,19 +288,19 @@ describe('SmartTable', () => {
         attachTo: document.body,
       });
 
-      // 初始：首行包含 name-1，不包含 name-100
+      // Initially: first row contains name-1, not name-100
       const initialRows = wrapper.findAll('tbody tr.data-row');
       expect(initialRows[0].text()).toContain('name-1');
       expect(wrapper.text()).not.toContain('name-100');
 
-      // 滚动到 scrollTop = 4000 → startIndex = floor(4000/40) - 5 = 95
+      // Scrolling to scrollTop = 4000 → startIndex = floor(4000/40) - 5 = 95
       const scrollEl = wrapper.find('.smart-table-scroll');
       (scrollEl.element as HTMLElement).scrollTop = 4000;
       await scrollEl.trigger('scroll');
 
       const dataRows = wrapper.findAll('tbody tr.data-row');
       expect(dataRows.length).toBe(30);
-      // 滚动后首行应为 name-96（index 95），不再是 name-1
+      // After scroll, first row should be name-96 (index 95), no longer name-1
       expect(dataRows[0].text()).toContain('name-96');
       expect(dataRows[0].text()).not.toContain('name-1');
 
@@ -322,14 +322,14 @@ describe('SmartTable', () => {
         },
       });
 
-      // 顶部 spacer 在 startIndex=0 时不渲染，底部 spacer 应存在
+      // Top spacer is not rendered at startIndex=0; bottom spacer should exist
       const spacers = wrapper.findAll('.virtual-spacer-row');
       expect(spacers.length).toBeGreaterThanOrEqual(1);
     });
   });
 
   // ============================================================
-  // 行编辑
+  // Row editing
   // ============================================================
   describe('row editing', () => {
     const editCols: SmartTableColumn[] = [
@@ -377,10 +377,10 @@ describe('SmartTable', () => {
 
       const inputs = wrapper.findAll('input.cell-editor');
       expect(inputs.length).toBe(2);
-      // text 输入框包含 Alice
+      // text input contains Alice
       const textInput = inputs.find((i) => i.attributes('type') === 'text');
       expect((textInput?.element as HTMLInputElement).value).toBe('Alice');
-      // 编辑行应显示保存/取消按钮
+      // Editing row should show save/cancel buttons
       expect(wrapper.find('.save-btn').exists()).toBe(true);
       expect(wrapper.find('.cancel-btn').exists()).toBe(true);
     });
@@ -406,7 +406,7 @@ describe('SmartTable', () => {
       expect(payload[0].rowId).toBe(1);
       expect(payload[0].changes.name).toBe('Alicia');
       expect(payload[0].changes.age).toBeUndefined();
-      // 保存后退出编辑模式
+      // Exits edit mode after save
       expect(wrapper.emitted('update:editingRowId')![0]).toEqual([null]);
     });
 
@@ -462,7 +462,7 @@ describe('SmartTable', () => {
   });
 
   // ============================================================
-  // 树形表格
+  // Tree table
   // ============================================================
   describe('tree table', () => {
     const treeCols: SmartTableColumn[] = [
@@ -511,7 +511,7 @@ describe('SmartTable', () => {
 
       const toggles = wrapper.findAll('.tree-toggle');
       expect(toggles.length).toBe(2);
-      // root1 有子节点，应有 svg 图标；root2 无子节点，无 svg
+      // root1 has children, should have svg icon; root2 has no children, no svg
       const root1Toggle = toggles[0];
       expect(root1Toggle.find('svg').exists()).toBe(true);
       const root2Toggle = toggles[1];
@@ -600,7 +600,7 @@ describe('SmartTable', () => {
   });
 
   // ============================================================
-  // 合并单元格
+  // Merged cells
   // ============================================================
   describe('merged cells', () => {
     const spanCols: SmartTableColumn[] = [
@@ -630,11 +630,11 @@ describe('SmartTable', () => {
       });
 
       const rows = wrapper.findAll('tbody tr.data-row');
-      // 第一行：第一个 td colspan=2，第二个 td 被跳过，第三个 td 正常 → 2 个 td
+      // First row: first td colspan=2, second td skipped, third td normal → 2 td
       const firstRowTds = rows[0].findAll('td');
       expect(firstRowTds.length).toBe(2);
       expect(firstRowTds[0].attributes('colspan')).toBe('2');
-      // 其他行应为 3 个 td
+      // Other rows should have 3 td
       expect(rows[1].findAll('td').length).toBe(3);
     });
 
@@ -654,10 +654,10 @@ describe('SmartTable', () => {
       });
 
       const rows = wrapper.findAll('tbody tr.data-row');
-      // 第一行第一个 td rowspan=2
+      // First row, first td rowspan=2
       const firstRowFirstTd = rows[0].findAll('td')[0];
       expect(firstRowFirstTd.attributes('rowspan')).toBe('2');
-      // 第二行第一个 td 被跳过 → 只有 2 个 td（type、value）
+      // Second row, first td skipped → only 2 td (type, value)
       expect(rows[1].findAll('td').length).toBe(2);
     });
 
@@ -677,7 +677,7 @@ describe('SmartTable', () => {
       });
 
       const rows = wrapper.findAll('tbody tr.data-row');
-      // 每行第一个 td colspan=3，后两个 td 被跳过 → 1 个 td
+      // Each row's first td colspan=3, next two td skipped → 1 td
       const firstRowTds = rows[0].findAll('td');
       expect(firstRowTds.length).toBe(1);
       expect(firstRowTds[0].attributes('colspan')).toBe('3');

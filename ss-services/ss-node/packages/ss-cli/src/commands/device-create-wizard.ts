@@ -3,23 +3,23 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * Device Create Wizard — 交互式设备创建向导
+ * Device Create Wizard - interactive device creation wizard
  *
- * 步骤：选择项目 → 选择驱动类型 → 输入设备标识 → 输入设备名称 →
- *       输入模板ID → 输入连接参数 → 确认创建
+ * Steps: choose project -> choose driver type -> enter device identifier -> enter device name ->
+ *       enter template ID -> enter connection params -> confirm creation
  */
 
 import { InteractivePrompts } from '../core/InteractivePrompts';
 import { ApiClient, ApiError } from '../core/ApiClient';
 
-/** 设备驱动选项 */
+/** Device driver options */
 interface DriverOption {
   name: string;
   value: string;
   connectionFields: ConnectionField[];
 }
 
-/** 连接参数字段定义 */
+/** Connection-parameter field definitions */
 interface ConnectionField {
   key: string;
   label: string;
@@ -27,7 +27,7 @@ interface ConnectionField {
   required?: boolean;
 }
 
-/** 从 API 响应中提取项目列表 */
+/** Extract the project list from the API response */
 function extractList<T>(response: unknown): T[] {
   if (Array.isArray(response)) {
     return response as T[];
@@ -45,13 +45,13 @@ function extractList<T>(response: unknown): T[] {
   return [];
 }
 
-/** 项目信息 */
+/** Project info */
 interface ProjectInfo {
   id: string;
   name: string;
 }
 
-/** 支持的设备驱动 */
+/** Supported device drivers */
 const DRIVER_OPTIONS: DriverOption[] = [
   {
     name: 'Modbus TCP',
@@ -118,25 +118,25 @@ const DRIVER_OPTIONS: DriverOption[] = [
   },
 ];
 
-/** 向导选项 */
+/** Wizard options */
 export interface DeviceWizardOptions {
   apiClient: ApiClient;
 }
 
-/** 运行设备创建向导 */
+/** Run the device-creation wizard */
 export async function runDeviceCreateWizard(options: DeviceWizardOptions): Promise<void> {
   const { apiClient } = options;
 
   console.log('\n=== Device Create Wizard ===\n');
 
-  // Step 1: 选择项目
+  // Step 1: choose project
   const projectId = await selectProject(apiClient);
   if (!projectId) {
     console.log('Cancelled.');
     return;
   }
 
-  // Step 2: 选择驱动类型
+  // Step 2: choose driver type
   const driverChoices = DRIVER_OPTIONS.map((d) => ({ name: d.name, value: d.value }));
   const driverValue = await InteractivePrompts.select('Select device driver:', driverChoices);
   const driverOpt = DRIVER_OPTIONS.find((d) => d.value === driverValue);
@@ -145,7 +145,7 @@ export async function runDeviceCreateWizard(options: DeviceWizardOptions): Promi
     return;
   }
 
-  // Step 3: 输入设备编码 (deviceCode)
+  // Step 3: enter device code (deviceCode)
   const deviceCode = await InteractivePrompts.input(
     'Enter device code (lowercase letters, numbers, hyphens):',
     undefined,
@@ -158,7 +158,7 @@ export async function runDeviceCreateWizard(options: DeviceWizardOptions): Promi
     },
   );
 
-  // Step 4: 输入设备名称
+  // Step 4: enter device name
   const deviceName = await InteractivePrompts.input(
     'Enter device name:',
     undefined,
@@ -168,7 +168,7 @@ export async function runDeviceCreateWizard(options: DeviceWizardOptions): Promi
     },
   );
 
-  // Step 5: 输入模板ID
+  // Step 5: enter template ID
   const templateId = await InteractivePrompts.input(
     'Enter template ID:',
     undefined,
@@ -178,10 +178,10 @@ export async function runDeviceCreateWizard(options: DeviceWizardOptions): Promi
     },
   );
 
-  // Step 6: 输入连接参数
+  // Step 6: enter connection parameters
   const connection = await collectConnectionParams(driverOpt);
 
-  // Step 7: 采集周期（可选）
+  // Step 7: scan period (optional)
   const scanRateStr = await InteractivePrompts.input(
     'Scan rate (ms, optional):',
     '1000',
@@ -193,7 +193,7 @@ export async function runDeviceCreateWizard(options: DeviceWizardOptions): Promi
   );
   const scanRate = parseInt(scanRateStr, 10);
 
-  // Step 8: 确认
+  // Step 8: confirm
   console.log('\n--- Device Summary ---');
   console.log(`  Project:   ${projectId}`);
   console.log(`  Code:      ${deviceCode}`);
@@ -210,7 +210,7 @@ export async function runDeviceCreateWizard(options: DeviceWizardOptions): Promi
     return;
   }
 
-  // Step 9: 调用 API 创建
+  // Step 9: call the API to create
   try {
     const payload = {
       deviceCode,
@@ -245,7 +245,7 @@ export async function runDeviceCreateWizard(options: DeviceWizardOptions): Promi
   }
 }
 
-/** 选择项目 */
+/** Choose project */
 async function selectProject(apiClient: ApiClient): Promise<string | null> {
   try {
     const response = await apiClient.get<unknown>('/api/v1/projects');
@@ -265,7 +265,7 @@ async function selectProject(apiClient: ApiClient): Promise<string | null> {
   }
 }
 
-/** 收集连接参数 */
+/** Collect connection parameters */
 async function collectConnectionParams(driverOpt: DriverOption): Promise<Record<string, string>> {
   const connection: Record<string, string> = {};
 

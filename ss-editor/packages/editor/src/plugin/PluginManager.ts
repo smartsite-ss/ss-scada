@@ -37,7 +37,7 @@ export class UIPluginManager {
     const index = this.plugins.findIndex(p => p.name === pluginName);
     if (index !== -1) {
       this.plugins.splice(index, 1);
-      // 清理对应的面板和工具
+      // Clean up the corresponding panels and tools
       this.panels = this.panels.filter(p => !p.id.startsWith(`${pluginName}-`));
       this.tools = this.tools.filter(t => !t.id.startsWith(`${pluginName}-`));
     }
@@ -60,7 +60,7 @@ export class UIPluginManager {
   }
 }
 
-// 创建单例
+// Create the singleton
 let uiPluginManagerInstance: UIPluginManager | null = null;
 
 export function getUIPluginManager() {

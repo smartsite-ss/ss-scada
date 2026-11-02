@@ -89,8 +89,9 @@ export class UpdateGraphicChange implements IChange {
     }
 
     /**
-     * 还原属性：对 geometry 使用 setPosition/setSize/setRotation 就地修改，
-     * 避免 _updateGeometry 替换 config.geometry 对象导致 Vue/Canvas 引用断裂。
+     * Restore properties: for geometry use setPosition/setSize/setRotation for in-place
+     * modification, to avoid _updateGeometry replacing the config.geometry object and
+     * breaking Vue/Canvas references.
      */
     undo(): void {
         const graphic = this.page.findGraphicById(this.graphicId);
@@ -105,9 +106,10 @@ export class UpdateGraphicChange implements IChange {
     }
 
     /**
-     * 将 source 中的属性应用到 graphic。
-     * geometry 从 delta 中提取变更字段，通过 setPosition/setSize/setRotation 应用
-     * 其余属性（style/visible/locked/zIndex）通过 graphic.update() 应用
+     * Apply the properties from source to the graphic.
+     * geometry extracts changed fields from delta and applies them via
+     * setPosition/setSize/setRotation; other properties (style/visible/locked/zIndex)
+     * are applied via graphic.update()
      */
     private _applyProperties(graphic: IGraphic, source: any, delta: any): void {
         const deltaGeom = delta?.geometry || delta?.config?.geometry;
@@ -120,8 +122,9 @@ export class UpdateGraphicChange implements IChange {
     }
 
     /**
-     * 应用几何属性：仅设置 delta 中出现的字段，
-     * 通过 setPosition/setSize/setRotation 就地修改，不替换 config.geometry 对象
+     * Apply geometry properties: only set fields present in delta,
+     * using setPosition/setSize/setRotation for in-place modification,
+     * without replacing the config.geometry object
      */
     private _applyGeometry(graphic: IGraphic, source: any, deltaGeom: any): void {
         const srcGeom = source?.geometry || source?.config?.geometry || {};
@@ -136,7 +139,8 @@ export class UpdateGraphicChange implements IChange {
             graphic.setRotation(srcGeom.rotation ?? 0);
         }
 
-        // 其余属性（style/visible/locked/zIndex）通过 update 应用，剔除 geometry 避免重复替换
+        // Other properties (style/visible/locked/zIndex) applied via update,
+        // with geometry removed to avoid duplicate replacement
         const sourceClone = { ...source };
         delete sourceClone.geometry;
         if (source.config) {
@@ -471,10 +475,10 @@ export class HistoryManager {
         if (this.currentIndex < this.changes.length - 1) {
             this.changes = this.changes.slice(0, this.currentIndex + 1);
         }
-        
+
         this.changes.push(change);
         this.currentIndex++;
-        
+
         if (this.changes.length > this.maxHistoryLength) {
             this.changes.shift();
             this.currentIndex--;
@@ -520,23 +524,23 @@ export class HistoryManager {
     }
 
     /**
-     * 跳转到指定历史位置。
-     * 如果 target < currentIndex：撤销多余步骤；
-     * 如果 target > currentIndex：重做多余步骤。
-     * @param targetIndex 目标索引（-1 表示无历史），取值 [-1, changes.length - 1]
+     * Jump to a specific history position.
+     * If target < currentIndex: undo the extra steps;
+     * If target > currentIndex: redo the extra steps.
+     * @param targetIndex Target index (-1 means no history), range [-1, changes.length - 1]
      */
     jumpTo(targetIndex: number): void {
         const clamped = Math.max(-1, Math.min(targetIndex, this.changes.length - 1));
         if (clamped === this.currentIndex) return;
 
         if (clamped < this.currentIndex) {
-            // 需要撤销 currentIndex 到 clamped+1 之间的步骤
+            // Need to undo steps between currentIndex and clamped+1
             while (this.currentIndex > clamped) {
                 this.changes[this.currentIndex].undo();
                 this.currentIndex--;
             }
         } else {
-            // 需要重做 currentIndex+1 到 clamped 之间的步骤
+            // Need to redo steps between currentIndex+1 and clamped
             while (this.currentIndex < clamped) {
                 this.currentIndex++;
                 this.changes[this.currentIndex].redo();

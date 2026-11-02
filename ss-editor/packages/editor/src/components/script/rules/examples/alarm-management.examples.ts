@@ -3,29 +3,29 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 告警管理脚本示例
+ * Alarm management script examples
  *
- * === 场景说明 ===
- * 告警管理是 SCADA 系统的核心功能，脚本可以编程方式管理告警生命周期。
- * 包括触发、确认、清除告警，以及告警汇总分析。
+ * === Scenario ===
+ * Alarm management is a core feature of SCADA systems; scripts can manage the alarm lifecycle programmatically,
+ * including triggering, acknowledging and clearing alarms, as well as alarm summary analysis.
  *
- * === 触发方式 ===
- * - dataChange: 数据变化触发告警判断
- * - event: 告警事件触发联动处理
- * - schedule: 定时生成告警汇总
+ * === Trigger modes ===
+ * - dataChange: triggered on data change for alarm evaluation
+ * - event: triggered by alarm events for linked handling
+ * - schedule: generates alarm summaries on a schedule
  *
- * === 常用 API 组合 ===
- * triggerAlarm / acknowledgeAlarm / clearAlarm / getActiveAlarms → 告警生命周期
- * isAlarm / readTag / writeTag                                    → 告警判断
- * setGraphicProps / showGraphic / hideGraphic                      → 告警可视化
- * notify / log / fetch                                             → 告警通知
+ * === Common API combinations ===
+ * triggerAlarm / acknowledgeAlarm / clearAlarm / getActiveAlarms → alarm lifecycle
+ * isAlarm / readTag / writeTag                                    → alarm evaluation
+ * setGraphicProps / showGraphic / hideGraphic                      → alarm visualization
+ * notify / log / fetch                                             → alarm notification
  */
 
 import type { ScriptExample } from '../types';
 
 export const alarmManagementExamples: ScriptExample[] = [
   // ═══════════════════════════════════════════════════════════
-  // 示例 1：多级告警判断
+  // Example 1: multi-level alarm evaluation
   // ═══════════════════════════════════════════════════════════
   {
     id: 'alarm-multi-level',
@@ -77,7 +77,7 @@ log('info', \`温度告警检查完成: \${temp}°C\`);
   },
 
   // ═══════════════════════════════════════════════════════════
-  // 示例 2：告警自动确认与恢复
+  // Example 2: automatic alarm acknowledgment and recovery
   // ═══════════════════════════════════════════════════════════
   {
     id: 'alarm-auto-recovery',
@@ -125,7 +125,7 @@ if (temp < 80 && tagAlarms.length > 0) {
   },
 
   // ═══════════════════════════════════════════════════════════
-  // 示例 3：告警统计分析
+  // Example 3: alarm statistics analysis
   // ═══════════════════════════════════════════════════════════
   {
     id: 'alarm-statistics',

@@ -8,10 +8,10 @@ import { PathResolverService } from '@ss-node/ss-core';
 import * as fs from 'fs';
 import * as path from 'path';
 
-/** 重启状态枚举 */
+/** Restart status enum */
 export type RestartStatus = 'idle' | 'pending' | 'restarting' | 'exited' | 'ready' | 'failed';
 
-/** 重启状态信息 */
+/** Restart status info */
 export interface RestartState {
   status: RestartStatus;
   triggeredBy?: string;
@@ -22,17 +22,17 @@ export interface RestartState {
   markerPath: string;
 }
 
-/** 运行时环境类型 */
+/** Runtime environment type */
 export type RuntimeEnvironment = 'pm2' | 'docker' | 'standalone';
 
 /**
- * 系统重启服务
+ * System restart service
  *
- * 通过 spawn detached 子进程实现优雅重启：
- * 1. 写入 marker 文件记录重启状态
- * 2. spawn 独立子进程（restarter.js），等待当前进程退出后拉起新服务
- * 3. 当前进程优雅退出
- * 4. 新服务启动时检测 marker 文件，更新状态为 ready
+ * Implements graceful restart via a spawn detached child process:
+ * 1. Write a marker file recording the restart state
+ * 2. Spawn an independent child process (restarter.js) that waits for the current process to exit and then starts the new service
+ * 3. The current process exits gracefully
+ * 4. When the new service starts, it detects the marker file and updates the status to ready
  */
 @Injectable()
 export class SystemRestartService implements OnModuleInit {
@@ -48,27 +48,27 @@ export class SystemRestartService implements OnModuleInit {
   }
 
   /**
-   * 将相对路径解析为绝对路径
+   * Resolve a relative path to an absolute path
    *
-   * 相对路径基准：
-   * - dev 模式：__dirname 上溯 4 级 = ss-services/ss-node（本文件位于 packages/ss-system/dist/restart/）
-   *   .env.dev 中 DATA_DIR 相对于 ss-services/ss-node 解析
-   * - 生产模式：process.cwd() = ss-run/ss/services/ss-node
-   *   .env 中 DATA_DIR=../../data 相对于该目录解析
+   * Relative-path baselines:
+   * - dev mode: go up 4 levels from __dirname = ss-services/ss-node (this file lives in packages/ss-system/dist/restart/)
+   *   DATA_DIR in .env.dev resolves against ss-services/ss-node
+   * - production mode: process.cwd() = ss-run/ss/services/ss-node
+   *   DATA_DIR=../../data in .env resolves against that directory
    *
-   * 与 app.module.ts getDatabaseConfig()、backup.service.ts getProjectRoot() 保持一致。
+   * Kept consistent with app.module.ts getDatabaseConfig() and backup.service.ts getProjectRoot().
    */
   private resolvePath(p: string): string {
     return this.pathResolver.resolve(p);
   }
 
-  /** 启动时检查 marker 文件，判断是否由重启触发 */
+  /** Check the marker file at startup to determine whether this was triggered by a restart */
   async onModuleInit(): Promise<void> {
     if (fs.existsSync(this.markerPath)) {
       try {
         const state = this.readMarker();
         if (state && state.status === 'restarting') {
-          // 由重启触发的新进程
+          // New process triggered by a restart
           state.status = 'ready';
           state.newPid = process.pid;
           this.writeMarker(state);
@@ -77,13 +77,13 @@ export class SystemRestartService implements OnModuleInit {
               `oldPid=${state.oldPid}, newPid=${state.newPid}`,
           );
         } else if (state === null) {
-          // readMarker 返回 null 说明文件损坏或无法解析，直接删除
+          // readMarker returning null means the file is corrupt or unparseable; delete it directly
           this.logger.warn('Restart marker file is corrupted, deleting...');
           fs.unlinkSync(this.markerPath);
         }
       } catch (err) {
         this.logger.warn(`Failed to update restart marker: ${(err as Error).message}`);
-        // 损坏的 marker 文件直接删除
+        // Delete corrupt marker files directly
         try {
           fs.unlinkSync(this.markerPath);
         } catch {
@@ -93,14 +93,14 @@ export class SystemRestartService implements OnModuleInit {
     }
   }
 
-  /** 触发系统重启 */
+  /** Trigger a system restart */
   async triggerRestart(username: string): Promise<RestartState> {
-    // 并发防护
+    // Concurrency guard
     if (this.isRestarting) {
       throw new BadRequestException('重启已在进行中');
     }
 
-    // 冷却期检查
+    // Cooldown check
     if (Date.now() - this.lastRestartAt < SystemRestartService.RESTART_COOLDOWN_MS) {
       throw new BadRequestException(
         `重启冷却期内，请等待 ${Math.ceil(
@@ -109,7 +109,7 @@ export class SystemRestartService implements OnModuleInit {
       );
     }
 
-    // 运行时环境检测
+    // Runtime environment detection
     const env = this.detectRuntimeEnvironment();
     if (env === 'pm2') {
       throw new BadRequestException('检测到 PM2 环境，请使用命令 "pm2 restart ss-data" 重启服务');
@@ -131,10 +131,10 @@ export class SystemRestartService implements OnModuleInit {
       markerPath: this.markerPath,
     };
 
-    // 1. 写 marker 文件
+    // 1. Write the marker file
     this.writeMarker(state);
 
-    // 2. spawn detached 子进程
+    // 2. Spawn a detached child process
     try {
       const restarterPath = this.getRestarterScriptPath();
       if (!fs.existsSync(restarterPath)) {
@@ -157,7 +157,7 @@ export class SystemRestartService implements OnModuleInit {
       throw new BadRequestException(state.errorMessage);
     }
 
-    // 3. 延迟 1 秒后退出当前进程（给 HTTP 响应留时间）
+    // 3. Exit the current process after a 1-second delay (leaving time for the HTTP response)
     setTimeout(() => {
       this.logger.log('Gracefully exiting current process for restart...');
       process.exit(0);
@@ -166,7 +166,7 @@ export class SystemRestartService implements OnModuleInit {
     return state;
   }
 
-  /** 获取重启状态 */
+  /** Get the restart status */
   getRestartStatus(): RestartState {
     if (this.isRestarting) {
       return {
@@ -187,7 +187,7 @@ export class SystemRestartService implements OnModuleInit {
     return { status: 'idle', markerPath: this.markerPath };
   }
 
-  /** 清除 marker 文件（前端确认重启完成后调用） */
+  /** Clear the marker file (called by the frontend after confirming the restart is complete) */
   clearMarker(): void {
     try {
       if (fs.existsSync(this.markerPath)) {
@@ -199,38 +199,38 @@ export class SystemRestartService implements OnModuleInit {
     }
   }
 
-  /** 检测当前运行时环境 */
+  /** Detect the current runtime environment */
   detectRuntimeEnvironment(): RuntimeEnvironment {
-    // PM2 检测：PM2_HOME 环境变量或 pm_id 标识
+    // PM2 detection: PM2_HOME env var or pm_id marker
     if (process.env.PM2_HOME || process.env.pm_id !== undefined) {
       return 'pm2';
     }
-    // Docker 检测：/.dockerenv 文件存在
+    // Docker detection: the /.dockerenv file exists
     if (fs.existsSync('/.dockerenv')) {
       return 'docker';
     }
     return 'standalone';
   }
 
-  /** 是否正在重启中 */
+  /** Whether a restart is in progress */
   isCurrentlyRestarting(): boolean {
     return this.isRestarting;
   }
 
-  // ==================== 私有方法 ====================
+  // ==================== Private methods ====================
 
   private getRestarterScriptPath(): string {
-    // 编译后：packages/ss-system/dist/restart/restarter.js
-    // __dirname 在编译后是 dist/restart/ 或 dist/config/
+    // Compiled: packages/ss-system/dist/restart/restarter.js
+    // After compilation __dirname is dist/restart/ or dist/config/
     const candidates = [
-      path.resolve(__dirname, 'restarter.js'), // 同目录
-      path.resolve(__dirname, '..', 'restart', 'restarter.js'), // 兄弟目录
+      path.resolve(__dirname, 'restarter.js'), // same directory
+      path.resolve(__dirname, '..', 'restart', 'restarter.js'), // sibling directory
       path.resolve(__dirname, '..', '..', 'restart', 'restarter.js'),
     ];
     for (const candidate of candidates) {
       if (fs.existsSync(candidate)) return candidate;
     }
-    // 返回默认值，由调用方处理不存在的情况
+    // Return the default; the caller handles the not-found case
     return candidates[0];
   }
 

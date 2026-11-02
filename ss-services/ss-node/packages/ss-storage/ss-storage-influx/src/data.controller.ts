@@ -129,7 +129,7 @@ export class DataController {
     );
   }
 
-  // ──────────── 趋势图专用接口 ────────────
+  // ──────────── Trend-chart specific endpoints ────────────
 
   @Post('trend/query')
   @ApiOperation({ summary: '趋势图批量查询（带 LTTB 降采样 + 插值 + 可选窗口聚合）' })
@@ -141,11 +141,11 @@ export class DataController {
       endTime: string;
       maxPoints?: number;
       projectId?: string;
-      /** 插值方式：raw（原始值，默认）| linear（线性插值）| step（阶梯插值） */
+      /** Interpolation: raw (raw values, default) | linear (linear interpolation) | step (step interpolation) */
       interpolation?: string;
-      /** 插值间隔（毫秒），linear/step 模式生效，默认 1000 */
+      /** Interpolation interval (ms), effective for linear/step, default 1000 */
       interval?: number;
-      /** 窗口聚合参数（三期增强）：携带时跳过插值与降采样，逐标签按窗口聚合 */
+      /** Window aggregation parameters (Phase 3 enhancement): when present, skips interpolation and downsampling and aggregates per tag by window */
       aggregation?: { type: string; windowMs: number };
     },
   ) {
@@ -173,7 +173,7 @@ export class DataController {
     });
   }
 
-  // ──────────── 数据导出接口 ────────────
+  // ──────────── Data export endpoints ────────────
 
   @Get('export/:tagId/csv')
   @ApiOperation({ summary: '导出标签历史数据为 CSV 文件' })

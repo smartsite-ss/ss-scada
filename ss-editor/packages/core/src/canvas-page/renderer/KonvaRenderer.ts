@@ -7,7 +7,7 @@ import { IRenderer, RenderContext, RenderOptions, ViewportRect } from './types';
 import { IGraphic } from '@scada-editor/plugin-sdk';
 
 /**
- * 图层类型枚举
+ * Layer type enum
  */
 export enum KonvaLayerType {
   Background = 'background',
@@ -17,58 +17,58 @@ export enum KonvaLayerType {
 }
 
 /**
- * 多层 Konva 渲染器
- * 
- * 架构优势：
- * - Background 层：网格、背景（极少重绘）
- * - Static 层：静态图元（形状、标签、图片）（低频重绘）
- * - Dynamic 层：动态图元（图表、仪表、按钮）（高频重绘）
- * - Overlay 层：选择框、辅助线、控制点（实时重绘）
- * 
- * 性能优化：
- * - 使用 batchDraw() 批量渲染，减少重绘次数
- * - 使用 requestAnimationFrame 合并渲染请求
- * - 分层渲染，避免无关图元重绘
+ * Multi-layer Konva renderer
+ *
+ * Architecture benefits:
+ * - Background layer: grid, background (rarely redrawn)
+ * - Static layer: static graphics (shapes, labels, images) (low-frequency redraw)
+ * - Dynamic layer: dynamic graphics (charts, gauges, buttons) (high-frequency redraw)
+ * - Overlay layer: selection box, guides, control points (real-time redraw)
+ *
+ * Performance optimizations:
+ * - Use batchDraw() for batched rendering to reduce redraw count
+ * - Use requestAnimationFrame to merge render requests
+ * - Layered rendering avoids redrawing unrelated graphics
  */
 export class KonvaRenderer implements IRenderer {
   private stage: Konva.Stage;
-  
-  /** 四层独立图层 */
+
+  /** Four independent layers */
   private layers: Record<KonvaLayerType, Konva.Layer>;
-  
-  /** 图元到图层的映射 */
+
+  /** Graphic-to-layer mapping */
   private graphicLayerMap: Map<string, KonvaLayerType> = new Map();
-  
-  /** 图元节点映射 */
+
+  /** Graphic node mapping */
   private nodes: Map<string, Konva.Node> = new Map();
-  
-  /** 渲染状态 */
+
+  /** Render state */
   private scale: number = 1;
   private panX: number = 0;
   private panY: number = 0;
-  
-  /** 批量渲染控制 */
+
+  /** Batch render control */
   private pendingRenders = new Set<string>();
   private animationFrameId: number | null = null;
 
-  /** 性能统计 */
+  /** Performance statistics */
   private renderCount: number = 0;
   private batchCount: number = 0;
-  
+
   constructor(container: HTMLElement, options?: RenderOptions) {
     this.stage = new Konva.Stage({
       container: container as HTMLDivElement,
       width: options?.width || container.clientWidth,
       height: options?.height || container.clientHeight,
     });
-    
+
     this.layers = {
       background: new Konva.Layer({ name: KonvaLayerType.Background }),
       static: new Konva.Layer({ name: KonvaLayerType.Static }),
       dynamic: new Konva.Layer({ name: KonvaLayerType.Dynamic }),
       overlay: new Konva.Layer({ name: KonvaLayerType.Overlay }),
     };
-    
+
     Object.values(this.layers).forEach(layer => {
       this.stage.add(layer);
     });
@@ -77,7 +77,7 @@ export class KonvaRenderer implements IRenderer {
   render(graphic: IGraphic): void {
     const layer = this.getLayerForGraphic(graphic);
     const node = this.createKonvaNode(graphic);
-    
+
     if (node) {
       this.nodes.set(graphic.id, node);
       this.graphicLayerMap.set(graphic.id, this.getLayerTypeForGraphic(graphic));
@@ -157,7 +157,7 @@ export class KonvaRenderer implements IRenderer {
   getContext(): RenderContext | null {
     const canvas = this.stage.toCanvas();
     if (!canvas) return null;
-    
+
     return {
       canvas,
       context: canvas.getContext('2d')!,
@@ -167,42 +167,42 @@ export class KonvaRenderer implements IRenderer {
   }
 
   /**
-   * 获取图层实例
+   * Get the layer instance
    */
   getLayer(type: KonvaLayerType): Konva.Layer {
     return this.layers[type];
   }
 
   /**
-   * 获取所有图层
+   * Get all layers
    */
   getAllLayers(): Konva.Layer[] {
     return Object.values(this.layers);
   }
 
   /**
-   * 获取舞台实例
+   * Get the stage instance
    */
   getStage(): Konva.Stage {
     return this.stage;
   }
 
   /**
-   * 强制立即渲染指定图层
+   * Force immediate render of a specific layer
    */
   forceRenderLayer(type: KonvaLayerType): void {
     this.layers[type].batchDraw();
   }
 
   /**
-   * 强制立即渲染所有图层
+   * Force immediate render of all layers
    */
   forceRenderAll(): void {
     Object.values(this.layers).forEach(layer => layer.batchDraw());
   }
 
   /**
-   * 获取性能统计
+   * Get performance statistics
    */
   getStats(): { renderCount: number; batchCount: number; nodeCount: number } {
     return {
@@ -212,16 +212,16 @@ export class KonvaRenderer implements IRenderer {
     };
   }
 
-  // ====== 视口裁剪实现 ======
+  // ====== Viewport culling implementation ======
 
-  /** Konva 自身有 clipFunc 可用于视口裁剪 */
+  /** Konva has clipFunc for viewport culling */
   private _viewport: ViewportRect | null = null;
   private _cullingEnabled = false;
 
   setViewport(viewport: ViewportRect): void {
     this._viewport = viewport;
-    // Konva Stage 支持 clipFunc，但更高效的方式是控制各 Layer 的可见性
-    // 这里记录视口信息，供外部查询使用
+    // Konva Stage supports clipFunc, but a more efficient approach is controlling each Layer's visibility
+    // Here we just record the viewport info for external querying
   }
 
   getViewport(): ViewportRect | null {
@@ -241,8 +241,8 @@ export class KonvaRenderer implements IRenderer {
   }
 
   /**
-   * 批量渲染调度器
-   * 使用 requestAnimationFrame 合并多个渲染请求
+   * Batch render scheduler
+   * Uses requestAnimationFrame to merge multiple render requests
    */
   private scheduleBatchRender(): void {
     if (!this.animationFrameId) {
@@ -254,39 +254,39 @@ export class KonvaRenderer implements IRenderer {
   }
 
   /**
-   * 执行批量渲染
-   * 只渲染有变化的图层，减少不必要的重绘
+   * Perform batch rendering
+   * Only renders the layers that changed, reducing unnecessary redraws
    */
   private batchRender(): void {
     this.batchCount++;
-    
-    /** 判断哪些图层需要重绘 */
+
+    /** Determine which layers need redrawing */
     const needsBackgroundRender = this.pendingRenders.size === 0;
     const needsStaticRender = this.pendingRenders.size > 0;
     const needsDynamicRender = this.pendingRenders.size > 0;
-    
-    /** 分层渲染策略 */
+
+    /** Layered rendering strategy */
     if (needsBackgroundRender) {
       this.layers.background.batchDraw();
     }
-    
+
     if (needsStaticRender) {
       this.layers.static.batchDraw();
     }
-    
+
     if (needsDynamicRender) {
       this.layers.dynamic.batchDraw();
     }
-    
-    /** Overlay 层始终需要渲染（选择框等） */
+
+    /** The Overlay layer always needs rendering (selection box, etc.) */
     this.layers.overlay.batchDraw();
-    
+
     this.pendingRenders.clear();
     this.renderCount++;
   }
 
   /**
-   * 刷新批量渲染队列
+   * Flush the batch render queue
    */
   private flushBatchRender(): void {
     if (this.animationFrameId) {
@@ -298,28 +298,28 @@ export class KonvaRenderer implements IRenderer {
   }
 
   /**
-   * 根据图元类型确定所属图层
+   * Determine the layer a graphic belongs to based on its type
    */
   private getLayerTypeForGraphic(graphic: IGraphic): KonvaLayerType {
     const type = graphic.type;
-    
+
     if (['grid', 'background', 'guide'].includes(type)) {
       return KonvaLayerType.Background;
     }
-    
+
     if (['shape', 'label', 'image', 'textbox'].includes(type)) {
       return KonvaLayerType.Static;
     }
-    
+
     if (['button', 'input', 'checkbox', 'chart', 'pump', 'valve', 'tank', 'gauge'].includes(type)) {
       return KonvaLayerType.Dynamic;
     }
-    
+
     return KonvaLayerType.Dynamic;
   }
 
   /**
-   * 获取图元对应的图层实例
+   * Get the layer instance for a graphic
    */
   private getLayerForGraphic(graphic: IGraphic): Konva.Layer {
     const layerType = this.getLayerTypeForGraphic(graphic);
@@ -330,7 +330,7 @@ export class KonvaRenderer implements IRenderer {
     const type = graphic.type;
     const geometry = graphic.config.geometry;
     const style = graphic.config.style;
-    
+
     switch (type) {
       case 'button':
       case 'shape':
@@ -348,7 +348,7 @@ export class KonvaRenderer implements IRenderer {
           scaleX: geometry.scaleX || 1,
           scaleY: geometry.scaleY || 1,
         });
-        
+
       case 'label':
       case 'textbox':
         return new Konva.Text({
@@ -366,7 +366,7 @@ export class KonvaRenderer implements IRenderer {
           scaleX: geometry.scaleX || 1,
           scaleY: geometry.scaleY || 1,
         });
-        
+
       case 'input':
         return new Konva.Rect({
           id: graphic.id,
@@ -382,10 +382,10 @@ export class KonvaRenderer implements IRenderer {
           scaleX: geometry.scaleX || 1,
           scaleY: geometry.scaleY || 1,
         });
-        
+
       case 'checkbox':
         return new Konva.Group({ id: graphic.id });
-        
+
       case 'image':
         return new Konva.Image({
           id: graphic.id,
@@ -398,7 +398,7 @@ export class KonvaRenderer implements IRenderer {
           scaleY: geometry.scaleY || 1,
           image: document.createElement('img'),
         } as any);
-        
+
       case 'chart':
         return new Konva.Rect({
           id: graphic.id,
@@ -414,7 +414,7 @@ export class KonvaRenderer implements IRenderer {
           scaleX: geometry.scaleX || 1,
           scaleY: geometry.scaleY || 1,
         });
-        
+
       default:
         return new Konva.Group({ id: graphic.id });
     }
@@ -423,7 +423,7 @@ export class KonvaRenderer implements IRenderer {
   private updateKonvaNode(node: Konva.Node, graphic: IGraphic): void {
     const geometry = graphic.config.geometry;
     const style = graphic.config.style;
-    
+
     if ((node as any).className === 'Rect') {
       (node as any).position({ x: geometry.x, y: geometry.y })
         .size({ width: geometry.width, height: geometry.height })

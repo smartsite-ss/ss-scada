@@ -8,10 +8,10 @@ import { Type } from 'class-transformer';
 import { AuditSeverity } from './audit-logger.types';
 
 /**
- * 审计日志查询 DTO — 支持 REST API 分页查询 + 多维筛选
+ * Audit-log query DTO - supports REST API pagination + multi-dimension filtering
  *
- * 参考 EventLogQueryDto 模式，使用 class-validator 装饰器。
- * 所有字段均为可选，支持灵活组合筛选。
+ * Follows the EventLogQueryDto pattern, using class-validator decorators.
+ * All fields are optional, supporting flexible filter combinations.
  */
 export class AuditLogQueryDto {
   @ApiPropertyOptional({ description: '日期（YYYY-MM-DD），默认今天', example: '2026-08-05' })

@@ -2,7 +2,7 @@
 // https://smartsite.top/
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
-// Mock @nestjs/swagger（ScriptApiService 间接导入 ss-datatag 需要此 mock）
+// Mock @nestjs/swagger (ScriptApiService imports ss-datatag indirectly, which requires this mock)
 jest.mock('@nestjs/swagger', () => {
   const propDeco = (): any => () => {};
   return {
@@ -22,7 +22,7 @@ jest.mock('@nestjs/swagger', () => {
   };
 });
 
-// Mock 外部服务包，避免加载真实源码的依赖链
+// Mock external service packages to avoid loading real source dependency chains
 jest.mock('@ss-node/ss-datatag', () => ({
   DataTagService: jest.fn().mockImplementation(() => ({ findById: jest.fn() })),
   DatatagModule: class {},
@@ -130,7 +130,7 @@ function createMockSchedulerService() {
 }
 
 function createMockQueueService() {
-  // 队列 mock：直接同步执行 executeFn 并返回结果（模拟无背压的即时执行）
+  // Queue mock: execute executeFn synchronously and return the result (simulates immediate execution without backpressure)
   return {
     enqueue: jest.fn(
       (_id: string, _scriptId: string, _projectId: string, _priority: number, executeFn: () => Promise<any>) =>
@@ -169,7 +169,7 @@ describe('ScriptService', () => {
     mockQueueService = createMockQueueService();
     mockI18nService = createMockI18nService();
 
-    // executionRepo.create 返回带 id 的记录对象
+    // executionRepo.create returns a record object with an id
     mockExecutionRepo.create.mockImplementation((data: any) => ({
       id: 'exec-generated',
       status: 'queued',
@@ -395,7 +395,7 @@ describe('ScriptService', () => {
     });
   });
 
-  // ==================== executeScript（队列接入） ====================
+  // ==================== executeScript (queue integration) ====================
   describe('executeScript', () => {
     it('should execute script synchronously via queue and return result', async () => {
       const script = makeScript({ id: 'script-001', projectId: 'project-001' });
@@ -411,7 +411,7 @@ describe('ScriptService', () => {
       const result = await service.executeScript('script-001', 'project-001');
 
       expect(result).toEqual(executionResult);
-      // 验证调用了 runScript（非 execute）
+      // Verify that runScript (not execute) was called
       expect(mockEngineService.runScript).toHaveBeenCalledWith(
         script,
         expect.objectContaining({
@@ -420,7 +420,7 @@ describe('ScriptService', () => {
           userId: 'system',
         }),
       );
-      // 验证入队
+      // Verify enqueue
       expect(mockQueueService.enqueue).toHaveBeenCalledWith(
         expect.any(String),
         'script-001',
@@ -429,7 +429,7 @@ describe('ScriptService', () => {
         expect.any(Function),
         5000,
       );
-      // 验证创建并保存执行记录
+      // Verify the execution record was created and saved
       expect(mockExecutionRepo.create).toHaveBeenCalledWith(
         expect.objectContaining({
           scriptId: 'script-001',
@@ -555,7 +555,7 @@ describe('ScriptService', () => {
       const result = await service.executeScript('script-001', 'project-001');
 
       expect(result.success).toBe(false);
-      // 最后一次 save 应该是 failed 状态
+      // The last save should be with failed status
       const lastSaveCall = mockExecutionRepo.save.mock.calls[mockExecutionRepo.save.mock.calls.length - 1][0];
       expect(lastSaveCall.status).toBe('failed');
       expect(lastSaveCall.error).toBe('Runtime error');
@@ -620,7 +620,7 @@ describe('ScriptService', () => {
 
       await service.cancelExecution('exec-001', 'project-001');
 
-      // status 不应被改为 cancelled
+      // status should not be changed to cancelled
       expect(execution.status).toBe('completed');
     });
   });

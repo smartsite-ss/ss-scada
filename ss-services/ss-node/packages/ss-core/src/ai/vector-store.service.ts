@@ -3,12 +3,12 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * Vector Store — P1-T08 RAG 向量存储服务
+ * Vector Store - P1-T08 RAG vector storage service
  *
- * Phase 1：内存向量存储（使用余弦相似度检索）
- * Phase 2：迁移到 pgvector + HNSW 索引
+ * Phase 1: in-memory vector storage (cosine-similarity retrieval)
+ * Phase 2: migrate to pgvector + HNSW index
  *
- * 用法:
+ * Usage:
  *   await vectorStore.addChunks(chunks, embeddings);
  *   const results = await vectorStore.search(queryVector, { topK: 5 });
  */
@@ -16,24 +16,24 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { TextChunk } from './chunking.service';
 
-/** 向量条目 */
+/** Vector entry */
 export interface VectorEntry {
   chunk: TextChunk;
   vector: number[];
 }
 
-/** 检索配置 */
+/** Retrieval config */
 export interface SearchConfig {
-  /** 返回结果数 */
+  /** Number of results to return */
   topK: number;
-  /** 最小相似度阈值（0-1） */
+  /** Minimum similarity threshold (0-1) */
   minSimilarity: number;
 }
 
-/** 检索结果 */
+/** Retrieval result */
 export interface SearchResult {
   chunk: TextChunk;
-  /** 余弦相似度（0-1） */
+  /** Cosine similarity (0-1) */
   similarity: number;
 }
 
@@ -48,14 +48,14 @@ export class VectorStoreService {
   private entries: VectorEntry[] = [];
 
   /**
-   * 添加块 + 向量
+   * Add chunk + vector
    */
   addChunk(chunk: TextChunk, vector: number[]): void {
     this.entries.push({ chunk, vector });
   }
 
   /**
-   * 批量添加
+   * Batch add
    */
   addChunks(chunks: TextChunk[], vectors: number[][]): void {
     if (chunks.length !== vectors.length) {
@@ -68,10 +68,10 @@ export class VectorStoreService {
   }
 
   /**
-   * 余弦相似度搜索
-   * @param queryVector — 查询向量
-   * @param config — 检索配置
-   * @returns 按相似度降序排列的结果
+   * Cosine-similarity search
+   * @param queryVector - query vector
+   * @param config - retrieval config
+   * @returns results sorted descending by similarity
    */
   search(queryVector: number[], config?: Partial<SearchConfig>): SearchResult[] {
     const mergedConfig = { ...DEFAULT_SEARCH_CONFIG, ...config };
@@ -89,28 +89,28 @@ export class VectorStoreService {
       }
     }
 
-    // 按相似度降序排列
+    // Sort by similarity descending
     results.sort((a, b) => b.similarity - a.similarity);
 
     return results.slice(0, mergedConfig.topK);
   }
 
   /**
-   * 清空向量存储
+   * Clear the vector store
    */
   clear(): void {
     this.entries = [];
   }
 
   /**
-   * 获取条目数
+   * Get entry count
    */
   size(): number {
     return this.entries.length;
   }
 
   // ============================================================
-  //  余弦相似度计算
+  //  Cosine similarity computation
   // ============================================================
 
   private cosineSimilarity(a: number[], b: number[]): number {

@@ -22,13 +22,13 @@ export interface RoomJoinResult {
 export class RoomService implements OnModuleInit {
   private readonly logger = new Logger(RoomService.name);
 
-  /** 房间成员存储：roomName -> Set<RoomMember> */
+  /** Room-member store: roomName -> Set<RoomMember> */
   private readonly memberStore = new Map<string, Map<string, RoomMember>>();
 
-  /** 用户所属房间：userId -> Set<roomName> */
+  /** User's rooms: userId -> Set<roomName> */
   private readonly userRooms = new Map<string, Set<string>>();
 
-  /** socket 所属房间：socketId -> Set<roomName> */
+  /** Socket's rooms: socketId -> Set<roomName> */
   private readonly socketRooms = new Map<string, Set<string>>();
 
   constructor(
@@ -42,12 +42,12 @@ export class RoomService implements OnModuleInit {
   }
 
   /**
-   * 加入项目房间（带权限校验）
-   * @param room 房间名
+   * Join a project room (with permission check)
+   * @param room room name
    * @param socketId socket ID
-   * @param userId 用户ID（未认证用户可能为 undefined）
-   * @param username 用户名
-   * @param canAccess 权限校验函数：返回用户是否有权限访问该项目
+   * @param userId user ID (undefined for unauthenticated users)
+   * @param username username
+   * @param canAccess permission-check function: returns whether the user may access the project
    */
   joinProjectRoom(
     room: string,
@@ -75,14 +75,14 @@ export class RoomService implements OnModuleInit {
   }
 
   /**
-   * 加入普通房间（无权限校验）
+   * Join a normal room (no permission check)
    */
   joinRoom(room: string, socketId: string, userId?: string, username?: string): void {
     this.addMember(room, socketId, userId, username);
   }
 
   /**
-   * 离开房间
+   * Leave a room
    */
   leaveRoom(room: string, socketId: string): void {
     const members = this.memberStore.get(room);
@@ -96,7 +96,7 @@ export class RoomService implements OnModuleInit {
       this.memberStore.delete(room);
     }
 
-    // 清理用户房间索引
+    // Clean up the user's room index
     if (member.userId) {
       const rooms = this.userRooms.get(member.userId);
       if (rooms) {
@@ -107,7 +107,7 @@ export class RoomService implements OnModuleInit {
       }
     }
 
-    // 清理 socket 房间索引
+    // Clean up the socket's room index
     const socketRooms = this.socketRooms.get(socketId);
     if (socketRooms) {
       socketRooms.delete(room);
@@ -122,7 +122,7 @@ export class RoomService implements OnModuleInit {
     });
     this.logger.log(message);
 
-    // 发送 user:left 事件
+    // Emit the user:left event
     this.eventBus.emit('user.left', {
       socketId,
       userId: member.userId,
@@ -132,7 +132,7 @@ export class RoomService implements OnModuleInit {
     });
   }
 
-  /** 移除某 socket 所有房间 */
+  /** Remove all rooms of a socket */
   leaveAllRooms(socketId: string): void {
     const rooms = this.socketRooms.get(socketId);
     if (!rooms) return;
@@ -143,36 +143,36 @@ export class RoomService implements OnModuleInit {
     }
   }
 
-  /** 获取房间成员列表 */
+  /** Get a room's member list */
   getRoomMembers(room: string): RoomMember[] {
     const members = this.memberStore.get(room);
     if (!members) return [];
     return Array.from(members.values());
   }
 
-  /** 获取房间成员数 */
+  /** Get a room's member count */
   getRoomMemberCount(room: string): number {
     return this.memberStore.get(room)?.size || 0;
   }
 
-  /** 获取用户所在房间 */
+  /** Get a user's rooms */
   getUserRooms(userId: string): string[] {
     const rooms = this.userRooms.get(userId);
     return rooms ? Array.from(rooms) : [];
   }
 
-  /** 获取 socket 所在房间 */
+  /** Get a socket's rooms */
   getSocketRooms(socketId: string): string[] {
     const rooms = this.socketRooms.get(socketId);
     return rooms ? Array.from(rooms) : [];
   }
 
-  /** 获取所有房间名 */
+  /** Get all room names */
   getAllRoomNames(): string[] {
     return Array.from(this.memberStore.keys());
   }
 
-  /** 获取所有房间统计 */
+  /** Get all room statistics */
   getRoomStats(): Array<{ name: string; memberCount: number }> {
     const stats: Array<{ name: string; memberCount: number }> = [];
     this.memberStore.forEach((members, name) => {
@@ -181,7 +181,7 @@ export class RoomService implements OnModuleInit {
     return stats.sort((a, b) => b.memberCount - a.memberCount);
   }
 
-  /** 检查用户是否在房间中 */
+  /** Check whether a user is in a room */
   isMemberInRoom(room: string, socketId: string): boolean {
     return this.memberStore.get(room)?.has(socketId) || false;
   }
@@ -200,7 +200,7 @@ export class RoomService implements OnModuleInit {
 
     this.memberStore.get(room)!.set(socketId, member);
 
-    // 更新用户房间索引
+    // Update the user's room index
     if (userId) {
       if (!this.userRooms.has(userId)) {
         this.userRooms.set(userId, new Set());
@@ -208,7 +208,7 @@ export class RoomService implements OnModuleInit {
       this.userRooms.get(userId)!.add(room);
     }
 
-    // 更新 socket 房间索引
+    // Update the socket's room index
     if (!this.socketRooms.has(socketId)) {
       this.socketRooms.set(socketId, new Set());
     }
@@ -220,7 +220,7 @@ export class RoomService implements OnModuleInit {
     });
     this.logger.log(message);
 
-    // 发送 user:joined 事件
+    // Emit the user:joined event
     this.eventBus.emit('user.joined', {
       socketId,
       userId,

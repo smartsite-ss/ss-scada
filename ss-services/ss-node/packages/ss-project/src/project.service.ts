@@ -59,16 +59,16 @@ export class ProjectService {
   }
 
   /**
-   * 获取项目目录绝对路径
+   * Get the project-directory absolute path
    *
-   * 相对路径基准：
-   * - dev 模式：__dirname 上溯 3 级 = ss-services/ss-node（.env.dev 中 PROJECTS_DIR=../../ss-run/ss/data/projects 相对于此目录）
-   * - 生产模式：process.cwd() = ss-run/ss/services/ss-node（.env 中 PROJECTS_DIR=../../data/projects 相对于此目录）
+   * Relative-path base:
+   * - dev mode: __dirname up 3 levels = ss-services/ss-node (PROJECTS_DIR=../../ss-run/ss/data/projects in .env.dev is relative to this directory)
+   * - production: process.cwd() = ss-run/ss/services/ss-node (PROJECTS_DIR=../../data/projects in .env is relative to this directory)
    *
-   * 修复历史：v1.4 之前用 process.cwd()，dev 模式下 cwd = apps/ss-node-server，
-   * 导致 ../../ss-run/ss/data/projects 被解析为 ss-services/ss-node/ss-run/...（不存在），
-   * 项目目录指向错误位置，登录后看不到已有项目。
-   * 与 app.module.ts getDatabaseConfig()、database.service.ts getProjectRoot() 保持一致。
+   * Fix history: before v1.4 process.cwd() was used; in dev mode cwd = apps/ss-node-server,
+   * so ../../ss-run/ss/data/projects resolved to ss-services/ss-node/ss-run/... (nonexistent),
+   * pointing the project directory at the wrong location, making existing projects invisible after login.
+   * Kept consistent with app.module.ts getDatabaseConfig() and database.service.ts getProjectRoot().
    */
   getProjectsDir(): string {
     const configuredDir = this.configService.get<string>('PROJECTS_DIR') || './data/projects';
@@ -109,10 +109,10 @@ export class ProjectService {
     const raw = JSON.parse(fs.readFileSync(infoPath, 'utf-8'));
     const projectDir = this.getProjectDir(projectId);
     const project = new Project({
-      // 向后兼容：旧 projectinfo.json 可能含 tid 字段（旧目录名）而非 projectId
-      // 注意：旧 pid 是拼音首字母（如 'zwxm'），不是目录名，不应作为 projectId 回退
+      // Backward compatible: legacy projectinfo.json may contain a tid field (old directory name) rather than projectId
+      // Note: the old pid was pinyin initials (e.g. 'zwxm'), not a directory name, and must not fall back as projectId
       projectId: raw.projectId || raw.tid || projectId,
-      // 向后兼容：旧 projectinfo.json 可能含 tid 字段而非 tenantId
+      // Backward compatible: legacy projectinfo.json may contain a tid field rather than tenantId
       tenantId: raw.tenantId || raw.tid || projectId,
       projectName: raw.projectName || raw.name || projectId,
       description: raw.description || '',
@@ -129,7 +129,7 @@ export class ProjectService {
       latitude: raw.latitude,
       owner: raw.owner,
       image: raw.image,
-      // enabled 读取：旧 projectinfo.json 无此字段时为 undefined，Project 构造函数会默认 false
+      // enabled reading: undefined when legacy projectinfo.json lacks the field; the Project constructor defaults it to false
       enabled: raw.enabled,
     });
     return project;
@@ -141,13 +141,13 @@ export class ProjectService {
   }
 
   /**
-   * 生成项目唯一标识符 projectId（拼音全拼 kebab-case，用作目录名/DB 隔离/InfluxDB bucket/Redis key）。
+   * Generate the project's unique identifier projectId (full pinyin kebab-case; used as the directory name / DB isolation / InfluxDB bucket / Redis key).
    *
-   * 生成规则：
-   * - 拉丁名：转小写，空格和特殊字符替换为连字符
-   * 纯中文名（拉丁 slug 为空）时回退到拼音全拼 slug，确保非空
+   * Generation rules:
+   * - Latin names: lowercased, spaces and special chars replaced with hyphens
+   * Pure-Chinese names (empty Latin slug) fall back to a full-pinyin slug, ensuring non-empty
    *
-   * 示例："测试工程" → "ce-shi-gong-cheng"，"My Project" → "my-project"
+   * Examples: a pure-Chinese name -> ce-shi-gong-cheng, "My Project" -> my-project
    */
   private generateProjectId(name: string): string {
     const slug = name
@@ -159,7 +159,7 @@ export class ProjectService {
     if (slug) {
       return slug;
     }
-    // 纯中文/非拉丁名：用拼音全拼生成 slug（如 "测试工程" → "ce-shi-gong-cheng"）
+    // Pure-Chinese / non-Latin names: generate the slug from full pinyin (e.g. a Chinese name -> ce-shi-gong-cheng)
     const py = pinyin(name, { toneType: 'none', type: 'array' })
       .filter(Boolean)
       .join('-')
@@ -171,7 +171,7 @@ export class ProjectService {
   }
 
   /**
-   * 解析最终 projectId：用户手填则校验唯一性（冲突抛错）；留空则自动生成并在冲突时追加数字后缀。
+   * Resolve the final projectId: user-provided values are validated for uniqueness (conflicts throw); blank values are auto-generated with a numeric suffix appended on conflict.
    */
   private resolveUniqueProjectId(userProjectId: string | undefined, projectName: string): string {
     const existingProjectIds = new Set(this.scanProjects().map((p) => p.projectId));
@@ -206,15 +206,15 @@ export class ProjectService {
 
     for (const entry of entries) {
       if (!entry.isDirectory()) continue;
-      // 跳过隐藏文件（如 .default-project.json 所在的非项目目录）
+      // Skip hidden files (e.g. the non-project directory containing .default-project.json)
       if (entry.name.startsWith('.')) continue;
 
       const infoPath = path.join(projectsDir, entry.name, PROJECT_INFO_FILE);
       if (fs.existsSync(infoPath)) {
         try {
-          // entry.name 即为目录名，迁移后等于 projectId
+          // entry.name is the directory name, equal to projectId after migration
           const project = this.readProjectInfo(entry.name);
-          // 默认排除停用项目（includeDisabled=false 时跳过 enabled=false）
+          // Disabled projects are excluded by default (skips enabled=false when includeDisabled=false)
           if (!includeDisabled && !project.enabled) continue;
           projects.push(project);
         } catch (err) {
@@ -237,25 +237,25 @@ export class ProjectService {
       throw new BadRequestException('项目名称不能为空');
     }
 
-    // 项目名称必须全局唯一（即使 projectId 不同也不允许同名）
+    // Project names must be globally unique (same names forbidden even with different projectIds)
     const existingProjects = this.scanProjects();
     if (existingProjects.some((p) => p.projectName === projectName)) {
       throw new BadRequestException(`项目名称 "${projectName}" 已存在`);
     }
 
-    // projectId（项目唯一标识符 + 目录名）：用户指定或从 projectName 自动生成（拼音全拼 kebab-case）
+    // projectId (project unique identifier + directory name): user-specified or auto-generated from projectName (full pinyin kebab-case)
     const projectId = this.resolveUniqueProjectId(createProjectDto.projectId?.trim(), projectName);
     if (!projectId) {
       throw new BadRequestException('项目 projectId 不能为空');
     }
 
-    // 检查 projectId（目录名）是否冲突
+    // Check whether projectId (the directory name) conflicts
     const projectDir = this.getProjectDir(projectId);
     if (fs.existsSync(projectDir)) {
       throw new BadRequestException(`项目 projectId "${projectId}" 已存在`);
     }
 
-    // tenantId：多租户预留，当前 = projectId
+    // tenantId: multi-tenant reserved, currently = projectId
     const tenantId = createProjectDto.tenantId?.trim() || projectId;
 
     const now = new Date().toISOString();
@@ -284,7 +284,7 @@ export class ProjectService {
     this.ensureProjectSubdirs(projectId);
     this.writeProjectInfo(project);
 
-    // isolated 模式：初始化项目级数据库 system.db
+    // isolated mode: initialize the project-level database system.db
     if (this.projectDbService.getMode() === 'isolated') {
       await this.projectDbService.initProjectDatabases(projectId);
     }
@@ -317,8 +317,8 @@ export class ProjectService {
     const start = (page - 1) * pageSize;
     const data = filtered.slice(start, start + pageSize);
 
-    // 为当前页的每个项目计算页面数量和文件夹大小（运行时统计，不入 projectinfo.json）
-    // 仅计算当前页（最多 pageSize 个），避免全量遍历导致性能问题
+    // Compute page counts and folder sizes for each project on the current page (runtime stats, not written into projectinfo.json)
+    // Compute only the current page (at most pageSize items), avoiding performance issues from full traversal
     await Promise.all(
       data.map(async (project) => {
         project.pageCount = await this.getPageCount(project.projectId);
@@ -376,7 +376,7 @@ export class ProjectService {
       project.image = updateProjectDto.image.trim() || undefined;
     }
 
-    // 启用状态变更：检测 false→true / true→false，发 EventBus 通知采集层动态启停
+    // Enabled-state change: detect false->true / true->false, emit EventBus to notify the collection layer to start/stop dynamically
     let enabledChanged = false;
     if (updateProjectDto.enabled !== undefined && updateProjectDto.enabled !== project.enabled) {
       project.enabled = updateProjectDto.enabled;
@@ -389,7 +389,7 @@ export class ProjectService {
     this.writeProjectInfo(project);
     this.logger.log(`Project updated: ${projectId} by user ${userId}`);
 
-    // 动态启停：enabled 变化时通知采集层立即生效
+    // Dynamic start/stop: notify the collection layer immediately when enabled changes
     if (enabledChanged) {
       if (project.enabled) {
         this.eventBus.emit('project:enabled', { projectId });
@@ -404,15 +404,15 @@ export class ProjectService {
   }
 
   /**
-   * 判断 projectId 是否合法（kebab-case 格式，小写字母/数字/连字符）。
+   * Decide whether a projectId is valid (kebab-case format: lowercase letters/digits/hyphens).
    */
   private isValidProjectId(projectId: string | undefined): boolean {
     return !!projectId && /^[a-z0-9][a-z0-9-]*[a-z0-9]$|^[a-z0-9]$/.test(projectId);
   }
 
   /**
-   * 为单个项目重新生成 projectId（基于项目名称拼音全拼 kebab-case），确保唯一性。
-   * 用于修复历史项目中的 GUID/中文 projectId。
+   * Regenerate a single project's projectId (based on the project name's full pinyin kebab-case), ensuring uniqueness.
+   * Used to fix GUID/Chinese projectIds in legacy projects.
    */
   regenerateProjectId(projectId: string): {
     projectId: string;
@@ -424,7 +424,7 @@ export class ProjectService {
     const project = this.readProjectInfo(projectId);
     const oldProjectId = project.projectId || '';
 
-    // 如果当前 projectId 已合法，跳过
+    // Skip if the current projectId is already valid
     if (this.isValidProjectId(oldProjectId)) {
       return {
         projectId: project.projectId,
@@ -435,7 +435,7 @@ export class ProjectService {
       };
     }
 
-    // 基于项目名称生成唯一 projectId（排除自身）
+    // Generate a unique projectId from the project name (excluding itself)
     const existingProjectIds = new Set(
       this.scanProjects()
         .filter((p) => p.projectId !== project.projectId)
@@ -468,8 +468,8 @@ export class ProjectService {
   }
 
   /**
-   * 批量迁移所有项目的 projectId：扫描全部项目，修复不合法（GUID/中文/缺失）的 projectId。
-   * 仅修改 projectinfo.json 中的 projectId 字段，不涉及历史数据关联更新。
+   * Batch-migrate all projects' projectIds: scan all projects and repair invalid (GUID/Chinese/missing) projectIds.
+   * Only modifies the projectId field in projectinfo.json, without historical-data association updates.
    */
   migrateAllProjectIds(): {
     total: number;
@@ -525,15 +525,15 @@ export class ProjectService {
     const project = this.readProjectInfo(projectId);
     const projectDir = this.getProjectDir(project.projectId);
 
-    // 通知全局 ProjectDatabaseService 关闭该项目相关的数据库连接
-    // 必须在删除文件之前执行，否则 SQLite 文件仍被占用导致 EBUSY
+    // Notify the global ProjectDatabaseService to close the database connections related to this project
+    // Must run before deleting files, otherwise the SQLite file is still held, causing EBUSY
     await this.eventBus.emitAsync('project.beforeDelete', {
       projectId: project.projectId,
       tenantId: project.tenantId,
       timestamp: Date.now(),
     });
 
-    // 再释放本模块的数据库连接（isolated 模式）
+    // Then release this module's database connections (isolated mode)
     if (this.projectDbService.getMode() === 'isolated') {
       await this.projectDbService.deleteProjectDatabases(project.projectId);
     }
@@ -543,8 +543,8 @@ export class ProjectService {
   }
 
   /**
-   * 上传项目封面图片到 {projectId}/images/ 目录，返回相对路径。
-   * 若项目已有旧封面图片，上传新图时自动删除旧文件。
+   * Upload a project cover image to the {projectId}/images/ directory, returning the relative path.
+   * If the project already has an old cover image, uploading a new one auto-deletes the old file.
    */
   uploadProjectImage(projectId: string, buffer: Buffer, originalName: string): string {
     const project = this.readProjectInfo(projectId);
@@ -554,7 +554,7 @@ export class ProjectService {
       fs.mkdirSync(imagesDir, { recursive: true });
     }
 
-    // 删除旧封面图片（如存在）
+    // Delete the old cover image (if present)
     if (project.image) {
       const oldPath = path.join(projectDir, project.image);
       if (fs.existsSync(oldPath)) {
@@ -568,7 +568,7 @@ export class ProjectService {
       }
     }
 
-    // 生成安全文件名：cover-{timestamp}.{ext}
+    // Generate a safe file name: cover-{timestamp}.{ext}
     const ext = path.extname(originalName).toLowerCase() || '.png';
     const fileName = `cover-${Date.now()}${ext}`;
     const relativePath = `images/${fileName}`;
@@ -579,7 +579,7 @@ export class ProjectService {
       `Project image uploaded: ${projectId}/${relativePath} (${buffer.length} bytes)`,
     );
 
-    // 更新 projectinfo.json 中的 image 字段
+    // Update the image field in projectinfo.json
     project.image = relativePath;
     this.writeProjectInfo(project);
 
@@ -587,7 +587,7 @@ export class ProjectService {
   }
 
   /**
-   * 获取项目封面图片的绝对路径（用于文件流响应）。
+   * Get the project cover image's absolute path (for file-stream responses).
    */
   getProjectImagePath(projectId: string): string | null {
     const project = this.readProjectInfo(projectId);
@@ -609,13 +609,13 @@ export class ProjectService {
     const zipFileName = `${project.projectId}_${Date.now()}.zip`;
     const zipFilePath = path.join(tmpDir, zipFileName);
 
-    // 选择性导出：未指定参数时默认全部包含（向后兼容）
+    // Selective export: include everything by default when no params are given (backward compatible)
     const includePages = options?.includePages ?? true;
     const includeProjectDb = options?.includeProjectDb ?? true;
     const includeRtdb = options?.includeRtdb ?? true;
     const isSelective = options !== undefined;
 
-    // isolated 模式且包含项目数据库时：导出前 VACUUM 压缩数据库
+    // isolated mode and including the project database: VACUUM-compact the database before export
     if (
       includeProjectDb &&
       this.projectDbService.getMode() === 'isolated' &&
@@ -656,13 +656,13 @@ export class ProjectService {
 
       archive.pipe(output);
 
-      // projectinfo.json 总是包含（项目元信息必需）
+      // projectinfo.json is always included (required project metadata)
       const infoPath = this.getProjectInfoPath(project.projectId);
       if (fs.existsSync(infoPath)) {
         archive.file(infoPath, { name: PROJECT_INFO_FILE });
       }
 
-      // 选择性添加子目录
+      // Selectively add subdirectories
       if (includePages) {
         const pagesDir = path.join(projectDir, 'pages');
         if (fs.existsSync(pagesDir)) {
@@ -672,8 +672,8 @@ export class ProjectService {
       if (includeProjectDb) {
         const dbDir = path.join(projectDir, 'db');
         if (fs.existsSync(dbDir)) {
-          // 排除 SQLite WAL/SHM 临时文件：这些文件在运行时被锁定，
-          // 打包会导致导出失败或导入后数据库不一致
+          // Exclude SQLite WAL/SHM temp files: these are locked at runtime,
+          // and packing them causes export failure or an inconsistent database after import
           this.addDirToArchiveExcludingDbTemp(archive, dbDir, 'db');
         }
       }
@@ -683,7 +683,7 @@ export class ProjectService {
           archive.directory(rtdbDir, 'rtdb');
         }
       }
-      // template 目录总是包含（模板为项目基础资源，体积小）
+      // The template directory is always included (templates are basic project resources, small in size)
       const templateDir = path.join(projectDir, 'template');
       if (fs.existsSync(templateDir)) {
         archive.directory(templateDir, 'template');
@@ -696,13 +696,13 @@ export class ProjectService {
   }
 
   /**
-   * 将目录添加到 archive，排除 SQLite WAL/SHM 临时文件。
+   * Add a directory to the archive, excluding SQLite WAL/SHM temp files.
    *
-   * 排除原因：
-   * - .db-wal / .db-shm 是 SQLite WAL 模式的运行时临时文件
-   * - 在 Windows 上这些文件可能被数据库进程锁定，导致 archiver 读取失败
-   * - VACUUM 已将 WAL 数据合并到主 .db 文件，临时文件无需导出
-   * - 导入时包含这些文件会导致数据库状态不一致
+   * Exclusion reasons:
+   * - .db-wal / .db-shm are SQLite WAL-mode runtime temp files
+   * - On Windows these files may be locked by the database process, causing archiver read failures
+   * - VACUUM has already merged WAL data into the main .db file; the temp files need no export
+   * - Including them at import would leave the database in an inconsistent state
    */
   private addDirToArchiveExcludingDbTemp(
     archive: archiver.Archiver,
@@ -714,10 +714,10 @@ export class ProjectService {
       const fullPath = path.join(dirPath, entry.name);
       const archiveEntryName = `${archiveName}/${entry.name}`;
       if (entry.isDirectory()) {
-        // 递归处理子目录
+        // Process subdirectories recursively
         this.addDirToArchiveExcludingDbTemp(archive, fullPath, archiveEntryName);
       } else if (entry.isFile()) {
-        // 排除 SQLite WAL 和 SHM 临时文件
+        // Exclude SQLite WAL and SHM temp files
         if (entry.name.endsWith('.db-wal') || entry.name.endsWith('.db-shm')) {
           continue;
         }
@@ -778,7 +778,7 @@ export class ProjectService {
         throw new BadRequestException('无法从 ZIP 文件中解析项目名称');
       }
 
-      // ZIP 根目录名将参与路径拼接，先做段级校验（拒绝 .. / 分隔符 / 盘符等）
+      // The ZIP root directory name participates in path joining; do segment-level validation first (rejecting .. / separators / drive letters etc.)
       this.projectFs.assertSafeSegment(extractedDirName, 'ZIP 根目录名');
 
       const hasProjectInfo = entries.some(
@@ -791,21 +791,21 @@ export class ProjectService {
         throw new BadRequestException('ZIP 文件缺少 projectinfo.json，项目数据不完整');
       }
 
-      // 安全解压：逐条目校验解压目标位于临时目录内，杜绝 Zip Slip（P0-2）
+      // Safe extraction: validate each entry's extraction target lies inside the temp directory, eliminating Zip Slip (P0-2)
       this.projectFs.extractZipSafely(zip, tmpDir);
       const sourceDir = path.join(tmpDir, extractedDirName);
       if (!fs.existsSync(sourceDir)) {
         throw new BadRequestException('ZIP 文件解压后未找到项目目录');
       }
 
-      // 从解压后的 projectinfo.json 读取 projectId（兼容旧 tid 字段）
+      // Read the projectId from the extracted projectinfo.json (legacy tid-field compatible)
       let projectId: string;
       let projectName: string;
       try {
         const infoRaw = JSON.parse(
           fs.readFileSync(path.join(sourceDir, PROJECT_INFO_FILE), 'utf-8'),
         );
-        // 向后兼容：旧 zip 包可能含 tid 而非 projectId，此时用 tid 作为目录名
+        // Backward compatible: legacy ZIPs may contain tid rather than projectId; use tid as the directory name then
         projectId = infoRaw.projectId || infoRaw.tid || extractedDirName;
         projectName = infoRaw.projectName || infoRaw.name || projectId;
       } catch {
@@ -813,19 +813,19 @@ export class ProjectService {
         projectName = extractedDirName;
       }
 
-      // projectId 来自 ZIP 内的 projectinfo.json（用户可控），先做段级校验，
-      // 拒绝 `..` / 路径分隔符 / 盘符等，防止 rmSync/copyDirSync 越出项目根（P0-2）
+      // The projectId comes from the ZIP's projectinfo.json (user-controlled); do segment-level validation first,
+      // rejecting `..` / path separators / drive letters etc., preventing rmSync/copyDirSync from escaping the projects root (P0-2)
       this.projectFs.assertSafeSegment(projectId, 'projectId');
 
       this.ensureProjectsDir();
       const targetDir = this.getProjectDir(projectId);
-      // 纵深防御：确认最终目标目录确实位于 projects 根内
+      // Defense in depth: confirm the final target directory really lies within the projects root
       this.projectFs.assertPathWithin(this.getProjectsDir(), targetDir);
       const existsLocally = fs.existsSync(targetDir);
 
       if (existsLocally) {
         if (options?.overwrite) {
-          // 先释放可能存在的数据库连接
+          // Release any existing database connections first
           if (this.projectDbService.getMode() === 'isolated') {
             await this.projectDbService.unloadProjectDatabases(projectId);
           }
@@ -841,7 +841,7 @@ export class ProjectService {
       this.copyDirSync(sourceDir, targetDir);
       this.ensureProjectSubdirs(projectId);
 
-      // isolated 模式：导入后校验/重建数据库
+      // isolated mode: validate/rebuild the database after import
       if (this.projectDbService.getMode() === 'isolated') {
         if (!this.projectDbService.hasDatabaseFiles(projectId)) {
           await this.projectDbService.initProjectDatabases(projectId);
@@ -883,14 +883,14 @@ export class ProjectService {
     const defaultName = '默认项目';
     const defaultProjectId = 'default-project';
 
-    // 先扫描所有项目，查找 projectId 为 "default-project" 的默认项目
+    // Scan all projects first, looking for the default project with projectId "default-project"
     const existing = this.scanProjects();
     const defaultProject = existing.find((p) => p.projectId === defaultProjectId);
     if (defaultProject) {
       return defaultProject;
     }
 
-    // 兼容：检查 "默认项目" 名称目录（旧版）
+    // Compatible: check the legacy directory named after the Chinese default-project name
     const legacyDir = this.getProjectDir(defaultName);
     if (fs.existsSync(legacyDir)) {
       const infoPath = this.getProjectInfoPath(defaultName);
@@ -920,7 +920,7 @@ export class ProjectService {
     this.ensureProjectSubdirs(defaultProjectId);
     this.writeProjectInfo(project);
 
-    // isolated 模式：初始化默认项目的数据库
+    // isolated mode: initialize the default project's database
     if (this.projectDbService.getMode() === 'isolated') {
       await this.projectDbService.initProjectDatabases(defaultProjectId);
     }
@@ -937,8 +937,8 @@ export class ProjectService {
   }
 
   /**
-   * 获取用户设定的默认项目 ID（从 .default-project.json 读取）
-   * 返回 null 表示未设定
+   * Get the user-configured default project ID (read from .default-project.json)
+   * Returns null when not configured
    */
   getDefaultProjectId(): string | null {
     const filePath = path.join(this.getProjectsDir(), DEFAULT_PROJECT_FILE);
@@ -953,8 +953,8 @@ export class ProjectService {
   }
 
   /**
-   * 设置默认项目 ID，写入 .default-project.json
-   * 会校验项目目录是否存在
+   * Set the default project ID, writing .default-project.json
+   * Validates that the project directory exists
    */
   setDefaultProjectId(projectId: string): void {
     this.ensureProjectsDir();
@@ -972,7 +972,7 @@ export class ProjectService {
   }
 
   /**
-   * 清除默认项目设置（删除 .default-project.json）
+   * Clear the default-project setting (deletes .default-project.json)
    */
   clearDefaultProjectId(): void {
     const filePath = path.join(this.getProjectsDir(), DEFAULT_PROJECT_FILE);
@@ -983,8 +983,8 @@ export class ProjectService {
   }
 
   /**
-   * 诊断项目资源完整性
-   * 检测目录结构、配置文件、数据库文件是否存在
+   * Diagnose project resource integrity
+   * Detects whether the directory structure, config files, and database files exist
    */
   async diagnoseProject(projectId: string): Promise<DiagnoseResult> {
     this.ensureProjectsDir();
@@ -1008,7 +1008,7 @@ export class ProjectService {
       issues.push('projectinfo.json 文件缺失');
     }
 
-    // 2. 子目录
+    // 2. Subdirectories
     for (const subdir of SUBDIRS) {
       const subdirPath = path.join(projectDir, subdir);
       const key = `${subdir}Dir` as keyof DiagnoseResources;
@@ -1021,7 +1021,7 @@ export class ProjectService {
       }
     }
 
-    // 3. 数据库文件（isolated 模式）
+    // 3. Database files (isolated mode)
     const dbMode = this.projectDbService.getMode();
     if (dbMode === 'isolated') {
       const dbDir = path.join(projectDir, 'db');
@@ -1038,10 +1038,10 @@ export class ProjectService {
       }
     }
 
-    // 健康度判定
+    // Health determination
     let health: 'healthy' | 'degraded' | 'unhealthy' = 'healthy';
 
-    // 数据库健康度判定：若 db/ 目录存在且包含有效的 system.db 文件，则视为数据库资源可用
+    // Database health: if the db/ directory exists and contains a valid system.db file, the database resources count as available
     const dbDirPath = path.join(projectDir, 'db');
     let hasAnyDbFile = false;
     let hasAnyDbOk = false;
@@ -1086,8 +1086,8 @@ export class ProjectService {
   }
 
   /**
-   * 初始化项目缺失资源
-   * 自动补建缺失的子目录和数据库文件
+   * Initialize a project's missing resources
+   * Auto-creates missing subdirectories and database files
    */
   async initProjectResources(
     projectId: string,
@@ -1107,11 +1107,11 @@ export class ProjectService {
     const initialized: string[] = [];
     const skipped: string[] = [];
     const warnings: string[] = [];
-    // 清理无效的 resources 参数（如 [undefined] 等）
+    // Clean up invalid resources params (e.g. [undefined])
     const cleanResources = targetResources?.filter(Boolean);
     const initAll = !cleanResources || cleanResources.length === 0;
 
-    // 初始化子目录
+    // Initialize subdirectories
     if (initAll || cleanResources?.includes('subdirs')) {
       const existingSubdirs = SUBDIRS.filter((sd) => fs.existsSync(path.join(projectDir, sd)));
       const missingSubdirs = SUBDIRS.filter((sd) => !fs.existsSync(path.join(projectDir, sd)));
@@ -1133,7 +1133,7 @@ export class ProjectService {
       }
     }
 
-    // 初始化数据库
+    // Initialize the database
     if (initAll || cleanResources?.includes('database')) {
       const dbMode = this.projectDbService.getMode();
       const dbDir = path.join(projectDir, 'db');
@@ -1145,7 +1145,7 @@ export class ProjectService {
           !needSystemDb && (await this.checkDbFile(systemDbPath)).status !== 'ok';
 
         if (forceRecreateSystemDb) {
-          // 数据库文件存在但为空或损坏，先删除再重新初始化
+          // Database file exists but is empty or corrupted; delete then re-initialize
           fs.unlinkSync(systemDbPath);
           this.logger.log(
             `Project "${projectId}": removing broken/empty system.db for re-initialization`,
@@ -1178,7 +1178,7 @@ export class ProjectService {
   }
 
   /**
-   * 获取项目页面数量（轻量级，仅 readdir 一次，用于 getOverview 聚合）
+   * Get a project's page count (lightweight, only one readdir, used for getOverview aggregation)
    */
   async getPageCount(projectId: string): Promise<number> {
     const pagesDir = path.join(this.getProjectDir(projectId), 'pages');
@@ -1191,8 +1191,8 @@ export class ProjectService {
   }
 
   /**
-   * 递归计算目录总大小（字节）
-   * 异步遍历，避免阻塞事件循环
+   * Recursively compute a directory's total size (bytes)
+   * Async traversal, avoiding blocking the event loop
    */
   private async getDirSize(dirPath: string): Promise<number> {
     let total = 0;
@@ -1207,19 +1207,19 @@ export class ProjectService {
             const stat = await fs.promises.stat(fullPath);
             total += stat.size;
           } catch {
-            // 跳过无法访问的文件（如被锁定的 SQLite WAL/SHM 临时文件）
+            // Skip inaccessible files (e.g. locked SQLite WAL/SHM temp files)
           }
         }
       }
     } catch {
-      // 目录不存在或无法访问
+      // Directory does not exist or is inaccessible
     }
     return total;
   }
 
   /**
-   * 计算项目目录总大小（字节，包含所有子目录：db/pages/rtdb/template/images 等）
-   * 用于卡片视图展示项目磁盘占用
+   * Compute a project directory's total size (bytes, including all subdirectories: db/pages/rtdb/template/images etc.)
+   * Used by the card view to show a project's disk usage
    */
   private async getProjectFolderSize(projectId: string): Promise<number> {
     const projectDir = this.getProjectDir(projectId);
@@ -1227,9 +1227,9 @@ export class ProjectService {
   }
 
   /**
-   * 获取单个文件大小（字节）
-   * 仅 stat 单个文件，O(1) 轻量操作，不走 libuv 线程池的递归 stat 重路径。
-   * 文件不存在或无法访问时返回 0（如项目尚未初始化 db）。
+   * Get a single file's size (bytes)
+   * Only stats one file, an O(1) lightweight operation, avoiding the recursive stat heavy path on the libuv thread pool.
+   * Returns 0 when the file does not exist or is inaccessible (e.g. the project's db not yet initialized).
    */
   private async getFileSize(filePath: string): Promise<number> {
     try {
@@ -1241,7 +1241,7 @@ export class ProjectService {
   }
 
   /**
-   * 获取项目管理信息（页面数量、数据库大小、时间等）
+   * Get project management info (page count, database size, times, etc.)
    */
   async getManageInfo(projectId: string): Promise<ManageInfo> {
     const project = this.readProjectInfo(projectId);
@@ -1250,7 +1250,7 @@ export class ProjectService {
     const rtdbDir = path.join(projectDir, 'rtdb');
     const pagesDir = path.join(projectDir, 'pages');
 
-    // 页面数量（异步读取，避免阻塞事件循环）
+    // Page count (async read, avoiding blocking the event loop)
     let pageCount = 0;
     try {
       const entries = await fs.promises.readdir(pagesDir, { withFileTypes: true });
@@ -1259,10 +1259,10 @@ export class ProjectService {
       pageCount = 0;
     }
 
-    // 数据库大小：统计 db/ 目录下的 system.db
-    // 不遍历整个项目目录树（rtdb/ 下可能有海量实时数据文件）
+    // Database size: stat the system.db under the db/ directory
+    // Does not traverse the whole project directory tree (rtdb/ may hold massive real-time data files)
     const dbSize = await this.getFileSize(path.join(dbDir, 'system.db'));
-    const rtdbSize = 0; // rtdb 按需计算，不在 overview 中遍历
+    const rtdbSize = 0; // rtdb is computed on demand, not walked in the overview
 
     const dbMode = this.projectDbService.getMode();
 
@@ -1292,13 +1292,13 @@ export class ProjectService {
   }
 
   /**
-   * 获取系统概览统计（所有项目聚合）
-   * 后端统一汇总设备统计、报警统计，前端仅需一次请求。
+   * Get system-overview statistics (aggregated over all projects)
+   * The backend aggregates device and alarm statistics uniformly; the frontend needs only one request.
    *
-   * 性能保护：
-   * - 单项目超时 10s，超时跳过不阻塞整体
-   * - 最多 5 个项目并发加载，避免 SQLite 争用
-   * - 全程耗时日志便于排查瓶颈
+   * Performance protections:
+   * - Per-project timeout of 10s; timed-out projects are skipped without blocking the whole
+   * - At most 5 projects load concurrently, avoiding SQLite contention
+   * - Full elapsed-time logging for bottleneck troubleshooting
    */
   async getOverview(): Promise<ProjectOverview> {
     const t0 = Date.now();
@@ -1316,7 +1316,7 @@ export class ProjectService {
     let failCount = 0;
     let timeoutCount = 0;
 
-    // 聚合设备统计
+    // Aggregate device statistics
     const deviceStats: DeviceStats = {
       total: 0,
       online: 0,
@@ -1326,23 +1326,23 @@ export class ProjectService {
       error: 0,
       totalTags: 0,
     };
-    // 聚合报警统计
+    // Aggregate alarm statistics
     let alarmTotal = 0;
     let alarmActive = 0;
     let alarmAcknowledged = 0;
     let alarmCleared = 0;
     let alarmShelved = 0;
 
-    // 逐项目超时保护
+    // Per-project timeout protection
     const PER_PROJECT_TIMEOUT_MS = 10_000;
-    // 并发数限制：避免过多项目同时打开 DB 连接导致 SQLite 繁忙
+    // Concurrency limit: avoids SQLite busyness from too many projects opening DB connections at once
     const CONCURRENCY = 5;
 
     const processProject = async (project: Project) => {
       const pt0 = Date.now();
       let phaseTimings = '';
       try {
-        // 并行执行 + 各阶段独立计时（保持并发优势）
+        // Parallel execution + independent per-phase timing (keeping the concurrency benefit)
         const timed = async <T>(fn: () => Promise<T>): Promise<{ dur: number; result: T }> => {
           const t = Date.now();
           const result = await fn();
@@ -1351,16 +1351,16 @@ export class ProjectService {
         const result = await Promise.race([
           (async () => {
             const t1 = Date.now();
-            // 并行获取 pageCount / 设备统计 / 报警统计 / system.db 文件大小。
-            // 注意：仅 stat 单个 system.db 文件（O(1) 轻量），不递归 rtdb 目录树 ——
-            // getManageInfo 内部 getDirSize 会递归 stat rtdb 下海量文件（可达 300MB+），
-            // 在 5 个并发 worker 中会导致 libuv 线程池饱和、setTimeout 推迟 10s+ 才执行。
-            // 因此 rtdb 大小仍不在此处计算，仅在项目详情页 getManageInfo 按需获取。
+            // Fetch pageCount / device stats / alarm stats / system.db file size in parallel.
+            // Note: only stat the single system.db file (O(1) lightweight), never recursively walk the rtdb tree --
+            // getManageInfo's internal getDirSize recursively stats the massive files under rtdb (300MB+ possible),
+            // which among 5 concurrent workers saturates the libuv thread pool and delays setTimeout by 10s+.
+            // So rtdb size is still not computed here; it is fetched on demand by getManageInfo on the project detail page.
             const [pageCount, devTimed, almTimed, dbSize] = await Promise.all([
               this.getPageCount(project.projectId),
               timed(() => this.deviceService.getDeviceStats(project.projectId)),
               timed(() => this.alarmStatsService.getStatistics(project.projectId)),
-              // 仅 stat 单个 system.db 文件（O(1)），不递归 rtdb 目录，避免 libuv 线程池饱和
+              // Only stat the single system.db file (O(1)), never recursing the rtdb directory, avoiding libuv thread-pool saturation
               this.getFileSize(path.join(this.getProjectDir(project.projectId), 'db', 'system.db')),
             ]);
             phaseTimings = `pages=${Date.now() - t1}ms device=${devTimed.dur}ms alarm=${almTimed.dur}ms db=${dbSize}B`;
@@ -1414,7 +1414,7 @@ export class ProjectService {
       }
     };
 
-    // 限流并发执行
+    // Rate-limited concurrent execution
     this.logger.log(
       `[getOverview] starting ${CONCURRENCY} workers for ${projects.length} projects...`,
     );
@@ -1455,10 +1455,10 @@ export class ProjectService {
   }
 
   /**
-   * 检测数据库文件状态（三层检测：文件存在 → 大小 → SQLite 魔数）
+   * Detect the database file's state (three-layer detection: file exists -> size -> SQLite magic number)
    *
-   * 使用文件头魔数（"SQLite format 3\0"）检测，避免引入 better-sqlite3 原生依赖。
-   * 不检查表数量，因为空表数据库仍是合法 SQLite 文件，且 Phase 2 实体迁移后会自动建表。
+   * Uses the file-header magic number ("SQLite format 3\0") for detection, avoiding the better-sqlite3 native dependency.
+   * Does not check table counts, because a database with empty tables is still a valid SQLite file, and Phase 2 entity migration will auto-create tables.
    */
   private async checkDbFile(dbPath: string): Promise<ResourceStatus> {
     if (!fs.existsSync(dbPath)) {
@@ -1471,11 +1471,11 @@ export class ProjectService {
       return { status: 'error', path: dbPath };
     }
     if (stat.size < 100) {
-      // SQLite 文件太小（有效数据库至少包含文件头 100 字节）
+      // SQLite file too small (a valid database contains at least the 100-byte header)
       return { status: 'empty', path: dbPath, size: stat.size };
     }
     try {
-      // 读取 SQLite 文件头魔数："SQLite format 3\0"（16 字节）
+      // Read the SQLite file-header magic number: "SQLite format 3\0" (16 bytes)
       const fd = fs.openSync(dbPath, 'r');
       const header = Buffer.alloc(16);
       fs.readSync(fd, header, 0, 16, 0);
@@ -1487,18 +1487,18 @@ export class ProjectService {
       }
       return { status: 'error', path: dbPath, size: stat.size };
     } catch {
-      // 文件存在且大小合理，但无法以 'r' 打开读取魔数 ——
-      // 在 Windows 上，当 SQLite 文件被当前后端进程（better-sqlite3/TypeORM）
-      // 独占锁定时，fs.openSync 会抛出 EBUSY/EPERM。
-      // 由于该文件正是由本项目代码创建并维护的合法数据库，
-      // 此处将"已锁定但存在且非空"视为有效（status: 'ok'），
-      // 避免误报为损坏，导致诊断显示"初始化缺失资源"。
+      // File exists with a reasonable size, but cannot be opened with 'r' to read the magic number --
+      // on Windows, when the SQLite file is exclusively locked by the current backend process (better-sqlite3/TypeORM),
+      // fs.openSync throws EBUSY/EPERM.
+      // Since that file is exactly the valid database created and maintained by this project's code,
+      // "locked but existing and non-empty" is treated as valid here (status: 'ok'),
+      // avoiding a false corruption report that would make diagnostics show "initialize missing resources".
       return { status: 'ok', path: dbPath, size: stat.size };
     }
   }
 }
 
-/** 诊断结果类型 */
+/** Diagnostic result type */
 export interface DiagnoseResources {
   projectinfo?: ResourceStatus;
   dbDir?: ResourceStatus;
@@ -1524,7 +1524,7 @@ export interface DiagnoseResult {
   dbMode: string;
 }
 
-/** 聚合报警统计 */
+/** Aggregated alarm statistics */
 export interface AggregatedAlarmStats {
   total: number;
   active: number;
@@ -1533,21 +1533,21 @@ export interface AggregatedAlarmStats {
   shelved: number;
 }
 
-/** 系统概览统计 */
+/** System-overview statistics */
 export interface ProjectOverview {
-  /** 项目总数 */
+  /** Total project count */
   projectCount: number;
-  /** 所有项目数据库总大小（字节） */
+  /** Total size of all projects' databases (bytes) */
   totalDbSize: number;
-  /** 所有项目页面总数 */
+  /** Total page count across all projects */
   totalPageCount: number;
-  /** 聚合设备统计（所有项目汇总） */
+  /** Aggregated device statistics (summed over all projects) */
   deviceStats: DeviceStats;
-  /** 聚合报警统计（所有项目汇总） */
+  /** Aggregated alarm statistics (summed over all projects) */
   alarmStats: AggregatedAlarmStats;
 }
 
-/** 项目管理信息 */
+/** Project management info */
 export interface ManageInfo {
   projectName: string;
   tenantId: string;

@@ -3,12 +3,12 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 集成测试：Device → Collector → DataTag → Storage 端到端数据流
+ * Integration test: Device -> Collector -> DataTag -> Storage end-to-end data flow
  *
- * 测试策略：
- * - Mock 外部协议（Modbus、MQTT），让内部服务真实交互
- * - 使用 DataPointCacheService 作为存储层验证数据持久化
- * - 通过 EventBusService 验证数据变更事件的传播
+ * Test strategy:
+ * - Mock external protocols (Modbus, MQTT) while letting internal services interact for real
+ * - Use DataPointCacheService as the storage layer to verify data persistence
+ * - Verify data-change event propagation via EventBusService
  */
 
 jest.mock('typeorm', () => {
@@ -144,7 +144,7 @@ import { DataPointCacheService } from '../../packages/ss-core/src/cache/data-poi
 import { EventBusService } from '../../packages/ss-core/src/event-bus/event-bus.service';
 import { AlarmDebouncer } from '../../packages/ss-alarm/src/engine/alarm-debouncer';
 
-// ─── 模拟采集服务（内部模拟 Modbus / MQTT 协议交互） ───
+// ─── Mock collector service (simulates Modbus / MQTT protocol interaction internally) ───
 
 interface TagConfig {
   id: string;
@@ -173,7 +173,7 @@ interface TagValue {
 }
 
 /**
- * 模拟采集器 - 内部模拟 Modbus / MQTT 协议交互
+ * Mock collector - simulates Modbus / MQTT protocol interaction internally
  */
 class SimulatedCollector {
   private tagValues = new Map<string, TagValue>();
@@ -181,7 +181,7 @@ class SimulatedCollector {
 
   async connect(_deviceConfig: DeviceConfig): Promise<void> {
     this.connected = true;
-    // 模拟协议连接成功
+    // Simulate a successful protocol connection
   }
 
   async disconnect(): Promise<void> {
@@ -193,7 +193,7 @@ class SimulatedCollector {
   }
 
   /**
-   * 模拟从设备读取标签值（Modbus 风格）
+   * Mock reading tag values from a device (Modbus style)
    */
   async readTag(tag: TagConfig): Promise<TagValue> {
     const rawValue = this.generateRawValue(tag);
@@ -210,7 +210,7 @@ class SimulatedCollector {
   }
 
   /**
-   * 模拟批量读取标签值
+   * Mock batch reading of tag values
    */
   async readBatch(tags: TagConfig[]): Promise<TagValue[]> {
     const results: TagValue[] = [];
@@ -222,7 +222,7 @@ class SimulatedCollector {
   }
 
   /**
-   * 模拟接收 MQTT 消息
+   * Mock receiving MQTT messages
    */
   simulateMqttMessage(tag: TagConfig, value: number): TagValue {
     const result: TagValue = {
@@ -237,7 +237,7 @@ class SimulatedCollector {
   }
 
   /**
-   * 模拟数据质量劣化
+   * Mock data-quality degradation
    */
   simulateQualityDegradation(tagId: string): TagValue {
     const existing = this.tagValues.get(tagId);
@@ -253,7 +253,7 @@ class SimulatedCollector {
   }
 
   private generateRawValue(tag: TagConfig): number {
-    // 模拟真实设备返回的原始值
+    // Simulate the raw value returned by a real device
     const base = tag.address ? parseInt(tag.address, 10) : 0;
     return Math.round((Math.sin(Date.now() / 10000 + base) * 100 + 500) * 100) / 100;
   }
@@ -273,7 +273,7 @@ class SimulatedCollector {
   }
 }
 
-// ─── 测试套件 ───
+// ─── Test suite ───
 
 describe('Device → Collector → DataTag → Storage 集成测试', () => {
   let cacheService: DataPointCacheService;
@@ -403,7 +403,7 @@ describe('Device → Collector → DataTag → Storage 集成测试', () => {
       expect(typeof result.value).toBe('number');
       expect(typeof result.rawValue).toBe('number');
 
-      // 存储到缓存
+      // Store to cache
       await cacheService.set({
         tagId: result.tagId,
         value: result.value,
@@ -412,7 +412,7 @@ describe('Device → Collector → DataTag → Storage 集成测试', () => {
         cachedAt: Date.now(),
       });
 
-      // 验证缓存
+      // Verify the cache
       const cached = await cacheService.get('tag-temp-001');
       expect(cached).not.toBeNull();
       expect(cached!.value).toBe(result.value);
@@ -426,7 +426,7 @@ describe('Device → Collector → DataTag → Storage 集成测试', () => {
 
       expect(results.length).toBe(4);
 
-      // 批量存储到缓存
+      // Store to cache in batch
       const cachedPoints = results.map((r) => ({
         tagId: r.tagId,
         value: r.value,
@@ -436,7 +436,7 @@ describe('Device → Collector → DataTag → Storage 集成测试', () => {
       }));
       await cacheService.setMany(cachedPoints);
 
-      // 验证所有标签都已缓存
+      // Verify all tags are cached
       for (const tag of deviceConfig.tags) {
         const cached = await cacheService.get(tag.id);
         expect(cached).not.toBeNull();
@@ -460,7 +460,7 @@ describe('Device → Collector → DataTag → Storage 集成测试', () => {
           cachedAt: Date.now(),
         });
 
-        // 通过事件总线发布数据变更
+        // Publish data changes via the event bus
         eventBusService.emitDataPointChanged({
           tagId: result.tagId,
           deviceId: deviceConfig.id,
@@ -484,7 +484,7 @@ describe('Device → Collector → DataTag → Storage 集成测试', () => {
       const tempTag = deviceConfig.tags[0]; // scale: 0.1
       const result = await collector.readTag(tempTag);
 
-      // 变换后的值应等于 rawValue * 0.1
+      // The transformed value should equal rawValue * 0.1
       const expectedValue = parseFloat((result.rawValue * 0.1).toFixed(1));
       expect(result.value).toBe(expectedValue);
     });
@@ -509,7 +509,7 @@ describe('Device → Collector → DataTag → Storage 集成测试', () => {
       expect(result.value).toBe(25.5);
       expect(result.quality).toBe('good');
 
-      // 存储到缓存
+      // Store to cache
       await cacheService.set({
         tagId: result.tagId,
         value: result.value,
@@ -568,7 +568,7 @@ describe('Device → Collector → DataTag → Storage 集成测试', () => {
       await collector.connect(deviceConfig);
       await collector2.connect(mqttDeviceConfig);
 
-      // 从 Modbus 设备读取
+      // Read from the Modbus device
       const modbusResults = await collector.readBatch(deviceConfig.tags);
       await cacheService.setMany(
         modbusResults.map((r) => ({
@@ -580,7 +580,7 @@ describe('Device → Collector → DataTag → Storage 集成测试', () => {
         })),
       );
 
-      // 从 MQTT 设备读取
+      // Read from the MQTT device
       const mqttResult = collector2.simulateMqttMessage(mqttDeviceConfig.tags[0], 30.0);
       await cacheService.set({
         tagId: mqttResult.tagId,
@@ -590,7 +590,7 @@ describe('Device → Collector → DataTag → Storage 集成测试', () => {
         cachedAt: Date.now(),
       });
 
-      // 验证各设备数据独立
+      // Verify each device's data is independent
       const temp1 = await cacheService.get('tag-temp-001');
       const mqttTemp = await cacheService.get('tag-mqtt-temp-001');
 
@@ -598,7 +598,7 @@ describe('Device → Collector → DataTag → Storage 集成测试', () => {
       expect(mqttTemp).not.toBeNull();
       expect(temp1!.value).not.toBe(mqttTemp!.value);
 
-      // 验证缓存总数
+      // Verify the total cache count
       expect(cacheService.getSize().l1).toBe(5);
     });
 
@@ -618,7 +618,7 @@ describe('Device → Collector → DataTag → Storage 集成测试', () => {
         });
       }
 
-      // 模拟 MQTT 设备数据
+      // Simulate MQTT device data
       eventBusService.emitDataPointChanged({
         tagId: 'tag-mqtt-temp-001',
         deviceId: 'dev-mqtt-001',
@@ -628,7 +628,7 @@ describe('Device → Collector → DataTag → Storage 集成测试', () => {
         quality: 'good',
       });
 
-      // 验证事件按设备ID区分
+      // Verify events are distinguished by device ID
       const allCalls = mockEventEmitter.emit.mock.calls;
       const modbusCalls = allCalls.filter((call: any[]) => call[1]?.deviceId === 'dev-modbus-001');
       const mqttCalls = allCalls.filter((call: any[]) => call[1]?.deviceId === 'dev-mqtt-001');
@@ -651,20 +651,20 @@ describe('Device → Collector → DataTag → Storage 集成测试', () => {
       const tag = deviceConfig.tags[0];
       const result = await collector.readTag(tag);
 
-      // 即使断开也能读取模拟值（模拟闭路行为），但质量应标记
+      // Can still read the simulated value even when disconnected (simulated closed-loop behavior), but quality should be flagged
       expect(result.quality).toBe('good');
     });
 
     it('设备重连后数据流恢复正常', async () => {
-      // 初始连接
+      // Initial connection
       await collector.connect(deviceConfig);
       const initialResult = await collector.readTag(deviceConfig.tags[0]);
 
-      // 断开
+      // Disconnect
       await collector.disconnect();
       expect(collector.isConnected()).toBe(false);
 
-      // 重连
+      // Reconnect
       await collector.connect(deviceConfig);
       expect(collector.isConnected()).toBe(true);
 
@@ -677,7 +677,7 @@ describe('Device → Collector → DataTag → Storage 集成测试', () => {
     it('重连后缓存数据应正确更新', async () => {
       await collector.connect(deviceConfig);
 
-      // 第一次读取
+      // First read
       const r1 = await collector.readTag(deviceConfig.tags[0]);
       await cacheService.set({
         tagId: r1.tagId,
@@ -687,11 +687,11 @@ describe('Device → Collector → DataTag → Storage 集成测试', () => {
         cachedAt: Date.now(),
       });
 
-      // 断开重连
+      // Disconnect and reconnect
       await collector.disconnect();
       await collector.connect(deviceConfig);
 
-      // 第二次读取
+      // Second read
       const r2 = await collector.readTag(deviceConfig.tags[0]);
       await cacheService.set({
         tagId: r2.tagId,
@@ -715,7 +715,7 @@ describe('Device → Collector → DataTag → Storage 集成测试', () => {
     it('应检测到数据质量劣化并更新缓存', async () => {
       await collector.connect(deviceConfig);
 
-      // 正常读取
+      // Normal read
       const normalResult = await collector.readTag(deviceConfig.tags[0]);
       await cacheService.set({
         tagId: normalResult.tagId,
@@ -727,7 +727,7 @@ describe('Device → Collector → DataTag → Storage 集成测试', () => {
 
       expect(normalResult.quality).toBe('good');
 
-      // 模拟质量劣化
+      // Simulate quality degradation
       const degradedResult = collector.simulateQualityDegradation('tag-temp-001');
       await cacheService.set({
         tagId: degradedResult.tagId,
@@ -779,13 +779,13 @@ describe('Device → Collector → DataTag → Storage 集成测试', () => {
     it('告警条件评估应正确检测阈值越界', async () => {
       await collector.connect(deviceConfig);
 
-      // 模拟温度过高（> 80°C）
+      // Simulate excessive temperature (> 80 C)
       const highTemp = 85.5;
-      // 使用 alarm debouncer 的无消抖模式验证条件判断
+      // Use the alarm debouncer's no-debounce mode to verify the condition check
       const debounceCheck = alarmDebouncer.check('rule-temp', 'tag-temp-001', highTemp, 0);
       expect(debounceCheck).toBe('trigger');
 
-      // 模拟正常温度
+      // Simulate normal temperature
       const normalTemp = 45.0;
       const normalCheck = alarmDebouncer.check('rule-temp', 'tag-temp-001', normalTemp, 0);
       expect(normalCheck).toBe('trigger'); // 无消抖始终触发
@@ -795,15 +795,15 @@ describe('Device → Collector → DataTag → Storage 集成测试', () => {
       const ruleId = 'alarm-rule-001';
       const tagId = 'tag-temp-001';
 
-      // 第一次触发 → debouncing
+      // First trigger -> debouncing
       const r1 = alarmDebouncer.check(ruleId, tagId, 85.0, 5000);
       expect(r1).toBe('debouncing');
 
-      // 短时间内再次触发 → debouncing
+      // Trigger again within a short interval -> debouncing
       const r2 = alarmDebouncer.check(ruleId, tagId, 86.0, 5000);
       expect(r2).toBe('debouncing');
 
-      // 相同值 → no_change
+      // Same value -> no_change
       const r3 = alarmDebouncer.check(ruleId, tagId, 86.0, 5000);
       expect(r3).toBe('no_change');
 
@@ -812,7 +812,7 @@ describe('Device → Collector → DataTag → Storage 集成测试', () => {
   });
 
   // ========================================================================
-  // 边界情况与错误路径
+  // Edge cases and error paths
   // ========================================================================
   describe('边界情况与错误路径', () => {
     it('缓存应正确覆盖旧值', async () => {
@@ -824,7 +824,7 @@ describe('Device → Collector → DataTag → Storage 集成测试', () => {
         cachedAt: Date.now(),
       });
 
-      // 覆盖旧值
+      // Overwrite the old value
       await cacheService.set({
         tagId: 'tag-test-001',
         value: 200,

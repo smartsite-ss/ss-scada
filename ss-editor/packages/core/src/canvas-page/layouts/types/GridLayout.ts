@@ -5,7 +5,7 @@
 import { BaseLayout } from '../base/BaseLayout';
 import { IGraphic } from '@scada-editor/plugin-sdk';
 
-// 网格布局类
+// Grid layout class
 export class GridLayout extends BaseLayout {
   constructor() {
     super('grid', {
@@ -22,12 +22,12 @@ export class GridLayout extends BaseLayout {
     return cloned;
   }
 
-  // 应用布局
+  // Apply the layout
   applyLayout(graphics: IGraphic[]): void {
     this.arrange(graphics);
   }
 
-  // 排列图形
+  // Arrange the graphics
   arrange(graphics: IGraphic[]): void {
     const { rows, columns, spacing, padding } = this.properties;
     const totalItems = graphics.length;
@@ -44,13 +44,13 @@ export class GridLayout extends BaseLayout {
         const row = Math.floor(i / columns);
         const col = i % columns;
 
-        // 计算图形位置
+        // Compute graphic position
         const x =
           padding + col * (graphic.config.geometry.width + spacing);
         const y =
           padding + row * (graphic.config.geometry.height + spacing);
 
-        // 更新图形位置
+        // Update graphic position
         graphic.config.geometry.x = x;
         graphic.config.geometry.y = y;
       }

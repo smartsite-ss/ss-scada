@@ -17,14 +17,14 @@ interface ScheduledTask {
 }
 
 /**
- * ScriptSchedulerService — 基于 node-cron 的标准 Cron 调度器
+ * ScriptSchedulerService — standard cron scheduler based on node-cron
  *
- * Phase 6.1 升级：setInterval → cron.schedule
- * - 支持完整标准 Cron 表达式（分 时 日 月 周，含 间隔、范围、列表等）
- * - 通过 cron.validate() 校验表达式合法性
- * - 时区固定为 Asia/Shanghai（避免服务器时区差异导致调度偏移）
- * - 实现 OnModuleDestroy，模块销毁时停止所有任务
- * - getApiProvider(script.projectId) 传入项目上下文
+ * Phase 6.1 upgrade: setInterval → cron.schedule
+ * - Supports full standard cron expressions (minute hour day month weekday, incl. ranges, lists, steps)
+ * - Expression validity is validated via cron.validate()
+ * - Timezone is fixed to Asia/Shanghai (avoids scheduling drift from server timezone differences)
+ * - Implements OnModuleDestroy to stop all tasks on module destruction
+ * - getApiProvider(script.projectId) passes in the project context
  */
 @Injectable()
 export class ScriptSchedulerService implements OnModuleDestroy {
@@ -66,7 +66,7 @@ export class ScriptSchedulerService implements OnModuleDestroy {
       const config = script.triggerConfig ? JSON.parse(script.triggerConfig) : {};
       const cronExpression = config.cron || '*/5 * * * *';
 
-      // 使用 node-cron 校验表达式（标准 5 段格式：分 时 日 月 周）
+      // Validate the expression with node-cron (standard 5-field format: minute hour day month weekday)
       if (!cron.validate(cronExpression)) {
         this.logger.error(
           `Invalid cron expression for script ${script.name}: ${cronExpression}`,
@@ -74,7 +74,7 @@ export class ScriptSchedulerService implements OnModuleDestroy {
         return;
       }
 
-      // 先清理旧任务，再注册新任务
+      // Stop the old task first, then register the new one
       this.unscheduleScript(script.id);
 
       const task = cron.schedule(

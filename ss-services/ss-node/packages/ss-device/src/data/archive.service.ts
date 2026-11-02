@@ -12,8 +12,8 @@ import {
 
 export interface ArchiveConfig {
   enabled: boolean;
-  interval: number; // 归档间隔 (ms)
-  retentionDays: number; // 保留天数
+  interval: number; // archive interval (ms)
+  retentionDays: number; // retention days
   destination: 'influxdb' | 'sqlite' | 'both';
 }
 
@@ -26,15 +26,15 @@ export interface ArchivedDataPoint {
 }
 
 /**
- * ArchiveService — 数据归档与历史查询服务（3.17 实现）
+ * ArchiveService - data archive and history-query service (implemented in 3.17)
  *
- * 行为：
- * - archiveDataPoint(): InfluxWriteService 可用时 → 写入真实 InfluxDB；否则仅记录日志
- * - queryHistory(): DataQueryService 可用时 → 查询 HistoricalData 表；否则返回空数组
+ * Behavior:
+ * - archiveDataPoint(): when InfluxWriteService is available -> writes the real InfluxDB; otherwise only logs
+ * - queryHistory(): when DataQueryService is available -> queries the HistoricalData table; otherwise returns an empty array
  *
- * 使用字符串 Token 注入避免 ss-device 与 ss-storage-influx 的循环包依赖。
+ * String-Token injection avoids a circular package dependency between ss-device and ss-storage-influx.
  *
- * @see docs/ss-data/02-详细设计/03-设备管理/00-设计-设备管理.md §10
+ * @see device-management design doc section 10
  */
 @Injectable()
 export class ArchiveService {
@@ -66,11 +66,11 @@ export class ArchiveService {
   }
 
   /**
-   * 归档单个数据点（3.17 实现）
+   * Archive a single data point (implemented in 3.17)
    *
-   * 行为：
-   * - InfluxWriteService 可用时 → 调用 writePoint() 写入真实 InfluxDB
-   * - 不可用时 → 仅记录 debug 日志
+   * Behavior:
+   * - When InfluxWriteService is available -> calls writePoint() to write the real InfluxDB
+   * - When unavailable -> only logs at debug level
    */
   async archiveDataPoint(point: ArchivedDataPoint): Promise<void> {
     if (this.influxWriteService) {
@@ -100,11 +100,11 @@ export class ArchiveService {
   }
 
   /**
-   * 查询历史数据（3.17 实现）
+   * Query historical data (implemented in 3.17)
    *
-   * 行为：
-   * - DataQueryService 可用时 → 调用 queryTimeRange() 查询 HistoricalData 表
-   * - 不可用时 → 返回空数组
+   * Behavior:
+   * - When DataQueryService is available -> calls queryTimeRange() on the HistoricalData table
+   * - When unavailable -> returns an empty array
    */
   async queryHistory(
     tagId: string,

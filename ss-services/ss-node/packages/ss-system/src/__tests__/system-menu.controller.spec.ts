@@ -221,7 +221,7 @@ describe('SystemMenuController', () => {
     });
   });
 
-  // ──────── 单项 CRUD ────────
+  // ──────── Single-item CRUD ────────
   describe('POST /system/menu/item', () => {
     it('TC-CRUD-CTRL-001: should create a single menu item', async () => {
       mockMenuService.createMenuItem.mockResolvedValue({ id: 'new-item' });
@@ -301,7 +301,7 @@ describe('SystemMenuController', () => {
     });
   });
 
-  // ──────── 菜单国际化 ────────
+  // ──────── Menu i18n ────────
   describe('GET /system/menu/i18n', () => {
     it('TC-I18N-CTRL-001: should return i18n data for specific menu', async () => {
       const mockTable = { menuId: 'test', menuName: 'Test', category: 'system', items: [] };

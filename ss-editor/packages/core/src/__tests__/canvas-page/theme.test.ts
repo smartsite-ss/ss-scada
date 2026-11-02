@@ -93,29 +93,29 @@ describe('主题系统测试', () => {
     ];
 
     it.each(themes)('$name 主题应该包含所有必需的属性', ({ theme }) => {
-      // 验证主色调
+      // Verify the primary color
       expect(theme).toHaveProperty('primary');
       expect(theme).toHaveProperty('secondary');
-      expect(theme).toHaveProperty('accent'); // 验证背景色 expect(theme).toHaveProperty('background');
-      expect(theme).toHaveProperty('surface'); // 验证文本色 expect(theme).toHaveProperty('text');
-      expect(theme).toHaveProperty('textSecondary'); // 验证边框色 expect(theme).toHaveProperty('border');
-      expect(theme).toHaveProperty('borderLight'); // 验证按钮样式 expect(theme).toHaveProperty('button');
+      expect(theme).toHaveProperty('accent'); // verify background color expect(theme).toHaveProperty('background');
+      expect(theme).toHaveProperty('surface'); // verify text color expect(theme).toHaveProperty('text');
+      expect(theme).toHaveProperty('textSecondary'); // verify border color expect(theme).toHaveProperty('border');
+      expect(theme).toHaveProperty('borderLight'); // verify button styles expect(theme).toHaveProperty('button');
       expect(theme.button).toHaveProperty('background');
       expect(theme.button).toHaveProperty('hover');
       expect(theme.button).toHaveProperty('active');
-      expect(theme.button).toHaveProperty('text'); // 验证控制按钮样式 expect(theme).toHaveProperty('controlButton');
+      expect(theme.button).toHaveProperty('text'); // verify control button styles expect(theme).toHaveProperty('controlButton');
       expect(theme.controlButton).toHaveProperty('background');
       expect(theme.controlButton).toHaveProperty('hover');
       expect(theme.controlButton).toHaveProperty('active');
       expect(theme.controlButton).toHaveProperty('text');
-      expect(theme.controlButton).toHaveProperty('border'); // 验证状态色 expect(theme).toHaveProperty('status');
+      expect(theme.controlButton).toHaveProperty('border'); // verify status colors expect(theme).toHaveProperty('status');
       expect(theme.status).toHaveProperty('success');
       expect(theme.status).toHaveProperty('warning');
       expect(theme.status).toHaveProperty('error');
-      expect(theme.status).toHaveProperty('info'); // 验证阴影 expect(theme).toHaveProperty('shadow');
+      expect(theme.status).toHaveProperty('info'); // verify shadow expect(theme).toHaveProperty('shadow');
       expect(theme.shadow).toHaveProperty('small');
       expect(theme.shadow).toHaveProperty('medium');
-      expect(theme.shadow).toHaveProperty('large'); // 验证过渡 expect(theme).toHaveProperty('transition');
+      expect(theme.shadow).toHaveProperty('large'); // verify transition expect(theme).toHaveProperty('transition');
       expect(theme.transition).toHaveProperty('fast');
       expect(theme.transition).toHaveProperty('normal');
       expect(theme.transition).toHaveProperty('slow');
@@ -164,10 +164,10 @@ describe('主题系统测试', () => {
     it('应该能够在所有主题之间切换', () => {
       const themeNames = getThemeNames();
       
-      // 依次获取所有主题
+      // Fetch all themes one by one
       const obtainedThemes = themeNames.map(name => getTheme(name));
       
-      // 验证所有主题都是不同的
+      // Verify all themes are distinct
       const uniqueThemes = new Set(obtainedThemes.map(t => JSON.stringify(t)));
       expect(uniqueThemes.size).toBe(themeNames.length);
     });

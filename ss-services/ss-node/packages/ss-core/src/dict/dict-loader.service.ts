@@ -11,7 +11,7 @@ import { PathResolverService } from '../path/path-resolver.service';
 const DEFAULT_LOCALE = 'zh-CN';
 
 /**
- * 内嵌默认数据字典，在文件系统不存在字典文件时使用
+ * Embedded default data dictionaries, used when dictionary files are absent from the file system
  */
 const EMBEDDED_DICTS: Record<string, DictTable[]> = {
   'zh-CN': [
@@ -166,10 +166,10 @@ const EMBEDDED_DICTS: Record<string, DictTable[]> = {
 export class DictionaryLoaderService implements OnModuleInit {
   private readonly logger = new Logger(DictionaryLoaderService.name);
 
-  /** 内存缓存：locale -> dictId -> DictTable */
+  /** In-memory cache: locale -> dictId -> DictTable */
   private cache: Map<string, Map<string, DictTable>> = new Map();
 
-  /** 字典文件目录 */
+  /** Dictionary file directory */
   private readonly dictsBaseDir: string;
 
   constructor(private readonly pathResolver: PathResolverService) {
@@ -177,39 +177,39 @@ export class DictionaryLoaderService implements OnModuleInit {
   }
 
   /**
-   * 解析字典文件目录为绝对路径
+   * Resolve the dictionary file directory to an absolute path
    *
-   * 优先级：
-   * 1. DICTS_DIR 环境变量（与 ss-system 的 dictionary-loader.service.ts 保持一致）
-   * 2. RUN_DIR 环境变量 + ss/data/dicts（env 文件中定义的是 RUN_DIR）
-   * 3. SS_RUN_DIR 环境变量 + ss/data/dicts（向后兼容，旧变量名）
-   * 4. fallback：项目根 + ss-run/ss/data/dicts
+   * Priority:
+   * 1. DICTS_DIR env var (consistent with ss-system's dictionary-loader.service.ts)
+   * 2. RUN_DIR env var + ss/data/dicts (the env file defines RUN_DIR)
+   * 3. SS_RUN_DIR env var + ss/data/dicts (backward compatible, old var name)
+   * 4. fallback: project root + ss-run/ss/data/dicts
    *
-   * 相对路径基准：
-   * - dev 模式：__dirname 上溯 4 级 = ss-services/ss-node（本文件位于 packages/ss-core/dist/dict/）
-   * - 生产模式：process.cwd() = ss-run/ss/services/ss-node
+   * Relative-path base:
+   * - dev mode: __dirname up 4 levels = ss-services/ss-node (this file lives in packages/ss-core/dist/dict/)
+   * - production: process.cwd() = ss-run/ss/services/ss-node
    *
-   * 修复历史：之前用 process.cwd()/ss-run 作为 fallback，dev 模式下 cwd = apps/ss-node-server，
-   * 解析为 apps/ss-node-server/ss-run/ss/data/dicts（不存在），导致字典加载失败。
-   * 之前用 SS_RUN_DIR，但 env 文件中定义的是 RUN_DIR，导致总是 fallback。
+   * Fix history: previously used process.cwd()/ss-run as fallback; in dev mode cwd = apps/ss-node-server,
+   * resolving to apps/ss-node-server/ss-run/ss/data/dicts (nonexistent), causing dictionary loading to fail.
+   * Previously used SS_RUN_DIR, but the env file defines RUN_DIR, so it always fell back.
    */
   private resolveDictsDir(): string {
-    // 1. DICTS_DIR 环境变量（推荐方式，与 ss-system 一致）
+    // 1. DICTS_DIR env var (recommended, consistent with ss-system)
     const dictsDir = process.env.DICTS_DIR;
     if (dictsDir) {
       return this.resolvePath(dictsDir);
     }
-    // 2. RUN_DIR 环境变量 + ss/data/dicts（env 文件中定义的是 RUN_DIR）
+    // 2. RUN_DIR env var + ss/data/dicts (the env file defines RUN_DIR)
     const runDir = process.env.RUN_DIR;
     if (runDir) {
       return path.resolve(this.resolvePath(runDir), 'ss', 'data', 'dicts');
     }
-    // 3. SS_RUN_DIR 环境变量 + ss/data/dicts（向后兼容，旧变量名）
+    // 3. SS_RUN_DIR env var + ss/data/dicts (backward compatible, old var name)
     const ssRunDir = process.env.SS_RUN_DIR;
     if (ssRunDir) {
       return path.resolve(this.resolvePath(ssRunDir), 'ss', 'data', 'dicts');
     }
-    // 4. fallback：项目根 + ss-run/ss/data/dicts
+    // 4. fallback: project root + ss-run/ss/data/dicts
     return path.resolve(this.getProjectRoot(), 'ss-run', 'ss', 'data', 'dicts');
   }
 
@@ -228,8 +228,8 @@ export class DictionaryLoaderService implements OnModuleInit {
   }
 
   /**
-   * 加载所有字典数据
-   * 优先从文件系统加载，失败时回退到内嵌默认字典
+   * Load all dictionary data
+   * Prefers the file system; falls back to embedded default dictionaries on failure
    */
   loadDicts(): void {
     const newCache: Map<string, Map<string, DictTable>> = new Map();
@@ -253,7 +253,7 @@ export class DictionaryLoaderService implements OnModuleInit {
   }
 
   /**
-   * 从文件系统目录加载字典 JSON 文件
+   * Load dictionary JSON files from a file-system directory
    */
   private loadFromDirectory(cache: Map<string, Map<string, DictTable>>): boolean {
     try {
@@ -313,7 +313,7 @@ export class DictionaryLoaderService implements OnModuleInit {
   }
 
   /**
-   * 加载内嵌默认字典
+   * Load embedded default dictionaries
    */
   private loadEmbeddedDicts(cache: Map<string, Map<string, DictTable>>): void {
     for (const [locale, tables] of Object.entries(EMBEDDED_DICTS)) {
@@ -326,7 +326,7 @@ export class DictionaryLoaderService implements OnModuleInit {
   }
 
   /**
-   * 获取指定 locale 对应的字典 Map，自动回退到 zh-CN
+   * Get the dictionary Map for a locale, auto-falling back to zh-CN
    */
   private resolveLocaleMap(locale?: string): Map<string, DictTable> {
     const targetLocale = locale || DEFAULT_LOCALE;
@@ -334,7 +334,7 @@ export class DictionaryLoaderService implements OnModuleInit {
     const directMap = this.cache.get(targetLocale);
     if (directMap) return directMap;
 
-    // 回退到 zh-CN
+    // Fall back to zh-CN
     if (targetLocale !== DEFAULT_LOCALE) {
       const fallback = this.cache.get(DEFAULT_LOCALE);
       if (fallback) return fallback;
@@ -344,7 +344,7 @@ export class DictionaryLoaderService implements OnModuleInit {
   }
 
   /**
-   * 获取单个字典
+   * Get a single dictionary
    */
   getDict(dictId: string, locale?: string): DictTable | null {
     const localeMap = this.resolveLocaleMap(locale);
@@ -352,7 +352,7 @@ export class DictionaryLoaderService implements OnModuleInit {
   }
 
   /**
-   * 获取所有字典
+   * Get all dictionaries
    */
   getAllDicts(locale?: string): DictTable[] {
     const localeMap = this.resolveLocaleMap(locale);
@@ -360,7 +360,7 @@ export class DictionaryLoaderService implements OnModuleInit {
   }
 
   /**
-   * 获取分类树结构
+   * Get the category tree structure
    */
   getCategories(locale?: string): DictCategory[] {
     const localeMap = this.resolveLocaleMap(locale);
@@ -382,7 +382,7 @@ export class DictionaryLoaderService implements OnModuleInit {
   }
 
   /**
-   * 热重载所有字典
+   * Hot-reload all dictionaries
    */
   reloadDicts(): void {
     this.logger.log('Reloading dicts...');

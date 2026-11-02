@@ -318,7 +318,7 @@ describe('DataTagController', () => {
       };
       mockImportService.importJson.mockResolvedValue(importResult);
 
-      // deviceId 现为必填，禁止回退 default-device（见 07 §4.1 G5）
+      // deviceId is now required; falling back to default-device is forbidden (see 07 section 4.1 G5)
       const body = { tags: [{ name: 'tag1' }, { name: 'tag2' }], deviceId: 'device-001' };
       const result = await controller.importTags('project-001', body as any);
 

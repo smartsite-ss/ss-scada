@@ -5,19 +5,19 @@
 import { DataPoint } from '../interfaces/storage-adapter.interface';
 
 /**
- * Line Protocol 序列化器（v2 / v3 / TDengine 共用）。
+ * Line Protocol serializer (shared by v2 / v3 / TDengine).
  *
- * 报文格式（从 InfluxdbAdapterService.sendToInfluxDB 抽取）：
- * - measurement：tag_values
- * - tags：tagId / deviceId / projectId
- * - fields：value / value_text / quality / metadata(JSON)
- * - 时间戳：纳秒（precision=ns）
+ * Payload format (extracted from InfluxdbAdapterService.sendToInfluxDB):
+ * - measurement: tag_values
+ * - tags: tagId / deviceId / projectId
+ * - fields: value / value_text / quality / metadata(JSON)
+ * - timestamp: nanoseconds (precision=ns)
  *
- * value 类型约束（写入契约，§5.1/§8.3）：
- * Line Protocol 同一 field 在同一 shard 内只能保持单一类型。
- * 约定 value 以数值为主（number）；非数值（string / boolean）写入独立的
- * value_text field，禁止同 field 混写类型。TDengine 侧 value 固定 DOUBLE，
- * 强模式下混写类型直接报错，序列化层在此统一分流。
+ * value type constraint (write contract, §5.1/§8.3):
+ * Within the same shard, a Line Protocol field can only hold a single type.
+ * The convention is that value is numeric-first (number); non-numeric values (string / boolean) go to a separate
+ * value_text field, and mixing types in the same field is forbidden. On the TDengine side value is fixed DOUBLE;
+ * in strict mode mixed types error out directly, and the serialization layer splits the flow uniformly here.
  */
 
 function escapeTagValue(value: string): string {
@@ -28,13 +28,13 @@ function escapeFieldValue(value: string): string {
   return value.replace(/"/g, '\\"');
 }
 
-/** 序列化选项 */
+/** Serialization options */
 export interface SerializeLineProtocolOptions {
   /**
-   * 跳过字符串 field（value_text / metadata）。
-   * InfluxDB 3 Core 不支持字符串 field 值（P0 实测：写入报
-   * "No fields were provided"，且连累同行的数值 field 一并失败），
-   * v3 引擎写入时必须开启；v2 / TDengine 保持关闭。
+   * Skip string fields (value_text / metadata).
+   * InfluxDB 3 Core does not support string field values (P0 test: writes fail with
+   * "No fields were provided", and also fail the numeric fields on the same line),
+   * so it must be enabled when writing to the v3 engine; kept off for v2 / TDengine.
    */
   skipStringFields?: boolean;
 }
@@ -55,8 +55,8 @@ export function serializeLineProtocol(
         .map(([tagName, tagValue]) => `${tagName}=${escapeTagValue(String(tagValue))}`)
         .join(',');
 
-      // 类型分流：数值走 value，非数值走 value_text，避免同 field 混写类型；
-      // v3（skipStringFields）不支持字符串 field，非数值值直接跳过该 field
+      // Type split: numeric goes to value, non-numeric to value_text, avoiding mixed types in one field;
+      // v3 (skipStringFields) does not support string fields; non-numeric values skip that field entirely
       const fields: Record<string, number | string | boolean> = {};
       if (typeof point.value === 'number') {
         fields.value = point.value;

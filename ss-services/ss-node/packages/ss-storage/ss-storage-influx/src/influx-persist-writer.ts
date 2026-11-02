@@ -8,30 +8,30 @@ import { IPersistWriter, DataPoint, PersistWriterRegistry } from '@ss-node/ss-co
 import { InfluxWriteService } from './influx-write.service';
 
 /**
- * InfluxDB 时序数据 PersistWriter 实现
+ * InfluxDB time-series PersistWriter implementation
  *
- * 数据流：Pipeline DataPoint → write() → InfluxWriteService → InfluxDB tag_values measurement
+ * Data flow: Pipeline DataPoint → write() → InfluxWriteService → InfluxDB tag_values measurement
  *
- * 条件激活：当 HISTORICAL_DATA_BACKEND=influxdb（默认）时执行写入，
- * 否则 write/writeBatch/flush 均为 no-op（由 SqlitePersistWriter 接管）。
+ * Conditional activation: writes only when HISTORICAL_DATA_BACKEND=influxdb (default);
+ * otherwise write/writeBatch/flush are all no-ops (SqlitePersistWriter takes over).
  *
- * 注意：必须通过 onModuleInit 主动注册到 PersistWriterRegistry，
- * 否则 PersistStep 无法获取到本 Writer（NestJS 模块封装性限制）。
+ * Note: must actively register with PersistWriterRegistry via onModuleInit,
+ * otherwise PersistStep cannot obtain this Writer (NestJS module encapsulation limitation).
  *
- * 容错策略：InfluxDB 不可用（如未配置 TOKEN）时，InfluxWriteService 内部会捕获错误，
- * 不影响 Pipeline 主流程。
+ * Fault tolerance: when InfluxDB is unavailable (e.g. no TOKEN configured), InfluxWriteService catches the error internally,
+ * without affecting the Pipeline main flow.
  */
 @Injectable()
 export class InfluxPersistWriter implements IPersistWriter, OnModuleInit {
   readonly name = 'InfluxDB';
   /**
-   * InfluxDB 写入相对较慢（HTTP 协议、批量提交），声明为 best_effort
-   * 使 PersistStep 异步 fire-and-forget，不阻塞 Pipeline 周期。
-   * 失败时由 InfluxWriteService 内部缓冲重试。
+   * InfluxDB writes are relatively slow (HTTP protocol, batch commits); declaring best_effort
+   * makes PersistStep fire-and-forget asynchronously, without blocking the Pipeline cycle.
+   * On failure, InfluxWriteService buffers and retries internally.
    */
   readonly priority = 'best_effort' as const;
   private readonly logger = new Logger(InfluxPersistWriter.name);
-  /** 是否激活：仅当 HISTORICAL_DATA_BACKEND=influxdb（默认） */
+  /** Whether active: only when HISTORICAL_DATA_BACKEND=influxdb (default) */
   private readonly enabled: boolean;
 
   isActive(): boolean {
@@ -84,27 +84,27 @@ export class InfluxPersistWriter implements IPersistWriter, OnModuleInit {
 
     await this.influxWriteService.writePoints(influxPoints);
 
-    // 先缓冲数据（保证定时器持续运行以便探测恢复），再检查后端状态
+    // Buffer the data first (keeps the timer running for recovery probing), then check the backend status
     if (!this.influxWriteService.isBackendReachable) {
       throw new Error('InfluxDB backend is unreachable (previous flush failed)');
     }
   }
 
   /**
-   * 构造 InfluxDB fields，保留 value 的原始类型语义。
+   * Construct InfluxDB fields, preserving the original type semantics of value.
    *
-   * InfluxDB 支持 boolean/float/integer/unsigned/string 字段类型，
-   * 由值的 JS 类型自动推断：
+   * InfluxDB supports boolean/float/integer/unsigned/string field types,
+   * inferred automatically from the value's JS type:
    * - JS boolean → InfluxDB boolean
    * - JS number → InfluxDB float
    * - JS string → InfluxDB string
    *
-   * quality 始终以 string 存储。
+   * quality is always stored as a string.
    */
   private buildFields(point: DataPoint): Record<string, any> {
     const fields: Record<string, any> = { quality: point.quality };
     if (point.value === null || point.value === undefined) {
-      fields.value = 0; // InfluxDB 不支持 null 字段值，用 0 兜底
+      fields.value = 0; // InfluxDB does not support null field values; fall back to 0
     } else {
       fields.value = point.value;
     }

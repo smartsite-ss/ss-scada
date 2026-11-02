@@ -4,7 +4,7 @@
 
 import { IGraphic } from '@scada-editor/plugin-sdk';
 
-// ==================== 类型定义 ====================
+// ==================== Type Definitions ====================
 
 export interface GuideLine {
   id: string;
@@ -23,24 +23,24 @@ export interface AlignTarget {
 export type AlignType = 'left' | 'right' | 'top' | 'bottom' | 'centerX' | 'centerY';
 
 /**
- * 智能对齐管理器
- * 处理实时对齐检测、参考线管理、等分布局
+ * Smart align manager
+ * Handles real-time alignment detection, guide line management, and even distribution
  */
 export class SmartAlignManager {
   private guideLines: GuideLine[] = [];
-  private alignDistance: number = 8; // 默认对齐距离
+  private alignDistance: number = 8; // Default alignment distance
 
   /**
-   * 设置对齐距离
+   * Set the alignment distance
    */
   setAlignDistance(distance: number): void {
     this.alignDistance = distance;
   }
 
   /**
-   * 检测对齐目标（拖拽时实时调用）
-   * @param draggingGraphic - 正在拖拽的图形
-   * @param otherGraphics - 其他可参考的图形
+   * Detect alignment targets (called in real time during dragging)
+   * @param draggingGraphic - Graphic being dragged
+   * @param otherGraphics - Other referenceable graphics
    */
   detectAlignTargets(
     draggingGraphic: IGraphic,
@@ -54,7 +54,7 @@ export class SmartAlignManager {
     const centerX = x + width / 2;
     const centerY = y + height / 2;
 
-    // 1. 检测其他图形对齐
+    // 1. Detect alignment with other graphics
     for (const graphic of otherGraphics) {
       if (graphic.id === draggingGraphic.id) continue;
 
@@ -65,33 +65,33 @@ export class SmartAlignManager {
       const otherCenterX = ox + ow / 2;
       const otherCenterY = oy + oh / 2;
 
-      // 左对齐
+      // Align left
       if (Math.abs(x - ox) <= this.alignDistance) {
         targets.push({ type: 'left', value: ox, referenceGraphicId: graphic.id });
       }
-      // 右对齐
+      // Align right
       if (Math.abs(x + width - (ox + ow)) <= this.alignDistance) {
         targets.push({ type: 'right', value: ox + ow, referenceGraphicId: graphic.id });
       }
-      // 上对齐
+      // Align top
       if (Math.abs(y - oy) <= this.alignDistance) {
         targets.push({ type: 'top', value: oy, referenceGraphicId: graphic.id });
       }
-      // 下对齐
+      // Align bottom
       if (Math.abs(y + height - (oy + oh)) <= this.alignDistance) {
         targets.push({ type: 'bottom', value: oy + oh, referenceGraphicId: graphic.id });
       }
-      // 水平居中对齐
+      // Horizontal center alignment
       if (Math.abs(centerX - otherCenterX) <= this.alignDistance) {
         targets.push({ type: 'centerX', value: otherCenterX, referenceGraphicId: graphic.id });
       }
-      // 垂直居中对齐
+      // Vertical center alignment
       if (Math.abs(centerY - otherCenterY) <= this.alignDistance) {
         targets.push({ type: 'centerY', value: otherCenterY, referenceGraphicId: graphic.id });
       }
     }
 
-    // 2. 检测参考线对齐
+    // 2. Detect alignment with guide lines
     for (const line of this.guideLines) {
       if (line.direction === 'vertical') {
         if (Math.abs(x - line.position) <= this.alignDistance) {
@@ -120,9 +120,9 @@ export class SmartAlignManager {
   }
 
   /**
-   * 应用对齐
-   * @param graphic - 要对齐的图形
-   * @param target - 对齐目标
+   * Apply alignment
+   * @param graphic - Graphic to align
+   * @param target - Alignment target
    */
   applyAlignment(graphic: IGraphic, target: AlignTarget): void {
     const geometry = this.getSafeGeometry(graphic);
@@ -154,10 +154,10 @@ export class SmartAlignManager {
     }
   }
 
-  // ==================== 参考线管理 ====================
+  // ==================== Guide Line Management ====================
 
   /**
-   * 添加参考线
+   * Add a guide line
    */
   addGuideLine(position: number, direction: 'horizontal' | 'vertical'): string {
     const id = `guide-${Date.now()}-${Math.random()}`;
@@ -166,28 +166,28 @@ export class SmartAlignManager {
   }
 
   /**
-   * 移除参考线
+   * Remove a guide line
    */
   removeGuideLine(id: string): void {
     this.guideLines = this.guideLines.filter(line => line.id !== id);
   }
 
   /**
-   * 移除所有参考线
+   * Remove all guide lines
    */
   clearAllGuideLines(): void {
     this.guideLines = [];
   }
 
   /**
-   * 获取所有参考线
+   * Get all guide lines
    */
   getAllGuideLines(): GuideLine[] {
     return [...this.guideLines];
   }
 
   /**
-   * 更新参考线位置
+   * Update guide line position
    */
   updateGuideLinePosition(id: string, position: number): void {
     const line = this.guideLines.find(l => l.id === id);
@@ -197,35 +197,35 @@ export class SmartAlignManager {
   }
 
   /**
-   * 获取参考线
+   * Get a guide line
    */
   getGuideLine(id: string): GuideLine | null {
     return this.guideLines.find(l => l.id === id) || null;
   }
 
   /**
-   * 序列化为JSON
+   * Serialize to JSON
    */
   toJSON(): GuideLine[] {
     return [...this.guideLines];
   }
 
   /**
-   * 从JSON反序列化
+   * Deserialize from JSON
    */
   fromJSON(data: GuideLine[]): void {
     this.guideLines = data ? [...data] : [];
   }
 
-  // ==================== 增强对齐功能 ====================
+  // ==================== Enhanced Alignment Features ====================
 
   /**
-   * 等宽等高对齐
+   * Equal width and height alignment
    */
   makeSameSize(graphics: IGraphic[]): void {
     if (graphics.length < 2) return;
 
-    // 计算最大宽高
+    // Compute the maximum width and height
     let maxWidth = 0;
     let maxHeight = 0;
     for (const graphic of graphics) {
@@ -235,14 +235,14 @@ export class SmartAlignManager {
       maxHeight = Math.max(maxHeight, geo.height);
     }
 
-    // 统一应用
+    // Apply uniformly
     for (const graphic of graphics) {
       graphic.setSize(maxWidth, maxHeight);
     }
   }
 
   /**
-   * 等宽对齐
+   * Equal width alignment
    */
   makeSameWidth(graphics: IGraphic[]): void {
     if (graphics.length < 2) return;
@@ -261,7 +261,7 @@ export class SmartAlignManager {
   }
 
   /**
-   * 等高对齐
+   * Equal height alignment
    */
   makeSameHeight(graphics: IGraphic[]): void {
     if (graphics.length < 2) return;
@@ -280,7 +280,7 @@ export class SmartAlignManager {
   }
 
   /**
-   * 对齐到页面边缘
+   * Align to page edge
    */
   alignToPageEdge(
     graphics: IGraphic[],
@@ -311,7 +311,7 @@ export class SmartAlignManager {
   }
 
   /**
-   * 图形居中（相对于页面）
+   * Center graphic (relative to page)
    */
   centerOnPage(
     graphics: IGraphic[],
@@ -339,7 +339,7 @@ export class SmartAlignManager {
     }
   }
 
-  // ==================== 内部辅助方法 ====================
+  // ==================== Internal Helper Methods ====================
 
   private getSafeGeometry(graphic: IGraphic): any {
     if (!graphic || !graphic.config) {

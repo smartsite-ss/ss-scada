@@ -8,10 +8,10 @@ import { Type, Transform } from 'class-transformer';
 import { EventLogStatus } from './entities/event-log.entity';
 
 /**
- * 事件日志查询 DTO — 支持 REST API 分页查询 + 多维筛选
+ * Event-log query DTO - supports REST API pagination + multi-dimension filtering
  *
- * 参考 PaginationDto 模式，使用 class-validator 装饰器。
- * 所有字段均为可选，支持灵活组合筛选。
+ * Follows the PaginationDto pattern, using class-validator decorators.
+ * All fields are optional, supporting flexible filter combinations.
  */
 export class EventLogQueryDto {
   @ApiPropertyOptional({ description: '项目 ID（系统级事件为 null）', example: 'demo-project' })

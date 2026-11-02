@@ -14,25 +14,25 @@ import { EventLogService } from '../event-log/event-log.service';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const sqlite3 = require('sqlite3');
 
-/** SQL 初始化脚本文件名 */
+/** SQL init-script file name */
 const INIT_SCRIPT = 'init-system-db.sql';
 
 /**
- * 连接池配置
+ * Connection-pool config
  */
 export interface PoolConfig {
-  /** 最大连接数，默认 10 */
+  /** Max connections, default 10 */
   maxConnections: number;
-  /** 空闲连接超时时间（ms），默认 30000 */
+  /** Idle-connection timeout (ms), default 30000 */
   idleTimeoutMs: number;
-  /** 连接健康检查间隔（ms），默认 60000 */
+  /** Connection health-check interval (ms), default 60000 */
   healthCheckIntervalMs: number;
-  /** 获取连接超时时间（ms），默认 5000 */
+  /** Connection-acquisition timeout (ms), default 5000 */
   acquireTimeoutMs: number;
 }
 
 /**
- * 连接池统计信息
+ * Connection-pool statistics
  */
 export interface PoolStats {
   activeConnections: number;
@@ -45,7 +45,7 @@ export interface PoolStats {
   lastHealthCheck: Date | null;
 }
 
-/** 默认连接池配置 */
+/** Default connection-pool config */
 const DEFAULT_POOL_CONFIG: PoolConfig = {
   maxConnections: 10,
   idleTimeoutMs: 30000,
@@ -53,56 +53,56 @@ const DEFAULT_POOL_CONFIG: PoolConfig = {
   acquireTimeoutMs: 5000,
 };
 
-/** SQLite 忙等待超时（ms），防止并发访问时 SQLITE_BUSY 导致死锁 */
+/** SQLite busy-wait timeout (ms), preventing SQLITE_BUSY deadlocks under concurrent access */
 const BUSY_TIMEOUT = 10000;
 
 /**
- * 项目数据库模式
- * - isolated: 每个项目拥有独立的 system.db（默认）
- * - unified: 所有项目共用全局 ss-data.db
+ * Project-database mode
+ * - isolated: each project has its own system.db (default)
+ * - unified: all projects share the global ss-data.db
  */
 export type ProjectDbMode = 'unified' | 'isolated';
 
 /**
- * 项目数据库连接信息
+ * Project-database connection info
  */
 export interface ProjectDbConnection {
-  /** 系统配置数据库（设备、标签、报警规则、脚本、告警记录等） */
+  /** System-config database (devices, tags, alarm rules, scripts, alarm records, etc.) */
   system: DataSource;
 }
 
 /**
- * 项目级数据库连接管理服务（全局单例）
+ * Project-level database-connection management service (global singleton)
  *
- * 职责：
- * 1. 管理按项目隔离的 TypeORM DataSource 实例（system.db）
- * 2. 提供懒加载能力：首次访问时自动创建连接
- * 3. 支持实体类动态注册：各业务包（ss-device 等）在启动时注册自己的实体类
- * 4. 监听 project.beforeDelete 事件，自动关闭对应连接
- * 5. 提供连接池配置、统计、健康检查
+ * Responsibilities:
+ * 1. Manage per-project isolated TypeORM DataSource instances (system.db)
+ * 2. Provide lazy loading: connections are created automatically on first access
+ * 3. Support dynamic entity registration: business packages (ss-device etc.) register their entities at startup
+ * 4. Listen for the project.beforeDelete event and auto-close the corresponding connection
+ * 5. Provide connection-pool config, statistics, health checks
  *
- * 使用方式：
- * - ss-device 在 DeviceModule.onModuleInit() 中调用 registerSystemEntities([Device, ...])
- * - ss-project 在创建项目时调用 initProjectDatabases(tid)
- * - 业务代码调用 getSystemDb(projectId) 获取 DataSource（自动懒加载）
+ * Usage:
+ * - ss-device calls registerSystemEntities([Device, ...]) in DeviceModule.onModuleInit()
+ * - ss-project calls initProjectDatabases(tid) when creating a project
+ * - business code calls getSystemDb(projectId) to get the DataSource (lazy-loaded automatically)
  */
 @Injectable()
 export class ProjectDatabaseService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(ProjectDatabaseService.name);
 
-  /** 项目名 → 数据库连接池映射 */
+  /** Project-name -> database connection-pool map */
   private readonly connections = new Map<string, ProjectDbConnection>();
 
-  /** 正在加载中的项目连接 Promise（防并发重复初始化） */
+  /** In-flight project-connection Promises (prevents concurrent duplicate initialization) */
   private readonly pendingLoads = new Map<string, Promise<ProjectDbConnection>>();
 
-  /** 已注册的实体类 */
+  /** Registered entity classes */
   private registeredEntities: any[] = [];
 
-  /** 连接池配置 */
+  /** Connection-pool config */
   private poolConfig: PoolConfig;
 
-  /** 连接池统计 */
+  /** Connection-pool statistics */
   private poolStats: PoolStats = {
     activeConnections: 0,
     idleConnections: 0,
@@ -114,7 +114,7 @@ export class ProjectDatabaseService implements OnModuleInit, OnModuleDestroy {
     lastHealthCheck: null,
   };
 
-  /** 健康检查定时器 */
+  /** Health-check timer */
   private healthCheckTimer: ReturnType<typeof setInterval> | null = null;
 
   constructor(
@@ -127,11 +127,11 @@ export class ProjectDatabaseService implements OnModuleInit, OnModuleDestroy {
   }
 
   // ============================================================
-  // 生命周期
+  // Lifecycle
   // ============================================================
 
   onModuleInit(): void {
-    // wrap helper：通过 EventLogService.wrapSubscriber 自动追踪处理结果和业务效果
+    // wrap helper: auto-trace handling result and business effect via EventLogService.wrapSubscriber
     const wrap = <T extends any[]>(
       eventType: string,
       handler: (...args: T) => Promise<Record<string, any> | void>,
@@ -145,8 +145,8 @@ export class ProjectDatabaseService implements OnModuleInit, OnModuleDestroy {
       };
     };
 
-    // 监听项目删除事件，提前关闭该项目的 DataSource
-    // 防止项目目录被删除时 SQLite 文件仍被占用（EBUSY/EPERM）
+    // Listen for the project-delete event and close that project's DataSource early
+    // Prevents the SQLite file from still being held (EBUSY/EPERM) when the project directory is deleted
     this.eventBus.on(
       'project.beforeDelete',
       wrap('project.beforeDelete', async (payload: { projectId: string; tenantId?: string }) => {
@@ -170,19 +170,19 @@ export class ProjectDatabaseService implements OnModuleInit, OnModuleDestroy {
   }
 
   // ============================================================
-  // 实体类注册
+  // Entity registration
   // ============================================================
 
   /**
-   * 注册 system.db 实体类
+   * Register system.db entity classes
    *
-   * 各业务包（如 ss-device）在模块初始化时调用此方法注册自己的实体类。
-   * 注册的实体类将用于：
-   * - initProjectDatabases() 时的 TypeORM synchronize 建表
-   * - loadProjectDatabases() 时的 DataSource 创建
-   * - getSystemDb() 懒加载时的自动创建
+   * Business packages (e.g. ss-device) call this method during module init to register their entities.
+   * Registered entities are used for:
+   * - TypeORM synchronize table creation in initProjectDatabases()
+   * - DataSource creation in loadProjectDatabases()
+   * - auto-creation in getSystemDb() lazy loading
    *
-   * @param entities 实体类数组
+   * @param entities array of entity classes
    */
   registerSystemEntities(entities: any[]): void {
     for (const entity of entities) {
@@ -196,12 +196,12 @@ export class ProjectDatabaseService implements OnModuleInit, OnModuleDestroy {
   }
 
   // ============================================================
-  // 模式与路径
+  // Mode and paths
   // ============================================================
 
   /**
-   * 获取当前数据库模式
-   * 默认 isolated（每个项目独立数据库），可通过 PROJECT_DB_MODE=unified 回退到共用全局库
+   * Get the current database mode
+   * Defaults to isolated (each project has its own database); PROJECT_DB_MODE=unified falls back to the shared global DB
    */
   getMode(): ProjectDbMode {
     const mode = this.configService.get<string>('PROJECT_DB_MODE') || 'isolated';
@@ -213,24 +213,24 @@ export class ProjectDatabaseService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 获取项目数据库目录路径
+   * Get the project-database directory path
    *
-   * 相对路径基准：
-   * - dev 模式：__dirname 上溯 4 级 = ss-services/ss-node
-   *   （本文件编译后位于 packages/ss-core/dist/database/，4 级上溯：
-   *    dist/database/ → dist/ → ss-core/ → packages/ → ss-node/）
-   * - 生产模式：process.cwd() = ss-run/ss/services/ss-node（.env 中相对路径基准）
+   * Relative-path base:
+   * - dev mode: __dirname up 4 levels = ss-services/ss-node
+   *   (after compilation this file lives in packages/ss-core/dist/database/, 4 levels up:
+   *    dist/database/ -> dist/ -> ss-core/ -> packages/ -> ss-node/)
+   * - production: process.cwd() = ss-run/ss/services/ss-node (relative-path base in .env)
    *
-   * 修复历史：
-   * - v1.4 之前用 process.cwd()，dev 模式下 cwd = apps/ss-node-server，
-   *   导致 .env.dev 中 ../../ss-run/ss/data/projects 被解析到错误路径。
-   * - v1.5 之前用 3 级上溯，但本文件编译后位于 packages/ss-core/dist/database/，
-   *   3 级上溯只能到 packages/（错误），导致 PROJECTS_DIR=../../ss-run/ss/data/projects
-   *   被解析为 ss-services/ss-run/ss/data/projects（多了一级 ss-services），
-   *   在错误路径下创建空 system.db，正确路径下的真实 system.db 不被加载。
-   * - 现在与 collector-bootstrap.service.ts resolveProjectsDir()（同样位于 dist/子目录/）
-   *   保持一致，使用 4 级上溯。注意 project.service.ts 位于 packages/ss-project/dist/（无子目录），
-   *   3 级上溯即可，两者层级不同，不可统一。
+   * Fix history:
+   * - Before v1.4 used process.cwd(); in dev mode cwd = apps/ss-node-server,
+   *   so ../../ss-run/ss/data/projects in .env.dev resolved to the wrong path.
+   * - Before v1.5 used 3-level upward traversal, but after compilation this file lives in packages/ss-core/dist/database/,
+   *   and 3 levels only reaches packages/ (wrong), so PROJECTS_DIR=../../ss-run/ss/data/projects
+   *   resolved to ss-services/ss-run/ss/data/projects (one extra ss-services level),
+   *   creating an empty system.db at the wrong path while the real system.db at the correct path was never loaded.
+   * - Now consistent with collector-bootstrap.service.ts resolveProjectsDir() (also under dist/<subdir>/),
+   *   using 4-level upward traversal. Note project.service.ts lives in packages/ss-project/dist/ (no subdir),
+   *   where 3 levels suffices; the two levels differ and cannot be unified.
    */
   getProjectDbDir(projectId: string): string {
     const projectsDir = this.configService.get<string>('PROJECTS_DIR') || './data/projects';
@@ -239,18 +239,18 @@ export class ProjectDatabaseService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 获取 SQL 初始化脚本目录（绝对路径）
+   * Get the SQL init-script directory (absolute path)
    *
-   * 通过环境变量 PROJECT_DB_INIT_DIR 配置，默认 ./data/init。
+   * Configured via the PROJECT_DB_INIT_DIR env var, default ./data/init.
    *
-   * 相对路径基准：
-   * - 生产部署下，服务从 `ss-run/ss/services/ss-node` 启动（process.cwd()），
-   *   .env 中的 `PROJECT_DB_INIT_DIR=../../data/init` 即相对于该目录解析为
-   *   `ss-run/ss/data/init`。
-   * - 不能使用 `path.resolve(__dirname, '..', '..', '..', '..')` 作为基准，
-   *   因为本文件编译后位于 `node_modules/@ss-node/ss-core/dist/database/`，
-   *   向上 4 级得到 `node_modules/`，再解析 `../../data/init` 会得到
-   *   `ss-run/ss/services/data/init`（错误路径，多了一级 services）。
+   * Relative-path base:
+   * - In production the service starts from `ss-run/ss/services/ss-node` (process.cwd()),
+   *   so `PROJECT_DB_INIT_DIR=../../data/init` in .env resolves relative to that directory into
+   *   `ss-run/ss/data/init`.
+   * - Do NOT use `path.resolve(__dirname, '..', '..', '..', '..')` as the base:
+   *   after compilation this file lives in `node_modules/@ss-node/ss-core/dist/database/`,
+   *   and 4 levels up gives `node_modules/`, so resolving `../../data/init` yields
+   *   `ss-run/ss/services/data/init` (wrong path, one extra services level).
    */
   private getInitDir(): string {
     const initDir = this.configService.get<string>('PROJECT_DB_INIT_DIR') || './data/init';
@@ -258,22 +258,22 @@ export class ProjectDatabaseService implements OnModuleInit, OnModuleDestroy {
   }
 
   // ============================================================
-  // 初始化
+  // Initialization
   // ============================================================
 
   /**
-   * 初始化项目的 system.db
+   * Initialize a project's system.db
    *
-   * 实体类来源优先级：
-   * 1. 显式传入的 entities 参数（向后兼容）
-   * 2. 通过 registerSystemEntities() 注册的实体类
+   * Entity source priority:
+   * 1. Explicitly passed entities param (backward compatible)
+   * 2. Entity classes registered via registerSystemEntities()
    *
-   * 建表策略：
-   * - 有实体：TypeORM DataSource + synchronize 自动建表
-   * - 无实体：读取 SQL 脚本通过原生 sqlite3 执行初始化
+   * Table-creation strategy:
+   * - With entities: TypeORM DataSource + synchronize auto-creates tables
+   * - Without entities: SQL scripts executed via native sqlite3
    *
-   * @param projectId    项目名称（tid）
-   * @param entities       system.db 实体类数组（可选，默认使用已注册的）
+   * @param projectId    project name (tid)
+   * @param entities       system.db entity-class array (optional; defaults to registered ones)
    */
   async initProjectDatabases(projectId: string, entities?: any[]): Promise<void> {
     const sysEntities = entities ?? this.registeredEntities;
@@ -283,7 +283,7 @@ export class ProjectDatabaseService implements OnModuleInit, OnModuleDestroy {
       fs.mkdirSync(dbDir, { recursive: true });
     }
 
-    // 初始化 system.db
+    // Initialize system.db
     const systemDbPath = path.join(dbDir, 'system.db');
     if (!fs.existsSync(systemDbPath)) {
       await this.initSingleDb(systemDbPath, INIT_SCRIPT, sysEntities, projectId);
@@ -291,9 +291,9 @@ export class ProjectDatabaseService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 初始化单个数据库文件
-   * - 有实体：TypeORM DataSource + synchronize 自动建表
-   * - 无实体：读取 SQL 脚本通过原生 sqlite3 执行初始化
+   * Initialize a single database file
+   * - With entities: TypeORM DataSource + synchronize auto-creates tables
+   * - Without entities: SQL scripts executed via native sqlite3
    */
   private async initSingleDb(
     dbPath: string,
@@ -304,7 +304,7 @@ export class ProjectDatabaseService implements OnModuleInit, OnModuleDestroy {
     const hasEntities = entities && entities.length > 0;
 
     if (hasEntities) {
-      // TypeORM 建表
+      // TypeORM table creation
       const ds = new DataSource({
         type: 'sqlite',
         database: dbPath,
@@ -316,7 +316,7 @@ export class ProjectDatabaseService implements OnModuleInit, OnModuleDestroy {
       await ds.destroy();
       this.logger.log(`[${projectId}] ${path.basename(dbPath)} initialized with TypeORM entities`);
     } else {
-      // SQL 脚本初始化
+      // SQL-script initialization
       await this.executeInitScript(dbPath, scriptName);
       this.logger.log(
         `[${projectId}] ${path.basename(dbPath)} initialized via SQL script: ${scriptName}`,
@@ -325,7 +325,7 @@ export class ProjectDatabaseService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 读取 SQL 初始化脚本并通过原生 sqlite3 逐条执行
+   * Read the SQL init script and execute statements one by one via native sqlite3
    */
   private executeInitScript(dbPath: string, scriptName: string): Promise<void> {
     const initDir = this.getInitDir();
@@ -401,7 +401,7 @@ export class ProjectDatabaseService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 将 SQL 脚本拆分为逐条语句
+   * Split an SQL script into individual statements
    */
   private splitSqlStatements(sql: string): string[] {
     const lines = sql.split('\n');
@@ -427,28 +427,28 @@ export class ProjectDatabaseService implements OnModuleInit, OnModuleDestroy {
   }
 
   // ============================================================
-  // 连接管理
+  // Connection management
   // ============================================================
 
   /**
-   * 加载项目数据库连接（建立 DataSource）
-   * 如果连接已存在则直接返回，否则创建新连接
+   * Load a project-database connection (build the DataSource)
+   * Returns directly if the connection exists, otherwise creates a new one
    *
-   * 实体类来源优先级：
-   * 1. 显式传入的 entities 参数（向后兼容）
-   * 2. 通过 registerSystemEntities() 注册的实体类
+   * Entity source priority:
+   * 1. Explicitly passed entities param (backward compatible)
+   * 2. Entity classes registered via registerSystemEntities()
    *
-   * @param projectId     项目名称
-   * @param entities        system.db 实体类数组（可选）
+   * @param projectId     project name
+   * @param entities        system.db entity-class array (optional)
    */
   async loadProjectDatabases(projectId: string, entities?: any[]): Promise<ProjectDbConnection> {
-    // 已加载则直接返回
+    // Return directly if already loaded
     const existing = this.connections.get(projectId);
     if (existing) {
       return existing;
     }
 
-    // 并发初始化保护：同一项目正在加载中，等待已有 Promise
+    // Concurrency guard: the same project is loading; wait for the existing Promise
     const pending = this.pendingLoads.get(projectId);
     if (pending) {
       this.logger.debug(`[${projectId}] Waiting for in-progress database load...`);
@@ -474,17 +474,17 @@ export class ProjectDatabaseService implements OnModuleInit, OnModuleDestroy {
     const dbDir = this.getProjectDbDir(projectId);
     const systemDbPath = path.join(dbDir, 'system.db');
 
-    // 如果文件不存在，先初始化
+    // If the file does not exist, initialize first
     if (!fs.existsSync(systemDbPath)) {
       await this.initProjectDatabases(projectId, sysEntities);
     }
 
-    // 数据迁移：ProjectScopedEntity 引入后，已有记录的 projectId 可能为 NULL。
-    // 必须在 TypeORM synchronize 之前执行，否则 synchronize 重建表时，
-    // 临时表复制数据会遇到 NOT NULL constraint failed 错误。
+    // Data migration: after ProjectScopedEntity was introduced, existing records may have NULL projectId.
+    // Must run before TypeORM synchronize, otherwise when synchronize rebuilds tables,
+    // temporary-table data copying hits a NOT NULL constraint failed error.
     await this.migrateNullProjectIdsPreSync(systemDbPath, projectId);
-    // 策略 B：重命名 dev_devices 列 tid→device_code / name→device_name
-    // 必须在 TypeORM synchronize 之前执行，否则 synchronize 会删除旧列导致数据丢失
+    // Strategy B: rename dev_devices columns tid->device_code / name->device_name
+    // Must run before TypeORM synchronize, otherwise synchronize drops the old columns causing data loss
     await this.renameDeviceColumnsPreSync(systemDbPath, projectId);
 
     const systemDs = new DataSource({
@@ -511,17 +511,17 @@ export class ProjectDatabaseService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 启用 SQLite WAL 模式 + 性能优化 PRAGMAs
+   * Enable SQLite WAL mode + performance PRAGMAs
    *
-   * WAL（Write-Ahead Logging）模式允许读写并发：
-   * - 读操作不阻塞写操作
-   * - 写操作不阻塞读操作（大部分情况）
-   * - 相比默认的 DELETE 模式，可消除绝大多数 SQLITE_BUSY 错误
+   * WAL (Write-Ahead Logging) mode allows read/write concurrency:
+   * - reads do not block writes
+   * - writes do not block reads (in most cases)
+   * - compared with the default DELETE mode, eliminates the vast majority of SQLITE_BUSY errors
    *
-   * 性能 PRAGMAs：
-   * - synchronous=NORMAL：降低 fsync 频率，提升写入吞吐
-   * - cache_size=-64000：64MB 页面缓存
-   * - temp_store=MEMORY：临时表/索引存内存
+   * Performance PRAGMAs:
+   * - synchronous=NORMAL: reduces fsync frequency, improves write throughput
+   * - cache_size=-64000: 64MB page cache
+   * - temp_store=MEMORY: temp tables/indexes in memory
    */
   private async enableWalMode(ds: DataSource, dbPath: string, projectId: string): Promise<void> {
     try {
@@ -538,13 +538,13 @@ export class ProjectDatabaseService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 获取项目的 system.db DataSource（懒加载，自动创建）
+   * Get a project's system.db DataSource (lazy-loaded, auto-created)
    *
-   * 如果连接不存在，会自动调用 loadProjectDatabases() 创建。
-   * 使用已注册的实体类。
+   * If the connection does not exist, loadProjectDatabases() is called automatically.
+   * Uses registered entity classes.
    *
-   * @param projectId 项目名称
-   * @returns system.db 的 DataSource
+   * @param projectId project name
+   * @returns the system.db DataSource
    */
   async getSystemDb(projectId: string): Promise<DataSource> {
     const existing = this.connections.get(projectId);
@@ -556,24 +556,24 @@ export class ProjectDatabaseService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 获取已加载的 system.db DataSource（同步，不自动创建）
+   * Get a loaded system.db DataSource (synchronous, no auto-creation)
    *
-   * @returns 连接对象或 undefined（未加载时）
+   * @returns the connection or undefined (when not loaded)
    */
   getLoadedSystemDb(projectId: string): DataSource | undefined {
     return this.connections.get(projectId)?.system;
   }
 
   /**
-   * 获取已加载的项目数据库连接（同步，不自动创建）
-   * @returns 连接对象或 undefined（未加载时）
+   * Get a loaded project-database connection (synchronous, no auto-creation)
+   * @returns the connection or undefined (when not loaded)
    */
   getConnection(projectId: string): ProjectDbConnection | undefined {
     return this.connections.get(projectId);
   }
 
   /**
-   * 卸载项目数据库连接（关闭 DataSource）
+   * Unload a project-database connection (close the DataSource)
    */
   async unloadProjectDatabases(projectId: string): Promise<void> {
     const connection = this.connections.get(projectId);
@@ -598,8 +598,8 @@ export class ProjectDatabaseService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 删除项目数据库文件（物理删除 db/ 目录）
-   * 先关闭连接，再删除文件
+   * Delete a project-database file (physically delete the db/ directory)
+   * Closes the connection first, then deletes the files
    */
   async deleteProjectDatabases(projectId: string): Promise<void> {
     await this.unloadProjectDatabases(projectId);
@@ -612,7 +612,7 @@ export class ProjectDatabaseService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 检查项目数据库文件是否存在
+   * Check whether a project-database file exists
    */
   hasDatabaseFiles(projectId: string): boolean {
     const dbDir = this.getProjectDbDir(projectId);
@@ -621,7 +621,7 @@ export class ProjectDatabaseService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * VACUUM 压缩项目数据库
+   * VACUUM-compact a project database
    */
   async vacuumProjectDatabases(projectId: string): Promise<void> {
     const connection = this.connections.get(projectId);
@@ -636,24 +636,24 @@ export class ProjectDatabaseService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 获取当前已加载的项目数量
+   * Get the number of currently loaded projects
    */
   get loadedProjectCount(): number {
     return this.connections.size;
   }
 
   /**
-   * 获取当前已加载的项目名列表（用于跨项目定时扫描等场景）
+   * Get the list of currently loaded project names (for cross-project scheduled scans etc.)
    *
-   * 返回已建立 DataSource 的项目名数组（快照副本）。
-   * 在 isolated 模式下，业务定时任务可据此遍历各项目库执行扫描。
+   * Returns an array (snapshot copy) of project names with established DataSources.
+   * In isolated mode, business scheduled tasks can iterate each project DB to run scans.
    */
   getLoadedProjectNames(): string[] {
     return Array.from(this.connections.keys());
   }
 
   // ============================================================
-  // 连接池管理
+  // Connection-pool management
   // ============================================================
 
   private loadPoolConfig(): PoolConfig {
@@ -757,30 +757,30 @@ export class ProjectDatabaseService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 数据迁移（PreSync）：在 TypeORM synchronize 之前，用临时 DataSource 迁移 NULL projectId。
+   * Data migration (PreSync): before TypeORM synchronize, migrate NULL projectId using a temporary DataSource.
    *
-   * TypeORM 的 synchronize 在检测到 schema 变更时会创建临时表来重建，
-   * 如果现有记录的 projectId 为 NULL，临时表的 NOT NULL 约束会导致 SQLITE_CONSTRAINT 错误。
-   * 因此必须在 synchronize 之前完成迁移。
+   * TypeORM's synchronize creates a temporary table to rebuild when it detects a schema change;
+   * if existing records have NULL projectId, the temporary table's NOT NULL constraint raises a SQLITE_CONSTRAINT error.
+   * So the migration must complete before synchronize.
    *
-   * 处理两种场景：
-   * 1. 表已有 projectId 列但值为 NULL → UPDATE
-   * 2. 表完全没有 projectId 列 → ALTER TABLE ADD COLUMN + UPDATE
+   * Handles two scenarios:
+   * 1. Table has a projectId column but values are NULL -> UPDATE
+   * 2. Table has no projectId column at all -> ALTER TABLE ADD COLUMN + UPDATE
    *
-   * 优化：先检查是否需要 PreSync，如果所有表都已有 projectId 列则跳过，
-   * 避免每次启动都对大表（如 historical_data）执行不必要的 schema 检查。
+   * Optimization: check whether PreSync is needed first; skip if all tables already have the projectId column,
+   * avoiding unnecessary schema checks on large tables (e.g. historical_data) at every startup.
    */
   private async migrateNullProjectIdsPreSync(dbPath: string, projectId: string): Promise<void> {
-    // 快速检查：如果所有表都已有 projectId 列，跳过 PreSync
+    // Fast check: skip PreSync if all tables already have the projectId column
     const needsPreSync = await this.isPreSyncNeeded(dbPath);
     if (!needsPreSync) {
       return;
     }
 
-    // 先使用原生 sqlite3 处理缺少 projectId 列的表（ALTER TABLE）
+    // First use native sqlite3 to handle tables missing the projectId column (ALTER TABLE)
     await this.preSyncAddMissingColumns(dbPath, projectId);
 
-    // 再用 TypeORM DataSource 处理已有列但值为 NULL 的情况
+    // Then use the TypeORM DataSource to handle columns that exist but have NULL values
     let ds: DataSource | null = null;
     try {
       ds = new DataSource({
@@ -812,7 +812,7 @@ export class ProjectDatabaseService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 检查是否需要 PreSync：如果所有表都已存在 projectId 列，则跳过
+   * Check whether PreSync is needed: skip if all tables already have the projectId column
    */
   private isPreSyncNeeded(dbPath: string): Promise<boolean> {
     return new Promise((resolve) => {
@@ -841,7 +841,7 @@ export class ProjectDatabaseService implements OnModuleInit, OnModuleDestroy {
               return;
             }
 
-            // 检查所有用户表中已包含 projectId 列的数量
+            // Count user tables that already contain the projectId column
             db.all(
               `SELECT DISTINCT m.name as tbl_name
                FROM sqlite_master m
@@ -859,7 +859,7 @@ export class ProjectDatabaseService implements OnModuleInit, OnModuleDestroy {
                   return;
                 }
                 const tablesWithProjectId = rows?.length ?? 0;
-                // 如果所有表都已有 projectId 列，不需要 PreSync
+                // If all tables already have the projectId column, PreSync is not needed
                 resolve(tablesWithProjectId < totalTables);
               },
             );
@@ -870,9 +870,9 @@ export class ProjectDatabaseService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 为缺少 projectId 列的表添加该列并填充值。
-   * 必须在 TypeORM synchronize 之前完成，
-   * 否则 synchronize 创建临时表时会因 NOT NULL 约束而失败。
+   * Add the projectId column to tables missing it and fill values.
+   * Must complete before TypeORM synchronize,
+   * otherwise temporary-table creation during synchronize fails on the NOT NULL constraint.
    */
   private async preSyncAddMissingColumns(dbPath: string, projectId: string): Promise<void> {
     return new Promise((resolve) => {
@@ -913,7 +913,7 @@ export class ProjectDatabaseService implements OnModuleInit, OnModuleDestroy {
                   }
 
                   if (!cols || cols.length === 0) {
-                    // 该表缺少 projectId 列：先添加列，再填充值
+                    // Table missing the projectId column: add the column first, then fill values
                     db.run(
                       `ALTER TABLE "${tableName}" ADD COLUMN projectId varchar DEFAULT ''`,
                       [],
@@ -925,7 +925,7 @@ export class ProjectDatabaseService implements OnModuleInit, OnModuleDestroy {
                           }
                           return;
                         }
-                        // 填充默认值
+                        // Fill default values
                         db.run(
                           `UPDATE "${tableName}" SET projectId = ? WHERE projectId IS NULL OR projectId = ''`,
                           [projectId],
@@ -959,41 +959,41 @@ export class ProjectDatabaseService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * Pre-sync 迁移：重命名 dev_devices 表的 tid→device_code / name→device_name 列
+   * Pre-sync migration: rename the dev_devices table columns tid->device_code / name->device_name
    *
-   * 策略 B（DB 列名与 TS 属性名对齐）的配套迁移。
-   * 必须在 TypeORM synchronize 之前执行，否则 synchronize 会删除旧列（数据丢失）并新增空列。
+   * Companion migration for Strategy B (DB column names aligned with TS property names).
+   * Must run before TypeORM synchronize, otherwise synchronize drops the old columns (data loss) and adds empty ones.
    *
-   * 幂等性：
-   * - 已迁移的 DB（tid/name 列不存在）：跳过
-   * - 新建的 DB（device_code/device_name 列已存在）：跳过
-   * - 待迁移的 DB（tid/name 列存在）：执行 RENAME COLUMN + 重建索引
+   * Idempotency:
+   * - Already-migrated DB (tid/name columns absent): skip
+   * - Newly created DB (device_code/device_name columns present): skip
+   * - Pending DB (tid/name columns present): run RENAME COLUMN + rebuild indexes
    *
-   * @param dbPath    项目 system.db 路径
-   * @param projectId 项目标识符（用于日志）
+   * @param dbPath    project system.db path
+   * @param projectId project identifier (for logging)
    */
   private async renameDeviceColumnsPreSync(dbPath: string, projectId: string): Promise<void> {
     return new Promise((resolve) => {
       const db = new sqlite3.Database(dbPath, (openErr: Error | null) => {
         if (openErr) {
-          // 文件不存在或无法打开：跳过（新项目由 init-system-db.sql 创建）
+          // File missing or unopenable: skip (new projects are created by init-system-db.sql)
           resolve();
           return;
         }
 
-        // 1. 检查 dev_devices 表是否存在
+        // 1. Check whether the dev_devices table exists
         db.get(
           "SELECT name FROM sqlite_master WHERE type='table' AND name='dev_devices'",
           [],
           (tableErr: Error | null, row: { name: string } | undefined) => {
             if (tableErr || !row) {
-              // 表不存在（新项目）：跳过
+              // Table does not exist (new project): skip
               db.close();
               resolve();
               return;
             }
 
-            // 2. 获取 dev_devices 列名
+            // 2. Get dev_devices column names
             db.all(
               "SELECT name FROM pragma_table_info('dev_devices')",
               [],
@@ -1010,7 +1010,7 @@ export class ProjectDatabaseService implements OnModuleInit, OnModuleDestroy {
                 const hasDeviceCode = columnNames.includes('device_code');
                 const hasDeviceName = columnNames.includes('device_name');
 
-                // 3. 构建迁移 SQL（仅当旧列存在且新列不存在时）
+                // 3. Build migration SQL (only when old columns exist and new ones do not)
                 const statements: string[] = [];
 
                 if (hasTid && !hasDeviceCode) {
@@ -1026,10 +1026,10 @@ export class ProjectDatabaseService implements OnModuleInit, OnModuleDestroy {
                   return;
                 }
 
-                // 4. 执行列重命名
-                // 注：SQLite 在 RENAME COLUMN 时自动更新索引/触发器中的列引用，
-                //     索引名由 TypeORM synchronize 基于 @Index/@Unique 装饰器管理，
-                //     此处无需手动重建索引。
+                // 4. Execute the column renames
+                // Note: SQLite automatically updates column references in indexes/triggers on RENAME COLUMN;
+                //     index names are managed by TypeORM synchronize based on @Index/@Unique decorators,
+                //     so no manual index rebuild is needed here.
                 db.exec(statements.join(';\n') + ';', (execErr: Error | null) => {
                   if (execErr) {
                     this.logger.warn(
@@ -1052,10 +1052,10 @@ export class ProjectDatabaseService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 数据迁移：ProjectScopedEntity 引入后，已有记录的 projectId 列可能为 NULL。
-   * 在 isolated 模式下，所有记录都属于当前项目，统一设置为 projectId。
+   * Data migration: after ProjectScopedEntity was introduced, existing records may have NULL projectId.
+   * In isolated mode all records belong to the current project; uniformly set them to projectId.
    *
-   * 通过 TypeORM 元数据自动发现所有含 projectId 列的表，逐表执行 UPDATE。
+   * Uses TypeORM metadata to auto-discover all tables with a projectId column and runs UPDATE per table.
    */
   private async migrateNullProjectIds(
     ds: DataSource,
@@ -1084,7 +1084,7 @@ export class ProjectDatabaseService implements OnModuleInit, OnModuleDestroy {
           );
         }
       } catch (err) {
-        // 表不存在（实体注册但尚未建表）时静默跳过
+        // Silently skip when the table does not exist (entity registered but table not yet created)
         const msg = (err as Error).message || '';
         if (msg.includes('no such table')) {
           continue;

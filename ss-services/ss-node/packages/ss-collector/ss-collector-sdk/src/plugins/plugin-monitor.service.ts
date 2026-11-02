@@ -10,38 +10,38 @@ import * as winston from 'winston';
 import { PathResolverService, getLogConfig, createPluginLogger, LogConfig } from '@ss-node/ss-core';
 
 // ---------------------------------------------------------------------------
-// 类型
+// Types
 // ---------------------------------------------------------------------------
 
 export interface ProcessMetrics {
-  /** 堆内存已使用 (MB) */
+  /** Heap memory used (MB) */
   heapUsed: number;
-  /** 堆内存总大小 (MB) */
+  /** Total heap memory size (MB) */
   heapTotal: number;
-  /** 进程常驻内存 (MB) */
+  /** Process resident memory (MB) */
   rss: number;
-  /** 进程CPU使用时间 (微秒) */
+  /** Process CPU time (microseconds) */
   cpuUser: number;
   cpuSystem: number;
-  /** 系统CPU使用率 (%，基于两次调用的差值估算) */
+  /** System CPU usage (%, estimated from the delta between two calls) */
   cpuUsage: number;
-  /** 进程运行秒数 */
+  /** Process uptime in seconds */
   uptime: number;
 }
 
 export interface MonitorData {
   protocol: string;
-  /** 进程性能指标 */
+  /** Process performance metrics */
   metrics: ProcessMetrics;
-  /** 进程信息 */
+  /** Process info */
   processName: string;
   processId: number;
-  /** 线程 ID（仅 worker_thread 模式） */
+  /** Thread ID (worker_thread mode only) */
   threadId?: number;
   isolationMode: string;
-  /** 最近采集日志（最多 MAX_LOG_LINES 行） */
+  /** Recent collection logs (up to MAX_LOG_LINES lines) */
   logs: string[];
-  /** 日志文件路径 */
+  /** Log file path */
   logFilePath: string;
 }
 
@@ -52,35 +52,35 @@ export interface ClearLogsResult {
 }
 
 // ---------------------------------------------------------------------------
-// 服务
+// Services
 // ---------------------------------------------------------------------------
 
 /**
- * 插件监控服务
+ * Plugin monitoring service
  *
- * - 获取 Node.js 进程的内存/CPU 指标
- * - 按插件协议分目录、分日期记录采集日志
- * - 日志文件格式: {logsDir}/plugins/{protocol}/{protocol}-{YYYY-MM-DD}.log
+ * - collect Node.js process memory/CPU metrics
+ * - record collection logs in per-protocol directories, split by date
+ * - log file format: {logsDir}/plugins/{protocol}/{protocol}-{YYYY-MM-DD}.log
  *
- * 日志写入采用 Winston DailyRotateFile transport（由 LoggerFactory 创建）：
- * - 按天 + 按大小轮转（LOG_MAX_SIZE）
- * - 历史文件自动 gzip 压缩（zippedArchive）
- * - 超过 LOG_MAX_FILES 自动删除最旧文件
+ * Log writes use the Winston DailyRotateFile transport (created by LoggerFactory):
+ * - rotate by day + by size (LOG_MAX_SIZE)
+ * - old files are auto gzip-compressed (zippedArchive)
+ * - files beyond LOG_MAX_FILES are auto-deleted (oldest first)
  */
 @Injectable()
 export class PluginMonitorService {
   private readonly logger = new Logger(PluginMonitorService.name);
 
-  /** 统一日志配置（LOG_DIR / LOG_MAX_SIZE / LOG_MAX_FILES / LOG_LEVEL） */
+  /** Unified logging config (LOG_DIR / LOG_MAX_SIZE / LOG_MAX_FILES / LOG_LEVEL) */
   private readonly logConfig: LogConfig;
 
-  /** 按协议懒创建的 Winston logger 缓存 */
+  /** Lazily-created per-protocol Winston logger cache */
   private readonly pluginLoggers = new Map<string, winston.Logger>();
 
-  /** 监控中返回的最大日志行数 */
+  /** Maximum number of log lines returned in monitoring */
   private readonly MAX_LOG_LINES = 200;
 
-  /** 上次 CPU 快照，用于计算使用率变化 */
+  /** Last CPU snapshot, used to compute usage-rate changes */
   private lastCpuSnapshot: { timestamp: number; usage: NodeJS.CpuUsage } | null = null;
 
   constructor(private readonly pathResolver: PathResolverService) {
@@ -88,22 +88,22 @@ export class PluginMonitorService {
   }
 
   /**
-   * 获取 ss-services/ss-node 项目根目录的绝对路径（用于 fallback）
-   * 与 plugin-config.service.ts、plugin-discovery.service.ts 保持一致。
+   * Get the absolute path of the ss-services/ss-node project root (used as fallback)
+   * Kept consistent with plugin-config.service.ts and plugin-discovery.service.ts.
    */
   private getProjectRoot(): string {
     return this.pathResolver.getProjectRoot();
   }
 
   // -----------------------------------------------------------------------
-  //  进程指标
+  //  Process metrics
   // -----------------------------------------------------------------------
 
   getProcessMetrics(): ProcessMetrics {
     const mem = process.memoryUsage();
     const cpu = process.cpuUsage();
 
-    // CPU 使用率：基于时间差计算占比
+    // CPU usage: compute the proportion based on the time delta
     let cpuUsage = 0;
     const now = Date.now();
     if (this.lastCpuSnapshot) {
@@ -112,7 +112,7 @@ export class PluginMonitorService {
         const cpuDiffUser = cpu.user - this.lastCpuSnapshot.usage.user;
         const cpuDiffSystem = cpu.system - this.lastCpuSnapshot.usage.system;
         const totalCpuUs = cpuDiffUser + cpuDiffSystem;
-        // 转换为百分比（elapsedMs 是毫秒，cpu 是微秒）
+        // Convert to percentage (elapsedMs is milliseconds, cpu is microseconds)
         cpuUsage = (totalCpuUs / 1000 / elapsedMs / os.cpus().length) * 100;
       }
     }
@@ -130,10 +130,10 @@ export class PluginMonitorService {
   }
 
   // -----------------------------------------------------------------------
-  //  采集日志（按插件分目录、分时间）
+  //  Collection logs (per-protocol directory, split by time)
   // -----------------------------------------------------------------------
 
-  /** 获取（或懒创建）指定协议的 Winston logger */
+  /** Get (or lazily create) the Winston logger for the specified protocol */
   private getPluginLogger(protocol: string): winston.Logger {
     let logger = this.pluginLoggers.get(protocol);
     if (!logger) {
@@ -143,12 +143,12 @@ export class PluginMonitorService {
     return logger;
   }
 
-  /** 获取日志目录路径 */
+  /** Get the log directory path */
   getPluginLogDir(protocol: string): string {
     return path.join(this.logConfig.logDir, 'plugins', protocol);
   }
 
-  /** 获取当天日志文件路径 */
+  /** Get today's log file path */
   getPluginLogFile(protocol: string): string {
     const date = new Date();
     const yyyy = date.getFullYear();
@@ -159,10 +159,10 @@ export class PluginMonitorService {
   }
 
   /**
-   * 写入一条采集日志
+   * Write one collection log entry
    *
-   * 改用 Winston DailyRotateFile：按天 + 按大小轮转，历史文件 gzip 压缩。
-   * 文件路径：{logDir}/plugins/{protocol}/{protocol}-{YYYY-MM-DD}.log
+   * Switched to Winston DailyRotateFile: rotated by day + by size, old files gzip-compressed.
+   * File path: {logDir}/plugins/{protocol}/{protocol}-{YYYY-MM-DD}.log
    */
   writeLog(protocol: string, level: 'INFO' | 'WARN' | 'ERROR' | 'DEBUG', message: string): void {
     try {
@@ -181,7 +181,7 @@ export class PluginMonitorService {
   }
 
   /**
-   * 读取最近 N 行日志
+   * Read the most recent N log lines
    */
   readLogs(protocol: string, tail?: number): string[] {
     const limit = tail || this.MAX_LOG_LINES;
@@ -202,7 +202,7 @@ export class PluginMonitorService {
   }
 
   /**
-   * 清空当前日志文件
+   * Clear the current log file
    */
   clearLogs(protocol: string): ClearLogsResult {
     const filePath = this.getPluginLogFile(protocol);
@@ -212,7 +212,7 @@ export class PluginMonitorService {
     }
 
     try {
-      // 不移除文件，只清空内容（保留文件句柄）
+      // Do not remove the file, only clear its content (keep the file handle)
       fs.writeFileSync(filePath, '', 'utf-8');
       this.logger.log(`Logs cleared for plugin: ${protocol}`);
       return { cleared: true, logFilePath: filePath, message: '日志已清空' };
@@ -225,7 +225,7 @@ export class PluginMonitorService {
     }
   }
 
-  /** 获取完整监控数据 */
+  /** Get full monitoring data */
   getMonitorData(protocol: string, isolationMode: string = 'in_process'): MonitorData {
     return {
       protocol,

@@ -17,22 +17,22 @@ export interface BackupInfo {
   error?: string;
 }
 
-/** 单类备份配置（全局或项目） */
+/** A single backup configuration (global or project) */
 export interface CategoryBackupConfig {
   enabled: boolean;
   cronExpression: string;
   retentionDays: number;
-  /** 备份存储位置（覆盖默认），为空时使用默认路径 */
+  /** Backup storage location (overrides the default); uses the default path when empty */
   backupLocation?: string;
-  /** 备份总大小上限（MB），超过时自动清理最旧备份 */
+  /** Backup total size cap (MB); the oldest backups are cleaned automatically when exceeded */
   maxSizeMb?: number;
 }
 
-/** 备份配置根对象：包含全局与项目两套独立配置 */
+/** Backup configuration root object: contains two independent configurations, global and project */
 export interface BackupConfig {
-  /** 全局数据库备份配置 */
+  /** Global database backup configuration */
   system: CategoryBackupConfig;
-  /** 项目数据库备份配置 */
+  /** Project database backup configuration */
   project: CategoryBackupConfig;
 }
 
@@ -50,7 +50,7 @@ export interface BackupStats {
   freeSpaceBytes?: number;
 }
 
-/** 单类 Cron 任务状态 */
+/** Status of a single Cron task type */
 export interface CategoryCronStatus {
   exists: boolean;
   cronTime?: string;
@@ -58,13 +58,13 @@ export interface CategoryCronStatus {
   enabled: boolean;
 }
 
-/** Cron 任务状态（全局+项目） */
+/** Cron task status (global + project) */
 export interface CronJobStatus {
   system: CategoryCronStatus;
   project: CategoryCronStatus;
 }
 
-/** 备份日志条目 */
+/** Backup log entry */
 export interface BackupLogEntry {
   id: string;
   dbType: 'system' | 'project';
@@ -89,7 +89,7 @@ export interface DatabaseStatus {
   sizeFormatted: string;
   tableCount: number;
   lastModified: string | null;
-  /** 异常原因（exists=false 时填充） */
+  /** Exception reason (filled when exists=false) */
   errorMessage?: string;
 }
 
@@ -108,24 +108,24 @@ export interface VacuumResult {
   completedAt: string;
 }
 
-/** 清空表操作结果 */
+/** Table clear operation result */
 export interface ClearTableResult {
   ok: boolean;
-  /** 删除的总行数 */
+  /** Total number of rows deleted */
   deleted: number;
-  /** 被清空的表名列表 */
+  /** List of cleared table names */
   tables: string[];
   completedAt: string;
 }
 
 export const databaseApi = {
-  // ==================== 备份列表（可按 dbType 过滤） ====================
+  // ==================== Backup list (filterable by dbType) ====================
 
   getBackups(dbType?: 'system' | 'project'): Promise<ApiResponse<BackupInfo[]>> {
     return client.get('/system/backup', { params: { dbType } }).then((res) => res.data);
   },
 
-  // ==================== 手动备份 ====================
+  // ==================== Manual backup ====================
 
   createSystemBackup(): Promise<ApiResponse<BackupInfo>> {
     return client.post('/system/backup/system').then((res) => res.data);
@@ -143,7 +143,7 @@ export const databaseApi = {
     return client.post('/system/backup/selected-projects', { projectNames }).then((res) => res.data);
   },
 
-  // ==================== 下载/删除/恢复 ====================
+  // ==================== Download/delete/restore ====================
 
   downloadBackup(filename: string): Promise<Blob> {
     return client.get(`/system/backup/${filename}/download`, { responseType: 'blob' }).then((res) => res.data);
@@ -161,7 +161,7 @@ export const databaseApi = {
     return client.post(`/system/backup/${filename}/restore-project/${projectName}`).then((res) => res.data);
   },
 
-  // ==================== 备份配置（拆分结构） ====================
+  // ==================== Backup configuration (split structure) ====================
 
   getBackupConfig(): Promise<ApiResponse<BackupConfig>> {
     return client.get('/system/backup/config').then((res) => res.data);
@@ -179,7 +179,7 @@ export const databaseApi = {
     return client.get('/system/backup/stats').then((res) => res.data);
   },
 
-  // ==================== 备份日志 ====================
+  // ==================== Backup logs ====================
 
   getBackupLogs(filter?: {
     dbType?: 'system' | 'project';
@@ -191,13 +191,13 @@ export const databaseApi = {
     return client.get('/system/backup/logs', { params: filter }).then((res) => res.data);
   },
 
-  // ==================== 清理（按类型） ====================
+  // ==================== Cleanup (by type) ====================
 
   cleanupExpired(dbType: 'system' | 'project', days: number): Promise<ApiResponse<{ ok: boolean; deleted: number }>> {
     return client.delete(`/system/backup/cleanup/${dbType}/${days}`).then((res) => res.data);
   },
 
-  // ==================== 数据库状态 ====================
+  // ==================== Database status ====================
 
   getDatabaseStatus(): Promise<ApiResponse<{ system: DatabaseStatus; projects: DatabaseStatus[] }>> {
     return client.get('/system/database/status').then((res) => res.data);
@@ -219,7 +219,7 @@ export const databaseApi = {
     return client.post(`/system/database/vacuum/${projectName}`).then((res) => res.data);
   },
 
-  // ==================== 清空表数据 ====================
+  // ==================== Clear table data ====================
 
   clearProjectEvents(projectName: string): Promise<ApiResponse<ClearTableResult>> {
     return client.post(`/system/database/clear-events/${projectName}`).then((res) => res.data);

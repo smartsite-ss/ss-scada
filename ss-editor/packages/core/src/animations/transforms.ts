@@ -102,8 +102,8 @@ export function rotate3DFn(axis: 'X' | 'Y', p: number, _w: number, _h: number, l
   return base;
 }
 
-// ===== 循环动画变换函数 =====
-// 所有循环动画的参数 t 为 0~1 的周期进度，使用 sin/cos 实现平滑往复
+// ===== Loop animation transform functions =====
+// For all loop animations, parameter t is a 0~1 cycle progress; sin/cos are used for smooth back-and-forth motion
 
 const SHAKE_AMP = 8;
 const SCALE_PULSE_MIN = 0.9;

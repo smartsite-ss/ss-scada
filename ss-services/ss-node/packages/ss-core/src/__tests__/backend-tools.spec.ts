@@ -3,9 +3,9 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 后端 MCP 工具 — 字典管理工具单元测试
+ * Backend MCP tools - dictionary management tools unit tests
  *
- * 覆盖 5 个字典工具：
+ * Covers 5 dictionary tools:
  *   dict_list, dict_detail, dict_create, dict_addItems, dict_search
  */
 
@@ -19,7 +19,7 @@ import {
   BackendToolServices,
 } from '../ai/backend-tools';
 
-// 模拟字典数据
+// mock dictionary data
 const mockDictItems = [
   { value: 'modbus_tcp', label: 'Modbus TCP', sortOrder: 1, description: 'Modbus TCP 协议' },
   { value: 'opc_ua', label: 'OPC UA', sortOrder: 2, description: 'OPC UA 协议' },
@@ -271,12 +271,12 @@ describe('BackendTools — 字典管理', () => {
       const result = await tool.execute({ keyword: 'TCP', category: 'device' });
       const parsed = JSON.parse(result);
       expect(parsed.success).toBe(true);
-      // device 分类下没有 TCP 相关条目，应为空
+      // the device category has no TCP-related entries, should be empty
       expect(parsed.results).toHaveLength(0);
     });
 
     it('TC-DICT-TOOL-020: 限制 pageSize', async () => {
-      // 使用包含多个匹配项的 dict
+      // use a dict containing multiple matching items
       const multiItemServices = makeMockServices();
       (multiItemServices.dictService!.getAllDicts as jest.Mock).mockReturnValue([
         {

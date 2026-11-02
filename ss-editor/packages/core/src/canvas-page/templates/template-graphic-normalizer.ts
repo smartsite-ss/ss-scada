@@ -3,22 +3,22 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 模板图元规范化工具
+ * Template graphic normalizer
  *
- * 模板中使用简化的扁平格式（{ type: 'rect', x: 0, y: 0, width: 100, height: 100, fill: '#xxx' }）
- * 但 GraphicFactory.createGraphicFromJSON + BaseGraphic.fromJSON 需要标准规范格式
- * （{ type: 'shape', config: { geometry: {...}, style: {...}, customProps: {...} } }）。
+ * Templates use a simplified flat format ({ type: 'rect', x: 0, y: 0, width: 100, height: 100, fill: '#xxx' }),
+ * but GraphicFactory.createGraphicFromJSON + BaseGraphic.fromJSON require the standard normalized format
+ * ({ type: 'shape', config: { geometry: {...}, style: {...}, customProps: {...} } }).
  *
- * 本工具负责将扁平格式转换为标准格式，并映射类型名（rect→shape, text→label）。
+ * This utility converts the flat format into the standard format and maps type names (rect→shape, text→label).
  */
 
-/** 模板类型 → 注册类型映射 */
+/** Template type → registered type mapping */
 const TYPE_MAP: Record<string, string> = {
   rect: 'shape',
   text: 'label',
 };
 
-/** 通用 style 字段（直接从扁平属性提取） */
+/** Common style fields (extracted directly from flat properties) */
 const COMMON_STYLE_KEYS: Record<string, string> = {
   fill: 'backgroundColor',
   fillOpacity: 'fillOpacity',
@@ -42,7 +42,7 @@ const COMMON_STYLE_KEYS: Record<string, string> = {
 
 export function normalizeTemplateGraphics(flatGraphics: Record<string, any>[]): Record<string, any>[] {
   return flatGraphics.map((flat) => {
-    // 如果已经是标准格式（有 config 属性），直接透传
+    // If already in standard format (has a config property), pass through directly
     if (flat.config && typeof flat.config === 'object') {
       return flat;
     }
@@ -66,13 +66,13 @@ export function normalizeTemplateGraphics(flatGraphics: Record<string, any>[]): 
       }
     }
 
-    // 处理渐变填充
+    // Handle gradient fill
     if (flat.fill && typeof flat.fill === 'object' && flat.fill.type === 'gradient') {
       style.backgroundColor = flat.fill.colors?.[0] || '#808080';
       (style as any).gradient = flat.fill;
     }
 
-    // 处理 stroke: 'none'
+    // Handle stroke: 'none'
     if (flat.stroke === 'none') {
       style.borderColor = 'transparent';
       style.borderWidth = style.borderWidth ?? 0;
@@ -176,7 +176,7 @@ function buildCustomProps(flat: Record<string, any>, graphicType: string): Recor
       break;
     }
     default: {
-      // 通用属性透传
+      // Pass through common properties
       for (const key of Object.keys(flat)) {
         if (!['id', 'type', 'x', 'y', 'width', 'height', 'left', 'top', 'rotation',
           'fill', 'stroke', 'strokeWidth', 'strokeStyle', 'cornerRadius', 'opacity',

@@ -3,14 +3,14 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * CanvasTemplateService 单元测试
+ * CanvasTemplateService unit tests
  *
- * 核心验证点：
- * 1. getTemplatesDir 返回项目级 / 系统级正确路径
- * 2. createTemplate 写入文件到正确目录
- * 3. 文件实际存在于磁盘
- * 4. 项目级与系统级模板隔离
- * 5. listTemplates / readTemplate 正确读取
+ * Core verification points:
+ * 1. getTemplatesDir returns the correct project-level / system-level paths
+ * 2. createTemplate writes files to the correct directory
+ * 3. Files actually exist on disk
+ * 4. Project-level and system-level template isolation
+ * 5. listTemplates / readTemplate read correctly
  */
 
 import * as fs from 'fs';
@@ -32,7 +32,7 @@ jest.mock('@ss-node/ss-core', () => {
   };
 });
 
-// ─── 测试辅助 ───
+// ─── Test helpers ───
 
 function createMockTemplate(overrides: Partial<CanvasTemplateData> = {}): CanvasTemplateData {
   return {
@@ -53,7 +53,7 @@ function createMockTemplate(overrides: Partial<CanvasTemplateData> = {}): Canvas
   };
 }
 
-// ─── 测试套件 ───
+// ─── Test suites ───
 
 describe('CanvasTemplateService', () => {
   let service: CanvasTemplateService;
@@ -74,11 +74,11 @@ describe('CanvasTemplateService', () => {
   });
 
   afterEach(() => {
-    // 清理项目级目录
+    // Clean up the project-level directory
     if (fs.existsSync(tempDir)) {
       fs.rmSync(tempDir, { recursive: true, force: true });
     }
-    // 清理系统级模板目录（位于 tempDir 上层，不会被 tempDir 递归删除覆盖）
+    // Clean up the system-level template directory (above tempDir, so tempDir's recursive delete does not cover it)
     const systemDir = path.join(path.dirname(tempDir), 'canvas-templates');
     if (fs.existsSync(systemDir)) {
       fs.rmSync(systemDir, { recursive: true, force: true });
@@ -107,7 +107,7 @@ describe('CanvasTemplateService', () => {
     });
   });
 
-  // ─── createTemplate — 文件实际写入 ───
+  // ─── createTemplate - actual file writes ───
 
   describe('createTemplate — 文件写入', () => {
     it('项目级模板 → 写入 {PROJECTS_DIR}/{projectId}/canvas-templates/pages/{id}.json', () => {
@@ -116,11 +116,11 @@ describe('CanvasTemplateService', () => {
 
       expect(result.success).toBe(true);
 
-      // 验证文件存在于正确位置
+      // Verify the file exists at the correct location
       const expectedPath = path.join(tempDir, 'demo-project', 'canvas-templates', 'pages', 'tpl-proj-test.json');
       expect(fs.existsSync(expectedPath)).toBe(true);
 
-      // 验证文件内容可读
+      // Verify the file content is readable
       const raw = fs.readFileSync(expectedPath, 'utf-8');
       const parsed = JSON.parse(raw);
       expect(parsed.id).toBe('tpl-proj-test');
@@ -135,7 +135,7 @@ describe('CanvasTemplateService', () => {
 
       expect(result.success).toBe(true);
 
-      // 验证文件存在于正确位置
+      // Verify the file exists at the correct location
       const expectedPath = path.join(path.dirname(tempDir), 'canvas-templates', 'pages', 'tpl-sys-test.json');
       expect(fs.existsSync(expectedPath)).toBe(true);
 
@@ -149,7 +149,7 @@ describe('CanvasTemplateService', () => {
       service.createTemplate(template, 'demo-project');
 
       const systemDir = path.join(path.dirname(tempDir), 'canvas-templates', 'pages');
-      // 系统级目录可能不存在，或存在但不含该项目模板
+      // The system-level directory may not exist, or exist without this project's template
       if (fs.existsSync(systemDir)) {
         const files = fs.readdirSync(systemDir);
         expect(files).not.toContain('tpl-proj-isolated.json');
@@ -161,7 +161,7 @@ describe('CanvasTemplateService', () => {
       service.createTemplate(template);
 
       const projectDir = path.join(tempDir, 'demo-project', 'canvas-templates', 'pages');
-      // 如果项目级目录不存在则说明隔离正确
+      // If the project-level directory does not exist, isolation is correct
       if (fs.existsSync(projectDir)) {
         const files = fs.readdirSync(projectDir);
         expect(files).not.toContain('tpl-sys-isolated.json');
@@ -188,7 +188,7 @@ describe('CanvasTemplateService', () => {
     });
   });
 
-  // ─── listTemplates — 读取列表 ───
+  // ─── listTemplates - read the list ───
 
   describe('listTemplates — 模板列表', () => {
     it('创建后 listTemplates 能列出项目级模板', () => {
@@ -203,7 +203,7 @@ describe('CanvasTemplateService', () => {
     });
 
     it('空目录返回空列表', () => {
-      // 不创建任何模板直接查询
+      // Query directly without creating any templates
       const result = service.listTemplates(undefined, undefined, 'empty-project');
       expect(result.success).toBe(true);
       expect(result.count).toBe(0);
@@ -233,7 +233,7 @@ describe('CanvasTemplateService', () => {
     });
   });
 
-  // ─── readTemplate — 读取单个 ───
+  // ─── readTemplate - read a single one ───
 
   describe('readTemplate — 读取单个', () => {
     it('能读取已创建的项目级模板', () => {
@@ -254,7 +254,7 @@ describe('CanvasTemplateService', () => {
     });
   });
 
-  // ─── deleteTemplate — 删除模板 ───
+  // ─── deleteTemplate - delete a template ───
 
   describe('deleteTemplate — 删除', () => {
     it('删除模板后文件不存在', () => {
@@ -276,7 +276,7 @@ describe('CanvasTemplateService', () => {
     });
 
     it('禁止删除系统级内置模板', () => {
-      // 创建一个 source=builtin 的系统级模板
+      // Create a system-level template with source=builtin
       const template = createMockTemplate({ id: 'builtin-test', source: 'builtin' });
       service.createTemplate(template);
 
@@ -294,14 +294,14 @@ describe('CanvasTemplateService', () => {
     });
   });
 
-  // ─── 集成场景：项目页面保存为模板完整流程 ───
+  // ─── Integration scenario: full flow of saving a project page as a template ───
 
   describe('集成场景：项目页面保存为模板', () => {
     it('完整流程：创建 → 文件存在 → 列表可见 → 读取正确 → 删除清理', () => {
       const projectId = 'real-project';
       const templateId = 'tpl-integration';
 
-      // 1. 创建项目级模板
+      // 1. Create a project-level template
       const template = createMockTemplate({
         id: templateId,
         name: '集成测试模板',
@@ -311,11 +311,11 @@ describe('CanvasTemplateService', () => {
       const createResult = service.createTemplate(template, projectId);
       expect(createResult.success).toBe(true);
 
-      // 2. 验证文件存在于磁盘
+      // 2. Verify the file exists on disk
       const filePath = path.join(tempDir, projectId, 'canvas-templates', 'pages', `${templateId}.json`);
       expect(fs.existsSync(filePath)).toBe(true);
 
-      // 3. 验证文件内容完整性
+      // 3. Verify the file content is complete
       const raw = fs.readFileSync(filePath, 'utf-8');
       const diskData = JSON.parse(raw);
       expect(diskData.id).toBe(templateId);
@@ -324,17 +324,17 @@ describe('CanvasTemplateService', () => {
       expect(diskData.graphics).toHaveLength(1);
       expect(diskData.graphics[0].type).toBe('rect');
 
-      // 4. 验证列表可查
+      // 4. Verify the list is queryable
       const listResult = service.listTemplates(undefined, undefined, projectId);
       expect(listResult.templates).toHaveLength(1);
       expect(listResult.templates[0].id).toBe(templateId);
 
-      // 5. 验证单个读取
+      // 5. Verify single read
       const readResult = service.readTemplate(templateId, projectId);
       expect(readResult.success).toBe(true);
       expect(readResult.data!.name).toBe('集成测试模板');
 
-      // 6. 删除后文件不存在
+      // 6. After deletion the file does not exist
       service.deleteTemplate(templateId, projectId);
       expect(fs.existsSync(filePath)).toBe(false);
     });

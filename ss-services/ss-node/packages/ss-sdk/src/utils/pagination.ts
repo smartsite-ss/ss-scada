@@ -5,16 +5,16 @@
 import { PaginatedResult } from '../types';
 
 /**
- * 分页工具
+ * Pagination utilities
  *
- * 提供分页查询参数构建和分页结果构建的便捷方法。
+ * Provides convenient methods for building pagination query parameters and pagination results.
  */
 export class PaginationUtil {
   /**
-   * 构建分页查询参数（用于 TypeORM/Prisma 等 ORM 的 skip/take）
-   * @param page 页码（从 1 开始）
-   * @param pageSize 每页条数
-   * @returns `{ skip, take }` 查询参数
+   * Build pagination query parameters (for ORM skip/take such as TypeORM/Prisma)
+   * @param page page number (starting from 1)
+   * @param pageSize items per page
+   * @returns `{ skip, take }` query parameters
    */
   static buildQuery(page: number, pageSize: number): { skip: number; take: number } {
     const safePage = Math.max(1, Math.floor(page));
@@ -26,12 +26,12 @@ export class PaginationUtil {
   }
 
   /**
-   * 构建分页结果
-   * @param items 当前页数据
-   * @param total 总记录数
-   * @param page 当前页码
-   * @param pageSize 每页条数
-   * @returns 标准化的分页结果
+   * Build a pagination result
+   * @param items the current page's data
+   * @param total total record count
+   * @param page the current page number
+   * @param pageSize items per page
+   * @returns the normalized pagination result
    */
   static buildResult<T>(
     items: T[],

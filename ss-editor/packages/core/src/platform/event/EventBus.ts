@@ -2,6 +2,6 @@
 // https://smartsite.top/
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
-// 事件总线，统一从 utils/event/eventBus.ts 导出
-// 避免创建多个 eventBus 实例导致事件监听器无法接收消息
+// Event bus, re-exported uniformly from utils/event/eventBus.ts
+// Avoid creating multiple eventBus instances that would prevent listeners from receiving messages
 export * from '../../utils/event/eventBus';

@@ -7,7 +7,7 @@ import { TemplateIndexService } from '../template/template-index.service';
 import * as fs from 'fs';
 import * as path from 'path';
 
-// 创建测试用的临时目录结构
+// Create the temp directory structure for testing
 const TEST_BASE = path.join(__dirname, '__temp_templates__');
 
 function ensureDir(dirPath: string) {
@@ -27,7 +27,7 @@ function cleanupTestDir() {
   }
 }
 
-// 模拟模板 JSON 文件数据
+// Simulate template JSON file data
 function makeTemplateData(overrides: Record<string, any> = {}) {
   return {
     schemaVersion: '1.0',
@@ -74,7 +74,7 @@ describe('TemplateIndexService', () => {
   beforeEach(() => {
     cleanupTestDir();
     ensureDir(TEST_BASE);
-    // 注入测试路径 - 传入 mock configService 并覆盖 basePath
+    // Inject the test path - pass the mock configService and override basePath
     const mockConfigService = { get: jest.fn().mockReturnValue(undefined) };
     const mockPathResolverService = {
       resolve: jest.fn((p: string) => p),
@@ -90,7 +90,7 @@ describe('TemplateIndexService', () => {
 
   describe('rebuildIndex', () => {
     it('TC-IDX-001: should build index from directory structure', () => {
-      // 创建目录结构
+      // Create the directory structure
       writeFile(
         path.join(TEST_BASE, '工业自动化', 'PLC控制器', 'siemens-s7-1200.json'),
         makeTemplateData({
@@ -117,18 +117,18 @@ describe('TemplateIndexService', () => {
       expect(index.totalIndustries).toBe(2);
       expect(index.totalTemplates).toBe(2);
 
-      // 验证行业排序
+      // Verify industry sorting
       expect(index.industries[0].name).toBe('工业自动化');
       expect(index.industries[1].name).toBe('能源电力');
 
-      // 验证分类
+      // Verify categories
       const automation = index.industries[0];
       expect(automation.categories).toHaveLength(1);
       expect(automation.categories[0].name).toBe('PLC控制器');
       expect(automation.categories[0].templateCount).toBe(1);
       expect(automation.templateCount).toBe(1);
 
-      // 验证模板
+      // Verify templates
       const tpl1 = automation.categories[0].templates[0];
       expect(tpl1.id).toBe('tpl-s7-1200');
       expect(tpl1.name).toBe('西门子 S7-1200');
@@ -136,7 +136,7 @@ describe('TemplateIndexService', () => {
       expect(tpl1.tags).toEqual(['西门子', 'PLC']);
       expect(tpl1.relativePath).toBe('工业自动化/PLC控制器/siemens-s7-1200.json');
 
-      // 验证 index.json 文件已写入
+      // Verify index.json has been written
       const indexPath = path.join(TEST_BASE, 'index.json');
       expect(fs.existsSync(indexPath)).toBe(true);
     });
@@ -150,7 +150,7 @@ describe('TemplateIndexService', () => {
     });
 
     it('TC-IDX-003: should handle nested categories correctly', () => {
-      // 同一行业多个分类
+      // Multiple categories in the same industry
       writeFile(
         path.join(TEST_BASE, '工业自动化', 'PLC控制器', 'tpl1.json'),
         makeTemplateData({
@@ -178,7 +178,7 @@ describe('TemplateIndexService', () => {
     });
 
     it('TC-IDX-004: should handle empty category directories', () => {
-      // 空分类目录（无模板文件）
+      // Empty category directory (no template files)
       ensureDir(path.join(TEST_BASE, '工业自动化', '空分类'));
       writeFile(
         path.join(TEST_BASE, '工业自动化', 'PLC控制器', 'tpl.json'),
@@ -202,11 +202,11 @@ describe('TemplateIndexService', () => {
     });
 
     it('TC-IDX-005: should handle template JSON parse errors gracefully', () => {
-      // 创建包含无效 JSON 的目录
+      // Create a directory containing invalid JSON
       const dir = path.join(TEST_BASE, '工业自动化', 'PLC控制器');
       ensureDir(dir);
       fs.writeFileSync(path.join(dir, 'bad.json'), 'not valid json', 'utf-8');
-      // 再创建一个有效的模板
+      // Then create a valid template
       writeFile(
         path.join(dir, 'good.json'),
         makeTemplateData({
@@ -227,7 +227,7 @@ describe('TemplateIndexService', () => {
 
   describe('loadIndex', () => {
     it('TC-IDX-010: should load existing index.json', () => {
-      // 先构建一个
+      // Build one first
       writeFile(
         path.join(TEST_BASE, '工业自动化', 'PLC控制器', 'tpl.json'),
         makeTemplateData({
@@ -238,7 +238,7 @@ describe('TemplateIndexService', () => {
       );
       indexService.rebuildIndex();
 
-      // 重新加载
+      // Reload
       const loaded = indexService.loadIndex();
       expect(loaded).not.toBeNull();
       expect(loaded!.totalTemplates).toBe(1);
@@ -253,7 +253,7 @@ describe('TemplateIndexService', () => {
 
   describe('createCategory', () => {
     it('TC-IDX-020: should create category directory and rebuild index', async () => {
-      // 确保行业目录存在
+      // Ensure the industry directory exists
       ensureDir(path.join(TEST_BASE, '工业自动化'));
 
       const result = await indexService.createCategory({
@@ -264,10 +264,10 @@ describe('TemplateIndexService', () => {
       expect(result.success).toBe(true);
       expect(result.path).toBe('工业自动化/新分类');
 
-      // 验证目录创建
+      // Verify directory creation
       expect(fs.existsSync(path.join(TEST_BASE, '工业自动化', '新分类'))).toBe(true);
 
-      // 验证索引已更新
+      // Verify the index was updated
       const index = indexService.loadIndex()!;
       const industry = index.industries.find((i) => i.name === '工业自动化')!;
       expect(industry.categories.some((c) => c.name === '新分类')).toBe(true);
@@ -300,7 +300,7 @@ describe('TemplateIndexService', () => {
       expect(fs.existsSync(path.join(TEST_BASE, '工业自动化', '旧分类'))).toBe(false);
       expect(fs.existsSync(path.join(TEST_BASE, '工业自动化', '新分类'))).toBe(true);
 
-      // 验证模板文件的 industry/category 已更新
+      // Verify the template file's industry/category were updated
       const tplPath = path.join(TEST_BASE, '工业自动化', '新分类', 'tpl.json');
       const tplContent = JSON.parse(fs.readFileSync(tplPath, 'utf-8'));
       expect(tplContent.industry).toBe('工业自动化');

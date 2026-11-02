@@ -3,18 +3,18 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 知识库类型定义 — 纯文件方案（v2.0 多产品架构）
+ * Knowledge base type definitions — pure-file approach (v2.0 multi-product architecture)
  *
- * 存储模型：
- *   - manifest.json：多产品清单 + 每个产品的模块清单和路由映射（语言无关）
- *   - Markdown frontmatter：每篇文章自带元数据（id/title/lang/module 等）
- *   - Git：版本历史（不内置版本表）
+ * Storage model:
+ *   - manifest.json: multi-product list + per-product module list and route mappings (language-independent)
+ *   - Markdown frontmatter: each article carries its own metadata (id/title/lang/module etc.)
+ *   - Git: version history (no built-in version table)
  *
- * 文件结构：
+ * File structure:
  *   ${KB_ROOT}/{lang}/{product}/{module}/*.md
  */
 
-/** 知识库模块元数据（语言无关，来自 manifest.json） */
+/** Knowledge base module metadata (language-independent, from manifest.json) */
 export interface KbModule {
   id: string;
   name: string;
@@ -22,13 +22,13 @@ export interface KbModule {
   icon?: string;
   order: number;
   routePath?: string;
-  /** 是否为全局章节（系统概述/操作手册） */
+  /** Whether this is a global section (system overview/user manual) */
   isGlobal?: boolean;
-  /** 全局章节类型：overview（系统概述）/ manual（操作手册） */
+  /** Global section type: overview (system overview) / manual (user manual) */
   globalType?: 'overview' | 'manual';
 }
 
-/** 路由映射（语言无关，来自 manifest.json） */
+/** Route mapping (language-independent, from manifest.json) */
 export interface KbRouteMapping {
   routePattern: string;
   knowledgePath: string;
@@ -36,27 +36,27 @@ export interface KbRouteMapping {
   hintDismissible?: boolean;
 }
 
-/** 单个产品的知识库定义 */
+/** A single product's knowledge base definition */
 export interface KbProduct {
   id: string;
   name: string;
   nameI18n?: Record<string, string>;
   icon?: string;
   order: number;
-  /** 该产品的模块清单 */
+  /** This product's module list */
   modules: KbModule[];
-  /** 该产品的路由映射 */
+  /** This product's route mappings */
   routeMap: KbRouteMapping[];
 }
 
-/** manifest.json 结构（v2.0 多产品） */
+/** manifest.json structure (v2.0 multi-product) */
 export interface KbManifest {
   version: string;
-  /** 产品列表（v2.0 新增，替代 v1.0 的 modules/routeMap 顶层字段） */
+  /** Product list (v2.0 addition, replaces v1.0's top-level modules/routeMap fields) */
   products: KbProduct[];
 }
 
-/** 产品列表项（精简，用于前端产品选择器） */
+/** Product list item (slimmed down, for the frontend product selector) */
 export interface KbProductListItem {
   id: string;
   name: string;
@@ -66,12 +66,12 @@ export interface KbProductListItem {
   moduleCount: number;
 }
 
-/** 文章完整内容 */
+/** Full article content */
 export interface KbArticle {
   id: string;
   title: string;
   lang: string;
-  /** 产品 ID（v2.0 新增） */
+  /** Product ID (v2.0 addition) */
   product: string;
   module: string;
   category: string;
@@ -80,25 +80,25 @@ export interface KbArticle {
   updatedAt: string;
   updatedBy?: string;
   status: string;
-  /** Markdown 正文（不含 frontmatter） */
+  /** Markdown body (excluding frontmatter) */
   content: string;
-  /** 相对于 {KB_ROOT}/{lang}/{product} 的路径 */
+  /** Path relative to {KB_ROOT}/{lang}/{product} */
   filePath: string;
-  /** 是否为 Fallback 命中 */
+  /** Whether this hit came from a fallback */
   fallback: boolean;
-  /** Fallback 时的原始请求语言 */
+  /** The originally requested language when a fallback occurred */
   requestedLang?: string;
 }
 
-/** 目录树节点 */
+/** Directory tree node */
 export interface KbTreeNode {
   id: string;
   title: string;
   type: 'folder' | 'article';
   lang: string;
-  /** 产品 ID（v2.0 新增） */
+  /** Product ID (v2.0 addition) */
   product?: string;
-  /** 是否为全局章节 */
+  /** Whether this is a global section */
   isGlobal?: boolean;
   globalType?: 'overview' | 'manual';
   fallback: boolean;
@@ -107,43 +107,43 @@ export interface KbTreeNode {
   children?: KbTreeNode[];
 }
 
-/** 路由匹配结果 */
+/** Route match result */
 export interface KbRouteMatch {
   knowledgePath: string;
   hintTextKey?: string;
   articleId?: string;
   lang: string;
-  /** 产品 ID（v2.0 新增） */
+  /** Product ID (v2.0 addition) */
   product: string;
   fallback: boolean;
   requestedLang?: string;
 }
 
-/** 搜索结果 */
+/** Search result */
 export interface KbSearchResult {
   id: string;
   title: string;
   module: string;
-  /** 产品 ID（v2.0 新增） */
+  /** Product ID (v2.0 addition) */
   product: string;
   filePath: string;
-  /** 匹配片段 */
+  /** Matched snippet */
   snippet: string;
   lang: string;
 }
 
-/** 语言统计（按产品） */
+/** Language statistics (per product) */
 export interface KbLangStat {
   lang: string;
-  /** 各产品的文章统计 */
+  /** Per-product article statistics */
   products: Array<{
     product: string;
     articleCount: number;
     moduleCount: number;
   }>;
-  /** 兼容字段：总文章数 */
+  /** Compatibility field: total article count */
   articleCount: number;
-  /** 兼容字段：总模块数 */
+  /** Compatibility field: total module count */
   moduleCount: number;
 }
 
@@ -153,7 +153,7 @@ export interface KbLangsResponse {
   stats: KbLangStat[];
 }
 
-/** 产品列表响应 */
+/** Product list response */
 export interface KbProductsResponse {
   products: KbProductListItem[];
   defaultProduct: string;

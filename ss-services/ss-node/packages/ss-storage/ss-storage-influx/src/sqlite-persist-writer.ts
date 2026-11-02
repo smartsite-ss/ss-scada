@@ -10,35 +10,35 @@ import { ProjectDatabaseService } from '@ss-node/ss-core';
 import { HistoricalData } from './entities/historical-data.entity';
 
 /**
- * SQLite 历史数据 PersistWriter 实现
+ * SQLite historical-data PersistWriter implementation
  *
- * 数据流：Pipeline DataPoint → write() → buffer → flush() → 项目数据库 data_historical_data 表
+ * Data flow: Pipeline DataPoint → write() → buffer → flush() → project database data_historical_data table
  *
- * 条件激活：仅当 HISTORICAL_DATA_BACKEND=sqlite 时执行写入，
- * 否则 write/writeBatch/flush 均为 no-op（由 InfluxPersistWriter 接管）。
+ * Conditional activation: writes only when HISTORICAL_DATA_BACKEND=sqlite;
+ * otherwise write/writeBatch/flush are all no-ops (InfluxPersistWriter takes over).
  *
- * 关键设计：使用项目级 DataSource（通过 ProjectDatabaseService 获取），而非全局
- * DataSource。原因：
- * - HistoricalData 实体通过 @ManyToOne(() => DataTag) 建立外键引用 dev_data_tags.id
- * - DataTag 数据存放在项目数据库（PROJECT_DB_MODE=isolated）
- * - 若使用全局 DataSource（ss-node.db），全局库的 dev_data_tags 为空，外键检查失败
+ * Key design: uses the project-level DataSource (obtained via ProjectDatabaseService), not the global
+ * DataSource. Reasons:
+ * - The HistoricalData entity references dev_data_tags.id via @ManyToOne(() => DataTag)
+ * - DataTag data lives in the project database (PROJECT_DB_MODE=isolated)
+ * - With the global DataSource (ss-node.db), the global dev_data_tags is empty and the foreign key check fails
  *
- * HistoricalData 实体已由 DataModule.onModuleInit() 注册到 ProjectDatabaseService，
- * 因此每个项目数据库初始化时都会自动创建 data_historical_data 表。
+ * The HistoricalData entity is already registered with ProjectDatabaseService by DataModule.onModuleInit(),
+ * so the data_historical_data table is created automatically when each project database initializes.
  *
- * 注册：必须通过 onModuleInit 主动注册到 PersistWriterRegistry，
- * 否则 PersistStep 无法获取到本 Writer（NestJS 模块封装性限制）。
+ * Registration: must actively register with PersistWriterRegistry via onModuleInit,
+ * otherwise PersistStep cannot obtain this Writer (NestJS module encapsulation limitation).
  */
 @Injectable()
 export class SqlitePersistWriter implements IPersistWriter, OnModuleInit {
   readonly name = 'SQLite';
   private readonly logger = new Logger(SqlitePersistWriter.name);
-  /** 按 projectId 分组的待写入缓冲区 */
+  /** Pending-write buffer grouped by projectId */
   private bufferByProject: Map<string, HistoricalData[]> = new Map();
   private readonly batchSize = 100;
   private flushTimer: NodeJS.Timeout | null = null;
   private readonly flushIntervalMs = 5000;
-  /** 是否激活：仅当 HISTORICAL_DATA_BACKEND=sqlite */
+  /** Whether active: only when HISTORICAL_DATA_BACKEND=sqlite */
   private readonly enabled: boolean;
 
   isActive(): boolean {
@@ -59,8 +59,8 @@ export class SqlitePersistWriter implements IPersistWriter, OnModuleInit {
   }
 
   /**
-   * 获取指定项目的 HistoricalData Repository
-   * 通过 ProjectDatabaseService 获取项目级 DataSource，再取 Repository
+   * Get the HistoricalData repository for a given project
+   * Obtains the project-level DataSource via ProjectDatabaseService, then the Repository
    */
   private async getRepo(projectId: string): Promise<Repository<HistoricalData>> {
     const ds = await this.projectDbService.getSystemDb(projectId);
@@ -88,7 +88,7 @@ export class SqlitePersistWriter implements IPersistWriter, OnModuleInit {
     if (!this.enabled) return;
     if (points.length === 0) return;
 
-    // 按 projectId 分组，分别写入对应项目数据库
+    // Group by projectId and write to the corresponding project databases
     const grouped = new Map<string, DataPoint[]>();
     for (const point of points) {
       const arr = grouped.get(point.projectId) ?? [];
@@ -113,15 +113,15 @@ export class SqlitePersistWriter implements IPersistWriter, OnModuleInit {
   }
 
   /**
-   * 根据 DataPoint 构造 HistoricalData 记录
+   * Build a HistoricalData record from a DataPoint
    *
-   * 按 value 类型分写到对应列：
+   * Values are split by type into the corresponding columns:
    * - number → numericValue
    * - boolean → booleanValue
    * - string → stringValue
-   * - null → 三个列均为 null
+   * - null → all three columns null
    *
-   * 这样查询时可根据 tag.dataType 选择正确的列读取。
+   * Queries can then read the correct column based on tag.dataType.
    */
   private buildRecord(point: DataPoint): Partial<HistoricalData> {
     const record: Partial<HistoricalData> = {
@@ -155,8 +155,8 @@ export class SqlitePersistWriter implements IPersistWriter, OnModuleInit {
       this.flushTimer = null;
     }
 
-    // 快照当前待刷新项目，避免 flushProject 失败时 re-queue 导致 Map
-    // 在迭代中被修改（delete + set 会使迭代器重新访问该 key → 死循环）
+    // Snapshot the projects pending flush, to avoid re-queueing after flushProject failures making the Map
+    // modified during iteration (delete + set makes the iterator revisit that key → infinite loop)
     const entries = Array.from(this.bufferByProject.entries());
     for (const [projectId, buf] of entries) {
       if (buf.length === 0) continue;
@@ -167,9 +167,9 @@ export class SqlitePersistWriter implements IPersistWriter, OnModuleInit {
   private async flushProject(projectId: string, buf: HistoricalData[]): Promise<void> {
     if (buf.length === 0) return;
 
-    // 取出并清空对应项目的缓冲区
+    // Take out and clear the buffer of the corresponding project
     const batch = buf.splice(0);
-    // 如果缓冲区已空，从 map 中移除（避免 Map 无限增长）
+    // If the buffer is empty, remove it from the map (avoiding unbounded Map growth)
     if (buf.length === 0) {
       this.bufferByProject.delete(projectId);
     }
@@ -183,7 +183,7 @@ export class SqlitePersistWriter implements IPersistWriter, OnModuleInit {
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'SQLite flush failed';
       this.logger.error(`SQLite flush error (project=${projectId}): ${errorMsg}`);
-      // 失败时把记录放回缓冲区，下次再试
+      // On failure, put the records back into the buffer for the next attempt
       const current = this.bufferByProject.get(projectId) ?? [];
       this.bufferByProject.set(projectId, [...batch, ...current]);
     }

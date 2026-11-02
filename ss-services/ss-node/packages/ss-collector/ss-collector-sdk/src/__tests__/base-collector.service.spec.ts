@@ -7,17 +7,17 @@ import { BaseCollectorService } from '../base-collector.service';
 import { ITagContext } from '../types';
 
 // ============================================================
-// 测试用具体子类 — 把抽象方法暴露为 jest.fn 以便断言
+// Concrete subclass for testing - exposes abstract methods as jest.fn for assertions
 // ============================================================
 
 class TestCollector extends BaseCollectorService {
-  // 实现抽象方法（用 jest.fn 以便断言）
+  // Implement the abstract method (using jest.fn for assertions)
   connect = jest.fn();
   doReadTag = jest.fn();
   doWriteTag = jest.fn();
   doDisconnect = jest.fn();
 
-  // 暴露 protected 方法供测试调用
+  // Expose protected methods for test invocation
   trackClient(deviceId: string, client: any): void {
     super.trackClient(deviceId, client);
   }
@@ -65,7 +65,7 @@ describe('BaseCollectorService', () => {
   });
 
   // -------------------------------------------------------------
-  // validateChannelConfig（默认实现）
+  // validateChannelConfig (default implementation)
   // -------------------------------------------------------------
   describe('validateChannelConfig', () => {
     it('默认应返回 valid=true 与空错误列表', async () => {
@@ -83,7 +83,7 @@ describe('BaseCollectorService', () => {
   });
 
   // -------------------------------------------------------------
-  // readTag（带重试）
+  // readTag (with retry)
   // -------------------------------------------------------------
   describe('readTag', () => {
     it('首次成功应直接返回结果不重试', async () => {
@@ -101,7 +101,7 @@ describe('BaseCollectorService', () => {
     it('失败时按默认 maxRetries=3 重试 3 次', async () => {
       jest.useRealTimers();
       const client = { id: 'c1' };
-      const tag = makeTag(); // 未设置 maxRetries，默认 3
+      const tag = makeTag(); // maxRetries not set, defaults to 3
       service.doReadTag.mockImplementation(() => Promise.reject(new Error('read fail')));
 
       await expect(service.readTag(client, tag)).rejects.toThrow('read fail');
@@ -119,7 +119,7 @@ describe('BaseCollectorService', () => {
 
       jest.useFakeTimers();
       const promise = service.readTag(client, tag);
-      promise.catch(() => {}); // 立即附加 handler 避免 unhandledRejection
+      promise.catch(() => {}); // attach handler immediately to avoid unhandledRejection
       await jest.advanceTimersByTimeAsync(5000);
       const result = await promise;
 
@@ -150,7 +150,7 @@ describe('BaseCollectorService', () => {
   });
 
   // -------------------------------------------------------------
-  // writeTag（带重试）
+  // writeTag (with retry)
   // -------------------------------------------------------------
   describe('writeTag', () => {
     it('首次成功应直接返回不重试', async () => {
@@ -167,7 +167,7 @@ describe('BaseCollectorService', () => {
     it('失败时按默认 maxRetries=2 重试 2 次', async () => {
       jest.useRealTimers();
       const client = { id: 'c1' };
-      const tag = makeTag(); // 默认 2 次
+      const tag = makeTag(); // default 2 times
       service.doWriteTag.mockImplementation(() => Promise.reject(new Error('write fail')));
 
       await expect(service.writeTag(client, tag, 100)).rejects.toThrow('write fail');
@@ -191,7 +191,7 @@ describe('BaseCollectorService', () => {
 
       jest.useFakeTimers();
       const promise = service.writeTag(client, tag, 1);
-      promise.catch(() => {}); // 立即附加 handler 避免 unhandledRejection
+      promise.catch(() => {}); // attach handler immediately to avoid unhandledRejection
       await jest.advanceTimersByTimeAsync(5000);
       await promise;
 
@@ -271,7 +271,7 @@ describe('BaseCollectorService', () => {
 
       await service.onModuleDestroy();
 
-      // 推进时间，验证重连不再触发
+      // Advance time to verify reconnection is no longer triggered
       jest.advanceTimersByTime(5000);
       expect(reconnectFn).not.toHaveBeenCalled();
     });
@@ -314,7 +314,7 @@ describe('BaseCollectorService', () => {
     it('getClientEntries 应返回只读 Map', () => {
       const entries = service.getClientEntries();
       expect(entries).toBeInstanceOf(Map);
-      // Map 方法仍可调用，但语义上是只读
+      // Map methods are still callable, but semantically read-only
       expect(entries.size).toBe(0);
     });
   });
@@ -331,16 +331,16 @@ describe('BaseCollectorService', () => {
       const reconnectFn = jest.fn().mockResolvedValue(undefined);
       service.startAutoReconnect('dev-1', reconnectFn, 1000);
 
-      // 500ms: 不应调用
+      // 500ms: should not be called
       jest.advanceTimersByTime(500);
       expect(reconnectFn).not.toHaveBeenCalled();
 
-      // 1000ms: 应调用一次
+      // 1000ms: should be called once
       jest.advanceTimersByTime(500);
-      await Promise.resolve(); // 让 setInterval 回调中的 await resolve
+      await Promise.resolve(); // let the await inside the setInterval callback resolve
       expect(reconnectFn).toHaveBeenCalledTimes(1);
 
-      // 成功后应停止定时器，再推进时间不应再次调用
+      // After success, the timer should stop; advancing time again should not call it
       jest.advanceTimersByTime(5000);
       await Promise.resolve();
       expect(reconnectFn).toHaveBeenCalledTimes(1);
@@ -354,7 +354,7 @@ describe('BaseCollectorService', () => {
       await Promise.resolve();
       expect(reconnectFn).toHaveBeenCalledTimes(1);
 
-      // 再推进时间，不应再次调用
+      // Advancing time again should not call it
       jest.advanceTimersByTime(5000);
       await Promise.resolve();
       expect(reconnectFn).toHaveBeenCalledTimes(1);
@@ -370,7 +370,7 @@ describe('BaseCollectorService', () => {
       await Promise.resolve();
       expect(reconnectFn).toHaveBeenCalledTimes(1);
 
-      // 推进时间，应再次调用
+      // Advance time; it should be called again
       jest.advanceTimersByTime(1000);
       await Promise.resolve();
       expect(reconnectFn).toHaveBeenCalledTimes(2);
@@ -398,7 +398,7 @@ describe('BaseCollectorService', () => {
       service.startAutoReconnect('dev-1', fn2, 1000);
 
       jest.advanceTimersByTime(1000);
-      // 只有 fn2 应被调用
+      // Only fn2 should be called
       expect(fn1).not.toHaveBeenCalled();
       expect(fn2).toHaveBeenCalledTimes(1);
     });
@@ -407,11 +407,11 @@ describe('BaseCollectorService', () => {
       const reconnectFn = jest.fn().mockResolvedValue(undefined);
       service.startAutoReconnect('dev-1', reconnectFn);
 
-      // 29s 不应触发
+      // 29s should not trigger
       jest.advanceTimersByTime(29000);
       expect(reconnectFn).not.toHaveBeenCalled();
 
-      // 30s 应触发
+      // 30s should trigger
       jest.advanceTimersByTime(1000);
       expect(reconnectFn).toHaveBeenCalledTimes(1);
     });

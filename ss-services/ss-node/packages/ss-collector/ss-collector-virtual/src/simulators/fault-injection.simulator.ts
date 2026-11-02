@@ -7,14 +7,14 @@ import { VariableSimulator } from './variable-simulator.interface';
 import { VariableSimulationConfig, FaultInjectionParams } from '../simulation-config.types';
 
 /**
- * 故障注入仿真器
+ * Fault-injection simulator
  *
- * 按配置比例随机返回错误或超时，用于测试报警规则和熔断逻辑。
- * 支持三种故障场景：
- * - error：随机返回 NaN/Error（模拟通信失败）
- * - timeout：随机延迟超过超时阈值（模拟超时）
- * - slow_rise：值缓慢上升（模拟传感器漂移）
- * - spike：偶发尖峰跳变（模拟传感器故障）
+ * Randomly returns errors or timeouts according to configured ratios, for testing alarm rules and circuit-breaker logic.
+ * Supports four fault scenarios:
+ * - error: randomly return NaN/Error (simulates communication failure)
+ * - timeout: randomly delay beyond the timeout threshold (simulates timeout)
+ * - slow_rise: value slowly rises (simulates sensor drift)
+ * - spike: occasional spike jump (simulates sensor fault)
  */
 export class FaultInjectionSimulator implements VariableSimulator {
   private readonly logger = new Logger(FaultInjectionSimulator.name);
@@ -69,7 +69,7 @@ export class FaultInjectionSimulator implements VariableSimulator {
     this.config = config;
   }
 
-  /** 随机错误：按 errorRate 概率返回 NaN */
+  /** Random error: return NaN with probability errorRate */
   private generateError(): number | null {
     const errorRate = this.params.errorRate ?? 0.1;
     if (Math.random() < errorRate) {
@@ -79,7 +79,7 @@ export class FaultInjectionSimulator implements VariableSimulator {
     return this.currentValue;
   }
 
-  /** 随机超时：通过返回 null 模拟，由上层处理 */
+  /** Random timeout: simulated by returning null, handled by the upper layer */
   private generateTimeout(): number | null {
     const timeoutRate = this.params.timeoutRate ?? 0.05;
     if (Math.random() < timeoutRate) {
@@ -89,7 +89,7 @@ export class FaultInjectionSimulator implements VariableSimulator {
     return this.currentValue;
   }
 
-  /** 缓慢上升：模拟传感器漂移 */
+  /** Slow rise: simulates sensor drift */
   private generateSlowRise(elapsedSec: number): number {
     const riseRate = this.params.riseRatePerSec ?? 0.1;
     const noiseLevel = this.params.noiseLevel ?? 0.05;
@@ -97,7 +97,7 @@ export class FaultInjectionSimulator implements VariableSimulator {
     return this.currentValue;
   }
 
-  /** 偶发尖峰：模拟传感器跳变 */
+  /** Occasional spike: simulates sensor jump */
   private generateSpike(_elapsedSec: number): number {
     const spikeRate = this.params.spikeRate ?? 0.02;
     const spikeMagnitude = this.params.spikeMagnitude ?? 50;

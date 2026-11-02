@@ -6,8 +6,8 @@ import { getCompletionsByMode } from '../utils/completionData';
 import type { ScriptEditorMode } from '../ScriptEditor.types';
 
 /**
- * 上下文感知前缀映射：根据输入前缀过滤补全项
- * 例如：输入 `api.` 时只显示 api.* 方法
+ * Context-aware prefix mapping: filter completion items by the input prefix
+ * For example: typing `api.` shows only api.* methods
  */
 const CONTEXT_PREFIXES: Record<string, string> = {
   'api.': 'api.',
@@ -25,7 +25,7 @@ export function useScriptCompletion(
   mode: ScriptEditorMode,
 ) {
   let disposed = false;
-  // 缓存补全数据，避免每次输入都重新计算
+  // Cache completion data, avoiding recomputation on every keystroke
   const completionItems = getCompletionsByMode(mode);
 
   function register() {
@@ -50,7 +50,7 @@ export function useScriptCompletion(
           endColumn: word.endColumn,
         };
 
-        // 上下文感知过滤：根据输入前缀只显示相关补全项
+        // Context-aware filtering: show only relevant completion items based on the input prefix
         const filteredItems = filterByContext(completionItems, textBeforeCursor);
 
         const suggestions = filteredItems.map((item) => ({
@@ -74,10 +74,10 @@ export function useScriptCompletion(
   }
 
   /**
-   * 根据输入上下文过滤补全项
-   * - 输入 `api.` → 只显示 api.* 方法
-   * - 输入 `data.` → 只显示 data 相关
-   * - 其他情况 → 显示全部
+   * Filter completion items by input context
+   * - Typing `api.` → show only api.* methods
+   * - Typing `data.` → show only data-related items
+   * - Otherwise → show all
    */
   function filterByContext(items: any[], textBeforeCursor: string): any[] {
     for (const [suffix, prefix] of Object.entries(CONTEXT_PREFIXES)) {

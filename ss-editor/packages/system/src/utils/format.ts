@@ -3,45 +3,45 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 标签值显示格式化工具。
+ * Tag value display formatting utilities.
  *
- * 与后端 FormatStep.applyFormat() 保持一致的语义，支持：
- * - 整数格式：%d / %i / %.0f
- * - 浮点格式：%.Nf（保留 N 位小数）
- * - 十六进制格式：%X / %x / %04X / %08x 等
+ * Semantics kept consistent with the backend FormatStep.applyFormat(), supporting:
+ * - Integer formats: %d / %i / %.0f
+ * - Float formats: %.Nf (N decimal places)
+ * - Hexadecimal formats: %X / %x / %04X / %08x etc.
  *
- * 当未提供 displayFormat 或值无法解析为数字时，回退为直接转字符串。
+ * When displayFormat is not provided or the value cannot be parsed as a number, falls back to direct string conversion.
  */
 
 /**
- * 根据标签的 displayFormat 格式化显示值。
+ * Format the display value according to a tag's displayFormat.
  *
- * @param value          原始值（可能为 number / string / null / undefined）
- * @param displayFormat  显示格式串（如 "%.2f"、"%d"、"%04X"）
- * @returns 格式化后的字符串；值为空时返回 '—'
+ * @param value          Raw value (may be number / string / null / undefined)
+ * @param displayFormat  Display format string (e.g. "%.2f", "%d", "%04X")
+ * @returns The formatted string; returns an em dash when the value is empty
  */
 export function formatTagValue(value: unknown, displayFormat?: string): string {
   if (value === null || value === undefined || value === '') return '—';
 
-  // 无格式配置时，直接返回原值
+  // Without a format config, return the raw value directly
   if (!displayFormat) return String(value);
 
   const num = Number(value);
   if (Number.isNaN(num)) return String(value);
 
-  // 整数格式
+  // Integer formats
   if (displayFormat === '%d' || displayFormat === '%i' || displayFormat === '%.0f') {
     return Math.round(num).toString();
   }
 
-  // 浮点格式：%.Nf
+  // Float format: %.Nf
   const floatMatch = displayFormat.match(/^%\.(\d+)f$/);
   if (floatMatch) {
     const decimals = parseInt(floatMatch[1], 10);
     return num.toFixed(decimals);
   }
 
-  // 十六进制格式：%X / %x / %04X / %08x 等
+  // Hexadecimal formats: %X / %x / %04X / %08x etc.
   const hexMatch = displayFormat.match(/^%(\d*)([Xx])$/);
   if (hexMatch) {
     const width = parseInt(hexMatch[1], 10) || 0;
@@ -53,13 +53,13 @@ export function formatTagValue(value: unknown, displayFormat?: string): string {
     return upper ? padded.toUpperCase() : padded;
   }
 
-  // 不支持的格式，直接转字符串
+  // Unsupported format, convert to string directly
   return String(value);
 }
 
 /**
- * 从 displayFormat 中推断小数位数（用于坐标轴刻度等场景）。
- * 返回 null 表示无明确小数位（调用方应自行选择默认精度）。
+ * Infer the decimal places from displayFormat (for axis ticks and similar scenarios).
+ * Returns null when there are no explicit decimal places (callers should choose a default precision themselves).
  */
 export function getDecimalsFromFormat(displayFormat?: string): number | null {
   if (!displayFormat) return null;

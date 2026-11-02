@@ -156,7 +156,7 @@ export class SVGGraphicConverter {
   private createImage(
     graphic: IGraphic,
     geometry: { x: number; y: number; width: number; height: number },
-    // style 预留，后续支持图片滤镜等样式
+    // style reserved for future features such as image filters
     _style: Record<string, any>
   ): SVGElement {
     const img = this.pool.acquire('image')

@@ -22,7 +22,7 @@ jest.mock('@nestjs/swagger', () => {
   };
 });
 
-// Mock 外部服务包，避免加载真实源码的依赖链（swagger PartialType / ss-collector-sdk）
+// Mock external service packages, avoiding the dependency chain of loading real source (swagger PartialType / ss-collector-sdk)
 jest.mock('@ss-node/ss-datatag', () => ({
   DataTagService: jest.fn().mockImplementation(() => ({ findById: jest.fn() })),
   DatatagModule: class {},
@@ -41,7 +41,7 @@ jest.mock('@ss-node/ss-storage-influx', () => ({
 import { ScriptApiService } from '../script-api.service';
 
 // ============================================================
-// Mock 依赖服务
+// Mock dependent services
 // ============================================================
 function createMockCacheService() {
   return {
@@ -249,7 +249,7 @@ describe('ScriptApiService', () => {
       const provider = service.getApiProvider('proj-1');
       provider.triggerAlarm('test', 'msg', 'invalid-level');
 
-      // 事件中的 severity 应规范化为 warning
+      // The event's severity should be normalized to warning
       expect(mockEventBusService.emit).toHaveBeenCalledWith(
         'alarm_triggered',
         expect.objectContaining({
@@ -336,7 +336,7 @@ describe('ScriptApiService', () => {
     });
   });
 
-  // ==================== getApiProvider projectId 闭包 ====================
+  // ==================== getApiProvider projectId closure ====================
   describe('getApiProvider projectId closure', () => {
     it('should bind projectId to all functions via closure', async () => {
       mockDataTagService.findById.mockResolvedValue({
@@ -348,7 +348,7 @@ describe('ScriptApiService', () => {
       const provider = service.getApiProvider('proj-closure');
       await provider.writeTag('tag-1', 1);
 
-      // projectId 应通过闭包传递到 writeTag 内部
+      // projectId should be passed into writeTag's internals via the closure
       expect(mockEventBusService.emit).toHaveBeenCalledWith(
         'data_point_changed',
         expect.objectContaining({ projectId: 'proj-closure' }),
@@ -356,7 +356,7 @@ describe('ScriptApiService', () => {
     });
 
     it('should produce independent providers for different projectIds', () => {
-      // 使用 triggerAlarm 测试闭包隔离（writeTag 会从 DataTag 覆盖 projectId）
+      // Use triggerAlarm to test closure isolation (writeTag overwrites projectId from the DataTag)
       const providerA = service.getApiProvider('proj-A');
       const providerB = service.getApiProvider('proj-B');
 

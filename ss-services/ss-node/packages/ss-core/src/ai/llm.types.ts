@@ -3,37 +3,37 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * LLM 类型定义 — P1-T01 LLM API 接入配置
+ * LLM type definitions - P1-T01 LLM API access configuration
  *
- * 定义 LLM Provider、消息、请求/响应等公共类型。
- * 所有 Provider 实现均遵守此处定义的接口契约。
+ * Defines common types for LLM Provider, messages, requests/responses, etc.
+ * All provider implementations comply with the interface contract defined here.
  */
 
 /**
- * 供应商 ID
+ * Provider ID
  *
- * 使用字符串类型以支持扩展（deepseek/zhipu/qwen/moonshot/ernie/openai/claude/gemini/mistral/custom 等）。
- * 具体可用供应商见 provider-presets.ts 的 PROVIDER_PRESETS。
+ * Uses a string type for extensibility (deepseek/zhipu/qwen/moonshot/ernie/openai/claude/gemini/mistral/custom, etc.).
+ * Available providers see PROVIDER_PRESETS in provider-presets.ts.
  */
 export type LLMProviderId = string;
 
-/** 任务类型（用于路由策略 D-010） */
+/** Task type (for routing strategy D-010) */
 export type TaskType = 'codegen' | 'chat' | 'intent' | 'analysis' | 'embedding';
 
-/** 消息角色 */
+/** Message role */
 export type ChatRole = 'system' | 'user' | 'assistant' | 'tool';
 
-/** 聊天消息 */
+/** Chat message */
 export interface ChatMessage {
   role: ChatRole;
   content: string;
-  /** tool 角色消息的 tool_call_id */
+  /** tool role message's tool_call_id */
   toolCallId?: string;
-  /** assistant 消息携带的工具调用 */
+  /** assistant message's tool calls */
   toolCalls?: ToolCall[];
 }
 
-/** 工具调用 */
+/** Tool call */
 export interface ToolCall {
   id: string;
   type: 'function';
@@ -43,7 +43,7 @@ export interface ToolCall {
   };
 }
 
-/** 工具定义 */
+/** Tool definition */
 export interface ToolDefinition {
   type: 'function';
   function: {
@@ -53,141 +53,141 @@ export interface ToolDefinition {
   };
 }
 
-/** LLM 请求 */
+/** LLM request */
 export interface LLMRequest {
-  /** 消息列表 */
+  /** Message list */
   messages: ChatMessage[];
-  /** 指定供应商（覆盖任务类型路由，优先使用该供应商；失败再回退路由） */
+  /** Specified provider (overrides task-type routing; used first; falls back to routing on failure) */
   providerId?: LLMProviderId;
-  /** 指定模型（覆盖默认） */
+  /** Specified model (overrides default) */
   model?: string;
-  /** 温度（0-2，越高越发散） */
+  /** Temperature (0-2, higher = more random) */
   temperature?: number;
-  /** 最大生成 Token 数 */
+  /** Max tokens to generate */
   maxTokens?: number;
-  /** 可用工具列表（Function Calling） */
+  /** Available tool list (Function Calling) */
   tools?: ToolDefinition[];
-  /** 是否强制工具调用 */
+  /** Whether to force tool calls */
   toolChoice?: 'auto' | 'none' | 'required' | { type: 'function'; function: { name: string } };
-  /** 停止序列 */
+  /** Stop sequence */
   stop?: string[];
-  /** 用户标识（用于审计） */
+  /** User identifier (for audit) */
   user?: string;
-  /** 是否启用流式输出 */
+  /** Whether streaming output is enabled */
   stream?: boolean;
 }
 
-/** LLM 响应 */
+/** LLM response */
 export interface LLMResponse {
-  /** 生成内容 */
+  /** Generated content */
   content: string;
-  /** 模型名 */
+  /** Model name */
   model: string;
-  /** 角色（恒为 assistant） */
+  /** Role (always assistant) */
   role: 'assistant';
-  /** 工具调用（如有） */
+  /** Tool calls (if any) */
   toolCalls?: ToolCall[];
-  /** Token 使用统计 */
+  /** Token usage statistics */
   usage: {
     promptTokens: number;
     completionTokens: number;
     totalTokens: number;
   };
-  /** 供应商 ID */
+  /** Provider ID */
   provider: LLMProviderId;
-  /** 完成原因 */
+  /** Finish reason */
   finishReason: 'stop' | 'length' | 'tool_calls' | 'content_filter';
-  /** 响应耗时（毫秒） */
+  /** Response time (ms) */
   latencyMs: number;
 }
 
-/** 流式输出片段 */
+/** Streaming chunk */
 export interface ChatStreamChunk {
-  /** 增量内容 */
+  /** Incremental content */
   delta: string;
-  /** 是否结束 */
+  /** Whether finished */
   done: boolean;
-  /** 完成时的统计 */
+  /** Statistics at completion */
   usage?: {
     promptTokens: number;
     completionTokens: number;
     totalTokens: number;
   };
-  /** 完成原因（done=true 时） */
+  /** Finish reason (when done=true) */
   finishReason?: 'stop' | 'length' | 'tool_calls' | 'content_filter';
-  /** 由 Controller 在 done=true 时注入，标识本次对话所属会话（Provider 实现不应主动填充） */
+  /** Injected by Controller when done=true, identifies the session this conversation belongs to (provider impl should not fill this) */
   conversationId?: string;
 }
 
-/** 嵌入请求 */
+/** Embedding request */
 export interface EmbeddingRequest {
-  /** 待嵌入文本列表 */
+  /** Text list to embed */
   inputs: string[];
-  /** 指定模型（覆盖默认） */
+  /** Specified model (overrides default) */
   model?: string;
 }
 
-/** 嵌入响应 */
+/** Embedding response */
 export interface EmbeddingResponse {
-  /** 嵌入向量列表（与 inputs 一一对应） */
+  /** Embedding vector list (one-to-one with inputs) */
   embeddings: number[][];
-  /** 模型名 */
+  /** Model name */
   model: string;
-  /** 维度 */
+  /** Dimension */
   dimension: number;
-  /** Token 使用统计 */
+  /** Token usage statistics */
   usage: {
     promptTokens: number;
     totalTokens: number;
   };
-  /** 供应商 ID */
+  /** Provider ID */
   provider: LLMProviderId;
 }
 
-/** Provider 健康状态 */
+/** Provider health status */
 export interface ProviderHealth {
   providerId: LLMProviderId;
-  /** 是否可用 */
+  /** Whether available */
   healthy: boolean;
-  /** 最近一次检查时间 */
+  /** Last check time */
   lastCheckAt: number;
-  /** 最近错误信息 */
+  /** Last error message */
   lastError?: string;
-  /** 平均响应延迟（毫秒） */
+  /** Average response latency (ms) */
   avgLatencyMs?: number;
 }
 
-/** Provider 配置 */
+/** Provider config */
 export interface ProviderConfig {
   providerId: LLMProviderId;
   apiKey: string;
   apiBase: string;
   defaultModel: string;
-  /** 代码生成模型（DeepSeek 专用） */
+  /** Code-generation model (DeepSeek only) */
   codegenModel?: string;
-  /** 轻量模型（智谱专用） */
+  /** Lightweight model (Zhipu only) */
   liteModel?: string;
-  /** 嵌入模型 */
+  /** Embedding model */
   embeddingModel?: string;
-  /** 嵌入维度 */
+  /** Embedding dimension */
   embeddingDim?: number;
-  /** 请求超时（毫秒） */
+  /** Request timeout (ms) */
   timeout: number;
-  /** 最大重试次数 */
+  /** Max retry count */
   maxRetries: number;
 }
 
-/** 任务路由配置（D-010 多供应商路由策略） */
+/** Task routing config (D-010 multi-provider routing strategy) */
 export interface RoutingConfig {
   codegen: LLMProviderId;
   chat: LLMProviderId;
   intent: LLMProviderId;
   analysis: LLMProviderId;
-  /** 嵌入任务固定使用智谱 */
+  /** Embedding tasks always use Zhipu */
   embedding: LLMProviderId;
 }
 
-/** 默认路由策略（与 D-010 表格一致） */
+/** Default routing strategy (consistent with D-010 table) */
 export const DEFAULT_ROUTING: RoutingConfig = {
   codegen: 'deepseek',
   chat: 'zhipu',

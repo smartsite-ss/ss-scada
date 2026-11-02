@@ -15,7 +15,7 @@ export interface SimulationConfig {
   maxValue?: number;
   interval?: number; // ms
   script?: string; // Custom script
-  tagIds?: string[]; // 关联的 Tag ID 列表
+  tagIds?: string[]; // list of associated tag IDs
 }
 
 @Injectable()
@@ -42,7 +42,7 @@ export class DeviceSimulationService implements OnModuleDestroy {
       const value = this.generateValue(config);
       this.logger.debug(`Simulation [${deviceId}][${config.mode}]: ${value}`);
 
-      // 注入仿真数据到最新值缓存
+      // Inject simulated data into the latest-value cache
       if (this.deviceDataService && config.tagIds?.length) {
         for (const tagId of config.tagIds) {
           this.deviceDataService.updateLatestValue(tagId, deviceId, value, 'good').catch((err) => {

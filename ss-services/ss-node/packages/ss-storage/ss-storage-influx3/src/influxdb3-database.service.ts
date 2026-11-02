@@ -6,39 +6,39 @@ import { Injectable, Logger, OnModuleDestroy, OnModuleInit, Optional } from '@ne
 import { EventBusService, EventLogService } from '@ss-node/ss-core';
 import { STORAGE_ENGINE_TYPES, StorageEngineConfigService } from '@ss-node/ss-storage';
 
-/** v3 数据库名长度上限（v3 默认 64 字符） */
+/** v3 database name length cap (v3 default is 64 characters) */
 const DATABASE_NAME_MAX_LENGTH = 64;
-/** 单次 API fetch 超时（ms） */
+/** Per-API fetch timeout (ms) */
 const FETCH_TIMEOUT_MS = 5000;
 
 /**
- * InfluxDB 3 Core 项目 database 管理服务（对齐 InfluxBucketService）。
+ * InfluxDB 3 Core project database management service (aligned with InfluxBucketService).
  *
- * P0 实测（InfluxDB 3 Core 3.11.2）对齐：
- * - 建库：POST /api/v3/configure/database，body {"db", "retention_period"?}；
- *   重复创建返回 409（视为已存在=成功）；SQL CREATE DATABASE 不被支持
- *   （"DDL not supported: CreateCatalog"）；
- * - 隔离策略（用户决策）：按项目分库，库名 ss-node-data-{projectId}
- *   （UUID 含连字符合法，48 字符 ≤ 64 上限）；
- *   v3 Core 存在 5 个 database 上限（实测 422
- *   "Adding a new database would exceed limit of 5 databases"），
- *   属已知约束：项目数量由运维侧控制，超限时建库失败并明确报错；
- * - 保留期建库时设定（v3 特性：建库后不可修改），经 INFLUXDB3_RETENTION_PERIOD 配置；
- * - 健康探活：/health 需要 Bearer 鉴权（无 token 401），
- *   失败后置 false，恢复后置 true；
- * - project.created 事件：项目引擎为 influxdb3 时立即建库（幂等）。
+ * P0 test (InfluxDB 3 Core 3.11.2) alignment:
+ * - Create database: POST /api/v3/configure/database with body {"db", "retention_period"?};
+ *   duplicate creation returns 409 (treated as already exists = success); SQL CREATE DATABASE is not supported
+ *   ("DDL not supported: CreateCatalog");
+ * - Isolation strategy (user decision): per-project databases, name ss-node-data-{projectId}
+ *   (UUIDs with hyphens are valid, 48 chars ≤ the 64 cap);
+ *   v3 Core has a 5-database limit (tested 422
+ *   "Adding a new database would exceed limit of 5 databases"),
+ *   a known constraint: project count is controlled by ops; beyond the limit, creation fails with a clear error;
+ * - Retention period is set at creation time (v3 feature: cannot be modified afterwards), configured via INFLUXDB3_RETENTION_PERIOD;
+ * - Health probe: /health requires Bearer auth (401 without a token),
+ *   set to false on failure, back to true after recovery;
+ * - project.created event: when a project's engine is influxdb3, create the database immediately (idempotent).
  */
 @Injectable()
 export class Influxdb3DatabaseService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(Influxdb3DatabaseService.name);
 
-  /** 已就绪的 database 名集合（避免重复调用建库端点） */
+  /** Set of ready database names (avoids repeated calls to the create-database endpoint) */
   private readonly readyDatabases = new Set<string>();
 
-  /** InfluxDB 3 是否可用（失败后置 false，健康检查恢复后置 true） */
+  /** Whether InfluxDB 3 is available (set false on failure, back to true after the health check recovers) */
   private influxdb3Available = true;
 
-  /** 健康检查定时器 */
+  /** Health check timer */
   private healthCheckTimer: NodeJS.Timeout | null = null;
   private readonly healthCheckIntervalMs = 60_000;
   private readonly healthCheckTimeoutMs = 5000;
@@ -68,7 +68,7 @@ export class Influxdb3DatabaseService implements OnModuleInit, OnModuleDestroy {
       };
     };
 
-    // 项目创建 → 立即建库（幂等；超 5 库上限时记录错误日志，不阻断事件链）
+    // Project created → create the database immediately (idempotent; beyond the 5-database limit, log an error without breaking the event chain)
     this.eventBus.on(
       'project.created',
       wrap('project.created', async (payload: { projectId: string; tenantId?: string }) => {
@@ -98,11 +98,11 @@ export class Influxdb3DatabaseService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  // ──────────── 公开接口 ────────────
+  // ──────────── Public API ────────────
 
   /**
-   * 确保项目 database 存在（懒创建，幂等）。
-   * 供适配器写入/读取路径调用；失败时仍返回库名（write_lp 会自动建库兜底）。
+   * Ensure the project database exists (lazy creation, idempotent).
+   * Called by the adapter's write/read paths; on failure the database name is still returned (write_lp auto-creates as a fallback).
    */
   async ensureDatabase(projectId: string): Promise<string> {
     const databaseName = this.getDatabaseNameForProject(projectId);
@@ -118,24 +118,24 @@ export class Influxdb3DatabaseService implements OnModuleInit, OnModuleDestroy {
     return databaseName;
   }
 
-  /** 项目 → database 名（纯命名计算，不发请求） */
+  /** Project → database name (pure name computation, no requests) */
   getDatabaseNameForProject(projectId: string): string {
     return this.normalizeDatabaseName(`ss-node-data-${projectId}`);
   }
 
-  /** 兜底 database 名（无 projectId 的查询/写入路径） */
+  /** Fallback database name (query/write paths without a projectId) */
   getDefaultDatabase(): string {
     const base = process.env.INFLUXDB3_DATABASE || 'ss-node-data';
     return this.normalizeDatabaseName(base);
   }
 
   /**
-   * v3 库名归一化（§5.4 sanitize 边界，单测固化）：
-   * ① 下划线 → 连字符（v3 库名约定）；
-   * ② 其余非法字符（非 [a-zA-Z0-9-]）剔除；
-   * ③ 连续连字符折叠为单个；
-   * ④ 首尾连字符去除；
-   * ⑤ 长度截断至 64 字符。
+   * v3 database name normalization (§5.4 sanitize boundary, pinned by unit tests):
+   * ① underscore → hyphen (v3 database name convention);
+   * ② other illegal characters (not [a-zA-Z0-9-]) removed;
+   * ③ consecutive hyphens collapsed to one;
+   * ④ leading/trailing hyphens stripped;
+   * ⑤ length truncated to 64 characters.
    */
   normalizeDatabaseName(name: string): string {
     return name
@@ -146,21 +146,21 @@ export class Influxdb3DatabaseService implements OnModuleInit, OnModuleDestroy {
       .slice(0, DATABASE_NAME_MAX_LENGTH);
   }
 
-  /** 重置可用性标记（健康检查恢复后重试） */
+  /** Reset the availability flag (retry after the health check recovers) */
   markAvailable(): void {
     this.influxdb3Available = true;
   }
 
-  // ──────────── 内部方法 ────────────
+  // ──────────── Internal methods ────────────
 
   /**
-   * 创建 database（幂等：409=已存在 视为成功）
-   * @returns true=database 就绪，false=创建失败
+   * Create the database (idempotent: 409 = already exists, treated as success)
+   * @returns true = database ready, false = creation failed
    */
   private async createDatabaseIfNotExists(databaseName: string): Promise<boolean> {
     const serverUrl = process.env.INFLUXDB3_URL || 'http://localhost:8181';
     const authToken = process.env.INFLUXDB3_TOKEN || '';
-    // 保留期建库时设定（v3 特性：建库后不可修改），如 365d；留空则用服务端默认
+    // Retention period is set at creation time (v3 feature: cannot be modified afterwards), e.g. 365d; empty means the server default
     const retentionPeriod = process.env.INFLUXDB3_RETENTION_PERIOD || '';
 
     if (!authToken) {
@@ -172,8 +172,8 @@ export class Influxdb3DatabaseService implements OnModuleInit, OnModuleDestroy {
     }
 
     try {
-      // P0 实测：建库端点为 POST /api/v3/configure/database，
-      // body {"db", "retention_period"?}；重复创建返回 409
+      // P0 test: the create-database endpoint is POST /api/v3/configure/database,
+      // body {"db", "retention_period"?}; duplicate creation returns 409
       const body: Record<string, string> = { db: databaseName };
       if (retentionPeriod) {
         body.retention_period = retentionPeriod;
@@ -190,7 +190,7 @@ export class Influxdb3DatabaseService implements OnModuleInit, OnModuleDestroy {
       });
 
       if (response.ok || response.status === 409) {
-        // 409 = 已存在，幂等成功
+        // 409 = already exists, idempotent success
         this.logger.log(
           `InfluxDB 3 database "${databaseName}" ensured (HTTP ${response.status}, ` +
             `retention: ${retentionPeriod || 'server-default'}, 注意：v3 保留期建库后不可修改)`,
@@ -199,7 +199,7 @@ export class Influxdb3DatabaseService implements OnModuleInit, OnModuleDestroy {
       }
 
       const errorBody = await response.text().catch(() => 'unknown');
-      // 422 = 超出 v3 Core 5 库上限（用户决策：保留按项目分库，项目数由运维控制）
+      // 422 = beyond v3 Core's 5-database limit (user decision: keep per-project databases; project count is ops-controlled)
       if (response.status === 422 && /limit of \d+ databases/i.test(errorBody)) {
         this.logger.error(
           `Failed to create InfluxDB 3 database "${databaseName}": exceeds v3 Core database limit ` +
@@ -222,7 +222,7 @@ export class Influxdb3DatabaseService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  /** 定时探活 — /health 带 Bearer 鉴权，200 即恢复 influxdb3Available */
+  /** Periodic health probe — /health with Bearer auth; 200 restores influxdb3Available */
   private startHealthCheck(): void {
     this.healthCheckTimer = setInterval(async () => {
       if (this.influxdb3Available) return;
@@ -240,7 +240,7 @@ export class Influxdb3DatabaseService implements OnModuleInit, OnModuleDestroy {
           this.influxdb3Available = true;
         }
       } catch {
-        // 仍不可达，保持 false，等待下一轮探活
+        // Still unreachable, keep false and wait for the next probe
       }
     }, this.healthCheckIntervalMs);
     if (this.healthCheckTimer.unref) {

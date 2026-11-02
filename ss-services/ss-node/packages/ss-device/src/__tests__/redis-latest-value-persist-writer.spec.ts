@@ -8,16 +8,16 @@ import { LatestValueRedisService } from '@ss-node/ss-core';
 import type Redis from 'ioredis';
 
 /**
- * RedisLatestValuePersistWriter 单元测试（v3 — 项目→设备→变量 层级结构）
+ * RedisLatestValuePersistWriter unit tests (v3 -- project->device->tag hierarchy)
  *
- * v3 变更:
- * - 设备 Key 用 deviceCode(人类可读编码):ss:latest:{projectId}:{deviceCode}
- * - tree 索引(Hash)替换 flat Set:ss:latest:tree:{projectId},HSET deviceId → {deviceCode, deviceName}
- * - 序列化载荷为全语义 7 字段:{projectId, deviceCode, deviceId, tagId, value, quality, timestamp}
- * - handleProjectBeforeDelete 用 readTree(HGETALL tree)替代 SMEMBERS index
+ * v3 changes:
+ * - Device Key uses deviceCode (human-readable code): ss:latest:{projectId}:{deviceCode}
+ * - tree index (Hash) replaces the flat Set: ss:latest:tree:{projectId}, HSET deviceId -> {deviceCode, deviceName}
+ * - Serialized payload is the full-semantics 7 fields: {projectId, deviceCode, deviceId, tagId, value, quality, timestamp}
+ * - handleProjectBeforeDelete uses readTree (HGETALL tree) instead of SMEMBERS index
  *
- * 测试策略:注入真实的 LatestValueRedisService 实例(其 deviceKey/treeKey/serialize
- * 为纯函数,不依赖 Redis 连接),以验证 Writer 与共享服务的集成。
+ * Test strategy: inject a real LatestValueRedisService instance (whose deviceKey/treeKey/serialize
+ * are pure functions, not depending on a Redis connection), to verify the Writer's integration with the shared service.
  */
 describe('RedisLatestValuePersistWriter', () => {
   let writer: RedisLatestValuePersistWriter;
@@ -37,7 +37,7 @@ describe('RedisLatestValuePersistWriter', () => {
     ...overrides,
   });
 
-  // 期望的序列化载荷(v3 全语义字段)
+  // Expected serialized payload (v3 full-semantics fields)
   const expectedPayload = (point: DataPoint): string => {
     const deviceCode = point.deviceCode || point.deviceId;
     return JSON.stringify({
@@ -68,7 +68,7 @@ describe('RedisLatestValuePersistWriter', () => {
     const mockRegistry = new PersistWriterRegistry();
     jest.spyOn(mockRegistry, 'register').mockImplementation(() => undefined);
 
-    // 真实 LatestValueRedisService 实例:deviceKey/treeKey/serialize 为纯函数
+    // Real LatestValueRedisService instance: deviceKey/treeKey/serialize are pure functions
     latestValueService = new LatestValueRedisService(mockRedisClient as any);
 
     writer = new RedisLatestValuePersistWriter(
@@ -98,7 +98,7 @@ describe('RedisLatestValuePersistWriter', () => {
 
       await writer.write(dataPoint);
 
-      // 第一次 hset 是设备 Key
+      // The first hset is the device Key
       expect(mockRedisClient.hset).toHaveBeenCalledWith(
         'ss:latest:proj-A:pump-B',
         'tag-001',
@@ -115,7 +115,7 @@ describe('RedisLatestValuePersistWriter', () => {
 
       await writer.write(dataPoint);
 
-      // 第二次 hset 是 tree 索引:field=deviceId, value={deviceCode, deviceName}
+      // The second hset is the tree index: field=deviceId, value={deviceCode, deviceName}
       const treeCall = mockRedisClient.hset.mock.calls.find(
         (c) => c[0] === 'ss:latest:tree:proj-A',
       );
@@ -128,7 +128,7 @@ describe('RedisLatestValuePersistWriter', () => {
     });
 
     it('TC-RLV-001-C: should fall back to deviceId as deviceCode when deviceCode missing', async () => {
-      // 兼容旧代码路径:DataPoint 无 deviceCode 时,用 deviceId 作为 key 的一部分
+      // Legacy code-path compatibility: when a DataPoint has no deviceCode, deviceId is used as part of the key
       const dataPoint = createDataPoint({ deviceCode: undefined, deviceId: 'dev-fallback' });
 
       await writer.write(dataPoint);
@@ -184,7 +184,7 @@ describe('RedisLatestValuePersistWriter', () => {
 
       await writer.write(dataPoint);
 
-      // 设备 Key hset(第一次调用)
+      // Device Key hset (first call)
       expect(mockRedisClient.hset).toHaveBeenCalledWith(
         'ss:latest:project-001:pump-01',
         'tag-001',
@@ -281,15 +281,15 @@ describe('RedisLatestValuePersistWriter', () => {
     });
 
     it('TC-RLV-014-A: tree HSET failure should not affect main write', async () => {
-      // 设备 Key hset 成功,tree 索引 hset 失败(fire-and-forget,已被 .catch 捕获)
+      // Device Key hset succeeds, tree-index hset fails (fire-and-forget, already caught by .catch)
       mockRedisClient.hset
-        .mockResolvedValueOnce(1) // 设备 Key 成功
-        .mockRejectedValueOnce(new Error('tree HSET failed')); // tree 失败
+        .mockResolvedValueOnce(1) // device key succeeded
+        .mockRejectedValueOnce(new Error('tree HSET failed')); // tree failed
 
       const dataPoint = createDataPoint();
 
       await expect(writer.write(dataPoint)).resolves.toBeUndefined();
-      // 设备 Key 的 hset 仍被调用
+      // The device Key's hset is still called
       expect(mockRedisClient.hset).toHaveBeenCalledWith(
         'ss:latest:project-001:pump-01',
         'tag-001',
@@ -311,9 +311,9 @@ describe('RedisLatestValuePersistWriter', () => {
       await writer.writeBatch(dataPoints);
 
       expect(mockRedisClient.pipeline).toHaveBeenCalledTimes(1);
-      // 每个点 1 次 device hset + tree 索引 hset(去重后按 deviceId)
-      // 3 个点 3 个不同 deviceId(默认都是 device-uuid-001,所以 tree 去重后只有 1 条)
-      // device hset: 3 次 + tree hset: 1 次 = 4 次
+      // Per point 1 device hset + tree-index hset (deduped by deviceId)
+      // 3 points with 3 different deviceIds (all default to device-uuid-001, so the tree dedupes to 1 entry)
+      // device hset: 3 + tree hset: 1 = 4
       expect(mockPipeline.hset).toHaveBeenCalledTimes(4);
       expect(mockPipeline.exec).toHaveBeenCalledTimes(1);
     });
@@ -346,7 +346,7 @@ describe('RedisLatestValuePersistWriter', () => {
 
       await writer.writeBatch(dataPoints);
 
-      // tree 索引:每 projectId 按 deviceId 去重
+      // Tree index: deduped by deviceId per projectId
       const treeCalls = mockPipeline.hset.mock.calls.filter(
         (c) => c[0] === 'ss:latest:tree:project-001',
       );
@@ -374,7 +374,7 @@ describe('RedisLatestValuePersistWriter', () => {
       await writer.writeBatch(dataPoints);
 
       expect(mockPipeline.exec).toHaveBeenCalledTimes(1);
-      // 降级后逐条 write(),每条 write 调用 hset 2 次(设备 Key + tree)
+      // After degradation, per-record write(); each write calls hset 2 times (device Key + tree)
       expect(mockRedisClient.hset).toHaveBeenCalledTimes(4);
     });
 
@@ -476,7 +476,7 @@ describe('RedisLatestValuePersistWriter', () => {
       await writer.write(createDataPoint({ tagId: 'overwrite-tag', value: 100 }));
       await writer.write(createDataPoint({ tagId: 'overwrite-tag', value: 200 }));
 
-      // 两次 write,每次 2 次 hset(device + tree)
+      // Two writes, each with 2 hsets (device + tree)
       const deviceCalls = mockRedisClient.hset.mock.calls.filter(
         (c) => c[0] === 'ss:latest:project-001:pump-01',
       );
@@ -545,7 +545,7 @@ describe('RedisLatestValuePersistWriter', () => {
         't3',
         expect.any(String),
       );
-      // tree 索引:3 个不同 deviceId
+      // Tree index: 3 different deviceIds
       const treeCalls = mockPipeline.hset.mock.calls.filter(
         (c) => c[0] === 'ss:latest:tree:project-001',
       );
@@ -557,7 +557,7 @@ describe('RedisLatestValuePersistWriter', () => {
 
   describe('handleProjectBeforeDelete (v3)', () => {
     it('TC-RLV-030: should delete all device keys via tree index lookup', async () => {
-      // readTree 内部调用 hgetall(treeKey)
+      // readTree internally calls hgetall(treeKey)
       mockRedisClient.hgetall.mockResolvedValue({
         'dev-uuid-1': JSON.stringify({ deviceCode: 'pump-01', deviceName: '泵站A' }),
         'dev-uuid-2': JSON.stringify({ deviceCode: 'pump-02', deviceName: '泵站B' }),
@@ -581,7 +581,7 @@ describe('RedisLatestValuePersistWriter', () => {
       await writer.handleProjectBeforeDelete({ projectId: 'proj-empty', timestamp: Date.now() });
 
       expect(mockRedisClient.hgetall).toHaveBeenCalledWith('ss:latest:tree:proj-empty');
-      // 仅删除 tree 索引 Key 本身
+      // Only the tree-index Key itself is deleted
       expect(mockRedisClient.del).toHaveBeenCalledWith('ss:latest:tree:proj-empty');
     });
 
@@ -624,7 +624,7 @@ describe('RedisLatestValuePersistWriter', () => {
 
       await writer.handleProjectBeforeDelete({ projectId: 'proj-001', timestamp: Date.now() });
 
-      // 损坏条目被跳过,仅删除 pump-02 的 key + tree key
+      // Corrupted entries are skipped; only pump-02's key + tree key are deleted
       expect(mockRedisClient.del).toHaveBeenCalledWith(
         'ss:latest:proj-001:pump-02',
         'ss:latest:tree:proj-001',

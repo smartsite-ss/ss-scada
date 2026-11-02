@@ -5,8 +5,8 @@
 import type { ScriptAPI, ScriptContext } from '../types/script.types';
 
 /**
- * 客户端白名单 ScriptAPI 实现
- * 提供脚本在沙箱中可调用的所有安全 API
+ * Client whitelist ScriptAPI implementation
+ * Provides all safe APIs callable by scripts inside the sandbox
  */
 export interface ClientScriptAPIOptions {
   onTagRead?: (tagId: string, value: any) => void;
@@ -21,14 +21,14 @@ export interface ClientScriptAPIOptions {
 }
 
 export class ClientScriptAPIFactory {
-  /** 创建完整的 ScriptAPI 实例 */
+  /** Create a full ScriptAPI instance */
   static create(context: ScriptContext, options?: ClientScriptAPIOptions): ScriptAPI {
-    // 容器内定时器管理
+    // In-container timer management
     const timers: Map<number, ReturnType<typeof setInterval>> = new Map();
     let nextTimerId = 1;
 
     const api: ScriptAPI = {
-      // ─── 数据读写 ───
+      // ─── Data read/write ───
       readTag(tagId: string): any | null {
         const value = context.tagValues?.[tagId] ?? null;
         options?.onTagRead?.(tagId, value);
@@ -42,7 +42,7 @@ export class ClientScriptAPIFactory {
         return value?.quality ?? 'good';
       },
 
-      // ─── 图元操作 ───
+      // ─── Graphic operations ───
       setGraphicProps(graphicId: string, props: Record<string, any>): void {
         options?.onGraphicChange?.(graphicId, props);
       },
@@ -59,7 +59,7 @@ export class ClientScriptAPIFactory {
         options?.onGraphicChange?.(graphicId, { rotation: angle });
       },
 
-      // ─── 告警操作 ───
+      // ─── Alarm operations ───
       triggerAlarm(config: { tagId: string; level: string; message: string }): void {
         options?.onAlarmTrigger?.(config);
       },
@@ -67,13 +67,13 @@ export class ClientScriptAPIFactory {
         options?.onAlarmAcknowledge?.(alarmId);
       },
       clearAlarm(_alarmId: string): void {
-        // 通过事件总线清除告警
+        // Clear alarms via the event bus
       },
       getActiveAlarms(): any[] {
         return [];
       },
 
-      // ─── 页面操作 ───
+      // ─── Page operations ───
       switchPage(pageId: string): void {
         options?.onSwitchPage?.(pageId);
       },
@@ -81,7 +81,7 @@ export class ClientScriptAPIFactory {
         return context.graphicId ?? '';
       },
 
-      // ─── 网络请求 ───
+      // ─── Network requests ───
       async fetch(url: string, fetchOptions?: { method?: string; headers?: Record<string, string>; body?: string }): Promise<any> {
         if (options?.onFetch) {
           return options.onFetch(url, fetchOptions);
@@ -98,12 +98,12 @@ export class ClientScriptAPIFactory {
         }
       },
 
-      // ─── 定时器 ───
+      // ─── Timers ───
       setTimeout(callback: (...args: any[]) => void, delay: number): number {
         const id = nextTimerId++;
         const timer = globalThis.setTimeout(() => {
           timers.delete(id);
-          try { callback(); } catch (e) { /* 静默吞掉沙箱内回调异常 */ }
+          try { callback(); } catch (e) { /* silently swallow callback exceptions inside the sandbox */ }
         }, delay);
         timers.set(id, timer);
         return id;
@@ -111,7 +111,7 @@ export class ClientScriptAPIFactory {
       setInterval(callback: (...args: any[]) => void, interval: number): number {
         const id = nextTimerId++;
         const timer = globalThis.setInterval(() => {
-          try { callback(); } catch (e) { /* 静默吞掉沙箱内回调异常 */ }
+          try { callback(); } catch (e) { /* silently swallow callback exceptions inside the sandbox */ }
         }, interval);
         timers.set(id, timer);
         return id;
@@ -131,20 +131,20 @@ export class ClientScriptAPIFactory {
         }
       },
 
-      // ─── 工具函数 ───
+      // ─── Utility functions ───
       sleep(ms: number): Promise<void> {
         return new Promise((resolve) => globalThis.setTimeout(resolve, ms));
       },
       notify(message: string, level: 'info' | 'warn' | 'error' = 'info'): void {
         options?.onNotify?.(message, level);
-        // 同时记录到日志
+        // Also log it
         options?.onLog?.(level, `[notify] ${message}`);
       },
       log(level: 'info' | 'warn' | 'error', message: string): void {
         options?.onLog?.(level, message);
       },
 
-      // ─── 数值工具 ───
+      // ─── Numeric utilities ───
       round(value: number, decimals: number = 0): number {
         const factor = Math.pow(10, decimals);
         return Math.round(value * factor) / factor;

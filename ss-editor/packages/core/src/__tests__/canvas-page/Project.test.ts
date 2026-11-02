@@ -17,7 +17,7 @@ class TestShape extends BaseGraphic {
     static defaultHeight = 100;
     
     constructor(x: number = 0, y: number = 0, width: number = 100, height: number = 100) {
-        super('test-shape', x, y, width, height); } draw(): void { /* 简单的空实现，测试不需要实际绘 */ } containsPoint(): boolean { return false; } intersectsRegion(): boolean { return false; } } /* 创建测试图形的辅助函 */ const createTestGraphic = (id: string): any => { const graphic = new TestShape(100, 100, 200, 100); (graphic as any).id = id; (graphic as any).config.id = id; return graphic; }; describe('Project', () => {
+        super('test-shape', x, y, width, height); } draw(): void { /* simple empty implementation, no actual drawing needed for tests */ } containsPoint(): boolean { return false; } intersectsRegion(): boolean { return false; } } /* helper to create test graphics */ const createTestGraphic = (id: string): any => { const graphic = new TestShape(100, 100, 200, 100); (graphic as any).id = id; (graphic as any).config.id = id; return graphic; }; describe('Project', () => {
     let project: Project;
 
     beforeAll(() => {

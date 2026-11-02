@@ -8,7 +8,7 @@ import { AuthService } from '../../auth.service';
 import { UserService } from '../../../user/user.service';
 import { User } from '../../../user/entities/user.entity';
 
-// Mock 依赖（与 auth 域既有手工 mock 风格一致）
+// Mock dependencies (consistent with the existing hand-written mock style in the auth domain)
 const mockAuthService = {
   generateTokensForUser: jest.fn(),
 };

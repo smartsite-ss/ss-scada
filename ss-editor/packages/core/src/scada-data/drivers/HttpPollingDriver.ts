@@ -22,7 +22,7 @@ export class HttpPollingDriver extends AbstractBaseDriver {
 
   async connect(config: DataSourceConfig): Promise<void> {
     this._rawConfig = config;
-    // 标准配置形态为 { type, config: { url, method, ... } }，提取内层 config 作为解析源
+    // Standard config shape is { type, config: { url, method, ... } }; extract the inner config as the parse source
     const extConfig = (config as any).config ?? config;
     this._config = this._parseConfig(extConfig);
     this._maxRetries = this._config.retryCount ?? 3;
@@ -104,7 +104,7 @@ export class HttpPollingDriver extends AbstractBaseDriver {
       }
 
       this._status = 'error';
-      // 失败时推送 stale 降级数据，统一使用 'stale' 质量码（与 SqlQueryDriver 保持一致）
+      // On failure push stale fallback data using the unified 'stale' quality code (consistent with SqlQueryDriver)
       this._notifyStaleData(isAbort ? 'uncertain' : 'stale');
     }
   }

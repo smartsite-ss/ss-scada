@@ -10,18 +10,18 @@ import { requestQueue } from './request-queue';
 import { shouldQueueRequest } from './error-handler';
 
 /**
- * S-C03: Token 存储改为内存（不再使用 localStorage）
+ * S-C03: Token storage changed to in-memory (no longer using localStorage)
  *
- * Token 通过 HttpOnly Cookie 由后端自动管理，前端无法读取。
- * 内存中的 token 值仅用于标记认证状态和 Authorization Header 兼容回退。
+ * Tokens are managed automatically by the backend via HttpOnly Cookie and cannot be read by the frontend.
+ * The in-memory token value is only used to mark the auth state and as an Authorization header compatibility fallback.
  */
 let memoryToken: string | null = null;
 let memoryRefreshToken: string | null = null;
 
 /**
- * Bearer Token 模式（桌面端 Tauri）：refreshToken 持久化到 localStorage，
- * 用于应用重启后恢复会话。仅桌面端（跨站，Cookie 不可用）会写入真实 token，
- * Web 端（HttpOnly Cookie 模式）不会触发持久化。
+ * Bearer Token mode (desktop Tauri): refreshToken persisted to localStorage,
+ * used to restore the session after app restart. Only the desktop app (cross-site, cookies unavailable) writes the real token;
+ * the Web app (HttpOnly Cookie mode) never triggers persistence.
  */
 const PERSISTED_REFRESH_TOKEN_KEY = 'ss_auth_refresh_token';
 
@@ -32,7 +32,7 @@ export function persistRefreshToken(token: string | null): void {
     } else {
       localStorage.removeItem(PERSISTED_REFRESH_TOKEN_KEY);
     }
-  } catch { /* storage 不可用时静默降级（仅本次会话有效） */ }
+  } catch { /* degrade silently when storage is unavailable (valid for this session only) */ }
 }
 
 export function loadPersistedRefreshToken(): string | null {
@@ -46,7 +46,7 @@ export function loadPersistedRefreshToken(): string | null {
 const client = axios.create({
   baseURL: '/api/v1',
   timeout: 15000,
-  // S-C03: 携带 Cookie（HttpOnly Token 通过 Cookie 自动传输）
+  // S-C03: carry the Cookie (the HttpOnly token is transported automatically via Cookie)
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
@@ -67,8 +67,8 @@ function addRefreshSubscriber(cb: (token: string) => void) {
 
 client.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // 过滤器模式：当已知后端离线时，直接将请求入队而不发送 HTTP 请求
-    // 避免无意义的网络请求，视图层无需感知网络错误
+    // Filter mode: when the backend is known to be offline, enqueue the request directly without sending an HTTP request
+    // Avoids pointless network requests; the view layer need not be aware of network errors
     if (connectionMonitor.isOffline() && shouldQueueRequest(config)) {
       return new Promise((resolve, reject) => {
         const enqueued = requestQueue.enqueue(config, resolve, reject);
@@ -78,21 +78,21 @@ client.interceptors.request.use(
       });
     }
 
-    // S-C03: Token 主要通过 Cookie 传输，Authorization Header 仅作为兼容回退
+    // S-C03: the token is primarily transported via Cookie; the Authorization header is only a compatibility fallback
     const token = getToken();
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    // 注入 X-Request-Id 便于前后端日志关联
+    // Inject X-Request-Id to correlate frontend and backend logs
     if (config.headers && !config.headers['X-Request-Id']) {
       config.headers['X-Request-Id'] =
         typeof crypto !== 'undefined' && crypto.randomUUID
           ? crypto.randomUUID()
           : `req_${Date.now()}_${Math.random().toString(36).slice(2)}`;
     }
-    // FormData 请求必须删除 Content-Type 让浏览器自动设置 multipart boundary，
-    // 否则默认的 application/json 会导致后端 json() body-parser 提前消费请求流，
-    // multer 无法解析上传文件（触发"缺少背景图片文件"、"缺少预览图片文件"等 400 错误）
+    // FormData requests must remove Content-Type so the browser sets the multipart boundary automatically,
+    // otherwise the default application/json causes the backend json() body-parser to consume the request stream early,
+    // and multer cannot parse the uploaded file (triggering 400 errors such as "missing background image file", "missing preview image file")
     if (config.data instanceof FormData && config.headers) {
       delete config.headers['Content-Type'];
     }
@@ -102,17 +102,17 @@ client.interceptors.request.use(
 );
 
 /**
- * S-C03: 带重试的刷新令牌请求（最多 3 次，指数退避 1s / 2s）
+ * S-C03: refresh-token request with retry (up to 3 attempts, exponential backoff 1s / 2s)
  *
- * - Cookie 模式（Web，同源）：refreshToken 通过 HttpOnly Cookie 自动传输，body 为空；
- * - Bearer 模式（桌面端 Tauri）：refreshToken 通过 body 传输，
- *   刷新成功后新 token 对从响应体同步到内存与持久化存储。
+ * - Cookie mode (Web, same-origin): refreshToken is transported automatically via HttpOnly Cookie, body is empty;
+ * - Bearer mode (desktop Tauri): refreshToken is transported via the body;
+ *   after a successful refresh the new token pair is synced from the response body to memory and persistent storage.
  */
 async function refreshAccessToken(): Promise<boolean> {
   let bearerRefreshToken = memoryRefreshToken && memoryRefreshToken !== 'httpOnly'
     ? memoryRefreshToken
     : null;
-  // 应用重启后内存为空：回退读取持久化的 refreshToken（仅桌面端 Bearer 模式会写入）
+  // After app restart memory is empty: fall back to reading the persisted refreshToken (only the desktop Bearer mode writes it)
   if (!bearerRefreshToken) {
     bearerRefreshToken = loadPersistedRefreshToken();
   }
@@ -124,8 +124,8 @@ async function refreshAccessToken(): Promise<boolean> {
         bearerRefreshToken ? { refreshToken: bearerRefreshToken } : {},
         { withCredentials: true },
       );
-      // Bearer 模式：新 token 对在响应体中，同步到内存并更新持久化存储；
-      // Cookie 模式：新 Token 已通过 Set-Cookie 写入，无需额外处理。
+      // Bearer mode: the new token pair is in the response body, sync to memory and update persistent storage;
+      // Cookie mode: the new token has been written via Set-Cookie, no further handling needed.
       const data = response.data?.data ?? response.data;
       if (data?.accessToken) {
         memoryToken = data.accessToken;
@@ -148,13 +148,13 @@ async function refreshAccessToken(): Promise<boolean> {
 }
 
 /**
- * 清除认证状态并跳转到登录页（静默，不显示错误）
+ * Clear the auth state and redirect to the login page (silent, no error shown)
  */
 function logoutAndRedirect(): void {
   console.warn('[Auth] 认证失效，跳转登录页');
   clearTokens();
   persistRefreshToken(null);
-  // 使用 replace 避免回退时再回到 401 页面
+  // Use replace to avoid returning to the 401 page when navigating back
   if (window.location.hash !== '#/login') {
     window.location.replace('#/login');
   }
@@ -162,7 +162,7 @@ function logoutAndRedirect(): void {
 
 client.interceptors.response.use(
   (response: AxiosResponse<ApiResponse>) => {
-    // 请求成功 → 标记后端在线
+    // Request succeeded → mark the backend as online
     connectionMonitor.markOnline();
     return response;
   },
@@ -171,18 +171,18 @@ client.interceptors.response.use(
     const requestUrl = originalRequest?.url || 'unknown';
     const requestMethod = originalRequest?.method || 'unknown';
 
-    // 401 处理
+    // 401 handling
     if (error.response?.status === 401) {
       console.warn(`[Auth] 401 未授权 | ${requestMethod.toUpperCase()} ${requestUrl} | _retry=${!!originalRequest._retry}`);
 
-      // 已经是刷新后重试的请求又得 401 → 静默跳登录
+      // A retried request after refresh getting 401 again → silently go to login
       if (originalRequest._retry) {
         console.warn(`[Auth] 重试后仍 401，放弃 → 跳转登录 | ${requestMethod.toUpperCase()} ${requestUrl}`);
         logoutAndRedirect();
         return Promise.reject(error);
       }
 
-      // S-C03: 尝试通过 Cookie 刷新 Token
+      // S-C03: try refreshing the token via Cookie
       if (isRefreshing) {
         console.debug(`[Auth] 已有刷新进行中，排队等待 | ${requestMethod.toUpperCase()} ${requestUrl}`);
         return new Promise<AxiosResponse>((resolve) => {
@@ -209,12 +209,12 @@ client.interceptors.response.use(
         isRefreshing = false;
       }
 
-      // 刷新失败 → 静默跳登录
+      // Refresh failed → silently go to login
       console.warn(`[Auth] Token 刷新失败 → 跳转登录 | ${requestMethod.toUpperCase()} ${requestUrl}`);
       logoutAndRedirect();
     }
 
-    // 非 401 错误交由统一错误处理器
+    // Non-401 errors are delegated to the unified error handler
     if (error.response?.status !== 401) {
       return errorHandler.handle(error);
     }
@@ -223,18 +223,18 @@ client.interceptors.response.use(
   },
 );
 
-// 后端恢复时自动刷新重试队列
+// Automatically refresh and retry the queue when the backend recovers
 connectionMonitor.onRecover(() => {
   requestQueue.flush(client);
 });
 
 /**
- * S-C03: Token 操作函数（内存存储，不再使用 localStorage）
+ * S-C03: Token operation functions (in-memory storage, no longer using localStorage)
  */
 export function getToken(): string | null {
   if (memoryToken) return memoryToken;
-  // Debug 模式：localStorage 中 scada_debug_skip_auth === '1' 时自动返回 debug token，
-  // 确保预览页（新标签页/窗口）直接访问时 wsStore.connect() 可正常建立 WebSocket 连接
+  // Debug mode: when scada_debug_skip_auth === '1' in localStorage, automatically return the debug token,
+  // ensuring wsStore.connect() can establish the WebSocket connection when the preview page is opened directly (new tab/window)
   try {
     if (localStorage.getItem('scada_debug_skip_auth') === '1') return 'debug-mock-token';
   } catch { /* not in browser */ }

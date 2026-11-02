@@ -12,10 +12,10 @@ import {
   type CollectorReadResult,
 } from '@ss-node/ss-collector-sdk';
 
-/** OPC UA 安全模式 */
+/** OPC UA security mode */
 export type OpcUaSecurityMode = 'None' | 'Sign' | 'SignAndEncrypt';
 
-/** OPC UA 安全策略 */
+/** OPC UA security policy */
 export type OpcUaSecurityPolicy = 'None' | 'Basic128Rsa15' | 'Basic256' | 'Basic256Sha256';
 
 export interface OpcUaConfig {
@@ -80,7 +80,7 @@ export interface OpcUaNodeInfo {
 export class OpcUaService extends BaseCollectorService {
   private subscriptions = new Map<string, opcua.ClientSubscription>();
 
-  /** 获取所有设备的连接状态（与 ModbusService/S7Service/MqttService 保持一致） */
+  /** Get connection status of all devices (consistent with ModbusService/S7Service/MqttService) */
   getAllConnectionStatus(): Map<string, boolean> {
     const result = new Map<string, boolean>();
     for (const [deviceId] of this.getClientEntries()) {
@@ -89,7 +89,7 @@ export class OpcUaService extends BaseCollectorService {
     return result;
   }
 
-  /** 检查指定设备是否已连接 */
+  /** Check whether a given device is connected */
   isConnected(deviceId: string): boolean {
     return this.getConnectionStatus(deviceId);
   }
@@ -109,7 +109,7 @@ export class OpcUaService extends BaseCollectorService {
       requestedSessionTimeout: deviceConfig.requestedSessionTimeout || 60000,
     };
 
-    // 已连接则直接返回
+    // Already connected -> return directly
     if (alreadyConnected) {
       return { type: 'opcua', sessionId, config };
     }
@@ -164,7 +164,7 @@ export class OpcUaService extends BaseCollectorService {
     }
   }
 
-  /** 带错误捕获的标签读取（覆盖基类的重试版本） */
+  /** Tag read with error capture (overrides the base class retry version) */
   async readTag(client: any, tagConfig: Record<string, any>): Promise<OpcUaReadResult> {
     const tagId = tagConfig.id || 'unknown-tag';
     const nodeIdString = tagConfig.nodeId || tagConfig.address;
@@ -192,7 +192,7 @@ export class OpcUaService extends BaseCollectorService {
     }
   }
 
-  /** 带错误捕获的标签写入 */
+  /** Tag write with error capture */
   async writeTag(client: any, tagConfig: Record<string, any>, value: any): Promise<void> {
     const tagId = tagConfig.id || 'unknown-tag';
     const nodeIdString = tagConfig.nodeId || tagConfig.address;
@@ -304,7 +304,7 @@ export class OpcUaService extends BaseCollectorService {
     );
     if (policyError) errors.push(policyError);
 
-    // 安全模式与安全策略一致性校验：非 None 模式下不应使用 None 策略
+    // Security-mode vs security-policy consistency check: a non-None mode must not use the None policy
     if (
       config.securityMode &&
       config.securityMode !== 'None' &&
@@ -320,7 +320,7 @@ export class OpcUaService extends BaseCollectorService {
     return { valid: errors.length === 0, errors };
   }
 
-  // ---- OPC UA 特有方法 ----
+  // ---- OPC UA-specific methods ----
 
   async browseNode(client: any, nodeIdString: string): Promise<OpcUaNodeInfo[]> {
     try {
@@ -442,7 +442,7 @@ export class OpcUaService extends BaseCollectorService {
     return 'bad';
   }
 
-  /** 将配置中的安全模式字符串映射为 node-opcua MessageSecurityMode 枚举值 */
+  /** Map the security-mode string from config to the node-opcua MessageSecurityMode enum */
   private mapSecurityMode(
     mode: OpcUaSecurityMode | undefined,
   ): (typeof opcua.MessageSecurityMode)[keyof typeof opcua.MessageSecurityMode] {
@@ -457,7 +457,7 @@ export class OpcUaService extends BaseCollectorService {
     }
   }
 
-  /** 将配置中的安全策略字符串映射为 node-opcua SecurityPolicy 枚举值 */
+  /** Map the security-policy string from config to the node-opcua SecurityPolicy enum */
   private mapSecurityPolicy(
     policy: OpcUaSecurityPolicy | undefined,
   ): (typeof opcua.SecurityPolicy)[keyof typeof opcua.SecurityPolicy] {

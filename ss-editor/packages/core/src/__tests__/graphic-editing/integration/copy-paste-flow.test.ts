@@ -139,11 +139,11 @@ describe('Copy-paste integration tests', () => {
 
     it('should save group metadata in clipboard when copying group members', () => {
       addTwoGraphics();
-      const group = page.groupGraphics(['group-g-0', 'group-g-1']); expect(group).not.toBeNull(); /* 模拟选中组员?copy */ page.selectMultipleGraphics(['group-g-0', 'group-g-1']);
+      const group = page.groupGraphics(['group-g-0', 'group-g-1']); expect(group).not.toBeNull(); /* simulate selecting group members for copy */ page.selectMultipleGraphics(['group-g-0', 'group-g-1']);
       const serializedData = transferService.serializeGraphics(
         page.graphics.filter((g) => page.selectedGraphicIds.includes(g.id))
       );
-      clipboardManager.setData(serializedData, 'copy', page.id); /* 验证 groupMetadata 设置 */ clipboardManager.setGroupMetadata({ isGroupCopy: true, sourceGroupId: group.id, groupName: group.name, }); const metadata = clipboardManager.getGroupMetadata(); expect(metadata).not.toBeNull(); expect(metadata!.isGroupCopy).toBe(true); expect(metadata!.sourceGroupId).toBe(group.id); }); it('should paste group members and reconstruct group', () => {
+      clipboardManager.setData(serializedData, 'copy', page.id); /* verify groupMetadata is set */ clipboardManager.setGroupMetadata({ isGroupCopy: true, sourceGroupId: group.id, groupName: group.name, }); const metadata = clipboardManager.getGroupMetadata(); expect(metadata).not.toBeNull(); expect(metadata!.isGroupCopy).toBe(true); expect(metadata!.sourceGroupId).toBe(group.id); }); it('should paste group members and reconstruct group', () => {
       addTwoGraphics();
       page.groupGraphics(['group-g-0', 'group-g-1']);
       page.selectMultipleGraphics(['group-g-0', 'group-g-1']);
@@ -158,7 +158,7 @@ describe('Copy-paste integration tests', () => {
         page.id
       );
       const groupManager = page.getGroupManager();
-      const candidateGroup = groupManager.getGroupForGraphic('group-g-0'); clipboardManager.setGroupMetadata({ isGroupCopy: true, sourceGroupId: candidateGroup!.id, groupName: candidateGroup!.name, }); /* paste */ const data = clipboardManager.getData(); let newGraphics = transferService.deserializeGraphics(data); newGraphics = transferService.reassignIds( newGraphics, page.graphics.map((g) => g.id) ); newGraphics.forEach((graphic) => { transferService.transformCoordinates(graphic, 20, 20); page.addGraphic(graphic); }); const newIds = newGraphics.map((g) => g.id); /* 重建组合 */ const metadata = clipboardManager.getGroupMetadata(); if (metadata?.isGroupCopy && newIds.length > 1) { (page as any).updateGroupManagerReferences(); const newGroup = page.groupGraphics(newIds); expect(newGroup).not.toBeNull(); /* 验证新图元在组合 */ for (const newId of newIds) { expect(groupManager.isGraphicInGroup(newId)).toBe(true); } } }); it('should not group when pasting non-group clipboard data', () => { addTwoGraphics(); /* 直接 copy 不设 groupMetadata */ const serializedData = transferService.serializeGraphics( page.graphics.filter((g) => ['group-g-0', 'group-g-1'].includes(g.id))
+      const candidateGroup = groupManager.getGroupForGraphic('group-g-0'); clipboardManager.setGroupMetadata({ isGroupCopy: true, sourceGroupId: candidateGroup!.id, groupName: candidateGroup!.name, }); /* paste */ const data = clipboardManager.getData(); let newGraphics = transferService.deserializeGraphics(data); newGraphics = transferService.reassignIds( newGraphics, page.graphics.map((g) => g.id) ); newGraphics.forEach((graphic) => { transferService.transformCoordinates(graphic, 20, 20); page.addGraphic(graphic); }); const newIds = newGraphics.map((g) => g.id); /* rebuild the group */ const metadata = clipboardManager.getGroupMetadata(); if (metadata?.isGroupCopy && newIds.length > 1) { (page as any).updateGroupManagerReferences(); const newGroup = page.groupGraphics(newIds); expect(newGroup).not.toBeNull(); /* verify the new graphics are in the group */ for (const newId of newIds) { expect(groupManager.isGraphicInGroup(newId)).toBe(true); } } }); it('should not group when pasting non-group clipboard data', () => { addTwoGraphics(); /* plain copy does not set groupMetadata */ const serializedData = transferService.serializeGraphics( page.graphics.filter((g) => ['group-g-0', 'group-g-1'].includes(g.id))
       );
       clipboardManager.setData(serializedData, 'copy', page.id); const metadata = clipboardManager.getGroupMetadata(); expect(metadata).toBeNull(); /* paste should not call groupGraphics */ const data = clipboardManager.getData(); let newGraphics = transferService.deserializeGraphics(data); newGraphics = transferService.reassignIds( newGraphics, page.graphics.map((g) => g.id) ); newGraphics.forEach((graphic) => { transferService.transformCoordinates(graphic, 20, 20); page.addGraphic(graphic); }); /* Without groupMetadata, should not group */ const groupManager = page.getGroupManager(); for (const g of newGraphics) { expect(groupManager.isGraphicInGroup(g.id)).toBe(false); } }); it('should clear group metadata on new copy of non-group selection', () => {
       addTwoGraphics();
@@ -168,7 +168,7 @@ describe('Copy-paste integration tests', () => {
       clipboardManager.setGroupMetadata({
         isGroupCopy: true,
         sourceGroupId: 'some-id',
-        groupName: 'Some Group', }); expect(clipboardManager.getGroupMetadata()).not.toBeNull(); /* 重新 copy 非组合选择 */ const g3 = new TestShape(500, 100, 100, 100); g3.id ='group-g-3';
+        groupName: 'Some Group', }); expect(clipboardManager.getGroupMetadata()).not.toBeNull(); /* re-copy a non-group selection */ const g3 = new TestShape(500, 100, 100, 100); g3.id ='group-g-3';
       page.addGraphic(g3 as any);
       page.selectMultipleGraphics(['group-g-3']);
       clipboardManager.setData(
@@ -178,7 +178,7 @@ describe('Copy-paste integration tests', () => {
         'copy',
         page.id
       );
-      // setData 应该清空 groupMetadata
+      // setData should clear groupMetadata
       expect(clipboardManager.getGroupMetadata()).toBeNull();
     });
   });

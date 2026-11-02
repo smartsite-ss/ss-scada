@@ -39,7 +39,7 @@ export class ConnectionManagerService implements OnModuleInit {
   async onModuleInit(): Promise<void> {
     this.startHeartbeat();
 
-    // wrap helper：通过 EventLogService.wrapSubscriber 自动追踪处理结果和业务效果
+    // wrap helper: auto-trace handling result and business effect via EventLogService.wrapSubscriber
     const wrap = <T extends any[]>(
       eventType: string,
       handler: (...args: T) => Promise<Record<string, any> | void>,
@@ -53,7 +53,7 @@ export class ConnectionManagerService implements OnModuleInit {
       };
     };
 
-    // 订阅定时器配置变更事件，支持运行时热更新
+    // Subscribe to timer-config change events, supporting runtime hot updates
     this.eventBus.on('timer:configChanged', wrap('timer:configChanged', async (payload: { id: string; interval: number }) => {
       if (payload.id === 'DEVICE_CONNECTION_HEARTBEAT_INTERVAL_MS') {
         this.restartHeartbeat(payload.interval);
@@ -147,7 +147,7 @@ export class ConnectionManagerService implements OnModuleInit {
     }, intervalMs);
   }
 
-  /** 运行时热更新连接心跳间隔 */
+  /** Hot-update the connection heartbeat interval at runtime */
   restartHeartbeat(newInterval: number): void {
     if (this.heartbeatTimer) {
       clearInterval(this.heartbeatTimer);

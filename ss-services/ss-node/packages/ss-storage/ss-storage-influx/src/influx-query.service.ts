@@ -7,7 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { InfluxBucketService } from './influx-bucket.service';
 
 /**
- * InfluxDB 查询结果行（从 Flux pivot 后的 CSV 解析）
+ * InfluxDB query result row (parsed from the Flux pivot CSV)
  */
 export interface InfluxQueryRow {
   tagId: string;
@@ -19,15 +19,15 @@ export interface InfluxQueryRow {
 }
 
 /**
- * InfluxDB Flux 查询服务
+ * InfluxDB Flux query service
  *
- * 职责：
- * - 构建 Flux 查询语句
- * - 通过 InfluxDB HTTP API 执行查询
- * - 解析 CSV 响应为 InfluxQueryRow[]
- * - 支持按项目 bucket 查询
+ * Responsibilities:
+ * - Build Flux query statements
+ * - Execute queries via the InfluxDB HTTP API
+ * - Parse CSV responses into InfluxQueryRow[]
+ * - Support per-project bucket queries
  *
- * 容错：InfluxDB 不可用时抛出错误，由调用方（DataQueryService）处理降级。
+ * Fault tolerance: throws when InfluxDB is unavailable; the caller (DataQueryService) handles degradation.
  */
 @Injectable()
 export class InfluxQueryService {
@@ -46,10 +46,10 @@ export class InfluxQueryService {
     this.influxOrg = this.configService.get('INFLUXDB_ORG', 'ss-org');
   }
 
-  // ──────────── 时间范围查询 ────────────
+  // ──────────── Time-range queries ────────────
 
   /**
-   * 查询单个标签在时间范围内的所有数据点
+   * Query all data points of a single tag within a time range
    */
   async queryRange(
     projectId: string,
@@ -65,7 +65,7 @@ export class InfluxQueryService {
   }
 
   /**
-   * 批量查询多个标签在时间范围内的数据
+   * Batch query multiple tags' data within a time range
    */
   async queryRangeBatch(
     projectId: string,
@@ -80,10 +80,10 @@ export class InfluxQueryService {
     return this.executeFluxQuery(flux);
   }
 
-  // ──────────── 聚合查询 ────────────
+  // ──────────── Aggregate queries ────────────
 
   /**
-   * 单一聚合函数：mean / max / min / sum / count
+   * Single aggregation function: mean / max / min / sum / count
    */
   async queryAggregate(
     projectId: string,
@@ -95,15 +95,15 @@ export class InfluxQueryService {
     const bucket = await this.bucketService.getBucket(projectId);
     const flux = this.buildAggregateQuery(bucket, tagId, startTime, endTime, fn);
     const rows = await this.executeFluxQuery(flux);
-    // Flux aggregate 结果 pivot 后 value 列为聚合值，_time=startTime
+    // After pivot, the Flux aggregate result's value column is the aggregated value, _time=startTime
     if (rows.length === 0) return 0;
     const tagValue = rows[0].value;
     return tagValue ?? 0;
   }
 
   /**
-   * 时间窗口聚合
-   * @returns 按时间排序的 { interval, value } 数组
+   * Time-window aggregation
+   * @returns a time-sorted array of { interval, value }
    */
   async queryAggregateWindow(
     projectId: string,
@@ -130,10 +130,10 @@ export class InfluxQueryService {
     }));
   }
 
-  // ──────────── 最新值查询 ────────────
+  // ──────────── Latest-value queries ────────────
 
   /**
-   * 批量查询多个标签的最新值
+   * Batch query the latest values of multiple tags
    */
   async queryLatest(
     projectId: string,
@@ -233,8 +233,8 @@ export class InfluxQueryService {
   // ──────────── Flux Execution ────────────
 
   /**
-   * CODE-05: Flux 查询 fetch 超时（ms）。
-   * 查询可能扫描大时间范围，给 15s（比写入 5s 更宽松，避免误杀合法长查询）。
+   * CODE-05: Flux query fetch timeout (ms).
+   * A query may scan a large time range; 15s is given (looser than the 5s for writes, avoiding killing legitimate long queries).
    */
   private readonly queryTimeoutMs = 15000;
 
@@ -250,7 +250,7 @@ export class InfluxQueryService {
             Accept: 'application/csv',
           },
           body: JSON.stringify({ query: flux }),
-          // CODE-05: fetch 加超时，避免 InfluxDB 半挂时无限等待阻塞 event loop
+          // CODE-05: add a timeout to fetch, preventing an indefinitely hung InfluxDB from blocking the event loop
           signal: AbortSignal.timeout(this.queryTimeoutMs),
         },
       );
@@ -272,21 +272,21 @@ export class InfluxQueryService {
   // ──────────── CSV Parsing ────────────
 
   /**
-   * 解析 InfluxDB CSV 响应为 InfluxQueryRow[]
+   * Parse the InfluxDB CSV response into InfluxQueryRow[]
    *
-   * Flux 查询经过 pivot 后，CSV 表头包含：
+   * After a Flux query is pivoted, the CSV header contains:
    * #datatype,string,long,dateTime:RFC3339,...
    * ,result,table,_time,tagId,deviceId,projectId,value,quality
    *
-   * 没有 pivot 的聚合查询：
+   * Aggregation queries without pivot:
    * ,result,table,_time,_value
    */
   private parseCsvResponse(csvText: string): InfluxQueryRow[] {
-    // 归一化换行符（InfluxDB 返回 \r\n，但 split('\n') 会在行尾保留 \r）
+    // Normalize line endings (InfluxDB returns \r\n, but split('\n') would leave \r at line ends)
     const lines = csvText.replace(/\r\n/g, '\n').trim().split('\n');
     if (lines.length < 2) return [];
 
-    // 跳过注释行（# 开头），找到表头和数据行
+    // Skip comment lines (starting with #) to find the header and data rows
     let headerIdx = 0;
     for (let i = 0; i < lines.length; i++) {
       if (!lines[i].startsWith('#')) {
@@ -295,14 +295,14 @@ export class InfluxQueryService {
       }
     }
 
-    // 解析表头索引
+    // Parse header indexes
     const headers = lines[headerIdx].split(',');
     const dataLines = lines.slice(headerIdx + 1).filter((l) => l.trim() !== '');
 
-    // 如果只有一行注释头和数据头（没有数据行），直接返回空
+    // If there is only an annotation header and a data header (no data rows), return empty directly
     if (dataLines.length === 0) return [];
 
-    // 检查是否是聚合结果（没有 pivot）：_time, _value 列
+    // Check whether this is an aggregation result (no pivot): _time, _value columns
     const timeIdx = headers.indexOf('_time');
     const valueIdx = headers.indexOf('_value');
     const tagIdIdx = headers.indexOf('tagId');
@@ -310,7 +310,7 @@ export class InfluxQueryService {
     const projectIdIdx = headers.indexOf('projectId');
     const qualityIdx = headers.indexOf('quality');
 
-    // 如果 pivot 后的 value 列找不到，尝试用 _value 列
+    // If the pivoted value column is not found, try the _value column
     const actualValueIdx = valueIdx >= 0 ? valueIdx : headers.indexOf('value');
 
     const parsed = dataLines.map((line, lineIdx) => {
@@ -319,9 +319,9 @@ export class InfluxQueryService {
 
       const rawValue = getVal(actualValueIdx);
       let numericValue: number;
-      // 聚合查询可能直接返回 _value 数值
+      // Aggregation queries may return the _value numeric directly
       if (rawValue === '' || rawValue === undefined) {
-        // 尝试从 pivoted 'value' 列获取
+        // Try to get it from the pivoted 'value' column
         const pivotedValue =
           headers.indexOf('value') >= 0 ? getVal(headers.indexOf('value')) : rawValue;
         numericValue = pivotedValue ? parseFloat(pivotedValue) : 0;
@@ -349,7 +349,7 @@ export class InfluxQueryService {
   // ──────────── Helpers ────────────
 
   /**
-   * 将毫秒窗口转换为 Flux 时间字面量
+   * Convert a millisecond window to a Flux duration literal
    * 60000 → "1m", 3600000 → "1h", 600000 → "10m"
    */
   private formatWindowDuration(ms: number): string {

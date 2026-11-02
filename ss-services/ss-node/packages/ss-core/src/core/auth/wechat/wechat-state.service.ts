@@ -8,24 +8,24 @@ import { REDIS_CLIENT_DEFAULT } from '../../../redis/redis.constants';
 import { ScanState } from './wechat-auth.types';
 
 /**
- * 扫码 state 存储服务 — Redis 优先 + 内存 Map 兜底
+ * Scan-state storage service - Redis first + in-memory Map fallback
  *
- * 设计动机：
- * RedisModule 是 @Global 模块，但 REDIS_CLIENT_DEFAULT 可能为 null
- *（参考 redis.client-factory.ts 第 21-25 行，Redis 未启动时返回 null）。
- * 为保证扫码登录在 Redis 不可用时仍能工作，采用双轨制：
- *   - Redis 可用：使用 SET EX 实现自动过期
- *   - Redis 不可用：内存 Map + get 时检查 expiresAt
+ * Design motivation:
+ * RedisModule is a @Global module, but REDIS_CLIENT_DEFAULT may be null
+ * (see redis.client-factory.ts lines 21-25, returns null when Redis is not started).
+ * To keep scan login working when Redis is unavailable, a dual-track approach is used:
+ *   - Redis available: use SET EX for auto-expiry
+ *   - Redis unavailable: in-memory Map + check expiresAt on get
  *
- * Key 命名遵循项目规范：ss: 前缀 + 业务域 + 用途，参考 ss:latest:{projectId}:{deviceId}
+ * Key naming follows project conventions: ss: prefix + business domain + purpose, see ss:latest:{projectId}:{deviceId}
  */
 const STATE_KEY_PREFIX = 'ss:wechat:scan:state:';
-const STATE_TTL_SECONDS = 300; // 5 分钟（与微信二维码默认有效期一致）
+const STATE_TTL_SECONDS = 300; // 5 minutes (matches the WeChat QR code default validity)
 
 @Injectable()
 export class WechatStateService {
   private readonly logger = new Logger(WechatStateService.name);
-  /** 内存兜底存储（Redis 不可用时使用） */
+  /** In-memory fallback storage (used when Redis unavailable) */
   private readonly memoryStore = new Map<string, ScanState>();
 
   constructor(
@@ -38,7 +38,7 @@ export class WechatStateService {
     }
   }
 
-  /** 创建扫码会话状态 */
+  /** Create scan-session status */
   async create(state: ScanState): Promise<void> {
     if (this.redis) {
       await this.redis.set(
@@ -48,19 +48,19 @@ export class WechatStateService {
         STATE_TTL_SECONDS,
       );
     } else {
-      // 内存模式：expiresAt 已由调用方设置，get 时检查
+      // Memory mode: expiresAt already set by caller, checked on get
       this.memoryStore.set(state.state, state);
     }
   }
 
-  /** 查询扫码会话状态（过期自动删除并返回 null） */
+  /** Query scan-session status (auto-delete on expiry and return null) */
   async get(state: string): Promise<ScanState | null> {
     if (this.redis) {
       const raw = await this.redis.get(STATE_KEY_PREFIX + state);
       if (!raw) return null;
       try {
         const parsed = JSON.parse(raw) as ScanState;
-        // Redis TTL 自动过期，但兜底检查 expiresAt（防止时钟漂移）
+        // Redis TTL auto-expires, but double-check expiresAt (guard against clock drift)
         if (Date.now() > parsed.expiresAt && parsed.status === 'pending') {
           await this.update(state, { status: 'expired' });
           parsed.status = 'expired';
@@ -80,14 +80,14 @@ export class WechatStateService {
     return entry;
   }
 
-  /** 更新扫码会话状态（保留原 TTL） */
+  /** Update scan-session status (preserve original TTL) */
   async update(state: string, patch: Partial<ScanState>): Promise<ScanState | null> {
     const current = await this.get(state);
     if (!current) return null;
     const updated: ScanState = { ...current, ...patch };
 
     if (this.redis) {
-      // 保留剩余 TTL（重新 SET 时按剩余时间设置）
+      // Preserve remaining TTL (re-SET with the remaining time)
       const remainingTtl = await this.redis.ttl(STATE_KEY_PREFIX + state);
       const ttl = remainingTtl > 0 ? remainingTtl : STATE_TTL_SECONDS;
       await this.redis.set(
@@ -102,7 +102,7 @@ export class WechatStateService {
     return updated;
   }
 
-  /** 删除扫码会话状态（confirmed 后一次性消费） */
+  /** Delete scan-session status (one-time consume after confirmed) */
   async delete(state: string): Promise<void> {
     if (this.redis) {
       await this.redis.del(STATE_KEY_PREFIX + state);

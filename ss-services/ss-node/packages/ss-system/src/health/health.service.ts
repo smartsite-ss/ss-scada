@@ -14,11 +14,11 @@ export interface HealthProbeResult {
   status: 'pass' | 'warn' | 'error';
   message?: string;
   latencyMs: number;
-  /** 可选附加详情 */
+  /** Optional extra details */
   details?: Record<string, any>;
 }
 
-/** 磁盘分区信息 */
+/** Disk partition info */
 export interface DiskPartitionInfo {
   path: string;
   totalBytes: number;
@@ -42,7 +42,7 @@ export interface DetailedHealth {
   platform: string;
   hostname: string;
   pid: number;
-  /** 磁盘分区详情：应用目录、数据目录、备份目录 */
+  /** Disk partition details: app directory, data directory, backup directory */
   disks: {
     appDir: DiskPartitionInfo;
     dataDir: DiskPartitionInfo;
@@ -61,7 +61,7 @@ export class HealthService {
     private readonly pathResolver: PathResolverService,
   ) {}
 
-  /** 简单健康检查 - LB 探活 */
+  /** Simple health check - LB liveness probe */
   getSimple(): { status: string; uptime: number; timestamp: string } {
     return {
       status: 'ok',
@@ -70,7 +70,7 @@ export class HealthService {
     };
   }
 
-  /** 详细健康检查 */
+  /** Detailed health check */
   async getDetailed(): Promise<DetailedHealth> {
     const totalMem = os.totalmem();
     const freeMem = os.freemem();
@@ -111,9 +111,9 @@ export class HealthService {
     if (checkValues.some((c) => c.status === 'error')) overallStatus = 'error';
     else if (checkValues.some((c) => c.status === 'warn')) overallStatus = 'degraded';
 
-    // 磁盘详情
+    // Disk details
     const disks = await this.getDiskPartitions();
-    // 如果磁盘使用率超阈值，整体状态降级
+    // If disk usage exceeds the threshold, degrade the overall status
     for (const disk of Object.values(disks)) {
       if (disk.status === 'critical') overallStatus = 'error';
       else if (disk.status === 'warning' && overallStatus === 'ok') overallStatus = 'degraded';
@@ -173,13 +173,13 @@ export class HealthService {
     };
   }
 
-  /** 获取磁盘分区详情（应用目录、数据目录、备份目录） */
+  /** Get disk partition details (app directory, data directory, backup directory) */
   async getDiskPartitions(): Promise<{
     appDir: DiskPartitionInfo;
     dataDir: DiskPartitionInfo;
     backupDir: DiskPartitionInfo;
   }> {
-    // appDir 使用项目根目录，与 dataDir/backupDir 基准保持一致
+    // appDir uses the project root, consistent with the dataDir/backupDir baselines
     const appDir = this.getProjectRoot();
     const dataDir = this.resolveDataDir();
     const backupDir = this.resolveBackupDir();
@@ -191,7 +191,7 @@ export class HealthService {
     };
   }
 
-  /** 获取指定路径的磁盘使用信息 */
+  /** Get disk usage info for a given path */
   private async getDiskInfo(dirPath: string): Promise<DiskPartitionInfo> {
     const warnPercent = this.getDiskWarnPercent();
     const criticalPercent = this.getDiskCriticalPercent();
@@ -240,7 +240,7 @@ export class HealthService {
     }
   }
 
-  // ==================== 阈值读取 ====================
+  // ==================== Threshold reading ====================
 
   private getMemoryWarnPercent(): number {
     return parseInt(process.env.MEMORY_WARN_PERCENT || '70', 10);
@@ -258,16 +258,16 @@ export class HealthService {
     return parseInt(process.env.DISK_CRITICAL_PERCENT || '85', 10);
   }
 
-  // ==================== 路径解析 ====================
+  // ==================== Path resolution ====================
 
   /**
-   * 获取 ss-services/ss-node 项目根目录的绝对路径
+   * Get the absolute path of the ss-services/ss-node project root
    *
-   * 相对路径基准：
-   * - dev 模式：__dirname 上溯 4 级 = ss-services/ss-node（本文件位于 packages/ss-system/dist/health/）
-   * - 生产模式：process.cwd() = ss-run/ss/services/ss-node
+   * Relative-path baselines:
+   * - dev mode: go up 4 levels from __dirname = ss-services/ss-node (this file lives in packages/ss-system/dist/health/)
+   * - production mode: process.cwd() = ss-run/ss/services/ss-node
    *
-   * 与 app.module.ts getDatabaseConfig()、backup.service.ts getProjectRoot() 保持一致。
+   * Kept consistent with app.module.ts getDatabaseConfig() and backup.service.ts getProjectRoot().
    */
   private getProjectRoot(): string {
     return this.pathResolver.getProjectRoot();
@@ -289,9 +289,9 @@ export class HealthService {
     return path.join(this.getProjectRoot(), 'backups');
   }
 
-  // ==================== 探针 ====================
+  // ==================== Probes ====================
 
-  /** 数据库探针 */
+  /** Database probe */
   private async probeDatabase(): Promise<HealthProbeResult> {
     const start = Date.now();
     try {
@@ -302,7 +302,7 @@ export class HealthService {
     }
   }
 
-  /** InfluxDB 探针 — 真实连接检测 */
+  /** InfluxDB probe — real connection check */
   private async probeInfluxDB(): Promise<HealthProbeResult> {
     const start = Date.now();
 
@@ -311,7 +311,7 @@ export class HealthService {
     const org = process.env.INFLUXDB_ORG || 'ss-org';
     const bucket = process.env.INFLUXDB_BUCKET || 'ss_node_data';
 
-    // TOKEN 未配置 → warn（InfluxDB 未启用但不算故障）
+    // TOKEN not configured → warn (InfluxDB not enabled, but not a fault)
     if (!token) {
       return {
         status: 'warn',
@@ -322,7 +322,7 @@ export class HealthService {
     }
 
     try {
-      // 用 InfluxDB /health 端点检测连通性（InfluxDB 2.x 内置，无需认证）
+      // Use the InfluxDB /health endpoint to check connectivity (built into InfluxDB 2.x, no auth required)
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 5000);
 
@@ -337,7 +337,7 @@ export class HealthService {
         const body = await response.json().catch(() => ({}));
         const info: Record<string, any> = { url, org, bucket, perProjectBuckets: true, latencyMs };
 
-        // 尝试查询 bucket 数量
+        // Try querying the bucket count
         try {
           const bucketsResp = await fetch(`${url}/api/v2/buckets?org=${encodeURIComponent(org)}`, {
             headers: { Authorization: `Token ${token}` },
@@ -348,7 +348,7 @@ export class HealthService {
             info.bucketCount = bucketsData.buckets?.length ?? 0;
           }
         } catch {
-          // 查询 bucket 列表失败不影响主探测结果
+          // A bucket-list query failure does not affect the main probe result
         }
 
         return {
@@ -376,11 +376,11 @@ export class HealthService {
     }
   }
 
-  /** 磁盘探针 */
+  /** Disk probe */
   private async probeDisk(): Promise<HealthProbeResult> {
     const start = Date.now();
     try {
-      // 使用项目根目录作为磁盘探针路径，与 getDiskPartitions() 保持一致
+      // Use the project root as the disk probe path, consistent with getDiskPartitions()
       const diskPath = this.getProjectRoot();
       if (fs.existsSync(diskPath)) {
         const info = await this.getDiskInfo(diskPath);
@@ -397,7 +397,7 @@ export class HealthService {
     }
   }
 
-  // ==================== 工具 ====================
+  // ==================== Utilities ====================
 
   private formatBytes(bytes: number): string {
     if (!bytes || bytes <= 0) return '0 B';

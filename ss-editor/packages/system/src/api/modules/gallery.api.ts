@@ -5,21 +5,21 @@
 import client from '../client';
 import type { ApiResponse } from '../types/api';
 
-/** 图库格式目录（第一层：图元GIF/PNG/SVG） */
+/** Gallery format directory (level 1: graphic GIF/PNG/SVG) */
 export interface GalleryFormat {
   id: string;
   name: string;
   imageCount: number;
 }
 
-/** 图库分类目录（第二层：交通/仪表/开关等） */
+/** Gallery category directory (level 2: transport/instrument/switch, etc.) */
 export interface GalleryCategory {
   id: string;
   name: string;
   imageCount: number;
 }
 
-/** 图库图片文件（第三层） */
+/** Gallery image file (level 3) */
 export interface GalleryImage {
   fileName: string;
   url: string;
@@ -27,26 +27,26 @@ export interface GalleryImage {
 }
 
 export const galleryApi = {
-  /** 列出所有格式目录 */
+  /** List all format directories */
   listFormats(): Promise<ApiResponse<GalleryFormat[]>> {
     return client.get('/gallery/formats').then((res) => res.data);
   },
 
-  /** 列出指定格式下的分类目录 */
+  /** List category directories under a specified format */
   listCategories(format: string): Promise<ApiResponse<GalleryCategory[]>> {
     return client
       .get('/gallery/categories', { params: { format } })
       .then((res) => res.data);
   },
 
-  /** 列出指定分类下的图片文件 */
+  /** List image files under a specified category */
   listImages(format: string, category: string): Promise<ApiResponse<GalleryImage[]>> {
     return client
       .get('/gallery/images', { params: { format, category } })
       .then((res) => res.data);
   },
 
-  /** 上传图片（base64，admin） */
+  /** Upload an image (base64, admin) */
   uploadImage(payload: {
     format: string;
     category: string;
@@ -56,7 +56,7 @@ export const galleryApi = {
     return client.post('/gallery/upload', payload).then((res) => res.data);
   },
 
-  /** 删除指定图片（admin） */
+  /** Delete a specified image (admin) */
   deleteImage(format: string, category: string, fileName: string): Promise<ApiResponse<{ deleted: boolean }>> {
     return client
       .delete('/gallery/images', { params: { format, category, fileName } })
@@ -64,8 +64,8 @@ export const galleryApi = {
   },
 
   /**
-   * 构造图片访问 URL（后端 GET /gallery/image 端点）
-   */
+     * Construct the image access URL (backend GET /gallery/image endpoint)
+     */
   buildImageUrl(format: string, category: string, fileName: string): string {
     const params = new URLSearchParams({ format, category, fileName });
     return `${client.defaults.baseURL}/gallery/image?${params.toString()}`;

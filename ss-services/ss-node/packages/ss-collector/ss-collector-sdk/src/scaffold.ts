@@ -6,34 +6,34 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 export interface ScaffoldOptions {
-  /** 插件名称（如 "bacnet"），生成 ss-collector-{name} 目录 */
+  /** Plugin name (e.g. "bacnet"), generates the ss-collector-{name} directory */
   name: string;
-  /** 显示名称（如 "BACnet/IP"） */
+  /** Display name (e.g. "BACnet/IP") */
   displayName: string;
-  /** 协议分类 */
+  /** Protocol category */
   category: string;
-  /** 传输层类型 */
+  /** Transport layer type */
   transport: string;
-  /** 作者 */
+  /** Author */
   author: string;
-  /** 目标输出目录（默认为 packages/ss-collector/） */
+  /** Target output directory (defaults to packages/ss-collector/) */
   outputDir?: string;
 }
 
 export interface ScaffoldResult {
-  /** 生成的目录绝对路径 */
+  /** Absolute path of the generated directory */
   outputPath: string;
-  /** 生成的包名 */
+  /** Generated package name */
   packageName: string;
-  /** 生成的文件列表 */
+  /** List of generated files */
   files: string[];
 }
 
 /**
- * 采集插件脚手架生成器
+ * Collection plugin scaffold generator
  *
- * 根据输入参数生成完整的插件项目目录结构，包括：
- * - package.json（含 collectorPlugin 元数据）
+ * Generates a complete plugin project directory structure from input parameters, including:
+ * - package.json (with collectorPlugin metadata)
  * - tsconfig.json
  * - src/index.ts / src/{name}.module.ts / src/{name}.service.ts / src/{name}.types.ts
  * - src/__tests__/{name}.service.spec.ts
@@ -44,9 +44,9 @@ export function scaffoldPlugin(options: ScaffoldOptions): ScaffoldResult {
   const { name, displayName, category, transport, author, outputDir } = options;
 
   const packageName = `ss-collector-${name}`;
-  // 默认输出目录：项目根 + packages/ss-collector
-  // - dev 模式：__dirname 上溯 4 级 = ss-services/ss-node（本文件位于 packages/ss-collector/ss-collector-sdk/dist/）
-  // - 生产模式：process.cwd() = ss-run/ss/services/ss-node
+  // Default output directory: project root + packages/ss-collector
+  // - dev mode: walk up 4 levels from __dirname = ss-services/ss-node (this file is at packages/ss-collector/ss-collector-sdk/dist/)
+  // - production mode: process.cwd() = ss-run/ss/services/ss-node
   const projectRoot =
     process.env.NODE_ENV === 'production'
       ? process.cwd()
@@ -60,7 +60,7 @@ export function scaffoldPlugin(options: ScaffoldOptions): ScaffoldResult {
 
   const files: string[] = [];
 
-  // 确保输出目录存在
+  // Ensure the output directory exists
   fs.mkdirSync(outputPath, { recursive: true });
 
   // ---- package.json ----
@@ -108,7 +108,7 @@ export function scaffoldPlugin(options: ScaffoldOptions): ScaffoldResult {
   };
 }
 
-// ---- 模板生成函数 ----
+// ---- Template generation functions ----
 
 function generatePackageJson(
   name: string,
@@ -145,7 +145,7 @@ function generatePackageJson(
       'ts-jest': '^29.4.0',
       typescript: '^5.0.0',
     },
-    /** 采集插件元数据（PluginDiscoveryService 读取） */
+    /** Collection plugin metadata (read by PluginDiscoveryService) */
     collectorPlugin: {
       protocol: name,
       displayName: displayName,
@@ -614,7 +614,7 @@ pnpm test
 `;
 }
 
-// ---- 辅助函数 ----
+// ---- Helper functions ----
 
 function toPascalCase(name: string): string {
   return name

@@ -4,7 +4,7 @@
 
 import { type PluginPropertySchema } from '@scada-editor/plugin-sdk';
 
-/** tag-waterpolo 变量水球图全局配置（变量绑定由 TagVariableSelector 自定义 section 管理） */
+/** tag-waterpolo variable water polo chart global config (variable binding is managed by the TagVariableSelector custom section) */
 export const tagWaterpoloPropertySchema: PluginPropertySchema = {
   name: '变量水球图',
   layout: 'grid',

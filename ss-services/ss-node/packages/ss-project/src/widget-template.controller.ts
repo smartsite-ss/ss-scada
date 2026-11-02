@@ -3,11 +3,11 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * Widget Template Controller（组件模板控制器）
+ * Widget Template Controller
  *
- * 与 CanvasTemplateController 保持完全一致的路由风格：
- *   - 全局：/api/v1/widget-templates
- *   - 项目级：/api/v1/projects/:projectId/widget-templates
+ * Route style kept fully consistent with CanvasTemplateController:
+ *   - Global: /api/v1/widget-templates
+ *   - Project-level: /api/v1/projects/:projectId/widget-templates
  */
 
 import {
@@ -51,7 +51,7 @@ export class WidgetTemplateController {
     private readonly configService: ConfigService,
   ) {}
 
-  /** GET /api/v1/widget-templates — 获取组件模板列表 */
+  /** GET /api/v1/widget-templates - get the widget-template list */
   @Get()
   @Public()
   @ApiOperation({ summary: '获取组件模板列表（系统级/内置）' })
@@ -62,7 +62,7 @@ export class WidgetTemplateController {
     return this.widgetTemplateService.listTemplates(category, source);
   }
 
-  /** GET /api/v1/widget-templates/:templateId — 获取单个组件模板 */
+  /** GET /api/v1/widget-templates/:templateId - get a single widget template */
   @Get(':templateId')
   @Public()
   @ApiOperation({ summary: '获取单个组件模板详情' })
@@ -74,7 +74,7 @@ export class WidgetTemplateController {
     return result;
   }
 
-  /** POST /api/v1/widget-templates — 新建用户组件模板 */
+  /** POST /api/v1/widget-templates - create a user widget template */
   @Post()
   @ApiOperation({ summary: '新建用户组件模板' })
   createTemplate(@Body() body: WidgetTemplateData): WidgetTemplateWriteResult {
@@ -88,7 +88,7 @@ export class WidgetTemplateController {
     }
   }
 
-  /** PUT /api/v1/widget-templates/:templateId — 更新组件模板 */
+  /** PUT /api/v1/widget-templates/:templateId - update a widget template */
   @Put(':templateId')
   @ApiOperation({ summary: '更新组件模板' })
   updateTemplate(
@@ -105,7 +105,7 @@ export class WidgetTemplateController {
     }
   }
 
-  /** DELETE /api/v1/widget-templates/:templateId — 删除组件模板 */
+  /** DELETE /api/v1/widget-templates/:templateId - delete a widget template */
   @Delete(':templateId')
   @ApiOperation({ summary: '删除用户组件模板（禁止删除内置）' })
   deleteTemplate(
@@ -124,7 +124,7 @@ export class WidgetTemplateController {
     }
   }
 
-  /** POST /api/v1/widget-templates/import — 导入组件模板 */
+  /** POST /api/v1/widget-templates/import - import a widget template */
   @Post('import')
   @ApiOperation({ summary: '导入组件模板（JSON 字符串）' })
   importTemplate(@Body() body: { json: string }): WidgetTemplateWriteResult {
@@ -142,7 +142,7 @@ export class WidgetTemplateController {
     }
   }
 
-  /** GET /api/v1/widget-templates/:templateId/export — 导出组件模板 */
+  /** GET /api/v1/widget-templates/:templateId/export - export a widget template */
   @Get(':templateId/export')
   @Public()
   @ApiOperation({ summary: '导出组件模板为 JSON 文件' })

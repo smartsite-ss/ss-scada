@@ -13,7 +13,7 @@ export function useProjectData() {
       return null;
     }
 
-    // 保存当前页面 ID 到 localStorage，用于下次打开时恢复
+    // Save the current page ID to localStorage for restoration on next open
     try {
       localStorage.setItem('scada-last-page-id', currentPage.id);
     } catch { /* ignore */ }
@@ -34,8 +34,8 @@ export function useProjectData() {
   };
 
   /**
-   * 从 ProjectData 恢复页面到 Store
-   * @returns 返回需要按需加载的页面名数组（_lazy 标记的页面）
+   * Restore pages from ProjectData into the Store
+   * @returns Array of page names that need lazy loading (pages marked with _lazy)
    */
   const restorePagesToStore = (projectData: ProjectData | null): string[] => {
     if (!projectData?.pages?.length) {
@@ -54,22 +54,22 @@ export function useProjectData() {
         backgroundColor: pageJson.backgroundColor
       });
 
-      // 保留来自大纲的预览小图 URL
+      // Keep the preview thumbnail URL from the outline
       if (pageJson.previewSmallUrl) {
         (page as any).previewSmallUrl = pageJson.previewSmallUrl;
       }
 
-      // 保留来自大纲的背景图路径（相对路径，由调用方在加载页面数据时解析为完整 URL）
+      // Keep the background image path from the outline (relative path, resolved to a full URL by the caller when loading page data)
       if (pageJson.backgroundImage) {
         (page as any).backgroundImage = pageJson.backgroundImage;
       }
 
-      // 如果标记为延迟加载（来自大纲），只初始不加载 graphics
+      // If marked as lazy-loaded (from the outline), do not load graphics initially
       if (pageJson._lazy) {
-        (page as any)._lazy = true; // 将 _lazy 标记写入 page 实例，确保 ensurePageDataLoaded 能识别
+        (page as any)._lazy = true; // write the _lazy flag onto the page instance so ensurePageDataLoaded can recognize it
         lazyPageNames.push(pageJson.name || pageJson.id);
       } else {
-        // 完整数据加载 graphics
+        // Load graphics with full data
         page.fromJSON(pageJson);
       }
 
@@ -78,7 +78,7 @@ export function useProjectData() {
 
     pageStore.pages = restoredPages;
 
-    // 从 localStorage 读取上次打开的页面 ID
+    // Read the previously opened page ID from localStorage
     let lastPageId = projectData.currentPageId;
     try {
       const savedId = localStorage.getItem('scada-last-page-id');
@@ -91,7 +91,7 @@ export function useProjectData() {
       pageStore.currentPageId = lastPageId;
     }
 
-    // 关闭除当前页面外的所有页面，避免全部打开
+    // Close all pages except the current one, avoiding opening all of them
     const openPageId = lastPageId || (restoredPages[0]?.id);
     if (openPageId) {
       pageStore.closedPageIds = restoredPages
@@ -108,7 +108,7 @@ export function useProjectData() {
     if (savedGroupNames) {
       pageStore.pageGroups = Object.entries(savedGroupNames).map(([id, name]) => ({
         id,
-        name: name.replace(/^(p_|g_)/, ''), // 安全去前缀
+        name: name.replace(/^(p_|g_)/, ''), // safely strip the prefix
       }));
     }
 

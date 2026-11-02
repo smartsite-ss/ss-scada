@@ -8,7 +8,7 @@ import type { DataInputPayload, DataAction } from '../types/pipeline.types';
 import { ScriptEngine } from '../engine/ScriptEngine';
 
 /**
- * EventBus 接口 - 用于解耦 BindingManager 与 EventBus 实现的循环依赖
+ * EventBus interface - decouples BindingManager from the EventBus implementation's circular dependency
  */
 export interface ScadaEventBusLike {
   on(eventType: string, callback: (event: { payload: unknown }) => void): () => void;
@@ -16,8 +16,8 @@ export interface ScadaEventBusLike {
 }
 
 /**
- * 标签订阅处理器接口 - 用于解耦 core 与 system 的循环依赖
- * 由上层（如 system 模块）注入实现
+ * Tag subscription handler interface - decouples the core/system circular dependency
+ * Injected by the upper layer (e.g. the system module)
  */
 export interface TagSubscriptionHandler {
   subscribeTags(tagIds: string[]): void;
@@ -25,15 +25,15 @@ export interface TagSubscriptionHandler {
 }
 
 /**
- * GraphicStore 访问器接口 - 用于解耦 BindingManager 与 graphic.store 的循环依赖
- * 由上层（如 main.ts）注入实现，避免 barrel export 导致的 TDZ 错误
+ * GraphicStore accessor interface - decouples BindingManager from graphic.store's circular dependency
+ * Injected by the upper layer (e.g. main.ts), avoiding TDZ errors caused by barrel exports
  */
 export interface GraphicStoreAccessor {
   applyProperty(graphicId: string, propertyPath: string, value: any): void;
   applyQualityIndicator(graphicId: string, quality: string): void;
   bindData(graphicId: string, dataSource: string, dataField: string): void;
   unbindData(graphicId: string): void;
-  /** 获取图元实例（用于调用 onDataInput，Phase 15.2 完整数据管道接入） */
+  /** Get the graphic instance (to call onDataInput, Phase 15.2 full data pipeline integration) */
   getGraphicInstance?(graphicId: string): { onDataInput?(payload: DataInputPayload): void } | undefined;
 }
 
@@ -54,35 +54,35 @@ export interface BindingSnapshot {
 
 export class BindingManager {
   private static instance: BindingManager;
-  /** 标签订阅处理器 - 由上层注入，避免循环依赖 */
+  /** Tag subscription handler - injected by the upper layer, avoiding circular dependencies */
   private static _tagHandler: TagSubscriptionHandler | null = null;
-  /** GraphicStore 访问器 - 由上层注入，避免循环依赖 */
+  /** GraphicStore accessor - injected by the upper layer, avoiding circular dependencies */
   private static _graphicStore: GraphicStoreAccessor | null = null;
-  /** EventBus 取消监听函数 */
+  /** EventBus unsubscribe function */
   private static _unsubscribeEventBus: (() => void) | null = null;
   private bindings = new Map<string, TagBinding[]>();
   private tagReferenceCount = new Map<string, number>();
   private _receivers: Map<string, IGraphicDataReceiver> = new Map();
   private _graphicContexts: Map<string, GraphicContext> = new Map();
 
-  /** 设置标签订阅处理器（由 system 模块初始化时调用） */
+  /** Set the tag subscription handler (called by the system module at init) */
   static setTagHandler(handler: TagSubscriptionHandler | null): void {
     BindingManager._tagHandler = handler;
   }
 
-  /** 设置 GraphicStore 访问器（由 main.ts 初始化时调用，解决循环依赖） */
+  /** Set the GraphicStore accessor (called by main.ts at init, resolving circular dependencies) */
   static setGraphicStore(store: GraphicStoreAccessor | null): void {
     BindingManager._graphicStore = store;
   }
 
-  /** 获取 GraphicStore 访问器（供 DataPipelineBridge 构造 DriverScriptAPI 时使用） */
+  /** Get the GraphicStore accessor (used by DataPipelineBridge when constructing DriverScriptAPI) */
   static getGraphicStore(): GraphicStoreAccessor | null {
     return BindingManager._graphicStore;
   }
 
-  /** 设置 EventBus（由 ScadaDataManager 初始化时调用，统一数据分发） */
+  /** Set EventBus (called by ScadaDataManager at init, unifying data dispatch) */
   static setEventBus(eventBus: ScadaEventBusLike | null): void {
-    // 先取消旧监听
+    // Cancel the old listener first
     if (BindingManager._unsubscribeEventBus) {
       BindingManager._unsubscribeEventBus();
       BindingManager._unsubscribeEventBus = null;
@@ -156,8 +156,8 @@ export class BindingManager {
     propertyPath: string | string[],
     options?: { bindingMode?: 'simple' | 'expression'; expression?: string; format?: string },
   ): void {
-    // 支持 propertyPath 数组：一个标签同时绑定到多个图元属性
-    // 内部展开为多次单路径 bind 调用，引用计数自动管理（每条路径独立计数）
+    // Supports propertyPath arrays: one tag bound to multiple graphic properties simultaneously
+    // Internally expanded into multiple single-path bind calls; reference counting manages each path independently
     if (Array.isArray(propertyPath)) {
       for (const path of propertyPath) {
         this.bind(graphicId, tagId, tagName, path, options);
@@ -246,11 +246,11 @@ export class BindingManager {
   }
 
   /**
-   * 补偿订阅：对当前全部已绑定标签重新发起订阅。
+   * Compensating subscription: re-issue subscriptions for all currently bound tags.
    *
-   * subscribeTags 在 WS 未连接时会被静默丢弃（见 ws.store），
-   * 而 bind() 内部的引用计数已递增，后续不会重新触发订阅；
-   * 本方法供「断连→连接成功」过渡后调用，补发丢失的订阅。
+   * subscribeTags is silently dropped when WS is not connected (see ws.store),
+   * while bind()'s internal reference count has already incremented, so it would not re-trigger the subscription;
+   * this method is called after the "disconnected → connected" transition to re-issue lost subscriptions.
    */
   resyncTagSubscriptions(): void {
     const tagIds = Array.from(this.tagReferenceCount.keys());
@@ -291,14 +291,14 @@ export class BindingManager {
           resolvedValue = this.formatValue(resolvedValue, binding.format);
         }
 
-        // 优先走 onDataInput 完整管道（Phase 15.2）
-        // onDataInput 内部会调用 setProperty/setStyle/setAlarmVisual/setQualityVisual
+        // Prefer the onDataInput full pipeline (Phase 15.2)
+        // onDataInput internally calls setProperty/setStyle/setAlarmVisual/setQualityVisual
         const graphicInstance = graphicStore.getGraphicInstance?.(graphicId);
         if (graphicInstance?.onDataInput) {
           const payload = this._buildDataInputPayload(binding, resolvedValue, quality, tagId);
           graphicInstance.onDataInput(payload);
         } else {
-          // fallback: 直接 applyProperty（向后兼容，图元未实现 onDataInput 时）
+          // fallback: applyProperty directly (backward compatible, when the graphic does not implement onDataInput)
           graphicStore.applyProperty(graphicId, binding.propertyPath, resolvedValue);
           if (quality !== 'good') {
             graphicStore.applyQualityIndicator(graphicId, quality);
@@ -309,9 +309,9 @@ export class BindingManager {
   }
 
   /**
-   * 构建 DataInputPayload（Phase 15.2）
-   * 将 simple binding 的 propertyPath 转换为 DataAction，
-   * 使数据能够走 onDataInput → setProperty/setStyle 完整路径。
+   * Build the DataInputPayload (Phase 15.2)
+   * Converts a simple binding's propertyPath into a DataAction,
+   * letting data go through the onDataInput → setProperty/setStyle full path.
    */
   private _buildDataInputPayload(
     binding: TagBinding,
@@ -329,10 +329,10 @@ export class BindingManager {
   }
 
   /**
-   * 解析 propertyPath 为 DataAction
+   * Parse a propertyPath into a DataAction
    * - config.customProps.text → { type: 'setProperty', target: 'text', value }
    * - config.style.borderColor → { type: 'setStyle', target: 'borderColor', value }
-   * - 其他路径 → null（调用方 fallback 到 applyProperty）
+   * - Other paths → null (the caller falls back to applyProperty)
    */
   private _parsePropertyPathToAction(propertyPath: string, value: any): DataAction | null {
     if (propertyPath.startsWith('config.customProps.')) {
@@ -381,7 +381,7 @@ export class BindingManager {
   }
 
   private evaluateExpression(expression: string, value: any): any {
-    // 统一走 ScriptEngine.evaluateExpression，启用沙箱隔离（拦截 BLOCKED_GLOBALS + 步数限制）
+    // Go through ScriptEngine.evaluateExpression uniformly, enabling sandbox isolation (intercepting BLOCKED_GLOBALS + step limit)
     return ScriptEngine.getInstance().evaluateExpression(expression, value);
   }
 

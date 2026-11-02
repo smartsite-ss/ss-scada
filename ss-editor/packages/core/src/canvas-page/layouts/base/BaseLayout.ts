@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { ILayout } from './ILayout';
 import { IGraphic } from '@scada-editor/plugin-sdk';
 
-// 基础布局类
+// Base layout class
 export abstract class BaseLayout implements ILayout {
   id: string;
   type: string;

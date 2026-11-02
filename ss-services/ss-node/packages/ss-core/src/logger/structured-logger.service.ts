@@ -8,23 +8,24 @@ import { LogEntry, StructuredLoggerConfig, DEFAULT_LOGGER_CONFIG } from './logge
 export { LogEntry, StructuredLoggerConfig, DEFAULT_LOGGER_CONFIG };
 
 /**
- * 结构化日志服务
+ * Structured logging service
  *
- * 保留上下文管理（setContext/withContext）、脱敏（redactSensitiveData）、
- * 采样（enableSampling）等结构化能力，但输出统一委托给 NestJS Logger，
- * 由全局 WinstonModule（main.ts 配置的 DailyRotateFile transport）负责文件写入。
+ * Keeps structured capabilities such as context management (setContext/withContext),
+ * redaction (redactSensitiveData), and sampling (enableSampling), but output is uniformly
+ * delegated to the NestJS Logger, with the global WinstonModule (DailyRotateFile transports
+ * configured in main.ts) responsible for file writes.
  *
- * 不再维护独立的文件流 / 轮转逻辑 —— 文件日志由 Winston 统一管理，
- * 避免此前 StructuredLogger 写 app.log 与 Winston 写 combined.log 两份冗余。
+ * No longer maintains its own file streams / rotation logic -- file logs are managed by Winston,
+ * avoiding the previous redundancy of StructuredLogger writing app.log while Winston wrote combined.log.
  */
 @Injectable()
 export class StructuredLogger implements LoggerService {
   private config: StructuredLoggerConfig = DEFAULT_LOGGER_CONFIG;
 
-  // 当前请求上下文（使用AsyncLocalStorage或类似机制）
+  // Current request context (using AsyncLocalStorage or similar)
   private contextStore = new Map<string, any>();
 
-  // 委托给 NestJS Logger（走全局 Winston → 控制台 + 文件）
+  // Delegate to the NestJS Logger (via global Winston -> console + file)
   private readonly nestLogger = new Logger('StructuredLogger');
 
   constructor(@Optional() config?: Partial<StructuredLoggerConfig>) {
@@ -99,10 +100,10 @@ export class StructuredLogger implements LoggerService {
     context?: string,
     options?: { error?: Error; trace?: string; metadata?: Record<string, any> },
   ): void {
-    // 检查日志级别
+    // Check the log level
     if (!this.shouldLog(level)) return;
 
-    // 检查采样率
+    // Check the sampling rate
     if (this.config.enableSampling && Math.random() > this.config.samplingRate) return;
 
     let entry: LogEntry = {
@@ -117,7 +118,7 @@ export class StructuredLogger implements LoggerService {
       metadata: options?.metadata || this.getContext('metadata'),
     };
 
-    // 处理错误对象
+    // Handle error objects
     if (options?.error) {
       entry.error = {
         name: options.error.name,
@@ -126,21 +127,21 @@ export class StructuredLogger implements LoggerService {
       };
     }
 
-    // 处理trace
+    // Handle trace
     if (options?.trace) {
       entry.metadata = { ...entry.metadata, stackTrace: options.trace };
     }
 
-    // 脱敏处理
+    // Redact sensitive data
     if (this.config.redactSensitiveData) {
       entry = this.redactSensitiveFields(entry);
     }
 
-    // 格式化输出
+    // Format the output
     const formattedMessage = this.formatLogEntry(entry);
     const ctx = entry.context || 'StructuredLogger';
 
-    // 委托给 NestJS Logger（走全局 Winston → 控制台 + 文件，统一轮转与压缩）
+    // Delegate to the NestJS Logger (via global Winston -> console + file, unified rotation and compression)
     switch (level) {
       case 'error':
         this.nestLogger.error(formattedMessage, options?.error?.stack, ctx);
@@ -216,18 +217,18 @@ export class StructuredLogger implements LoggerService {
   private redactSensitiveFields(entry: LogEntry): LogEntry {
     const redacted = { ...entry };
 
-    // 脱敏metadata中的敏感字段
+    // Redact sensitive fields in metadata
     if (redacted.metadata) {
       redacted.metadata = this.redactObject(redacted.metadata);
     }
 
-    // 脱敏message中的敏感信息（如果是JSON字符串）
+    // Redact sensitive info in the message (if it is a JSON string)
     if (typeof redacted.message === 'string' && redacted.message.startsWith('{')) {
       try {
         const parsed = JSON.parse(redacted.message);
         redacted.message = JSON.stringify(this.redactObject(parsed));
       } catch {
-        // 不是JSON，保持原样
+        // Not JSON; keep as-is
       }
     }
 

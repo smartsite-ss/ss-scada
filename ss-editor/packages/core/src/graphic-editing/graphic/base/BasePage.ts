@@ -35,15 +35,15 @@ import { LoopAnimationEngine } from '../../../animations/LoopAnimationEngine';
 import { safeCopyObject } from '../../../utils/core';
 
 /**
- * 页面基类
+ * Page base class
  *
- * 架构优化（v2）：
- *   - 删除 _timers/_groups/_guideLines 重复数组，Manager 为单一真相源
- *   - 使用 GraphicOperationHelper 封装变更模式（消除样板代码）
- *   - 按功能域组织方法区段
+ * Architecture optimization (v2):
+ *   - Removed duplicate arrays _timers/_groups/_guideLines; Manager is the single source of truth
+ *   - Wrapped change patterns with GraphicOperationHelper (eliminating boilerplate)
+ *   - Organized method sections by functional domain
  */
 export class BasePage implements IPage {
-  // ==================== 常量 ====================
+  // ==================== Constants ====================
   private static readonly DEFAULT_PAGE_WIDTH = 1920;
   private static readonly DEFAULT_PAGE_HEIGHT = 1080;
   private static readonly DEFAULT_SCALE = 100;
@@ -52,7 +52,7 @@ export class BasePage implements IPage {
   private static readonly DEFAULT_HISTORY_LIMIT = 50;
   private static readonly DUPLICATE_OFFSET = 20;
 
-  // ==================== 页面属性 ====================
+  // ==================== Page Properties ====================
   private _id: string = `page-${Date.now()}`;
   private _name: string = 'New Page';
   private _width: number = BasePage.DEFAULT_PAGE_WIDTH;
@@ -74,12 +74,12 @@ export class BasePage implements IPage {
   private _templateId?: string = undefined;
   private _templateMode?: 'reference' | 'copy' = undefined;
 
-  // ==================== 核心数据 ====================
+  // ==================== Core Data ====================
   private _layout: ILayout = new FreeLayout();
   private _graphics: IGraphic[] = [];
-  // 注意：_timers/_groups/_guideLines 不再存储副本，由 Manager 统一管理（单一真相源）
+  // Note: _timers/_groups/_guideLines no longer store copies; the Manager manages them uniformly (single source of truth)
 
-  // ==================== 属性访问器 ====================
+  // ==================== Property Accessors ====================
   get id(): string { return this._id; }
   set id(value: string) { this._id = value; }
 
@@ -130,7 +130,7 @@ export class BasePage implements IPage {
   get graphics(): IGraphic[] { return this._graphics; }
   set graphics(value: IGraphic[]) { this._graphics = value; }
 
-  // timers/groups/guideLines 从 Manager 读取（单一真相源）
+  // timers/groups/guideLines read from the Manager (single source of truth)
   get timers(): ITimerConfig[] { return this.timerManager.toJSON(); }
   set timers(value: ITimerConfig[]) { this.timerManager.fromJSON(value); }
 
@@ -140,7 +140,7 @@ export class BasePage implements IPage {
   get guideLines(): GuideLine[] { return this.smartAlignManager.getAllGuideLines(); }
   set guideLines(value: GuideLine[]) { this.smartAlignManager.fromJSON(value); }
 
-  // ==================== Manager 实例 ====================
+  // ==================== Manager Instances ====================
   private selectionManager: SelectionManager;
   private layerManager: LayerManager;
   private historyManager: HistoryManager;
@@ -156,7 +156,7 @@ export class BasePage implements IPage {
     groupId: null,
   };
 
-  // ==================== 懒加载 Manager ====================
+  // ==================== Lazily-loaded Managers ====================
   private _alignmentManager?: AlignmentManager;
   private get alignmentManager(): AlignmentManager {
     if (!this._alignmentManager) this._alignmentManager = new AlignmentManager();
@@ -206,7 +206,7 @@ export class BasePage implements IPage {
     this.bindingEngine = new BindingEngine(this.pageContextImpl);
   }
 
-  // ==================== 初始化 / 序列化 ====================
+  // ==================== Initialization / Serialization ====================
 
   init(
     options: {
@@ -245,7 +245,7 @@ export class BasePage implements IPage {
       this._injectPageContext(graphic);
     }
     this._dataSource = options.dataSource || undefined;
-    // 数据源从 Manager 读取（单一真相源，无需 syncXxxToManager）
+    // Data source read from the Manager (single source of truth, no need for syncXxxToManager)
     if (options.timers) this.timerManager.fromJSON(options.timers);
     if (options.groups) this.groupManager.fromJSON(options.groups);
     if (options.guideLines) this.smartAlignManager.fromJSON(options.guideLines);
@@ -319,9 +319,9 @@ export class BasePage implements IPage {
       themeColors: this.themeColors,
       layout: this.layout.toJSON(),
       graphics: this.graphics.map((graphic) => graphic.toJSON()),
-      groups: this.groups,        // 直接从 groupManager 读取
-      timers: this.timers,        // 直接从 timerManager 读取
-      guideLines: this.guideLines, // 直接从 smartAlignManager 读取
+      groups: this.groups,        // Read directly from groupManager
+      timers: this.timers,        // Read directly from timerManager
+      guideLines: this.guideLines, // Read directly from smartAlignManager
       dataSource: this._dataSource,
       templateId: this._templateId,
       templateMode: this._templateMode,
@@ -413,7 +413,7 @@ export class BasePage implements IPage {
     }
   }
 
-  // ==================== 图元查询 ====================
+  // ==================== Graphic Query ====================
 
   findGraphicById(id: string): IGraphic | null {
     return this.graphics.find(g => g.id === id) || null;
@@ -427,7 +427,7 @@ export class BasePage implements IPage {
     return [...this.graphics];
   }
 
-  // ==================== 图元上下文注入 ====================
+  // ==================== Graphic Context Injection ====================
 
   private _injectPageContext(graphic: IGraphic): void {
     if (graphic instanceof BaseGraphic) {
@@ -461,19 +461,19 @@ export class BasePage implements IPage {
     this.loopAnimationEngine.destroy();
   }
 
-  /** 设置动画帧回调（由编辑器层注入 drawCanvas） */
+  /** Set the animation frame callback (drawCanvas injected by the editor layer) */
   setAnimationFrameCallback(callback: () => void): void {
     this.animationEngine.setFrameCallback(callback);
   }
 
-  /** 获取动画引擎 */
+  /** Get the animation engine */
   getAnimationEngine(): EnterAnimationEngine {
     return this.animationEngine;
   }
 
-  // ==================== 图元增删改（委托模式） ====================
+  // ==================== Graphic Add/Remove/Update (Delegation Pattern) ====================
 
-  /** 设置图元布尔标志位（lock/visible），统一处理历史记录 */
+  /** Set a graphic boolean flag (lock/visible), handling history recording uniformly */
   private _setGraphicFlag(id: string, flag: 'locked' | 'visible', value: boolean): void {
     const graphic = this.findGraphicById(id);
     if (!graphic) return;
@@ -571,7 +571,7 @@ export class BasePage implements IPage {
     }
   }
 
-  /** 通用图元属性更新 —— 封装"保存旧值→修改→历史→事件"模式 */
+  /** Generic graphic property update — wraps the "save old value → modify → history → event" pattern */
   updateGraphic(id: string, properties: Partial<Record<string, any>>): void {
     const graphic = this.findGraphicById(id);
     if (!graphic) return;
@@ -721,7 +721,7 @@ export class BasePage implements IPage {
     const { x, y } = newGraphic.getPosition();
     newGraphic.setPosition(x + BasePage.DUPLICATE_OFFSET, y + BasePage.DUPLICATE_OFFSET);
 
-    // ★ 按同类图元最大编码递增名称
+    // ★ Increment name by the largest code among same-type graphics
     const newName = getNextGraphicName(newGraphic.type, this._graphics);
     newGraphic.config.name = newName;
 
@@ -759,7 +759,7 @@ export class BasePage implements IPage {
       const { x, y } = newGraphic.getPosition();
       newGraphic.setPosition(x + BasePage.DUPLICATE_OFFSET, y + BasePage.DUPLICATE_OFFSET);
 
-      // ★ 按同类图元最大编码递增名称
+      // ★ Increment name by the largest code among same-type graphics
       const newName = getNextGraphicName(newGraphic.type, this._graphics);
       newGraphic.config.name = newName;
 
@@ -850,7 +850,7 @@ export class BasePage implements IPage {
     return this.graphics.map((graphic) => graphic.toJSON());
   }
 
-  // ==================== 选择管理 ====================
+  // ==================== Selection Management ====================
 
   get selectedGraphicId(): string | null { return this.selectionManager.getSelectedGraphicId(); }
   get selectedGraphicIds(): string[] { return this.selectionManager.getSelectedGraphicIds(); }
@@ -914,7 +914,7 @@ export class BasePage implements IPage {
     });
   }
 
-  addToSelection(id: string): void { 
+  addToSelection(id: string): void {
     if (!this.selectionManager.isSelected(id)) {
       this.selectionManager.addToSelection(id);
       eventBus.emit(Events.SELECTION_CHANGED, {
@@ -923,7 +923,7 @@ export class BasePage implements IPage {
       });
     }
   }
-  removeFromSelection(id: string): void { 
+  removeFromSelection(id: string): void {
     if (this.selectionManager.isSelected(id)) {
       this.selectionManager.removeFromSelection(id);
       eventBus.emit(Events.SELECTION_CHANGED, {
@@ -962,7 +962,7 @@ export class BasePage implements IPage {
     }
   }
 
-  // ==================== 组编辑模式 ====================
+  // ==================== Group Edit Mode ====================
 
   get groupEditMode(): { active: boolean; groupId: string | null } { return this._groupEditMode; }
 
@@ -999,7 +999,7 @@ export class BasePage implements IPage {
     }
   }
 
-  // ==================== 组合管理 ====================
+  // ==================== Group Management ====================
 
   getGroupManager(): GroupManager { return this.groupManager; }
 
@@ -1094,7 +1094,7 @@ export class BasePage implements IPage {
     this.groupManager.updateReferences(this.graphics, new Map(this.graphics.map(g => [g.id, g])));
   }
 
-  // ==================== 图层管理 ====================
+  // ==================== Layer Management ====================
 
   getLayerManager(): LayerManager { return this.layerManager; }
 
@@ -1179,7 +1179,7 @@ export class BasePage implements IPage {
 
   getSortedGraphics(): IGraphic[] { return this.layerManager.getSortedGraphics(this.graphics); }
 
-  // ==================== 历史记录 ====================
+  // ==================== History ====================
 
   getHistoryManager(): HistoryManager { return this.historyManager; }
 
@@ -1202,7 +1202,7 @@ export class BasePage implements IPage {
     this.markDirty();
   }
 
-  // ==================== 对齐与分布 ====================
+  // ==================== Alignment & Distribution ====================
 
   getAlignmentManager(): AlignmentManager { return this.alignmentManager; }
   getLayoutManager(): LayoutManager { return this.layoutManager; }
@@ -1327,7 +1327,7 @@ export class BasePage implements IPage {
     this.markDirty();
   }
 
-  // ==================== 网格吸附 ====================
+  // ==================== Grid Snapping ====================
 
   setGridSnapConfig(config: Partial<GridSnapConfig>): void { this.gridSnapManager.setConfig(config); }
   getGridSnapConfig(): GridSnapConfig { return this.gridSnapManager.getConfig(); }
@@ -1339,7 +1339,7 @@ export class BasePage implements IPage {
   }
   getGridSnapManager(): GridSnapManager { return this.gridSnapManager; }
 
-  // ==================== 智能对齐 ====================
+  // ==================== Smart Alignment ====================
 
   setAlignDistance(distance: number): void { this.smartAlignManager.setAlignDistance(distance); }
   detectAlignTargets(draggingGraphic: IGraphic, otherGraphics: IGraphic[]) {
@@ -1358,7 +1358,7 @@ export class BasePage implements IPage {
   }
   getSmartAlignManager(): SmartAlignManager { return this.smartAlignManager; }
 
-  // ==================== 辅助线 ====================
+  // ==================== Guide Lines ====================
 
   addGuideLine(position: number, direction: 'horizontal' | 'vertical'): string {
     this.markDirty();
@@ -1370,7 +1370,7 @@ export class BasePage implements IPage {
   getAllGuideLines(): GuideLine[] { return this.smartAlignManager.getAllGuideLines(); }
   getGuideLine(id: string): GuideLine | null { return this.smartAlignManager.getGuideLine(id); }
 
-  // ==================== 批量操作 ====================
+  // ==================== Batch Operations ====================
 
   batchEdit(properties: Record<string, any>): void {
     if (this.selectedGraphicIds.length === 0) return;
@@ -1420,7 +1420,7 @@ export class BasePage implements IPage {
     const selectedGraphics = this.getSelectionGraphics();
     if (selectedGraphics.length === 0) return [];
     const result = this.batchOperationManager.smartPaste(selectedGraphics, options);
-    // ★ 按同类图元最大编码递增名称
+    // ★ Increment name by the largest code among same-type graphics
     for (const g of result) {
       g.config.name = getNextGraphicName(g.type, this._graphics);
     }
@@ -1441,7 +1441,7 @@ export class BasePage implements IPage {
 
   getBatchOperationManager(): BatchOperationManager { return this.batchOperationManager; }
 
-  // ==================== 定时器管理 ====================
+  // ==================== Timer Management ====================
 
   getTimerManager(): TimerManager { return this.timerManager; }
 
@@ -1471,7 +1471,7 @@ export class BasePage implements IPage {
     return this.timerManager.executeTimerScript(timer, this);
   }
 
-  // ==================== 视口适配 ====================
+  // ==================== Viewport Fitting ====================
 
   setFitMode(mode: FitMode): void { this._fitMode = mode; }
   getFitMode(): FitMode { return this._fitMode; }

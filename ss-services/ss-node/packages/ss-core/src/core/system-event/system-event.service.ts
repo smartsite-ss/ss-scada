@@ -14,7 +14,7 @@ import {
 } from '../entities/system-event.entity';
 
 /**
- * 创建系统事件入参
+ * Create-system-event input
  */
 export interface CreateSystemEventDto {
   eventType: string;
@@ -24,12 +24,12 @@ export interface CreateSystemEventDto {
   source?: string;
   triggerValue?: string;
   metadata?: Record<string, any>;
-  /** 确定性 ID（用于去重），不传则自动生成 UUID */
+  /** Deterministic ID (for dedupe); a UUID is generated when omitted */
   deterministicId?: string;
 }
 
 /**
- * 系统事件查询参数
+ * System-event query params
  */
 export interface SystemEventQuery {
   eventType?: string;
@@ -44,19 +44,19 @@ export interface SystemEventQuery {
 }
 
 /**
- * 全局系统事件服务
+ * Global system-event service
  *
- * 管理全局 ss-node.db 中 sys_events 表的读写。
- * 生命周期与项目级 AlarmRecord 完全一致：
+ * Manages read/write of the sys_events table in the global ss-node.db.
+ * Its lifecycle is identical to the project-level AlarmRecord:
  *
  *   ACTIVE ──(acknowledge)──> ACKNOWLEDGED ──(clear)──> CLEARED
  *     │                                                        ↑
  *     └────────────────(recover/clear)────────────────────────┘
  *
- * 状态转换校验：
- * - acknowledge: 仅 ACTIVE → ACKNOWLEDGED
- * - clear:       ACTIVE/ACKNOWLEDGED → CLEARED
- * - recover:     ACTIVE → CLEARED（auto 恢复）
+ * State-transition validation:
+ * - acknowledge: ACTIVE -> ACKNOWLEDGED only
+ * - clear:       ACTIVE/ACKNOWLEDGED -> CLEARED
+ * - recover:     ACTIVE -> CLEARED (auto recovery)
  */
 @Injectable()
 export class SystemEventService {
@@ -68,13 +68,13 @@ export class SystemEventService {
     private readonly repo?: Repository<SystemEvent>,
   ) {}
 
-  // ==================== 创建 ====================
+  // ==================== Create ====================
 
   /**
-   * 创建系统事件
+   * Create a system event
    *
-   * 如果 deterministicId 已存在且 isActive=true，跳过创建（去重），
-   * 但更新 lastTriggerTime 和 triggerValue。
+   * If deterministicId already exists with isActive=true, creation is skipped (dedupe),
+   * but lastTriggerTime and triggerValue are updated.
    */
   async create(dto: CreateSystemEventDto): Promise<SystemEvent | null> {
     if (!this.repo) {
@@ -84,7 +84,7 @@ export class SystemEventService {
 
     const id = dto.deterministicId || crypto.randomUUID();
 
-    // 去重：已存在同 ID 的活跃事件则跳过
+    // Dedupe: skip if an active event with the same ID exists
     if (dto.deterministicId) {
       const existing = await this.repo.findOne({
         where: { id, isActive: true },
@@ -115,12 +115,12 @@ export class SystemEventService {
     return event;
   }
 
-  // ==================== 确认 ====================
+  // ==================== Acknowledge ====================
 
   /**
-   * 确认事件（人工确认）
+   * Acknowledge an event (manual)
    *
-   * 状态转换：ACTIVE → ACKNOWLEDGED
+   * State transition: ACTIVE -> ACKNOWLEDGED
    */
   async acknowledge(id: string, userId: string): Promise<SystemEvent | null> {
     if (!this.repo) return null;
@@ -150,12 +150,12 @@ export class SystemEventService {
     return event;
   }
 
-  // ==================== 清除 ====================
+  // ==================== Clear ====================
 
   /**
-   * 清除事件（人工清除）
+   * Clear an event (manual)
    *
-   * 状态转换：ACTIVE/ACKNOWLEDGED → CLEARED
+   * State transition: ACTIVE/ACKNOWLEDGED -> CLEARED
    */
   async clear(
     id: string,
@@ -190,10 +190,10 @@ export class SystemEventService {
   }
 
   /**
-   * 自动恢复事件（系统自行恢复）
+   * Auto-recover an event (system recovered on its own)
    *
-   * 状态转换：ACTIVE → CLEARED（clearReason=auto）
-   * 与 AlarmRecord 的自动恢复逻辑一致：记录 recoveredAt + recoveredValue
+   * State transition: ACTIVE -> CLEARED (clearReason=auto)
+   * Consistent with AlarmRecord auto-recovery: records recoveredAt + recoveredValue
    */
   async recover(id: string, recoveredValue?: string): Promise<SystemEvent | null> {
     if (!this.repo) return null;
@@ -223,9 +223,9 @@ export class SystemEventService {
   }
 
   /**
-   * 按事件类型批量恢复所有活跃事件
+   * Batch-recover all active events by event type
    *
-   * 用于系统健康恢复时批量清除（如数据库恢复后，所有 database 类型事件标记 CLEARED）
+   * Used for batch clearing on system-health recovery (e.g. after DB recovery, all database-type events are marked CLEARED)
    */
   async recoverByType(eventType: string, subType?: string): Promise<number> {
     if (!this.repo) return 0;
@@ -254,10 +254,10 @@ export class SystemEventService {
     return events.length;
   }
 
-  // ==================== 查询 ====================
+  // ==================== Query ====================
 
   /**
-   * 查询系统事件
+   * Query system events
    */
   async query(query: SystemEventQuery): Promise<{ items: SystemEvent[]; total: number }> {
     if (!this.repo) return { items: [], total: 0 };
@@ -280,7 +280,7 @@ export class SystemEventService {
   }
 
   /**
-   * 获取活跃事件列表
+   * Get the active event list
    */
   async getActive(eventType?: string): Promise<SystemEvent[]> {
     if (!this.repo) return [];
@@ -293,7 +293,7 @@ export class SystemEventService {
   }
 
   /**
-   * 获取单个事件
+   * Get a single event
    */
   async getById(id: string): Promise<SystemEvent | null> {
     if (!this.repo) return null;
@@ -301,7 +301,7 @@ export class SystemEventService {
   }
 
   /**
-   * 事件统计
+   * Event statistics
    */
   async getStats(): Promise<{
     total: number;
@@ -321,10 +321,10 @@ export class SystemEventService {
     return { total, active, acknowledged, cleared };
   }
 
-  // ==================== 清理 ====================
+  // ==================== Cleanup ====================
 
   /**
-   * 清理过期事件（保留最近 N 天的已清除记录）
+   * Clean up expired events (keep cleared records from the last N days)
    */
   async cleanupExpired(retentionDays: number = 90): Promise<number> {
     if (!this.repo) return 0;
@@ -344,10 +344,10 @@ export class SystemEventService {
     return count;
   }
 
-  // ==================== 内部 ====================
+  // ==================== Internal ====================
 
   /**
-   * 状态转换校验（与 AlarmRecord 一致）
+   * State-transition validation (consistent with AlarmRecord)
    */
   private validateTransition(current: AlarmStatus, target: AlarmStatus): boolean {
     if (current === AlarmStatus.CLEARED) return false;

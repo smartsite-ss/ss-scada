@@ -27,10 +27,10 @@ class TestShape extends BaseGraphic {
 }
 
 /**
- * Helper: 添加图元到页面但不记录历史
+ * Helper: add a graphic to the page without recording history
  */
 function addGraphicNoHistory(page: BasePage, graphic: any): void {
-  // 直接操作 graphics 数组，绕过历史记录
+  // Directly manipulate the graphics array, bypassing history recording
   (page as any).graphics.push(graphic);
 }
 
@@ -225,7 +225,7 @@ describe('HistoryManager', () => {
     graphic.id = 'rm-no-extra';
     addGraphicNoHistory(page, graphic);
 
-    // 先移除图元（不记录历史），然后保存变更
+    // First remove the graphic (without recording history), then save the change
     page.removeGraphic('rm-no-extra', false);
     const change = new RemoveGraphicChange(page, graphic as any);
     historyManager.saveChange(change);
@@ -468,18 +468,18 @@ describe('RemoveGraphicChange', () => {
     graphic.id = 'remove-test';
     addGraphicNoHistory(page, graphic);
 
-    // 先移除图元（不记录历史），再保存 RemoveGraphicChange 代表此次移除
+    // First remove the graphic (without recording history), then save a RemoveGraphicChange representing this removal
     page.removeGraphic('remove-test', false);
     expect(page.getGraphicById('remove-test')).toBeNull();
 
     const change = new RemoveGraphicChange(page, graphic as any);
     historyManager.saveChange(change);
 
-    // undo: 恢复被移除的图元
+    // undo: restore the removed graphic
     historyManager.undo();
     expect(page.getGraphicById('remove-test')).not.toBeNull();
 
-    // redo: 再次移除
+    // redo: remove it again
     historyManager.redo();
     expect(page.getGraphicById('remove-test')).toBeNull();
   });
@@ -804,7 +804,7 @@ describe('DuplicateGraphicChange', () => {
   beforeEach(() => {
     historyManager = new HistoryManager(10);
     page = new BasePage();
-    // 注册 TestShape，使 duplicateGraphic 中 GraphicFactory.createGraphicFromJSON 能正确创建
+    // Register TestShape so that GraphicFactory.createGraphicFromJSON inside duplicateGraphic creates correctly
     if (!GraphicFactory.hasGraphic('test-shape')) {
       GraphicFactory.registerGraphic('test-shape', TestShape as any, 'Test Shape', 'basic');
     }
@@ -914,11 +914,11 @@ describe('TransformGraphicChange via batch (simulating drag operations)', () => 
     graphic.id = 'drag-move';
     addGraphicNoHistory(page, graphic);
 
-    // 模拟拖拽移动：startBatch → 起始位置记录 → 鼠标松开 → 对比起始/终位 → endBatch
+    // Simulate a drag move: startBatch → record start position → mouse up → compare start/end → endBatch
     page.startBatch('移动图元');
 
     const startPos = { x: graphic.config.geometry.x, y: graphic.config.geometry.y };
-    // 拖拽结束后的最终位置
+    // Final position after the drag ends
     graphic.setPosition(300, 400);
 
     const size = graphic.getSize();
@@ -935,13 +935,13 @@ describe('TransformGraphicChange via batch (simulating drag operations)', () => 
     expect(historyManager.getHistoryLength()).toBe(1);
     expect(historyManager.canUndo()).toBe(true);
 
-    // Undo: 回到起始位置
+    // Undo: back to the start position
     historyManager.undo();
     expect(graphic.config.geometry.x).toBe(100);
     expect(graphic.config.geometry.y).toBe(100);
     expect(historyManager.canRedo()).toBe(true);
 
-    // Redo: 回到拖拽后的位置
+    // Redo: back to the post-drag position
     historyManager.redo();
     expect(graphic.config.geometry.x).toBe(300);
     expect(graphic.config.geometry.y).toBe(400);
@@ -958,11 +958,11 @@ describe('TransformGraphicChange via batch (simulating drag operations)', () => 
 
     page.startBatch('移动图元');
 
-    // 记录起始位置
+    // Record the start position
     const g1Start = { x: g1.config.geometry.x, y: g1.config.geometry.y };
     const g2Start = { x: g2.config.geometry.x, y: g2.config.geometry.y };
 
-    // 拖拽结束后的最终位置
+    // Final position after the drag ends
     g1.setPosition(500, 300);
     g2.setPosition(600, 400);
 
@@ -982,7 +982,7 @@ describe('TransformGraphicChange via batch (simulating drag operations)', () => 
 
     expect(historyManager.getHistoryLength()).toBe(1);
 
-    // Undo: 两个图元都回到起始位置
+    // Undo: both graphics back to their start positions
     historyManager.undo();
     expect(g1.config.geometry.x).toBe(100);
     expect(g1.config.geometry.y).toBe(100);
@@ -990,7 +990,7 @@ describe('TransformGraphicChange via batch (simulating drag operations)', () => 
     expect(g2.config.geometry.y).toBe(200);
     expect(historyManager.canRedo()).toBe(true);
 
-    // Redo: 两个图元都回到拖拽位置
+    // Redo: both graphics back to their post-drag positions
     historyManager.redo();
     expect(g1.config.geometry.x).toBe(500);
     expect(g1.config.geometry.y).toBe(300);
@@ -1014,7 +1014,7 @@ describe('TransformGraphicChange via batch (simulating drag operations)', () => 
       rotation: graphic.config.geometry.rotation ?? 0,
     };
 
-    // 模拟缩放结束后的状态
+    // Simulate the state after a resize ends
     graphic.setSize(400, 200);
     graphic.setPosition(150, 150);
 
@@ -1048,13 +1048,13 @@ describe('TransformGraphicChange via batch (simulating drag operations)', () => 
   });
 
   it('should discard empty batch when drag has no actual movement', () => {
-    // 模拟用户点击但未实际拖拽移动
+    // Simulate a user click without an actual drag move
     const graphic = new TestShape(100, 100, 200, 100);
     graphic.id = 'no-move';
     addGraphicNoHistory(page, graphic);
 
     page.startBatch('移动图元');
-    // 没有 saveChange 任何记录（因为位置未变）
+    // No saveChange records at all (the position did not change)
     page.endBatch();
 
     expect(historyManager.getHistoryLength()).toBe(0);
@@ -1095,7 +1095,7 @@ describe('TransformGraphicChange via batch (simulating drag operations)', () => 
     graphic.id = 'jump-drag';
     addGraphicNoHistory(page, graphic);
 
-    // 第一次拖拽: 移动到 (300, 300)
+    // First drag: move to (300, 300)
     page.startBatch('移动图元');
     graphic.setPosition(300, 300);
     const s = graphic.getSize();
@@ -1106,7 +1106,7 @@ describe('TransformGraphicChange via batch (simulating drag operations)', () => 
     ));
     page.endBatch();
 
-    // 第二次拖拽: 移动到 (500, 500)
+    // Second drag: move to (500, 500)
     page.startBatch('移动图元');
     graphic.setPosition(500, 500);
     historyManager.saveChange(new TransformGraphicChange(page as any, 'jump-drag',
@@ -1119,17 +1119,17 @@ describe('TransformGraphicChange via batch (simulating drag operations)', () => 
     expect(historyManager.getCurrentIndex()).toBe(1);
     expect(graphic.config.geometry.x).toBe(500);
 
-    // jumpTo 0 (回到第一次拖拽后的状态)
+    // jumpTo 0 (back to the state after the first drag)
     historyManager.jumpTo(0);
     expect(historyManager.getCurrentIndex()).toBe(0);
     expect(graphic.config.geometry.x).toBe(300);
 
-    // jumpTo -1 (回到所有拖拽之前)
+    // jumpTo -1 (back to before all drags)
     historyManager.jumpTo(-1);
     expect(historyManager.getCurrentIndex()).toBe(-1);
     expect(graphic.config.geometry.x).toBe(100);
 
-    // jumpTo 1 (跳到第二次拖拽后)
+    // jumpTo 1 (jump to after the second drag)
     historyManager.jumpTo(1);
     expect(historyManager.getCurrentIndex()).toBe(1);
     expect(graphic.config.geometry.x).toBe(500);

@@ -172,11 +172,11 @@ export abstract class Three3dPlugin<TProps extends Record<string, any>> extends 
   }
 
   draw(_context: CanvasRenderingContext2D): void {
-    /* 3D 插件不使用 Canvas 2D 绘制，而是通过 Three.js 独立渲染 */
+    /* 3D plugins do not use Canvas 2D drawing; they render independently via Three.js */
   }
 
   onMounted(): void {
-    /* 3D 插件不使用动画引擎，留给子类按需覆盖 */
+    /* 3D plugins do not use the animation engine; subclasses may override as needed */
   }
 
   onUnmounted(): void {}

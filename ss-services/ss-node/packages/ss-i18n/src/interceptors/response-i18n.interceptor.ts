@@ -38,8 +38,8 @@ export class ResponseI18nInterceptor implements NestInterceptor {
       return data;
     }
 
-    // Date / Buffer / RegExp 等内置对象不递归翻译，原样返回
-    // 否则 Object.keys(new Date()) === [] 会导致日期被序列化为空对象 {}
+    // Built-in objects like Date / Buffer / RegExp are not translated recursively; returned as-is
+    // Otherwise Object.keys(new Date()) === [] would serialize dates into empty objects {}
     if (data instanceof Date || Buffer.isBuffer(data) || data instanceof RegExp) {
       return data;
     }

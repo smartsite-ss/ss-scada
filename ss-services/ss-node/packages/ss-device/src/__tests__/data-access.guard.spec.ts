@@ -47,7 +47,7 @@ describe('DataAccessGuard (3.6 设备权限)', () => {
     guard = new DataAccessGuard(reflector, mockAuthService);
   });
 
-  // ==================== 基础场景 ====================
+  // ==================== Basic scenarios ====================
   describe('基础放行场景', () => {
     it('TC-PERM-001: 未登录用户应抛出 ForbiddenException', async () => {
       const ctx = createMockContext({ user: null });
@@ -99,7 +99,7 @@ describe('DataAccessGuard (3.6 设备权限)', () => {
     });
   });
 
-  // ==================== 项目级权限 ====================
+  // ==================== Project-level permissions ====================
   describe('项目级资源权限', () => {
     it('TC-PERM-010: 有项目写权限应放行', async () => {
       reflector.getAllAndOverride.mockReturnValue(['project']);
@@ -131,7 +131,7 @@ describe('DataAccessGuard (3.6 设备权限)', () => {
     });
   });
 
-  // ==================== 设备级权限 ====================
+  // ==================== Device-level permissions ====================
   describe('设备级资源权限', () => {
     it('TC-PERM-020: 有设备写权限应放行', async () => {
       reflector.getAllAndOverride.mockReturnValue(['device']);
@@ -174,7 +174,7 @@ describe('DataAccessGuard (3.6 设备权限)', () => {
     });
   });
 
-  // ==================== 分组级权限 ====================
+  // ==================== Group-level permissions ====================
   describe('设备分组级资源权限', () => {
     it('TC-PERM-030: 有分组写权限应放行', async () => {
       reflector.getAllAndOverride.mockReturnValue(['deviceGroup']);
@@ -207,7 +207,7 @@ describe('DataAccessGuard (3.6 设备权限)', () => {
     });
   });
 
-  // ==================== 回退场景 ====================
+  // ==================== Fallback scenarios ====================
   describe('authService 不可用时的回退', () => {
     it('TC-PERM-040: 无 authService 且无 @Roles 装饰器应放行', async () => {
       guard = new DataAccessGuard(reflector, undefined as any);
@@ -250,7 +250,7 @@ describe('DataAccessGuard (3.6 设备权限)', () => {
     });
   });
 
-  // ==================== body 参数回退 ====================
+  // ==================== body-param fallback ====================
   describe('从 body 获取资源 ID', () => {
     it('TC-PERM-050: params 无 projectId 但 body 有时应正常检查', async () => {
       reflector.getAllAndOverride.mockReturnValue(['project']);

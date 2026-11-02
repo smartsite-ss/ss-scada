@@ -23,7 +23,7 @@ export abstract class BaseGraphic implements IGraphic {
   private _propertyCache: Map<string, any> = new Map();
   private _cacheVersion = -1;
 
-  /** 质量/告警视觉覆盖前的原始属性备份（Phase 15.3 修复 restore bug） */
+  /** Original property backup before quality/alarm visual override (Phase 15.3 restore bug fix) */
   private _savedVisualState: {
     borderColor?: any;
     borderWidth?: any;
@@ -59,8 +59,8 @@ export abstract class BaseGraphic implements IGraphic {
   ) {
     this.id = uuidv4();
     this.type = type;
-    // 版本由 GraphicFactory.createGraphic() 注入 graphic.version = info.version
-    // 不通过 factory 直接 new 的图元，version 保持 undefined，toJSON() 已使用兜底 '1.0'
+    // Version injected via GraphicFactory.createGraphic(): graphic.version = info.version
+    // Graphics instantiated directly without the factory keep version undefined; toJSON() already falls back to '1.0'
 
     this.config = {
       id: this.id,
@@ -152,7 +152,7 @@ export abstract class BaseGraphic implements IGraphic {
     };
     const color = alarmColors[severity] || '#F44336';
     this._saveVisualState();
-    // 同时写入 config.style（Canvas 插件读取）和 config.customProps（Vue 插件读取）
+    // Write to both config.style (read by Canvas plugins) and config.customProps (read by Vue plugins)
     this.setProperty('config.style.borderColor', color);
     this.setProperty('config.style.borderWidth', 2);
     this.setProperty('config.style.borderStyle', 'solid');
@@ -169,7 +169,7 @@ export abstract class BaseGraphic implements IGraphic {
     const indicator = QUALITY_VISUAL_MAP[code];
     if (!indicator) return;
     this._saveVisualState();
-    // 同时写入 config.style（Canvas 插件读取）和 config.customProps（Vue 插件读取）
+    // Write to both config.style (read by Canvas plugins) and config.customProps (read by Vue plugins)
     this.setProperty('config.style.borderColor', indicator.color);
     this.setProperty('config.style.borderStyle', indicator.borderStyle);
     this.setProperty('config.style.opacity', indicator.opacity);
@@ -182,8 +182,8 @@ export abstract class BaseGraphic implements IGraphic {
   }
 
   /**
-   * 保存当前视觉状态（在质量/告警覆盖前调用）
-   * 仅在未保存时才保存，避免多次覆盖导致原始值丢失
+   * Save the current visual state (called before quality/alarm override)
+   * Saves only when not already saved, to avoid losing original values through repeated overwrites
    */
   private _saveVisualState(): void {
     if (this._savedVisualState) return;
@@ -198,7 +198,7 @@ export abstract class BaseGraphic implements IGraphic {
   }
 
   /**
-   * 恢复原始视觉状态（清除质量/告警覆盖时调用）
+   * Restore the original visual state (called when clearing quality/alarm override)
    */
   private _restoreVisualState(): void {
     if (!this._savedVisualState) return;
@@ -228,7 +228,7 @@ export abstract class BaseGraphic implements IGraphic {
       if (properties.properties) Object.assign(this.config.customProps, properties.properties);
       if (properties.events) {
         if (Array.isArray(properties.events)) {
-          // 数组格式 → eventHandlers Record 格式
+          // Array format → eventHandlers Record format
           const handlers: Record<string, any> = {};
           for (const evt of properties.events) {
             handlers[evt.id] = evt;
@@ -400,10 +400,10 @@ export abstract class BaseGraphic implements IGraphic {
   }
 
   fromJSON(data: any): void {
-    // 读取存储的版本
+    // Read the stored version
     if (data.version) this.version = data.version;
 
-    // 未来：版本比较 + 迁移
+    // Future: version comparison + migration
     // const registeredVersion = GraphicFactory.getGraphicVersion(this.type);
     // if (registeredVersion && this.version && this.version !== registeredVersion) {
     //   this.migrate(this.version, registeredVersion);
@@ -411,8 +411,8 @@ export abstract class BaseGraphic implements IGraphic {
 
     if (data.config) {
       this.config = this.deepClone(data.config);
-      // 保留 JSON 中的原始图元 ID（顶层 id 或 config.id），
-      // 避免每次加载重新生成 UUID 导致数据源绑定（graphicBindings.graphicId）失配
+      // Keep the original graphic ID in the JSON (top-level id or config.id),
+      // avoiding regenerating a UUID on every load which would break data source bindings (graphicBindings.graphicId)
       this.id = data.id || this.config.id || this.id;
       this.config.id = this.id;
     }

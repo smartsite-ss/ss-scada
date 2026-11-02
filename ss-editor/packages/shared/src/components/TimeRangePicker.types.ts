@@ -2,7 +2,7 @@
 // https://smartsite.top/
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
-/** 时间范围值 */
+/** Time range value */
 export interface TimeRange {
   start: string;
   end: string;

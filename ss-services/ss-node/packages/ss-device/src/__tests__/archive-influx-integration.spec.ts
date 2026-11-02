@@ -3,13 +3,13 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 3.15 + 3.17 集成测试 — DeviceArchiveService / ArchiveService 接入真实 InfluxDB
+ * 3.15 + 3.17 integration tests - DeviceArchiveService / ArchiveService connected to a real InfluxDB
  *
- * 验证：
- * - InfluxWriteService 可用时，archiveToInfluxDB 调用真实 writePoint()
- * - DataQueryService 可用时，queryArchive / queryHistory 从 HistoricalData 表查询
- * - 不可用时降级到内存 Map / 空返回
- * - toInfluxPoint 数据映射正确
+ * Verifies:
+ * - When InfluxWriteService is available, archiveToInfluxDB calls the real writePoint()
+ * - When DataQueryService is available, queryArchive / queryHistory query the HistoricalData table
+ * - Degrades to an in-memory Map / empty return when unavailable
+ * - toInfluxPoint data mapping is correct
  */
 import { DeviceArchiveService } from '../archive/device-archive.service';
 import { ArchiveService } from '../data/archive.service';
@@ -76,7 +76,7 @@ describe('3.15 + 3.17 — DeviceArchiveService InfluxDB 集成', () => {
       const startTime = new Date('2024-01-01T00:00:00.000Z');
       const endTime = new Date('2024-01-01T00:01:00.000Z');
 
-      // 模拟 DataQueryService 返回数据
+      // Simulate DataQueryService returning data
       const mockDataQuery = (service as any).dataQueryService;
       mockDataQuery.queryTimeRange.mockResolvedValue({
         data: [
@@ -166,7 +166,7 @@ describe('3.15 + 3.17 — DeviceArchiveService InfluxDB 集成', () => {
         endTime,
       });
 
-      // 降级到内存返回空结果
+      // Degrade to in-memory, returning an empty result
       expect(result.data).toEqual([]);
       expect(result.total).toBe(0);
     });
@@ -178,7 +178,7 @@ describe('3.15 + 3.17 — DeviceArchiveService InfluxDB 集成', () => {
     beforeEach(() => {
       const mockRepo = createMockDataTagRepo();
       const mockPdb = createMockProjectDbService(mockRepo);
-      // 不传入 influxWriteService 和 dataQueryService
+      // Do not pass influxWriteService and dataQueryService
       service = new DeviceArchiveService(mockRepo as any, mockPdb);
     });
 
@@ -188,7 +188,7 @@ describe('3.15 + 3.17 — DeviceArchiveService InfluxDB 集成', () => {
 
       const result = await service.archiveToInfluxDB('tag-fallback', startTime, endTime);
 
-      // 无 DataQueryService 时 fetchDataPoints 返回空数组
+      // fetchDataPoints returns an empty array without DataQueryService
       expect(result.archived).toBe(0);
       expect(result.jobId).toMatch(/^arc_/);
     });
@@ -210,7 +210,7 @@ describe('3.15 + 3.17 — DeviceArchiveService InfluxDB 集成', () => {
       const startTime = new Date('2024-01-01T00:00:00.000Z');
       const endTime = new Date('2024-01-01T00:01:00.000Z');
 
-      // 间接验证：archiveToInfluxDB 调用 fetchDataPoints，archived 应为 0
+      // Indirect verification: archiveToInfluxDB calls fetchDataPoints, so archived should be 0
       const result = await service.archiveToInfluxDB('tag-no-random', startTime, endTime);
       expect(result.archived).toBe(0);
     });
@@ -276,7 +276,7 @@ describe('3.17 — ArchiveService InfluxDB 集成', () => {
         quality: 'good',
         timestamp: new Date(),
       });
-      // 不应抛出异常
+      // Should not throw
       expect(true).toBe(true);
     });
   });
@@ -296,7 +296,7 @@ describe('3.17 — ArchiveService InfluxDB 集成', () => {
         quality: 'good',
         timestamp: new Date(),
       });
-      // 不应抛出异常
+      // Should not throw
       expect(true).toBe(true);
     });
 

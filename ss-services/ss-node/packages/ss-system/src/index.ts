@@ -101,7 +101,7 @@ export { TerminalService } from './terminal/terminal.service';
 export type { TerminalCommand } from './terminal/terminal.service';
 export { TerminalGateway } from './terminal/terminal.gateway';
 
-// Phase 4 - 基础服务管理
+// Phase 4 - Base services management
 export { BaseServicesService } from './base-services/base-services.service';
 export type {
   ServiceStatus,
@@ -112,7 +112,7 @@ export { BaseServicesController } from './base-services/base-services.controller
 export { BaseServiceEntity } from './base-services/base-service.entity';
 export { CreateBaseServiceDto, UpdateBaseServiceDto } from './base-services/base-service.dto';
 
-// Phase 5 - 系统配置管理与重启
+// Phase 5 - System config management and restart
 export {
   CONFIG_METADATA_REGISTRY,
   CONFIG_CATEGORY_INFO,
@@ -128,7 +128,7 @@ export type {
   RuntimeEnvironment,
 } from './restart/system-restart.service';
 
-// Phase 6 - 知识库（纯文件方案）
+// Phase 6 - Knowledge base (pure-file approach)
 export { KnowledgeModule } from './knowledge/knowledge.module';
 export { KnowledgeService } from './knowledge/knowledge.service';
 export { KnowledgeController } from './knowledge/knowledge.controller';
@@ -144,7 +144,7 @@ export type {
   KbLangsResponse,
 } from './knowledge/knowledge.types';
 
-// Phase 7 - 定时任务配置管理
+// Phase 7 - Scheduled task config management
 export { TimerConfigService } from './timer-config/timer-config.service';
 export type { TimerEntry } from './timer-config/timer-config.service';
 export { TimerConfigController } from './timer-config/timer-config.controller';

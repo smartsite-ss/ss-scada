@@ -6,7 +6,7 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { ExpressionTriggerManager } from '../../scada-data/engine/ExpressionTrigger';
 import { ScriptEngine } from '../../scada-data/engine/ScriptEngine';
 
-describe('ExpressionTriggerManager', () => { let triggerManager: ExpressionTriggerManager; beforeEach(() => { vi.useFakeTimers(); /* 重建引擎 */ const engine = ScriptEngine.getInstance(); engine.destroy(); /* 注册测试脚本 */ engine.registerScript({ id:'script-1',
+describe('ExpressionTriggerManager', () => { let triggerManager: ExpressionTriggerManager; beforeEach(() => { vi.useFakeTimers(); /* rebuild the engine */ const engine = ScriptEngine.getInstance(); engine.destroy(); /* register the test script */ engine.registerScript({ id:'script-1',
       name: 'Test Script',
       script: 'api.log("info", "triggered");',
       type: 'client',
@@ -83,7 +83,7 @@ describe('ExpressionTriggerManager', () => { let triggerManager: ExpressionTrigg
         enabled: true,
       });
 
-      triggerManager.evaluate('tag1', 85); /* 推进 150ms 触发防抖 */ vi.advanceTimersByTime(150); const triggers = triggerManager.getAll(); expect(triggers[0].lastEvaluatedAt).toBeDefined(); expect(triggers[0].lastTriggeredAt).toBeDefined(); }); it('should not trigger when expression is false', () => {
+      triggerManager.evaluate('tag1', 85); /* advance 150ms to trigger the debounce */ vi.advanceTimersByTime(150); const triggers = triggerManager.getAll(); expect(triggers[0].lastEvaluatedAt).toBeDefined(); expect(triggers[0].lastTriggeredAt).toBeDefined(); }); it('should not trigger when expression is false', () => {
       triggerManager.register({
         id: 'trigger-1',
         scriptId: 'script-1',
@@ -141,7 +141,7 @@ describe('ExpressionTriggerManager', () => { let triggerManager: ExpressionTrigg
         id: 'trigger-1',
         scriptId: 'script-1',
         expression: 'value > 80',
-        tagIds: ['tag1'], debounceMs: 500, enabled: true, }); /* 第一次触发 */ triggerManager.evaluate('tag1', 85); vi.advanceTimersByTime(300); /* 第二次触发（重置 debounce） */ triggerManager.evaluate('tag1', 90); vi.advanceTimersByTime(300); /* 还没到 debounce time */ const triggers = triggerManager.getAll(); expect(triggers[0].lastTriggeredAt).toBeUndefined(); /* 推进到 debounce 后 */ vi.advanceTimersByTime(250); expect(triggers[0].lastTriggeredAt).toBeDefined(); }); }); describe('getAll', () => {
+        tagIds: ['tag1'], debounceMs: 500, enabled: true, }); /* first trigger */ triggerManager.evaluate('tag1', 85); vi.advanceTimersByTime(300); /* second trigger (resets the debounce) */ triggerManager.evaluate('tag1', 90); vi.advanceTimersByTime(300); /* debounce time not yet reached */ const triggers = triggerManager.getAll(); expect(triggers[0].lastTriggeredAt).toBeUndefined(); /* advance past the debounce */ vi.advanceTimersByTime(250); expect(triggers[0].lastTriggeredAt).toBeDefined(); }); }); describe('getAll', () => {
     it('should return all triggers', () => {
       triggerManager.register({
         id: 'trigger-1',

@@ -15,11 +15,11 @@ import { isBooleanDataType, isStringDataType } from '../../data-type.util';
 
 export { AlarmConditionType, AlarmEvent, NormalizedAlarmEvent };
 
-/** 告警状态记录（含恢复消抖追踪） */
+/** Alarm-state record (with recovery-debounce tracking) */
 interface AlarmState {
   isActive: boolean;
   lastTriggerTime?: Date;
-  /** 值开始恢复正常的时间（Phase 5 恢复消抖用），null 表示未开始恢复 */
+  /** Time when the value started recovering (Phase 5 recovery debounce); null means recovery not yet started */
   normalSince?: Date;
 }
 
@@ -30,12 +30,12 @@ export class AlarmCheckStep implements PipelineStep {
 
   private readonly logger = new Logger(AlarmCheckStep.name);
   private alarmStates = new Map<string, AlarmState>();
-  /** 已诊断告警状态的标签集合（每个标签仅打印一次诊断日志） */
+  /** Set of tags whose alarm state has been diagnosed (each tag logs diagnosis only once) */
   private diagnosedTags = new Set<string>();
 
   async process(ctx: PipelineContext): Promise<PipelineContext> {
     try {
-      // 如果数据质量不好，跳过报警检查
+      // Skip alarm checking if data quality is bad
       if (ctx.quality !== 'good') {
         return ctx;
       }
@@ -45,10 +45,10 @@ export class AlarmCheckStep implements PipelineStep {
       }
 
       const tagConfig = ctx.tagConfig || {};
-      // 注意：必须用 let，下方虚拟设备分支会重新赋值以引用注入后的条件
+      // Note: must use let; the virtual-device branch below reassigns to reference the injected condition
       let alarmConditions: AlarmConditionType[] = tagConfig.alarms || [];
 
-      // 为虚拟设备自动注入默认报警条件（模拟 0-100 范围随机游走数据）
+      // Auto-inject default alarm conditions for virtual devices (simulating 0-100 random-walk data)
       if (alarmConditions.length === 0 && ctx.deviceType === 'virtual') {
         const dataType = tagConfig.dataType || 'float32';
         if (!isBooleanDataType(dataType) && !isStringDataType(dataType)) {
@@ -58,7 +58,7 @@ export class AlarmCheckStep implements PipelineStep {
             { type: 'limit', severity: 'critical', enabled: true },
           ];
           ctx.tagConfig.alarmLimits = { high: 55, low: 15, highHigh: 70, lowLow: 5 };
-          // 重新读取注入后的条件
+          // Re-read the injected condition
           alarmConditions = ctx.tagConfig.alarms;
           this.logger.log(
             `Injected default alarm limits for virtual tag "${ctx.tagName || ctx.tagId}" ` +
@@ -68,7 +68,7 @@ export class AlarmCheckStep implements PipelineStep {
       }
 
       if (alarmConditions.length === 0) {
-        // 每个标签仅打印一次诊断日志，避免刷屏
+        // Log diagnosis once per tag to avoid flooding
         if (!this.diagnosedTags.has(ctx.tagId)) {
           this.diagnosedTags.add(ctx.tagId);
           this.logger.log(
@@ -91,7 +91,7 @@ export class AlarmCheckStep implements PipelineStep {
           const state = this.alarmStates.get(alarmKey);
 
           if (isTriggered) {
-            // 防抖：同一报警 5 秒内不重复触发
+            // Debounce: do not re-trigger the same alarm within 5 seconds
             if (!state || !state.isActive || this.shouldRetrigger(state.lastTriggerTime)) {
               const alarmEvent: AlarmEvent = {
                 alarmId: randomUUID(),
@@ -120,8 +120,8 @@ export class AlarmCheckStep implements PipelineStep {
               });
             }
           } else if (state?.isActive) {
-            // Phase 5: 检测条件恢复正常
-            // 值不再满足告警条件，且该条件曾处于活跃状态 → 判定是否恢复
+            // Phase 5: detect that the condition has recovered
+            // Value no longer satisfies the alarm condition, and the condition was previously active -> decide whether to recover
             if (this.shouldRecover(state, condition)) {
               const normalizedEvent: NormalizedAlarmEvent = {
                 tagId: ctx.tagId,
@@ -134,7 +134,7 @@ export class AlarmCheckStep implements PipelineStep {
               };
 
               normalizedAlarms.push(normalizedEvent);
-              // 标记为已恢复，清除活跃状态
+              // Mark as recovered and clear the active state
               this.alarmStates.set(alarmKey, {
                 isActive: false,
                 lastTriggerTime: undefined,
@@ -148,7 +148,7 @@ export class AlarmCheckStep implements PipelineStep {
                 conditionType: condition.type,
               });
             } else if (!state.normalSince) {
-              // 首次检测到值恢复正常，记录开始时间（恢复消抖计时起点）
+              // First detection that the value recovered; record the start time (recovery-debounce start)
               this.alarmStates.set(alarmKey, {
                 ...state,
                 normalSince: new Date(),
@@ -162,12 +162,12 @@ export class AlarmCheckStep implements PipelineStep {
         }
       }
 
-      // 将触发的报警事件附加到 context（供 PublishStep 使用）
+      // Attach the triggered alarm event to the context (for PublishStep)
       if (triggeredAlarms.length > 0) {
         (ctx as any).triggeredAlarms = triggeredAlarms;
       }
 
-      // Phase 5: 将恢复正常的告警事件附加到 context（供 PublishStep 发出 alarm_normalized）
+      // Phase 5: attach the recovered-alarm event to the context (for PublishStep to emit alarm_normalized)
       if (normalizedAlarms.length > 0) {
         (ctx as any).normalizedAlarms = normalizedAlarms;
       }
@@ -222,7 +222,7 @@ export class AlarmCheckStep implements PipelineStep {
       }
 
       case 'digital': {
-        // 数字量报警：值等于触发值
+        // Digital alarm: value equals the trigger value
         const { triggerValue } = tagConfig.alarmDigital || {};
         return triggerValue !== undefined && value === triggerValue;
       }
@@ -239,31 +239,32 @@ export class AlarmCheckStep implements PipelineStep {
   }
 
   /**
-   * 判断告警条件是否已恢复正常（Phase 5 恢复消抖）
+   * Decide whether the alarm condition has recovered (Phase 5 recovery debounce)
    *
-   * 第一版策略：值恢复正常即判定恢复（立即恢复）。
-   * 后续可扩展为：值需持续 normalSince 后 N 秒/N 个采样周期才判定恢复，
-   * 防止中间波动（如 80→79→80）导致告警抖动。
+   * First-version strategy: recover as soon as the value returns to normal (immediate recovery).
+   * Later extensible to: require the value to stay normal for N seconds / N sampling cycles
+   * (via normalSince) before declaring recovery, to prevent oscillation from intermediate
+   * fluctuations (e.g. 80->79->80) causing alarm flapping.
    *
-   * @param state     当前告警状态（含 normalSince 恢复计时起点）
-   * @param condition 告警条件（可用于按条件类型定制恢复策略）
+   * @param state      current alarm state (with normalSince recovery-timing start)
+   * @param condition alarm condition (for condition-type-specific recovery policy)
    */
   private shouldRecover(_state: AlarmState, _condition: AlarmConditionType): boolean {
-    // 简单策略：值恢复正常即恢复
-    // TODO: 后续可扩展为时间消抖 — state.normalSince 持续超过 RECOVERY_DEBOUNCE_MS 才恢复
+    // Simple strategy: recover as soon as the value returns to normal
+    // TODO: later extend to time-based debounce - require state.normalSince to persist beyond RECOVERY_DEBOUNCE_MS before recovering
     return true;
   }
 
   /**
-   * 格式化报警消息中的数值，避免浮点精度问题（如 22.57000000000001）
-   * 整数不显小数，浮点保留 2 位
+   * Format the numeric value in an alarm message, avoiding floating-point precision issues (e.g. 22.57000000000001)
+   * Integers show no decimals; floats keep 2 decimals
    */
   private formatAlarmValue(value: number): string {
     return Number.isInteger(value) ? String(value) : value.toFixed(2);
   }
 
   /**
-   * 构建可读的中文报警消息，包含告警类型、阈值和当前值
+   * Build a human-readable alarm message, including alarm type, threshold, and current value
    */
   private buildAlarmMessage(
     tagName: string,
@@ -282,7 +283,7 @@ export class AlarmCheckStep implements PipelineStep {
     switch (condition.type) {
       case 'limit': {
         const limits = tagConfig?.alarmLimits || {};
-        // 按优先级判断触发的是哪个限值（与 checkAlarmCondition 顺序一致）
+        // Determine which threshold triggered, by priority (consistent with checkAlarmCondition)
         if (limits.highHigh !== undefined && value >= limits.highHigh) {
           return `[${severityLabel}] ${tagName} 超过上上限 ${this.formatAlarmValue(limits.highHigh)}，当前值: ${fmtVal}`;
         }
@@ -322,7 +323,7 @@ export class AlarmCheckStep implements PipelineStep {
   }
 
   private getLastValue(_tagId: string): { value: number; timestamp: Date } | undefined {
-    // 从 DeadbandStep 或 Cache 获取上次值
+    // Get the last value from DeadbandStep or Cache
     return undefined;
   }
 

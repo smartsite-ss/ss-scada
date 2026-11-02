@@ -4,14 +4,14 @@
 
 import { type PluginPropertySchema } from '@scada-editor/plugin-sdk';
 
-/** chart-bar 柱状图全局配置（数据源由 ChartDataSourceEditor 自定义 section 管理） */
+/** chart-bar bar chart global config (data source is managed by the ChartDataSourceEditor custom section) */
 export const chartBarPropertySchema: PluginPropertySchema = {
   name: '柱状图',
   layout: 'grid',
   columns: 2,
   propsPath: 'customProps',
   fields: [
-    // 标题
+    // Title
     { name: 'title', label: '标题', labelKey: 'chartBar.properties.title', type: 'text', defaultValue: '柱状图', group: '标题' },
     { name: 'titleColor', label: '标题颜色', labelKey: 'chartBar.properties.titleColor', type: 'color', defaultValue: '#333333FF', group: '标题' },
     { name: 'titleFontSize', label: '标题字号', labelKey: 'chartBar.properties.titleFontSize', type: 'number', min: 8, max: 48, step: 1, defaultValue: 14, group: '标题' },
@@ -20,7 +20,7 @@ export const chartBarPropertySchema: PluginPropertySchema = {
       { value: 'bold', label: '粗体', labelKey: 'chartBar.options.fontWeight.bold' },
     ], defaultValue: 'bold', group: '标题' },
 
-    // 图表
+    // Chart
     { name: 'horizontal', label: '横向柱状', labelKey: 'chartBar.properties.horizontal', type: 'boolean', defaultValue: false, group: '图表' },
     { name: 'gridColor', label: '网格颜色', labelKey: 'chartBar.properties.gridColor', type: 'color', defaultValue: '#E9ECEF', group: '图表' },
     { name: 'axisColor', label: '坐标轴颜色', labelKey: 'chartBar.properties.axisColor', type: 'color', defaultValue: '#495057', group: '图表' },
@@ -33,7 +33,7 @@ export const chartBarPropertySchema: PluginPropertySchema = {
     ], defaultValue: 'bottom', group: '图表' },
     { name: 'showTooltip', label: '显示提示框', labelKey: 'chartBar.properties.showTooltip', type: 'boolean', defaultValue: true, group: '图表' },
 
-    // 背景 / 边框 / 阴影
+    // Background / border / shadow
     { name: 'backgroundColor', label: '背景色', labelKey: 'chartBar.properties.backgroundColor', type: 'color', defaultValue: '#00000000', group: '样式' },
     { name: 'borderColor', label: '边框色', labelKey: 'chartBar.properties.borderColor', type: 'color', defaultValue: '#00000000', group: '样式' },
     { name: 'borderWidth', label: '边框宽度', labelKey: 'chartBar.properties.borderWidth', type: 'number', min: 0, max: 10, step: 1, defaultValue: 0, group: '样式' },

@@ -16,10 +16,11 @@ import type {
 } from './channel-config.interface';
 
 /**
- * 设备通道配置服务
+ * Device channel-config service
  *
- * 一个设备实例仅配置一个数据采集通道。
- * 通道承载设备实例化后的差异化连接信息（串口号、IP地址、端口、MQTT Broker等）。
+ * A device instance configures exactly one data-collection channel.
+ * The channel carries the differentiated connection info after device instantiation
+ * (serial port, IP address, port, MQTT broker, etc.).
  */
 @Injectable()
 export class ChannelConfigService {
@@ -31,7 +32,7 @@ export class ChannelConfigService {
   }
 
   /**
-   * 校验通道配置，并填充默认值
+   * Validate the channel config and fill in defaults
    */
   validate(config: DeviceChannelConfig): DeviceChannelConfig {
     const errors = validateChannelConfig(config);
@@ -45,7 +46,7 @@ export class ChannelConfigService {
   }
 
   /**
-   * 校验协议类型与设备类型是否匹配
+   * Validate that the protocol type matches the device type
    */
   checkProtocolMatch(deviceType: string, channelProtocol: string): void {
     const protocolMap: Record<string, string> = {
@@ -66,7 +67,7 @@ export class ChannelConfigService {
   }
 
   /**
-   * 生成通道连接字符串（用于日志/诊断）
+   * Generate the channel connection string (for logs/diagnostics)
    */
   toConnectionString(config: DeviceChannelConfig): string {
     const protocol = (config as any).protocol;
@@ -97,7 +98,7 @@ export class ChannelConfigService {
   }
 
   /**
-   * 填充通道配置的默认值
+   * Fill in the channel config's default values
    */
   private fillDefaults(config: DeviceChannelConfig): DeviceChannelConfig {
     const protocol = (config as any).protocol;

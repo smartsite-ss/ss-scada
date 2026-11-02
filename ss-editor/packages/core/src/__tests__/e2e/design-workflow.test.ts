@@ -171,7 +171,7 @@ function createMockGraphic(overrides: Partial<MockGraphic> = {}): MockGraphic {
       locked: false,
       style: { fill: '#409EFF', stroke: '#333333', strokeWidth: 1 },
     },
-    dataSource: overrides.dataSource || { enabled: false, dataSource: '', dataField: ''}, events: overrides.events || { eventHandlers: {} }, animations: overrides.animations || [], parentId: overrides.parentId ?? null, groupId: overrides.groupId ?? null, visible: overrides.visible ?? true, locked: overrides.locked ?? false, zIndex: overrides.zIndex ?? 0, metadata: overrides.metadata || {}, toJSON() { return { id: self.id, type: self.type, name: self.name, config: { ...self.config }, dataSource: { ...self.dataSource }, events: { ...self.events }, animations: [...self.animations], parentId: self.parentId, groupId: self.groupId, visible: self.visible, locked: self.locked, zIndex: self.zIndex, metadata: { ...self.metadata }, }; }, }; return self; } /* 设置 mockGraphicFactoryCreate 的默认行为 */ mockGraphicFactoryCreate.mockImplementation((type: string, x: number, y: number, width: number, height: number) => { return createMockGraphic({ type, x, y, width, height }); }); mockGraphicFactoryFromJSON.mockImplementation((data: any) => { return createMockGraphic({ ...data }); }); /* ─── Import stores ─── */ import { usePageStore } from '../../store/page.store';
+    dataSource: overrides.dataSource || { enabled: false, dataSource: '', dataField: ''}, events: overrides.events || { eventHandlers: {} }, animations: overrides.animations || [], parentId: overrides.parentId ?? null, groupId: overrides.groupId ?? null, visible: overrides.visible ?? true, locked: overrides.locked ?? false, zIndex: overrides.zIndex ?? 0, metadata: overrides.metadata || {}, toJSON() { return { id: self.id, type: self.type, name: self.name, config: { ...self.config }, dataSource: { ...self.dataSource }, events: { ...self.events }, animations: [...self.animations], parentId: self.parentId, groupId: self.groupId, visible: self.visible, locked: self.locked, zIndex: self.zIndex, metadata: { ...self.metadata }, }; }, }; return self; } /* set the default behavior of mockGraphicFactoryCreate */ mockGraphicFactoryCreate.mockImplementation((type: string, x: number, y: number, width: number, height: number) => { return createMockGraphic({ type, x, y, width, height }); }); mockGraphicFactoryFromJSON.mockImplementation((data: any) => { return createMockGraphic({ ...data }); }); /* ─── Import stores ─── */ import { usePageStore } from '../../store/page.store';
 import { useGraphicStore } from '../../store/graphic.store';
 
 // ─── Test suite ───
@@ -361,7 +361,7 @@ describe('E2E: Design Workflow', () => {
 
     it('should toggle graphic selection', () => {
       pageStore.addPage('Toggle Page');
-      const graphic = graphicStore.addGraphic('shape', 50, 50, 100, 100); /* addGraphic 已自动选中图形，先清除选择 */ const currentPage = pageStore.currentPage; currentPage!.clearSelection(); expect(currentPage!.selectedGraphicId).toBeNull(); graphicStore.toggleSelection(graphic!.id); expect(currentPage!.selectedGraphicId).toBe(graphic!.id); graphicStore.toggleSelection(graphic!.id); expect(currentPage!.selectedGraphicId).toBeNull(); }); it('should delete a graphic', () => {
+      const graphic = graphicStore.addGraphic('shape', 50, 50, 100, 100); /* addGraphic has auto-selected the graphic; clear the selection first */ const currentPage = pageStore.currentPage; currentPage!.clearSelection(); expect(currentPage!.selectedGraphicId).toBeNull(); graphicStore.toggleSelection(graphic!.id); expect(currentPage!.selectedGraphicId).toBe(graphic!.id); graphicStore.toggleSelection(graphic!.id); expect(currentPage!.selectedGraphicId).toBeNull(); }); it('should delete a graphic', () => {
       pageStore.addPage('Delete Page');
       const graphic = graphicStore.addGraphic('shape', 50, 50, 100, 100);
 
@@ -461,7 +461,7 @@ describe('E2E: Design Workflow', () => {
       expect(reordered[0]).toBe('Page A');
     });
 
-    it('should delete a page', () => { /* 有多于一个页面才能删除 */ pageStore.addPage('Extra Page');
+    it('should delete a page', () => { /* there must be more than one page to delete */ pageStore.addPage('Extra Page');
       const pageCountBefore = pageStore.pages.length;
       const pageId = pageStore.currentPageId!;
 
@@ -471,7 +471,7 @@ describe('E2E: Design Workflow', () => {
     });
 
     it('只有一个页面时不应删除', () => {
-      // 确保只有一个页面
+      // Ensure there is only one page
       const pageCountBefore = pageStore.pages.length;
       pageStore.removePage(pageStore.currentPageId!);
 
@@ -538,9 +538,9 @@ describe('E2E: Design Workflow', () => {
       try {
         pageStore.importPages([{ invalid: true }]);
       } catch (e) {
-        // 期望可能抛出异常
+        // Expect a possible exception
       }
-      // 不应崩溃
+      // Should not crash
     });
   });
 
@@ -556,7 +556,7 @@ describe('E2E: Design Workflow', () => {
 
     it('should set page icon', () => {
       pageStore.addPage('Icon Page');
-      pageStore.setPageIcon(pageStore.currentPageId!, 'icon-home'); /* 图标设置不应报错 */ }); it('应能获取页面模式', () => {
+      pageStore.setPageIcon(pageStore.currentPageId!, 'icon-home'); /* setting the icon should not throw */ }); it('应能获取页面模式', () => {
       expect(pageStore.currentPageMode).toBe('edit');
       pageStore.setPageMode('preview');
       expect(pageStore.currentPageMode).toBe('preview');

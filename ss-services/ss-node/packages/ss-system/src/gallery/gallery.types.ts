@@ -3,40 +3,40 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 图库类型定义 — 纯文件方案
+ * Gallery type definitions — pure-file approach
  *
- * 存储模型：
- *   - 文件系统：${IMAGES_DIR}/{格式}/{分类}/{文件}（图元 PNG/SVG/GIF 图片资源）
+ * Storage model:
+ *   - File system: ${IMAGES_DIR}/{format}/{category}/{file} (widget PNG/SVG/GIF image resources)
  *
- * 不依赖数据库，人工增删文件后自动生效。
+ * No database dependency; manually added/removed files take effect automatically.
  */
 
-/** 图库格式目录（第一层：图元GIF/图元PNG/图元SVG） */
+/** Gallery format directory (first level: widget GIF/widget PNG/widget SVG) */
 export interface GalleryFormat {
-  /** 格式目录名，如 '图元PNG' */
+  /** Format directory name, e.g. 'widget PNG' (original data is the Chinese name) */
   id: string;
-  /** 显示名，默认同 id */
+  /** Display name, defaults to the id */
   name: string;
-  /** 该格式下的图片总数（不含子分类目录） */
+  /** Total image count under this format (excluding subcategory directories) */
   imageCount: number;
 }
 
-/** 图库分类目录（第二层：交通/仪表/开关等） */
+/** Gallery category directory (second level: traffic/instrument/switch etc.) */
 export interface GalleryCategory {
-  /** 分类目录名，如 '交通' */
+  /** Category directory name, e.g. 'traffic' (original data is the Chinese name) */
   id: string;
-  /** 显示名，默认同 id */
+  /** Display name, defaults to the id */
   name: string;
-  /** 该分类下的图片总数 */
+  /** Total image count under this category */
   imageCount: number;
 }
 
-/** 图库图片文件（第三层） */
+/** Gallery image file (third level) */
 export interface GalleryImage {
-  /** 文件名，如 '1.png' */
+  /** File name, e.g. '1.png' */
   fileName: string;
-  /** 图片访问 URL */
+  /** Image access URL */
   url: string;
-  /** 文件大小（字节） */
+  /** File size (bytes) */
   size: number;
 }

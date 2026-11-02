@@ -3,25 +3,25 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * Trigger Matcher — P1-T06 触发事件匹配器
+ * Trigger Matcher — P1-T06 trigger event matcher
  *
- * 基于关键词 + 规则从自然语言描述中推断触发事件类型和参数。
- * 无需 LLM 调用，轻量级匹配器（< 3KB）。
+ * Infers trigger event types and parameters from natural-language descriptions using keywords + rules.
+ * No LLM call needed; lightweight matcher (< 3KB).
  *
- * 支持 4 种触发类型：
- *   - dataChange: 数据标签值变化触发（"当温度超过 80 度"）
- *   - timer: 定时触发（"每 5 秒执行一次"）
- *   - event: 图元事件触发（"点击按钮时"）
- *   - manual: 手动触发（"手动执行"）
- *   - unknown: 无法识别
+ * Supports 4 trigger types:
+ *   - dataChange: data tag value change ("when temperature exceeds 80")
+ *   - timer: scheduled trigger ("run every 5 seconds")
+ *   - event: graphic event trigger ("when the button is clicked")
+ *   - manual: manual trigger ("execute manually")
+ *   - unknown: unrecognized
  *
- * 用法:
- *   const result = triggerMatcher.match('当温度超过 80 度时触发告警');
+ * Usage:
+ *   const result = triggerMatcher.match('Trigger an alarm when the temperature exceeds 80');
  *   // { type: 'dataChange', tagId: 'temperature', condition: '>', threshold: 80, confidence: 0.8 }
  */
 
 // ============================================================
-// 类型定义
+// Type definitions
 // ============================================================
 
 export type TriggerType = 'dataChange' | 'timer' | 'event' | 'manual' | 'unknown';
@@ -29,24 +29,24 @@ export type TriggerType = 'dataChange' | 'timer' | 'event' | 'manual' | 'unknown
 export interface TriggerMatchResult {
   type: TriggerType;
   confidence: number;
-  /** dataChange: 标签 ID */
+  /** dataChange: tag ID */
   tagId?: string;
-  /** dataChange: 比较条件 */
+  /** dataChange: comparison condition */
   condition?: string;
-  /** dataChange: 阈值 */
+  /** dataChange: threshold */
   threshold?: number;
-  /** timer: 间隔（毫秒） */
+  /** timer: interval (ms) */
   interval?: number;
-  /** timer: Cron 表达式（可选） */
+  /** timer: Cron expression (optional) */
   cron?: string;
-  /** event: 图元 ID */
+  /** event: graphic ID */
   graphicId?: string;
-  /** event: 事件类型 */
+  /** event: event type */
   eventType?: 'click' | 'dblclick' | 'mousedown' | 'mouseup';
 }
 
 // ============================================================
-// 常量：关键词 → 标签 ID 映射
+// Constants: keyword → tag ID mapping
 // ============================================================
 
 const TAG_KEYWORD_MAP: Record<string, string> = {
@@ -92,39 +92,39 @@ const EVENT_KEYWORDS: Record<string, string> = {
 
 export class TriggerMatcher {
   /**
-   * 从自然语言中匹配触发事件
+   * Match a trigger event from natural language
    */
   match(input: string): TriggerMatchResult {
-    // 1. 检测 timer 触发
+    // 1. Detect timer triggers
     const timerResult = this._matchTimer(input);
     if (timerResult) return timerResult;
 
-    // 2. 检测 event 触发
+    // 2. Detect event triggers
     const eventResult = this._matchEvent(input);
     if (eventResult) return eventResult;
 
-    // 3. 检测 dataChange 触发
+    // 3. Detect dataChange triggers
     const dataChangeResult = this._matchDataChange(input);
     if (dataChangeResult) return dataChangeResult;
 
-    // 4. 检测 manual 触发
+    // 4. Detect manual triggers
     if (/手动|菜单|按钮.*执行/.test(input)) {
       return { type: 'manual', confidence: 0.7 };
     }
 
-    // 5. 默认：unknown
+    // 5. Default: unknown
     return { type: 'unknown', confidence: 0 };
   }
 
-  // ─── 私有匹配方法 ───
+  // ─── Private match methods ───
 
   private _matchDataChange(input: string): TriggerMatchResult | null {
-    // 模式："当/如果 X 超过/大于/低于 Y (度/单位) 时/就..."
+    // Pattern: "when/if X exceeds/greater than/below Y (unit) then..."
     const pattern = /(?:当|如果|一旦|若)\s*(.+?)\s*(超过|大于|高于|超出|低于|小于|不足|等于|达到|不低于|不高于|不等于)\s*(\d+(?:\.\d+)?)\s*(?:度|毫米|米|秒|分钟|小时|%|％)?/;
     const match = input.match(pattern);
 
     if (!match) {
-      // 宽松模式：仅匹配 "当X变化时"
+      // Loose pattern: match only "when X changes"
       const looseMatch = input.match(/(?:当|如果)\s*(.+?)\s*(?:变化|改变|更新|变动)/);
       if (looseMatch) {
         const tagId = this._extractTagId(looseMatch[1]);
@@ -150,7 +150,7 @@ export class TriggerMatcher {
   }
 
   private _matchTimer(input: string): TriggerMatchResult | null {
-    // 模式："每 X 秒/分钟/小时/毫秒 执行"
+    // Pattern: "every X seconds/minutes/hours/milliseconds run"
     const pattern = /每\s*(\d+(?:\.\d+)?)\s*(秒|分钟?|小时?|毫秒|ms|s|min|h)\s*(?:执行|运行|触发|检查|调用)?/;
     const match = input.match(pattern);
 
@@ -159,21 +159,21 @@ export class TriggerMatcher {
       const unit = match[2];
       const interval = unitMultiplier[unit]
         ? value * unitMultiplier[unit]
-        : value * 1000; // 默认秒
+        : value * 1000; // default seconds
 
       return { type: 'timer', confidence: 0.85, interval };
     }
 
-    // Cron 模式
+    // Cron pattern
     if (/cron|定时|周期性/.test(input)) {
-      return { type: 'timer', confidence: 0.6, interval: 60000 }; // 默认 1 分钟
+      return { type: 'timer', confidence: 0.6, interval: 60000 }; // default 1 minute
     }
 
     return null;
   }
 
   private _matchEvent(input: string): TriggerMatchResult | null {
-    // 模式："点击/双击 X 按钮/图元 时"
+    // Pattern: "when X button/graphic is clicked/double-clicked"
     const pattern = /(点击|双击|按下|松开)\s*(.+?)(?:按钮|图元|组件|图标)?\s*时/;
     const match = input.match(pattern);
 
@@ -188,14 +188,14 @@ export class TriggerMatcher {
     return null;
   }
 
-  // ─── 辅助方法 ───
+  // ─── Helper methods ───
 
   private _extractTagId(tagName: string): string {
-    // 先查关键词映射
+    // Check the keyword mapping first
     for (const [kw, id] of Object.entries(TAG_KEYWORD_MAP)) {
       if (tagName.includes(kw)) return id;
     }
-    // 回退：保留中文字符（\u4e00-\u9fff），其他非单词字符转下划线
+    // Fallback: keep CJK characters (\u4e00-\u9fff), convert other non-word characters to underscores
     return tagName
       .replace(/[^\w\u4e00-\u9fff]/g, '_')
       .replace(/_+/g, '_')
@@ -213,7 +213,7 @@ export class TriggerMatcher {
 }
 
 // ============================================================
-// 时间单位乘法器
+// Time unit multipliers
 // ============================================================
 
 const unitMultiplier: Record<string, number> = {
@@ -228,5 +228,5 @@ const unitMultiplier: Record<string, number> = {
   h: 3_600_000,
 };
 
-/** 单例 */
+/** Singleton */
 export const triggerMatcher = new TriggerMatcher();

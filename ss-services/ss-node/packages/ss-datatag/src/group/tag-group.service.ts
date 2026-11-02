@@ -7,7 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TagGroup } from '../entities/tag-group.entity';
 
-// 树节点类型：在 TagGroup 基础上增加层级和子节点
+// Tree-node type: extends TagGroup with hierarchy and children
 export interface TagGroupTreeNode extends TagGroup {
   level: number;
   children: TagGroupTreeNode[];

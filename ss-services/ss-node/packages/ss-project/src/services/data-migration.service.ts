@@ -9,29 +9,29 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 /**
- * 数据迁移结果
+ * Data-migration result
  */
 export interface MigrationResult {
-  /** 项目名称 */
+  /** Project name */
   projectName: string;
-  /** 迁移的实体统计 */
+  /** Migrated entity statistics */
   entities: {
     name: string;
     tableName: string;
     rowCount: number;
     errors: number;
   }[];
-  /** 警告信息 */
+  /** Warning messages */
   warnings: string[];
-  /** 总耗时（ms） */
+  /** Total elapsed time (ms) */
   durationMs: number;
 }
 
 /**
- * 数据迁移服务
+ * Data-migration service
  *
- * 提供 unified → isolated 模式的数据迁移能力
- * 将全局 ss-data.db 中指定项目的数据迁移到项目级 system.db
+ * Provides unified -> isolated mode data migration
+ * Migrates a project's data from the global ss-data.db into the project-level system.db
  */
 @Injectable()
 export class DataMigrationService {
@@ -40,12 +40,12 @@ export class DataMigrationService {
   constructor(private readonly configService: ConfigService) {}
 
   /**
-   * 将指定项目的数据从全局数据库迁移到项目级 system.db
+   * Migrate a project's data from the global database to the project-level system.db
    *
-   * @param globalDataSource 全局 ss-data.db DataSource
-   * @param projectDataSource 项目级 system.db DataSource
-   * @param projectName 项目名称
-   * @param tables 要迁移的表配置（表名 → 选择条件）
+   * @param globalDataSource the global ss-data.db DataSource
+   * @param projectDataSource the project-level system.db DataSource
+   * @param projectName project name
+   * @param tables the tables to migrate (table name -> selection conditions)
    */
   async migrateProjectFromGlobal(
     globalDataSource: DataSource,
@@ -53,11 +53,11 @@ export class DataMigrationService {
     projectName: string,
     tables: Array<{
       tableName: string;
-      /** 从全局库筛选该表数据的 WHERE 条件 */
+      /** WHERE condition filtering this table's data from the global DB */
       whereCondition?: string;
-      /** projectId 字段名（默认 "projectId"） */
+      /** projectId field name (default "projectId") */
       projectIdField?: string;
-      /** 显示的实体名称 */
+      /** Displayed entity name */
       entityName?: string;
     }>,
   ): Promise<MigrationResult> {
@@ -73,7 +73,7 @@ export class DataMigrationService {
       let errors = 0;
 
       try {
-        // 检查目标表是否存在
+        // Check whether the target table exists
         const tablesResult = await projectDataSource.query(
           `SELECT name FROM sqlite_master WHERE type='table' AND name='${tableName}'`,
         );
@@ -83,7 +83,7 @@ export class DataMigrationService {
           continue;
         }
 
-        // 从全局库查询数据
+        // Query data from the global DB
         let selectSQL = `SELECT * FROM "${tableName}"`;
         if (table.whereCondition) {
           selectSQL += ` WHERE ${table.whereCondition}`;
@@ -98,11 +98,11 @@ export class DataMigrationService {
           continue;
         }
 
-        // 获取目标表的列
+        // Get the target table's columns
         const columnsResult = await projectDataSource.query(`PRAGMA table_info("${tableName}")`);
         const targetColumns = columnsResult.map((c: any) => c.name);
 
-        // 批量插入到项目数据库
+        // Batch-insert into the project database
         for (const row of rows) {
           try {
             const filteredRow: Record<string, any> = {};
@@ -153,10 +153,10 @@ export class DataMigrationService {
   }
 
   /**
-   * 备份全局数据库
+   * Back up the global database
    *
-   * @param globalDataSource 全局 DataSource
-   * @param backupDir 备份目录
+   * @param globalDataSource the global DataSource
+   * @param backupDir backup directory
    */
   async backupGlobalDatabase(globalDataSource: DataSource, backupDir: string): Promise<string> {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
@@ -178,7 +178,7 @@ export class DataMigrationService {
   }
 
   /**
-   * 获取全局数据库中指定项目的数据统计
+   * Get the specified project's data statistics in the global database
    */
   async getProjectDataStats(
     globalDataSource: DataSource,
@@ -197,7 +197,7 @@ export class DataMigrationService {
         );
         stats[tableName] = result[0]?.count || 0;
       } catch {
-        stats[tableName] = -1; // 表不存在或查询失败
+        stats[tableName] = -1; // table missing or query failed
       }
     }
 

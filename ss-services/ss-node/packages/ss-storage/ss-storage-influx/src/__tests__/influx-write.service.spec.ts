@@ -308,7 +308,7 @@ describe('InfluxWriteService', () => {
     it('TC-IWS-022: should return initial default stats', () => {
       const stats = service.getStats();
 
-      // CODE-02/03: getStats 新增 backendUnreachable / unavailableBuckets / nextRetryInMs 字段
+      // CODE-02/03: getStats adds the backendUnreachable / unavailableBuckets / nextRetryInMs fields
       expect(stats).toEqual({
         enabled: true,
         totalWritten: 0,

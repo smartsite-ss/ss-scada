@@ -22,8 +22,8 @@ interface VirtualClient {
 }
 
 /**
- * 虚拟协议适配器 — 无需真实物理连接，
- * 通过 SimulatorFactory 生成模拟数据。
+ * Virtual protocol adapter - requires no real physical connection,
+ * generates simulated data through the SimulatorFactory.
  */
 @Injectable()
 @CollectorPlugin({
@@ -56,7 +56,7 @@ export class VirtualProtocolAdapter extends BaseCollectorService {
     private readonly monitor?: PluginMonitorService,
   ) {
     super();
-    // 支持无 NestJS DI 环境运行（如 worker/子进程隔离模式）
+    // Supports running without a NestJS DI environment (e.g. worker/child-process isolation mode)
     this.simulatorFactory = simulatorFactory ?? new SimulatorFactory();
     this.logger.log('========== VirtualProtocolAdapter CONSTRUCTED ==========');
     this.logger.log(`  - simulatorFactory available: ${!!this.simulatorFactory}`);
@@ -65,15 +65,15 @@ export class VirtualProtocolAdapter extends BaseCollectorService {
   }
 
   /**
-   * 插件激活时的初始化钩子
-   * 独立于设备加载 — 即使没有设备也会调用。
-   * 用于预热仿真器工厂、输出初始化日志等。
+   * Initialization hook called when the plugin is activated
+   * Independent of device loading - called even when there are no devices.
+   * Used to warm up the simulator factory, emit initialization logs, etc.
    */
   async onActivate(): Promise<void> {
     const startTime = Date.now();
     this.logger.log('VirtualProtocolAdapter.onActivate() — starting initialization...');
 
-    // 预热 SimulatorFactory
+    // Warm up the SimulatorFactory
     try {
       if (typeof (this.simulatorFactory as any).warmup === 'function') {
         (this.simulatorFactory as any).warmup();
@@ -83,7 +83,7 @@ export class VirtualProtocolAdapter extends BaseCollectorService {
       this.logger.warn(`SimulatorFactory.warmup() failed: ${(err as Error).message}`);
     }
 
-    // 记录初始化日志到采集日志文件
+    // Record the initialization log to the collection log file
     this.monitor?.writeLog(
       'virtual',
       'INFO',
@@ -96,12 +96,12 @@ export class VirtualProtocolAdapter extends BaseCollectorService {
   }
 
   /**
-   * 插件停用时的清理钩子
+   * Cleanup hook called when the plugin is deactivated
    */
   async onDeactivate(): Promise<void> {
     this.logger.log('VirtualProtocolAdapter.onDeactivate() — cleaning up connections...');
 
-    // 基类的 onModuleDestroy 会处理连接清理
+    // The base class onModuleDestroy handles connection cleanup
     await this.onModuleDestroy();
 
     this.monitor?.writeLog(
@@ -115,7 +115,7 @@ export class VirtualProtocolAdapter extends BaseCollectorService {
   async connect(device: any): Promise<VirtualClient> {
     const deviceId = device.id;
     if (this.getConnectionStatus(deviceId)) {
-      // 已连接，从 getClientEntries 中找到并返回
+      // Already connected, find and return from getClientEntries
       for (const [, entry] of this.getClientEntries()) {
         if ((entry.client as VirtualClient).deviceId === deviceId) {
           return entry.client as VirtualClient;
@@ -133,25 +133,25 @@ export class VirtualProtocolAdapter extends BaseCollectorService {
 
   protected async doReadTag(client: VirtualClient, tag: ITagContext): Promise<CollectorReadResult> {
     const tagId = tag.id;
-    // 获取或创建仿真器
+    // Get or create a simulator
     const simulator = this.simulatorFactory.getOrCreate(tagId, tag);
 
-    // 缓存到 client 以便快速访问
+    // Cache on the client for fast access
     if (!client.simulators.has(tagId)) {
       client.simulators.set(tagId, simulator);
     }
 
     const value = simulator.generate();
 
-    // CODE-12: 采集统计与日志降频 — 原 doReadTag 每次调用都通过 monitor.writeLog 写入一条 INFO，
-    // 在虚拟采集器 40-58 次/秒的读取频率下产生大量 IO（且 LOG_LEVEL=info 无法拦截）。
-    // 改为：每 60 秒输出一次 debug 级别汇总 + 一条 monitor 摘要日志，避免日志 IO 放大服务器负载。
+    // CODE-12: collection stats and log frequency reduction - the original doReadTag wrote an INFO entry via monitor.writeLog on every call,
+    // which, at the virtual collector's read rate of 40-58 calls/second, produced heavy IO (and could not be suppressed by LOG_LEVEL=info).
+    // Changed to: emit a debug-level summary every 60 seconds plus one monitor summary log, to avoid log IO amplifying the server load.
     this.readCounter++;
     const now = Date.now();
     if (now - this.lastSummaryTime >= 60000) {
       const summary = `采集统计: 过去60秒读取 ${this.readCounter} 次 | 最新值: ${tag.name || tagId}=${JSON.stringify(value)}`;
       this.logger.debug(summary);
-      // 周期性摘要写入监控日志（DEBUG 级别，生产 LOG_LEVEL=warn 时不入文件）
+      // Periodically write a summary to the monitoring log (DEBUG level; not written to file when production LOG_LEVEL=warn)
       this.monitor?.writeLog('virtual', 'DEBUG', `[STATS] ${summary}`);
       this.readCounter = 0;
       this.lastSummaryTime = now;
@@ -177,7 +177,7 @@ export class VirtualProtocolAdapter extends BaseCollectorService {
   }
 
   protected async doDisconnect(client: VirtualClient): Promise<void> {
-    // 虚拟设备无需实际断开，仅清理模拟器状态
+    // Virtual devices need no real disconnect; only clean up simulator state
     client.simulators.clear();
   }
 
@@ -186,16 +186,16 @@ export class VirtualProtocolAdapter extends BaseCollectorService {
   }
 
   /**
-   * 通道连通性预检
+   * Channel connectivity pre-check
    *
-   * 在创建/编辑设备时验证通道配置是否可达，不依赖 EnhancedScheduler 调度。
-   * 虚拟设备始终返回成功（无真实物理连接）。
+   * Validates whether the channel config is reachable when creating/editing a device, without relying on EnhancedScheduler scheduling.
+   * Virtual devices always return success (no real physical connection).
    */
   async precheckConnection(config: Record<string, any>): Promise<ChannelValidationResult> {
     const startTime = Date.now();
     this.logger.log(`Prechecking virtual connection for device: ${config.deviceId || 'unknown'}`);
 
-    // 虚拟设备不需要真实连接，直接返回成功
+    // Virtual devices need no real connection; return success directly
     const elapsed = Date.now() - startTime;
     this.logger.log(`Virtual precheck completed in ${elapsed}ms`);
 

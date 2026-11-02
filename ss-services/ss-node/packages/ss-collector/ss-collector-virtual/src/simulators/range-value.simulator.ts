@@ -5,7 +5,7 @@
 import { VariableSimulator } from './variable-simulator.interface';
 import { VariableSimulationConfig, RangeValueParams } from '../simulation-config.types';
 
-/** 范围可变值仿真器 — 支持 5 种变化模式 */
+/** Range variable-value simulator - supports 5 change modes */
 export class RangeValueSimulator implements VariableSimulator {
   private currentValue: number;
   private config: RangeValueParams;

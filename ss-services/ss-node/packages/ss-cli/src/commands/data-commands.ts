@@ -3,16 +3,16 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * data-commands.ts — 数据查询命令
+ * data-commands.ts - data query commands
  *
- *   data query  — 查询时序数据
- *   data latest — 查询最新值
+ *   data query  - query time-series data
+ *   data latest - query the latest value
  */
 
 import { ApiError } from '../core/ApiClient';
 import type { CommandParser } from '../core/CommandParser';
 
-/** 创建数据查询子命令组 */
+/** Create the data-query subcommand group */
 export function registerCommands(parser: CommandParser): void {
   const program = parser.getProgram();
 
@@ -64,7 +64,7 @@ export function registerCommands(parser: CommandParser): void {
     });
 }
 
-/** 从 API 响应中提取数据点列表 */
+/** Extract the data-point list from the API response */
 function extractDataPoints(response: unknown): Array<Record<string, unknown>> {
   if (Array.isArray(response)) {
     return response as Array<Record<string, unknown>>;
@@ -82,7 +82,7 @@ function extractDataPoints(response: unknown): Array<Record<string, unknown>> {
   return [];
 }
 
-/** 格式化输出数据点 */
+/** Format and print the data points */
 function printDataPoints(data: unknown): void {
   const points = extractDataPoints(data);
   if (points.length === 0) {
@@ -99,7 +99,7 @@ function printDataPoints(data: unknown): void {
   console.table(rows);
 }
 
-/** 统一错误处理 */
+/** Unified error handling */
 function handleError(context: string, err: unknown): void {
   if (err instanceof ApiError) {
     console.error(`${context}: ${err.message}`);

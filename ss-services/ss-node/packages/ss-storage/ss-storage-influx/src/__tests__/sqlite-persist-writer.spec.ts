@@ -37,10 +37,10 @@ describe('SqlitePersistWriter', () => {
       }),
     };
 
-    // SqlitePersistWriter 构造函数第一个参数是 ProjectDatabaseService，
-    // 通过 getSystemDb(projectId) 获取项目级 DataSource，再取 Repository。
-    // 使用 mockImplementation 确保每次调用都返回当前最新的 mockRepo 引用
-    // （部分测试用例会重新赋值 mockRepo）。
+    // SqlitePersistWriter's constructor's first parameter is ProjectDatabaseService,
+    // which obtains the project-level DataSource via getSystemDb(projectId), then the Repository.
+    // mockImplementation is used so every call returns the latest mockRepo reference
+    // (some test cases reassign mockRepo).
     const mockDataSource = {
       getRepository: jest.fn().mockImplementation(() => mockRepo),
     };
@@ -130,9 +130,9 @@ describe('SqlitePersistWriter', () => {
 
       // Advance timer past flushIntervalMs (5000ms)
       jest.advanceTimersByTime(5000);
-      // flush() 由 setTimeout 触发且为 async，链式 await（getRepo→save）
-      // 需多次刷新微任务队列使整条 Promise 链完全 resolve。
-      // 注意：fake timers 下 setImmediate 也被 mock，只能用 Promise.resolve()
+      // flush() is triggered by setTimeout and is async; the chain awaits (getRepo→save)
+      // so the microtask queue must be flushed several times for the whole promise chain to resolve.
+      // Note: under fake timers setImmediate is mocked too; only Promise.resolve() can be used
       await Promise.resolve();
       await Promise.resolve();
       await Promise.resolve();

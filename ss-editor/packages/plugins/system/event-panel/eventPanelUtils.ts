@@ -3,8 +3,8 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 事件类型分组、状态徽章映射等纯函数。
- * 与后端 PERSISTED_EVENTS 白名单、前端 EventLogListView 分组对齐，便于单测。
+ * Pure functions such as event type grouping and status badge mapping.
+ * Aligned with the backend PERSISTED_EVENTS whitelist and the frontend EventLogListView grouping for easy unit testing.
  */
 
 import type { SubscriberRecord } from '@scada-editor/system';
@@ -18,7 +18,7 @@ export interface EventTypeGroup {
   items: string[];
 }
 
-/** 事件类型分组（与后端持久化事件白名单对齐） */
+/** Event type grouping (aligned with the backend persisted events whitelist) */
 export const EVENT_TYPE_GROUPS: EventTypeGroup[] = [
   {
     id: 'device',
@@ -65,10 +65,10 @@ export const EVENT_TYPE_GROUPS: EventTypeGroup[] = [
   },
 ];
 
-/** 事件日志实时状态列表（未闭环：仅已发射/处理中，与 EventLogStatus 对齐） */
+/** Real-time status list of event logs (not yet closed: only emitted/processing, aligned with EventLogStatus) */
 export const EVENT_STATUS_LIST = ['emitted', 'processing'] as const;
 
-/** 事件类型 → 域 CSS 类（按域着色，与 EventLogListView 一致） */
+/** Event type → domain CSS class (colored by domain, consistent with EventLogListView) */
 export function getEventTypeClass(eventType: string): string {
   if (eventType.startsWith('device.')) return 'event-type-device';
   if (eventType.startsWith('project') || eventType.startsWith('project:')) return 'event-type-project';
@@ -84,12 +84,12 @@ export function getEventTypeClass(eventType: string): string {
   return 'event-type-other';
 }
 
-/** 事件状态 → CSS 类（徽章着色） */
+/** Event status → CSS class (badge coloring) */
 export function getStatusClass(status: string): string {
   return `status-${status}`;
 }
 
-/** 计算订阅者最大耗时（毫秒），无订阅者返回 '-' */
+/** Compute the max subscriber duration (ms); returns '-' when there are no subscribers */
 export function getMaxDuration(subscribers?: SubscriberRecord[]): string {
   if (!subscribers || subscribers.length === 0) return '-';
   const max = subscribers.reduce((maxDuration, subscriber) => {
@@ -100,7 +100,7 @@ export function getMaxDuration(subscribers?: SubscriberRecord[]): string {
   return max > 0 ? `${max}ms` : '-';
 }
 
-/** 成功率（如 '2/3'）→ CSS 类（全成功/部分成功/全失败） */
+/** Success rate (e.g. '2/3') → CSS class (all success / partial success / all failure) */
 export function getRatioClass(ratio: string): string {
   const match = ratio.match(/^(\d+)\/(\d+)$/);
   if (!match) return '';

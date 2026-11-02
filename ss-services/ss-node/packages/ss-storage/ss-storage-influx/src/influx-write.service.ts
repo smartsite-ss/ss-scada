@@ -18,8 +18,8 @@ interface BatchBuffer {
 }
 
 /**
- * CODE-03: 自定义 InfluxDB HTTP 错误，携带 HTTP status 与 bucket 名，
- * 供上层区分 404（bucket 不存在）与其它网络/服务端错误。
+ * CODE-03: custom InfluxDB HTTP error carrying the HTTP status and bucket name,
+ * letting upper layers distinguish 404 (bucket missing) from other network/server errors.
  */
 export class InfluxHttpException extends Error {
   constructor(
@@ -44,22 +44,22 @@ export class InfluxWriteService implements OnModuleInit, OnModuleDestroy {
   private totalWritten = 0;
   private totalErrors = 0;
 
-  /** 后端是否不可达（持久标志：失败时置 true，成功时置 false） */
+  /** Whether the backend is unreachable (persistent flag: set true on failure, false on success) */
   private _backendUnreachable = false;
 
-  /** CODE-02: 熔断静默期 — 上次错误/摘要日志时间戳，30s 内不重复打 error/warn */
+  /** CODE-02: circuit-breaker quiet period — timestamp of the last error/summary log; no repeated error/warn within 30s */
   private _lastErrorLogTime = 0;
   private readonly _silenceWindowMs = 30_000;
-  /** 熔断静默期间累积的丢弃点数（用于周期性摘要输出） */
+  /** Dropped points accumulated during the quiet period (for periodic summary output) */
   private _silencedErrorCount = 0;
-  /** CODE-02: 指数退避 — 下次允许尝试写入的时间戳（ms） */
+  /** CODE-02: exponential backoff — timestamp of the next allowed write attempt (ms) */
   private _nextRetryTime = 0;
   private _consecutiveFailures = 0;
 
-  /** CODE-03: 已知不可用的 bucket（404 等） — 后续写入直接跳过，不再重试 */
+  /** CODE-03: known-unavailable buckets (404 etc.) — subsequent writes skip them directly, no more retries */
   private readonly _unavailableBuckets = new Set<string>();
 
-  /** CODE-05: 单次 fetch 超时（ms），避免 InfluxDB 半挂时无限等待阻塞 event loop */
+  /** CODE-05: per-fetch timeout (ms), preventing an indefinitely hung InfluxDB from blocking the event loop */
   private readonly fetchTimeoutMs = 5000;
 
   constructor(@Optional() private readonly bucketService?: InfluxBucketService) {}
@@ -97,7 +97,7 @@ export class InfluxWriteService implements OnModuleInit, OnModuleDestroy {
       await this.flushBuffer(key);
     } else if (!buffer.timer) {
       buffer.timer = setTimeout(() => {
-        // 异步 flush 时捕获错误（已通过 lastFlushError 记录，供下次 writeBatch 检查）
+        // Catch errors during async flush (already recorded via lastFlushError, checked by the next writeBatch)
         this.flushBuffer(key).catch(() => {});
       }, this.flushTimeoutMs);
     }
@@ -121,9 +121,9 @@ export class InfluxWriteService implements OnModuleInit, OnModuleDestroy {
     const points = buffer.points.splice(0);
     this.batchBuffer.delete(key);
 
-    // CODE-02: 熔断退避期内直接放弃本批（点已从 buffer 移除），
-    // 避免熔断打开后仍每 5s 触发一次 fetch 失败 + 日志刷屏。
-    // 不抛错 → 不触发上层 PersistStep 熔断，仅本服务内部静默丢弃。
+    // CODE-02: during the backoff window, abandon this batch directly (points already removed from the buffer),
+    // avoiding a fetch failure + log spam every 5s after the breaker opens.
+    // Does not throw → does not trigger the upper PersistStep breaker; silently dropped inside this service only.
     if (this._backendUnreachable && Date.now() < this._nextRetryTime) {
       this._silencedErrorCount += points.length;
       this.maybeLogSilencedSummary();
@@ -131,14 +131,14 @@ export class InfluxWriteService implements OnModuleInit, OnModuleDestroy {
     }
 
     try {
-      // 按 bucket 分组发送
+      // Send grouped by bucket
       const projectId = points[0]?.tags?.projectId;
       const bucket =
         projectId && this.bucketService
           ? await this.bucketService.getBucket(projectId)
           : this.getDefaultBucket();
 
-      // CODE-03: 已知 404 的 bucket 直接跳过，不再无效重试
+      // CODE-03: skip buckets known to be 404 directly, no more useless retries
       if (this._unavailableBuckets.has(bucket)) {
         this._silencedErrorCount += points.length;
         this.maybeLogSilencedSummary();
@@ -148,7 +148,7 @@ export class InfluxWriteService implements OnModuleInit, OnModuleDestroy {
       await this.sendToInfluxDB(points, bucket);
       this.totalWritten += points.length;
 
-      // 写入成功：复位熔断、退避与静默计数
+      // Write succeeded: reset the breaker, backoff, and quiet-period counters
       if (this._backendUnreachable || this._silencedErrorCount > 0) {
         this.logger.warn(
           `InfluxDB recovered after ${this._silencedErrorCount} points dropped during circuit-open window`,
@@ -167,9 +167,9 @@ export class InfluxWriteService implements OnModuleInit, OnModuleDestroy {
       this.totalErrors += points.length;
       const errorMsg = error instanceof Error ? error.message : String(error);
 
-      // CODE-03: 404（bucket 不存在）— 标记该 bucket 不可用，不再重试；
-      // 不设置 _backendUnreachable（后端本身可达，仅 bucket 配置错误），
-      // 不抛错以避免上层 PersistStep 熔断。
+      // CODE-03: 404 (bucket missing) — mark the bucket unavailable, no more retries;
+      // do not set _backendUnreachable (the backend itself is reachable, only the bucket config is wrong),
+      // and do not throw, to avoid tripping the upper PersistStep breaker.
       if (error instanceof InfluxHttpException && error.status === 404) {
         if (!this._unavailableBuckets.has(error.bucket)) {
           this._unavailableBuckets.add(error.bucket);
@@ -181,10 +181,10 @@ export class InfluxWriteService implements OnModuleInit, OnModuleDestroy {
         return;
       }
 
-      // CODE-02: 网络错误 → 熔断 + 指数退避 + 错误日志限频
+      // CODE-02: network error → breaker + exponential backoff + rate-limited error logging
       this._backendUnreachable = true;
       this._consecutiveFailures += 1;
-      // 指数退避：1s, 2s, 4s, 8s, ... 上限 60s
+      // Exponential backoff: 1s, 2s, 4s, 8s, ... capped at 60s
       const backoffMs = Math.min(
         1000 * Math.pow(2, this._consecutiveFailures - 1),
         60_000,
@@ -192,7 +192,7 @@ export class InfluxWriteService implements OnModuleInit, OnModuleDestroy {
       this._nextRetryTime = Date.now() + backoffMs;
       this._silencedErrorCount += points.length;
 
-      // 错误日志限频：30s 内首条 error，后续仅 debug（生产 LOG_LEVEL=info 时不入文件）
+      // Error log rate limit: first error within 30s, then debug only (not written to file at production LOG_LEVEL=info)
       const now = Date.now();
       if (now - this._lastErrorLogTime >= this._silenceWindowMs) {
         this.logger.error(
@@ -209,8 +209,8 @@ export class InfluxWriteService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * CODE-02: 静默期内周期性输出 warn 摘要，
-   * 避免完全无日志（便于运维感知），但不再每秒 error 刷屏。
+   * CODE-02: periodically output a warn summary during the quiet period,
+   * avoiding a complete log blackout (helps ops awareness) without per-second error spam.
    */
   private maybeLogSilencedSummary(): void {
     const now = Date.now();
@@ -256,7 +256,7 @@ export class InfluxWriteService implements OnModuleInit, OnModuleDestroy {
       })
       .join('\n');
 
-    // CODE-05: fetch 加 5s 超时（AbortSignal.timeout），避免 InfluxDB 半挂时无限等待阻塞 event loop
+    // CODE-05: add a 5s timeout to fetch (AbortSignal.timeout), preventing an indefinitely hung InfluxDB from blocking the event loop
     let response: Response;
     try {
       response = await fetch(`${url}/api/v2/write?org=${org}&bucket=${bucket}&precision=ns`, {
@@ -269,13 +269,13 @@ export class InfluxWriteService implements OnModuleInit, OnModuleDestroy {
         signal: AbortSignal.timeout(this.fetchTimeoutMs),
       });
     } catch (err) {
-      // 包装超时/网络错误信息（保留原始 message 便于诊断）
+      // Wrap the timeout/network error message (keeps the original message for diagnostics)
       throw new Error(`InfluxDB write fetch failed: ${(err as Error).message}`);
     }
 
     if (!response.ok && response.status !== 204) {
       const errorBody = await response.text().catch(() => 'unknown');
-      // CODE-03: 抛出带 HTTP status 的错误，调用方据此区分 404 与网络错误
+      // CODE-03: throw with the HTTP status so callers can distinguish 404 from network errors
       throw new InfluxHttpException(
         response.status,
         bucket,
@@ -290,7 +290,7 @@ export class InfluxWriteService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  /** 后端是否可达（持久标志：任一失败即 false，成功后恢复 true） */
+  /** Whether the backend is reachable (persistent flag: false on any failure, back to true on success) */
   get isBackendReachable(): boolean {
     return !this._backendUnreachable;
   }

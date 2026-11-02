@@ -10,24 +10,24 @@ import { WechatMpAuthService } from './wechat-mp-auth.service';
 import { WechatMpLoginDto, WechatMpBindAccountDto, WechatMpPasswordLoginDto } from './dto/wechat-mp-auth.dto';
 import { Public } from '../decorators/public.decorator';
 
-/** JWT 鉴权后守卫挂载的用户载荷（JwtStrategy 写入） */
+/** User payload mounted by the guard after JWT auth (written by JwtStrategy) */
 interface AuthenticatedRequest extends Request {
   user: { id: string; username: string; role: string };
 }
 
 /**
- * 小程序微信登录 Controller（01-账号与认证）
+ * Mini-program WeChat login Controller (01 - account & auth)
  *
- * 路由前缀：/auth/wechat（与扫码登录共用前缀，端点无冲突）
+ * Route prefix: /auth/wechat (shares the prefix with scan login; endpoints do not conflict)
  *
- * 端点：
- *   1. POST /login            wx.login code → 已绑定签发双 Token / 未绑定引导账密绑定
- *   2. POST /bind             账密绑定（提交时新取 code）+ 签发双 Token
- *   3. POST /login-password   账密登录（不依赖微信 code，直接用系统账号密码登录）
- *   4. POST /unbind           解绑（需登录，Bearer accessToken）
+ * Endpoints:
+ *   1. POST /login            wx.login code -> bound issues dual token / unbound guides to account-password binding
+ *   2. POST /bind              account-password binding (fresh code at submit) + issue dual token
+ *   3. POST /login-password    account-password login (does not depend on WeChat code, uses system account/password)
+ *   4. POST /unbind            unbind (requires login, Bearer accessToken)
  *
- * 小程序无 Cookie 能力，Token 一律通过响应体下发（Bearer 模式），
- * 与桌面端 Tauri 的下发策略一致，不走 setAuthCookies。
+ * Mini-programs have no Cookie capability; Token is always delivered via response body (Bearer mode),
+ * consistent with the desktop Tauri delivery strategy, not via setAuthCookies.
  */
 @ApiTags('认证')
 @Controller('auth/wechat')
@@ -36,7 +36,7 @@ export class WechatMpAuthController {
 
   constructor(private readonly wechatMpAuthService: WechatMpAuthService) {}
 
-  /** 从请求中提取客户端 IP（支持代理转发场景，与 AuthController 一致） */
+  /** Extract client IP from the request (supports proxy-forwarding, consistent with AuthController) */
   private getClientIp(req: Request): string {
     return (
       (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() ||
@@ -46,7 +46,7 @@ export class WechatMpAuthController {
     );
   }
 
-  /** 1. 小程序微信登录（公开，限流防爆破） */
+  /** 1. Mini-program WeChat login (public, rate-limited to prevent brute force) */
   @Post('login')
   @Public()
   @HttpCode(HttpStatus.OK)
@@ -63,7 +63,7 @@ export class WechatMpAuthController {
     return result;
   }
 
-  /** 2. 账密绑定并登录（公开，限流防密码爆破） */
+  /** 2. Account-password binding and login (public, rate-limited to prevent password brute force) */
   @Post('bind')
   @Public()
   @HttpCode(HttpStatus.OK)
@@ -76,7 +76,7 @@ export class WechatMpAuthController {
     });
   }
 
-  /** 3. 小程序账密登录（公开，限流防密码爆破） */
+  /** 3. Mini-program account-password login (public, rate-limited to prevent password brute force) */
   @Post('login-password')
   @Public()
   @HttpCode(HttpStatus.OK)
@@ -93,7 +93,7 @@ export class WechatMpAuthController {
     return result;
   }
 
-  /** 4. 解绑当前登录用户的小程序微信（需登录） */
+  /** 4. Unbind the current logged-in user's mini-program WeChat (requires login) */
   @Post('unbind')
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth('JWT-auth')

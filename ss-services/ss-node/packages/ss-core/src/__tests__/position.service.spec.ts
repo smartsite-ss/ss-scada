@@ -166,7 +166,7 @@ describe('PositionService', () => {
       positionRepo.save.mockResolvedValue({ ...existing, name: '新名' });
 
       await service.update('pos-1', { name: '新名' });
-      // code 不在 UpdatePositionDto 中，不会被修改
+      // code is not in UpdatePositionDto and will not be modified
       expect(existing.code).toBe(mockPosition.code);
       expect(existing.description).toBe(mockPosition.description);
     });
@@ -202,7 +202,7 @@ describe('PositionService', () => {
   });
 });
 
-/** 创建模拟 Repository */
+/** Create a mock Repository */
 function createMockRepo<T>(): jest.Mocked<Repository<T>> {
   return {
     find: jest.fn().mockResolvedValue([]),

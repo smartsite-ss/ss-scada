@@ -7,7 +7,7 @@ import { i18n } from '../locales';
 
 const t = (key: string) => i18n.global.t(key)
 
-// 快捷键配置类型
+// Shortcut configuration type
 export interface ShortcutConfig {
   id: string;
   name: string;
@@ -19,9 +19,9 @@ export interface ShortcutConfig {
   category?: string;
 }
 
-// 默认快捷键配置
+// Default shortcut configuration
 export const DEFAULT_SHORTCUTS: ShortcutConfig[] = [
-  // 编辑模式快捷键
+  // Edit-mode shortcuts
   {
     id: 'clearSelection',
     name: t('settings.deselect'),
@@ -285,5 +285,5 @@ export const DEFAULT_SHORTCUTS: ShortcutConfig[] = [
   }
 ];
 
-// 快捷键分类
+// Shortcut categories
 export const SHORTCUT_CATEGORIES = [t('settings.shortcutsSelection'), t('settings.shortcutsEdit'), t('settings.shortcutsMove'), t('settings.shortcutsLayer'), t('settings.shortcutsPreview')];

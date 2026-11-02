@@ -2,7 +2,7 @@
 // https://smartsite.top/
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
-// 图元样式组合式 API
+// Graphic style composable API
 
 import { computed } from 'vue';
 import { useTheme } from './useTheme';

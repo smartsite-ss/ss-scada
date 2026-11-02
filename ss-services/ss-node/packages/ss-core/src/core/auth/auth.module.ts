@@ -19,16 +19,16 @@ import { PreviewTicketService } from './preview-ticket/preview-ticket.service';
 import { PreviewTicketController } from './preview-ticket/preview-ticket.controller';
 
 /**
- * 使用 JwtModule.registerAsync 而非 register，原因：
+ * Use JwtModule.registerAsync instead of register, because:
  *
- * JwtModule.register 在 @Module 装饰器阶段同步执行，此时 ConfigModule
- * 尚未加载 .env 文件，process.env.JWT_SECRET 为 undefined，导致 secret
- * 回退为 'your-secret-key'，与 JwtStrategy 中读取的 process.env.JWT_SECRET
- * 不一致（JwtStrategy 构造函数在依赖注入阶段才执行，此时 .env 已加载），
- * 造成 token 签名验证失败（401 Unauthorized）。
+ * JwtModule.register executes synchronously at the @Module decorator stage, when ConfigModule
+ * has not yet loaded the .env file, so process.env.JWT_SECRET is undefined, causing secret
+ * to fall back to 'your-secret-key', inconsistent with the process.env.JWT_SECRET read in JwtStrategy
+ * (JwtStrategy's constructor executes at the dependency-injection stage, when .env is already loaded),
+ * resulting in token signature verification failure (401 Unauthorized).
  *
- * registerAsync 通过 useFactory + inject:[ConfigService]，确保 secret 在
- * ConfigModule 加载 .env 之后才被读取。
+ * registerAsync uses useFactory + inject:[ConfigService] to ensure secret is read only after
+ * ConfigModule has loaded .env.
  */
 @Module({
   imports: [

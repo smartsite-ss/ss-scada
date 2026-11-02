@@ -3,25 +3,25 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 图元操作脚本示例
+ * Graphic operation script examples
  *
- * === 场景说明 ===
- * 图元操作是脚本中最常见的可视化操作。
- * 涵盖图元的显示/隐藏、移动、旋转、属性设置等。
+ * === Scenario ===
+ * Graphic operations are the most common visualization actions in scripts,
+ * covering graphic show/hide, movement, rotation, property setting, etc.
  *
- * === 常用 API 组合 ===
- * setGraphicProps / showGraphic / hideGraphic → 图元属性控制
- * moveGraphic / rotateGraphic                  → 图元动画
- * setTimeout / setInterval                     → 定时动画
- * sleep                                        → 异步动画
- * mapRange / clamp                             → 动画参数计算
+ * === Common API combinations ===
+ * setGraphicProps / showGraphic / hideGraphic → graphic property control
+ * moveGraphic / rotateGraphic                  → graphic animation
+ * setTimeout / setInterval                     → timed animation
+ * sleep                                        → async animation
+ * mapRange / clamp                             → animation parameter calculation
  */
 
 import type { ScriptExample } from '../types';
 
 export const graphicOperationExamples: ScriptExample[] = [
   // ═══════════════════════════════════════════════════════════
-  // 示例 1：弹窗显示/隐藏
+  // Example 1: popup show/hide
   // ═══════════════════════════════════════════════════════════
   {
     id: 'graphic-popup-control',
@@ -55,7 +55,7 @@ setTimeout(() => {
   },
 
   // ═══════════════════════════════════════════════════════════
-  // 示例 2：图元平移动画
+  // Example 2: graphic translation animation
   // ═══════════════════════════════════════════════════════════
   {
     id: 'graphic-move-animation',
@@ -95,7 +95,7 @@ log('info', \`图元 \${graphicId} 移动动画完成: (\${startX},\${startY}) �
   },
 
   // ═══════════════════════════════════════════════════════════
-  // 示例 3：批量图元样式切换
+  // Example 3: batch graphic style switching
   // ═══════════════════════════════════════════════════════════
   {
     id: 'graphic-batch-style',

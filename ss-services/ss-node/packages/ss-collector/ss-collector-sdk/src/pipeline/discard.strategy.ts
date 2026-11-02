@@ -12,13 +12,13 @@ export enum DataPriority {
 }
 
 export interface DiscardConfig {
-  /** 丢弃 MEDIUM 优先级数据所需的压力等级，默认 CRITICAL */
+  /** Pressure level required to discard MEDIUM-priority data; default CRITICAL */
   mediumDiscardLevel?: PressureLevel;
-  /** 丢弃 LOW 优先级数据所需的压力等级，默认 HIGH */
+  /** Pressure level required to discard LOW-priority data; default HIGH */
   lowDiscardLevel?: PressureLevel;
-  /** 开启丢弃的最小队列利用率 (0-1)，默认 0.8 */
+  /** Minimum queue utilization (0-1) to enable discarding; default 0.8 */
   minUtilizationForDiscard?: number;
-  /** 最大丢弃率 (0-1)，超过此比例将不再丢弃，默认 0.5 */
+  /** Maximum discard rate (0-1); above this ratio no more discarding; default 0.5 */
   maxDiscardRate?: number;
 }
 
@@ -68,11 +68,11 @@ export class DiscardStrategy {
   }
 
   /**
-   * 判断是否应该丢弃数据
-   * @param tag 带优先级的数据标签
-   * @param queueState 队列状态
-   * @param currentPressure 当前压力等级
-   * @returns 是否应该丢弃
+   * Decide whether data should be discarded
+   * @param tag data tag carrying a priority
+   * @param queueState queue state
+   * @param currentPressure current pressure level
+   * @returns whether the data should be discarded
    */
   shouldDiscard(tag: Taggable, queueState: QueueState, currentPressure?: PressureLevel): boolean {
     this.totalOffered++;
@@ -80,17 +80,17 @@ export class DiscardStrategy {
     const priority = tag.priority ?? DataPriority.MEDIUM;
     const pressure = currentPressure ?? PressureLevel.NORMAL;
 
-    // HIGH 优先级数据永不丢弃
+    // HIGH-priority data is never discarded
     if (priority === DataPriority.HIGH) {
       return false;
     }
 
-    // 队列利用率低于最小阈值时不丢弃
+    // Do not discard when queue utilization is below the minimum threshold
     if (queueState.utilization < this.config.minUtilizationForDiscard) {
       return false;
     }
 
-    // 检查丢弃率是否超过最大限制
+    // Check whether the discard rate exceeds the maximum limit
     if (this.totalOffered > 0) {
       const currentDiscardRate = this.totalDiscarded / this.totalOffered;
       if (currentDiscardRate >= this.config.maxDiscardRate) {
@@ -135,7 +135,7 @@ export class DiscardStrategy {
   }
 
   /**
-   * 批量判断数据是否应该丢弃
+   * Batch-decide whether data should be discarded
    */
   filterDiscardable(
     tags: Taggable[],
@@ -157,7 +157,7 @@ export class DiscardStrategy {
   }
 
   /**
-   * 获取丢弃统计信息
+   * Get discard statistics
    */
   getDiscardStats(): DiscardStats {
     const discardRate = this.totalOffered > 0 ? this.totalDiscarded / this.totalOffered : 0;
@@ -173,7 +173,7 @@ export class DiscardStrategy {
   }
 
   /**
-   * 重置丢弃统计
+   * Reset discard statistics
    */
   reset(): void {
     this.totalDiscarded = 0;
@@ -188,7 +188,7 @@ export class DiscardStrategy {
   }
 
   /**
-   * 更新配置
+   * Update configuration
    */
   updateConfig(config: Partial<DiscardConfig>): void {
     this.config = { ...this.config, ...config };

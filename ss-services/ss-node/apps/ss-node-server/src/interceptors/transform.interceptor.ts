@@ -17,14 +17,14 @@ export class TransformInterceptor<T> implements NestInterceptor<T, WrappedRespon
   intercept(context: ExecutionContext, next: CallHandler): Observable<WrappedResponse<T> | T> {
     const request = context.switchToHttp().getRequest();
 
-    // 跳过健康检查等基础端点，直接返回原始数据
+    // Skip basic endpoints like health checks and return the raw data directly
     if (request.url.startsWith('/api/v1/system/health')) {
       return next.handle();
     }
 
     return next.handle().pipe(
       map((data) => {
-        // 已包含标准包装字段（data + message + timestamp）的响应不再重复包装
+        // Responses already containing the standard wrapper fields (data + message + timestamp) are not wrapped again
         if (
           data &&
           typeof data === 'object' &&
@@ -35,7 +35,7 @@ export class TransformInterceptor<T> implements NestInterceptor<T, WrappedRespon
           return data;
         }
 
-        // 分页查询响应
+        // Paginated query response
         if (data && typeof data === 'object' && 'pagination' in data) {
           return {
             data: data.data,
@@ -45,7 +45,7 @@ export class TransformInterceptor<T> implements NestInterceptor<T, WrappedRespon
           };
         }
 
-        // 文件下载等非 JSON 响应
+        // Non-JSON responses such as file downloads
         if (Buffer.isBuffer(data)) return data as any;
 
         return this.wrapResponse(data);

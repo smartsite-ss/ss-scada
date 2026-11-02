@@ -7,7 +7,7 @@ import { IProtocolAdapter, IDeviceContext, ITagContext } from '../../../types';
 import { IsolationMode } from '../../plugin.types';
 
 // ============================================================
-// 测试用数据
+// Test data
 // ============================================================
 const mockDevice: IDeviceContext = {
   id: 'dev-001',
@@ -51,7 +51,7 @@ const createMockAdapter = () =>
   }) as jest.Mocked<IProtocolAdapter>;
 
 // ============================================================
-// 测试套件
+// Test suite
 // ============================================================
 describe('InProcessExecutor', () => {
   let executor: InProcessExecutor;
@@ -139,7 +139,7 @@ describe('InProcessExecutor', () => {
       await executor.disconnect(shard);
 
       expect(adapter.disconnect).toHaveBeenCalledWith({ id: 'client-001' });
-      // 断开后读取应失败
+      // Read after disconnect should fail
       await expect(executor.readTag(shard, mockTag)).rejects.toThrow('Connection not found');
     });
 
@@ -176,7 +176,7 @@ describe('InProcessExecutor', () => {
 
     it('错误应统计 errorCount', async () => {
       await executor.init('virtual', adapter, {});
-      // 使用不存在的连接
+      // Use a non-existent connection
       try {
         await executor.readTag({ connectionId: 'nonexistent', protocol: 'virtual' }, mockTag);
       } catch {}

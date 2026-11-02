@@ -33,7 +33,7 @@ export class MockDataSourceManager {
     return id;
   }
 
-  /** 模拟数据源推送值 */
+  /** Simulated data source push value */
   simulateTagValue(tagPath: string, value: TagValue): void {
     const callbacks = this.subscriptions.get(tagPath);
     if (callbacks) {

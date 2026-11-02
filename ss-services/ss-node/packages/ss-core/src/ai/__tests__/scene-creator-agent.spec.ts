@@ -3,13 +3,13 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 场景创建 Agent 单元测试 — P2-T02
+ * Scene-creation Agent unit tests - P2-T02
  *
- * 验证：
- *   - GRAPHIC_TYPE_MAP 数据完整性
- *   - matchGraphicTypes 关键词匹配
- *   - getSceneCreationSystemPrompt 完整性
- *   - isSceneCreationIntent 意图判断
+ * Verifies:
+ *   - GRAPHIC_TYPE_MAP data completeness
+ *   - matchGraphicTypes keyword matching
+ *   - getSceneCreationSystemPrompt completeness
+ *   - isSceneCreationIntent intent detection
  */
 
 import {
@@ -168,8 +168,8 @@ describe('matchGraphicTypes', () => {
   it('多重关键词应返回多个匹配（按得分排序）', () => {
     const result = matchGraphicTypes('泵站需要水泵和压力表和流量计');
     expect(result.length).toBeGreaterThanOrEqual(3);
-    // 水泵得分最高（3字母+精确匹配）
-    // 但 waterpump 和 pump 都会匹配"泵"，waterpump 因为精确匹配"水泵"得分更高
+    // water pump scores highest (3 letters + exact match)
+    // but waterpump and pump both match "pump"; waterpump scores higher due to exact match of "water pump"
   });
 
   it('不匹配的描述应返回空数组', () => {

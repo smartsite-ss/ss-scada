@@ -15,48 +15,48 @@ import type {
 } from '../logger/audit-logger.types';
 
 /**
- * S-M02: 审计日志独立通道 — 完整单元测试
+ * S-M02: dedicated audit-log channel - full unit tests
  *
- * 测试覆盖：
- * 1. logSecurityEvent 文件写入验证（通过轮询等待 winston 异步写入完成）
- * 2. logSecurityEvent 字段验证与边界条件
- * 3. logSecurityEvent 安全性（XSS/SQL 注入 payload 不破坏日志）
- * 4. verifyChain 完整链验证与篡改检测
- * 5. 哈希链算法正确性（确定性、唯一性、格式）
- * 6. 重启恢复 prevHash 边界条件
- * 7. logSecurityEvent + verifyChain 集成测试
- * 8. close() 方法功能验证
- * 9. 服务生命周期边界条件
+ * Coverage:
+ * 1. logSecurityEvent file-write verification (poll until winston async write completes)
+ * 2. logSecurityEvent field validation and boundary conditions
+ * 3. logSecurityEvent security (XSS/SQL-injection payloads must not corrupt the log)
+ * 4. verifyChain full-chain verification and tamper detection
+ * 5. hash-chain algorithm correctness (determinism, uniqueness, format)
+ * 6. restart recovery prevHash boundary conditions
+ * 7. logSecurityEvent + verifyChain integration test
+ * 8. close() method functionality
+ * 9. service lifecycle boundary conditions
  *
- * 关键实现说明：
- * - 全局 setup.ts 启用了 jest.useFakeTimers()，但 winston 的 DailyRotateFile
- *   依赖真实定时器进行文件 I/O。本测试文件在 beforeAll 中切换回真实定时器。
- * - winston DailyRotateFile transport 的文件写入是异步的，close() 不保证数据
- *   落盘。测试通过轮询文件内容等待写入完成，而非依赖 close()。
- * - 所有创建的 AuditLoggerService 实例都会被追踪，在 afterEach 中统一 close()，
- *   确保 winston 文件流关闭后再删除临时目录，防止 ENOENT 错误。
+ * Key implementation notes:
+ * - global setup.ts enables jest.useFakeTimers(), but winston's DailyRotateFile
+ *   relies on real timers for file I/O. This test file switches back to real timers in beforeAll.
+ * - winston DailyRotateFile transport writes asynchronously and close() does not guarantee
+ *   data is flushed. The test polls file content to await completion instead of relying on close().
+ * - all created AuditLoggerService instances are tracked and closed uniformly in afterEach,
+ *   ensuring winston file streams are closed before the temp directory is removed, preventing ENOENT errors.
  */
 describe('AuditLoggerService', () => {
   let tempLogDir: string;
   let originalLogDir: string | undefined;
-  /** 追踪所有创建的服务实例，在 afterEach 中统一关闭 */
+  /** Track all created service instances and close them uniformly in afterEach */
   const createdServices: AuditLoggerService[] = [];
   /**
-   * 每个 test case 开始时冻结的基础时间戳（毫秒）。
+   * The base timestamp (ms) frozen at the start of each test case.
    *
-   * 作用：buildAuditEntry 使用 frozenBaseTime + index 生成确定性 timestamp，
-   * 避免并行测试负载下 Date.now() 在同一 test 内多次调用返回不同毫秒值，
-   * 导致"相同输入应产生相同 hash"等算法测试因 timestamp 差异而失败。
+   * Purpose: buildAuditEntry generates a deterministic timestamp via frozenBaseTime + index,
+   * avoiding Date.now() returning different millisecond values within the same test under parallel load,
+   * which would otherwise fail algorithm tests such as "same input should produce the same hash".
    */
   let frozenBaseTime: number;
 
   beforeAll(() => {
-    // 全局 setup.ts 启用了假定时器，但 winston 文件 I/O 依赖真实定时器
+    // global setup.ts enables fake timers, but winston file I/O relies on real timers
     jest.useRealTimers();
   });
 
   afterAll(() => {
-    // 恢复假定时器，避免影响后续测试文件
+    // restore fake timers to avoid affecting subsequent test files
     jest.useFakeTimers();
   });
 
@@ -65,39 +65,39 @@ describe('AuditLoggerService', () => {
     originalLogDir = process.env.LOG_DIR;
     process.env.LOG_DIR = tempLogDir;
     createdServices.length = 0;
-    // 在每个 test case 开始时冻结基础时间，确保 buildAuditEntry 的 timestamp 确定性
+    // freeze the base time at the start of each test case to ensure buildAuditEntry timestamp determinism
     frozenBaseTime = Date.now();
   });
 
   afterEach(async () => {
-    // 1. 先关闭所有 winston 实例（等待文件流完成写入）
+    // 1. close all winston instances first (await file stream completion)
     await Promise.all(
       createdServices.map((service) =>
         service.close().catch(() => {
-          /* 忽略关闭错误 */
+          /* ignore close errors */
         }),
       ),
     );
     createdServices.length = 0;
 
-    // 2. 恢复环境变量
+    // 2. restore environment variables
     if (originalLogDir !== undefined) {
       process.env.LOG_DIR = originalLogDir;
     } else {
       delete process.env.LOG_DIR;
     }
 
-    // 3. 最后删除临时目录（此时所有文件流已关闭，不会触发 ENOENT）
+    // 3. finally remove the temp directory (all file streams are closed now, no ENOENT)
     if (fs.existsSync(tempLogDir)) {
       fs.rmSync(tempLogDir, { recursive: true, force: true });
     }
   });
 
-  // ──────────── 辅助函数 ────────────
+  // ──────────── Helper functions ────────────
 
   /**
-   * 创建 AuditLoggerService 实例并自动追踪
-   * 追踪的实例会在 afterEach 中自动 close()，确保文件流关闭后再清理目录
+   * Create an AuditLoggerService instance and track it automatically
+   * Tracked instances are auto-closed in afterEach, ensuring the directory is cleaned up after streams close
    */
   function createService(): AuditLoggerService {
     const service = new AuditLoggerService();
@@ -105,13 +105,13 @@ describe('AuditLoggerService', () => {
     return service;
   }
 
-  /** 获取当天审计日志文件路径 */
+  /** Get today's audit log file path */
   function getTodayAuditFile(): string {
     const today = new Date().toISOString().split('T')[0];
     return path.join(tempLogDir, 'audit', `audit-${today}.log`);
   }
 
-  /** 确保 audit 目录存在 */
+  /** Ensure the audit directory exists */
   function ensureAuditDir(): void {
     const auditDir = path.join(tempLogDir, 'audit');
     if (!fs.existsSync(auditDir)) {
@@ -120,8 +120,8 @@ describe('AuditLoggerService', () => {
   }
 
   /**
-   * 与 AuditLoggerService.canonicalString 相同的算法
-   * 手动按键排序构建新对象（不使用 replacer 数组，避免递归过滤嵌套键）
+   * Same algorithm as AuditLoggerService.canonicalString
+   * Build a new object with manually key-sorted order (no replacer array, to avoid recursively filtering nested keys)
    */
   function computeCanonical(entry: AuditLogEntry): string {
     const fields: Record<string, any> = {
@@ -146,8 +146,8 @@ describe('AuditLoggerService', () => {
   }
 
   /**
-   * 手动构建一条审计日志条目（含正确的哈希链）
-   * 使用与 AuditLoggerService 相同的 canonicalString 和 SHA256 算法
+   * Build an audit log entry manually (with a correct hash chain)
+   * Uses the same canonicalString and SHA256 algorithm as AuditLoggerService
    */
   function buildAuditEntry(
     index: number,
@@ -155,9 +155,9 @@ describe('AuditLoggerService', () => {
     event: Partial<AuditEvent> & { type: AuditEventType; severity: AuditSeverity },
   ): AuditLogEntry {
     const entry: AuditLogEntry = {
-      // 使用 frozenBaseTime（每个 test case 冻结一次）而非 Date.now()，
-      // 确保同一 test 内多次调用 buildAuditEntry 的 timestamp 确定性，
-      // 避免"相同输入应产生相同 hash"测试因毫秒级时间差而失败
+      // use frozenBaseTime (frozen once per test case) instead of Date.now(),
+      // to ensure a deterministic timestamp across multiple buildAuditEntry calls in the same test,
+      // avoiding test failures from millisecond-level time differences in "same input should produce same hash"
       timestamp: new Date(frozenBaseTime + index).toISOString(),
       type: event.type,
       severity: event.severity,
@@ -175,14 +175,14 @@ describe('AuditLoggerService', () => {
     return entry;
   }
 
-  /** 将审计条目数组写入当天日志文件（每行一个 JSON） */
+  /** Write an array of audit entries to today's log file (one JSON per line) */
   function writeAuditFile(entries: AuditLogEntry[]): void {
     ensureAuditDir();
     const lines = entries.map((e) => JSON.stringify(e));
     fs.writeFileSync(getTodayAuditFile(), lines.join('\n') + '\n');
   }
 
-  /** 读取当天审计日志文件的所有行（解析为 JSON 数组，跳过无法解析的行） */
+  /** Read all lines of today's audit log file (parse into a JSON array, skipping unparseable lines) */
   function readTodayAuditEntries(): AuditLogEntry[] {
     const file = getTodayAuditFile();
     if (!fs.existsSync(file)) return [];
@@ -202,10 +202,10 @@ describe('AuditLoggerService', () => {
   }
 
   /**
-   * 轮询等待审计日志文件中出现指定数量的条目
+   * Poll until the audit log file contains the expected number of entries
    *
-   * winston DailyRotateFile transport 的文件写入是异步的，
-   * close() 不保证数据已落盘。通过轮询文件内容确保读取到完整数据。
+   * winston DailyRotateFile transport writes asynchronously and close() does not
+   * guarantee data is flushed. Polling the file content ensures complete data is read.
    */
   async function waitForEntries(
     expectedCount: number,
@@ -224,11 +224,11 @@ describe('AuditLoggerService', () => {
     );
   }
 
-  /** 创世哈希常量 */
+  /** Genesis hash constant */
   const GENESIS_HASH = '0'.repeat(64);
 
   // ═══════════════════════════════════════════════════════════════
-  // 1. logSecurityEvent 文件写入验证
+  // 1. logSecurityEvent file-write verification
   // ═══════════════════════════════════════════════════════════════
 
   describe('logSecurityEvent 文件写入', () => {
@@ -309,14 +309,14 @@ describe('AuditLoggerService', () => {
       });
 
       const entries = await waitForEntries(1);
-      // winston.format.timestamp() 会添加 timestamp 字段，但我们的 entry 已有该字段
-      // 验证 timestamp 存在且为有效 ISO 8601
+      // winston.format.timestamp() adds a timestamp field, but our entry already has it
+      // verify the timestamp exists and is a valid ISO 8601 string
       expect(entries[0].timestamp).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
     });
   });
 
   // ═══════════════════════════════════════════════════════════════
-  // 2. logSecurityEvent 字段验证与边界条件
+  // 2. logSecurityEvent field validation and boundary conditions
   // ═══════════════════════════════════════════════════════════════
 
   describe('logSecurityEvent 字段验证', () => {
@@ -442,7 +442,7 @@ describe('AuditLoggerService', () => {
   });
 
   // ═══════════════════════════════════════════════════════════════
-  // 3. logSecurityEvent 安全性
+  // 3. logSecurityEvent security
   // ═══════════════════════════════════════════════════════════════
 
   describe('logSecurityEvent 安全性', () => {
@@ -458,7 +458,7 @@ describe('AuditLoggerService', () => {
 
       const entries = await waitForEntries(1);
       expect(entries.length).toBe(1);
-      // 审计日志忠实记录原始 payload，JSON 序列化天然安全
+      // the audit log faithfully records the raw payload; JSON serialization is inherently safe
       expect(entries[0].username).toBe('<script>alert("xss")</script>');
       expect(() => JSON.parse(JSON.stringify(entries[0]))).not.toThrow();
     });
@@ -525,7 +525,7 @@ describe('AuditLoggerService', () => {
   });
 
   // ═══════════════════════════════════════════════════════════════
-  // 4. verifyChain 验证
+  // 4. verifyChain verification
   // ═══════════════════════════════════════════════════════════════
 
   describe('verifyChain', () => {
@@ -603,7 +603,7 @@ describe('AuditLoggerService', () => {
       });
       writeAuditFile([e1, e2]);
 
-      // 篡改第一条记录的 userId（不改 hash）
+      // tamper with the first record's userId (without changing its hash)
       e1.userId = 'hacked-user-id';
       writeAuditFile([e1, e2]);
 
@@ -621,7 +621,7 @@ describe('AuditLoggerService', () => {
         severity: 'info',
         userId: 'u1',
       });
-      // 第二条 prevHash 故意设为错误值
+      // the second record's prevHash is deliberately set to a wrong value
       const e2 = buildAuditEntry(1, 'a'.repeat(64), {
         type: 'auth.logout',
         severity: 'info',
@@ -655,7 +655,7 @@ describe('AuditLoggerService', () => {
       });
       writeAuditFile([e1, e2, e3]);
 
-      // 篡改最后一条记录
+      // tamper with the last record
       e3.userId = 'hacked';
       writeAuditFile([e1, e2, e3]);
 
@@ -684,7 +684,7 @@ describe('AuditLoggerService', () => {
       });
       writeAuditFile([e1, e2, e3]);
 
-      // 篡改第二条记录的 hash 值（不改内容）
+      // tamper with the second record's hash value (without changing its content)
       e2.hash = 'b'.repeat(64);
       writeAuditFile([e1, e2, e3]);
 
@@ -709,7 +709,7 @@ describe('AuditLoggerService', () => {
       });
       writeAuditFile([e1, e2]);
 
-      // 篡改 details 中的嵌套值
+      // tamper with a nested value inside details
       e1.details.role = 'superadmin';
       writeAuditFile([e1, e2]);
 
@@ -795,7 +795,7 @@ describe('AuditLoggerService', () => {
   });
 
   // ═══════════════════════════════════════════════════════════════
-  // 5. 哈希链算法正确性
+  // 5. hash-chain algorithm correctness
   // ═══════════════════════════════════════════════════════════════
 
   describe('哈希链算法', () => {
@@ -930,7 +930,7 @@ describe('AuditLoggerService', () => {
   });
 
   // ═══════════════════════════════════════════════════════════════
-  // 6. 重启恢复 prevHash
+  // 6. restart recovery prevHash
   // ═══════════════════════════════════════════════════════════════
 
   describe('重启恢复 prevHash', () => {
@@ -947,10 +947,10 @@ describe('AuditLoggerService', () => {
       });
       writeAuditFile([e1, e2]);
 
-      // 创建新实例（模拟重启），loadLastHashFromToday 应从 e2.hash 恢复
+      // create a new instance (simulate restart); loadLastHashFromToday should recover from e2.hash
       const service = createService();
 
-      // 手动写入第三条记录（prevHash 应为 e2.hash）
+      // manually write a third record (prevHash should be e2.hash)
       const e3 = buildAuditEntry(2, e2.hash, {
         type: 'auth.login.success',
         severity: 'info',
@@ -970,7 +970,7 @@ describe('AuditLoggerService', () => {
 
       const service = createService();
 
-      // 写入一条 prevHash 为创世哈希的记录
+      // write a record whose prevHash is the genesis hash
       const e1 = buildAuditEntry(0, GENESIS_HASH, {
         type: 'auth.login.success',
         severity: 'info',
@@ -1036,7 +1036,7 @@ describe('AuditLoggerService', () => {
   });
 
   // ═══════════════════════════════════════════════════════════════
-  // 7. logSecurityEvent + verifyChain 集成测试
+  // 7. logSecurityEvent + verifyChain integration test
   // ═══════════════════════════════════════════════════════════════
 
   describe('logSecurityEvent + verifyChain 集成', () => {
@@ -1060,7 +1060,7 @@ describe('AuditLoggerService', () => {
 
       await waitForEntries(2);
 
-      // 读取文件，篡改第二条记录
+      // read the file and tamper with the second record
       const file = getTodayAuditFile();
       const content = fs.readFileSync(file, 'utf-8');
       const lines = content.trim().split('\n');
@@ -1082,7 +1082,7 @@ describe('AuditLoggerService', () => {
 
       await waitForEntries(3);
 
-      // 删除中间记录（第二条）
+      // delete the middle record (the second)
       const file = getTodayAuditFile();
       const content = fs.readFileSync(file, 'utf-8');
       const lines = content.trim().split('\n');
@@ -1094,7 +1094,7 @@ describe('AuditLoggerService', () => {
     });
 
     it('两次创建实例写入的记录应形成连续哈希链', async () => {
-      // 第一次：写入 2 条
+      // first time: write 2 records
       const service1 = createService();
       service1.logSecurityEvent({ type: 'auth.login.success', severity: 'info', userId: 'u1' });
       service1.logSecurityEvent({ type: 'auth.logout', severity: 'info', userId: 'u1' });
@@ -1102,16 +1102,16 @@ describe('AuditLoggerService', () => {
       const entriesAfterFirst = await waitForEntries(2);
       expect(entriesAfterFirst.length).toBe(2);
 
-      // 第二次：模拟重启，写入 1 条
+      // second time: simulate restart, write 1 record
       const service2 = createService();
       service2.logSecurityEvent({ type: 'auth.login.success', severity: 'info', userId: 'u2' });
 
       const entriesAfterSecond = await waitForEntries(3);
       expect(entriesAfterSecond.length).toBe(3);
-      // 第三条的 prevHash 应等于第二条的 hash（重启恢复成功）
+      // the third record's prevHash should equal the second record's hash (restart recovery succeeded)
       expect(entriesAfterSecond[2].prevHash).toBe(entriesAfterSecond[1].hash);
 
-      // 完整链验证
+      // full-chain verification
       const result = service2.verifyChain();
       expect(result.valid).toBe(true);
       expect(result.totalEntries).toBe(3);
@@ -1139,7 +1139,7 @@ describe('AuditLoggerService', () => {
   });
 
   // ═══════════════════════════════════════════════════════════════
-  // 8. close() 方法
+  // 8. close() method
   // ═══════════════════════════════════════════════════════════════
 
   describe('close()', () => {
@@ -1162,7 +1162,7 @@ describe('AuditLoggerService', () => {
   });
 
   // ═══════════════════════════════════════════════════════════════
-  // 9. 服务生命周期边界条件
+  // 9. service lifecycle boundary conditions
   // ═══════════════════════════════════════════════════════════════
 
   describe('服务生命周期边界条件', () => {
@@ -1186,7 +1186,7 @@ describe('AuditLoggerService', () => {
       const entries = await waitForEntries(100);
       expect(entries.length).toBe(100);
 
-      // 验证哈希链完整性
+      // verify hash-chain integrity
       const result = service.verifyChain();
       expect(result.valid).toBe(true);
       expect(result.totalEntries).toBe(100);
@@ -1195,7 +1195,7 @@ describe('AuditLoggerService', () => {
     it('同一服务实例多次写入+验证应保持链完整性', async () => {
       const service = createService();
 
-      // 第一批
+      // first batch
       service.logSecurityEvent({ type: 'auth.login.success', severity: 'info', userId: 'u1' });
       service.logSecurityEvent({ type: 'auth.logout', severity: 'info', userId: 'u1' });
 
@@ -1204,7 +1204,7 @@ describe('AuditLoggerService', () => {
       expect(result.valid).toBe(true);
       expect(result.totalEntries).toBe(2);
 
-      // 第二批（模拟同一实例后续写入）
+      // second batch (simulate subsequent writes from the same instance)
       service.logSecurityEvent({ type: 'user.created', severity: 'info', userId: 'u2' });
 
       await waitForEntries(3);

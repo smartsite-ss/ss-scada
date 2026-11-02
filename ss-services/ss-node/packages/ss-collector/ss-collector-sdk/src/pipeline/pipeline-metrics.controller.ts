@@ -17,17 +17,17 @@ export class PipelineMetricsController {
     private readonly scheduler: EnhancedScheduler,
   ) {}
 
-  /** 返回 Prometheus 文本格式指标 */
+  /** Return metrics in Prometheus text format */
   @Get()
   getPrometheusMetrics(): string {
     return this.metricsService.getMetrics();
   }
 
-  /** 返回 JSON 格式指标 */
+  /** Return metrics in JSON format */
   @Get('json')
   getJsonMetrics() {
     const snapshot = this.metricsService.getMetricsSnapshot();
-    // 诊断日志：若指标为 0，提示可能的原因
+    // Diagnostic log: if a metric is 0, hint at the possible cause
     if (snapshot.pipeline_executions_total === 0) {
       this.logger.warn(
         `getJsonMetrics: pipeline_executions_total=0 — Pipeline 从未执行过。` +
@@ -43,7 +43,7 @@ export class PipelineMetricsController {
     };
   }
 
-  /** 返回各步骤 P50/P95/P99 延迟统计 */
+  /** Return per-step P50/P95/P99 latency statistics */
   @Get('percentiles')
   getPercentiles() {
     return {
@@ -54,7 +54,7 @@ export class PipelineMetricsController {
     };
   }
 
-  /** 返回最近 N 次 Pipeline 耗时分解（用于火焰图可视化） */
+  /** Return the recent N Pipeline timing breakdowns (for flame-graph visualization) */
   @Get('breakdowns')
   getBreakdowns() {
     return {
@@ -66,13 +66,13 @@ export class PipelineMetricsController {
   }
 
   /**
-   * 诊断端点：一次性返回 Pipeline 内部状态，用于排查"指标无数据"问题。
+   * Diagnostic endpoint: return Pipeline internal state in one shot, for troubleshooting "metrics have no data".
    *
-   * 排查思路：
-   * - scheduler.tasks.size === 0 → 无采集任务，检查设备/标签是否注册
-   * - orchestrator.stepCount === 0 → Pipeline 未初始化，检查 PipelineInitializer.onModuleInit
-   * - orchestrator.timingHistorySize === 0 但 tasks.size > 0 → 任务未就绪或被熔断
-   * - metricsServiceInjected === false → DI 配置错误
+   * Troubleshooting steps:
+   * - scheduler.tasks.size === 0 -> no collection tasks; check whether devices/tags are registered
+   * - orchestrator.stepCount === 0 -> Pipeline not initialized; check PipelineInitializer.onModuleInit
+   * - orchestrator.timingHistorySize === 0 but tasks.size > 0 -> tasks not ready or circuit-broken
+   * - metricsServiceInjected === false -> DI configuration error
    */
   @Get('diagnostic')
   getDiagnostic() {
@@ -81,7 +81,7 @@ export class PipelineMetricsController {
     const orchestratorInfo = this.orchestrator.getDiagnosticInfo();
     const metricsSnapshot = this.metricsService.getMetricsSnapshot();
 
-    // 收集所有任务的简要信息（最多 10 条）
+    // Collect brief info for all tasks (up to 10)
     const taskList = Array.from(taskStatus.entries())
       .slice(0, 10)
       .map(([id, task]) => ({
@@ -125,7 +125,7 @@ export class PipelineMetricsController {
     };
   }
 
-  /** 返回所有有指标数据的协议列表（供前端筛选） */
+  /** Return the list of protocols that have metric data (for frontend filtering) */
   @Get('protocols')
   getProtocols() {
     const metrics = this.metricsService.getAllProtocolMetrics();
@@ -143,7 +143,7 @@ export class PipelineMetricsController {
     };
   }
 
-  /** 按协议获取指标详情 */
+  /** Get metric details by protocol */
   @Get('protocol')
   getProtocolMetrics(@Query('protocol') protocol: string) {
     if (!protocol) {
@@ -172,7 +172,7 @@ export class PipelineMetricsController {
   }
 
   /**
-   * 根据当前状态自动生成诊断结论，帮助用户快速定位问题。
+   * Automatically generate a diagnostic conclusion from the current state to help users locate the problem quickly.
    */
   private buildDiagnosis(
     orchestratorInfo: any,

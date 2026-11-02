@@ -35,14 +35,14 @@ export interface UpdateRoleDto {
   sortOrder?: number;
 }
 
-/** 项目授权 DTO */
+/** Project authorization DTO */
 export interface ProjectAuthDto {
   roleId: string;
   projectId: string;
   permission: 'read' | 'write' | 'admin';
 }
 
-/** 设备授权 DTO */
+/** Device authorization DTO */
 export interface DeviceAuthDto {
   roleId: string;
   projectId: string;
@@ -71,31 +71,31 @@ export const roleApi = {
     return client.delete(`/roles/${id}`);
   },
 
-  // ──────── 数据授权 API（v7.0 新增） ────────
+  // ──────── Data authorization API (added in v7.0) ────────
 
-  /** 获取角色的项目授权列表 */
+  /** Get the project authorization list of a role */
   getProjectAuths(roleId: string): Promise<ApiResponse<ProjectAuthDto[]>> {
     return client.get(`/roles/${roleId}/project-auths`).then((res) => res.data);
   },
 
-  /** 设置角色的项目授权（全量替换） */
+  /** Set the project authorizations of a role (full replacement) */
   setProjectAuths(roleId: string, auths: Omit<ProjectAuthDto, 'roleId'>[]): Promise<ApiResponse<void>> {
     return client.put(`/roles/${roleId}/project-auths`, auths).then((res) => res.data);
   },
 
-  /** 获取角色在某项目下的设备授权列表 */
+  /** Get the device authorization list of a role under a project */
   getDeviceAuths(roleId: string, projectId: string): Promise<ApiResponse<DeviceAuthDto[]>> {
     return client.get(`/roles/${roleId}/device-auths`, { params: { projectId } }).then((res) => res.data);
   },
 
-  /** 设置角色在某项目下的设备授权（全量替换） */
+  /** Set the device authorizations of a role under a project (full replacement) */
   setDeviceAuths(roleId: string, projectId: string, auths: Omit<DeviceAuthDto, 'roleId' | 'projectId'>[]): Promise<ApiResponse<void>> {
     return client.put(`/roles/${roleId}/device-auths`, auths, { params: { projectId } }).then((res) => res.data);
   },
 
-  // ──────── 权限审计日志 API（v7.0 新增） ────────
+  // ──────── Permission audit log API (added in v7.0) ────────
 
-  /** 查询权限审计日志 */
+  /** Query permission audit logs */
   getAuditLogs(params?: {
     page?: number;
     pageSize?: number;
@@ -109,9 +109,9 @@ export const roleApi = {
     return client.get('/roles/audit-logs', { params }).then((res) => res.data);
   },
 
-  // ──────── 权限码注册表（v8.0 新增） ────────
+  // ──────── Permission code registry (added in v8.0) ────────
 
-  /** 获取权限码注册表（含分类和标签，替代前端硬编码 PERMISSION_CATEGORIES） */
+  /** Get the permission code registry (with categories and tags, replacing the frontend hardcoded PERMISSION_CATEGORIES) */
   getPermissionsRegistry(): Promise<
     ApiResponse<{
       categories: { module: string; label: string; codes: { code: string; label: string }[] }[];

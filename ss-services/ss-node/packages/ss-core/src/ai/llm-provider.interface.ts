@@ -3,17 +3,17 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * LLM Provider 抽象层接口 — P1-T01 LLM API 接入配置
+ * LLM Provider abstraction interface - P1-T01 LLM API access configuration
  *
- * 所有 LLM 供应商（DeepSeek、智谱等）均实现此接口。
- * 后端 LLM 代理服务（LLMProxyService）通过此接口调用底层供应商 API，
- * 实现多供应商路由、降级、统一接口契约。
+ * All LLM providers (DeepSeek, Zhipu, etc.) implement this interface.
+ * The backend LLM proxy service (LLMProxyService) calls the underlying provider API through this
+ * interface, achieving multi-provider routing, fallback, and a unified contract.
  *
- * 关联决策：
- *   - D-001 云端 API 优先（DeepSeek + 智谱）
- *   - D-002 LLM 模型选型（DeepSeek + 智谱 GLM）
- *   - D-009 SSE 流式输出
- *   - D-010 多供应商路由 + 降级
+ * Related decisions:
+ *   - D-001 cloud API first (DeepSeek + Zhipu)
+ *   - D-002 LLM model selection (DeepSeek + Zhipu GLM)
+ *   - D-009 SSE streaming output
+ *   - D-010 multi-provider routing + fallback
  */
 
 import { ProviderConfig, ProviderHealth } from './llm.types';
@@ -26,54 +26,55 @@ import {
 } from './llm.types';
 
 /**
- * LLM Provider 接口
+ * LLM Provider interface
  *
- * 实现类负责：
- *   1. 调用具体供应商 API（DeepSeek / 智谱 / ...）
- *   2. 将供应商响应转换为统一格式（LLMResponse / ChatStreamChunk）
- *   3. 处理重试、超时、错误降级
- *   4. 报告自身健康状态
+ * Implementations are responsible for:
+ *   1. Calling the specific provider API (DeepSeek / Zhipu / ...)
+ *   2. Converting the provider response into a unified format (LLMResponse / ChatStreamChunk)
+ *   3. Handling retries, timeouts, error fallbacks
+ *   4. Reporting their own health status
  */
 export interface ILLMProvider {
-  /** 供应商 ID（支持扩展：deepseek/zhipu/qwen/moonshot/ernie/openai/claude/gemini/mistral/custom 等） */
+  /** Provider ID (extensible: deepseek/zhipu/qwen/moonshot/ernie/openai/claude/gemini/mistral/custom, etc.) */
   readonly providerId: string;
 
-  /** 初始化 Provider（注入配置） */
+  /** Initialize the provider (inject config) */
   initialize(config: ProviderConfig): void;
 
-  /** 是否已初始化（apiKey 等配置就绪） */
+  /** Whether initialized (apiKey etc. config ready) */
   isReady(): boolean;
 
   /**
-   * 同步生成（非流式）
-   * @throws Error 当 API 调用失败、超时、所有重试均失败时抛出
+   * Synchronous generation (non-streaming)
+   * @throws Error when API call fails, times out, or all retries fail
    */
   generate(req: LLMRequest): Promise<LLMResponse>;
 
   /**
-   * 流式生成（AsyncGenerator）
+   * Streaming generation (AsyncGenerator)
    *
-   * 每次 yield 一个 ChatStreamChunk，最后一个 chunk 的 done=true。
-   * 实现需在内部处理网络断开、超时等异常，并在异常时通过 throw 中断流。
+   * Yields one ChatStreamChunk each time; the last chunk has done=true.
+   * Implementations must handle network disconnects, timeouts, etc. internally and interrupt
+   * the stream via throw on exceptions.
    */
   stream(req: LLMRequest): AsyncGenerator<ChatStreamChunk, void, unknown>;
 
   /**
-   * 嵌入（向量生成）
+   * Embedding (vector generation)
    *
-   * 用于 RAG 文档向量化、查询向量化（D-006 / D-007）。
-   * DeepSeek Provider 可不实现此方法（throw NotImplemented），
-   * 嵌入任务通过路由固定走智谱（见 DEFAULT_ROUTING.embedding = 'zhipu'）。
+   * Used for RAG document/query vectorization (D-006 / D-007).
+   * The DeepSeek provider may not implement this method (throw NotImplemented);
+   * embedding tasks are routed to Zhipu via DEFAULT_ROUTING.embedding = 'zhipu'.
    */
   embed(req: EmbeddingRequest): Promise<EmbeddingResponse>;
 
-  /** 健康检查（Ping 供应商 API，返回 ProviderHealth） */
+  /** Health check (ping provider API, returns ProviderHealth) */
   checkHealth(): Promise<ProviderHealth>;
 }
 
 /**
- * LLM Provider Token（NestJS DI 注入标识）
+ * LLM Provider Token (NestJS DI injection identifier)
  *
- * 用于在 LLMProxyService 中通过 @Inject(LLM_PROVIDERS) 注入所有 Provider 实例。
+ * Used in LLMProxyService to inject all provider instances via @Inject(LLM_PROVIDERS).
  */
 export const LLM_PROVIDERS = Symbol('LLM_PROVIDERS');

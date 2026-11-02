@@ -7,17 +7,17 @@ import { usePermission } from '../composables/usePermission';
 import type { PermissionCode } from '../config/system-menu.config';
 
 /**
- * 权限指令 v-permission
+ * Permission directive v-permission
  *
- * 用法：
- *   <button v-permission="'project:create'">新建</button>
- *        → 无权限时隐藏元素
+ * Usage:
+ *   <button v-permission="'project:create'">New</button>
+ *        → hides the element when unauthorized
  *
- *   <button v-permission="['project:edit','project:delete']">操作</button>
- *        → 任一权限满足即可显示
+ *   <button v-permission="['project:edit','project:delete']">Operate</button>
+ *        → shown when any permission is satisfied
  *
- *   <button v-permission:disable="'device:delete'">删除</button>
- *        → 无权限时 disabled 而非移除
+ *   <button v-permission:disable="'device:delete'">Delete</button>
+ *        → disabled instead of removed when unauthorized
  */
 export const vPermission: Directive<HTMLElement, PermissionCode | PermissionCode[]> = {
   mounted(el: HTMLElement, binding: DirectiveBinding<PermissionCode | PermissionCode[]>) {
@@ -26,7 +26,7 @@ export const vPermission: Directive<HTMLElement, PermissionCode | PermissionCode
     const allowed = hasAnyPermission(...codes);
 
     if (binding.arg === 'disable') {
-      // 禁用模式：不移除元素，仅添加 disabled 属性
+      // Disable mode: do not remove the element, only add the disabled attribute
       if (!allowed) {
         el.setAttribute('disabled', 'true');
         el.classList.add('permission-disabled');
@@ -35,7 +35,7 @@ export const vPermission: Directive<HTMLElement, PermissionCode | PermissionCode
         }
       }
     } else {
-      // 隐藏模式：无权限时移除 DOM 元素
+      // Hide mode: remove the DOM element when unauthorized
       if (!allowed) {
         el.parentNode?.removeChild(el);
       }

@@ -3,47 +3,47 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * Code Validator — P1-T05/P1-T06 代码校验工具
+ * Code Validator — P1-T05/P1-T06 code validation utility
  *
- * 对 LLM 生成的代码进行语法校验和安全性检查：
- *   1. JS/TS 语法校验（Function 构造函数 + 正则模式检查）
- *   2. 安全性检查（禁止使用 window/document/eval 等全局对象）
- *   3. 常见错误检测（括号不匹配、未闭合字符串等）
+ * Performs syntax validation and security checks on LLM-generated code:
+ *   1. JS/TS syntax validation (Function constructor + regex pattern checks)
+ *   2. Security checks (forbids window/document/eval and other globals)
+ *   3. Common error detection (unbalanced brackets, unclosed strings, etc.)
  *
- * 用法:
+ * Usage:
  *   const result = validateCode(code, 'javascript');
  *   // result.valid → boolean
  *   // result.errors → ValidationError[]
  */
 
 // ============================================================
-// 类型定义
+// Type definitions
 // ============================================================
 
 export interface ValidationError {
-  /** 错误消息 */
+  /** Error message */
   message: string;
-  /** 错误行号（1-based），-1 表示未知 */
+  /** Error line number (1-based); -1 means unknown */
   line: number;
-  /** 错误列号（1-based），-1 表示未知 */
+  /** Error column number (1-based); -1 means unknown */
   column: number;
-  /** 错误类型 */
+  /** Error type */
   type: 'syntax' | 'security' | 'style';
-  /** 严重级别 */
+  /** Severity */
   severity: 'error' | 'warning';
 }
 
 export interface ValidationResult {
-  /** 是否通过校验 */
+  /** Whether validation passed */
   valid: boolean;
-  /** 错误/警告列表 */
+  /** Error/warning list */
   errors: ValidationError[];
-  /** 警告列表（severity === 'warning'） */
+  /** Warning list (severity === 'warning') */
   warnings: ValidationError[];
 }
 
 // ============================================================
-// 安全黑名单：禁止在沙箱脚本中使用的全局对象和函数
+// Security blacklist: global objects and functions forbidden in sandbox scripts
 // ============================================================
 
 const FORBIDDEN_GLOBALS = [
@@ -60,7 +60,7 @@ const FORBIDDEN_GLOBALS = [
 ];
 
 // ============================================================
-// 常见语法错误模式
+// Common syntax error patterns
 // ============================================================
 
 const COMMON_SYNTAX_ISSUES = [
@@ -74,10 +74,10 @@ const COMMON_SYNTAX_ISSUES = [
 
 export class CodeValidator {
   /**
-   * 校验代码
-   * @param code 代码字符串
-   * @param lang 语言标识（javascript/typescript/js/ts）
-   * @param options.sandboxMode 沙箱模式（默认 true），检测禁止的 API
+   * Validate code
+   * @param code the code string
+   * @param lang language identifier (javascript/typescript/js/ts)
+   * @param options.sandboxMode sandbox mode (default true); detects forbidden APIs
    */
   validate(
     code: string,
@@ -87,20 +87,20 @@ export class CodeValidator {
     const errors: ValidationError[] = [];
     const { sandboxMode = true } = options;
 
-    // 1. 基础模式检查（括号匹配等）
+    // 1. Basic pattern checks (bracket matching etc.)
     this._checkBasicSyntax(code, errors);
 
-    // 2. Function 构造函数语法校验
+    // 2. Function constructor syntax validation
     if (this._isJavaScript(lang)) {
       this._checkWithFunction(code, errors);
     }
 
-    // 3. 安全黑名单检查（仅沙箱模式）
+    // 3. Security blacklist check (sandbox mode only)
     if (sandboxMode) {
       this._checkSecurity(code, errors);
     }
 
-    // 4. 常见模式检查
+    // 4. Common pattern checks
     this._checkCommonPatterns(code, errors);
 
     const warnings = errors.filter((e) => e.severity === 'warning');
@@ -111,27 +111,27 @@ export class CodeValidator {
   }
 
   /**
-   * 快速校验（只返回是否通过）
+   * Quick validation (returns only pass/fail)
    */
   isValid(code: string, lang: string = 'javascript'): boolean {
     return this.validate(code, lang).valid;
   }
 
-  // ─── 私有方法 ───
+  // ─── Private methods ───
 
   private _isJavaScript(lang: string): boolean {
     return ['javascript', 'js', 'typescript', 'ts', 'tsx', 'jsx'].includes(lang.toLowerCase());
   }
 
   private _checkBasicSyntax(code: string, errors: ValidationError[]): void {
-    // 括号匹配检查
+    // Bracket matching check
     const bracketPairs = [
       { open: '{', close: '}', name: '花括号' },
       { open: '[', close: ']', name: '方括号' },
       { open: '(', close: ')', name: '圆括号' },
     ];
 
-    // 排除字符串和注释中的括号
+    // Exclude brackets inside strings and comments
     const cleanCode = this._stripStringsAndComments(code);
 
     for (const pair of bracketPairs) {
@@ -158,7 +158,7 @@ export class CodeValidator {
               type: 'syntax',
               severity: 'error',
             });
-            depth = 0; // 重置以继续检查
+            depth = 0; // reset to continue checking
           }
         }
       }
@@ -177,13 +177,13 @@ export class CodeValidator {
 
   private _checkWithFunction(code: string, errors: ValidationError[]): void {
     try {
-      // 使用 Function 构造函数进行语法检查
-      // 注意：只编译不执行，安全
+      // Use the Function constructor for syntax checking
+      // Note: compile only, never execute — safe
       new Function(code);
     } catch (e) {
       const message = e instanceof SyntaxError ? e.message : String(e);
 
-      // 尝试提取行号
+      // Try to extract the line number
       let line = -1;
       let column = -1;
       const lineMatch = message.match(/at position (\d+)/i)
@@ -193,7 +193,7 @@ export class CodeValidator {
       if (lineMatch) {
         const pos = parseInt(lineMatch[1], 10);
         if (!isNaN(pos) && pos > 0) {
-          // 根据位置计算行列
+          // Compute line/column from the position
           const lines = code.substring(0, pos).split('\n');
           line = lines.length;
           column = lines[lines.length - 1].length + 1;
@@ -212,7 +212,7 @@ export class CodeValidator {
 
   private _checkSecurity(code: string, errors: ValidationError[]): void {
     for (const rule of FORBIDDEN_GLOBALS) {
-      // 重置正则 lastIndex
+      // Reset the regex lastIndex
       rule.pattern.lastIndex = 0;
       const cleanCode = this._stripStringsAndComments(code);
       const match = rule.pattern.exec(cleanCode);
@@ -247,28 +247,28 @@ export class CodeValidator {
   }
 
   /**
-   * 移除字符串字面量和注释内容
+   * Remove string literals and comment content
    */
   private _stripStringsAndComments(code: string): string {
-    // 移除单行注释
+    // Remove single-line comments
     let result = code.replace(/\/\/.*$/gm, '');
-    // 移除多行注释
+    // Remove multi-line comments
     result = result.replace(/\/\*[\s\S]*?\*\//g, '');
-    // 移除模板字符串
+    // Remove template strings
     result = result.replace(/`(?:[^`\\]|\\.)*`/g, '``');
-    // 移除单引号字符串
+    // Remove single-quoted strings
     result = result.replace(/'(?:[^'\\]|\\.)*'/g, "''");
-    // 移除双引号字符串
+    // Remove double-quoted strings
     result = result.replace(/"(?:[^"\\]|\\.)*"/g, '""');
     return result;
   }
 }
 
-/** 单例 */
+/** Singleton */
 export const codeValidator = new CodeValidator();
 
 /**
- * 便捷函数：校验代码
+ * Convenience function: validate code
  */
 export function validateCode(
   code: string,
@@ -279,7 +279,7 @@ export function validateCode(
 }
 
 /**
- * 便捷函数：校验并返回格式化错误信息
+ * Convenience function: validate and return formatted error messages
  */
 export function validateCodeForDisplay(
   code: string,

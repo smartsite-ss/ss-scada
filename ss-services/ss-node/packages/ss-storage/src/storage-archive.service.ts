@@ -48,7 +48,7 @@ export class StorageArchiveService {
     let archivedSize = 0;
 
     try {
-      // 归档前执行降采样（可选，InfluxDB 不可用时跳过）
+      // Run downsampling before archiving (optional; skipped when InfluxDB is unavailable)
       if (this.downsamplingService) {
         try {
           await this.downsamplingService.executeDownsampling('tag_values', '1h', '365d');

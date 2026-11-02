@@ -3,7 +3,7 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 // ============================================================
-// Mock @ss-node/ss-device — entity 文件中 import DataTag 需要
+// Mock @ss-node/ss-device -- its entity file imports DataTag
 // ============================================================
 jest.mock('@ss-node/ss-device', () => ({
   DataTag: class {},
@@ -17,7 +17,7 @@ jest.mock('@ss-node/ss-device', () => ({
 }));
 
 // ============================================================
-// Mock @ss-node/ss-sdk — entity 文件中 import enums 需要
+// Mock @ss-node/ss-sdk -- its entity file imports enums
 // ============================================================
 jest.mock('@ss-node/ss-sdk', () => ({
   AlarmLevel: { INFO: 'info', WARNING: 'warning', ERROR: 'error', CRITICAL: 'critical' },
@@ -518,7 +518,7 @@ describe('AlarmService', () => {
         }),
       );
       const saved = mockRecordRepo.save.mock.calls[0][0] as AlarmRecord;
-      // shelvedUntil ≈ now + 300000ms（允许 ±2s 误差）
+      // shelvedUntil approx now + 300000ms (allow +-2s tolerance)
       expect(saved.shelvedUntil!.getTime()).toBeGreaterThan(before + 290000);
       expect(saved.shelvedUntil!.getTime()).toBeLessThan(before + 310000);
     });
@@ -913,7 +913,7 @@ describe('AlarmService', () => {
     });
   });
 
-  // ==================== 告警类型与处置类型 (alarmType & dispositionType) ====================
+  // ==================== alarmType & dispositionType ====================
   describe('alarmType & dispositionType', () => {
     it('TC-ALM-TYPE-003: acknowledge should set dispositionType to alarm.acknowledged', async () => {
       const record = makeRecord({ id: 'record-001', status: AlarmStatus.ACTIVE });
@@ -1003,7 +1003,7 @@ describe('AlarmService', () => {
     });
   });
 
-  // ==================== batchAcknowledgeIdempotent（二期 07 #10） ====================
+  // ==================== batchAcknowledgeIdempotent (phase 2, 07 #10) ====================
   describe('batchAcknowledgeIdempotent', () => {
     it('TC-ALM-BATCH-101: 相同 requestId 重复请求直接返回首次结果（幂等重放）', async () => {
       const record = makeRecord({ id: 'rec-1', status: AlarmStatus.ACTIVE });
@@ -1025,7 +1025,7 @@ describe('AlarmService', () => {
 
       expect(first.succeeded).toEqual(['rec-1']);
       expect(second).toBe(first);
-      // 重放不再查库/不再写库，避免重复确认
+      // Replay no longer queries/writes the DB, avoiding duplicate acknowledgment
       expect(mockRecordRepo.find).toHaveBeenCalledTimes(1);
       expect(mockRecordRepo.save).toHaveBeenCalledTimes(1);
     });
@@ -1040,7 +1040,7 @@ describe('AlarmService', () => {
       nowSpy.mockReturnValue(base);
       await service.batchAcknowledgeIdempotent(['rec-1'], 'user-1', 'project-001', 'req-1');
 
-      // 模拟记录被外部重置后再次以相同 requestId 请求（已超 10 分钟）
+      // Simulate a record reset externally, then requested again with the same requestId (already >10min)
       record.status = AlarmStatus.ACTIVE;
       nowSpy.mockReturnValue(base + 11 * 60 * 1000);
       const second = await service.batchAcknowledgeIdempotent(
@@ -1078,7 +1078,7 @@ describe('AlarmService', () => {
         { alarmRecordId: 'rec-shelved', reason: 'invalid_status' },
         { alarmRecordId: 'rec-missing', reason: 'not_found' },
       ]);
-      // 仅保存成功项，且携带确认人/处置类型
+      // Only save successful items, carrying the acknowledging user / disposition type
       expect(mockRecordRepo.save).toHaveBeenCalledWith([
         expect.objectContaining({
           id: 'rec-active',

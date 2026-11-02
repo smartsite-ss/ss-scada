@@ -2,7 +2,7 @@
 // https://smartsite.top/
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
-// 图元编辑子系统 - 图元数据模型
+// Graphic editing subsystem - graphic data model
 export type { IGraphic, GraphicPropertyChanges, DataBindingPayload } from '@scada-editor/plugin-sdk';
 export { BaseGraphic } from '@scada-editor/plugin-sdk';
 export * from './graphic-editing/graphic/base/BasePage';
@@ -11,29 +11,29 @@ export { createPropertyAccessor, type PropertyAccessorOptions } from '@scada-edi
 export * from './graphic-editing/graphic/factory/GraphicFactory';
 export { Graphic, type GraphicFeatureFlags, type GraphicThemeColors, type GraphicOptions } from '@scada-editor/plugin-sdk';
 
-// 图元编辑子系统 - PluginKit (方案A)
+// Graphic editing subsystem - PluginKit (Plan A)
 export * from './graphic-editing/plugin';
 
-// 图元动画子系统
+// Graphic animation subsystem
 export * from './animations';
 
-// 画布与页面子系统 - 渲染器
+// Canvas and page subsystem - renderers
 export * from './canvas-page/renderer/types';
 export * from './canvas-page/renderer/RendererFactory';
 export * from './canvas-page/renderer/CanvasRenderer';
 export * from './canvas-page/renderer/canvas2d/Canvas2DBackend';
 export * from './canvas-page/renderer/KonvaRenderer';
 
-// 状态管理
+// State management
 export * from './store/graphic.store';
 export * from './store/page.store';
 export * from './store/config.store';
 export * from './store/persistent-store';
 
-// 画布与页面子系统 - 页面模板
+// Canvas and page subsystem - page templates
 export * from './canvas-page/templates';
 
-// 服务
+// Services
 export * from './services/state.service';
 export * from './canvas-page/keyboard.service';
 export * from './canvas-page/export.service';
@@ -41,30 +41,30 @@ export * from './canvas-page/page-export.service';
 export * from './platform/collaboration.service';
 export * from './services/storage.service';
 export * from './services/InterpageTransferService';
-// 保存服务
+// Save services
 export * from './services/save/types';
 export * from './services/save/SaveServiceManager';
 
-// Composables（编辑器专用 composable 已迁移至 @scada-editor/editor）
+// Composables (editor-specific composables have moved to @scada-editor/editor)
 
-// 配置
+// Config
 export * from './canvas-page/shortcuts.config';
 export * from './config/ConfigTemplateManager';
 export * from './config/project.config';
 
-// 插件系统（已迁移至 @scada-editor/plugin-sdk）
-// 请使用 @scada-editor/plugin-sdk 中的 definePlugin / createPlugin / usePluginConfig
+// Plugin system (moved to @scada-editor/plugin-sdk)
+// Use definePlugin / createPlugin / usePluginConfig from @scada-editor/plugin-sdk
 
-// 平台扩展子系统 - 事件总线
+// Platform extension subsystem - event bus
 export * from './platform/event/EventBus';
 
-// 平台扩展子系统 - 消息服务
+// Platform extension subsystem - message service
 export * from './utils/event/MessageService';
 
-// 平台扩展子系统 - 依赖注入
+// Platform extension subsystem - dependency injection
 export * from './platform/di/DIContainer';
 
-// 图元编辑子系统 - 管理器
+// Graphic editing subsystem - managers
 export * from './graphic-editing/managers/AlignmentManager';
 export * from './graphic-editing/managers/BatchOperationManager';
 export * from './graphic-editing/managers/ClipboardManager';
@@ -74,20 +74,20 @@ export * from './graphic-editing/managers/HistoryManager';
 export * from './graphic-editing/managers/SelectionManager';
 export * from './graphic-editing/managers/SmartAlignManager';
 export * from './graphic-editing/managers/FormatPainterManager';
-// 画布与页面子系统 - 管理器
+// Canvas and page subsystem - managers
 export * from './canvas-page/managers/LayerManager';
 export * from './canvas-page/managers/LayoutManager';
 export * from './canvas-page/managers/PageManager';
 export * from './canvas-page/managers/ZoomManager';
-// 运行态子系统 - 管理器
+// Runtime subsystem - managers
 export * from './runtime';
 
-// 项目和编辑器入口
+// Project and editor entry
 export { Project } from './project/Project';
 export type { IProject } from './project/Project';
 export * from './project/Editor';
 
-// 布局系统
+// Layout system
 export * from './canvas-page/layouts/base/ILayout';
 export * from './canvas-page/layouts/base/BaseLayout';
 export * from './canvas-page/layouts/types/FlowLayout';
@@ -95,27 +95,27 @@ export * from './canvas-page/layouts/types/FreeLayout';
 export * from './canvas-page/layouts/types/GridLayout';
 export * from './canvas-page/layouts/types/CircleLayout';
 
-// 工具（向后兼容）
+// Utilities (backward compatible)
 export * from './utils';
 
-// 画布与页面子系统 - 主题系统
+// Canvas and page subsystem - theme system
 export * from './canvas-page/theme';
 export * from './canvas-page/theme/GraphicStyleManager';
 
-// 国际化
+// i18n
 export * from './locales';
 
-// 导入主题样式
+// Import theme styles
 import './canvas-page/theme/styles/theme.css';
 
-// 类型
-// 显式导出 types 中的类型和枚举，避免与 IGraphic 等重名成员冲突
+// Types
+// Explicitly re-export types/enums from types to avoid name clashes with IGraphic etc.
 export * from './types/index';
 
-// ── scada-data 数据管理模块 ──
+// ── scada-data data management module ──
 export * from './scada-data/index';
 
-// ── AI Agent 客户端（P1-T04）──
+// ── AI Agent client (P1-T04) ──
 export * from './ai/ai-client';
 
 // ── AI Agent Runtime（P1-T03）──

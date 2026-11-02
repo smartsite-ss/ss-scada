@@ -3,17 +3,17 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * sourceMeta — 数据源 UI 公共映射
+ * sourceMeta — Data source UI common mappings
  *
- * 抽取自 VariableSelector / FetchPanel / TagSourceSelector
- * 中重复的 qualityColor / sourceTypeLabel / statusLabel 映射逻辑。
+ * Extracted from the duplicated qualityColor / sourceTypeLabel / statusLabel mapping logic
+ * in VariableSelector / FetchPanel / TagSourceSelector.
  *
- * 统一包含所有 quality 状态（含 stale/disconnected），消除 3 个文件中的实现差异。
+ * Includes all quality states uniformly (including stale/disconnected), eliminating implementation differences across 3 files.
  */
 
 /**
- * 数据质量 → CSS 颜色变量映射。
- * 用于质量指示灯、表格质量列着色等。
+ * Data quality → CSS color variable mapping.
+ * Used for quality indicator lights, table quality column coloring, etc.
  */
 export const qualityMeta: Record<string, { color: string; label: string }> = {
   good: { color: 'var(--status-success, #18a058)', label: 'Good' },
@@ -24,8 +24,8 @@ export const qualityMeta: Record<string, { color: string; label: string }> = {
 };
 
 /**
- * 获取数据质量对应的颜色。
- * 未知质量码回退为次级文本色。
+ * Get the color for a data quality.
+ * Unknown quality codes fall back to the secondary text color.
  */
 export function getQualityColor(quality: string | undefined | null): string {
   if (!quality) return 'var(--text-secondary, #909399)';
@@ -33,7 +33,7 @@ export function getQualityColor(quality: string | undefined | null): string {
 }
 
 /**
- * 获取数据质量对应的标签文本。
+ * Get the label text for a data quality.
  */
 export function getQualityLabel(quality: string | undefined | null): string {
   if (!quality) return '--';
@@ -41,7 +41,7 @@ export function getQualityLabel(quality: string | undefined | null): string {
 }
 
 /**
- * 数据源类型 → 显示标签映射。
+ * Data source type → display label mapping.
  */
 export const sourceTypeMeta: Record<string, { label: string; icon: string }> = {
   static: { label: 'Static', icon: '📊' },
@@ -52,7 +52,7 @@ export const sourceTypeMeta: Record<string, { label: string; icon: string }> = {
 };
 
 /**
- * 获取数据源类型的显示标签。
+ * Get the display label for a data source type.
  */
 export function getSourceTypeLabel(sourceType: string | undefined | null): string {
   if (!sourceType) return '--';
@@ -60,7 +60,7 @@ export function getSourceTypeLabel(sourceType: string | undefined | null): strin
 }
 
 /**
- * 数据源状态 → 显示标签 + 颜色映射。
+ * Data source status → display label + color mapping.
  */
 export const statusMeta: Record<string, { label: string; color: string }> = {
   idle: { label: 'Idle', color: 'var(--text-secondary, #909399)' },
@@ -71,7 +71,7 @@ export const statusMeta: Record<string, { label: string; color: string }> = {
 };
 
 /**
- * 获取数据源状态的显示标签。
+ * Get the display label for a data source status.
  */
 export function getStatusLabel(status: string | undefined | null): string {
   if (!status) return '--';
@@ -79,7 +79,7 @@ export function getStatusLabel(status: string | undefined | null): string {
 }
 
 /**
- * 获取数据源状态的颜色。
+ * Get the color for a data source status.
  */
 export function getStatusColor(status: string | undefined | null): string {
   if (!status) return 'var(--text-secondary, #909399)';

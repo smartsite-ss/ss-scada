@@ -16,7 +16,7 @@ export interface TerminalCommand {
   completedAt?: Date;
 }
 
-/** 命令白名单 */
+/** Command whitelist */
 const COMMAND_WHITELIST = [
   'dir',
   'ls',
@@ -54,7 +54,7 @@ const COMMAND_WHITELIST = [
   'pm2 status',
 ];
 
-/** 危险命令模式 */
+/** Dangerous command patterns */
 const DANGEROUS_PATTERNS = [
   /rm\s+-rf/i,
   /rm\s+-r/i,
@@ -80,21 +80,21 @@ const DANGEROUS_PATTERNS = [
   /\|\|\s*(rm|shutdown|reboot)/i,
 ];
 
-const MAX_COMMAND_TIMEOUT = 10000; // 10秒
+const MAX_COMMAND_TIMEOUT = 10000; // 10 seconds
 
 @Injectable()
 export class TerminalService {
   private readonly logger = new Logger(TerminalService.name);
   private activeCommands: Map<string, TerminalCommand> = new Map();
 
-  /** 执行命令 */
+  /** Execute a command */
   async executeCommand(cmd: string, adminUser?: string): Promise<TerminalCommand> {
-    // 权限检查
+    // Permission check
     if (!adminUser) {
       throw new ForbiddenException('Only administrators can execute terminal commands');
     }
 
-    // 危险命令拦截
+    // Dangerous-command interception
     const dangerCheck = this.checkDangerous(cmd);
     if (dangerCheck) {
       this.logger.warn(`Dangerous command blocked: "${cmd}" by ${adminUser}`);
@@ -109,7 +109,7 @@ export class TerminalService {
       };
     }
 
-    // 白名单检查
+    // Whitelist check
     if (!this.isWhitelisted(cmd)) {
       this.logger.warn(`Command not in whitelist: "${cmd}" by ${adminUser}`);
       return {
@@ -157,17 +157,17 @@ export class TerminalService {
     return entry;
   }
 
-  /** 获取活跃命令列表 */
+  /** Get the list of active commands */
   getActiveCommands(): TerminalCommand[] {
     return Array.from(this.activeCommands.values());
   }
 
-  /** 获取命令执行结果 */
+  /** Get a command's execution result */
   getCommandResult(id: string): TerminalCommand | null {
     return this.activeCommands.get(id) || null;
   }
 
-  /** 检查危险命令 */
+  /** Check for dangerous commands */
   private checkDangerous(cmd: string): string | null {
     for (const pattern of DANGEROUS_PATTERNS) {
       const match = cmd.match(pattern);
@@ -178,7 +178,7 @@ export class TerminalService {
     return null;
   }
 
-  /** 检查白名单 */
+  /** Check the whitelist */
   private isWhitelisted(cmd: string): boolean {
     const trimmed = cmd.trim().toLowerCase();
     for (const allowed of COMMAND_WHITELIST) {
@@ -189,7 +189,7 @@ export class TerminalService {
     return false;
   }
 
-  /** 带超时的命令执行 */
+  /** Command execution with timeout */
   private execWithTimeout(
     cmd: string,
     timeoutMs: number,
@@ -199,7 +199,7 @@ export class TerminalService {
         reject(new Error('TIMEOUT'));
       }, timeoutMs);
 
-      // Windows 下切换到 UTF-8 代码页，避免中文乱码
+      // On Windows, switch to the UTF-8 code page to avoid garbled CJK output
       const isWin = process.platform === 'win32';
       const finalCmd = isWin ? `chcp 65001 >nul && ${cmd}` : cmd;
 

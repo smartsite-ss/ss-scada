@@ -38,7 +38,7 @@ export class AlarmController {
     @Optional() private readonly eventBus?: EventBusService,
   ) {}
 
-  // ──────────── 报警规则 CRUD ────────────
+  // ──────────── Alarm rule CRUD ────────────
 
   @Get('rules')
   @ApiOperation({ summary: '获取所有报警规则' })
@@ -96,7 +96,7 @@ export class AlarmController {
     return this.alarmService.disableRule(alarmRuleId, projectId);
   }
 
-  // ──────────── 事件记录 ────────────
+  // ──────────── Event records ────────────
 
   @Get('records')
   @ApiOperation({ summary: '获取事件记录（支持筛选）' })
@@ -148,8 +148,8 @@ export class AlarmController {
     @Body('ids') ids: string[],
     @Body('requestId') requestId?: string,
   ) {
-    // 小程序二期（07 #10）：携带 requestId 走幂等 + 部分失败结构；
-    // Web 端（ss-editor）不传 requestId，保持返回数量的旧契约。
+    // Mini-program phase 2 (07 #10): carry requestId for idempotency + partial-failure structure;
+    // Web (ss-editor) does not send requestId, keeping the old count-return contract.
     if (requestId) {
       const result = await this.alarmService.batchAcknowledgeIdempotent(
         ids,
@@ -257,7 +257,7 @@ export class AlarmController {
     );
   }
 
-  // ──────────── 报警升级 ────────────
+  // ──────────── Alarm escalation ────────────
 
   @Post('escalate')
   @ApiOperation({ summary: '执行报警升级检查' })
@@ -271,7 +271,7 @@ export class AlarmController {
     return this.escalationService.getRules();
   }
 
-  // ──────────── 报警抑制 ────────────
+  // ──────────── Alarm suppression ────────────
 
   @Get('suppression-rules')
   @ApiOperation({ summary: '获取抑制规则' })
@@ -286,7 +286,7 @@ export class AlarmController {
     return { ok: true };
   }
 
-  // ──────────── 报警统计 ────────────
+  // ──────────── Alarm statistics ────────────
 
   @Get('statistics')
   @ApiOperation({ summary: '获取报警统计数据' })

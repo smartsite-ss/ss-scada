@@ -23,11 +23,11 @@ export interface PluginInfo {
   activatedAt?: string;
   metrics?: PluginMetrics;
   errorMessage?: string;
-  /** 运行时进程名（child_process / in_process 模式） */
+  /** Runtime process name (child_process / in_process mode) */
   processName?: string;
-  /** 运行时进程 PID（child_process / in_process 模式） */
+  /** Runtime process PID (child_process / in_process mode) */
   processId?: number;
-  /** 运行时线程 ID（仅 worker_thread 模式） */
+  /** Runtime thread ID (worker_thread mode only) */
   threadId?: number;
 }
 
@@ -79,7 +79,7 @@ export interface PluginHealthCheck {
   status: 'healthy' | 'degraded' | 'unhealthy';
 }
 
-/** 活跃采集设备信息 */
+/** Active collection device info */
 export interface ActiveDeviceInfo {
   deviceId: string;
   deviceName: string;
@@ -90,14 +90,14 @@ export interface ActiveDeviceInfo {
   lastOfflineAt: string | null;
 }
 
-/** 插件活跃设备列表响应 */
+/** Plugin active device list response */
 export interface PluginActiveDevices {
   protocol: string;
   count: number;
   devices: ActiveDeviceInfo[];
 }
 
-/** 插件关联设备统计 */
+/** Plugin related device statistics */
 export interface DeviceStats {
   total: number;
   online: number;
@@ -106,7 +106,7 @@ export interface DeviceStats {
   other: number;
 }
 
-/** 进程性能指标 */
+/** Process performance metrics */
 export interface ProcessMetrics {
   heapUsed: number;
   heapTotal: number;
@@ -115,21 +115,21 @@ export interface ProcessMetrics {
   uptime: number;
 }
 
-/** 插件监控数据 */
+/** Plugin monitor data */
 export interface PluginMonitorData {
   protocol: string;
   metrics: ProcessMetrics;
-  /** 进程信息 */
+  /** Process info */
   processName: string;
   processId: number;
-  /** 线程 ID（仅 worker_thread 模式） */
+  /** Thread ID (worker_thread mode only) */
   threadId?: number;
   isolationMode: string;
   logs: string[];
   logFilePath: string;
 }
 
-/** 插件运行时配置（持久化到 PLUGIN_CONFIG_DIR 下的 JSON 文件） */
+/** Plugin runtime configuration (persisted to the JSON file under PLUGIN_CONFIG_DIR) */
 export interface PluginRuntimeConfig {
   isolationMode?: string;
 }

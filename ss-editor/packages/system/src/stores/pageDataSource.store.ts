@@ -56,7 +56,7 @@ export interface PageDataSourceGroup {
     pageId: string;
     dataSources: DataSourceRecord[];
     variables: PageVariable[];
-    /** @deprecated v3.0 — graphicBindings 已迁移至图元自身的 graphicData 字段，此处保留仅为兼容。运行时 DataSourceManager 从各图元的 graphicData 读取绑定信息。 */
+    /** @deprecated v3.0 — graphicBindings have moved to each graphic's own graphicData field; kept only for compatibility. At runtime DataSourceManager reads binding info from each graphic's graphicData. */
     graphicBindings: GraphicBinding[];
 }
 
@@ -336,7 +336,7 @@ export const usePageDataSourceStore = defineStore('pageDataSource', () => {
                 throw new Error(`Data source not found: ${dataSourceId}`);
             }
 
-            // 禁用数据源不允许拉取，对齐 DataSourceManager.init 中的 enabled===false 跳过逻辑
+            // Disabled data sources are not allowed to fetch, aligned with the enabled===false skip logic in DataSourceManager.init
             if (ds.enabled === false) {
                 const disabledResult: DataSourceFetchResult = {
                     sourceId: dataSourceId,
@@ -459,7 +459,7 @@ export const usePageDataSourceStore = defineStore('pageDataSource', () => {
                 case 'tag':
                 case 'device': {
                     const tagIds = extractTagIds(ds as unknown as Record<string, unknown>);
-                    // 运行态：优先通过 DataSourceManager 驱动读取实时缓存
+                    // Runtime: prefer reading the real-time cache through the DataSourceManager driver
                     const dm = ScadaDataManager.dataSourceManager;
                     if (dm.initialized) {
                         await dm.fetchById(dataSourceId);
@@ -481,7 +481,7 @@ export const usePageDataSourceStore = defineStore('pageDataSource', () => {
                         rawData = { tagIds, values: cachedValues };
                         break;
                     }
-                    // 编辑态：从 wsStore 读取实时数据 fallback
+                    // Edit mode: read real-time data from wsStore as fallback
                     const wsStore = useWsStore();
                     const wsValues: Record<string, unknown> = {};
                     for (const tagId of tagIds) {
@@ -635,10 +635,10 @@ export const usePageDataSourceStore = defineStore('pageDataSource', () => {
     }
 
     /**
-     * 统一保存链路：将当前 store 状态序列化后写入页面 JSON 的 dataSource 字段。
-     * 替代各组件中重复的 `currentPage.dataSource = pageDsStore.toJSON()` 调用。
+     * Unified save path: serialize the current store state and write it into the page JSON dataSource field.
+     * Replaces the duplicated `currentPage.dataSource = pageDsStore.toJSON()` calls across components.
      *
-     * @param page 当前页面对象（需具有可写的 dataSource 字段）
+     * @param page The current page object (must have a writable dataSource field)
      */
     function persistToPage(page: { dataSource?: PageDataSourceGroup | null }): void {
         page.dataSource = toJSON();

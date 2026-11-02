@@ -3,17 +3,17 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 脚本执行 Web Worker 管理器
+ * Script execution Web Worker manager
  *
- * 将脚本执行放入独立的后台线程，避免阻塞主线程导致浏览器 tab 卡死。
- * 支持真正的超时终止（Worker.terminate）。
+ * Runs scripts in a separate background thread to avoid blocking the main thread and freezing the browser tab.
+ * Supports true timeout termination (Worker.terminate).
  */
 
 export interface WorkerInput {
   script: string;
   tagValues: Record<string, any>;
   graphicId: string;
-  /** 交互模式的事件模拟数据（模拟 event 对象） */
+  /** Event simulation data for interaction mode (simulates an event object) */
   event?: Record<string, any>;
 }
 
@@ -25,7 +25,7 @@ export interface WorkerOutput {
   apiCalls: Array<{ method: string; args: any[] }>;
 }
 
-/** 内联 Worker 脚本代码（自包含，无外部依赖） */
+/** Inline Worker script code (self-contained, no external dependencies) */
 function getWorkerCode(): string {
   return `
 // ── 简单的 Mock API（Worker 内自包含） ──
@@ -235,9 +235,9 @@ function getWorkerBlobUrl(): string {
 }
 
 /**
- * 在 Web Worker 中执行脚本，支持真正的超时终止。
- * 超时后 Worker 会被 terminate，彻底释放主线程。
- * @param onApiCall 可选回调，当 Worker 中调用图元操作 API 时实时触发，用于同步更新页面
+ * Execute a script in a Web Worker with true timeout termination.
+ * After timeout the Worker is terminated, fully releasing the main thread.
+ * @param onApiCall Optional callback triggered in real time when the Worker calls a graphic operation API, used to sync page updates
  */
 export function executeInWorker(
   input: WorkerInput,
@@ -250,7 +250,7 @@ export function executeInWorker(
     try {
       worker = new Worker(getWorkerBlobUrl());
     } catch (workerErr: any) {
-      // Worker 创建失败（如 CSP 限制），直接返回错误
+      // Worker creation failed (e.g. CSP restrictions), return an error directly
       resolve({
         success: false,
         error: `无法创建 Worker: ${workerErr.message || String(workerErr)}`,
@@ -272,12 +272,12 @@ export function executeInWorker(
 
     worker.onmessage = (e: MessageEvent) => {
       const data = e.data;
-      // 实时 API 调用消息：立即应用到页面
+      // Real-time API call message: apply to the page immediately
       if (data && data.type === 'apiCall') {
         onApiCall?.(data.method, data.args);
         return;
       }
-      // 最终结果消息
+      // Final result message
       clearTimeout(timeoutId);
       worker.terminate();
       resolve(data as WorkerOutput);
@@ -299,7 +299,7 @@ export function executeInWorker(
 }
 
 /**
- * 释放 Worker Blob URL（页面卸载时调用）
+ * Release the Worker Blob URL (call on page unload)
  */
 export function releaseWorkerBlobUrl(): void {
   if (_workerCodeBlobUrl) {

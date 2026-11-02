@@ -10,10 +10,10 @@ export type DistributionDirection = 'horizontal' | 'vertical';
 
 export class AlignmentManager {
     /**
-     * 左对齐
+     * Align left
      */
     alignLeft(graphics: IGraphic[]): void {
-        // 所有选中的图形都参与计算（包括锁定的）
+        // All selected graphics participate in the calculation (including locked ones)
         const validGraphics = this.getValidGraphics(graphics, true);
         if (validGraphics.length < 2) return;
 
@@ -21,7 +21,7 @@ export class AlignmentManager {
             ...validGraphics.map(g => g.getPosition().x)
         );
 
-        // 只移动未锁定的图形
+        // Only move unlocked graphics
         validGraphics.forEach(graphic => {
             if (!graphic.getLocked()) {
                 const currentPos = graphic.getPosition();
@@ -31,7 +31,7 @@ export class AlignmentManager {
     }
 
     /**
-     * 右对齐
+     * Align right
      */
     alignRight(graphics: IGraphic[]): void {
         const validGraphics = this.getValidGraphics(graphics, true);
@@ -55,7 +55,7 @@ export class AlignmentManager {
     }
 
     /**
-     * 顶对齐
+     * Align top
      */
     alignTop(graphics: IGraphic[]): void {
         const validGraphics = this.getValidGraphics(graphics, true);
@@ -74,7 +74,7 @@ export class AlignmentManager {
     }
 
     /**
-     * 底对齐
+     * Align bottom
      */
     alignBottom(graphics: IGraphic[]): void {
         const validGraphics = this.getValidGraphics(graphics, true);
@@ -98,7 +98,7 @@ export class AlignmentManager {
     }
 
     /**
-     * 水平居中
+     * Horizontal center
      */
     alignCenter(graphics: IGraphic[]): void {
         const validGraphics = this.getValidGraphics(graphics, true);
@@ -122,7 +122,7 @@ export class AlignmentManager {
     }
 
     /**
-     * 垂直居中
+     * Vertical middle
      */
     alignMiddle(graphics: IGraphic[]): void {
         const validGraphics = this.getValidGraphics(graphics, true);
@@ -146,10 +146,10 @@ export class AlignmentManager {
     }
 
     /**
-     * 水平分布
+     * Distribute horizontally
      */
     distributeHorizontal(graphics: IGraphic[]): void {
-        // 所有选中的图形都参与计算
+        // All selected graphics participate in the calculation
         const validGraphics = this.getValidGraphics(graphics, true);
         if (validGraphics.length < 3) return;
 
@@ -158,10 +158,10 @@ export class AlignmentManager {
     }
 
     /**
-     * 垂直分布
+     * Distribute vertically
      */
     distributeVertical(graphics: IGraphic[]): void {
-        // 所有选中的图形都参与计算
+        // All selected graphics participate in the calculation
         const validGraphics = this.getValidGraphics(graphics, true);
         if (validGraphics.length < 3) return;
 
@@ -170,13 +170,13 @@ export class AlignmentManager {
     }
 
     /**
-     * 使选中图元宽度相同（以最宽的为准）
+     * Make selected graphics the same width (using the widest as reference)
      */
     makeSameWidth(graphics: IGraphic[]): void {
         const validGraphics = this.getValidGraphics(graphics, true);
         if (validGraphics.length < 2) return;
 
-        // 找到最大宽度
+        // Find the maximum width
         const maxWidth = Math.max(
             ...validGraphics.map(g => g.getSize().width)
         );
@@ -190,13 +190,13 @@ export class AlignmentManager {
     }
 
     /**
-     * 使选中图元高度相同（以最高的为准）
+     * Make selected graphics the same height (using the tallest as reference)
      */
     makeSameHeight(graphics: IGraphic[]): void {
         const validGraphics = this.getValidGraphics(graphics, true);
         if (validGraphics.length < 2) return;
 
-        // 找到最大高度
+        // Find the maximum height
         const maxHeight = Math.max(
             ...validGraphics.map(g => g.getSize().height)
         );
@@ -210,13 +210,13 @@ export class AlignmentManager {
     }
 
     /**
-     * 使选中图元尺寸相同（以最大的为准）
+     * Make selected graphics the same size (using the largest as reference)
      */
     makeSameSize(graphics: IGraphic[]): void {
         const validGraphics = this.getValidGraphics(graphics, true);
         if (validGraphics.length < 2) return;
 
-        // 找到最大宽度和高度
+        // Find the maximum width and height
         const maxWidth = Math.max(
             ...validGraphics.map(g => g.getSize().width)
         );
@@ -232,21 +232,21 @@ export class AlignmentManager {
     }
 
     /**
-     * 调整间距
+     * Adjust spacing
      */
     adjustSpacing(
-        graphics: IGraphic[], 
-        spacing: number, 
+        graphics: IGraphic[],
+        spacing: number,
         direction: DistributionDirection
     ): void {
-        // 所有选中的图形都参与计算
+        // All selected graphics participate in the calculation
         const validGraphics = this.getValidGraphics(graphics, true);
         if (validGraphics.length < 2) return;
 
         if (direction === 'horizontal') {
             validGraphics.sort((a, b) => a.getPosition().x - b.getPosition().x);
             let currentX = validGraphics[0].getPosition().x;
-            
+
             validGraphics.forEach((graphic, index) => {
                 if (index > 0 && !graphic.getLocked()) {
                     const currentPos = graphic.getPosition();
@@ -259,7 +259,7 @@ export class AlignmentManager {
         } else {
             validGraphics.sort((a, b) => a.getPosition().y - b.getPosition().y);
             let currentY = validGraphics[0].getPosition().y;
-            
+
             validGraphics.forEach((graphic, index) => {
                 if (index > 0 && !graphic.getLocked()) {
                     const currentPos = graphic.getPosition();
@@ -272,16 +272,16 @@ export class AlignmentManager {
         }
     }
 
-    // ==================== 内部辅助方法 ====================
+    // ==================== Internal Helper Methods ====================
 
     private getValidGraphics(graphics: IGraphic[], includeLocked: boolean = false): IGraphic[] {
         return graphics.filter(g => {
-            // 如果不包括锁定的，过滤掉锁定的图形
+            // If locked graphics are not included, filter them out
             if (!includeLocked && g.getLocked()) {
                 return false;
             }
-            
-            // 检查图形是否有效
+
+            // Check whether the graphic is valid
             try {
                 const pos = g.getPosition();
                 const size = g.getSize();
@@ -296,7 +296,7 @@ export class AlignmentManager {
     }
 
     private calculateAndApplyDistribution(
-        graphics: IGraphic[], 
+        graphics: IGraphic[],
         direction: DistributionDirection
     ): void {
         const firstGraphic = graphics[0];
@@ -305,7 +305,7 @@ export class AlignmentManager {
         const firstSize = firstGraphic.getSize();
         const lastPos = lastGraphic.getPosition();
         const lastSize = lastGraphic.getSize();
-        
+
         if (direction === 'horizontal') {
             const minX = firstPos.x;
             const maxX = lastPos.x + lastSize.width;
@@ -320,8 +320,8 @@ export class AlignmentManager {
                 const currentPos = graphic.getPosition();
                 const currentSize = graphic.getSize();
                 const newX = i === graphics.length - 1
-                    ? maxX - currentSize.width      // 末位元素：右对齐边界
-                    : currentRightEdge + gap;       // 中间元素：prevRightEdge + gap
+                    ? maxX - currentSize.width      // Last element: right-aligned boundary
+                    : currentRightEdge + gap;       // Middle element: prevRightEdge + gap
                 if (!graphic.getLocked()) {
                     graphic.setPosition(newX, currentPos.y);
                 }
@@ -341,8 +341,8 @@ export class AlignmentManager {
                 const currentPos = graphic.getPosition();
                 const currentSize = graphic.getSize();
                 const newY = i === graphics.length - 1
-                    ? maxY - currentSize.height     // 末位元素：下对齐边界
-                    : currentBottomEdge + gap;      // 中间元素：prevBottomEdge + gap
+                    ? maxY - currentSize.height     // Last element: bottom-aligned boundary
+                    : currentBottomEdge + gap;      // Middle element: prevBottomEdge + gap
                 if (!graphic.getLocked()) {
                     graphic.setPosition(currentPos.x, newY);
                 }

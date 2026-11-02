@@ -22,19 +22,19 @@ export interface PipelineMetricsSnapshot {
   persist_write_errors: number;
 }
 
-/** 按协议维度的指标条目 */
+/** Metric entry per protocol dimension */
 interface ProtocolMetricsEntry {
   totalReads: number;
   totalErrors: number;
   totalConnections: number;
-  /** 最近 N 次读取耗时（ms），用于计算平均响应时间 */
+  /** Recent N read durations (ms), used to compute the average response time */
   recentDurations: number[];
-  /** 协议下活跃设备集合（deviceId → 最近活跃时间戳 ms） */
+  /** Active-device set per protocol (deviceId -> last-active timestamp ms) */
   activeDevices: Map<string, number>;
   lastActivity: number | null;
 }
 
-/** 按协议维度的对外指标（与 PluginMetrics 对齐） */
+/** Externally-exposed metrics per protocol (aligned with PluginMetrics) */
 export interface ProtocolMetrics {
   totalReads: number;
   totalErrors: number;
@@ -45,56 +45,56 @@ export interface ProtocolMetrics {
 }
 
 /**
- * pipeline 级别 Prometheus 指标收集服务。
- * 使用纯内存计数器，无需外部依赖，可通过 API 端点暴露。
+ * Pipeline-level Prometheus metric collection service.
+ * Uses pure in-memory counters, no external dependency; exposed via API endpoints.
  */
 @Injectable()
 export class PipelineMetricsService {
   private readonly logger = new Logger(PipelineMetricsService.name);
 
-  // --- 全局计数器 ---
+  // --- Global counters ---
   private pipelineExecutionsTotal = 0;
   private pipelineExecutionsSuccess = 0;
   private pipelineExecutionsError = 0;
 
-  // --- 直方图 / gauge ---
+  // --- Histogram / gauge ---
   private pipelineDurationMs = 0;
 
   // --- Gauge ---
   private pipelineQueueDepth = 0;
   private pipelineActiveTasks = 0;
 
-  // --- 按 step 维度 ---
+  // --- Per-step dimension ---
   private stepDurationMs = new Map<string, number>();
   private stepErrorCount = new Map<string, number>();
 
-  // --- 协议读取 ---
+  // --- Protocol reads ---
   private protocolReadTotal = 0;
   private protocolReadErrors = 0;
 
-  // --- 死区过滤 ---
+  // --- Deadband filtering ---
   private deadbandFilteredTotal = 0;
 
-  // --- 缓存 ---
+  // --- Cache ---
   private cacheHitTotal = 0;
   private cacheMissTotal = 0;
 
-  // --- 持久化 ---
+  // --- Persistence ---
   private persistWriteTotal = 0;
   private persistWriteErrors = 0;
 
-  // --- 按协议维度 ---
+  // --- Per-protocol dimension ---
   private protocolMetrics = new Map<string, ProtocolMetricsEntry>();
-  /** 活跃设备判定窗口：5 分钟内有过读取的设备视为活跃 */
+  /** Active-device window: a device read within the last 5 minutes is considered active */
   private readonly ACTIVE_DEVICE_WINDOW_MS = 5 * 60 * 1000;
-  /** 保留最近 N 次读取耗时用于计算平均 */
+  /** Keep the recent N read durations for averaging */
   private readonly MAX_RECENT_DURATIONS = 100;
 
   // ═══════════════════════════════════════════════════════════════
-  // 记录方法
+  // Recording methods
   // ═══════════════════════════════════════════════════════════════
 
-  /** 记录一次 pipeline 执行结果 */
+  /** Record one Pipeline execution result */
   recordExecution(success: boolean, durationMs: number): void {
     this.pipelineExecutionsTotal++;
     if (success) {
@@ -105,28 +105,28 @@ export class PipelineMetricsService {
     this.pipelineDurationMs = durationMs;
   }
 
-  /** 设置当前队列深度 */
+  /** Set the current queue depth */
   setQueueDepth(depth: number): void {
     this.pipelineQueueDepth = depth;
   }
 
-  /** 设置当前活跃任务数 */
+  /** Set the current active task count */
   setActiveTasks(count: number): void {
     this.pipelineActiveTasks = count;
   }
 
-  /** 记录某步骤的执行耗时 */
+  /** Record a step's execution duration */
   recordStepDuration(step: string, durationMs: number): void {
     this.stepDurationMs.set(step, durationMs);
   }
 
-  /** 记录某步骤的错误 */
+  /** Record a step's error */
   recordStepError(step: string): void {
     const current = this.stepErrorCount.get(step) || 0;
     this.stepErrorCount.set(step, current + 1);
   }
 
-  /** 记录一次协议读取 */
+  /** Record one protocol read */
   recordProtocolRead(success: boolean): void {
     this.protocolReadTotal++;
     if (!success) {
@@ -134,22 +134,22 @@ export class PipelineMetricsService {
     }
   }
 
-  /** 记录一次死区过滤 */
+  /** Record one deadband filter */
   recordDeadband(): void {
     this.deadbandFilteredTotal++;
   }
 
-  /** 记录一次缓存命中 */
+  /** Record one cache hit */
   recordCacheHit(): void {
     this.cacheHitTotal++;
   }
 
-  /** 记录一次缓存未命中 */
+  /** Record one cache miss */
   recordCacheMiss(): void {
     this.cacheMissTotal++;
   }
 
-  /** 记录一次持久化写入 */
+  /** Record one persistence write */
   recordPersistWrite(success: boolean): void {
     this.persistWriteTotal++;
     if (!success) {
@@ -157,15 +157,15 @@ export class PipelineMetricsService {
     }
   }
 
-  // ── 按协议维度 ──────────────────────────────────────────────
+  // ── Per-protocol dimension ──────────────────────────────────────────────
 
   /**
-   * 记录一次按协议的读取（在 PipelineOrchestrator.execute 完成后调用）
+   * Record one protocol-scoped read (called after PipelineOrchestrator.execute completes)
    *
-   * @param protocol 设备协议（deviceType）
-   * @param success  本次 pipeline 执行是否成功
-   * @param durationMs 本次 pipeline 执行耗时
-   * @param deviceId  可选，设备 ID（用于统计活跃连接数）
+   * @param protocol device protocol (deviceType)
+   * @param success  whether this pipeline execution succeeded
+   * @param durationMs duration of this pipeline execution
+   * @param deviceId  optional, device ID (used to count active connections)
    */
   recordProtocolReadDetailed(
     protocol: string,
@@ -179,12 +179,12 @@ export class PipelineMetricsService {
     if (!success) {
       entry.totalErrors++;
     }
-    // 维护最近 N 次耗时环形数组
+    // Maintain a ring buffer of the recent N durations
     entry.recentDurations.push(durationMs);
     if (entry.recentDurations.length > this.MAX_RECENT_DURATIONS) {
       entry.recentDurations.shift();
     }
-    // 活跃设备追踪
+    // Active-device tracking
     if (deviceId) {
       const now = Date.now();
       const isNew = !entry.activeDevices.has(deviceId);
@@ -196,14 +196,14 @@ export class PipelineMetricsService {
     entry.lastActivity = Date.now();
   }
 
-  /** 获取指定协议的汇总指标（供 PluginManagerService 合并到插件卡片） */
+  /** Get the aggregated metrics for a given protocol (merged into plugin cards by PluginManagerService) */
   getProtocolMetrics(protocol: string): ProtocolMetrics | null {
     const entry = this.protocolMetrics.get(protocol);
     if (!entry) return null;
     return this.computeProtocolMetrics(entry);
   }
 
-  /** 获取所有协议的汇总指标 */
+  /** Get aggregated metrics for all protocols */
   getAllProtocolMetrics(): Record<string, ProtocolMetrics> {
     const result: Record<string, ProtocolMetrics> = {};
     for (const [protocol, entry] of this.protocolMetrics) {
@@ -230,7 +230,7 @@ export class PipelineMetricsService {
 
   private computeProtocolMetrics(entry: ProtocolMetricsEntry): ProtocolMetrics {
     const now = Date.now();
-    // 清理超过窗口期的设备，统计活跃连接
+    // Evict devices outside the window and count active connections
     let activeConnections = 0;
     for (const [deviceId, lastSeen] of entry.activeDevices) {
       if (now - lastSeen < this.ACTIVE_DEVICE_WINDOW_MS) {
@@ -239,7 +239,7 @@ export class PipelineMetricsService {
         entry.activeDevices.delete(deviceId);
       }
     }
-    // 计算平均响应时间
+    // Compute the average response time
     const avgResponseTime =
       entry.recentDurations.length > 0
         ? Math.round(
@@ -257,10 +257,10 @@ export class PipelineMetricsService {
   }
 
   // ═══════════════════════════════════════════════════════════════
-  // 导出方法
+  // Export methods
   // ═══════════════════════════════════════════════════════════════
 
-  /** 返回当前指标快照（JSON 格式） */
+  /** Return the current metric snapshot (JSON format) */
   getMetricsSnapshot(): PipelineMetricsSnapshot {
     return {
       pipeline_executions_total: this.pipelineExecutionsTotal,
@@ -281,7 +281,7 @@ export class PipelineMetricsService {
     };
   }
 
-  /** 返回 Prometheus 文本格式指标 */
+  /** Return metrics in Prometheus text format */
   getMetrics(): string {
     const lines: string[] = [];
 
@@ -382,7 +382,7 @@ export class PipelineMetricsService {
     return lines.join('\n');
   }
 
-  /** 重置所有指标（主要用于测试） */
+  /** Reset all metrics (mainly for tests) */
   reset(): void {
     this.pipelineExecutionsTotal = 0;
     this.pipelineExecutionsSuccess = 0;

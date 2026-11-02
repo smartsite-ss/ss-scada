@@ -3,10 +3,10 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * AI Provider 配置服务 — 管理全局数据库表 sys_ai_providers
+ * AI Provider config service - manages the global database table sys_ai_providers
  *
- * 提供 AI 供应商配置的 CRUD 操作，支持 API Key 加密存储。
- * LLMProxyService 在启动和热更新时通过此服务读取配置。
+ * Provides CRUD operations for AI vendor configs, supporting encrypted API Key storage.
+ * LLMProxyService reads config through this service at startup and on hot reload.
  */
 
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
@@ -21,7 +21,7 @@ const ENCRYPTION_KEY =
   process.env.SYSTEM_CONFIG_ENCRYPTION_KEY || 'ss-v7-default-encryption-key-32b';
 const SENSITIVE_PREFIX = 'ENC:';
 
-/** 创建/更新 DTO */
+/** Create/update DTO */
 export interface CreateAiProviderDto {
   providerId: string;
   name: string;
@@ -36,7 +36,7 @@ export interface CreateAiProviderDto {
 
 export type UpdateAiProviderDto = Partial<CreateAiProviderDto>;
 
-/** 返回给前端的视图（apiKey 脱敏） */
+/** View returned to the frontend (apiKey masked) */
 export interface AiProviderView {
   id: string;
   providerId: string;
@@ -61,28 +61,28 @@ export class AiProviderConfigService {
     private readonly repo: Repository<AiProvider>,
   ) {}
 
-  /** 查询所有供应商配置（apiKey 脱敏） */
+  /** Query all vendor configs (apiKey masked) */
   async findAll(): Promise<AiProviderView[]> {
     const list = await this.repo.find({ order: { sortOrder: 'ASC', createdAt: 'ASC' } });
     return list.map((e) => this.toView(e));
   }
 
-  /** 查询单个供应商配置（返回完整 apiKey，供 LLMProxyService 使用） */
+  /** Query a single vendor config (returns the full apiKey for LLMProxyService) */
   async findById(id: string): Promise<AiProvider | null> {
     return this.repo.findOne({ where: { id } });
   }
 
-  /** 按 providerId 查询已启用的供应商配置 */
+  /** Query enabled vendor config by providerId */
   async findEnabledByProviderId(providerId: string): Promise<AiProvider | null> {
     return this.repo.findOne({ where: { providerId, enabled: 1 } });
   }
 
-  /** 查询所有已启用的供应商配置 */
+  /** Query all enabled vendor configs */
   async findEnabled(): Promise<AiProvider[]> {
     return this.repo.find({ where: { enabled: 1 }, order: { sortOrder: 'ASC' } });
   }
 
-  /** 创建供应商配置 */
+  /** Create a vendor config */
   async create(dto: CreateAiProviderDto): Promise<AiProviderView> {
     this.validateDto(dto);
     const entity = this.repo.create({
@@ -101,7 +101,7 @@ export class AiProviderConfigService {
     return this.toView(saved);
   }
 
-  /** 更新供应商配置 */
+  /** Update a vendor config */
   async update(id: string, dto: UpdateAiProviderDto): Promise<AiProviderView> {
     const entity = await this.repo.findOne({ where: { id } });
     if (!entity) {
@@ -123,7 +123,7 @@ export class AiProviderConfigService {
     return this.toView(saved);
   }
 
-  /** 删除供应商配置 */
+  /** Delete a vendor config */
   async remove(id: string): Promise<void> {
     const entity = await this.repo.findOne({ where: { id } });
     if (!entity) {
@@ -133,7 +133,7 @@ export class AiProviderConfigService {
     this.logger.log(`AI Provider 删除: ${entity.name} (${entity.providerId})`);
   }
 
-  /** 切换启用/禁用 */
+  /** Toggle enabled/disabled */
   async toggleEnabled(id: string, enabled: boolean): Promise<AiProviderView> {
     const entity = await this.repo.findOne({ where: { id } });
     if (!entity) {
@@ -146,9 +146,9 @@ export class AiProviderConfigService {
   }
 
   /**
-   * 按数据库 ID 获取供应商的完整 ProviderConfig（解密 apiKey，不限启用状态）
+   * Get the complete ProviderConfig of a vendor by DB ID (decrypts apiKey, regardless of enabled state)
    *
-   * 供连接测试场景使用：用户可能在启用前先验证配置是否正确。
+   * Used for connection-test scenarios: a user may validate the config before enabling it.
    */
   async getProviderConfigById(id: string): Promise<ProviderConfig | null> {
     const p = await this.repo.findOne({ where: { id } });
@@ -169,8 +169,8 @@ export class AiProviderConfigService {
   }
 
   /**
-   * 获取已启用 Provider 的 ProviderConfig 列表（供 LLMProxyService 初始化使用）
-   * 解密 apiKey 后返回完整配置
+   * Get the ProviderConfig list of enabled Providers (used by LLMProxyService init)
+   * Returns the full config after decrypting apiKey
    */
   async getEnabledProviderConfigs(): Promise<ProviderConfig[]> {
     const providers = await this.findEnabled();
@@ -192,18 +192,18 @@ export class AiProviderConfigService {
   }
 
   /**
-   * 获取所有预置供应商模板（供前端展示供应商选择列表）
+   * Get all preset vendor templates (for the frontend vendor-selection list)
    */
   getPresets(): ProviderPreset[] {
     return PROVIDER_PRESETS;
   }
 
   /**
-   * 确保预置供应商已种入数据库
+   * Ensure preset vendors are seeded into the database
    *
-   * 首次启动时，将所有预置供应商写入数据库（apiKey 为空、enabled=0），
-   * 用户在前端只需填入 API Key 并启用即可使用。
-   * 已存在的 providerId 跳过（不覆盖用户配置）。
+   * On first startup, write all preset vendors to the database (apiKey empty, enabled=0),
+   * so the user only needs to fill in the API Key and enable it on the frontend.
+   * Existing providerIds are skipped (user config is not overwritten).
    */
   async ensureDefaultProviders(): Promise<void> {
     try {
@@ -216,11 +216,11 @@ export class AiProviderConfigService {
           const entity = this.repo.create({
             providerId: preset.providerId,
             name: preset.name,
-            apiKey: '', // 用户需在前端填入
+            apiKey: '', // the user fills this in on the frontend
             apiBase: preset.apiBase,
             defaultModel: preset.defaultModel,
             models: JSON.stringify(preset.models),
-            enabled: 0, // 默认禁用，用户启用后生效
+            enabled: 0, // disabled by default; takes effect after the user enables it
             sortOrder: index,
             config: JSON.stringify({
               codegenModel: preset.codegenModel,
@@ -251,9 +251,9 @@ export class AiProviderConfigService {
   }
 
   /**
-   * 按预置模板快速创建供应商配置（仅需 API Key）
+   * Quickly create a vendor config from a preset template (API Key only)
    *
-   * 用户选择预置供应商后，只需提供 API Key，其余配置从预置模板自动填充。
+   * After the user selects a preset vendor, only the API Key is required; the rest is auto-filled from the template.
    */
   async createFromPreset(providerId: string, apiKey: string): Promise<AiProviderView> {
     const preset = findPreset(providerId);
@@ -264,10 +264,10 @@ export class AiProviderConfigService {
       throw new BadRequestException('API Key 不能为空');
     }
 
-    // 检查是否已存在同 providerId 的配置
+    // check whether a config with the same providerId already exists
     const existing = await this.repo.findOne({ where: { providerId } });
     if (existing) {
-      // 已存在则更新 API Key 并启用
+      // if exists, update the API Key and enable it
       existing.apiKey = this.encrypt(apiKey);
       existing.enabled = 1;
       const saved = await this.repo.save(existing);
@@ -275,7 +275,7 @@ export class AiProviderConfigService {
       return this.toView(saved);
     }
 
-    // 创建新配置
+    // create a new config
     const entity = this.repo.create({
       providerId: preset.providerId,
       name: preset.name,
@@ -283,7 +283,7 @@ export class AiProviderConfigService {
       apiBase: preset.apiBase,
       defaultModel: preset.defaultModel,
       models: JSON.stringify(preset.models),
-      enabled: 1, // 从预置创建后直接启用
+      enabled: 1, // enabled directly after creation from presets
       sortOrder: PROVIDER_PRESETS.findIndex((p) => p.providerId === providerId),
       config: JSON.stringify({
         codegenModel: preset.codegenModel,
@@ -303,7 +303,7 @@ export class AiProviderConfigService {
     return this.toView(saved);
   }
 
-  // ==================== 私有方法 ====================
+  // ==================== Private methods ====================
 
   private validateDto(dto: CreateAiProviderDto): void {
     if (!dto.providerId?.trim()) {
@@ -348,7 +348,7 @@ export class AiProviderConfigService {
     }
   }
 
-  /** AES-256-GCM 加密 */
+  /** AES-256-GCM encryption */
   private encrypt(value: string): string {
     try {
       const key = Buffer.from(ENCRYPTION_KEY.slice(0, 32), 'utf-8');
@@ -364,7 +364,7 @@ export class AiProviderConfigService {
     }
   }
 
-  /** AES-256-GCM 解密 */
+  /** AES-256-GCM decryption */
   private decrypt(encryptedValue: string): string {
     try {
       const parts = encryptedValue.replace(SENSITIVE_PREFIX, '').split(':');

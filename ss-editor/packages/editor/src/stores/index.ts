@@ -2,4 +2,4 @@
 // https://smartsite.top/
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
-// canvasStore 已删除 - 缩放等功能已迁移到 pageStore
+// canvasStore has been removed - zoom and related features have migrated to pageStore

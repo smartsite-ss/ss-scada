@@ -131,5 +131,5 @@ export const LOOP_ANIMATION_TYPE_LABELS: Record<LoopAnimationType, string> = {
 export interface LoopAnimationState {
   playing: boolean;
   startTime: number;
-  cycleProgress: number; // 0~1 within one cycle
+  cycleProgress: number; // 0~1 progress within one cycle
 }

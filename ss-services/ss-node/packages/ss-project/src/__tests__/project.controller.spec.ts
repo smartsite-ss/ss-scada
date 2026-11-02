@@ -329,7 +329,7 @@ describe('ProjectController', () => {
   describe('POST /projects/:id/export', () => {
     const mockReq = { user: { id: 'user-001' } };
 
-    // TC-PROJ-CTL-018: 默认全量导出（无 query 参数，向后兼容）
+    // TC-PROJ-CTL-018: default full export (no query params, backward compatible)
     it('TC-PROJ-CTL-018: should export project as zip download (default: all)', async () => {
       const mockRes = {
         setHeader: jest.fn(),
@@ -343,7 +343,7 @@ describe('ProjectController', () => {
         fileName: 'test-project_123.zip',
       });
 
-      // 无 query 参数 → options 应为 undefined（向后兼容）
+      // No query params -> options should be undefined (backward compatible)
       await controller.exportZip('test-project', mockReq, mockRes);
 
       expect(mockProjectService.exportProjectZip).toHaveBeenCalledWith(
@@ -358,7 +358,7 @@ describe('ProjectController', () => {
       );
     });
 
-    // TC-PROJ-CTL-018a: 选择性导出 - 仅页面
+    // TC-PROJ-CTL-018a: selective export - pages only
     it('TC-PROJ-CTL-018a: should export with includePages=true only', async () => {
       const mockRes = {
         setHeader: jest.fn(),
@@ -381,7 +381,7 @@ describe('ProjectController', () => {
       });
     });
 
-    // TC-PROJ-CTL-018b: 选择性导出 - 排除实时数据库
+    // TC-PROJ-CTL-018b: selective export - exclude the real-time database
     it('TC-PROJ-CTL-018b: should export with includeRtdb=false', async () => {
       const mockRes = {
         setHeader: jest.fn(),
@@ -404,7 +404,7 @@ describe('ProjectController', () => {
       });
     });
 
-    // TC-PROJ-CTL-018c: 选择性导出 - 未传某个参数应回退为默认 true
+    // TC-PROJ-CTL-018c: selective export - omitted params fall back to default true
     it('TC-PROJ-CTL-018c: should default missing params to true', async () => {
       const mockRes = {
         setHeader: jest.fn(),
@@ -418,7 +418,7 @@ describe('ProjectController', () => {
         fileName: 'test-project_partial.zip',
       });
 
-      // 只传 includePages=false，其它两个参数为 undefined，应回退为 true
+      // Only includePages=false passed; the other two params are undefined and should fall back to true
       await controller.exportZip('test-project', mockReq, mockRes, 'false', undefined, undefined);
 
       expect(mockProjectService.exportProjectZip).toHaveBeenCalledWith('test-project', 'user-001', {
@@ -428,7 +428,7 @@ describe('ProjectController', () => {
       });
     });
 
-    // TC-PROJ-CTL-019: 导出失败应返回 500
+    // TC-PROJ-CTL-019: export failure should return 500
     it('TC-PROJ-CTL-019: should handle export errors', async () => {
       const mockRes = {
         setHeader: jest.fn(),

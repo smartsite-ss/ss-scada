@@ -26,10 +26,10 @@ export class PageManager {
         this.clipboardManager = new ClipboardManager();
     }
 
-    // ==================== 页面管理 ====================
-    
+    // ==================== Page Management ====================
+
     /**
-     * 创建页面
+     * Create a page
      */
     createPage(config: PageConfig = {}): BasePage {
         const id = config.id || `page-${Date.now()}-${this.pages.size}`;
@@ -40,25 +40,25 @@ export class PageManager {
             width: config.width || 1920,
             height: config.height || 1080,
         });
-        
+
         this.pages.set(id, page);
-        
-        // 如果没有活动页面，设置为第一个
+
+        // If no active page, set as the first one
         if (!this.activePageId) {
             this.activePageId = id;
         }
-        
+
         return page;
     }
 
     /**
-     * 移除页面
+     * Remove a page
      */
     removePage(pageId: string): void {
         if (this.pages.has(pageId)) {
             this.pages.delete(pageId);
-            
-            // 如果移除的是活动页面，切换到其他页面
+
+            // If the removed page is the active one, switch to another page
             if (this.activePageId === pageId) {
                 const remainingPages = Array.from(this.pages.keys());
                 this.activePageId = remainingPages.length > 0 ? remainingPages[0] : null;
@@ -67,21 +67,21 @@ export class PageManager {
     }
 
     /**
-     * 获取页面
+     * Get a page
      */
     getPage(pageId: string): BasePage | null {
         return this.pages.get(pageId) || null;
     }
 
     /**
-     * 获取活动页面
+     * Get the active page
      */
     getActivePage(): BasePage | null {
         return this.activePageId ? this.getPage(this.activePageId) : null;
     }
 
     /**
-     * 设置活动页面
+     * Set the active page
      */
     setActivePage(pageId: string): boolean {
         if (this.pages.has(pageId)) {
@@ -92,37 +92,37 @@ export class PageManager {
     }
 
     /**
-     * 获取所有页面
+     * Get all pages
      */
     getAllPages(): BasePage[] {
         return Array.from(this.pages.values());
     }
 
     /**
-     * 获取页面数量
+     * Get the page count
      */
     get pageCount(): number {
         return this.pages.size;
     }
 
-    // ==================== 图元跨页面操作 ====================
-    
+    // ==================== Cross-page Graphic Operations ====================
+
     /**
-     * 在页面间复制图元
+     * Copy graphics between pages
      */
     copyBetweenPages(
-        graphicIds: string[], 
-        fromPageId: string, 
+        graphicIds: string[],
+        fromPageId: string,
         toPageId: string
     ): IGraphic[] {
         const fromPage = this.getPage(fromPageId);
         const toPage = this.getPage(toPageId);
-        
+
         if (!fromPage || !toPage) {
             return [];
         }
 
-        // 获取源图元列表
+        // Get the source graphic list
         const sourceGraphics = graphicIds
             .map(id => fromPage.getGraphicById(id))
             .filter(g => g !== null) as IGraphic[];
@@ -131,37 +131,37 @@ export class PageManager {
             return [];
         }
 
-        // 序列化和转换
+        // Serialize and transform
         const serialized = this.transferService.serializeGraphics(sourceGraphics);
-        
-        // 获取目标页面现有 ID
+
+        // Get existing IDs of the target page
         const existingIds = toPage.getGraphics().map(g => g.id);
-        
-        // 重建并添加到目标页面
+
+        // Rebuild and add to the target page
         const newGraphics = serialized.map(data => {
             data.id = this.transferService.generateNewId(existingIds);
             existingIds.push(data.id);
             return this.transferService.deserializeGraphic(data);
         });
 
-        // 添加到目标页面
+        // Add to the target page
         newGraphics.forEach(g => toPage.addGraphic(g));
 
         return newGraphics;
     }
 
     /**
-     * 在页面间移动图元
+     * Move graphics between pages
      */
     moveBetweenPages(
-        graphicIds: string[], 
-        fromPageId: string, 
+        graphicIds: string[],
+        fromPageId: string,
         toPageId: string
     ): IGraphic[] {
-        // 1. 复制到目标页面
+        // 1. Copy to the target page
         const copiedGraphics = this.copyBetweenPages(graphicIds, fromPageId, toPageId);
-        
-        // 2. 从源页面移除
+
+        // 2. Remove from the source page
         const fromPage = this.getPage(fromPageId);
         if (fromPage) {
             graphicIds.forEach(id => fromPage.removeGraphic(id));
@@ -170,10 +170,10 @@ export class PageManager {
         return copiedGraphics;
     }
 
-    // ==================== 剪贴板功能 ====================
-    
+    // ==================== Clipboard Functionality ====================
+
     /**
-     * 复制到剪贴板
+     * Copy to clipboard
      */
     copyToClipboard(pageId: string, graphicIds: string[]): void {
         const page = this.getPage(pageId);
@@ -188,7 +188,7 @@ export class PageManager {
     }
 
     /**
-     * 剪切到剪贴板
+     * Cut to clipboard
      */
     cutToClipboard(pageId: string, graphicIds: string[]): void {
         const page = this.getPage(pageId);
@@ -203,7 +203,7 @@ export class PageManager {
     }
 
     /**
-     * 从剪贴板粘贴
+     * Paste from clipboard
      */
     pasteFromClipboard(pageId: string): IGraphic[] {
         const page = this.getPage(pageId);
@@ -214,35 +214,35 @@ export class PageManager {
 
         const existingIds = page.getGraphics().map(g => g.id);
         const pasteCount = this.clipboardManager.getPasteCount();
-        
-        // 重建并重新分配 ID
+
+        // Rebuild and reassign IDs
         const newGraphics = data.map((d: ITransferableData) => {
             d.id = this.transferService.generateNewId(existingIds);
             existingIds.push(d.id);
             return this.transferService.deserializeGraphic(d);
         });
 
-        // 计算累积偏移位置（每次粘贴都增加 20px）
+        // Compute cumulative offset position (each paste adds 20px)
         const totalOffsetX = 20 * (pasteCount + 1);
         const totalOffsetY = 20 * (pasteCount + 1);
-        
-        // 对粘贴的图形进行偏移
+
+        // Apply offset to the pasted graphics
         newGraphics.forEach((g, index) => {
             this.transferService.transformCoordinates(g, totalOffsetX + index * 5, totalOffsetY + index * 5);
         });
 
-        // 添加到页面
+        // Add to the page
         newGraphics.forEach(g => page.addGraphic(g));
 
-        // 先清空原选择，再选择新粘贴的图形
+        // Clear the original selection first, then select the newly pasted graphics
         page.clearSelection();
         const newIds = newGraphics.map((g) => g.id);
         page.selectMultipleGraphics(newIds);
 
-        // 增加粘贴计数
+        // Increment the paste count
         this.clipboardManager.incrementPasteCount();
 
-        // 如果是剪切，清空剪贴板
+        // If it is a cut, clear the clipboard
         if (this.clipboardManager.getClipboardMode() === 'cut') {
             this.clipboardManager.clearData();
         }
@@ -251,21 +251,21 @@ export class PageManager {
     }
 
     /**
-     * 清空剪贴板
+     * Clear the clipboard
      */
     clearClipboard(): void {
         this.clipboardManager.clearData();
     }
 
     /**
-     * 获取剪贴板管理器
+     * Get the clipboard manager
      */
     getClipboardManager(): ClipboardManager {
         return this.clipboardManager;
     }
 
     /**
-     * 获取传输服务
+     * Get the transfer service
      */
     getTransferService(): InterpageTransferService {
         return this.transferService;

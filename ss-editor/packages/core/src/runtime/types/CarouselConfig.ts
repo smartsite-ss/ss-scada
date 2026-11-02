@@ -3,53 +3,53 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 页面轮播相关类型定义
+ * Page carousel type definitions
  */
 
-/** 轮播过渡效果 */
+/** Carousel transition effect */
 export type CarouselTransition = 'none' | 'fade' | 'slide-left' | 'slide-right';
 
-/** 轮播配置（项目级持久化） */
+/** Carousel config (project-level persistence) */
 export interface CarouselConfig {
-  /** 是否启用轮播 */
+  /** Whether the carousel is enabled */
   enabled: boolean;
-  /** 轮播间隔（毫秒），默认 30000（30秒） */
+  /** Carousel interval (ms), default 30000 (30 seconds) */
   interval: number;
-  /** 参与轮播的页面 ID 列表；为空则使用全部页面 */
+  /** List of page IDs participating in the carousel; empty means all pages */
   pageIds: string[];
-  /** 是否循环播放 */
+  /** Whether to loop */
   loop: boolean;
-  /** 切换过渡效果 */
+  /** Transition effect */
   transition: CarouselTransition;
-  /** 是否在预览启动时自动开始 */
+  /** Whether to start automatically when preview starts */
   autoStart: boolean;
-  /** 是否单页时仍显示轮播控制 */
+  /** Whether to show carousel controls even with a single page */
   showSinglePage: boolean;
 }
 
-/** 轮播页面信息 */
+/** Carousel page info */
 export interface CarouselPageInfo {
   id: string;
   name: string;
-  /** 在原 pages 数组中的索引 */
+  /** Index in the original pages array */
   index: number;
 }
 
-/** 轮播运行时状态 */
+/** Carousel runtime state */
 export interface CarouselState {
-  /** 是否正在运行 */
+  /** Whether running */
   isRunning: boolean;
-  /** 是否已暂停 */
+  /** Whether paused */
   isPaused: boolean;
-  /** 当前播放的页面在 carouselPages 中的索引 */
+  /** Index of the current page within carouselPages */
   currentIndex: number;
-  /** 当前页已播放时间（ms） */
+  /** Elapsed play time of the current page (ms) */
   elapsedTime: number;
-  /** 轮播的页面列表（已过滤排序） */
+  /** List of carousel pages (filtered and sorted) */
   carouselPages: CarouselPageInfo[];
 }
 
-/** 默认轮播配置 */
+/** Default carousel config */
 export const DEFAULT_CAROUSEL_CONFIG: CarouselConfig = {
   enabled: false,
   interval: 10000,

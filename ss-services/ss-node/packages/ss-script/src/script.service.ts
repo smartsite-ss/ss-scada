@@ -15,14 +15,14 @@ import { ExecuteScriptDto, AsyncExecutionResponse } from './dto/script.dto';
 import { I18nService } from '@ss-node/ss-i18n';
 
 /**
- * ScriptService — 脚本管理服务
+ * ScriptService — script management service
  *
- * Phase 5.1/5.2 改造：executeScript 接入 ExecutionQueueService
- * - 手动生成 executionId（randomUUID），先创建 ScriptExecution 记录（status='queued'）
- * - 构建 executeFn（更新记录状态 + 调 engineService.runScript）
- * - async=true：入队后立即返回 { executionId, status:'queued' }（fire-and-forget）
- * - async=false：入队并 await，返回 ExecutionResult
- * - 优先级映射：manual→NORMAL, scheduled→LOW, event→HIGH, pipeline→NORMAL
+ * Phase 5.1/5.2 rework: executeScript goes through ExecutionQueueService
+ * - Generate executionId manually (randomUUID), create the ScriptExecution record first (status='queued')
+ * - Build executeFn (updates the record status + calls engineService.runScript)
+ * - async=true: return { executionId, status:'queued' } immediately after enqueue (fire-and-forget)
+ * - async=false: enqueue and await, returning ExecutionResult
+ * - Priority mapping: manual→NORMAL, scheduled→LOW, event→HIGH, pipeline→NORMAL
  */
 @Injectable()
 export class ScriptService {
@@ -88,12 +88,12 @@ export class ScriptService {
   }
 
   /**
-   * 执行脚本 — 通过 ExecutionQueueService 接管调度，支持同步/异步模式
+   * Execute a script — scheduling is taken over by ExecutionQueueService, supports sync/async modes
    *
-   * @param id 脚本 ID
-   * @param projectId 项目 ID
-   * @param dto 执行选项（params/async/priority/userId）
-   * @returns 同步模式返回 ExecutionResult；异步模式返回 { executionId, status }
+   * @param id script ID
+   * @param projectId project ID
+   * @param dto execution options (params/async/priority/userId)
+   * @returns sync mode returns ExecutionResult; async mode returns { executionId, status }
    */
   async executeScript(
     id: string,
@@ -107,11 +107,11 @@ export class ScriptService {
     const userId = dto?.userId ?? 'system';
     const context: Record<string, any> = dto?.params ?? {};
 
-    // 手动生成 executionId（先于记录创建，供队列任务引用）
+    // Generate executionId manually (before record creation, for queue task reference)
     const executionId = randomUUID();
     const apiProvider = this.apiService.getApiProvider(projectId);
 
-    // 1. 创建执行记录（status='queued'）
+    // 1. Create the execution record (status='queued')
     const execution = this.executionRepo.create({
       id: executionId,
       scriptId: script.id,
@@ -122,7 +122,7 @@ export class ScriptService {
     });
     await this.executionRepo.save(execution);
 
-    // 2. 构建执行函数（更新记录状态 + 调用 runScript 纯执行）
+    // 2. Build the execution function (updates the record status + calls the pure runScript)
     const executeFn = async (): Promise<ExecutionResult> => {
       execution.status = 'running';
       await this.executionRepo.save(execution);
@@ -149,7 +149,7 @@ export class ScriptService {
       return result;
     };
 
-    // 3. 入队执行
+    // 3. Enqueue for execution
     const enqueuePromise = this.queueService.enqueue(
       executionId,
       script.id,
@@ -160,18 +160,18 @@ export class ScriptService {
     );
 
     if (isAsync) {
-      // 异步模式：fire-and-forget，立即返回 executionId
+      // Async mode: fire-and-forget, return executionId immediately
       enqueuePromise.catch((err) => {
         this.logger.error(`Async execution ${executionId} failed: ${err.message}`);
       });
       return { executionId, status: 'queued' };
     }
 
-    // 同步模式：等待队列执行完成
+    // Sync mode: wait for queue execution to complete
     return enqueuePromise;
   }
 
-  /** 查询执行记录详情 */
+  /** Query execution record details */
   async getExecution(executionId: string, _projectId: string): Promise<ScriptExecution> {
     const execution = await this.executionRepo.findOne({ where: { id: executionId } });
     if (!execution) {
@@ -182,7 +182,7 @@ export class ScriptService {
     return execution;
   }
 
-  /** 取消执行（取消队列任务 + 更新记录状态） */
+  /** Cancel an execution (cancel the queue task + update the record status) */
   async cancelExecution(
     executionId: string,
     _projectId: string,
@@ -216,7 +216,7 @@ export class ScriptService {
   }
 
   /**
-   * 优先级映射：显式指定优先于触发类型默认值
+   * Priority mapping: explicit specification takes precedence over trigger-type defaults
    * - manual → NORMAL, scheduled → LOW, event → HIGH, pipeline → NORMAL
    */
   private mapPriority(

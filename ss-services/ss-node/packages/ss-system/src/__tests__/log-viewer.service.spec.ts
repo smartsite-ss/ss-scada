@@ -95,7 +95,7 @@ describe('LogViewerService', () => {
       expect(observable).toBeDefined();
       expect(observable.subscribe).toBeDefined();
 
-      // 订阅后立即取消，触发 watcher 清理，避免 EPERM
+      // Unsubscribe immediately after subscribing to trigger watcher cleanup, avoiding EPERM
       const subscription = observable.subscribe();
       subscription.unsubscribe();
     });

@@ -15,7 +15,7 @@ import { AuditLoggerService } from '../../../../logger/audit-logger.service';
 import { PathResolverService } from '../../../../path/path-resolver.service';
 import { User } from '../../../user/entities/user.entity';
 
-// Mock 依赖（与 auth.service.spec 一致的手工 mock 风格）
+// Mock dependencies (consistent with the hand-written mock style in auth.service.spec)
 const mockUserService = {
   findByWechatMpOpenId: jest.fn(),
   findByUsername: jest.fn(),
@@ -153,7 +153,7 @@ describe('WechatMpAuthService', () => {
         projectName: 'other-project',
         permissionLevel: 'write',
       });
-      // 非法权限级别降级为 read
+      // Illegal permission level is downgraded to read
       expect(result.authorizedProjects).toContainEqual({
         projectId: 'unknown-project',
         projectName: 'unknown-project',

@@ -5,18 +5,18 @@
 import type { KbManifest } from './knowledge.types';
 
 /**
- * 默认 manifest.json 数据（v2.0 多产品架构）
+ * Default manifest.json data (v2.0 multi-product architecture)
  *
- * 当 ${KB_ROOT}/manifest.json 不存在时，服务启动时自动写入此默认值。
- * 管理员可手动编辑 manifest.json 调整产品清单、模块清单和路由映射。
+ * When ${KB_ROOT}/manifest.json does not exist, the service writes this default value at startup.
+ * Admins can manually edit manifest.json to adjust the product list, module list and route mappings.
  *
- * 包含的产品：
- *   - ss-data：数据中台（17 功能模块 + 2 全局章节）
- *   - ss-scada：组态编辑器（骨架 + 2 全局章节）
+ * Products included:
+ *   - ss-data: data hub (17 feature modules + 2 global sections)
+ *   - ss-scada: SCADA editor (skeleton + 2 global sections)
  *
- * 每个产品内置两个全局章节：
- *   - 00-overview：系统概述
- *   - 00-manual：操作手册
+ * Each product embeds two global sections:
+ *   - 00-overview: system overview
+ *   - 00-manual: user manual
  */
 export const DEFAULT_MANIFEST: KbManifest = {
   version: '2.0',
@@ -28,7 +28,7 @@ export const DEFAULT_MANIFEST: KbManifest = {
       icon: 'database',
       order: 10,
       modules: [
-        // ===== 全局章节 =====
+        // ===== Global sections =====
         {
           id: '00-overview',
           name: '系统概述',
@@ -47,7 +47,7 @@ export const DEFAULT_MANIFEST: KbManifest = {
           isGlobal: true,
           globalType: 'manual',
         },
-        // ===== 功能模块 =====
+        // ===== Feature modules =====
         {
           id: '01-permission',
           name: '权限管理',
@@ -241,7 +241,7 @@ export const DEFAULT_MANIFEST: KbManifest = {
       icon: 'editor',
       order: 20,
       modules: [
-        // ===== 全局章节 =====
+        // ===== Global sections =====
         {
           id: '00-overview',
           name: '系统概述',
@@ -260,7 +260,7 @@ export const DEFAULT_MANIFEST: KbManifest = {
           isGlobal: true,
           globalType: 'manual',
         },
-        // ===== 功能模块（骨架，待逐步完善） =====
+        // ===== Feature modules (skeleton, to be fleshed out gradually) =====
         {
           id: '01-canvas',
           name: '画布编辑',
@@ -335,5 +335,5 @@ export const DEFAULT_MANIFEST: KbManifest = {
   ],
 };
 
-/** 默认产品 ID（向后兼容） */
+/** Default product ID (backward compatible) */
 export const DEFAULT_PRODUCT_ID = 'ss-data';

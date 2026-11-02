@@ -4,7 +4,7 @@
 
 import { StorageError, errorService } from '../utils/core/errors';
 
-// 存储键名
+// Storage keys
 const STORAGE_KEYS = {
   PROJECT: 'scada-editor-project',
   AUTO_SAVE: 'scada-editor-auto-save',
@@ -13,7 +13,7 @@ const STORAGE_KEYS = {
   TEMPLATES: 'scada-editor-templates',
 };
 
-// 保存数据到本地存储
+// Save data to local storage
 export const saveToStorage = (key: string, data: any, throwOnError: boolean = false): void => {
   try {
     const serializedData = JSON.stringify(data);
@@ -21,7 +21,7 @@ export const saveToStorage = (key: string, data: any, throwOnError: boolean = fa
   } catch (error) {
     const err = new StorageError('save', error instanceof Error ? error.message : 'Unknown error');
     errorService.record(err, `Storage save key: ${key}`);
-    
+
     if (throwOnError) {
       throw err;
     }
@@ -29,7 +29,7 @@ export const saveToStorage = (key: string, data: any, throwOnError: boolean = fa
   }
 };
 
-// 从本地存储读取数据
+// Read data from local storage
 export const loadFromStorage = (key: string, throwOnError: boolean = false): any => {
   try {
     const serializedData = localStorage.getItem(key);
@@ -40,7 +40,7 @@ export const loadFromStorage = (key: string, throwOnError: boolean = false): any
   } catch (error) {
     const err = new StorageError('load', error instanceof Error ? error.message : 'Unknown error');
     errorService.record(err, `Storage load key: ${key}`);
-    
+
     if (throwOnError) {
       throw err;
     }
@@ -49,14 +49,14 @@ export const loadFromStorage = (key: string, throwOnError: boolean = false): any
   }
 };
 
-// 从本地存储删除数据
+// Remove data from local storage
 export const removeFromStorage = (key: string, throwOnError: boolean = false): void => {
   try {
     localStorage.removeItem(key);
   } catch (error) {
     const err = new StorageError('remove', error instanceof Error ? error.message : 'Unknown error');
     errorService.record(err, `Storage remove key: ${key}`);
-    
+
     if (throwOnError) {
       throw err;
     }
@@ -64,14 +64,14 @@ export const removeFromStorage = (key: string, throwOnError: boolean = false): v
   }
 };
 
-// 清除所有存储数据
+// Clear all storage data
 export const clearStorage = (throwOnError: boolean = false): void => {
   try {
     localStorage.clear();
   } catch (error) {
     const err = new StorageError('clear', error instanceof Error ? error.message : 'Unknown error');
     errorService.record(err, 'Storage clear');
-    
+
     if (throwOnError) {
       throw err;
     }
@@ -79,32 +79,32 @@ export const clearStorage = (throwOnError: boolean = false): void => {
   }
 };
 
-// 保存项目数据
+// Save project data
 export const saveProject = (project: any, throwOnError: boolean = false): void => {
   saveToStorage(STORAGE_KEYS.PROJECT, project, throwOnError);
 };
 
-// 加载项目数据
+// Load project data
 export const loadProject = (throwOnError: boolean = false): any => {
   return loadFromStorage(STORAGE_KEYS.PROJECT, throwOnError);
 };
 
-// 保存自动保存数据
+// Save auto-save data
 export const saveAutoSave = (data: any, throwOnError: boolean = false): void => {
   saveToStorage(STORAGE_KEYS.AUTO_SAVE, data, throwOnError);
 };
 
-// 加载自动保存数据
+// Load auto-save data
 export const loadAutoSave = (throwOnError: boolean = false): any => {
   return loadFromStorage(STORAGE_KEYS.AUTO_SAVE, throwOnError);
 };
 
-// 保存设置数据
+// Save settings data
 export const saveSettings = (settings: any, throwOnError: boolean = false): void => {
   saveToStorage(STORAGE_KEYS.SETTINGS, settings, throwOnError);
 };
 
-// 加载设置数据
+// Load settings data
 export const loadSettings = (throwOnError: boolean = false): any => {
   const defaultSettings = {
     autoSave: true,
@@ -114,27 +114,27 @@ export const loadSettings = (throwOnError: boolean = false): any => {
   return loaded || defaultSettings;
 };
 
-// 保存项目列表
+// Save project list
 export const saveProjects = (projects: any[], throwOnError: boolean = false): void => {
   saveToStorage(STORAGE_KEYS.PROJECTS, projects, throwOnError);
 };
 
-// 加载项目列表
+// Load project list
 export const loadProjects = (throwOnError: boolean = false): any[] => {
   return loadFromStorage(STORAGE_KEYS.PROJECTS, throwOnError) || [];
 };
 
-// 保存模板列表
+// Save template list
 export const saveTemplates = (templates: any[], throwOnError: boolean = false): void => {
   saveToStorage(STORAGE_KEYS.TEMPLATES, templates, throwOnError);
 };
 
-// 加载模板列表
+// Load template list
 export const loadTemplates = (throwOnError: boolean = false): any[] => {
   return loadFromStorage(STORAGE_KEYS.TEMPLATES, throwOnError) || [];
 };
 
-// 清除自动保存数据
+// Clear auto-save data
 export const clearAutoSave = (throwOnError: boolean = false): void => {
   removeFromStorage(STORAGE_KEYS.AUTO_SAVE, throwOnError);
 };

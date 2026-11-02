@@ -9,19 +9,19 @@ import { ConnectionLimiterService, ConnectionLimiterConfig } from './connection-
 import { WebSocketMetricsService } from './websocket-metrics.service';
 
 /**
- * WebSocket 管理员 REST API
+ * WebSocket admin REST API
  *
- * 提供连接管理、配置管理和综合监控能力：
- * - GET    /api/v1/ws/admin/overview                  — 综合概览（metrics + monitor + limiter + gateway）
- * - GET    /api/v1/ws/admin/connections               — 所有连接详情列表
- * - DELETE /api/v1/ws/admin/connections/:socketId     — 强制断开指定连接
- * - POST   /api/v1/ws/admin/connections/cleanup-idle  — 清理空闲连接
- * - GET    /api/v1/ws/admin/config                    — 获取连接限制配置
- * - PUT    /api/v1/ws/admin/config                    — 更新连接限制配置
+ * Provides connection management, config management, and combined monitoring:
+ * - GET    /api/v1/ws/admin/overview                  -- combined overview (metrics + monitor + limiter + gateway)
+ * - GET    /api/v1/ws/admin/connections               -- all connection detail list
+ * - DELETE /api/v1/ws/admin/connections/:socketId     -- force-disconnect a given connection
+ * - POST   /api/v1/ws/admin/connections/cleanup-idle  -- clean up idle connections
+ * - GET    /api/v1/ws/admin/config                    -- get connection-limit config
+ * - PUT    /api/v1/ws/admin/config                    -- update connection-limit config
  *
- * 注意：所有方法返回原始数据，由全局 TransformInterceptor 统一包装为
- * { code, data, message, timestamp } 信封。切勿在此手动预包装（缺少 timestamp 字段
- * 会被拦截器二次包装，导致前端 res.data 多解一层后取不到真实 payload）。
+ * Note: all methods return raw data; the global TransformInterceptor uniformly wraps it into the
+ * { code, data, message, timestamp } envelope. Do NOT pre-wrap here manually (a missing timestamp field
+ * would cause the interceptor to wrap a second time, so the frontend's res.data ends up one layer deep and the real payload is unreachable).
  */
 @Controller('ws/admin')
 export class WebSocketAdminController {
@@ -34,7 +34,7 @@ export class WebSocketAdminController {
     private readonly metricsService: WebSocketMetricsService,
   ) {}
 
-  /** 综合概览：聚合 metrics / monitor / limiter / gateway 四类数据 */
+  /** Combined overview: aggregates metrics / monitor / limiter / gateway data */
   @Get('overview')
   getOverview() {
     return {
@@ -45,7 +45,7 @@ export class WebSocketAdminController {
     };
   }
 
-  /** 所有连接详情列表 */
+  /** All connection detail list */
   @Get('connections')
   getConnections() {
     const snapshots = this.connectionMonitor.getAllSnapshots();
@@ -55,7 +55,7 @@ export class WebSocketAdminController {
     };
   }
 
-  /** 强制断开指定连接 */
+  /** Force-disconnect a given connection */
   @Delete('connections/:socketId')
   forceDisconnect(@Param('socketId') socketId: string) {
     const success = this.wsGateway.forceDisconnect(socketId);
@@ -63,7 +63,7 @@ export class WebSocketAdminController {
     return { success, socketId };
   }
 
-  /** 清理空闲连接 */
+  /** Clean up idle connections */
   @Post('connections/cleanup-idle')
   cleanupIdle() {
     const idleSocketIds = this.connectionLimiter.checkIdleConnections();
@@ -77,13 +77,13 @@ export class WebSocketAdminController {
     return { cleaned, total: idleSocketIds.length };
   }
 
-  /** 获取连接限制配置 */
+  /** Get connection-limit config */
   @Get('config')
   getConfig() {
     return this.connectionLimiter.getConfig();
   }
 
-  /** 更新连接限制配置 */
+  /** Update connection-limit config */
   @Put('config')
   updateConfig(@Body() body: Partial<ConnectionLimiterConfig>) {
     this.connectionLimiter.updateConfig(body);

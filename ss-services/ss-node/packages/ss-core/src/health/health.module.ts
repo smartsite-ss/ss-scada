@@ -19,7 +19,7 @@ export class HealthModule {
     memoryChecker: MemoryUsageChecker,
     cpuChecker: CpuUsageChecker,
   ) {
-    // 在构造函数中注册检查器（早于 onModuleInit），确保定时检查启动前已注册
+    // Register checkers in the constructor (before onModuleInit), ensuring they are registered before scheduled checks start
     healthCheckerService.registerChecker(diskChecker);
     healthCheckerService.registerChecker(memoryChecker);
     healthCheckerService.registerChecker(cpuChecker);

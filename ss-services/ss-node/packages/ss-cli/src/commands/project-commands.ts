@@ -3,16 +3,16 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * project-commands.ts — 项目管理命令
+ * project-commands.ts - project management commands
  *
- *   project list — 列出所有项目
- *   project get  — 查看项目详情
+ *   project list - list all projects
+ *   project get  - view project details
  */
 
 import { ApiError } from '../core/ApiClient';
 import type { CommandParser } from '../core/CommandParser';
 
-/** 创建项目管理子命令组 */
+/** Create the project-management subcommand group */
 export function registerCommands(parser: CommandParser): void {
   const program = parser.getProgram();
 
@@ -49,7 +49,7 @@ export function registerCommands(parser: CommandParser): void {
     });
 }
 
-/** 从 API 响应中提取列表 */
+/** Extract the list from the API response */
 function extractList<T>(response: unknown): T[] {
   if (Array.isArray(response)) {
     return response as T[];
@@ -67,7 +67,7 @@ function extractList<T>(response: unknown): T[] {
   return [];
 }
 
-/** 格式化输出项目列表 */
+/** Format and print the project list */
 function printProjectList(data: unknown): void {
   const list = extractList<Record<string, unknown>>(data);
   if (list.length === 0) {
@@ -84,7 +84,7 @@ function printProjectList(data: unknown): void {
   console.table(rows);
 }
 
-/** 统一错误处理 */
+/** Unified error handling */
 function handleError(context: string, err: unknown): void {
   if (err instanceof ApiError) {
     console.error(`${context}: ${err.message}`);

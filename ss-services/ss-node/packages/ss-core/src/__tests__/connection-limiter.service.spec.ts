@@ -110,11 +110,11 @@ describe('ConnectionLimiterService', () => {
 
     it('should detect idle connections after idle timeout exceeded', () => {
       service.registerConnection('socket-1', 'user-1', '192.168.1.1');
-      // 缩短空闲超时为 1 分钟，并伪造一条很久之前的活动记录
+      // shorten the idle timeout to 1 minute and forge an activity record from long ago
       service.updateConfig({ idleTimeoutMinutes: 1 });
       const record = service.getConnection('socket-1');
       expect(record).toBeDefined();
-      (record as any).lastActivityAt = Date.now() - 2 * 60 * 1000; // 2 分钟前
+      (record as any).lastActivityAt = Date.now() - 2 * 60 * 1000; // 2 minutes ago
 
       const idle = service.checkIdleConnections();
       expect(idle).toContain('socket-1');
@@ -126,7 +126,7 @@ describe('ConnectionLimiterService', () => {
       const record = service.getConnection('socket-1');
       (record as any).lastActivityAt = Date.now() - 2 * 60 * 1000;
 
-      // 记录业务活动刷新 lastActivityAt
+      // record business activity to refresh lastActivityAt
       service.recordActivity('socket-1');
       const idle = service.checkIdleConnections();
       expect(idle).not.toContain('socket-1');

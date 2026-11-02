@@ -5,10 +5,10 @@
 import type { ChartTagBinding, TrendSeriesStyle } from './types';
 import { formatNumber } from './format';
 
-/** 折线趋势图 ECharts option 组装输入 */
+/** Line trend chart ECharts option builder input */
 export interface TrendChartOptionInput {
   tags: ChartTagBinding[];
-  /** 每个 tagId → 时间序列数据的取值函数 */
+  /** Per-tagId → time-series data value function */
   getSeriesData: (tagId: string) => Array<[number, number]>;
   title: string;
   titleColor: string;
@@ -24,11 +24,11 @@ export interface TrendChartOptionInput {
   xAxisLineColor: string;
   xAxisLabelFontSize: number;
   xAxisLabelRotate: number;
-  /** 数值显示小数位数（默认 2） */
+  /** Decimal places for displayed values (default 2) */
   decimalPlaces?: number;
 }
 
-/** 将每变量趋势样式转为 ECharts 折线 series 配置 */
+/** Convert each variable's trend style into an ECharts line series config */
 function buildSeries(style: TrendSeriesStyle) {
   return {
     type: 'line' as const,
@@ -63,8 +63,8 @@ function buildSeries(style: TrendSeriesStyle) {
 }
 
 /**
- * 组装折线时序图 ECharts option（title/tooltip/legend/grid/dataZoom/xAxis/yAxis/series）。
- * tag-trend 与 history-trend 复用，消除两份重复的 chartOption 逻辑。
+ * Build the line time-series chart ECharts option (title/tooltip/legend/grid/dataZoom/xAxis/yAxis/series).
+ * Shared by tag-trend and history-trend, eliminating two duplicate chartOption implementations.
  */
 export function buildTrendChartOption(input: TrendChartOptionInput) {
   const {

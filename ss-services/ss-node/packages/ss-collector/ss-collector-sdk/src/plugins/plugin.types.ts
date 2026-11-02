@@ -3,96 +3,96 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 采集插件元数据 — 描述一个采集插件的能力、配置和依赖信息
+ * Collection plugin metadata - describes a collection plugin's capabilities, config and dependencies
  */
 export interface CollectorPluginMeta {
-  /** 插件唯一标识（与 DeviceType 对应） */
+  /** Unique plugin identifier (corresponds to DeviceType) */
   protocol: string;
 
-  /** 显示名称 */
+  /** Display name */
   displayName: string;
 
-  /** 语义化版本 */
+  /** Semantic version */
   version: string;
 
-  /** 插件描述 */
+  /** Plugin description */
   description: string;
 
-  /** 作者/组织 */
+  /** Author/organization */
   author?: string;
 
-  /** 协议分类 */
+  /** Protocol category */
   category: PluginCategory;
 
-  /** 传输层类型 */
+  /** Transport layer type */
   transport: 'tcp' | 'serial' | 'ws' | 'tls' | 'other';
 
-  /** 配置 JSON Schema（通道连接配置的校验规则） */
+  /** Config JSON Schema (validation rules for channel connection config) */
   connectionSchema: Record<string, any>;
 
-  /** 默认连接配置 */
+  /** Default connection config */
   defaultConnection: Record<string, any>;
 
-  /** 支持的标签数据类型 */
+  /** Supported tag data types */
   supportedDataTypes: string[];
 
-  /** 依赖的其他 npm 包 */
+  /** Other npm packages this depends on */
   dependencies?: Record<string, string>;
 
-  /** 图标（可选，base64 或 URL） */
+  /** Icon (optional, base64 or URL) */
   icon?: string;
 
-  /** 标签列表（用于前端展示） */
+  /** Tag list (for frontend display) */
   tags?: string[];
 
-  /** 是否默认启用 */
+  /** Whether enabled by default */
   enabledByDefault: boolean;
 
   /**
-   * 隔离模式（新增，默认 in_process）
+   * Isolation mode (added, default in_process)
    *
-   * 决定该插件的 adapter 在什么环境中运行。
-   * - in_process:   适配器在主线程内直接调用（默认，性能最优）
-   * - worker_thread:适配器在独立 Worker 线程中执行（崩溃隔离）
-   * - child_process:适配器在独立子进程中执行（完全隔离）
+   * Determines the environment in which the plugin's adapter runs.
+   * - in_process:   adapter invoked directly in the main thread (default, best performance)
+   * - worker_thread:adapter runs in a separate Worker thread (crash isolation)
+   * - child_process:adapter runs in a separate child process (full isolation)
    */
   isolationMode?: IsolationMode;
 
   /**
-   * 隔离配置（仅 worker_thread / child_process 模式下生效）
+   * Isolation config (only effective in worker_thread / child_process mode)
    */
   isolation?: IsolationConfig;
 }
 
-/** 采集插件隔离模式 */
+/** Collection plugin isolation mode */
 export enum IsolationMode {
-  /** 进程内模式：适配器在主线程内直接调用（默认，性能最优） */
+  /** In-process mode: adapter invoked directly in the main thread (default, best performance) */
   IN_PROCESS = 'in_process',
-  /** Worker 线程模式：适配器在独立 Worker 线程中执行（崩溃隔离，内存开销小） */
+  /** Worker thread mode: adapter runs in a separate Worker thread (crash isolation, low memory overhead) */
   WORKER_THREAD = 'worker_thread',
-  /** 子进程模式：适配器在独立子进程中执行（完全隔离，最安全） */
+  /** Child process mode: adapter runs in a separate child process (full isolation, most secure) */
   CHILD_PROCESS = 'child_process',
 }
 
-/** 隔离配置 */
+/** Isolation config */
 export interface IsolationConfig {
-  /** 最大并行请求数（默认 50） */
+  /** Maximum parallel request count (default 50) */
   maxParallel?: number;
-  /** 单次请求超时 ms（默认 10000） */
+  /** Single-request timeout ms (default 10000) */
   requestTimeoutMs?: number;
-  /** 崩溃后自动重启（默认 true） */
+  /** Auto-restart after crash (default true) */
   autoRestart?: boolean;
-  /** 启动超时 ms（默认 30000） */
+  /** Startup timeout ms (default 30000) */
   startupTimeoutMs?: number;
-  /** 空闲多久后回收（0 = 永不回收，默认 300000 = 5 分钟） */
+  /** Idle time before reclaiming (0 = never reclaim, default 300000 = 5 minutes) */
   idleTimeoutMs?: number;
-  /** 最大重启次数（0 = 不限，默认 5） */
+  /** Maximum restart count (0 = unlimited, default 5) */
   maxRestarts?: number;
-  /** 子进程入口脚本路径（仅 child_process，不填则自动推断） */
+  /** Child process entry script path (child_process only; auto-inferred if omitted) */
   entryScript?: string;
 }
 
-/** 插件分类枚举 */
+/** Plugin category enum */
 export enum PluginCategory {
   INDUSTRIAL_BUS = 'industrial_bus',
   IOT = 'iot',
@@ -101,7 +101,7 @@ export enum PluginCategory {
   CUSTOM = 'custom',
 }
 
-/** 注册后的插件实例 */
+/** Registered plugin instance */
 export interface RegisteredPlugin {
   meta: CollectorPluginMeta;
   adapter: any;
@@ -112,10 +112,10 @@ export interface RegisteredPlugin {
   errorMessage?: string;
 }
 
-/** 插件状态 */
+/** Plugin status */
 export type PluginStatus = 'discovered' | 'registered' | 'active' | 'inactive' | 'error';
 
-/** 插件运行指标 */
+/** Plugin runtime metrics */
 export interface PluginMetrics {
   totalConnections: number;
   activeConnections: number;
@@ -126,13 +126,13 @@ export interface PluginMetrics {
   lastActivity: Date | null;
 }
 
-/** 插件筛选条件 */
+/** Plugin filter criteria */
 export interface PluginFilter {
   status?: PluginStatus;
   category?: PluginCategory;
 }
 
-/** 发现到的插件 */
+/** Discovered plugin */
 export interface DiscoveredPlugin {
   meta: CollectorPluginMeta;
   packageName: string;
@@ -143,7 +143,7 @@ export interface DiscoveredPlugin {
   error?: string;
 }
 
-/** PluginModule 配置选项 */
+/** PluginModule config options */
 export interface PluginModuleOptions {
   autoDiscover?: boolean;
   scanExternal?: boolean;
@@ -159,7 +159,7 @@ export interface ActiveDeviceInfo {
   lastOfflineAt: Date | null;
 }
 
-/** 插件关联设备的统计信息 */
+/** Statistics for devices associated with a plugin */
 export interface DeviceStats {
   total: number;
   online: number;
@@ -168,32 +168,32 @@ export interface DeviceStats {
   other: number;
 }
 
-/** 活跃设备追踪器 — 由采集启动层注入，供插件详情接口查询 */
+/** Active device tracker - injected by the collection startup layer, queried by the plugin-details interface */
 export const ACTIVE_DEVICE_TRACKER = 'ACTIVE_DEVICE_TRACKER';
 
 export interface IActiveDeviceTracker {
-  /** 获取某个协议下的活跃采集设备ID列表 */
+  /** Get the active collection device ID list for a protocol */
   getActiveDeviceIds(protocol: string): string[];
-  /** 获取活跃设备详情 */
+  /** Get active device details */
   getActiveDeviceInfo(deviceId: string): ActiveDeviceInfo | undefined;
-  /** 获取某个协议关联的设备统计（在线/离线/其他） */
+  /** Get device statistics associated with a protocol (online/offline/other) */
   getDeviceStats(protocol: string): DeviceStats;
 }
 
 // ---------------------------------------------------------------------------
-// 提供者扫描器 — 解耦 @nestjs/core DiscoveryService，避免 pnpm 重复包导致 DI 令牌不匹配
+// Provider scanner - decouples from @nestjs/core DiscoveryService to avoid DI token mismatch caused by pnpm duplicate packages
 // ---------------------------------------------------------------------------
 
-/** 提供者扫描器令牌 */
+/** Provider scanner token */
 export const PROVIDER_SCANNER = 'PROVIDER_SCANNER';
 
-/** 拆解后的 ProviderWrapper（最小化接口，不含外部类引用） */
+/** Decomposed ProviderWrapper (minimal interface, no external class references) */
 export interface IProviderWrapper {
   instance: unknown;
   metatype: unknown;
 }
 
-/** 提供者扫描器接口 */
+/** Provider scanner interface */
 export interface IProviderScanner {
   getProviders(): IProviderWrapper[];
 }

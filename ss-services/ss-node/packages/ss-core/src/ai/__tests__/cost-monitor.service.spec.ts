@@ -3,7 +3,7 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 成本监控 Service 单元测试 — P2-T08
+ * Cost-monitor Service unit tests - P2-T08
  */
 
 import { CostMonitorService, estimateCost, MODEL_PRICES } from '../cost-monitor.service';
@@ -95,7 +95,7 @@ describe('CostMonitorService — 日志记录', () => {
 describe('CostMonitorService — 预算检查', () => {
   it('预算充足时应允许继续', async () => {
     const { service, mockLogRepo } = makeService(100);
-    // 模拟当月已花费 50
+    // simulate 50 already spent this month
     mockLogRepo.find = jest.fn(() =>
       Promise.resolve([
         {

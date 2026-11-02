@@ -6,7 +6,7 @@ import type { IEvent, IEventAction, IEventCondition, EventContext, EventType } f
 import type { IGraphic } from '@scada-editor/plugin-sdk';
 
 /**
- * 事件去抖配置（毫秒）
+ * Event debounce config (ms)
  */
 const DEBOUNCE_CONFIG: Partial<Record<EventType, number>> = {
   click: 0,
@@ -18,30 +18,30 @@ const DEBOUNCE_CONFIG: Partial<Record<EventType, number>> = {
 };
 
 /**
- * 动作执行器接口
- * 允许外部注入不同运行时（编辑态/运行态）的动作实现
+ * Action executor interface
+ * Allows injecting different runtime (edit mode / runtime mode) action implementations
  */
 export interface ActionExecutor {
-  /** 执行自定义脚本 */
+  /** Execute a custom script */
   executeScript(script: string, context: EventContext): void | Promise<void>;
-  /** 调用 API */
+  /** Call an API */
   callApi(target: string, value: any, context: EventContext): void | Promise<void>;
-  /** 执行内置脚本方法 */
+  /** Execute a built-in script method */
   executeBuiltinScript(target: string, value: any, context: EventContext): void;
-  /** 显示图元 */
+  /** Show a graphic */
   showGraphic(target: string): void;
-  /** 隐藏图元 */
+  /** Hide a graphic */
   hideGraphic(target: string): void;
-  /** 修改属性 */
+  /** Modify a property */
   changeProperty(target: string, value: any): void;
-  /** 页面跳转 */
+  /** Navigate to a page */
   navigateTo(target: string): void;
-  /** 弹出提示 */
+  /** Show a toast */
   showAlert(value: any): void;
 }
 
 /**
- * 默认空执行器（编辑态使用，不执行实际动作）
+ * Default no-op executor (edit mode; does not perform actual actions)
  */
 const NOOP_EXECUTOR: ActionExecutor = {
   executeScript() {},
@@ -55,30 +55,30 @@ const NOOP_EXECUTOR: ActionExecutor = {
 };
 
 /**
- * EventExecutionEngine — 事件交互引擎
+ * EventExecutionEngine — event interaction engine
  *
- * 负责：
- * 1. 注册/注销图元的 DOM 事件监听器
- * 2. 管理 Vue 生命周期事件（vnodeMounted / vnodeBeforeMount）
- * 3. 条件评估（AND 逻辑）
- * 4. 动作分发（8 种 actionType）
- * 5. 高频事件去抖
+ * Responsibilities:
+ * 1. Register/unregister DOM event listeners for graphics
+ * 2. Manage Vue lifecycle events (vnodeMounted / vnodeBeforeMount)
+ * 3. Condition evaluation (AND logic)
+ * 4. Action dispatch (8 action types)
+ * 5. High-frequency event debouncing
  *
- * 编辑态和运行态通过注入不同的 ActionExecutor 实现差异化行为
+ * Edit mode and runtime mode differentiate behavior by injecting different ActionExecutors
  */
 export class EventExecutionEngine {
   private static instance: EventExecutionEngine;
 
-  /** 已注册的 DOM 事件监听器引用（用于清理） */
+  /** Registered DOM event listener references (for cleanup) */
   private _domListeners: Map<string, Array<{ type: EventType; element: HTMLElement; handler: EventListener }>> = new Map();
 
-  /** 防抖计时器 */
+  /** Debounce timer */
   private _debounceTimers: Map<string, number> = new Map();
 
-  /** 动作执行器 */
+  /** Action executor */
   private _executor: ActionExecutor = NOOP_EXECUTOR;
 
-  /** 调试模式 */
+  /** Debug mode */
   private _debug = false;
 
   static getInstance(): EventExecutionEngine {
@@ -89,26 +89,26 @@ export class EventExecutionEngine {
   }
 
   /**
-   * 设置动作执行器
-   * - 编辑态：注入 NOOP_EXECUTOR 或仅记录日志的执行器
-   * - 运行态：注入实际操作执行器
+   * Set the action executor
+   * - Edit mode: inject NOOP_EXECUTOR or a log-only executor
+   * - Runtime mode: inject the actual action executor
    */
   setExecutor(executor: Partial<ActionExecutor>): void {
     this._executor = { ...NOOP_EXECUTOR, ...executor };
   }
 
-  /** 开启/关闭调试模式 */
+  /** Enable/disable debug mode */
   setDebug(enabled: boolean): void {
     this._debug = enabled;
   }
 
   /**
-   * 为图元注册所有事件监听器
-   * 在运行态图元挂载完成后调用
+   * Register all event listeners for a graphic
+   * Called after the runtime graphic is mounted
    */
   registerGraphicEvents(graphic: IGraphic, element: HTMLElement): void {
     const graphicId = graphic.id;
-    // 先清理旧监听器
+    // Clean up old listeners first
     this.unregisterGraphicEvents(graphicId);
 
     const eventHandlers = graphic.events?.eventHandlers;
@@ -123,7 +123,7 @@ export class EventExecutionEngine {
       const typedEventType = eventType as EventType;
 
       if (typedEventType === 'vnodeMounted' || typedEventType === 'vnodeBeforeMount') {
-        // 生命周期事件不注册 DOM 监听器，由 Vue 组件钩子触发
+        // Lifecycle events do not register DOM listeners; they are triggered by Vue component hooks
         continue;
       }
 
@@ -140,7 +140,7 @@ export class EventExecutionEngine {
   }
 
   /**
-   * 注销图元的所有事件监听器
+   * Unregister all event listeners of a graphic
    */
   unregisterGraphicEvents(graphicId: string): void {
     const listeners = this._domListeners.get(graphicId);
@@ -153,7 +153,7 @@ export class EventExecutionEngine {
       }
       this._domListeners.delete(graphicId);
     }
-    // 清理防抖计时器
+    // Clean up the debounce timer
     const timerKey = `${graphicId}:debounce`;
     const timer = this._debounceTimers.get(timerKey);
     if (timer) {
@@ -163,8 +163,8 @@ export class EventExecutionEngine {
   }
 
   /**
-   * 触发生命周期事件（vnodeMounted / vnodeBeforeMount）
-   * 由 Vue 组件钩子调用
+   * Trigger lifecycle events (vnodeMounted / vnodeBeforeMount)
+   * Called by Vue component hooks
    */
   triggerLifecycleEvent(graphic: IGraphic, eventType: 'vnodeMounted' | 'vnodeBeforeMount'): void {
     const eventHandlers = graphic.events?.eventHandlers;
@@ -180,8 +180,8 @@ export class EventExecutionEngine {
   }
 
   /**
-   * 评估条件列表（AND 逻辑）
-   * 所有条件必须同时满足才返回 true
+   * Evaluate the condition list (AND logic)
+   * All conditions must be satisfied to return true
    */
   evaluateConditions(conditions: IEventCondition[], context: EventContext): boolean {
     if (!conditions || conditions.length === 0) return true;
@@ -193,15 +193,15 @@ export class EventExecutionEngine {
   }
 
   /**
-   * 执行动作列表
+   * Execute the action list
    */
   executeActions(actions: IEventAction[], context: EventContext): void {
     this._executeActions(actions, context);
   }
 
-  // ─── 私有方法 ───
+  // ─── Private methods ───
 
-  /** 创建 DOM 事件处理器（含防抖） */
+  /** Create a DOM event handler (with debouncing) */
   private _createDOMHandler(
     graphic: IGraphic,
     eventDef: IEvent,
@@ -226,7 +226,7 @@ export class EventExecutionEngine {
     };
   }
 
-  /** 构建事件执行上下文 */
+  /** Build the event execution context */
   private _buildContext(graphic: IGraphic, eventType: EventType, domEvent: any): EventContext {
     return {
       graphic: {
@@ -253,11 +253,11 @@ export class EventExecutionEngine {
     };
   }
 
-  /** 执行动作列表 */
+  /** Execute the action list */
   private _executeActions(actions: IEventAction[], context: EventContext): void {
     for (const action of actions) {
       try {
-        // 条件评估
+        // Condition evaluation
         if (action.conditions && action.conditions.length > 0) {
           if (!this.evaluateConditions(action.conditions, context)) {
             this._log(`[EventEngine] Conditions not met for action "${action.id}", skipping`);
@@ -272,7 +272,7 @@ export class EventExecutionEngine {
     }
   }
 
-  /** 分发单个动作 */
+  /** Dispatch a single action */
   private _dispatchAction(action: IEventAction, context: EventContext): void {
     this._log(`[EventEngine] Dispatching action "${action.actionType}" (id: ${action.id})`);
 
@@ -316,7 +316,7 @@ export class EventExecutionEngine {
     }
   }
 
-  /** 获取嵌套属性值 */
+  /** Get a nested property value */
   private _getNestedValue(obj: any, path: string): any {
     const keys = path.split('.');
     let current = obj;
@@ -327,7 +327,7 @@ export class EventExecutionEngine {
     return current;
   }
 
-  /** 比较值 */
+  /** Compare values */
   private _compareValues(actual: any, operator: string, expected: any): boolean {
     switch (operator) {
       case 'equal': return actual === expected;
@@ -342,7 +342,7 @@ export class EventExecutionEngine {
     }
   }
 
-  /** EventType → DOM 事件名映射 */
+  /** EventType → DOM event name mapping */
   private _toDOMEventType(eventType: EventType): string | null {
     switch (eventType) {
       case 'click': return 'click';
@@ -351,7 +351,7 @@ export class EventExecutionEngine {
       case 'mouseleave': return 'mouseleave';
       case 'vnodeMounted':
       case 'vnodeBeforeMount':
-        return null; // 生命周期事件，不映射 DOM 事件
+        return null; // lifecycle events do not map to DOM events
       default: return null;
     }
   }

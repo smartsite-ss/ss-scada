@@ -91,21 +91,21 @@ export class StatusMonitorService implements OnModuleInit, OnModuleDestroy {
 
   private config: MonitorConfig = DEFAULT_CONFIG;
 
-  // 设备状态存储
+  // Device status storage
   private deviceStatuses = new Map<string, DeviceStatus>();
 
-  // 采集指标存储（环形缓冲区）
+  // Collection-metric storage (ring buffer)
   private metricsBuffer = new Map<string, AcquisitionMetrics[]>();
 
-  // 系统性能历史
+  // System performance history
   private performanceHistory: SystemPerformance[] = [];
 
-  // 报警规则和活跃报警
+  // Alarm rules and active alarms
   private alertRules = new Map<string, AlertRule>();
   private activeAlerts = new Map<string, Alert>();
   private alertHistory: Alert[] = [];
 
-  // 定时器
+  // Timers
   private alertCheckInterval: NodeJS.Timeout | null = null;
   private performanceInterval: NodeJS.Timeout | null = null;
   private cleanupInterval: NodeJS.Timeout | null = null;
@@ -115,7 +115,7 @@ export class StatusMonitorService implements OnModuleInit, OnModuleDestroy {
   onModuleInit(): void {
     this.logger.log('StatusMonitorService initialized');
 
-    // 启动报警检查定时器
+    // Start the alarm-check timer
     if (this.config.alertCheckIntervalMs > 0) {
       this.alertCheckInterval = setInterval(
         () => this.checkAlerts(),
@@ -123,7 +123,7 @@ export class StatusMonitorService implements OnModuleInit, OnModuleDestroy {
       );
     }
 
-    // 启动性能更新定时器
+    // Start the performance-update timer
     if (this.config.performanceUpdateIntervalMs > 0) {
       this.performanceInterval = setInterval(
         () => this.updateSystemPerformance(),
@@ -131,13 +131,13 @@ export class StatusMonitorService implements OnModuleInit, OnModuleDestroy {
       );
     }
 
-    // 启动清理定时器
+    // Start the cleanup timer
     this.cleanupInterval = setInterval(
       () => this.cleanupOldMetrics(),
-      60000, // 每分钟清理一次
+      60000, // cleanup once per minute
     );
 
-    // 初始化默认报警规则
+    // Initialize default alarm rules
     this.initializeDefaultAlertRules();
   }
 
@@ -170,10 +170,10 @@ export class StatusMonitorService implements OnModuleInit, OnModuleDestroy {
       this.deviceStatuses.set(deviceId, status);
     }
 
-    // 更新字段
+    // Update fields
     Object.assign(status, updates);
 
-    // 处理连接状态变化
+    // Handle connection-status changes
     if (updates.connected !== undefined && updates.connected !== status.connected) {
       if (updates.connected) {
         status.lastConnectionTime = new Date();
@@ -198,15 +198,15 @@ export class StatusMonitorService implements OnModuleInit, OnModuleDestroy {
       this.metricsBuffer.set(key, buffer);
     }
 
-    // 添加到缓冲区
+    // Add to the buffer
     buffer.push(metric);
 
-    // 限制缓冲区大小
+    // Limit buffer size
     if (buffer.length > this.config.maxMetricsPerDevice) {
-      buffer.shift(); // 移除最旧的记录
+      buffer.shift(); // remove the oldest record
     }
 
-    // 发送事件
+    // Emit event
     this.eventEmitter.emit('acquisition.metric', metric);
   }
 
@@ -230,18 +230,18 @@ export class StatusMonitorService implements OnModuleInit, OnModuleDestroy {
     if (key) {
       metrics = this.metricsBuffer.get(key) || [];
     } else {
-      // 获取设备的所有标签指标
+      // Get all tag metrics for the device
       for (const [k, buffer] of this.metricsBuffer) {
         if (k.startsWith(`${deviceId}:`)) {
           metrics = metrics.concat(buffer);
         }
       }
 
-      // 按时间排序
+      // Sort by time
       metrics.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
     }
 
-    // 应用过滤条件
+    // Apply filter conditions
     if (options?.since) {
       metrics = metrics.filter((m) => m.timestamp >= options.since!);
     }
@@ -296,7 +296,7 @@ export class StatusMonitorService implements OnModuleInit, OnModuleDestroy {
       history = history.slice(-options.limit);
     }
 
-    return history.reverse(); // 最新的在前
+    return history.reverse(); // newest first
   }
 
   resolveAlert(alertId: string): void {
@@ -326,7 +326,7 @@ export class StatusMonitorService implements OnModuleInit, OnModuleDestroy {
     const devices = Array.from(this.deviceStatuses.values());
     const alerts = this.getAlertHistory({ limit: 100 });
 
-    // 计算最慢的设备
+    // Compute the slowest device
     const deviceLatencies = new Map<string, number[]>();
     for (const [, buffer] of this.metricsBuffer) {
       for (const metric of buffer) {
@@ -346,7 +346,7 @@ export class StatusMonitorService implements OnModuleInit, OnModuleDestroy {
       .sort((a, b) => b.avgLatency - a.avgLatency)
       .slice(0, 10);
 
-    // 计算错误最多的设备
+    // Compute the device with the most errors
     const deviceErrors = new Map<string, { count: number; total: number }>();
     for (const [, buffer] of this.metricsBuffer) {
       for (const metric of buffer) {
@@ -500,7 +500,7 @@ export class StatusMonitorService implements OnModuleInit, OnModuleDestroy {
 
     this.activeAlerts.set(alert.id, alert);
 
-    // 发送事件
+    // Emit event
     this.eventEmitter.emit('alert.triggered', alert);
 
     this.logger.warn(`Alert triggered: ${alert.message} [${rule.severity.toUpperCase()}]`);
@@ -527,13 +527,13 @@ export class StatusMonitorService implements OnModuleInit, OnModuleDestroy {
     const performance = this.calculateCurrentPerformance();
     this.performanceHistory.push(performance);
 
-    // 限制历史记录大小
+    // Limit history size
     if (this.performanceHistory.length > 1440) {
-      // 保留24小时的数据（每分钟一个点）
+      // Keep 24 hours of data (one point per minute)
       this.performanceHistory.shift();
     }
 
-    // 推送性能更新事件
+    // Push performance-update event
     if (this.config.enableWebSocketPush) {
       this.eventEmitter.emit('performance.update', performance);
     }
@@ -548,7 +548,7 @@ export class StatusMonitorService implements OnModuleInit, OnModuleDestroy {
     let totalLatency = 0;
     let recentMetrics = 0;
 
-    // 统计最近1分钟的指标
+    // Aggregate metrics for the last 1 minute
     const oneMinuteAgo = new Date(now - 60000);
 
     for (const [, buffer] of this.metricsBuffer) {
@@ -568,7 +568,7 @@ export class StatusMonitorService implements OnModuleInit, OnModuleDestroy {
 
     const connectedDevices = devices.filter((d) => d.connected).length;
 
-    // 获取内存使用情况
+    // Get memory usage
     const memoryUsage = process.memoryUsage();
 
     return {
@@ -577,12 +577,12 @@ export class StatusMonitorService implements OnModuleInit, OnModuleDestroy {
       disconnectedDevices: devices.length - connectedDevices,
       totalTags: this.metricsBuffer.size,
       activeTags: recentMetrics,
-      tagsPerSecond: recentMetrics / 60, // 近似值
+      tagsPerSecond: recentMetrics / 60, // approximation
       avgLatencyMs: totalMetrics > 0 ? totalLatency / totalMetrics : 0,
       successRate: totalMetrics > 0 ? (successCount / totalMetrics) * 100 : 100,
       errorRate: totalMetrics > 0 ? ((totalMetrics - successCount) / totalMetrics) * 100 : 0,
       memoryUsageMb: Math.round(memoryUsage.heapUsed / 1024 / 1024),
-      cpuUsagePercent: 0, // 需要额外库支持，暂设为0
+      cpuUsagePercent: 0, // requires an extra library; set to 0 for now
       timestamp: new Date(),
     };
   }
@@ -594,7 +594,7 @@ export class StatusMonitorService implements OnModuleInit, OnModuleDestroy {
     for (const [key, buffer] of this.metricsBuffer) {
       const beforeLength = buffer.length;
 
-      // 过滤掉旧记录
+      // Filter out old records
       const filtered = buffer.filter((m) => m.timestamp > cutoff);
       this.metricsBuffer.set(key, filtered);
 

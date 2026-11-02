@@ -3,16 +3,16 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 轻量 HTTP 客户端工具 — P1-T01 LLM API 接入
+ * Lightweight HTTP client util - P1-T01 LLM API access
  *
- * 使用 Node.js 内置 http/https 模块，避免引入 axios 等额外依赖。
- * 支持：
- *   - POST 请求（JSON body）
- *   - 流式响应（SSE 解析）
- *   - 超时控制
- *   - Bearer Token 鉴权
+ * Uses Node.js built-in http/https modules to avoid extra deps like axios.
+ * Supports:
+ *   - POST requests (JSON body)
+ *   - Streaming responses (SSE parsing)
+ *   - Timeout control
+ *   - Bearer token auth
  *
- * 仅用于 AI Provider 调用云端 API，不替代项目其他 HTTP 客户端。
+ * Only used for AI provider cloud API calls; does not replace other HTTP clients in the project.
  */
 
 import * as https from 'https';
@@ -24,9 +24,9 @@ export interface HttpRequestOptions {
   url: string;
   headers?: Record<string, string>;
   body?: any;
-  /** 请求超时（毫秒） */
+  /** Request timeout (ms) */
   timeoutMs?: number;
-  /** 是否流式响应（true: 返回 AsyncGenerator；false: 返回 buffer） */
+  /** Whether streaming response (true: returns AsyncGenerator; false: returns buffer) */
   stream?: boolean;
 }
 
@@ -36,7 +36,7 @@ export interface HttpResponse {
   body: string;
 }
 
-/** HTTP 错误（非 2xx） */
+/** HTTP error (non-2xx) */
 export class HttpError extends Error {
   constructor(
     public readonly statusCode: number,
@@ -49,7 +49,7 @@ export class HttpError extends Error {
   }
 }
 
-/** 超时错误 */
+/** Timeout error */
 export class HttpTimeoutError extends Error {
   constructor(url: string, timeoutMs: number) {
     super(`Request to ${url} timed out after ${timeoutMs}ms`);
@@ -58,7 +58,7 @@ export class HttpTimeoutError extends Error {
 }
 
 /**
- * 发送 HTTP 请求并返回完整响应（非流式）
+ * Send an HTTP request and return the full response (non-streaming)
  */
 export function httpRequest(options: HttpRequestOptions): Promise<HttpResponse> {
   return new Promise((resolve, reject) => {
@@ -116,9 +116,9 @@ export function httpRequest(options: HttpRequestOptions): Promise<HttpResponse> 
 }
 
 /**
- * 发送 HTTP 请求并以流式方式返回响应（SSE/Stream）
+ * Send an HTTP request and return the response as a stream (SSE/Stream)
  *
- * yield 字符串片段（已是 UTF-8 解码）。
+ * Yields string chunks (already UTF-8 decoded).
  */
 export async function* httpStream(
   options: HttpRequestOptions,
@@ -137,7 +137,7 @@ export async function* httpStream(
     headers['Content-Length'] = Buffer.byteLength(bodyStr).toString();
   }
 
-  // 先通过 Promise 等待响应头到达，再返回内部的 AsyncGenerator
+  // Await the response headers via a Promise first, then return the inner AsyncGenerator
   const generator = await new Promise<AsyncGenerator<string, void, unknown>>((resolve, reject) => {
     const req = lib.request(
       url,
@@ -186,14 +186,14 @@ export async function* httpStream(
     req.end();
   });
 
-  // 转发底层流的 chunk
+  // Forward chunks from the underlying stream
   yield* generator;
 }
 
 /**
- * 解析 SSE 文本流，提取 data: 字段内容
+ * Parse an SSE text stream, extracting the content of data: fields
  *
- * SSE 协议格式（OpenAI 兼容）：
+ * SSE protocol format (OpenAI-compatible):
  *   data: {"id":...}\n\n
  *   data: {"id":...}\n\n
  *   data: [DONE]\n\n

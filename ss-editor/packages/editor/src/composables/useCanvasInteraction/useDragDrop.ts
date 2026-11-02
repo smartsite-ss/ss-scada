@@ -20,25 +20,25 @@ export function useDragDrop(options: CanvasInteractionOptions) {
   const snapToGrid = ref(true);
   const gridSize = ref(20);
 
-  // ===== 智能对齐支持 =====
+  // ===== Smart alignment support =====
   const alignTargets = ref<AlignTarget[]>([]);
   const showAlignLines = ref(true);
 
-  // ===== 网格吸附支持 =====
+  // ===== Grid snapping support =====
   const snapTargets = ref<SnapTarget[]>([]);
   const showSnapIndicator = ref(true);
 
-  // ===== 拖拽状态追踪（修复坐标系问题）=====
+  // ===== Drag state tracking (fixes coordinate system issue) =====
   const isDragging = ref(false);
   const startDisplayPos = ref<{ x: number; y: number } | null>(null);
   const startGraphicLogicalPos = ref<{ x: number; y: number } | null>(null);
 
-  // 获取当前页面的缩放比例
+  // Get the current page's zoom scale
   const getScale = () => {
     return pageStore.currentPageScaleFactor;
   };
 
-  // 获取 SmartAlignManager 实例
+  // Get the SmartAlignManager instance
   const getSmartAlignManager = () => {
     try {
       const currentPage = pageStore.currentPage;
@@ -51,7 +51,7 @@ export function useDragDrop(options: CanvasInteractionOptions) {
     return null;
   };
 
-  // 获取 GridSnapManager 实例
+  // Get the GridSnapManager instance
   const getGridSnapManager = () => {
     try {
       const currentPage = pageStore.currentPage;
@@ -83,7 +83,7 @@ export function useDragDrop(options: CanvasInteractionOptions) {
     return graphic ? graphic.config.locked : false;
   };
 
-  // ===== 增强的拖拽处理 - 集成智能对齐和网格吸附 =====
+  // ===== Enhanced drag handling - integrates smart alignment and grid snapping =====
   const handleGraphicDrag = (
     event: MouseEvent,
     drawCanvas: DrawCanvasCallback
@@ -96,13 +96,13 @@ export function useDragDrop(options: CanvasInteractionOptions) {
     const displayY = event.clientY - rect.top;
     const viewState = { scale: getScale(), offset: { x: panX.value, y: panY.value } };
 
-    // 获取当前拖拽的图元
+    // Get the graphic being dragged
     const selectedGraphics = graphicStore.selectedGraphics || [];
     if (selectedGraphics.length === 0) return;
 
     const draggingGraphic = selectedGraphics[0];
 
-    // 记录拖拽起始位置（首次调用时）
+    // Record the drag start position (on first call)
     if (!isDragging.value || !startDisplayPos.value || !startGraphicLogicalPos.value) {
       isDragging.value = true;
       startDisplayPos.value = { x: displayX, y: displayY };
@@ -110,7 +110,7 @@ export function useDragDrop(options: CanvasInteractionOptions) {
       startGraphicLogicalPos.value = { x: graphicPos.x, y: graphicPos.y };
     }
 
-    // 基于偏移量计算新的逻辑坐标（修复坐标系问题）
+    // Calculate new logical coordinates from offsets (fixes coordinate system issue)
     const displayDeltaX = displayX - startDisplayPos.value.x;
     const displayDeltaY = displayY - startDisplayPos.value.y;
     const logicalDeltaX = displayDeltaX / viewState.scale;
@@ -119,7 +119,7 @@ export function useDragDrop(options: CanvasInteractionOptions) {
     const newLogicalX = startGraphicLogicalPos.value.x + logicalDeltaX;
     const newLogicalY = startGraphicLogicalPos.value.y + logicalDeltaY;
 
-    // 1. 检测智能对齐目标
+    // 1. Detect smart alignment targets
     const smartAlignManager = getSmartAlignManager();
     if (smartAlignManager && showAlignLines.value) {
       const otherGraphics = (graphicStore.sortedGraphics || []).filter(
@@ -128,7 +128,7 @@ export function useDragDrop(options: CanvasInteractionOptions) {
       const targets = smartAlignManager.detectAlignTargets(draggingGraphic, otherGraphics);
       alignTargets.value = targets;
 
-      // 如果有对齐目标，应用对齐
+      // If there is an alignment target, apply the alignment
       if (targets.length > 0) {
         smartAlignManager.applyAlignment(draggingGraphic, targets[0]);
         drawCanvas();
@@ -138,7 +138,7 @@ export function useDragDrop(options: CanvasInteractionOptions) {
       alignTargets.value = [];
     }
 
-    // 2. 网格吸附（基于正确的逻辑坐标）
+    // 2. Grid snapping (based on correct logical coordinates)
     const gridSnapManager = getGridSnapManager();
     if (gridSnapManager && snapToGrid.value) {
       const otherGraphics = (graphicStore.sortedGraphics || []).filter(
@@ -152,7 +152,7 @@ export function useDragDrop(options: CanvasInteractionOptions) {
 
       snapTargets.value = snapResult.targets;
 
-      // 应用吸附位置
+      // Apply the snapped position
       if (snapResult.targets.length > 0) {
         draggingGraphic.setPosition(snapResult.x, snapResult.y);
         drawCanvas();
@@ -162,24 +162,24 @@ export function useDragDrop(options: CanvasInteractionOptions) {
       snapTargets.value = [];
     }
 
-    // 3. 默认移动（基于正确的逻辑坐标）
+    // 3. Default movement (based on correct logical coordinates)
     const snappedPos = snapToGridPosition(newLogicalX, newLogicalY);
     draggingGraphic.setPosition(snappedPos.x, snappedPos.y);
     drawCanvas();
   };
 
-  // 重置拖拽状态（在 mouseup 时调用）
+  // Reset drag state (called on mouseup)
   const resetDragState = () => {
     isDragging.value = false;
     startDisplayPos.value = null;
     startGraphicLogicalPos.value = null;
   };
 
-  // 清除对齐和吸附指示器
+  // Clear alignment and snapping indicators
   const clearAlignAndSnapIndicators = () => {
     alignTargets.value = [];
     snapTargets.value = [];
-    resetDragState();  // 同时重置拖拽状态
+    resetDragState();  // also reset the drag state
   };
 
   const handleDragOver = (event: DragEvent) => {
@@ -199,7 +199,7 @@ export function useDragDrop(options: CanvasInteractionOptions) {
     const logicalPos = displayToLogical({ x: displayX, y: displayY }, viewState);
     const snappedPos = snapToGridPosition(logicalPos.x - 50, logicalPos.y - 25);
 
-    // 组件模板拖放：交给组件模板面板处理（读取/变量赋值/实例化）
+    // Component template drop: delegate to the component template panel (read/variable assignment/instantiation)
     const widgetTemplateId = event.dataTransfer?.getData(WIDGET_TEMPLATE_MIME);
     if (widgetTemplateId) {
       emitWidgetTemplateDrop({
@@ -216,7 +216,7 @@ export function useDragDrop(options: CanvasInteractionOptions) {
       drawCanvas();
     }
 
-    // 清除指示器
+    // Clear indicators
     clearAlignAndSnapIndicators();
   };
 
@@ -227,13 +227,13 @@ export function useDragDrop(options: CanvasInteractionOptions) {
     snapToGridPosition,
     toggleSnapToGrid,
     isGraphicLocked,
-    // 智能对齐
+    // Smart alignment
     alignTargets,
     showAlignLines,
-    // 网格吸附
+    // Grid snapping
     snapTargets,
     showSnapIndicator,
-    // 增强功能
+    // Enhanced features
     handleGraphicDrag,
     clearAlignAndSnapIndicators,
     resetDragState,

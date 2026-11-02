@@ -3,28 +3,28 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 数据驱动脚本示例
+ * Data-driven script examples
  *
- * === 场景说明 ===
- * 数据驱动是最常见的脚本使用场景。脚本绑定到某个标签的数据变化，
- * 当标签值更新时自动执行脚本，根据数据值判断并执行相应操作。
+ * === Scenario ===
+ * Data-driven is the most common script use case. A script is bound to a tag's data change,
+ * and when the tag value updates the script runs automatically, evaluating the value and performing the corresponding actions.
  *
- * === 触发方式 ===
- * - dataChange: 绑定到指定标签，数据变化时触发
- * - expression: 满足表达式条件时触发
+ * === Trigger modes ===
+ * - dataChange: bound to a specific tag, triggered on data change
+ * - expression: triggered when an expression condition is met
  *
- * === 常用 API 组合 ===
- * readTag / writeTag / getTagQuality    → 数据读写
- * setGraphicProps / showGraphic / hideGraphic → 图元控制
- * triggerAlarm / notify / log           → 告警通知
- * isAlarm / clamp / mapRange / colorForValue → 判断与计算
+ * === Common API combinations ===
+ * readTag / writeTag / getTagQuality    → data read/write
+ * setGraphicProps / showGraphic / hideGraphic → graphic control
+ * triggerAlarm / notify / log           → alarm notification
+ * isAlarm / clamp / mapRange / colorForValue → evaluation and calculation
  */
 
 import type { ScriptExample } from '../types';
 
 export const dataDrivenExamples: ScriptExample[] = [
   // ═══════════════════════════════════════════════════════════
-  // 示例 1：温度告警 + 图元变色
+  // Example 1: temperature alarm + graphic color change
   // ═══════════════════════════════════════════════════════════
   {
     id: 'data-driven-temp-alarm',
@@ -86,7 +86,7 @@ log('info', \`温度检查完成: \${round(temp, 1)}°C\`);
   },
 
   // ═══════════════════════════════════════════════════════════
-  // 示例 2：数据质量检查 + 安全读取
+  // Example 2: data quality check + safe read
   // ═══════════════════════════════════════════════════════════
   {
     id: 'data-driven-quality-check',
@@ -139,7 +139,7 @@ if (quality === 'good') {
   },
 
   // ═══════════════════════════════════════════════════════════
-  // 示例 3：多阈值区间 + 颜色映射
+  // Example 3: multi-threshold ranges + color mapping
   // ═══════════════════════════════════════════════════════════
   {
     id: 'data-driven-color-mapping',
@@ -185,7 +185,7 @@ log('info', \`压力读数: \${round(safePressure, 1)} kPa, 颜色: \${color}\`)
   },
 
   // ═══════════════════════════════════════════════════════════
-  // 示例 4：数据聚合 + 多标签写入
+  // Example 4: data aggregation + multi-tag write
   // ═══════════════════════════════════════════════════════════
   {
     id: 'data-driven-aggregation',

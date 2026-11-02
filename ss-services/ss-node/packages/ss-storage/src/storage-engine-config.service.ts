@@ -35,7 +35,7 @@ export class StorageEngineConfigService {
     if (!envValue) {
       return STORAGE_ENGINE_TYPES.INFLUXDB2;
     }
-    // 兼容存量 'influxdb' 别名（归一化为 'influxdb2'）
+    // Compatibility with the legacy 'influxdb' alias (normalized to 'influxdb2')
     const resolved = resolveStorageEngineType(envValue);
     if (resolved) {
       return resolved;

@@ -58,8 +58,8 @@ describe('useWsStore', () => {
     setActivePinia(createPinia());
     vi.clearAllMocks();
     mockSocket.connected = false;
-    // Mock requestAnimationFrame 同步执行，确保 WS 批处理在测试中立即生效
-    // 必须在 clearAllMocks 之后设置，否则会被清除
+    // Mock requestAnimationFrame to run synchronously so WS batching takes effect immediately in tests
+    // Must be set after clearAllMocks, otherwise it gets cleared
     let rafIdCounter = 0;
     globalThis.requestAnimationFrame = vi.fn((cb: FrameRequestCallback) => {
       const id = ++rafIdCounter;
@@ -171,8 +171,8 @@ describe('useWsStore', () => {
       const { getToken } = await import('../api/client');
       (getToken as any).mockReturnValueOnce(null);
 
-      // 调试免登录兜底（import.meta.env.DEV → debug-mock-token）会使无 token 路径
-      // 不可达，测试需临时关闭 DEV 模式以验证原始错误分支（见 stores/ws.store.ts）
+      // The debug no-login fallback (import.meta.env.DEV → debug-mock-token) makes the no-token path
+      // unreachable; tests need to temporarily disable DEV mode to verify the original error branch (see stores/ws.store.ts)
       const originalDev = import.meta.env.DEV;
       (import.meta.env as { DEV: boolean }).DEV = false;
       try {
@@ -491,7 +491,7 @@ describe('useWsStore', () => {
       const store = useWsStore();
       store.connect('proj-1');
 
-      // 先触发报警
+      // Trigger the alarm first
       const triggerHandler = mockSocket.on.mock.calls.find(
         (call: any[]) => call[0] === 'alarm:trigger',
       );
@@ -506,7 +506,7 @@ describe('useWsStore', () => {
       });
       expect(store.activeAlarms.get('alarm-1')?.state).toBe('active');
 
-      // 确认报警
+      // Acknowledge the alarm
       const ackHandler = mockSocket.on.mock.calls.find(
         (call: any[]) => call[0] === 'alarm:acknowledged',
       );
@@ -659,7 +659,7 @@ describe('useWsStore', () => {
       connectHandler[1]();
 
       mockSocket.emit.mockClear();
-      // 推进 25s 触发心跳
+      // Advance 25s to trigger the heartbeat
       vi.advanceTimersByTime(25000);
 
       expect(mockSocket.emit).toHaveBeenCalledWith('ping', {});
@@ -716,7 +716,7 @@ describe('useWsStore', () => {
   describe('error state', () => {
     it('should set error flag on connection failure', async () => {
       const store = useWsStore();
-      // connect_error 会 reject connect Promise，测试需捕获避免 unhandled rejection
+      // connect_error rejects the connect Promise; tests must catch it to avoid an unhandled rejection
       store.connect('proj-1').catch(() => void 0);
 
       const errorHandler = mockSocket.on.mock.calls.find(
@@ -795,7 +795,7 @@ describe('useWsStore', () => {
       const store = useWsStore();
       store.connect('proj-1');
 
-      // 填充数据
+      // Populate data
       const deviceHandler = mockSocket.on.mock.calls.find(
         (call: any[]) => call[0] === 'device:statusChange',
       );
@@ -900,7 +900,7 @@ describe('useWsStore', () => {
         timestamp: 1700000000000,
       });
 
-      // requestAnimationFrame mock 同步执行，flushTagUpdates 已触发
+      // requestAnimationFrame mock runs synchronously, flushTagUpdates has fired
       expect(store.tagFlushVersion).toBe(1);
     });
 
@@ -912,14 +912,14 @@ describe('useWsStore', () => {
         (call: any[]) => call[0] === 'data:update',
       );
 
-      // 单条 data:update → flush → 版本号 +1
+      // A single data:update → flush → version +1
       handler[1]({ tagId: 'tag-1', value: 25.5, quality: 'good', timestamp: 1000 });
       expect(store.tagFlushVersion).toBe(1);
       expect(store.tagValues.size).toBe(1);
       expect(store.tagValues.get('tag-1')?.value).toBe(25.5);
       expect(store.tagValues.get('tag-1')?.quality).toBe('good');
 
-      // 更新已存在的 tag（值变化）→ flush → 版本号再 +1
+      // Update an existing tag (value changed) → flush → version +1 again
       handler[1]({ tagId: 'tag-1', value: 30, quality: 'good', timestamp: 2000 });
       expect(store.tagFlushVersion).toBe(2);
       expect(store.tagValues.get('tag-1')?.value).toBe(30);
@@ -934,7 +934,7 @@ describe('useWsStore', () => {
       );
       expect(handler).toBeDefined();
 
-      // 一次批量推送多个 tag
+      // Push multiple tags in one batch
       handler[1]({
         data: [
           { tagId: 'tag-1', value: 42, quality: 'good', timestamp: 1 },
@@ -942,7 +942,7 @@ describe('useWsStore', () => {
         ],
       });
 
-      // 一次 flush 处理，版本号递增 1，tagValues 有 2 个条目
+      // Processed in one flush, version increments by 1, tagValues has 2 entries
       expect(store.tagFlushVersion).toBe(1);
       expect(store.tagValues.size).toBe(2);
       expect(store.tagValues.get('tag-1')?.value).toBe(42);
@@ -987,7 +987,7 @@ describe('useWsStore', () => {
         ],
       });
 
-      // requestAnimationFrame mock 同步触发 flush
+      // requestAnimationFrame mock synchronously triggers the flush
       expect(ScadaDataManager.eventBus.emit).toHaveBeenCalledTimes(2);
       expect(ScadaDataManager.eventBus.emit).toHaveBeenCalledWith(
         'tagValueChanged',

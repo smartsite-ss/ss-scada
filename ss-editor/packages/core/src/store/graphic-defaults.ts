@@ -5,8 +5,8 @@
 import { IGraphic } from '../types';
 
 /**
- * 图形查找缓存 — 按 zIndex 排序的结果缓存
- * 避免 sortedGraphics getter 中重复 sort
+ * Graphic lookup cache — cache of results sorted by zIndex
+ * Avoids repeated sort inside the sortedGraphics getter
  */
 export class GraphicLookupCache {
   private _cache: IGraphic[] | null = null;
@@ -27,10 +27,10 @@ export class GraphicLookupCache {
   }
 }
 
-// 全局单例缓存
+// Global singleton cache
 export const graphicCache = new GraphicLookupCache();
 
-/** 图元类型 → 数据绑定目标属性名 */
+/** Graphic type → data-binding target property name */
 export const DATA_BINDING_TARGETS: Record<string, string> = {
   'button': 'text',
   'input': 'value',
@@ -39,7 +39,7 @@ export const DATA_BINDING_TARGETS: Record<string, string> = {
   'naive-button': 'text',
 };
 
-/** 图元类型 → 默认样式 */
+/** Graphic type → default style */
 export const GRAPHIC_DEFAULT_STYLES: Record<string, Record<string, any>> = {
   'button': {
     text: '按钮', backgroundColor: '#2196f3', textColor: '#ffffff',
@@ -91,7 +91,7 @@ export const GRAPHIC_DEFAULT_STYLES: Record<string, Record<string, any>> = {
 };
 
 /**
- * 按路径从嵌套对象中读取值
+ * Read a value from a nested object by path
  */
 export function resolveDataPath(data: Record<string, any>, path: string): any {
   const parts = path.split('.');

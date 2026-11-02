@@ -3,10 +3,10 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 订阅消息服务（10 模块）
+ * Subscribe-message service (Module 10)
  *
- * 职责：授权结果上报（配额维护）/ 通知偏好读写 / 配额查询。
- * 授权上报需解析当前用户的小程序 openid（sys_users.wechat_mp_open_id）。
+ * Responsibilities: authorization-result reporting (quota maintenance) / notification-preference read-write / quota query.
+ * Authorization reporting needs to resolve the current user's mini-program openid (sys_users.wechat_mp_open_id).
  */
 import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -22,13 +22,13 @@ import {
 } from './entities/wechat-notification-preference.entity';
 import { WechatSubscribeMessageChannel } from './wechat-subscribe-message.channel';
 
-/** 授权上报结果（uni.requestSubscribeMessage 单模板结果） */
+/** Authorization-report result (uni.requestSubscribeMessage single-template result) */
 export interface AuthorizationReportDto {
   templateId: string;
   result: SubscribeAuthorizationStatus;
 }
 
-/** 通知偏好更新载荷 */
+/** Notification-preference update payload */
 export interface NotificationPreferenceDto {
   alarmNotificationEnabled?: boolean;
   minimumAlarmLevel?: MinimumAlarmLevel;
@@ -51,7 +51,7 @@ export class SubscribeMessageService {
     private readonly subscribeChannel: WechatSubscribeMessageChannel,
   ) {}
 
-  /** 订阅配置（前端授权流程使用：模板 ID 配置驱动，未配置返回空） */
+  /** Subscribe config (used by the frontend authorization flow: template-ID driven, empty when unconfigured) */
   getSubscribeConfig(): {
     alarmTemplateId: string;
     deviceStatusTemplateId: string;
@@ -65,8 +65,8 @@ export class SubscribeMessageService {
   }
 
   /**
-   * 上报订阅授权结果：accept 累加配额，其余仅记录状态
-   * @returns 最新剩余配额
+   * Report subscribe-authorization result: accept accumulates quota, others only record status
+   * @returns latest remaining quota
    */
   async reportAuthorization(userId: string, dto: AuthorizationReportDto): Promise<{ quotaRemaining: number }> {
     if (!dto.templateId || !VALID_AUTHORIZATION_RESULTS.includes(dto.result)) {
@@ -96,7 +96,7 @@ export class SubscribeMessageService {
     if (dto.result === 'accept') {
       authorization.quotaRemaining += 1;
     } else if (dto.result === 'ban') {
-      // 用户在设置中关闭订阅 → 配额失效
+      // User disabled subscription in settings -> quota invalidated
       authorization.quotaRemaining = 0;
     }
     await this.authorizationRepo.save(authorization);
@@ -107,7 +107,7 @@ export class SubscribeMessageService {
     return { quotaRemaining: authorization.quotaRemaining };
   }
 
-  /** 查询指定模板剩余配额（无记录视为 0） */
+  /** Query remaining quota for a template (no record counts as 0) */
   async getQuota(userId: string, templateId: string): Promise<{ quotaRemaining: number }> {
     const authorization = await this.authorizationRepo.findOne({
       where: { userId, templateId },
@@ -115,7 +115,7 @@ export class SubscribeMessageService {
     return { quotaRemaining: authorization?.quotaRemaining ?? 0 };
   }
 
-  /** 获取通知偏好（无记录返回默认值：开启 + 全级别） */
+  /** Get notification preference (returns default when no record: enabled + all levels) */
   async getPreferences(userId: string): Promise<WechatNotificationPreference> {
     const preference = await this.preferenceRepo.findOne({ where: { userId } });
     if (preference) {
@@ -128,7 +128,7 @@ export class SubscribeMessageService {
     });
   }
 
-  /** 更新通知偏好（upsert） */
+  /** Update notification preference (upsert) */
   async updatePreferences(
     userId: string,
     dto: NotificationPreferenceDto,

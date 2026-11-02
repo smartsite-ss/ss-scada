@@ -23,7 +23,7 @@ export class TemplateInitService implements OnModuleInit {
   }
 
   /**
-   * 确保模板目录存在，并加载所有语言的模板（由 TemplateLoaderService 管理）
+   * Ensure the template directory exists and load templates for all languages (managed by TemplateLoaderService)
    */
   private async ensureTemplatesDirectory(): Promise<void> {
     const basePath = this.indexService?.getBasePath();
@@ -31,10 +31,10 @@ export class TemplateInitService implements OnModuleInit {
       this.logger.log(`模板目录: ${basePath}`);
     }
 
-    // 多语言模板库由 TemplateLoaderService.loadAllLocales() 统一管理，
-    // 此处不再重建单一根目录 index.json
+    // The multi-language template library is managed centrally by TemplateLoaderService.loadAllLocales(),
+    // so no single root index.json is rebuilt here
     if (this.templateLoader) {
-      // loadAllLocales 已在 TemplateLoaderService 的 onModuleInit 中调用
+      // loadAllLocales is already called in TemplateLoaderService's onModuleInit
       const stats = this.templateLoader.getCacheStats();
       this.logger.log(
         `模板库加载完成: ${stats.count} 个模板, ${stats.industries.length} 个行业, ${stats.deviceTypes.length} 种设备类型`,

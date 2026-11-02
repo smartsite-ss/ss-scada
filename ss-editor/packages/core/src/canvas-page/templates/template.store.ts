@@ -3,12 +3,12 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 页面模板管理 — Pinia Store（双层级：系统级 + 项目级）
+ * Page template management — Pinia Store (two levels: system-level + project-level)
  *
- * 优先通过后端 API 读写 JSON 文件：
- *   系统级 → /api/v1/canvas-templates
- *   项目级 → /api/v1/projects/{projectId}/canvas-templates
- * API 不可用时降级到硬编码内置模板 + localStorage。
+ * Prefer reading/writing JSON files via the backend API:
+ *   system-level → /api/v1/canvas-templates
+ *   project-level → /api/v1/projects/{projectId}/canvas-templates
+ * Falls back to hard-coded built-in templates + localStorage when the API is unavailable.
  */
 
 import { defineStore } from 'pinia';
@@ -23,31 +23,31 @@ let currentProjectId: string | null = null;
 
 export const useTemplateStore = defineStore('canvas-page-template', {
   state: () => ({
-    /** 系统级模板（内置 + 用户提升的） */
+    /** System-level templates (built-in + user-promoted) */
     systemTemplates: [] as PageTemplate[],
-    /** 项目级模板 */
+    /** Project-level templates */
     projectTemplates: [] as PageTemplate[],
     selectedCategory: 'all' as TemplateCategory | 'all',
     searchKeyword: '',
     isLoading: false,
-    /** 模板应用模式：reference（引用）| copy（复制） */
+    /** Template apply mode: reference | copy */
     configMode: 'reference' as 'reference' | 'copy',
   }),
 
   getters: {
-    /** 系统内置模板 */
+    /** Built-in system templates */
     builtinTemplates(state): PageTemplate[] {
       return state.systemTemplates.filter(t => t.source === 'builtin');
     },
-    /** 系统用户模板（非内置） */
+    /** System user templates (non-built-in) */
     systemUserTemplates(state): PageTemplate[] {
       return state.systemTemplates.filter(t => t.source === 'user');
     },
-    /** 全部模板：项目模板优先，然后系统模板 */
+    /** All templates: project templates first, then system templates */
     allTemplates(state): PageTemplate[] {
       return [...state.projectTemplates, ...state.systemTemplates];
     },
-    /** 分类筛选后的模板 */
+    /** Templates filtered by category */
     filteredTemplates(state): PageTemplate[] {
       let templates = state.selectedCategory === 'all'
         ? this.allTemplates
@@ -64,15 +64,16 @@ export const useTemplateStore = defineStore('canvas-page-template', {
       return templates;
     },
     categories(): typeof TEMPLATE_CATEGORIES { return TEMPLATE_CATEGORIES; },
+    /** Whether user templates exist */
     hasUserTemplates(state): boolean {
       return state.projectTemplates.length > 0 || state.systemTemplates.some(t => t.source === 'user');
     },
   },
 
   actions: {
-    // ─── 配置 ───
+    // ─── Config ───
 
-    /** 获取后端模板配置（应用模式） */
+    /** Get backend template config (apply mode) */
     async fetchConfig() {
       try {
         const res = await fetch(`${API_BASE}/config`);
@@ -83,20 +84,20 @@ export const useTemplateStore = defineStore('canvas-page-template', {
           }
         }
       } catch {
-        // 保持默认值 'reference'
+        // Keep default value 'reference'
       }
     },
 
-    // ─── 项目上下文 ───
+    // ─── Project context ───
 
-    /** 设置当前项目 ID，确保后续操作（保存、提升等）使用正确的项目级 API 路径 */
+    /** Set the current project ID so subsequent operations (save, promote, etc.) use the correct project-level API path */
     setCurrentProjectId(projectId: string | null) {
       currentProjectId = projectId;
     },
 
-    // ─── 加载 ───
+    // ─── Loading ───
 
-    /** 加载两层模板（优先 API，降级 localStorage） */
+    /** Load the two template levels (prefer API, fall back to localStorage) */
     async loadTemplates(projectId?: string) {
       if (projectId) currentProjectId = projectId;
       this.isLoading = true;
@@ -129,7 +130,7 @@ export const useTemplateStore = defineStore('canvas-page-template', {
       }
     },
 
-    /** 仅加载系统模板（用于系统管理页） */
+    /** Load only system templates (for the system management page) */
     async loadSystemTemplates() {
       this.isLoading = true;
       try {
@@ -167,25 +168,25 @@ export const useTemplateStore = defineStore('canvas-page-template', {
       }
     },
 
-    // ─── 筛选 ───
+    // ─── Filtering ───
 
     setCategory(category: TemplateCategory | 'all') { this.selectedCategory = category; },
     setSearchKeyword(keyword: string) { this.searchKeyword = keyword; },
 
-    // ─── 查询 ───
+    // ─── Query ───
 
     findTemplate(templateId: string): PageTemplate | undefined {
       return this.allTemplates.find(t => t.id === templateId);
     },
 
-    /** 判断模板是否为项目级 */
+    /** Whether the template is project-level */
     isProjectTemplate(templateId: string): boolean {
       return this.projectTemplates.some(t => t.id === templateId);
     },
 
-    // ─── 创建/保存 ───
+    // ─── Create/Save ───
 
-    /** 保存为模板（默认保存到项目级，否则保存到系统级） */
+    /** Save as template (defaults to project-level, otherwise system-level) */
     async saveAsTemplate(
       templateInfo: {
         name: string;
@@ -243,7 +244,7 @@ export const useTemplateStore = defineStore('canvas-page-template', {
       }
     },
 
-    /** 复制模板 */
+    /** Duplicate template */
     async duplicateTemplate(templateId: string): Promise<PageTemplate | null> {
       const source = this.allTemplates.find(t => t.id === templateId);
       if (!source) return null;
@@ -260,7 +261,7 @@ export const useTemplateStore = defineStore('canvas-page-template', {
       }, !isProject);
     },
 
-    /** 提升项目模板为系统级 */
+    /** Promote a project template to system level */
     async promoteToSystem(templateId: string): Promise<PageTemplate | null> {
       if (!currentProjectId) return null;
       try {
@@ -281,7 +282,7 @@ export const useTemplateStore = defineStore('canvas-page-template', {
       }
     },
 
-    // ─── 更新 ───
+    // ─── Update ───
 
     async updateTemplate(templateId: string, updates: Partial<PageTemplate>): Promise<boolean> {
       const isProject = this.isProjectTemplate(templateId);
@@ -319,7 +320,7 @@ export const useTemplateStore = defineStore('canvas-page-template', {
       return this.updateTemplate(templateId, { name: newName });
     },
 
-    // ─── 删除 ───
+    // ─── Delete ───
 
     async deleteTemplate(templateId: string): Promise<boolean> {
       const isProject = this.isProjectTemplate(templateId);
@@ -348,7 +349,7 @@ export const useTemplateStore = defineStore('canvas-page-template', {
       }
     },
 
-    // ─── 导出/导入 ───
+    // ─── Export/Import ───
 
     async exportTemplate(templateId: string): Promise<string | null> {
       const template = this.allTemplates.find(t => t.id === templateId);
@@ -363,7 +364,7 @@ export const useTemplateStore = defineStore('canvas-page-template', {
         try {
           const res = await fetch(`${apiPath}/${templateId}/export`);
           if (res.ok) return await res.text();
-        } catch { /* 降级 */ }
+        } catch { /* fallback */ }
       }
 
       const serialized = { ...template, source: 'user' as const, id: undefined, thumbnail: undefined, createdAt: undefined, updatedAt: undefined };
@@ -401,7 +402,7 @@ export const useTemplateStore = defineStore('canvas-page-template', {
               return result.data;
             }
           }
-        } catch { /* 降级 */ }
+        } catch { /* fallback */ }
 
         const template: PageTemplate = {
           id: `tpl-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
@@ -419,13 +420,14 @@ export const useTemplateStore = defineStore('canvas-page-template', {
       }
     },
 
-    // ─── 内部工具 ───
+    // ─── Internal utils ───
 
     async fetchFromApi(url: string): Promise<PageTemplate[]> {
-    const res = await fetch(url, { credentials: 'include' });
+      const res = await fetch(url, { credentials: 'include' });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const raw = await res.json();
-      // 兼容全局 TransformInterceptor 包装的 { code, data, message } 和裸 { success, templates } 两种格式
+      // Compatible with both the global TransformInterceptor wrapper { code, data, message }
+      // and the bare { success, templates } format
       const result = raw.data || raw;
       if (!result.success || !Array.isArray(result.templates)) throw new Error('API 返回格式异常');
       return result.templates as PageTemplate[];

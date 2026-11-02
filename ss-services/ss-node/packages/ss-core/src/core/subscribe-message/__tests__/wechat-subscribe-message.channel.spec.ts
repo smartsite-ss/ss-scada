@@ -3,10 +3,11 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * WechatSubscribeMessageChannel 单元测试（10 模块）
+ * WechatSubscribeMessageChannel unit tests (Module 10)
  *
- * 覆盖：未配置跳过 / Mock 配额扣减 / 偏好关闭过滤 / 级别阈值过滤 /
- *       用户限频 / 真实模式成功扣配额 / 43101 配额清零
+ * Covers: skip when unconfigured / Mock quota deduction / preference-off filter /
+ * level-threshold filter /
+ *       per-user rate limit / real-mode successful quota deduction / 43101 quota reset
  */
 import { httpRequest } from '../../../ai/http-client.util';
 import { WechatSubscribeMessageChannel } from '../wechat-subscribe-message.channel';
@@ -19,7 +20,7 @@ jest.mock('../../../ai/http-client.util', () => ({
 
 const mockedHttpRequest = httpRequest as jest.MockedFunction<typeof httpRequest>;
 
-/** 备份并在每个用例前重置相关环境变量 */
+/** Back up and reset related env vars before each test case */
 const ENV_KEYS = [
   'WECHAT_MOCK',
   'WECHAT_MP_APPID',
@@ -153,11 +154,11 @@ describe('WechatSubscribeMessageChannel', () => {
     const repos = createRepos({ authorizations: [authorization], preferences: [preference] });
     const channel = createChannel(repos);
 
-    // warning < error 阈值 → 跳过
+    // warning < error threshold -> skip
     const skipped = await channel.notifySubscribedUsers(basePayload);
     expect(skipped).toBe(false);
 
-    // critical ≥ error 阈值 → 下发
+    // critical >= error threshold -> send
     const sent = await channel.notifySubscribedUsers({ ...basePayload, level: 'critical' });
     expect(sent).toBe(true);
     expect(authorization.quotaRemaining).toBe(0);
@@ -268,12 +269,12 @@ describe('WechatSubscribeMessageChannel', () => {
         headers: {},
         body: JSON.stringify({ errcode: 0, errmsg: 'ok' }),
       });
-    // 配额 2 保证两次发送均有授权；同实例 token 已缓存，第二次不会重复请求 token（calls: token=0、第一次=1、第二次=2）
+    // Quota 2 ensures both sends have authorization; same-instance token is cached, so the second send does not re-request token (calls: token=0, first=1, second=2)
     const authorization = createAuthorization({ quotaRemaining: 2 });
     const repos = createRepos({ authorizations: [authorization] });
     const channel = createChannel(repos);
 
-    // 无记录 ID：保持原落页；有记录 ID：附带参数供小程序直达详情
+    // No record ID: keep the original landing page; with record ID: attach params so the mini-program jumps straight to the detail page
     await channel.notifySubscribedUsers(basePayload);
     await channel.notifySubscribedUsers({ ...basePayload, alarmRecordId: 'alarm-record-1' });
 
@@ -309,7 +310,7 @@ describe('WechatSubscribeMessageChannel 设备状态通知（二期 10 #6）', (
 
     expect(result).toBe(true);
     expect(authorization.quotaRemaining).toBe(1);
-    // 占位模板 ID 参与授权查询与下发，跳转设备列表页由真实模式用例校验
+    // Placeholder template ID participates in authorization query and send; jump to device list page is verified by the real-mode test case
     expect(repos.authorizationRepo.find).toHaveBeenCalledWith({
       where: expect.objectContaining({ templateId: 'mock-device-status-template' }),
     });

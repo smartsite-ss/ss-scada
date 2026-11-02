@@ -4,7 +4,7 @@
 
 import type { IDataSourceDriver } from '../drivers/IDataSourceDriver';
 
-/** 标签值变更回调 */
+/** Tag value change callback */
 export type TagValueChangeHandler = (payload: {
   tagId: string;
   value: unknown;
@@ -21,7 +21,7 @@ export interface BindingInfo {
   tagId: string;
   filterScript?: string;
   driverScript?: string;
-  /** 图元属性路径，运行时 BindingManager.applyProperty 据此写入；缺省 'config.customProps.text' */
+  /** Graphic property path; runtime BindingManager.applyProperty writes here; defaults to 'config.customProps.text' */
   propertyPath?: string;
 }
 
@@ -41,14 +41,14 @@ export interface VariableInfo {
 }
 
 /**
- * SubscriptionManager — 数据订阅/取消/推送管理
+ * SubscriptionManager — data subscription/unsubscription/push management
  *
- * 职责：
- * - 管理图元绑定关系（graphicBindings）
- * - 管理变量元数据（variables）
- * - 管理标签值变更监听器（onTagValueChanged）
- * - 订阅/取消订阅标签数据
- * - 分发标签值变更通知
+ * Responsibilities:
+ * - Manage graphic binding relations (graphicBindings)
+ * - Manage variable metadata (variables)
+ * - Manage tag value change listeners (onTagValueChanged)
+ * - Subscribe/unsubscribe tag data
+ * - Dispatch tag value change notifications
  */
 export class SubscriptionManager {
   private _bindings: BindingInfo[] = [];
@@ -67,7 +67,7 @@ export class SubscriptionManager {
     return [...this._bindings];
   }
 
-  /** 按 tagId 检索所有相关绑定（供 DataPipelineBridge 执行 filter/driver 脚本） */
+  /** Retrieve all bindings related to a tagId (for DataPipelineBridge to run filter/driver scripts) */
   getBindingsByTagId(tagId: string): BindingInfo[] {
     return this._bindings.filter((b) => b.tagId === tagId);
   }
@@ -77,7 +77,7 @@ export class SubscriptionManager {
   }
 
   /**
-   * 注册标签值变更监听器，返回取消注册函数。
+   * Register a tag value change listener; returns an unregister function.
    */
   onTagValueChanged(handler: TagValueChangeHandler): () => void {
     this._tagChangeHandlers.push(handler);
@@ -90,7 +90,7 @@ export class SubscriptionManager {
   }
 
   /**
-   * 向驱动订阅指定标签
+   * Subscribe the specified tags with the driver
    */
   subscribeToSource(driver: IDataSourceDriver | undefined, tagIds: string[]): void {
     if (driver) {
@@ -99,7 +99,7 @@ export class SubscriptionManager {
   }
 
   /**
-   * 广播标签值变更给所有监听器。
+   * Broadcast tag value changes to all listeners.
    */
   notifyTagValueChanged(payload: {
     tagId: string;

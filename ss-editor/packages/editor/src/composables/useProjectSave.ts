@@ -41,8 +41,8 @@ export function useProjectSave(
 
   const restoreProject = async () => {
     try {
-      // 直接调用 load()，不再前置 hasSavedData() 检查
-      // hasSavedData() 会重复请求 /pages 和 /groups，与 load() 高度重叠
+      // Call load() directly, no longer doing the upfront hasSavedData() check
+      // hasSavedData() would re-request /pages and /groups, highly overlapping with load()
       const projectData = await saveServiceManager.load();
       if (projectData) {
         lastSavedTime.value = projectData.savedAt;

@@ -40,7 +40,7 @@ export interface MqttReadResult extends CollectorReadResult {
 /**
  * MQTT Protocol Adapter
  *
- * 支持主题订阅与发布，适用于物联网场景
+ * Supports topic subscription and publishing; suitable for IoT scenarios
  */
 @Injectable()
 @CollectorPlugin({
@@ -70,7 +70,7 @@ export interface MqttReadResult extends CollectorReadResult {
 export class MqttService extends BaseCollectorService {
   private messageHandlers = new Map<string, (topic: string, message: Buffer) => void>();
 
-  /** 获取所有设备的连接状态（与 ModbusService/S7Service 保持一致） */
+  /** Get connection status of all devices (consistent with ModbusService/S7Service) */
   getAllConnectionStatus(): Map<string, boolean> {
     const result = new Map<string, boolean>();
     for (const [deviceId] of this.getClientEntries()) {
@@ -79,7 +79,7 @@ export class MqttService extends BaseCollectorService {
     return result;
   }
 
-  /** 检查指定设备是否已连接 */
+  /** Check whether a given device is connected */
   isConnected(deviceId: string): boolean {
     return this.getConnectionStatus(deviceId);
   }
@@ -104,7 +104,7 @@ export class MqttService extends BaseCollectorService {
       will: deviceConfig.will,
     };
 
-    // 已连接且客户端仍然 connected 则直接返回
+    // Already connected and client still connected -> return directly
     if (alreadyConnected) {
       const entries = this.getClientEntries();
       const entry = entries.get(clientId);
@@ -112,7 +112,7 @@ export class MqttService extends BaseCollectorService {
         this.logger.log(`MQTT client ${clientId} already connected`);
         return { type: 'mqtt', clientId, config };
       }
-      // 客户端已断开，继续重新连接
+      // Client is disconnected, keep reconnecting
     }
 
     try {
@@ -168,7 +168,7 @@ export class MqttService extends BaseCollectorService {
     }
   }
 
-  /** 带错误捕获的标签读取（覆盖基类的重试版本） */
+  /** Tag read with error capture (overrides the base class retry version) */
   async readTag(client: any, tagConfig: Record<string, any>): Promise<MqttReadResult> {
     const tagId = tagConfig.id || 'unknown-tag';
     const topic = tagConfig.topic;
@@ -196,7 +196,7 @@ export class MqttService extends BaseCollectorService {
     }
   }
 
-  /** 带错误捕获的标签写入 */
+  /** Tag write with error capture */
   async writeTag(client: any, tagConfig: Record<string, any>, value: any): Promise<void> {
     const tagId = tagConfig.id || 'unknown-tag';
     const topic = tagConfig.topic;
@@ -330,7 +330,7 @@ export class MqttService extends BaseCollectorService {
     return { valid: errors.length === 0, errors };
   }
 
-  // ---- MQTT 特有方法 ----
+  // ---- MQTT-specific methods ----
 
   async publish(
     client: any,
@@ -391,15 +391,15 @@ export class MqttService extends BaseCollectorService {
   }
 
   /**
-   * 处理订阅收到的 MQTT 消息，按标签的 jsonPath 配置提取值。
+   * Handle an MQTT message received via subscription, extracting values per tag's jsonPath config.
    *
-   * 适用于一条 MQTT 消息包含多个标签数据的场景：
-   * 消息体为 JSON，每个标签通过自身的 `jsonPath` 从中提取对应字段。
+   * For the case where one MQTT message contains data for multiple tags:
+   * the body is JSON, and each tag extracts its field via its own `jsonPath`.
    *
-   * @param tags     订阅该 topic 的标签列表（需包含 jsonPath 配置）
-   * @param _topic   接收到消息的 topic
-   * @param message  MQTT 消息体
-   * @returns 每个配置了 jsonPath 的标签对应的读取结果数组
+   * @param tags     list of tags subscribed to this topic (must include jsonPath config)
+   * @param _topic   the topic the message was received on
+   * @param message the MQTT message body
+   * @returns an array of read results, one per tag that has a jsonPath configured
    */
   processMessage(tags: ITagContext[], _topic: string, message: Buffer): MqttReadResult[] {
     const results: MqttReadResult[] = [];
@@ -409,7 +409,7 @@ export class MqttService extends BaseCollectorService {
     try {
       parsed = JSON.parse(message.toString());
     } catch {
-      // 非 JSON 消息，所有 jsonPath 标签均提取失败
+      // Non-JSON message: all jsonPath tags fail to extract
       for (const tag of tags) {
         if (!tag.jsonPath) continue;
         results.push({

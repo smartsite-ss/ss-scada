@@ -19,12 +19,13 @@ import { IsolationFactory } from './isolation/isolation-factory';
 @Module({})
 export class PluginModule {
   /**
-   * 注册插件管理模块
+   * Register the plugin management module
    *
-   * PluginExplorerService 通过 PROVIDER_SCANNER 字符串令牌注入提供者扫描能力，
-   * 实物实现由 app.module.ts 在根上下文提供，避免 pnpm 重复 @nestjs/core 导致 DI 令牌不匹配。
+   * PluginExplorerService injects the provider-scanning capability via the PROVIDER_SCANNER string token,
+   * whose concrete implementation is provided by app.module.ts in the root context, avoiding a DI token
+   * mismatch caused by pnpm duplicating @nestjs/core.
    *
-   * @param options.autoDiscover 是否启用启动时自动发现（默认 true）
+   * @param options.autoDiscover whether to enable auto-discovery at startup (default true)
    */
   static forRoot(options?: PluginModuleOptions): DynamicModule {
     return {

@@ -22,7 +22,7 @@ export const useDeviceStore = defineStore('device', () => {
   const currentDeviceTags = ref<DataTag[]>([]);
   const groups = ref<DeviceGroup[]>([]);
   const groupTree = ref<DeviceTree[]>([]);
-  /** 未分组的设备（挂载在项目节点下） */
+  /** Ungrouped devices (mounted under the project node) */
   const rootDevices = ref<DeviceSummary[]>([]);
   const pagination = ref<PaginationInfo>({
     page: 1,
@@ -51,7 +51,7 @@ export const useDeviceStore = defineStore('device', () => {
   }
 
   /**
-   * 静默刷新设备列表（不显示 loading，用于定时刷新 lastOnlineAt / lastDataAt 等字段）
+   * Silently refresh the device list (no loading shown; used to periodically refresh lastOnlineAt / lastDataAt and similar fields)
    */
   async function silentRefreshDevices(projectId: string, page = 1, pageSize = 20, keyword?: string) {
     try {
@@ -59,7 +59,7 @@ export const useDeviceStore = defineStore('device', () => {
       devices.value = res.data || [];
       pagination.value = res.pagination || { page: 1, pageSize: 20, total: 0, totalPages: 0 };
     } catch {
-      // 静默失败，不影响当前显示
+      // Fail silently without affecting the current display
     }
   }
 
@@ -190,7 +190,7 @@ export const useDeviceStore = defineStore('device', () => {
     error.value = null;
     try {
       const res: any = await deviceApi.getGroupTree(projectId);
-      // 后端返回 { projectId, projectName, groups: [...], rootDevices: [...] }
+      // The backend returns { projectId, projectName, groups: [...], rootDevices: [...] }
       const body = res.data || res;
       groupTree.value = body?.groups || (Array.isArray(body) ? body : []) || [];
       rootDevices.value = Array.isArray(body?.rootDevices) ? body.rootDevices : [];

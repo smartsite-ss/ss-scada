@@ -5,12 +5,12 @@
 import { usePageStore } from './page.store';
 import { GRAPHIC_DEFAULT_STYLES } from './graphic-defaults';
 
-/** 样式操作需要的 store 状态子集 */
+/** Store state subset required for style operations */
 export interface StyleStoreState {
   styleClipboard: Record<string, any> | null;
 }
 
-/** 样式管理 - 应用样式 */
+/** Style management - apply style */
 export function applyStyleHelper(graphicId: string, style: Record<string, any>) {
   const pageStore = usePageStore();
   const currentPage = pageStore.currentPage;
@@ -23,7 +23,7 @@ export function applyStyleHelper(graphicId: string, style: Record<string, any>) 
   }
 }
 
-/** 样式管理 - 复制样式 */
+/** Style management - copy style */
 export function copyStyleHelper(store: StyleStoreState, sourceGraphicId: string) {
   const pageStore = usePageStore();
   const currentPage = pageStore.currentPage;
@@ -39,7 +39,7 @@ export function copyStyleHelper(store: StyleStoreState, sourceGraphicId: string)
   return false;
 }
 
-/** 样式管理 - 粘贴样式 */
+/** Style management - paste style */
 export function pasteStyleHelper(store: StyleStoreState, targetGraphicId: string) {
   const pageStore = usePageStore();
   const currentPage = pageStore.currentPage;
@@ -61,7 +61,7 @@ export function pasteStyleHelper(store: StyleStoreState, targetGraphicId: string
   return false;
 }
 
-/** 样式管理 - 重置样式 */
+/** Style management - reset style */
 export function resetStyleHelper(graphicId: string) {
   const pageStore = usePageStore();
   const currentPage = pageStore.currentPage;
@@ -77,7 +77,7 @@ export function resetStyleHelper(graphicId: string) {
   }
 }
 
-/** 应用属性到图元 */
+/** Apply a property to a graphic */
 export function applyPropertyHelper(graphicId: string, propertyPath: string, value: any) {
   const pageStore = usePageStore();
   const currentPage = pageStore.currentPage;
@@ -86,8 +86,8 @@ export function applyPropertyHelper(graphicId: string, propertyPath: string, val
   const graphic = currentPage.graphics.find((g) => g.id === graphicId);
   if (!graphic) return;
 
-  // propertyPath 格式为 'config.customProps.text'，但 target 初始已是 graphic.config，
-  // 需去掉 'config.' 前缀，否则会多嵌套一层（写入 graphic.config.config.customProps.text）
+  // propertyPath is like 'config.customProps.text', but target already starts at graphic.config,
+  // so strip the 'config.' prefix to avoid an extra nesting level (writing graphic.config.config.customProps.text)
   const normalizedPath = propertyPath.startsWith('config.')
     ? propertyPath.substring('config.'.length)
     : propertyPath;
@@ -105,7 +105,7 @@ export function applyPropertyHelper(graphicId: string, propertyPath: string, val
   currentPage.updateGraphic(graphicId, { config: { ...graphic.config } });
 }
 
-/** 应用质量指示器 */
+/** Apply quality indicator */
 export function applyQualityIndicatorHelper(graphicId: string, quality: string) {
   const pageStore = usePageStore();
   const currentPage = pageStore.currentPage;

@@ -3,10 +3,11 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 首页仪表盘聚合服务（02 模块）
+ * Homepage dashboard aggregation service (module 02)
  *
- * 单次聚合查询：设备五态统计（复用 DeviceService）+ 当日报警分级计数（SQL 聚合）
- * + 活跃未确认报警计数；结果带 30s 内存缓存，避免小程序高频 onShow 重复打聚合查询。
+ * Single aggregation query: device five-state stats (reuses DeviceService) + today's alarm severity counts (SQL aggregation)
+ * + active unacknowledged alarm count; results carry a 30s in-memory cache to avoid repeated aggregation queries from the
+ * mini-program's high-frequency onShow.
  */
 import { Injectable, Logger, Inject, Optional } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
@@ -16,10 +17,10 @@ import { ProjectDatabaseService } from '@ss-node/ss-core';
 import { DeviceService } from '@ss-node/ss-device';
 import { AlarmRecord, AlarmLevel, AlarmStatus } from '@ss-node/ss-alarm';
 
-/** 服务端聚合缓存有效期（毫秒） */
+/** Server-side aggregation cache TTL (ms) */
 const DASHBOARD_CACHE_TTL_MS = 30_000;
 
-/** 仪表盘聚合摘要（与小程序 dashboard.api.ts 的 DashboardSummary 契约一致） */
+/** Dashboard aggregation summary (consistent with DashboardSummary in the mini-program's dashboard.api.ts contract) */
 export interface DashboardSummary {
   deviceTotal: number;
   deviceOnlineCount: number;
@@ -28,13 +29,13 @@ export interface DashboardSummary {
   deviceDegradedCount: number;
   deviceErrorCount: number;
   totalTagCount: number;
-  /** 当日报警总数（本地时区 0 点起） */
+  /** Total alarms today (from local-timezone midnight) */
   todayAlarmTotalCount: number;
-  /** 当日报警按级别计数 */
+  /** Today's alarm counts by severity */
   todayAlarmCountByLevel: Record<AlarmLevel, number>;
-  /** 当前活跃未确认报警数（用于角标） */
+  /** Current active unacknowledged alarm count (for the badge) */
   activeUnacknowledgedAlarmCount: number;
-  /** 聚合时间戳（毫秒，缓存新鲜度标注用） */
+  /** Aggregation timestamp (ms, used to mark cache freshness) */
   generatedAt: number;
 }
 
@@ -61,9 +62,9 @@ export class DashboardService {
   }
 
   /**
-   * 获取仪表盘聚合摘要
-   * @param forceRefresh true 时绕过缓存重新聚合（下拉刷新场景）
-   * @param roleId 角色 ID（透传给设备统计做授权过滤）
+   * Get the dashboard aggregation summary
+   * @param forceRefresh when true, bypass the cache and re-aggregate (pull-to-refresh scenario)
+   * @param roleId the role ID (passed through to device stats for authorization filtering)
    */
   async getSummary(
     projectId: string,
@@ -104,8 +105,8 @@ export class DashboardService {
   }
 
   /**
-   * 单条聚合查询：当日分级计数 + 活跃未确认计数在数据库侧完成，
-   * 避免将报警记录拉入内存（同 AlarmStatisticsService 聚合模式）
+   * Single aggregation query: today's severity counts + active unacknowledged count are computed on the database side,
+   * avoiding pulling alarm records into memory (same aggregation pattern as AlarmStatisticsService)
    */
   private async aggregateAlarms(projectId: string): Promise<{
     todayTotal: number;
@@ -166,13 +167,13 @@ export class DashboardService {
     };
   }
 
-  /** 本地时区当日 0 点（与小程序端"当日"口径一致） */
+  /** Local-timezone midnight today (consistent with the mini-program's "today" definition) */
   private getStartOfToday(): Date {
     const now = new Date();
     return new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
   }
 
-  /** 项目隔离库模式：按项目取独立库的 AlarmRecord 仓储（同 AlarmStatisticsService 模式） */
+  /** Project-isolated-database mode: take the per-project independent database's AlarmRecord repository (same pattern as AlarmStatisticsService) */
   private async getRepo(projectId: string): Promise<Repository<AlarmRecord>> {
     if (this.dbMode === 'isolated' && this.projectDbService) {
       const ds = await this.projectDbService.getSystemDb(projectId);

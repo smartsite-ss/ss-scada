@@ -40,7 +40,7 @@ export class AlarmNotificationService {
     { type: 'sms', enabled: false, config: { provider: '', apiKey: '', phones: [] } },
     { type: 'tts', enabled: false, config: { provider: '', apiKey: '', phones: [] } },
     { type: 'webhook', enabled: false, config: { url: '', headers: {} } },
-    // 微信小程序订阅消息：模板配置驱动，未配置（且非 Mock）时禁用；默认报警规则无需显式勾选即下发给已订阅用户（通道内部按配额/偏好过滤）
+    // WeChat mini-program subscription messages: template-config driven; disabled when unconfigured (and not Mock); default alarm rules are pushed to subscribed users without explicit opt-in (the channel filters by quota/preference internally)
     {
       type: 'wechatSubscribe',
       enabled:
@@ -131,10 +131,10 @@ export class AlarmNotificationService {
     this.logger.log(`[EMAIL] To: ${channel.config.to} | Subject: ${template.subject}`);
     this.logger.log(`[EMAIL] Body: ${template.body.substring(0, 200)}...`);
 
-    // 如果配置了 SMTP，通过 nodemailer 发送
+    // If SMTP is configured, send via nodemailer
     if (channel.config.smtpHost) {
       try {
-        // 动态导入 nodemailer（避免硬依赖）
+        // Dynamically import nodemailer (avoid a hard dependency)
         const nodemailer = await this.loadNodemailer();
         if (nodemailer) {
           const transporter = nodemailer.createTransport({
@@ -160,7 +160,7 @@ export class AlarmNotificationService {
     }
   }
 
-  /** 构建邮件模板（支持变量替换） */
+  /** Build the email template (supports variable substitution) */
   private buildEmailTemplate(payload: NotificationPayload): { subject: string; body: string } {
     const levelLabels: Record<string, string> = {
       info: '信息',
@@ -189,7 +189,7 @@ export class AlarmNotificationService {
     return { subject, body };
   }
 
-  /** 动态加载 nodemailer */
+  /** Load nodemailer dynamically */
   private async loadNodemailer(): Promise<{
     createTransport(config: Record<string, unknown>): {
       sendMail(options: Record<string, unknown>): Promise<unknown>;
@@ -231,7 +231,7 @@ export class AlarmNotificationService {
   }
 
   /**
-   * 通过短信通道分发报警通知（内部调度）
+   * Dispatch alarm notifications via the SMS channel (internal scheduling)
    */
   private async dispatchSmsNotification(payload: NotificationPayload): Promise<void> {
     const channel = this.channels.find((c) => c.type === 'sms');
@@ -257,7 +257,7 @@ export class AlarmNotificationService {
   }
 
   /**
-   * 通过 TTS 语音通道分发报警通知（内部调度）
+   * Dispatch alarm notifications via the TTS voice channel (internal scheduling)
    */
   private async dispatchTtsNotification(payload: NotificationPayload): Promise<void> {
     const channel = this.channels.find((c) => c.type === 'tts');
@@ -283,9 +283,9 @@ export class AlarmNotificationService {
   }
 
   /**
-   * 通过微信小程序订阅消息通道分发报警通知（内部调度）
-   * 通道未注入（模块未注册）时安全降级为日志；
-   * 接收人由通道内部按授权配额 + 通知偏好 + 限频过滤，无需外部指定。
+   * Dispatch alarm notifications via the WeChat mini-program subscription-message channel (internal scheduling)
+   * Safely degrades to logging when the channel is not injected (module not registered);
+   * recipients are filtered internally by the channel via authorization quota + notification preference + rate limiting, so no external spec is needed.
    */
   private async dispatchWechatSubscribeNotification(payload: NotificationPayload): Promise<void> {
     const channel = this.channels.find((c) => c.type === 'wechatSubscribe');
@@ -296,7 +296,7 @@ export class AlarmNotificationService {
         title: payload.ruleName,
         message: payload.message,
         level: payload.level,
-        // 随跳转页携带报警记录 ID（二期 10 #7：小程序冷启动直达报警详情）
+        // Carry the alarm record ID with the jump page (phase 2, 10 #7: mini-program cold-start deep-links to alarm details)
         alarmRecordId: payload.alarmId,
         timestamp: payload.timestamp,
       });
@@ -308,9 +308,9 @@ export class AlarmNotificationService {
   }
 
   /**
-   * 发送短信通知（直接调用）
-   * @param phoneNumbers 手机号列表
-   * @param alarm 报警记录
+   * Send an SMS notification (direct call)
+   * @param phoneNumbers phone number list
+   * @param alarm the alarm record
    */
   async sendSms(phoneNumbers: string[], alarm: AlarmRecord): Promise<void> {
     if (!phoneNumbers.length) {
@@ -331,9 +331,9 @@ export class AlarmNotificationService {
   }
 
   /**
-   * 发送 TTS 语音通知（直接调用）
-   * @param phoneNumbers 被叫号码列表
-   * @param alarm 报警记录
+   * Send a TTS voice notification (direct call)
+   * @param phoneNumbers called-number list
+   * @param alarm the alarm record
    */
   async sendTts(phoneNumbers: string[], alarm: AlarmRecord): Promise<void> {
     if (!phoneNumbers.length) {
@@ -354,7 +354,7 @@ export class AlarmNotificationService {
   }
 
   /**
-   * 将内部 NotificationPayload 转换为通道 NotificationPayload
+   * Convert the internal NotificationPayload into the channel NotificationPayload
    */
   private toChannelPayload(payload: NotificationPayload): ChannelNotificationPayload {
     return {
@@ -366,7 +366,7 @@ export class AlarmNotificationService {
   }
 
   /**
-   * 将 AlarmRecord 转换为通道 NotificationPayload
+   * Convert the AlarmRecord into the channel NotificationPayload
    */
   private alarmToChannelPayload(alarm: AlarmRecord): ChannelNotificationPayload {
     const ruleName = alarm.rule?.name || '报警通知';
@@ -402,7 +402,7 @@ export class AlarmNotificationService {
     await this.sendHttpPost(url, body, headers);
   }
 
-  /** 发送 HTTP POST 请求（支持 http 和 https） */
+  /** Send an HTTP POST request (supports both http and https) */
   private sendHttpPost(
     urlString: string,
     body: string,

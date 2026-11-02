@@ -6,7 +6,7 @@ import { i18n, registerLocaleModules } from '@scada-editor/core';
 import { createPlugin } from '@scada-editor/plugin-sdk';
 import pkg from './package.json';
 
-// 动态扫描 locales 目录，新增语言只需添加对应 json 文件，无需改动本文件
+// Dynamically scan the locales directory; adding a new language only requires adding the corresponding json file, no changes to this file needed
 registerLocaleModules(import.meta.glob('./locales/*.json', { eager: true }));
 
 import { TagVariablePlugin } from './TagVariablePlugin';

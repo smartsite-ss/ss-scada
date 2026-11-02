@@ -3,7 +3,7 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * Prompt 版本管理 Service 单元测试 — P2-T08
+ * Prompt version-management Service unit tests - P2-T08
  */
 
 import { PromptVersionService } from '../prompt-version.service';
@@ -101,8 +101,8 @@ describe('PromptVersionService — 版本管理', () => {
     const { service, mockVersionRepo, mockPromptRepo } = makeService();
     mockVersionRepo.findOne = jest
       .fn()
-      .mockResolvedValueOnce({ id: 'v2', promptId: 'p1', status: 'draft' }) // 目标
-      .mockResolvedValueOnce(null); // 旧 active 不存在
+      .mockResolvedValueOnce({ id: 'v2', promptId: 'p1', status: 'draft' }) // target
+      .mockResolvedValueOnce(null); // legacy active does not exist
 
     await service.publishVersion('v2');
     expect(mockVersionRepo.update).toHaveBeenCalledWith('v2', { status: 'active' });
@@ -125,8 +125,8 @@ describe('PromptVersionService — 版本管理', () => {
     const { service, mockVersionRepo } = makeService();
     mockVersionRepo.findOne = jest
       .fn()
-      .mockResolvedValueOnce({ id: 'v2', promptId: 'p1', status: 'archived' }) // 目标
-      .mockResolvedValueOnce({ id: 'v1', promptId: 'p1', status: 'active' }); // 当前
+      .mockResolvedValueOnce({ id: 'v2', promptId: 'p1', status: 'archived' }) // target
+      .mockResolvedValueOnce({ id: 'v1', promptId: 'p1', status: 'active' }); // current
 
     await service.rollbackToVersion('v2');
     expect(mockVersionRepo.update).toHaveBeenCalledWith('v1', { status: 'archived' });

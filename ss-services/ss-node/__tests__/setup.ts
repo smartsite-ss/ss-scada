@@ -2,11 +2,11 @@
 // https://smartsite.top/
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
-// 设置测试环境变量
+// Set test environment variables
 process.env.NODE_ENV = 'test';
 process.env.LOG_LEVEL = 'silent';
 
-// Mock日期时间（用于时间相关测试）
+// Mock date/time (for time-related tests)
 beforeAll(() => {
   jest.useFakeTimers();
 });
@@ -15,7 +15,7 @@ afterAll(() => {
   jest.useRealTimers();
 });
 
-// 全局错误处理
+// Global error handling
 process.on('unhandledRejection', (error) => {
   fail(`Unhandled Promise Rejection: ${error}`);
 });

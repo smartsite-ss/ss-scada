@@ -63,7 +63,7 @@ export class SystemController {
     return this.systemService.getInfo();
   }
 
-  // ──────────── 错误日志管理 ────────────
+  // ──────────── Error log management ────────────
 
   @Get('errors')
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -92,7 +92,7 @@ export class SystemController {
     return { ok: true };
   }
 
-  // ──────────── 系统配置管理 ────────────
+  // ──────────── System config management ────────────
 
   @Get('configs')
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -143,7 +143,7 @@ export class SystemController {
     return { ok: true };
   }
 
-  // ──────────── 操作日志 ────────────
+  // ──────────── Operation logs ────────────
 
   @Get('operation-logs')
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -172,14 +172,14 @@ export class SystemController {
     const size = pageSize ? Math.min(100, Math.max(1, parseInt(pageSize, 10))) : 20;
 
     const where: any = {};
-    // action 字段格式为 "METHOD /path"（如 "GET /api/v1/projects"），
-    // 筛选方法时传 "GET" 等前缀，用 Like 匹配所有该方法请求
+    // The action field format is "METHOD /path" (e.g. "GET /api/v1/projects"),
+    // so method filtering passes prefixes like "GET" and matches all requests of that method with Like
     if (action) where.action = Like(`${action} %`);
     if (userId) where.userId = userId;
     if (username) where.username = username;
     if (status) where.status = status;
 
-    // 时间范围筛选（startDate 为当天 00:00:00，endDate 为当天 23:59:59）
+    // Time-range filter (startDate is 00:00:00 of that day, endDate is 23:59:59 of that day)
     if (startDate && endDate) {
       where.createdAt = Between(new Date(startDate + 'T00:00:00'), new Date(endDate + 'T23:59:59'));
     } else if (startDate) {

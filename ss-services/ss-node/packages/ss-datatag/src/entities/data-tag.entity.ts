@@ -142,7 +142,7 @@ export class DataTag extends ProjectScopedEntity {
   @Column({ name: 'deviceId' })
   deviceId: string;
 
-  /** 关联的模板变量 GUID（null 表示手动创建的标签，不参与模板同步） */
+  /** Associated template-variable GUID (null means a manually created tag that does not participate in template sync) */
   @Column({ name: 'template_variable_guid', type: 'varchar', length: 36, nullable: true })
   templateVariableGuid?: string | null;
 }

@@ -5,19 +5,19 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { DeadbandMode } from '../entities/data-tag.entity';
 
-/** 死区过滤结果 */
+/** Deadband-filter result */
 export interface DeadbandFilterResult {
-  /** 是否应该上报 */
+  /** Whether it should be reported */
   shouldReport: boolean;
-  /** 过滤原因 */
+  /** Filter reason */
   reason?: string;
-  /** 变化量 */
+  /** Amount of change */
   delta?: number;
-  /** 变化百分比 */
+  /** Percentage of change */
   deltaPercent?: number;
 }
 
-/** 死区状态记录 */
+/** Deadband state record */
 interface DeadbandState {
   lastValue: number;
   lastReportedAt: number;
@@ -30,10 +30,10 @@ export class DeadbandFilterService {
   private readonly states = new Map<string, DeadbandState>();
 
   /**
-   * 判断数据点是否应该上报（死区过滤）
-   * @param currentValue 当前值
-   * @param previousValue 上一次上报的值
-   * @param tag 标签配置（包含死区参数）
+   * Decide whether a data point should be reported (deadband filtering)
+   * @param currentValue current value
+   * @param previousValue the previously reported value
+   * @param tag tag config (containing deadband params)
    */
   shouldReport(
     currentValue: number,
@@ -48,7 +48,7 @@ export class DeadbandFilterService {
     const mode = tag.deadbandMode || DeadbandMode.NONE;
     const _now = Date.now();
 
-    // 首次上报，或 previousValue 未提供
+    // First report, or previousValue not provided
     if (previousValue === undefined || previousValue === null) {
       return { shouldReport: true, reason: 'first_report' };
     }
@@ -73,7 +73,7 @@ export class DeadbandFilterService {
   }
 
   /**
-   * 绝对死区比较
+   * Absolute deadband comparison
    */
   absoluteDeadband(current: number, previous: number, deadbandValue: number): DeadbandFilterResult {
     const delta = Math.abs(current - previous);
@@ -89,14 +89,14 @@ export class DeadbandFilterService {
   }
 
   /**
-   * 百分比死区比较
+   * Percentage deadband comparison
    */
   percentageDeadband(
     current: number,
     previous: number,
     deadbandPercent: number,
   ): DeadbandFilterResult {
-    // 避免除零
+    // Avoid division by zero
     if (Math.abs(previous) < 1e-10) {
       return { shouldReport: true, reason: 'zero_base_bypass' };
     }
@@ -114,7 +114,7 @@ export class DeadbandFilterService {
   }
 
   /**
-   * 更新标签死区状态
+   * Update a tag's deadband state
    */
   updateState(tagId: string, value: number): void {
     this.states.set(tagId, {
@@ -125,7 +125,7 @@ export class DeadbandFilterService {
   }
 
   /**
-   * 记录跳过的数据点
+   * Record a skipped data point
    */
   recordSkip(tagId: string): void {
     const state = this.states.get(tagId);
@@ -135,35 +135,35 @@ export class DeadbandFilterService {
   }
 
   /**
-   * 获取标签死区状态
+   * Get a tag's deadband state
    */
   getState(tagId: string): DeadbandState | undefined {
     return this.states.get(tagId);
   }
 
   /**
-   * 获取标签上一次上报的值
+   * Get a tag's previously reported value
    */
   getLastValue(tagId: string): number | undefined {
     return this.states.get(tagId)?.lastValue;
   }
 
   /**
-   * 重置标签死区状态
+   * Reset a tag's deadband state
    */
   reset(tagId: string): void {
     this.states.delete(tagId);
   }
 
   /**
-   * 清除所有死区状态
+   * Clear all deadband states
    */
   clearAll(): void {
     this.states.clear();
   }
 
   /**
-   * 获取所有标签的跳过统计
+   * Get skip statistics for all tags
    */
   getSkipStatistics(): Map<string, { tagId: string; skipCount: number; lastValue: number }> {
     const result = new Map<string, { tagId: string; skipCount: number; lastValue: number }>();
@@ -177,7 +177,7 @@ export class DeadbandFilterService {
     return result;
   }
 
-  // ──────────── 私有方法 ────────────
+  // ──────────── Private methods ────────────
 
   private handleNone(_currentValue: number, _previousValue: number): DeadbandFilterResult {
     return { shouldReport: true, reason: 'none_mode' };
@@ -200,8 +200,8 @@ export class DeadbandFilterService {
   }
 
   private handleTime(currentValue: number, deadbandTime?: number): DeadbandFilterResult {
-    // 时间死区需要基于状态判断
-    // 此处简化实现：如果提供了 deadbandTime，始终返回 true（时间死区由 DeadbandStep 在 pipeline 中处理）
+    // Time deadband needs state-based judgment
+    // Simplified here: when deadbandTime is provided, always return true (time deadband is handled by DeadbandStep in the pipeline)
     if (!deadbandTime || deadbandTime <= 0) {
       return { shouldReport: true, reason: 'time_deadband_disabled' };
     }

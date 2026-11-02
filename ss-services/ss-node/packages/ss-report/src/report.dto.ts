@@ -127,7 +127,7 @@ export class SaveReportConfigDto {
   config: Record<string, unknown>;
 }
 
-// ==================== 报表模板 DTO ====================
+// ==================== Report-template DTO ====================
 
 export class CreateReportTemplateDto {
   @ApiProperty({ description: '模板名称' })
@@ -168,7 +168,7 @@ export class ReportTemplateQueryDto {
   type?: ReportType;
 }
 
-// ==================== 定时导出 DTO ====================
+// ==================== Scheduled-export DTO ====================
 
 export class CreateScheduleDto {
   @ApiPropertyOptional({ description: '关联模板ID' })

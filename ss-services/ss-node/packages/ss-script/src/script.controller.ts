@@ -61,8 +61,8 @@ export class ScriptController {
     return this.scriptService.findAll(projectId);
   }
 
-  // ==================== 脚本模板 ====================
-  // 注意: 模板路由必须放在 :scriptId 路由之前，避免 "templates" 被匹配为 scriptId 参数
+  // ==================== Script templates ====================
+  // Note: template routes must be placed before the :scriptId route, so "templates" is not matched as a scriptId parameter
 
   @Get('templates')
   @ReadRoles()
@@ -182,7 +182,7 @@ export class ScriptController {
     return this.scriptService.getApiFunctions();
   }
 
-  // ==================== 脚本验证 ====================
+  // ==================== Script validation ====================
 
   @Post('validate')
   @WriteRoles()
@@ -198,7 +198,7 @@ export class ScriptController {
     return this.validatorService.dryRun(dto.code, undefined, dto.allowNetwork, dto.allowFileSystem);
   }
 
-  // ==================== 监控与统计 ====================
+  // ==================== Monitoring and statistics ====================
 
   @Get('metrics/overview')
   @ReadRoles()
@@ -208,7 +208,7 @@ export class ScriptController {
     return this.metricsService.getMetrics(queueStats.queueLength, queueStats.activeJobs);
   }
 
-  // ==================== 执行队列 ====================
+  // ==================== Execution queue ====================
 
   @Get('queue/status')
   @WriteRoles()
@@ -217,7 +217,7 @@ export class ScriptController {
     return this.queueService.getStats();
   }
 
-  // ==================== 安全审计 ====================
+  // ==================== Security audit ====================
 
   @Get('audit/logs')
   @Roles(UserRole.ADMIN)

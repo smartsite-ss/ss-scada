@@ -10,7 +10,7 @@ import { getWsServerUrl } from '../utils/ws-url';
 import { i18n, ScadaDataManager } from '@scada-editor/core';
 import type { TagValue } from '@scada-editor/core';
 
-// WebSocketDriver 已拆分到独立文件，此处 re-export 保持向后兼容
+// WebSocketDriver has been split into a standalone file; re-exported here for backward compatibility
 export { WebSocketDriver } from './WebSocketDriver';
 export type { DataSourceStatus } from './WebSocketDriver';
 import type { DataSourceStatus } from './WebSocketDriver';
@@ -19,12 +19,12 @@ export interface TagValueEntry {
   tagId: string;
   tagName: string;
   value: any;
-  /** 后端 FormatStep 产出的格式化字符串（如 "12.3"），可能为空 */
+  /** Formatted string produced by the backend FormatStep (e.g. "12.3"); may be empty */
   displayValue?: string;
   quality: string;
-  /** 统一为毫秒时间戳(后端推送 ISO 字符串时自动转换) */
+  /** Normalized to a millisecond timestamp (auto-converted when the backend pushes ISO strings) */
   timestamp: number;
-  /** 活跃告警（仅当后端推送包含此字段时存在，无告警时为 undefined） */
+  /** Active alarms (present only when the backend push includes this field; undefined when there are no alarms) */
   activeAlarms?: Array<{
     alarmId: string;
     level: string;
@@ -35,7 +35,7 @@ export interface TagValueEntry {
 
 export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'error';
 
-/** 设备状态变更条目(对应后端 device:statusChange 事件) */
+/** Device status change entry (corresponds to the backend device:statusChange event) */
 export interface DeviceStatusEntry {
   deviceId: string;
   fromStatus: string;
@@ -44,7 +44,7 @@ export interface DeviceStatusEntry {
   timestamp: string;
 }
 
-/** 活跃报警条目(对应后端 alarm:trigger 事件) */
+/** Active alarm entry (corresponds to the backend alarm:trigger event) */
 export interface AlarmEntry {
   alarmId: string;
   ruleName: string;
@@ -53,20 +53,20 @@ export interface AlarmEntry {
   value: number;
   message: string;
   timestamp: string;
-  /** 报警状态:active/acknowledged/cleared */
+  /** Alarm status: active/acknowledged/cleared */
   state: 'active' | 'acknowledged' | 'cleared';
   acknowledgedBy?: string;
   clearedBy?: string;
 }
 
-/** 系统广播消息(对应后端 system:broadcast 事件) */
+/** System broadcast message (corresponds to the backend system:broadcast event) */
 export interface SystemMessageEntry {
   message: string;
   data?: unknown;
   timestamp: string;
 }
 
-/** 将后端推送的时间戳(ISO 字符串或数值)统一转换为毫秒时间戳 */
+/** Normalize backend-pushed timestamps (ISO strings or numbers) into millisecond timestamps */
 function toEpochMs(ts: unknown): number {
   if (typeof ts === 'number') return ts;
   if (typeof ts === 'string') {
@@ -79,44 +79,44 @@ function toEpochMs(ts: unknown): number {
 export const useWsStore = defineStore('ws', () => {
   const socket = ref<Socket | null>(null);
   const connectionStatus = ref<ConnectionStatus>('disconnected');
-  // 当前客户端 socket.id，连接建立后填充，断开后置空；供 WS 监控页展示
+  // Current client socket.id, filled after connection and cleared after disconnect; shown on the WS monitor page
   const socketId = ref<string | null>(null);
   const tagValues = shallowRef<Map<string, TagValueEntry>>(new Map());
-  /** 每次 flushTagUpdates 时递增，供外部 watch 强制触发 computed 重新计算 */
+  /** Incremented on every flushTagUpdates, letting external watch forcibly trigger computed recomputation */
   const tagFlushVersion = ref(0);
   const subscribedTags = ref<Set<string>>(new Set());
   const subscribedProjectId = ref<string | null>(null);
   const error = ref<string | null>(null);
   const reconnectAttempts = ref(0);
 
-  // 设备状态、报警、系统广播
+  // Device status, alarms, system broadcasts
   const deviceStatuses = ref<Map<string, DeviceStatusEntry>>(new Map());
   const activeAlarms = ref<Map<string, AlarmEntry>>(new Map());
   const systemMessages = ref<SystemMessageEntry[]>([]);
   const lastPongAt = ref<string | null>(null);
 
-  // 出站消息缓冲：断连期间 emit 的消息入队，重连后自动补发
+  // Outbound message buffer: messages emitted while disconnected are enqueued and auto-sent after reconnection
   const MAX_OUTBOUND_BUFFER = 100;
   const outboundBuffer: Array<{ event: string; data: any }> = [];
   const outboundBufferSize = ref(0);
 
-  // 标签订阅引用计数：多个调用方（BindingManager / WebSocketDriver / DataSourceConfigDialog）
-  // 可能各自订阅同一标签，仅当引用计数归零时才真正向服务端取消订阅
+  // Tag subscription reference counting: multiple callers (BindingManager / WebSocketDriver / DataSourceConfigDialog)
+  // may each subscribe to the same tag; the server unsubscribe happens only when the ref count reaches zero
   const _tagReferenceCount = new Map<string, number>();
 
-  // 标签值批处理：使用 RAF 合并同一帧内的多次 WS 更新，减少 Vue 响应式触发次数
+  // Tag value batching: use RAF to merge multiple WS updates within the same frame, reducing Vue reactive triggers
   const pendingTagUpdates = new Map<string, TagValueEntry>();
   let rafId: number | null = null;
   let flushPending = false;
 
-  // 增量数据回调监听器：由 WebSocketDriver 注册（运行态接管时）。
-  // 当存在监听器时，flushTagUpdates 不再直接 emit EventBus，避免双重触发。
+  // Incremental data callback listeners: registered by WebSocketDriver (when it takes over at runtime).
+  // When listeners exist, flushTagUpdates no longer emits EventBus directly, avoiding double triggering.
   const flushedListeners = new Set<(entries: Map<string, TagValueEntry>) => void>();
 
   /**
-   * 注册增量数据回调。返回注销函数。
-   * 由 WebSocketDriver.connect 注册，使其接管数据流（运行态走 DataSourceManager 路径）。
-   * 编辑态无监听器时，flushTagUpdates 仍直接 emit EventBus 作为 fallback。
+   * Register an incremental data callback. Returns an unsubscribe function.
+   * Registered by WebSocketDriver.connect so it takes over the data stream (runtime goes through the DataSourceManager path).
+   * In edit mode with no listeners, flushTagUpdates still emits EventBus directly as a fallback.
    */
   function onFlushed(cb: (entries: Map<string, TagValueEntry>) => void): () => void {
     flushedListeners.add(cb);
@@ -132,13 +132,13 @@ export const useWsStore = defineStore('ws', () => {
     pendingTagUpdates.forEach((entry, tagId) => {
       next.set(tagId, entry);
     });
-    // 保存副本用于回调 / EventBus 发送（clear 之后无法遍历）
+    // Save a copy for callbacks / EventBus emission (cannot iterate after clear)
     const flushedEntries = new Map(pendingTagUpdates);
     const flushTagIds = [...flushedEntries.keys()];
     pendingTagUpdates.clear();
     tagValues.value = next;
     tagFlushVersion.value++;
-    // 优先派发给 WebSocketDriver 监听器（运行态走 DataSourceManager → EventBus 路径）
+    // Dispatch to WebSocketDriver listeners first (runtime goes through the DataSourceManager → EventBus path)
     if (flushedListeners.size > 0) {
       for (const cb of flushedListeners) {
         try { cb(flushedEntries); } catch { void 0; }
@@ -146,7 +146,7 @@ export const useWsStore = defineStore('ws', () => {
       return;
     }
 
-    // Fallback：编辑态无 WebSocketDriver 接管时，直接 emit EventBus
+    // Fallback: in edit mode without WebSocketDriver takeover, emit EventBus directly
     const eventBus = ScadaDataManager.eventBus;
     if (eventBus) {
       flushedEntries.forEach((entry, tagId) => {
@@ -167,18 +167,18 @@ export const useWsStore = defineStore('ws', () => {
     }
   }
 
-  // 心跳定时器：每 25s 发送 ping,防止后端空闲清理(60s)断开连接
+  // Heartbeat timer: sends a ping every 25s to prevent backend idle cleanup (60s) from disconnecting
   const HEARTBEAT_INTERVAL_MS = 25000;
   let heartbeatTimer: ReturnType<typeof setInterval> | null = null;
 
   const isConnected = computed(() => connectionStatus.value === 'connected');
 
-  /** 安全 emit：已连接则直接发送，断连则入缓冲队列 */
+  /** Safe emit: sends directly when connected; enqueues into the buffer when disconnected */
   function safeEmit(event: string, data: any): void {
     if (socket.value?.connected) {
       socket.value.emit(event, data);
     } else {
-      // 缓冲上限，超限丢弃最早消息
+      // Buffer cap: drop the earliest messages when exceeded
       if (outboundBuffer.length >= MAX_OUTBOUND_BUFFER) {
         outboundBuffer.shift();
       }
@@ -187,7 +187,7 @@ export const useWsStore = defineStore('ws', () => {
     }
   }
 
-  /** 重连后补发出站缓冲中的消息 */
+  /** After reconnection, re-send the messages in the outbound buffer */
   function flushOutboundBuffer(): void {
     while (outboundBuffer.length > 0) {
       const { event, data } = outboundBuffer.shift()!;
@@ -205,10 +205,10 @@ export const useWsStore = defineStore('ws', () => {
     }
 
     let token = getToken();
-    // Debug token 兜底策略（按优先级）：
-    // 1. getToken() 已返回有效 token → 直接使用
-    // 2. localStorage.scada_debug_skip_auth === '1' → 用户显式开启了 debug 模式
-    // 3. import.meta.env.DEV → Vite dev server 模式，自动使用 debug token
+    // Debug token fallback strategy (by priority):
+    // 1. getToken() already returns a valid token → use it directly
+    // 2. localStorage.scada_debug_skip_auth === '1' → the user explicitly enabled debug mode
+    // 3. import.meta.env.DEV → Vite dev server mode, automatically use the debug token
     if (!token) {
       try {
         if (localStorage.getItem('scada_debug_skip_auth') === '1') {
@@ -227,8 +227,8 @@ export const useWsStore = defineStore('ws', () => {
     connectionStatus.value = 'connecting';
     error.value = null;
 
-    // Web 同源：页面 origin（Vite/反向代理转发）；桌面端（Tauri）：后端绝对地址，
-    // 否则 socket.io 会连接 https://tauri.localhost/socket.io 导致实时数据不更新（见 ws-url.ts）
+    // Web same-origin: page origin (Vite/reverse proxy forwarding); desktop (Tauri): backend absolute address,
+    // otherwise socket.io connects to https://tauri.localhost/socket.io and real-time data stops updating (see ws-url.ts)
     const wsUrl = getWsServerUrl();
 
     socket.value = io(wsUrl, {
@@ -324,7 +324,7 @@ export const useWsStore = defineStore('ws', () => {
       }
     });
 
-    // 设备状态变更:更新 deviceStatuses Map
+    // Device status change: update the deviceStatuses Map
     socket.value.on('device:statusChange', (data: any) => {
       if (data?.deviceId) {
         deviceStatuses.value.set(data.deviceId, {
@@ -338,7 +338,7 @@ export const useWsStore = defineStore('ws', () => {
       }
     });
 
-    // 报警触发:添加到 activeAlarms
+    // Alarm triggered: add to activeAlarms
     socket.value.on('alarm:trigger', (data: any) => {
       if (data?.alarmId) {
         activeAlarms.value.set(data.alarmId, {
@@ -355,7 +355,7 @@ export const useWsStore = defineStore('ws', () => {
       }
     });
 
-    // 报警确认:更新状态为 acknowledged
+    // Alarm acknowledged: update status to acknowledged
     socket.value.on('alarm:acknowledged', (data: any) => {
       if (data?.alarmId) {
         const alarm = activeAlarms.value.get(data.alarmId);
@@ -367,7 +367,7 @@ export const useWsStore = defineStore('ws', () => {
       }
     });
 
-    // 报警清除:更新状态为 cleared
+    // Alarm cleared: update status to cleared
     socket.value.on('alarm:cleared', (data: any) => {
       if (data?.alarmId) {
         const alarm = activeAlarms.value.get(data.alarmId);
@@ -379,7 +379,7 @@ export const useWsStore = defineStore('ws', () => {
       }
     });
 
-    // 报警自动恢复:更新状态为 cleared（自动恢复）
+    // Alarm auto-recovered: update status to cleared (auto recovery)
     socket.value.on('alarm:recovered', (data: any) => {
       if (data?.alarmId) {
         const alarm = activeAlarms.value.get(data.alarmId);
@@ -387,7 +387,7 @@ export const useWsStore = defineStore('ws', () => {
           alarm.state = 'cleared';
           alarm.clearedBy = 'system';
           activeAlarms.value = new Map(activeAlarms.value);
-          // 30s 后从 activeAlarms 中移除已恢复的告警
+          // Remove recovered alarms from activeAlarms after 30s
           setTimeout(() => {
             if (activeAlarms.value.get(data.alarmId)?.state === 'cleared') {
               activeAlarms.value.delete(data.alarmId);
@@ -398,7 +398,7 @@ export const useWsStore = defineStore('ws', () => {
       }
     });
 
-    // 系统广播
+    // System broadcast
     socket.value.on('system:broadcast', (data: any) => {
       if (data?.message) {
         systemMessages.value.push({
@@ -406,14 +406,14 @@ export const useWsStore = defineStore('ws', () => {
           data: data.data,
           timestamp: data.timestamp || new Date().toISOString(),
         });
-        // 仅保留最近 50 条
+        // Keep only the most recent 50 entries
         if (systemMessages.value.length > 50) {
           systemMessages.value = systemMessages.value.slice(-50);
         }
       }
     });
 
-    // 心跳响应
+    // Heartbeat response
     socket.value.on('pong', (data: any) => {
       lastPongAt.value = data?.timestamp || new Date().toISOString();
     });
@@ -526,7 +526,7 @@ export const useWsStore = defineStore('ws', () => {
     error.value = null;
   }
 
-  /** 启动客户端心跳:定时发送 ping 防止后端空闲清理断开 */
+  /** Start the client heartbeat: periodically send pings to prevent backend idle-cleanup disconnection */
   function startHeartbeat(): void {
     stopHeartbeat();
     heartbeatTimer = setInterval(() => {
@@ -534,7 +534,7 @@ export const useWsStore = defineStore('ws', () => {
     }, HEARTBEAT_INTERVAL_MS);
   }
 
-  /** 停止心跳定时器 */
+  /** Stop the heartbeat timer */
   function stopHeartbeat(): void {
     if (heartbeatTimer) {
       clearInterval(heartbeatTimer);

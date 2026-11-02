@@ -6,8 +6,8 @@ import { ScriptEngine, type ScriptContext, type ScriptResult } from '@scada-edit
 import { createMockApi } from './mockApiFactory';
 
 /**
- * 编辑态沙箱执行器
- * 用于 ScriptDebugPanel 中的脚本测试运行
+ * Edit-mode sandbox executor
+ * Used for test runs of scripts in ScriptDebugPanel
  */
 export class ScriptRunner {
   private engine: ScriptEngine;
@@ -17,11 +17,11 @@ export class ScriptRunner {
   }
 
   /**
-   * 执行脚本测试
-   * @param code 脚本代码
-   * @param mockData Mock 数据
-   * @param mockContext Mock 上下文
-   * @param timeout 超时时间（ms）
+   * Run a script test
+   * @param code Script code
+   * @param mockData Mock data
+   * @param mockContext Mock context
+   * @param timeout Timeout (ms)
    */
   async execute(
     code: string,

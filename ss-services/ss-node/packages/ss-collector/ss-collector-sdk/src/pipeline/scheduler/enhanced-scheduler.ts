@@ -28,7 +28,7 @@ export interface AcquisitionTask {
   retryCount: number;
   maxRetries: number;
   enabled: boolean;
-  /** 内部：延迟重试定时器句柄，用于 unregister 时取消 */
+  /** Internal: delayed-retry timer handle, used to cancel on unregister */
   _retryTimer?: ReturnType<typeof setTimeout>;
 }
 
@@ -57,37 +57,37 @@ const DEFAULT_CONFIG: Required<SchedulerConfig> = {
 };
 
 /**
- * online 事件发射节流上限（毫秒）。
- * 低频采集任务（如 60s）的 online 事件发射间隔不超过此值，
- * 避免设备状态长时间不刷新；高频任务仍按 scanRate 节流。
+ * online-event emission throttle cap (ms).
+ * The online-event emission interval for low-frequency tasks (e.g. 60s) does not exceed this value,
+ * to avoid device status going stale for too long; high-frequency tasks are still throttled by scanRate.
  */
 const MAX_ONLINE_EMIT_INTERVAL_MS = 30000;
 
 /**
- * 采集汇总日志输出间隔（毫秒）。
- * 调度器按此周期输出每个设备的采集统计，替代此前每 tag 每周期的细碎日志，
- * 便于运维快速识别"哪个插件/进程/设备/变量数/成功失败数"。
+ * Collection-summary log output interval (ms).
+ * The scheduler outputs per-device collection statistics at this period, replacing the previous
+ * per-tag-per-cycle fine-grained logs, so ops can quickly identify "which plugin/process/device/variable count/success-failure".
  */
 const COLLECTION_SUMMARY_INTERVAL_MS = 30000;
 
 /**
- * 单设备采集周期统计。
- * 在汇总窗口内累加：读取次数、成功/失败数、累计耗时，输出后清零。
+ * Per-device collection-cycle statistics.
+ * Accumulated within the summary window: read count, success/failure count, cumulative duration; reset after output.
  */
 interface DeviceCycleStats {
-  /** 协议（插件 protocol，如 modbus_tcp / opc_ua） */
+  /** Protocol (plugin protocol, e.g. modbus_tcp / opc_ua) */
   protocol: string;
-  /** 设备名（用于日志可读性） */
+  /** Device name (for log readability) */
   deviceName: string;
-  /** 当前注册到该设备的 tag 任务数 */
+  /** Number of tag tasks currently registered to this device */
   tagCount: number;
-  /** 汇总窗口内完成的读取次数 */
+  /** Number of reads completed within the summary window */
   reads: number;
-  /** 汇总窗口内 quality ∈ {good, out_of_range} 的次数 */
+  /** Count of quality within {good, out_of_range} within the summary window */
   successCount: number;
-  /** 汇总窗口内 quality ∈ {bad, comm_error} 或抛错的次数 */
+  /** Count of quality within {bad, comm_error} or exceptions within the summary window */
   errorCount: number;
-  /** 汇总窗口内累计耗时（ms） */
+  /** Cumulative duration (ms) within the summary window */
   totalDurationMs: number;
 }
 
@@ -124,32 +124,32 @@ export class EnhancedScheduler implements OnModuleInit, OnModuleDestroy {
   private pipelineSteps: PipelineStep[] = [];
 
   /**
-   * Pipeline 执行器与指标服务，由 PipelineInitializer 在启动阶段通过 setter 注入。
-   * 不使用构造器注入是为了避免 SchedulerModule ↔ PipelineModule 的循环依赖。
-   * - orchestrator：委托执行 pipeline，自动记录步骤耗时、错误率、火焰图分解
-   * - pipelineMetricsService：用于更新 queueDepth / activeTasks 等 gauge 指标
+   * Pipeline executor and metric service, injected via setter by PipelineInitializer during startup.
+   * Constructor injection is avoided to prevent the SchedulerModule <-> PipelineModule circular dependency.
+   * - orchestrator: delegates pipeline execution, auto-recording step duration, error rate, flame-graph breakdown
+   * - pipelineMetricsService: used to update gauge metrics such as queueDepth / activeTasks
    */
   private orchestrator?: PipelineOrchestrator;
   private pipelineMetricsService?: PipelineMetricsService;
 
   private deviceCircuits = new Map<string, DeviceCircuitState>();
 
-  /** 设备最近一次 online 事件发射时间（用于节流，避免高频 readTag 淹没 EventBus） */
+  /** Device's last online-event emission time (for throttle, to avoid high-frequency readTag flooding EventBus) */
   private lastOnlineEmitAt = new Map<string, number>();
 
   /**
-   * 按设备维度的采集周期统计。
-   * key = deviceId，value = 当前汇总窗口内的累计指标。
-   * 由 registerTask/unregisterTask 维护 tagCount，
-   * 由 handlePipelineResult/handleTaskError 累加 reads/success/error/duration，
-   * 由 emitCollectionSummary 周期输出并清零 reads/success/error/duration。
+   * Per-device collection-cycle statistics.
+   * key = deviceId, value = accumulated metrics within the current summary window.
+   * tagCount maintained by registerTask/unregisterTask,
+   * reads/success/error/duration accumulated by handlePipelineResult/handleTaskError,
+   * emitted and reset (reads/success/error/duration) by emitCollectionSummary.
    */
   private deviceStats = new Map<string, DeviceCycleStats>();
 
-  /** 采集汇总日志定时器 */
+  /** Collection-summary log timer */
   private summaryTimer: NodeJS.Timeout | null = null;
 
-  /** P1优化：错误日志节流 — 同一设备/标签 5 秒内只输出 1 条 warn */
+  /** P1 optimization: error-log throttle - only one warn per device/tag within 5 seconds */
   private lastErrorLogAt = new Map<string, number>();
 
   private metrics = {
@@ -166,9 +166,9 @@ export class EnhancedScheduler implements OnModuleInit, OnModuleDestroy {
     @Optional() private readonly metricsCollector?: MetricsCollectorService,
     @Optional() private readonly deviceStateManager?: DeviceStateManager,
     /**
-     * 插件注册表（@Global PluginModule 提供），用于在汇总日志中解析
-     * "当前协议 → isolationMode → 进程名" 的映射关系。
-     * 单测环境可能未注入，需做空值保护。
+     * Plugin registry (provided by @Global PluginModule), used in the summary log to resolve
+     * the "current protocol -> isolationMode -> process name" mapping.
+     * May be un-injected in the unit-test environment; null-safety required.
      */
     @Optional() private readonly pluginRegistry?: PluginRegistry,
   ) {
@@ -215,9 +215,9 @@ export class EnhancedScheduler implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 注入 PipelineOrchestrator，使调度器委托 orchestrator.execute() 执行 pipeline，
-   * 从而自动记录步骤耗时、错误率、火焰图分解等指标。
-   * 由 PipelineInitializer 在 onModuleInit 阶段调用。
+   * Inject PipelineOrchestrator so the scheduler delegates pipeline execution to orchestrator.execute(),
+   * automatically recording step duration, error rate, flame-graph breakdown, etc.
+   * Called by PipelineInitializer during onModuleInit.
    */
   setOrchestrator(orchestrator: PipelineOrchestrator): void {
     this.orchestrator = orchestrator;
@@ -225,8 +225,8 @@ export class EnhancedScheduler implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 注入 PipelineMetricsService，用于更新队列深度、活跃任务数等 gauge 指标。
-   * 由 PipelineInitializer 在 onModuleInit 阶段调用。
+   * Inject PipelineMetricsService, used to update gauge metrics such as queue depth and active task count.
+   * Called by PipelineInitializer during onModuleInit.
    */
   setPipelineMetricsService(metricsService: PipelineMetricsService): void {
     this.pipelineMetricsService = metricsService;
@@ -244,9 +244,9 @@ export class EnhancedScheduler implements OnModuleInit, OnModuleDestroy {
     task.lastExecution = new Date();
 
     this.tasks.set(task.id, task);
-    this.readyTasksCache = null; // P3：任务变更时失效缓存
+    this.readyTasksCache = null; // P3: invalidate the cache on task changes
 
-    // 维护按设备维度的 tag 计数，供汇总日志输出"采集了多少个变量"
+    // Maintain per-device tag counts for the summary log ("how many variables were collected")
     this.ensureDeviceStats(task).tagCount++;
 
     this.logger.debug(
@@ -257,10 +257,10 @@ export class EnhancedScheduler implements OnModuleInit, OnModuleDestroy {
   unregisterTask(taskId: string): boolean {
     const task = this.tasks.get(taskId);
     const deleted = this.tasks.delete(taskId);
-    this.readyTasksCache = null; // P3：任务变更时失效缓存
-    // 清理 online 事件节流记录，避免内存泄漏
+    this.readyTasksCache = null; // P3: invalidate the cache on task changes
+    // Clean up the online-event throttle records to avoid memory leaks
     if (deleted && task) {
-      // 取消挂起的重试定时器（驱动切换时防止旧任务在注销后仍执行）
+      // Clean up online-event throttle records to avoid memory leaks
       if (task._retryTimer) {
         clearTimeout(task._retryTimer);
         task._retryTimer = undefined;
@@ -270,11 +270,11 @@ export class EnhancedScheduler implements OnModuleInit, OnModuleDestroy {
       );
       if (!hasOtherTasks) {
         this.lastOnlineEmitAt.delete(task.deviceId);
-        // 该设备已无任何采集任务，移除其统计记录和熔断器状态
+        // Cancel the pending retry timer (prevents an old task from running after deregistering on driver switch)
         this.deviceStats.delete(task.deviceId);
         this.deviceCircuits.delete(task.deviceId);
       } else {
-        // 仍有其他任务，仅递减 tagCount
+        // This device has no collection tasks left; remove its statistics record and circuit-breaker state
         const stats = this.deviceStats.get(task.deviceId);
         if (stats && stats.tagCount > 0) {
           stats.tagCount--;
@@ -285,10 +285,10 @@ export class EnhancedScheduler implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 更新指定设备所有采集任务的执行间隔（用于 scanRate 变更场景）
-   * @param deviceId 设备 ID
-   * @param interval 新的采集间隔（ms）
-   * @returns 被更新的任务数量
+   * Update the execution interval of all collection tasks for a device (for scanRate changes)
+   * @param deviceId device ID
+   * @param interval new collection interval (ms)
+   * @returns the number of tasks updated
    */
   updateTaskInterval(deviceId: string, interval: number): number {
     if (interval < 1) {
@@ -316,7 +316,7 @@ export class EnhancedScheduler implements OnModuleInit, OnModuleDestroy {
     const task = this.tasks.get(taskId);
     if (task) {
       task.enabled = true;
-      this.readyTasksCache = null; // P3：任务启用时失效缓存
+      this.readyTasksCache = null; // P3: invalidate the cache when a task is enabled
       this.logger.debug(`Task ${taskId} enabled`);
     }
   }
@@ -325,7 +325,7 @@ export class EnhancedScheduler implements OnModuleInit, OnModuleDestroy {
     const task = this.tasks.get(taskId);
     if (task) {
       task.enabled = false;
-      this.readyTasksCache = null; // P3：任务禁用时失效缓存
+      this.readyTasksCache = null; // P3: invalidate the cache when a task is disabled
       this.logger.debug(`Task ${taskId} disabled`);
     }
   }
@@ -372,7 +372,7 @@ export class EnhancedScheduler implements OnModuleInit, OnModuleDestroy {
     this.metricsTimer = setInterval(() => {
       const metrics = this.getMetrics();
 
-      // 同步 gauge 指标到 PipelineMetricsService（供 /pipeline/metrics/json 端点暴露）
+      // Sync gauge metrics to PipelineMetricsService (exposed via the /pipeline/metrics/json endpoint)
       if (this.pipelineMetricsService) {
         this.pipelineMetricsService.setQueueDepth(metrics.queuedTasks);
         this.pipelineMetricsService.setActiveTasks(metrics.runningTasks);
@@ -397,9 +397,9 @@ export class EnhancedScheduler implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 启动采集汇总日志定时器。
-   * 每隔 COLLECTION_SUMMARY_INTERVAL_MS 输出一次按设备维度的采集统计，
-   * 替代此前每 tag 每周期的细碎日志，便于运维快速识别采集健康度。
+   * Start the collection-summary log timer.
+   * Output per-device collection statistics every COLLECTION_SUMMARY_INTERVAL_MS,
+   * replacing the previous per-tag-per-cycle fine-grained logs, so ops can quickly gauge collection health.
    */
   private startCollectionSummary(): void {
     this.summaryTimer = setInterval(() => {
@@ -408,14 +408,14 @@ export class EnhancedScheduler implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 输出采集汇总日志并重置窗口计数。
+   * Output the collection-summary log and reset the window counters.
    *
-   * 输出格式示例：
-   *   [EnhancedScheduler] Collection summary (30s) — 2 device(s):
+   * Example output format:
+   *   [EnhancedScheduler] Collection summary (30s) - 2 device(s):
    *     [modbus_tcp/node(main)] device=test-device2 (deviceId=5deba4b0): tags=10, reads=300, success=298, errors=2, avgMs=12
    *     [opc_ua/worker] device=test-device1 (deviceId=abc123): tags=5, reads=150, success=150, errors=0, avgMs=8
    *
-   * 若窗口内无任何采集活动，则跳过输出以避免噪音。
+   * Skip output when there was no collection activity in the window, to avoid noise.
    */
   private emitCollectionSummary(): void {
     if (this.deviceStats.size === 0) {
@@ -438,7 +438,7 @@ export class EnhancedScheduler implements OnModuleInit, OnModuleDestroy {
       `Collection summary (${intervalSec}s) — ${entries.length} device(s):\n${lines.join('\n')}`,
     );
 
-    // 重置窗口计数（保留 protocol/deviceName/tagCount，因为这些是当前状态而非窗口增量）
+    // Reset window counters (keep protocol/deviceName/tagCount, as these are current state, not window deltas)
     for (const s of this.deviceStats.values()) {
       s.reads = 0;
       s.successCount = 0;
@@ -448,11 +448,11 @@ export class EnhancedScheduler implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 根据协议推导进程名（与 PluginManagerService 保持一致）。
-   * - in_process   → node (main: ${protocol})
-   * - worker_thread→ worker (${protocol})
-   * - child_process→ ss-collector-${protocol}[.exe]
-   * 若 pluginRegistry 未注入或协议未注册，返回 'unknown'。
+   * Derive the process name from the protocol (consistent with PluginManagerService).
+   * - in_process   -> node (main: ${protocol})
+   * - worker_thread-> worker (${protocol})
+   * - child_process-> ss-collector-${protocol}[.exe]
+   * Returns 'unknown' if pluginRegistry is un-injected or the protocol is unregistered.
    */
   private resolveProcessName(protocol: string): string {
     if (!this.pluginRegistry || !protocol) {
@@ -474,10 +474,10 @@ export class EnhancedScheduler implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 获取或创建设备的采集统计记录。
-   * - protocol/deviceName 从 task 上下文推导，注册时即固化（不变动）
-   * - tagCount 由 registerTask/unregisterTask 维护
-   * - reads/success/error/duration 由 handlePipelineResult/handleTaskError 累加
+   * Get or create the collection-statistics record for a device.
+   * - protocol/deviceName derived from the task context and fixed at registration (immutable)
+   * - tagCount maintained by registerTask/unregisterTask
+   * - reads/success/error/duration accumulated by handlePipelineResult/handleTaskError
    */
   private ensureDeviceStats(task: AcquisitionTask): DeviceCycleStats {
     let stats = this.deviceStats.get(task.deviceId);
@@ -521,14 +521,14 @@ export class EnhancedScheduler implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  /** P3优化：就绪任务缓存 — 避免每秒 100 次（10ms → 50ms 后为 20 次）O(n)遍历 */
+  /** P3 optimization: ready-task cache - avoids O(n) scans 100 times/sec (20 times/sec after 10ms -> 50ms) */
   private readyTasksCache: AcquisitionTask[] | null = null;
   private readyTasksCacheAt: number = 0;
 
   private getReadyTasks(): AcquisitionTask[] {
     const now = Date.now();
 
-    // P3优化：同毫秒内返回缓存（连续快速调用时避免重复 O(n) 遍历）
+    // P3 optimization: return cache within the same millisecond (avoid repeated O(n) scans on rapid consecutive calls)
     if (this.readyTasksCache && this.readyTasksCacheAt === now) {
       return this.readyTasksCache;
     }
@@ -572,8 +572,8 @@ export class EnhancedScheduler implements OnModuleInit, OnModuleDestroy {
         errors: [],
       };
 
-      // 优先委托 PipelineOrchestrator 执行（自动记录步骤耗时、错误率、火焰图分解等指标）
-      // 若 orchestrator 未注入（例如单元测试场景），降级为直接遍历 steps 执行
+      // Prefer delegating execution to PipelineOrchestrator (auto-records step duration, error rate, flame-graph breakdown, etc.)
+      // If orchestrator is un-injected (e.g. unit-test scenario), fall back to iterating steps directly
       const ctx = this.orchestrator
         ? await this.orchestrator.execute(initialCtx)
         : await this.executeStepsFallback(initialCtx);
@@ -590,8 +590,8 @@ export class EnhancedScheduler implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 降级执行路径：直接遍历 pipelineSteps 执行（不经过 orchestrator）。
-   * 仅在 orchestrator 未注入时使用，保留原有行为。
+   * Fallback execution path: iterate pipelineSteps directly (without going through orchestrator).
+   * Used only when orchestrator is un-injected; preserves the original behavior.
    */
   private async executeStepsFallback(initialCtx: PipelineContext): Promise<PipelineContext> {
     let ctx = initialCtx;
@@ -608,9 +608,9 @@ export class EnhancedScheduler implements OnModuleInit, OnModuleDestroy {
   ): void {
     const deviceId = task.deviceId;
 
-    // 按设备维度累计采集指标（用于周期汇总日志）
-    // - comm_error / bad：计入 errorCount
-    // - good / out_of_range：计入 successCount（out_of_range 仍代表通信链路正常）
+    // Accumulate collection metrics per device (for the periodic summary log)
+    // - comm_error / bad: count as errorCount
+    // - good / out_of_range: count as successCount (out_of_range still means the comm link is healthy)
     const stats = this.ensureDeviceStats(task);
     stats.reads++;
     stats.totalDurationMs += durationMs;
@@ -628,33 +628,33 @@ export class EnhancedScheduler implements OnModuleInit, OnModuleDestroy {
     } else if (ctx.quality === 'out_of_range') {
       this.handleOutOfRange(deviceId, task, ctx);
     } else {
-      // 采集成功：重置熔断器 + 发射 online 事件（节流）
+      // Collection success: reset circuit breaker + emit online event (throttled)
       this.handleCommSuccess(deviceId, task);
     }
   }
 
   /**
-   * 采集成功处理：重置熔断器并发射 device_status_changed { status: 'online' } 事件。
+   * Collection-success handling: reset the circuit breaker and emit the device_status_changed { status: 'online' } event.
    *
-   * 事件采用自适应节流 —— 节流间隔 = min(scanRate, 30s)：
-   * - 高频任务（如 100ms）：按 scanRate 节流，避免淹没 EventBus
-   * - 低频任务（如 60s）：按 30s 上限节流，避免设备状态长时间不刷新
-   * DeviceCollectorBootstrap 收到事件后更新 deviceStatusMap 的 status 和 lastHeartbeat。
+   * The event uses adaptive throttling - throttle interval = min(scanRate, 30s):
+   * - High-frequency tasks (e.g. 100ms): throttled by scanRate, to avoid flooding EventBus
+   * - Low-frequency tasks (e.g. 60s): throttled by the 30s cap, to avoid device status going stale too long
+   * DeviceCollectorBootstrap receives the event and updates deviceStatusMap's status and lastHeartbeat.
    */
   private handleCommSuccess(deviceId: string, task: AcquisitionTask): void {
     this.resetDeviceFailure(deviceId);
 
-    // 优先使用 DeviceStateManager（统一状态管理）
+    // Prefer DeviceStateManager (unified state management)
     if (this.deviceStateManager) {
       this.deviceStateManager.setOnline(deviceId);
       return;
     }
 
-    // 降级：通过 EventBus 通知（旧路径，后续移除）
+    // Fallback: notify via EventBus (old path, to be removed later)
     if (this.eventBus) {
       const now = Date.now();
       const lastEmit = this.lastOnlineEmitAt.get(deviceId) || 0;
-      // 自适应节流：min(scanRate, 30s)，确保低频设备状态不过期
+      // Adaptive throttle: min(scanRate, 30s), ensuring low-frequency device status does not expire
       const throttleMs = Math.min(
         task.interval > 0 ? task.interval : 1000,
         MAX_ONLINE_EMIT_INTERVAL_MS,
@@ -684,7 +684,7 @@ export class EnhancedScheduler implements OnModuleInit, OnModuleDestroy {
     circuit.failureCount++;
     circuit.lastFailureTime = new Date();
 
-    // P1优化：同设备 5s 内只输出 1 条 comm error warn
+    // P1 optimization: only one comm-error warn per device within 5s
     if (this.shouldLogError(deviceId)) {
       this.logger.warn(
         `Comm error for device ${deviceId} (${circuit.failureCount}/${this.config.circuitFailureThreshold}): ` +
@@ -698,10 +698,10 @@ export class EnhancedScheduler implements OnModuleInit, OnModuleDestroy {
       ]);
     }
 
-    // 优先使用 DeviceStateManager
+    // Prefer DeviceStateManager
     if (this.deviceStateManager) {
       this.deviceStateManager.setError(deviceId, ctx.errors[0]?.message);
-      // 推送采集诊断数据
+      // Push collection diagnostic data
       this.deviceStateManager.setDiagnostics(deviceId, {
         circuitState: circuit.state,
         consecutiveFailures: circuit.failureCount,
@@ -725,7 +725,7 @@ export class EnhancedScheduler implements OnModuleInit, OnModuleDestroy {
   }
 
   private handleDataError(deviceId: string, task: AcquisitionTask, ctx: PipelineContext): void {
-    // P1优化：同标签 5s 内只输出 1 条 data error warn
+    // P1 optimization: only one data-error warn per tag within 5s
     if (this.shouldLogError(`data:${task.tagId}`)) {
       this.logger.warn(
         `Data error for tag ${task.tagId}: ${ctx.errors.map((e) => e.message).join(', ')}`,
@@ -741,7 +741,7 @@ export class EnhancedScheduler implements OnModuleInit, OnModuleDestroy {
   }
 
   private handleOutOfRange(deviceId: string, task: AcquisitionTask, ctx: PipelineContext): void {
-    // P1优化：同标签 5s 内只输出 1 条 out of range warn
+    // P1 optimization: only one out-of-range warn per tag within 5s
     if (this.shouldLogError(`oor:${task.tagId}`)) {
       this.logger.warn(`Out of range for tag ${task.tagId}: value=${ctx.transformedValue}`);
     }
@@ -757,7 +757,7 @@ export class EnhancedScheduler implements OnModuleInit, OnModuleDestroy {
   private handleTaskError(task: AcquisitionTask, error: Error, durationMs: number): void {
     task.retryCount++;
 
-    // 按设备维度累计异常指标（pipeline 抛错场景，未走到 quality 判定）
+    // Accumulate anomaly metrics per device (pipeline exception scenario, before quality evaluation)
     const stats = this.ensureDeviceStats(task);
     stats.reads++;
     stats.errorCount++;
@@ -767,7 +767,7 @@ export class EnhancedScheduler implements OnModuleInit, OnModuleDestroy {
       `Task ${task.id} failed (attempt ${task.retryCount}/${task.maxRetries}): ${error.message}`,
     );
 
-    // 首次失败即设置设备错误状态，让前端立即感知
+    // Set the device error state on first failure, so the frontend notices immediately
     if (task.retryCount === 1 && this.deviceStateManager) {
       this.deviceStateManager.setError(task.deviceId, error.message);
     }
@@ -791,7 +791,7 @@ export class EnhancedScheduler implements OnModuleInit, OnModuleDestroy {
     } else {
       this.logger.error(`Task ${task.id} permanently failed after ${task.maxRetries} retries`);
 
-      // 设置设备错误状态（含错误详情）
+      // Set the device error state (with error details)
       if (this.deviceStateManager) {
         this.deviceStateManager.setError(task.deviceId, error.message);
         const circuit = this.deviceCircuits.get(task.deviceId);
@@ -825,7 +825,7 @@ export class EnhancedScheduler implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  /** P1优化：错误日志节流 — 同 key 5 秒内返回 false（跳过日志） */
+  /** P1 optimization: error-log throttle - returns false for the same key within 5s (skip the log) */
   private shouldLogError(key: string): boolean {
     const now = Date.now();
     const last = this.lastErrorLogAt.get(key);

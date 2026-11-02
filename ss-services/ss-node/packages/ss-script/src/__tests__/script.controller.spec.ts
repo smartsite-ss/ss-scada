@@ -55,7 +55,7 @@ jest.mock('@ss-node/ss-core', () => {
 });
 
 // ============================================================
-// Mock 外部服务包，避免加载真实源码的依赖链（ss-datatag → ss-device → ss-system 循环依赖）
+// Mock external service packages, avoiding the dependency chain of loading real source (ss-datatag -> ss-device -> ss-system circular dependency)
 // ============================================================
 jest.mock('@ss-node/ss-datatag', () => ({
   DataTagService: jest.fn().mockImplementation(() => ({ findById: jest.fn() })),

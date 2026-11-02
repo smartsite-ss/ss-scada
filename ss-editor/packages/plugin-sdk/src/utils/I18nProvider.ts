@@ -100,7 +100,7 @@ export class I18nProvider {
           const mod = await entry.loader();
           this._resources.set(entry.pluginType, mod.default);
         } catch {
-          // 插件未提供该语言包，静默跳过
+          // The plugin does not provide this language pack, skip silently
         }
       }),
     );

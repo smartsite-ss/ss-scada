@@ -66,8 +66,8 @@ export interface UserInfo {
 }
 
 /**
- * S-C03: Token 通过 HttpOnly Cookie 传输，accessToken/refreshToken 可选
- * （Cookie 模式下响应体仅返回 user；Bearer Header 模式下返回完整 token 对）
+ * S-C03: tokens are transported via HttpOnly Cookie; accessToken/refreshToken are optional
+ * (Cookie mode returns only user in the response body; Bearer header mode returns the full token pair)
  */
 export interface AuthResult {
   accessToken?: string;
@@ -80,14 +80,14 @@ export interface RefreshResult {
   refreshToken?: string;
 }
 
-/** 项目资源状态 */
+/** Project resource status */
 export interface ResourceStatus {
   status: 'ok' | 'missing' | 'error' | 'empty';
   path: string;
   size?: number;
 }
 
-/** 资源诊断集合 */
+/** Resource diagnostics collection */
 export interface DiagnoseResources {
   projectinfo?: ResourceStatus;
   dbDir?: ResourceStatus;
@@ -98,11 +98,11 @@ export interface DiagnoseResources {
   eventDb?: ResourceStatus;
 }
 
-/** 项目诊断结果 */
+/** Project diagnostic result */
 export interface DiagnoseResult {
   projectName: string;
   projectId: string;
-  /** 多租户预留（当前 = projectId） */
+  /** Multi-tenant reserved (currently = projectId) */
   tenantId: string;
   resources: DiagnoseResources;
   health: 'healthy' | 'degraded' | 'unhealthy';
@@ -111,11 +111,11 @@ export interface DiagnoseResult {
 }
 
 export interface Project {
-  /** 项目代码（后台 projectId 字段，变量命名格式，不含中文） */
+  /** Project code (backend projectId field, variable-naming format, no Chinese) */
   projectId: string;
-  /** tenantId 多租户预留字段（当前 = projectId，为以后扩展多租户预置） */
+  /** tenantId multi-tenant reserved field (currently = projectId, preset for future multi-tenant expansion) */
   tenantId: string;
-  /** 项目显示名称 */
+  /** Project display name */
   projectName: string;
   description?: string;
   version?: string;
@@ -125,29 +125,29 @@ export interface Project {
   pages?: Page[];
   createdAt?: string;
   updatedAt?: string;
-  /** 工程位置（项目目录绝对路径） */
+  /** Project location (absolute path of the project directory) */
   projectPath?: string;
-  /** 数据库位置（项目数据库目录绝对路径） */
+  /** Database location (absolute path of the project database directory) */
   databasePath?: string;
-  /** 项目地址 */
+  /** Project address */
   address?: string;
-  /** 经度（十进制字符串） */
+  /** Longitude (decimal string) */
   longitude?: string;
-  /** 纬度（十进制字符串） */
+  /** Latitude (decimal string) */
   latitude?: string;
-  /** 负责人 */
+  /** Person in charge */
   owner?: string;
-  /** 项目封面图片相对路径（如 images/cover-1234567890.png） */
+  /** Project cover image relative path (e.g. images/cover-1234567890.png) */
   image?: string;
   /**
-   * 项目启用状态（true=启用，false=停用）。
-   * 停用的项目不采集数据、不在设备树/设备监控显示、不计入首页统计。
-   * 默认 false（新建项目默认停用，需手动启用后才开始采集）。
+   * Project enabled state (true = enabled, false = disabled).
+   * Disabled projects do not collect data, do not appear in the device tree/device monitoring, and are excluded from home statistics.
+   * Defaults to false (new projects are disabled by default; collection starts only after manual enabling).
    */
   enabled?: boolean;
-  /** 页面数量（运行时计算，不入 projectinfo.json） */
+  /** Page count (computed at runtime, not written into projectinfo.json) */
   pageCount?: number;
-  /** 项目目录总大小（字节，运行时计算，不入 projectinfo.json） */
+  /** Total project directory size (bytes, computed at runtime, not written into projectinfo.json) */
   folderSize?: number;
 }
 
@@ -168,7 +168,7 @@ export type TagDataType = 'boolean' | 'int16' | 'uint16' | 'int32' | 'uint32' | 
 
 export interface Device {
   id: string;
-  /** 设备编码（项目内唯一的设备标识符） */
+  /** Device code (unique device identifier within the project) */
   deviceCode: string;
   deviceName: string;
   nameAlias?: string;
@@ -194,7 +194,7 @@ export interface Device {
   scanRate?: number;
   offlinePeriod?: number;
   groupId?: string;
-  /** 运行时采集诊断数据（DeviceStateManager 推送） */
+  /** Runtime collection diagnostic data (pushed by DeviceStateManager) */
   _diagnostics?: {
     retryCount?: number;
     circuitState?: 'closed' | 'open' | 'half-open';
@@ -218,7 +218,7 @@ export interface DataTag {
   deviceId: string;
   createdAt?: string;
   updatedAt?: string;
-  // 显示与报警相关字段（与后端 DataTag 实体保持一致）
+  // Display and alarm related fields (kept consistent with the backend DataTag entity)
   unit?: string;
   displayFormat?: string;
   alarmHigh?: number;
@@ -242,7 +242,7 @@ export interface DeviceGroup {
 
 export interface DeviceSummary {
   id: string;
-  /** 设备编码（项目内唯一的设备标识符） */
+  /** Device code (unique device identifier within the project) */
   deviceCode: string;
   deviceName: string;
   type: DeviceType;
@@ -260,7 +260,7 @@ export interface DeviceTree {
   devices: DeviceSummary[];
 }
 
-/** 项目设备树（包含分组树和未分组的根设备） */
+/** Project device tree (including the group tree and ungrouped root devices) */
 export interface ProjectDeviceTree {
   projectId: string;
   projectName: string;
@@ -299,7 +299,7 @@ export interface AlarmRule {
   enabled: boolean;
   debounceMs: number;
   alarmType?: string;
-  /** 值恢复后是否自动清除告警（Phase 5） */
+  /** Whether to auto-clear the alarm when the value recovers (Phase 5) */
   autoClear?: boolean;
   projectId: string;
   tagId: string;
@@ -322,13 +322,13 @@ export interface AlarmRecord {
   status: AlarmStatus;
   alarmType?: string;
   dispositionType?: string;
-  /** 是否实时告警（Phase 5）：true=实时(未恢复) / false=历史(已清除) */
+  /** Whether it is a real-time alarm (Phase 5): true = real-time (not cleared) / false = historical (cleared) */
   isActive?: boolean;
-  /** 清除原因（Phase 5）：auto=条件自动恢复 / manual=人工清除 / rule_disabled=规则禁用 */
+  /** Clear reason (Phase 5): auto = condition auto-recovered / manual = manually cleared / rule_disabled = rule disabled */
   clearReason?: string;
-  /** 自动恢复时间（Phase 5）：仅 clearReason='auto' 时有值 */
+  /** Auto-recovery time (Phase 5): present only when clearReason = auto */
   recoveredAt?: string;
-  /** 自动恢复时的采集值（Phase 5） */
+  /** Collected value at auto recovery (Phase 5) */
   recoveredValue?: string;
   acknowledgedAt?: string;
   acknowledgedBy?: string;
@@ -476,9 +476,9 @@ export interface AuditLog {
   createdAt: string;
 }
 
-// ==================== 系统配置管理 ====================
+// ==================== System configuration management ====================
 
-/** 配置分类 */
+/** Configuration category */
 export type ConfigCategory =
   | 'application'
   | 'database'
@@ -490,10 +490,10 @@ export type ConfigCategory =
   | 'i18n'
   | 'monitoring';
 
-/** 配置值类型 */
+/** Configuration value type */
 export type ConfigValueType = 'string' | 'number' | 'boolean' | 'enum' | 'password';
 
-/** 配置元数据 */
+/** Configuration metadata */
 export interface ConfigMetadata {
   key: string;
   category: ConfigCategory;
@@ -513,7 +513,7 @@ export interface ConfigMetadata {
   };
 }
 
-/** 配置项展示视图（含元数据 + 当前值） */
+/** Configuration item display view (metadata + current value) */
 export interface ConfigItemView {
   key: string;
   category: ConfigCategory;
@@ -532,7 +532,7 @@ export interface ConfigItemView {
   source: 'env' | 'db' | 'default' | 'null';
 }
 
-/** 配置更新结果 */
+/** Configuration update result */
 export interface ConfigUpdateResult {
   key: string;
   value: string;
@@ -542,10 +542,10 @@ export interface ConfigUpdateResult {
   addedToPendingRestart: boolean;
 }
 
-/** 重启状态 */
+/** Restart status */
 export type RestartStatus = 'idle' | 'pending' | 'restarting' | 'exited' | 'ready' | 'failed';
 
-/** 重启状态信息 */
+/** Restart status info */
 export interface RestartState {
   status: RestartStatus;
   triggeredBy?: string;

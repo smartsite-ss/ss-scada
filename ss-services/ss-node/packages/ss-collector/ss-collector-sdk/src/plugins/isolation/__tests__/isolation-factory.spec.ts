@@ -62,7 +62,7 @@ const createMockEventBus = () => ({
 });
 
 // ============================================================
-// 测试套件
+// Test suite
 // ============================================================
 describe('IsolationFactory', () => {
   describe('getExecutor', () => {
@@ -306,7 +306,7 @@ describe('IsolationFactory', () => {
       );
 
       await factory.prepare('test');
-      expect(getAdapter).not.toHaveBeenCalled(); // prepare 不调用 getAdapter
+      expect(getAdapter).not.toHaveBeenCalled(); // prepare does not call getAdapter
     });
 
     it('协议不存在时不应报错', async () => {

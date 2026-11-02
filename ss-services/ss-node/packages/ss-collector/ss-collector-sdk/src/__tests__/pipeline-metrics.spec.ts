@@ -41,7 +41,7 @@ function makeStep(
   };
 }
 
-/** 模拟延迟的 step，用于测试耗时统计 */
+/** Simulated delayed step, used to test duration statistics */
 function makeDelayedStep(name: string, order: number, delayMs: number): PipelineStep {
   return {
     name,
@@ -109,7 +109,7 @@ describe('PipelineMetrics Integration', () => {
 
       const snapshot = metricsService.getMetricsSnapshot();
       expect(snapshot.step_error_count['bad-step']).toBe(1);
-      // step 失败时 ctx.errors > 0，recordExecution 标记为失败
+      // When a step fails, ctx.errors > 0 and recordExecution marks it as failed
       expect(snapshot.pipeline_executions_error).toBe(1);
     });
 
@@ -134,7 +134,7 @@ describe('PipelineMetrics Integration', () => {
       const step = makeDelayedStep('read', 1, 10);
       orchestrator.registerStep(step);
 
-      // 执行 5 次
+      // Execute 5 times
       for (let i = 0; i < 5; i++) {
         const promise = orchestrator.execute(makeContext());
         jest.advanceTimersByTime(10);
@@ -162,7 +162,7 @@ describe('PipelineMetrics Integration', () => {
       });
       orchestrator.registerStep(flakyStep);
 
-      // 执行 4 次，2 次成功 2 次失败
+      // Execute 4 times: 2 successes, 2 failures
       for (let i = 0; i < 4; i++) {
         await orchestrator.execute(makeContext());
       }

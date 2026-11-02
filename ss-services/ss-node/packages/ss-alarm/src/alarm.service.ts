@@ -9,7 +9,7 @@ import { AlarmRule, AlarmRecord, AlarmStatus, AlarmLevel } from './entities/alar
 import { I18nService } from '@ss-node/ss-i18n';
 import { ErrorFactory, ProjectDatabaseService } from '@ss-node/ss-core';
 import { ConfigService } from '@nestjs/config';
-/** 合法的状态流转映射 */
+/** Valid status-transition mapping */
 const VALID_TRANSITIONS: Record<AlarmStatus, AlarmStatus[]> = {
   [AlarmStatus.ACTIVE]: [AlarmStatus.ACKNOWLEDGED, AlarmStatus.SHELVED, AlarmStatus.CLEARED],
   [AlarmStatus.ACKNOWLEDGED]: [AlarmStatus.CLEARED, AlarmStatus.SHELVED],
@@ -25,24 +25,24 @@ export interface AlarmRecordsFilter {
   endDate?: string;
   alarmType?: string;
   dispositionType?: string;
-  /** 是否实时告警：true=仅实时(active/acknowledged/shelved) / false=仅历史(cleared)。
-   *  Phase 5 新增：显式区分实时/历史，查询效率高于 status IN (...) */
+  /** Whether it is a real-time alarm: true=real-time only (active/acknowledged/shelved) / false=history only (cleared).
+   *  Added in Phase 5: explicitly distinguishes real-time from history; more efficient than status IN (...) */
   isActive?: boolean;
 }
 
-/** 批量确认单条失败项（小程序二期：部分失败结构，不整体抛错） */
+/** Single failed item of a batch acknowledgment (mini-program phase 2: partial-failure structure, no whole-operation throw) */
 export interface BatchAcknowledgeFailureItem {
   alarmRecordId: string;
   reason: 'not_found' | 'already_acknowledged' | 'already_cleared' | 'invalid_status';
 }
 
-/** 批量确认结果（幂等接口返回结构） */
+/** Batch-acknowledgment result (return structure of the idempotent API) */
 export interface BatchAcknowledgeResult {
   succeeded: string[];
   failed: BatchAcknowledgeFailureItem[];
 }
 
-/** 幂等键缓存 TTL（10 分钟，覆盖网络重试窗口） */
+/** Idempotency-key cache TTL (10 minutes, covers the network-retry window) */
 const BATCH_ACKNOWLEDGE_IDEMPOTENCY_TTL_MS = 10 * 60 * 1000;
 
 interface AlarmRepos {
@@ -56,7 +56,7 @@ export class AlarmService {
   private readonly err: ErrorFactory;
   private readonly dbMode: string;
 
-  /** 批量确认幂等键缓存：`{projectId}:{requestId}` → 首次结果（进程内内存，重启失效不影响正确性） */
+  /** Batch-acknowledgment idempotency-key cache: `{projectId}:{requestId}` -> first result (in-process memory; restart invalidation does not affect correctness) */
   private readonly batchAcknowledgeIdempotencyCache = new Map<
     string,
     { result: BatchAcknowledgeResult; expireAt: number }
@@ -78,9 +78,9 @@ export class AlarmService {
   }
 
   /**
-   * 根据项目ID获取对应的 Repository 集合
-   * - isolated 模式：通过 ProjectDatabaseService 获取项目级 DataSource
-   * - unified 模式：使用全局注入的 Repository（兼容旧行为）
+   * Get the Repository collection for the given project ID
+   * - isolated mode: obtain the project-level DataSource via ProjectDatabaseService
+   * - unified mode: use the globally injected Repository (backward-compatible behavior)
    */
   private async getRepos(projectId: string): Promise<AlarmRepos> {
     if (this.dbMode === 'isolated' && this.projectDbService) {
@@ -96,7 +96,7 @@ export class AlarmService {
     };
   }
 
-  // ==================== 规则查询 ====================
+  // ==================== Rule query ====================
 
   async findAllRules(projectId: string): Promise<AlarmRule[]> {
     const { alarmRuleRepo } = await this.getRepos(projectId);
@@ -113,7 +113,7 @@ export class AlarmService {
     return rule;
   }
 
-  // ==================== 规则 CRUD ====================
+  // ==================== Rule CRUD ====================
 
   async createRule(projectId: string, data: Partial<AlarmRule>): Promise<AlarmRule> {
     const { alarmRuleRepo } = await this.getRepos(projectId);
@@ -144,7 +144,7 @@ export class AlarmService {
   async deleteRule(id: string, projectId: string): Promise<void> {
     const { alarmRuleRepo, alarmRecordRepo } = await this.getRepos(projectId);
     const rule = await this.findOneRule(id, projectId);
-    // 级联删除活跃报警记录
+    // Cascade-delete active alarm records
     await alarmRecordRepo.delete({ ruleId: id, projectId });
     await alarmRuleRepo.remove(rule);
   }
@@ -166,7 +166,7 @@ export class AlarmService {
       this.err.badRequest('alarm.rule.already_disabled', { id });
     }
     rule.enabled = false;
-    // 禁用规则时清除活跃报警（标记为规则禁用导致的清除）
+    // When disabling a rule, clear its active alarms (marked as cleared due to rule disable)
     await alarmRecordRepo.update(
       { ruleId: id, projectId, status: AlarmStatus.ACTIVE },
       {
@@ -180,7 +180,7 @@ export class AlarmService {
     return alarmRuleRepo.save(rule);
   }
 
-  // ==================== 报警记录查询 ====================
+  // ==================== Alarm record query ====================
 
   async getRecords(
     projectId: string,
@@ -206,7 +206,7 @@ export class AlarmService {
       where.isActive = filter.isActive;
     }
     if (filter?.keyword) {
-      // TypeORM 不支持 OR 条件直接放在 FindOptionsWhere，用数组形式
+      // TypeORM does not support OR conditions directly in FindOptionsWhere; use the array form
       (where as any).message = Like(`%${filter.keyword}%`);
     }
     if (filter?.startDate) {
@@ -224,7 +224,7 @@ export class AlarmService {
     });
   }
 
-  /** 批量确认报警 */
+  /** Batch-acknowledge alarms */
   async batchAcknowledge(ids: string[], userId: string, projectId: string): Promise<number> {
     const { alarmRecordRepo } = await this.getRepos(projectId);
     const records = await alarmRecordRepo.find({
@@ -242,11 +242,11 @@ export class AlarmService {
   }
 
   /**
-   * 批量确认报警（幂等 + 部分失败结构，小程序二期 07 #10）
+   * Batch-acknowledge alarms (idempotent + partial-failure structure, mini-program phase 2, 07 #10)
    *
-   * - requestId 幂等：同一 `{projectId}:{requestId}` 在 10 分钟内重复请求直接返回首次结果，
-   *   避免网络重试导致重复确认/重复事件广播。
-   * - 部分失败：状态冲突（已确认/已清除/其他状态）与不存在记录归入 failed，不整体抛错。
+   * - requestId idempotency: the same `{projectId}:{requestId}` repeated within 10 minutes returns the first result directly,
+   *   avoiding duplicate acknowledgments / duplicate event broadcasts caused by network retries.
+   * - Partial failure: status conflicts (already acknowledged / cleared / other) and missing records go into failed, without throwing for the whole operation.
    */
   async batchAcknowledgeIdempotent(
     ids: string[],
@@ -275,7 +275,7 @@ export class AlarmService {
     return result;
   }
 
-  /** 执行批量确认：仅 ACTIVE 记录可确认，其余归入失败项 */
+  /** Execute batch acknowledgment: only ACTIVE records can be acknowledged; the rest go into failed items */
   private async executeBatchAcknowledge(
     ids: string[],
     userId: string,
@@ -320,7 +320,7 @@ export class AlarmService {
     return { succeeded, failed };
   }
 
-  /** 清理过期幂等缓存项（惰性清理，随每次幂等请求触发） */
+  /** Clean expired idempotency-cache entries (lazy cleanup, triggered on each idempotent request) */
   private pruneExpiredIdempotencyEntries(): void {
     const now = Date.now();
     for (const [key, entry] of this.batchAcknowledgeIdempotencyCache) {
@@ -330,7 +330,7 @@ export class AlarmService {
     }
   }
 
-  /** 批量清除报警 */
+  /** Batch-clear alarms */
   async batchClear(ids: string[], userId: string, projectId: string): Promise<number> {
     const { alarmRecordRepo } = await this.getRepos(projectId);
     const allowedStatuses = [AlarmStatus.ACTIVE, AlarmStatus.ACKNOWLEDGED];
@@ -351,9 +351,9 @@ export class AlarmService {
     return records.length;
   }
 
-  // ==================== 报警生命周期管理（含状态机校验） ====================
+  // ==================== Alarm lifecycle management (with state-machine validation) ====================
 
-  /** 校验状态流转是否合法 */
+  /** Validate whether the status transition is legal */
   private validateTransition(current: AlarmStatus, target: AlarmStatus): void {
     const allowed = VALID_TRANSITIONS[current] ?? [];
     if (!allowed.includes(target)) {
@@ -407,30 +407,30 @@ export class AlarmService {
 
     this.validateTransition(record.status, AlarmStatus.SHELVED);
 
-    // 记录暂缓前状态，自动恢复时回退（仅 ACTIVE / ACKNOWLEDGED 可转入 SHELVED）
+    // Record the pre-shelve status to roll back on auto-recovery (only ACTIVE / ACKNOWLEDGED can transition into SHELVED)
     record.preShelveStatus = record.status;
     record.status = AlarmStatus.SHELVED;
     record.shelvedAt = new Date();
     record.shelvedBy = userId;
     record.shelveReason = reason;
-    // 注：暂缓动作不更新 dispositionType —— alarmActionType 字典中无"告警暂缓"动作值，
-    // 仅有恢复值 alarm.shelve.expired，故暂缓时保持前值，仅恢复时更新（见 AlarmShelveRecoveryService）
-    // 设置定时自动恢复：durationMs > 0 时记录到期时间，由 AlarmShelveRecoveryService 扫描恢复
+    // Note: the shelve action does not update dispositionType -- the alarmActionType dictionary has no "alarm shelved" action value,
+    // only the recovery value alarm.shelve.expired exists, so the pre-shelve value is kept and updated only on recovery (see AlarmShelveRecoveryService)
+    // Schedule auto-recovery: when durationMs > 0, record the expiry time; AlarmShelveRecoveryService scans and recovers
     record.shelvedUntil = durationMs && durationMs > 0 ? new Date(Date.now() + durationMs) : null;
     return alarmRecordRepo.save(record);
   }
 
   /**
-   * 自动恢复告警（Phase 5 状态机闭环）
+   * Auto-recover an alarm (Phase 5 state-machine closed loop)
    *
-   * 由 AlarmRecoverySubscriber 在检测到条件恢复正常时调用，完成告警闭环：
-   * - status → CLEARED
-   * - isActive → false（标记为历史告警）
-   * - clearReason → 'auto'（条件自动恢复）
-   * - recoveredAt → 当前时间（恢复时间，闭环关键字段）
-   * - recoveredValue → 恢复时的采集值
+   * Called by AlarmRecoverySubscriber when the condition is detected as recovered, closing the alarm loop:
+   * - status -> CLEARED
+   * - isActive -> false (marked as a historical alarm)
+   * - clearReason -> 'auto' (condition auto-recovered)
+   * - recoveredAt -> current time (recovery time, the key field for closing the loop)
+   * - recoveredValue -> the collected value at recovery
    *
-   * 注意：此方法不校验 VALID_TRANSITIONS，因为自动恢复可从 ACTIVE/ACKNOWLEDGED 直接到 CLEARED
+   * Note: this method does not validate VALID_TRANSITIONS, because auto-recovery can go directly from ACTIVE/ACKNOWLEDGED to CLEARED
    */
   async recoverAlarm(record: AlarmRecord, recoveredValue: string): Promise<AlarmRecord> {
     record.status = AlarmStatus.CLEARED;
@@ -444,9 +444,9 @@ export class AlarmService {
     return record;
   }
 
-  // ==================== 重复报警抑制 ====================
+  // ==================== Duplicate-alarm suppression ====================
 
-  /** 检查是否已存在该规则的活跃报警 */
+  /** Check whether an active alarm already exists for this rule */
   async hasActiveAlarm(ruleId: string, projectId: string): Promise<boolean> {
     const { alarmRecordRepo } = await this.getRepos(projectId);
     const count = await alarmRecordRepo.count({

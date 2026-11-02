@@ -3,7 +3,7 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 // ============================================================
-// Mock @nestjs/swagger — Controller 使用 ApiTags/ApiBearerAuth/ApiOperation/ApiQuery 装饰器
+// Mock @nestjs/swagger -- the Controller uses ApiTags/ApiBearerAuth/ApiOperation/ApiQuery decorators
 // ============================================================
 jest.mock('@nestjs/swagger', () => {
   const deco = (): any => (target: any, key?: string, descriptor?: any) => descriptor ?? target;
@@ -21,8 +21,8 @@ jest.mock('@nestjs/swagger', () => {
 });
 
 // ============================================================
-// Mock guard 模块 — Controller 直接从相对路径导入 JwtAuthGuard/RolesGuard/Roles/UserRole
-// 避免 NestJS TestingModule 尝试实例化 guard 及其依赖（Reflector 等）
+// Mock guard modules -- the Controller imports JwtAuthGuard/RolesGuard/Roles/UserRole via relative paths
+// Prevents the NestJS TestingModule from trying to instantiate the guards and their dependencies (Reflector etc.)
 // ============================================================
 jest.mock('../../core/auth/guards/jwt-auth.guard', () => ({
   JwtAuthGuard: class MockJwtAuthGuard {
@@ -50,16 +50,16 @@ import { EventLogQueryDto } from '../event-log-query.dto';
 import { EventLog } from '../entities/event-log.entity';
 
 /**
- * EventLogController 单元测试
+ * EventLogController unit tests
  *
- * 覆盖 3 个 REST API 端点：
- * 1. GET /system/event-logs       — findByFilter（分页 + 多维筛选 + 日期转换）
- * 2. GET /system/event-logs/failed — findFailed（失败事件快速查询）
- * 3. GET /system/event-logs/:id   — findOne（详情含订阅者追踪）
+ * Covers 3 REST API endpoints:
+ * 1. GET /system/event-logs       - findByFilter (pagination + multi-dimension filters + date conversion)
+ * 2. GET /system/event-logs/failed - findFailed (quick failed-event query)
+ * 3. GET /system/event-logs/:id   - findOne (detail including subscriber tracing)
  *
- * 验证 Controller 正确转发查询参数到 EventLogService，并完成 ISO 日期字符串 → Date 的转换。
- * Guard 依赖（JwtAuthGuard/RolesGuard）通过 jest.mock 替换为空实现，
- * 避免在单元测试中实例化 Reflector 等 DI 依赖。
+ * Verifies the Controller correctly forwards query params to EventLogService and converts ISO date strings -> Date.
+ * Guard dependencies (JwtAuthGuard/RolesGuard) are replaced with no-op implementations via jest.mock,
+ * avoiding instantiation of Reflector and other DI dependencies in unit tests.
  */
 describe('EventLogController', () => {
   let controller: EventLogController;
@@ -139,7 +139,7 @@ describe('EventLogController', () => {
     it('应使用 DTO 默认分页参数（page=1, pageSize=20）', async () => {
       service.findByFilter.mockResolvedValue({ items: [], total: 0 });
 
-      // 模拟 ValidationPipe：将普通对象赋值到 DTO 实例以应用字段默认值
+      // Simulate ValidationPipe: assign the plain object onto the DTO instance to apply field defaults
       const dto = Object.assign(new EventLogQueryDto(), {});
       await controller.findByFilter(dto);
 

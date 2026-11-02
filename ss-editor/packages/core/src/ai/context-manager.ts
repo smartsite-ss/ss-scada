@@ -3,21 +3,21 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * Context Manager — P1-T03 前端上下文管理器
+ * Context Manager — P1-T03 frontend context manager
  *
- * 收集编辑器运行上下文，供 Agent 决策使用：
- *   - 编辑器状态（当前页面、选中图元、历史操作）
- *   - 数据中台状态（活动报警、设备列表等，可供后续接入）
- *   - 用户上下文（角色、最近操作、偏好）
+ * Collects editor runtime context for Agent decision-making:
+ *   - Editor state (current page, selected graphics, history)
+ *   - Data-platform state (active alarms, device list, etc., available for future integration)
+ *   - User context (role, recent actions, preferences)
  *
- * 关联决策：D-005 混合模式（上下文注入 system prompt）
+ * Related decision: D-005 hybrid mode (context injected into the system prompt)
  *
- * 用法:
+ * Usage:
  *   const ctx = contextManager.collectContext();
  *   const systemPrompt = contextManager.buildSystemPrompt(ctx);
  */
 
-/** 编辑器上下文 */
+/** Editor context */
 export interface EditorContext {
   currentPage?: {
     id: string;
@@ -34,21 +34,21 @@ export interface EditorContext {
   zoom: number;
 }
 
-/** 运行时上下文 */
+/** Runtime context */
 export interface RuntimeContext {
   activeAlarms: number;
   connectedDevices: number;
   currentProject: string;
 }
 
-/** 用户上下文 */
+/** User context */
 export interface UserContext {
   role: string;
   language: string;
   theme: string;
 }
 
-/** 完整上下文 */
+/** Full context */
 export interface AgentContext {
   editor: EditorContext;
   runtime: RuntimeContext;
@@ -70,21 +70,21 @@ export class ContextManager {
   };
 
   /**
-   * 更新编辑器状态
+   * Update the editor state
    */
   updateEditorState(partial: Partial<EditorContext>): void {
     this.editorState = { ...this.editorState, ...partial };
   }
 
   /**
-   * 更新运行时状态
+   * Update the runtime state
    */
   updateRuntimeState(partial: Partial<RuntimeContext>): void {
     this.runtimeState = { ...this.runtimeState, ...partial };
   }
 
   /**
-   * 收集完整上下文
+   * Collect the full context
    */
   collectContext(): AgentContext {
     return {
@@ -100,7 +100,7 @@ export class ContextManager {
   }
 
   /**
-   * 构建 system prompt（注入上下文）
+   * Build the system prompt (with context injection)
    */
   buildSystemPrompt(ctx: AgentContext): string {
     const parts = [
@@ -112,7 +112,7 @@ export class ContextManager {
       '- 知识问答（SCADA 系统使用说明）',
     ];
 
-    // 编辑器上下文
+    // Editor context
     if (ctx.editor.currentPage) {
       const p = ctx.editor.currentPage;
       parts.push(
@@ -126,7 +126,7 @@ export class ContextManager {
       );
     }
 
-    // 运行时上下文
+    // Runtime context
     parts.push(
       `\n【系统状态】`,
       `- 当前项目：${ctx.runtime.currentProject || '(未加载)'}`,
@@ -138,5 +138,5 @@ export class ContextManager {
   }
 }
 
-/** 单例 */
+/** Singleton */
 export const contextManager = new ContextManager();

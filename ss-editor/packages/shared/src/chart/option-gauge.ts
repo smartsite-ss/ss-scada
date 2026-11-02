@@ -4,13 +4,13 @@
 
 import { formatNumber } from './format';
 
-/** 表盘（gauge）ECharts option 组装输入 */
+/** Gauge ECharts option builder input */
 export interface GaugeChartOptionInput {
   value: number;
   minValue: number;
   maxValue: number;
   unit: string;
-  /** 数值显示小数位数（默认 2） */
+  /** Decimal places for the displayed value (default 2) */
   decimalPlaces?: number;
   title: string;
   titleColor: string;
@@ -32,14 +32,14 @@ export interface GaugeChartOptionInput {
   dangerValue: number;
 }
 
-/** 将数值归一化到 0~1（按 min/max 夹取） */
+/** Normalize a value to 0~1 (clamped by min/max) */
 function clampRatio(value: number, min: number, max: number): number {
   const range = max - min;
   if (range <= 0) return 0;
   return Math.max(0, Math.min(1, (value - min) / range));
 }
 
-/** 表盘 ECharts option（复用 gauge 系列，替代现有 Canvas 手绘实现） */
+/** Gauge ECharts option (reuses the gauge series, replacing the existing hand-drawn Canvas implementation) */
 export function buildGaugeChartOption(input: GaugeChartOptionInput): Record<string, unknown> {
   const min = Number(input.minValue);
   const max = Number(input.maxValue);

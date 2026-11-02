@@ -3,10 +3,11 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * SubscribeMessageService 单元测试（10 模块）
+ * SubscribeMessageService unit tests (Module 10)
  *
- * 覆盖：配置查询 / 授权上报（accept 累加、ban 清零、未绑定拒绝、参数校验）/
- *       配额查询 / 偏好默认值与 upsert 校验
+ * Covers: config query / authorization report (accept accumulation, ban reset,
+ * unbound rejection, param validation) /
+ *       quota query / preference defaults and upsert validation
  */
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { SubscribeMessageService } from '../subscribe-message.service';

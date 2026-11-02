@@ -11,11 +11,11 @@ describe('Influxdb3SqlQueryBuilder', () => {
     builder = new Influxdb3SqlQueryBuilder();
   });
 
-  // ──────────── 原始点查询 ────────────
+  // ──────────── Raw point queries ────────────
 
   describe('buildRawQuery', () => {
     it('TC-IV3-QB-001: should build raw query with SELECT *, quoted identifiers and tagId filter', () => {
-      // P0 实测：camelCase 列必须双引号；动态 schema 下用 SELECT * 引用全部列
+      // P0 test: camelCase columns must be double-quoted; with a dynamic schema use SELECT * to reference all columns
       const sql = builder.buildQuery(
         {
           tagIds: ['tag-1', 'tag-2'],
@@ -51,14 +51,14 @@ describe('Influxdb3SqlQueryBuilder', () => {
     });
 
     it('TC-IV3-QB-004: should filter by projectId for shared-database isolation', () => {
-      // P0 实测：v3 Core 5 库上限 → 共享库 + "projectId" tag 过滤
+      // P0 test: v3 Core's 5-database limit → shared database + "projectId" tag filter
       const sql = builder.buildQuery({ projectId: 'proj-42' }, { name: 'ss-node-data' });
 
       expect(sql).toContain("\"projectId\" = 'proj-42'");
     });
   });
 
-  // ──────────── 聚合查询 ────────────
+  // ──────────── Aggregate queries ────────────
 
   describe('buildAggregationQuery', () => {
     it('TC-IV3-QB-010: should build scalar aggregation (no interval) grouped by quoted tagId', () => {
@@ -124,7 +124,7 @@ describe('Influxdb3SqlQueryBuilder', () => {
     });
   });
 
-  // ──────────── 注入防护 ────────────
+  // ──────────── Injection protection ────────────
 
   describe('injection protection', () => {
     it('TC-IV3-QB-020: should escape single quotes in tagId (a\'b";DROP)', () => {

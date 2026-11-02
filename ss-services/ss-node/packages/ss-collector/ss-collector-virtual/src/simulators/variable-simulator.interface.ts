@@ -4,21 +4,21 @@
 
 import { VariableSimulationConfig } from '../simulation-config.types';
 
-/** 变量仿真器接口 */
+/** Variable simulator interface */
 export interface VariableSimulator {
-  /** 生成下一个值 */
+  /** Generate the next value */
   generate(): number | boolean | string;
-  /** 设置当前值（用于外部写入） */
+  /** Set the current value (for external writes) */
   setValue(value: any): void;
-  /** 重置仿真器状态 */
+  /** Reset the simulator state */
   reset(): void;
-  /** 获取仿真器配置 */
+  /** Get the simulator config */
   getConfig(): VariableSimulationConfig;
-  /** 更新仿真器配置 */
+  /** Update the simulator config */
   updateConfig(config: VariableSimulationConfig): void;
 }
 
-/** 带缓存的仿真器包装器 — 按 updateIntervalSec 控制更新频率 */
+/** Cached simulator wrapper - controls update frequency by updateIntervalSec */
 export class CachedSimulator implements VariableSimulator {
   private inner: VariableSimulator;
   private updateIntervalMs: number;

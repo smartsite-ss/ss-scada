@@ -3,12 +3,12 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * canvas-page template.store 单元测试
+ * canvas-page template.store unit tests
  *
- * 核心验证点：
- * 1. setCurrentProjectId 正确设置项目上下文
- * 2. saveAsTemplate 根据项目上下文 + saveToSystem 决定 API 路径
- * 3. 保存成功后将模板加入正确的列表（systemTemplates / projectTemplates）
+ * Key verification points:
+ * 1. setCurrentProjectId correctly sets the project context
+ * 2. saveAsTemplate decides the API path based on the project context + saveToSystem
+ * 3. After a successful save the template is added to the correct list (systemTemplates / projectTemplates)
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
@@ -16,7 +16,7 @@ import { createPinia, setActivePinia } from 'pinia';
 import { useTemplateStore } from '../../../canvas-page/templates/template.store';
 import type { PageTemplate } from '../../../canvas-page/templates/types';
 
-// ─── 测试辅助 ───
+// ─── Test helpers ───
 
 const mockPageConfig: PageTemplate['pageConfig'] = {
   width: 1920,
@@ -56,7 +56,7 @@ function mockFetchError(message: string) {
   } as Response);
 }
 
-// ─── 测试套件 ───
+// ─── Test suites ───
 
 describe('canvas-page template.store', () => {
   let store: ReturnType<typeof useTemplateStore>;
@@ -65,7 +65,7 @@ describe('canvas-page template.store', () => {
   beforeEach(() => {
     setActivePinia(createPinia());
     store = useTemplateStore();
-    // 重置模块级 currentProjectId，防止测试间泄漏
+    // Reset the module-level currentProjectId to prevent leakage between tests
     store.setCurrentProjectId(null);
     fetchSpy = vi.spyOn(globalThis, 'fetch');
   });
@@ -74,7 +74,7 @@ describe('canvas-page template.store', () => {
     vi.restoreAllMocks();
   });
 
-  // ─── 初始状态 ───
+  // ─── Initial state ───
 
   describe('初始状态', () => {
     it('systemTemplates 和 projectTemplates 初始为空数组', () => {
@@ -118,7 +118,7 @@ describe('canvas-page template.store', () => {
     });
   });
 
-  // ─── saveAsTemplate — API 路径分派 ───
+  // ─── saveAsTemplate — API path dispatch ───
 
   describe('saveAsTemplate — API 路径分派', () => {
     it('saveToSystem=false + currentProjectId 已设置 → 使用项目级 API', async () => {
@@ -147,7 +147,7 @@ describe('canvas-page template.store', () => {
     });
 
     it('currentProjectId 未设置 → 即使 saveToSystem=false 也回退系统级 API', async () => {
-      // 不调用 setCurrentProjectId，模拟未打开 TemplateGallery 的场景
+      // Do not call setCurrentProjectId, simulating the scenario where TemplateGallery was never opened
 
       const saved = { success: true, data: { ...mockTemplateInfo, id: 'tpl-fallback', source: 'user' } };
       fetchSpy.mockResolvedValueOnce(mockFetchResponse(saved) as any);
@@ -159,7 +159,7 @@ describe('canvas-page template.store', () => {
     });
   });
 
-  // ─── saveAsTemplate — 模板归类 ───
+  // ─── saveAsTemplate — template categorization ───
 
   describe('saveAsTemplate — 模板归类', () => {
     it('项目级保存 → 加入 projectTemplates', async () => {
@@ -199,7 +199,7 @@ describe('canvas-page template.store', () => {
     });
   });
 
-  // ─── saveAsTemplate — API 失败降级 ───
+  // ─── saveAsTemplate — API failure degradation ───
 
   describe('saveAsTemplate — API 失败降级', () => {
     it('API 失败时降级到 localStorage（systemTemplates）', async () => {
@@ -207,10 +207,10 @@ describe('canvas-page template.store', () => {
 
       const result = await store.saveAsTemplate(mockTemplateInfo, true);
 
-      // 降级到 localStorage 时仍返回模板对象
+      // Still returns the template object when degrading to localStorage
       expect(result).not.toBeNull();
       expect(result!.name).toBe('测试模板');
-      // 降级时统一加入 systemTemplates
+      // During degradation the template is uniformly added to systemTemplates
       expect(store.systemTemplates).toHaveLength(1);
       expect(store.projectTemplates).toHaveLength(0);
     });
@@ -225,15 +225,15 @@ describe('canvas-page template.store', () => {
     });
   });
 
-  // ─── 集成场景：PageTabs → TemplateSaveDialog 完整流程 ───
+  // ─── Integration scenario: PageTabs → TemplateSaveDialog full flow ───
 
   describe('集成场景：右键菜单保存为模板', () => {
     it('PageTabs 先设置 projectId → 再保存 → 正确使用项目级 API', async () => {
-      // 模拟 PageTabs.openSaveAsTemplateDialog 的行为：
+      // Simulate the behavior of PageTabs.openSaveAsTemplateDialog:
       // templateStore.setCurrentProjectId(props.projectId || null);
       store.setCurrentProjectId('real-project');
 
-      // 模拟用户在 TemplateSaveDialog 中保存（saveToSystem=false 为默认值）
+      // Simulate the user saving in TemplateSaveDialog (saveToSystem=false is the default)
       const saved = { success: true, data: { ...mockTemplateInfo, id: 'tpl-integration-1', source: 'user' } };
       fetchSpy.mockResolvedValueOnce(mockFetchResponse(saved) as any);
 
@@ -250,7 +250,7 @@ describe('canvas-page template.store', () => {
       const saved = { success: true, data: { ...mockTemplateInfo, id: 'tpl-integration-2', source: 'user' } };
       fetchSpy.mockResolvedValueOnce(mockFetchResponse(saved) as any);
 
-      // 用户在 TemplateSaveDialog 下拉中选择了"系统级"
+      // The user selected "system level" in the TemplateSaveDialog dropdown
       await store.saveAsTemplate(mockTemplateInfo, true);
 
       const [url] = fetchSpy.mock.calls[0];

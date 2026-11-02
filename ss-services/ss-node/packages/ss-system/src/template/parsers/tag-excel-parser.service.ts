@@ -5,7 +5,7 @@
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import * as XLSX from 'xlsx';
 
-/** 从 Excel 解析出的标签原始数据 */
+/** Raw tag data parsed from Excel */
 export interface ParsedTagRow {
   rowIndex: number;
   name: string;
@@ -21,19 +21,19 @@ export interface ParsedTagRow {
   [key: string]: any;
 }
 
-/** Excel 解析配置 */
+/** Excel parsing configuration */
 export interface ExcelParseOptions {
-  /** 工作表名称（默认读取第一个） */
+  /** Worksheet name (reads the first one by default) */
   sheetName?: string;
-  /** 表头行号（从 0 开始，默认 0 即第一行） */
+  /** Header row number (0-based, default 0 i.e. the first row) */
   headerRow?: number;
-  /** 数据起始行号（从 0 开始，默认 headerRow + 1） */
+  /** Data start row number (0-based, default headerRow + 1) */
   dataStartRow?: number;
-  /** 列名映射：Excel 列名 → 标签字段名 */
+  /** Column name mapping: Excel column name → tag field name */
   columnMapping?: Record<string, string>;
 }
 
-/** 默认列名映射 */
+/** Default column name mapping */
 const DEFAULT_COLUMN_MAPPING: Record<string, string> = {
   名称: 'name',
   name: 'name',
@@ -67,7 +67,7 @@ const DEFAULT_COLUMN_MAPPING: Record<string, string> = {
   category: 'category',
 };
 
-/** 必填字段名列表 */
+/** List of required field names */
 const REQUIRED_FIELDS = ['name', 'address', 'dataType'];
 
 @Injectable()
@@ -75,7 +75,7 @@ export class TagExcelParserService {
   private readonly logger = new Logger(TagExcelParserService.name);
 
   /**
-   * 解析 Excel 文件 Buffer，返回标签数据数组
+   * Parse an Excel file Buffer, returning an array of tag data
    */
   parse(buffer: Buffer, options: ExcelParseOptions = {}): ParsedTagRow[] {
     const workbook = this.readWorkbook(buffer);
@@ -100,13 +100,13 @@ export class TagExcelParserService {
     const dataStartRow = options.dataStartRow ?? headerRow + 1;
     const columnMapping = options.columnMapping ?? DEFAULT_COLUMN_MAPPING;
 
-    // 读取表头
+    // Read the header
     const headerRowData = rawData[headerRow];
     if (!headerRowData || headerRowData.length === 0) {
       throw new BadRequestException('Excel 表头行无效');
     }
 
-    // 构建列索引映射：列索引 → 标签字段名
+    // Build the column index mapping: column index → tag field name
     const colIndexMap: Record<number, string> = {};
     for (let i = 0; i < headerRowData.length; i++) {
       const colName = String(headerRowData[i] ?? '').trim();
@@ -116,7 +116,7 @@ export class TagExcelParserService {
       }
     }
 
-    // 验证必填字段对应的列是否存在
+    // Validate that the columns for required fields exist
     const mappedFields = new Set(Object.values(colIndexMap));
     const missingRequired = REQUIRED_FIELDS.filter((f) => !mappedFields.has(f));
     if (missingRequired.length > 0) {
@@ -126,13 +126,13 @@ export class TagExcelParserService {
       );
     }
 
-    // 解析数据行
+    // Parse data rows
     const tags: ParsedTagRow[] = [];
 
     for (let rowIdx = dataStartRow; rowIdx < rawData.length; rowIdx++) {
       const row = rawData[rowIdx];
       if (!row || row.every((cell: any) => String(cell ?? '').trim() === '')) {
-        continue; // 跳过空行
+        continue; // skip empty rows
       }
 
       const tag: ParsedTagRow = { rowIndex: rowIdx + 1, name: '', address: '', dataType: '' };
@@ -143,7 +143,7 @@ export class TagExcelParserService {
         tag[fieldName] = this.normalizeValue(fieldName, rawValue);
       }
 
-      // 跳过 name 为空的行
+      // Skip rows with an empty name
       if (!tag.name || String(tag.name).trim() === '') {
         continue;
       }
@@ -156,7 +156,7 @@ export class TagExcelParserService {
   }
 
   /**
-   * 读取工作簿
+   * Read the workbook
    */
   private readWorkbook(buffer: Buffer): XLSX.WorkBook {
     try {
@@ -167,7 +167,7 @@ export class TagExcelParserService {
   }
 
   /**
-   * 根据字段名规范化值
+   * Normalize a value by field name
    */
   private normalizeValue(fieldName: string, rawValue: any): any {
     if (rawValue === undefined || rawValue === null) {
@@ -198,7 +198,7 @@ export class TagExcelParserService {
         const lower = strValue.toLowerCase();
         if (lower === 'true' || lower === '是' || lower === 'yes' || lower === '1') return true;
         if (lower === 'false' || lower === '否' || lower === 'no' || lower === '0') return false;
-        return true; // 默认启用
+        return true; // enabled by default
       }
       default:
         return strValue;

@@ -22,21 +22,21 @@ import {
   STORAGE_ENGINE_TYPES,
 } from '@ss-node/ss-storage';
 
-// multi: true 注册保留以兼容潜在的 @Inject(PERSIST_WRITER) 注入场景
-// （注意：multi provider 只有在被注入时才会被实例化，不会触发 onModuleInit）
+// multi: true registration is kept for potential @Inject(PERSIST_WRITER) injection scenarios
+// (note: multi providers are only instantiated when injected, so onModuleInit is not triggered)
 const persistWriterProviders = [
   { provide: PERSIST_WRITER, useClass: SqlitePersistWriter, multi: true },
   { provide: PERSIST_WRITER, useClass: InfluxPersistWriter, multi: true },
 ] as any[];
 
 /**
- * 字符串 Token alias —— 供 ss-device 的 DeviceArchiveService / ArchiveService 注入
+ * String token aliases — for injection by ss-device's DeviceArchiveService / ArchiveService
  *
- * 避免直接 import ss-storage-influx 的类（会产生 workspace 包级别循环依赖：
- * ss-storage-influx → ss-device [DataTag 实体]，ss-device → ss-storage-influx [服务类]）。
+ * Avoids directly importing ss-storage-influx classes (which would create workspace package-level circular dependencies:
+ * ss-storage-influx → ss-device [DataTag entity], ss-device → ss-storage-influx [service classes]).
  *
- * ss-device 通过 @Inject('INFLUX_WRITE_SERVICE') / @Inject('DATA_QUERY_SERVICE') 注入，
- * 此处用 useExisting 将 Token 映射到实际的 Service 实例。
+ * ss-device injects via @Inject('INFLUX_WRITE_SERVICE') / @Inject('DATA_QUERY_SERVICE');
+ * useExisting here maps the tokens to the actual service instances.
  */
 const serviceTokenAliases = [
   { provide: 'INFLUX_WRITE_SERVICE', useExisting: InfluxWriteService },
@@ -44,17 +44,17 @@ const serviceTokenAliases = [
 ];
 
 /**
- * @Global() — 数据存储模块声明为全局模块
+ * @Global() — the data storage module is declared as a global module
  *
- * 使 InfluxWriteService / DataQueryService / DataService 可被任意模块注入，
- * 避免业务模块（如 ss-device）需要导入 DataModule 时产生 workspace 包级别的循环依赖
- * （ss-storage-influx 依赖 ss-device 的 DataTag 实体类型，ss-device 不应反向依赖 ss-storage-influx）。
+ * Makes InfluxWriteService / DataQueryService / DataService injectable from any module,
+ * avoiding workspace package-level circular dependencies when business modules (e.g. ss-device) need DataModule
+ * (ss-storage-influx depends on ss-device's DataTag entity type; ss-device should not depend back on ss-storage-influx).
  *
- * 导入 PipelineModule：使 PersistWriterRegistry 可被注入到 SqlitePersistWriter / InfluxPersistWriter，
- * 让它们能在 onModuleInit 时主动注册到 Registry，从而被 PersistStep 调用。
+ * Imports PipelineModule: makes PersistWriterRegistry injectable into SqlitePersistWriter / InfluxPersistWriter,
+ * so they can actively register with the Registry at onModuleInit and be invoked by PersistStep.
  *
- * PersistWriter 直接在 providers 中列出（而非仅通过 multi: true 注册），
- * 确保 NestJS 实例化它们以触发 onModuleInit → PersistWriterRegistry.register()。
+ * PersistWriters are listed directly in providers (not only registered via multi: true),
+ * ensuring NestJS instantiates them to trigger onModuleInit → PersistWriterRegistry.register().
  */
 @Global()
 @Module({
@@ -94,18 +94,18 @@ export class DataModule implements OnModuleInit {
   ) {}
 
   /**
-   * 向全局 ProjectDatabaseService 注册 HistoricalData 实体。
+   * Register the HistoricalData entity with the global ProjectDatabaseService.
    *
-   * 这样项目数据库初始化时（synchronize: true），TypeORM 会自动创建
-   * data_historical_data 表，并将 HistoricalData.tagId 作为外键引用
-   * dev_data_tags.id（DataTag 实体由 DeviceModule 注册）。
+   * This way, when a project database is initialized (synchronize: true), TypeORM automatically creates
+   * the data_historical_data table with HistoricalData.tagId as a foreign key referencing
+   * dev_data_tags.id (the DataTag entity is registered by DeviceModule).
    *
-   * 若不注册，项目数据库中不会创建该表，SqlitePersistWriter 写入时
-   * 会因外键检查失败报错 "FOREIGN KEY constraint failed"。
+   * Without registration the table is not created in the project database, and SqlitePersistWriter writes
+   * fail the foreign key check with "FOREIGN KEY constraint failed".
    */
   onModuleInit(): void {
     this.projectDbService.registerSystemEntities([HistoricalData]);
-    // 将 InfluxDB 2 适配器注册到存储引擎路由（引擎类型 influxdb2）
+    // Register the InfluxDB 2 adapter with the storage engine router (engine type influxdb2)
     this.storageEngineRouter.registerAdapter(STORAGE_ENGINE_TYPES.INFLUXDB2, this.influxdbAdapter);
   }
 }

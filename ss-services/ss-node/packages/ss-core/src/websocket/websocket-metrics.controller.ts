@@ -9,13 +9,13 @@ import { ConnectionMonitorService } from './connection-monitor.service';
 import { OfflineMessageCacheService } from './offline-message-cache.service';
 
 /**
- * WebSocket 监控指标 Controller
+ * WebSocket monitoring-metrics Controller
  *
- * 提供消息来去过程监控与消息效率统计：
- * - GET /api/v1/ws/metrics            — JSON 指标快照
- * - GET /api/v1/ws/metrics/prometheus — Prometheus 文本格式
- * - GET /api/v1/ws/metrics/connections — 连接详情
- * - GET /api/v1/ws/metrics/diagnostic  — 诊断信息（排查消息丢失/无数据问题）
+ * Provides message incoming/outgoing monitoring and message-efficiency statistics:
+ * - GET /api/v1/ws/metrics            -- JSON metric snapshot
+ * - GET /api/v1/ws/metrics/prometheus -- Prometheus text format
+ * - GET /api/v1/ws/metrics/connections -- connection details
+ * - GET /api/v1/ws/metrics/diagnostic  -- diagnostics (troubleshooting missing messages / no data)
  */
 @Controller('ws/metrics')
 export class WebSocketMetricsController {
@@ -28,7 +28,7 @@ export class WebSocketMetricsController {
     private readonly offlineCache: OfflineMessageCacheService,
   ) {}
 
-  /** JSON 格式指标快照 */
+  /** JSON-format metric snapshot */
   @Get()
   getJsonMetrics() {
     const snapshot = this.metricsService.getSnapshot();
@@ -41,13 +41,13 @@ export class WebSocketMetricsController {
     return snapshot;
   }
 
-  /** Prometheus 文本格式指标 */
+  /** Prometheus text-format metrics */
   @Get('prometheus')
   getPrometheusMetrics(): string {
     return this.metricsService.getPrometheusMetrics();
   }
 
-  /** 连接详情（集成 ConnectionMonitorService） */
+  /** Connection details (integrating ConnectionMonitorService) */
   @Get('connections')
   getConnectionDetails() {
     const monitorStats = this.connectionMonitor.getStats();
@@ -61,15 +61,15 @@ export class WebSocketMetricsController {
   }
 
   /**
-   * 诊断端点：一次性返回 WebSocket 消息链路状态，排查"消息无数据"问题。
-   * 返回原始数据（由全局 TransformInterceptor 统一包装），形状对齐前端 WsDiagnosticInfo：
-   * { conclusions, suggestions, details }。
+   * Diagnostic endpoint: returns the WebSocket message-chain status in one shot, troubleshooting "messages with no data".
+   * Returns raw data (uniformly wrapped by the global TransformInterceptor); shape aligned with the frontend WsDiagnosticInfo:
+   * { conclusions, suggestions, details }.
    *
-   * 排查思路：
-   * - totalBroadcasts === 0 → 消息从未广播，检查 DataPushBridge 和采集任务
-   * - broadcastCounts 有数据但 roomHitStats 中 totalRecipients === 0 → 无客户端订阅
-   * - bridgeLatencyMs.count > 0 但 broadcastCounts 为空 → Bridge 收到事件但未广播
-   * - offlineCacheHits > 0 → 有离线客户端在缓存消息
+   * Troubleshooting guide:
+   * - totalBroadcasts === 0 -> messages never broadcast; check DataPushBridge and collection tasks
+   * - broadcastCounts has data but roomHitStats' totalRecipients === 0 -> no client subscribed
+   * - bridgeLatencyMs.count > 0 but broadcastCounts empty -> Bridge received events but did not broadcast
+   * - offlineCacheHits > 0 -> offline clients are caching messages
    */
   @Get('diagnostic')
   getDiagnostic() {
@@ -103,12 +103,12 @@ export class WebSocketMetricsController {
   }
 
   /**
-   * 根据当前状态自动生成诊断结论
+   * Auto-generate diagnostic conclusions from the current state
    */
   private buildDiagnosis(metrics: any, monitor: any, gateway: any): string[] {
     const conclusions: string[] = [];
 
-    // 检查消息广播情况
+    // Check message broadcasting
     if (metrics.totalBroadcasts === 0) {
       conclusions.push(
         '❌ WebSocket 从未广播过消息 — 检查: 1) 采集任务是否运行 2) EventBus 是否触发 data_point_changed/device:statusChanged/alarm_triggered 3) DataPushBridge 是否初始化',
@@ -118,25 +118,25 @@ export class WebSocketMetricsController {
         `✅ 已广播 ${metrics.totalBroadcasts} 次消息，共 ${metrics.totalRecipients} 个接收者`,
       );
 
-      // 检查事件类型分布
+      // Check the event-type distribution
       const eventTypes = Object.keys(metrics.broadcastCounts);
       conclusions.push(`📊 广播事件类型: ${eventTypes.join(', ')}`);
     }
 
-    // 检查 Bridge 延迟
+    // Check Bridge latency
     if (metrics.bridgeLatencyMs.count > 0) {
       conclusions.push(
         `✅ DataPushBridge 处理 ${metrics.bridgeLatencyMs.count} 次，平均耗时 ${metrics.bridgeLatencyMs.avgMs}ms，最大 ${metrics.bridgeLatencyMs.maxMs}ms`,
       );
     }
 
-    // 检查连接情况
+    // Check connections
     if (monitor.totalConnections === 0) {
       conclusions.push('❌ 无 WebSocket 客户端连接 — 前端未连接或连接失败');
     } else {
       conclusions.push(`✅ 当前 ${monitor.totalConnections} 个客户端连接`);
 
-      // 检查房间订阅
+      // Check room subscriptions
       if (gateway.roomCount === 0) {
         conclusions.push('⚠️ 无房间订阅 — 客户端未订阅任何项目/设备/标签房间');
       } else {
@@ -144,12 +144,12 @@ export class WebSocketMetricsController {
       }
     }
 
-    // 检查离线缓存
+    // Check the offline cache
     if (metrics.offlineCacheHits > 0) {
       conclusions.push(`✅ 离线缓存命中 ${metrics.offlineCacheHits} 次（有客户端曾离线）`);
     }
 
-    // 检查房间命中率（是否有空房间推送）
+    // Check room hit rate (whether there are pushes to empty rooms)
     const roomStats = metrics.roomHitStats || {};
     const emptyRooms = Object.entries(roomStats).filter(
       ([, stat]: [string, any]) => stat.totalRecipients === 0,

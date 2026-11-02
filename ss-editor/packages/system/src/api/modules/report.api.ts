@@ -5,24 +5,24 @@
 import client from '../client';
 import type { ApiResponse, PaginatedApiResponse } from '../types/api';
 
-// ==================== 类型定义 ====================
+// ==================== Type definitions ====================
 
-/** 报表类型（与后端 ReportType 枚举一致） */
+/** Report type (consistent with the backend ReportType enum) */
 export type ReportType = 'daily' | 'monthly' | 'custom' | 'alarm' | 'trend';
 
-/** 报表状态（与后端 ReportStatus 枚举一致） */
+/** Report status (consistent with the backend ReportStatus enum) */
 export type ReportStatus = 'generating' | 'completed' | 'failed';
 
-/** 报表粒度 */
+/** Report granularity */
 export type ReportGranularity = 'hour' | 'day' | 'month';
 
-/** 报表趋势方向 */
+/** Report trend direction */
 export type ReportTrend = 'up' | 'down' | 'stable';
 
-/** 图表类型 */
+/** Chart type */
 export type ReportChartType = 'line' | 'bar' | 'pie' | 'table';
 
-/** 报表摘要 */
+/** Report summary */
 export interface ReportSummary {
   totalDevices: number;
   onlineDevices: number;
@@ -32,7 +32,7 @@ export interface ReportSummary {
   [key: string]: unknown;
 }
 
-/** 报表指标项 */
+/** Report metric item */
 export interface ReportItem {
   label: string;
   value: number | string;
@@ -41,14 +41,14 @@ export interface ReportItem {
   changePercent?: number;
 }
 
-/** 图表数据集 */
+/** Chart dataset */
 export interface ReportChartDataset {
   label: string;
   data: number[];
   color?: string;
 }
 
-/** 报表图表 */
+/** Report chart */
 export interface ReportChart {
   type: ReportChartType;
   title: string;
@@ -56,14 +56,14 @@ export interface ReportChart {
   datasets: ReportChartDataset[];
 }
 
-/** 报表数据（嵌套在 Report.data 下） */
+/** Report data (nested under Report.data) */
 export interface ReportData {
   summary?: ReportSummary;
   items?: ReportItem[];
   charts?: ReportChart[];
 }
 
-/** 报表配置 */
+/** Report configuration */
 export interface ReportConfig {
   timeRange?: { start: string; end: string };
   metrics?: string[];
@@ -75,8 +75,8 @@ export interface ReportConfig {
 }
 
 /**
- * 报表响应对象（与后端 CachedReport 结构一致）
- * 注意：summary/items/charts 嵌套在 data 字段下
+ * Report response object (consistent with the backend CachedReport structure)
+ * Note: summary/items/charts are nested under the data field
  */
 export interface Report {
   id: string;
@@ -90,7 +90,7 @@ export interface Report {
   data: ReportData;
 }
 
-/** 导出报表结果 */
+/** Export report result */
 export interface ReportExportResult {
   reportId: string;
   format: 'pdf' | 'excel';
@@ -101,7 +101,7 @@ export interface ReportExportResult {
   status: ReportStatus;
 }
 
-/** 保存的报表配置 */
+/** Saved report configuration */
 export interface SavedReportConfig {
   id: string;
   projectId: string;
@@ -111,7 +111,7 @@ export interface SavedReportConfig {
   createdAt: string;
 }
 
-// ==================== DTO 定义 ====================
+// ==================== DTO definitions ====================
 
 export interface GenerateDailyReportDto {
   date: string;
@@ -161,41 +161,41 @@ export interface SaveReportConfigDto {
   config: Record<string, unknown>;
 }
 
-// ==================== API 方法 ====================
+// ==================== API methods ====================
 
 const buildUrl = (projectId: string, path: string) =>
   `/projects/${projectId}/reports${path}`;
 
 export const reportApi = {
-  /** 生成日报 */
+  /** Generate a daily report */
   generateDaily(projectId: string, dto: GenerateDailyReportDto): Promise<ApiResponse<Report>> {
     return client.post(buildUrl(projectId, '/daily'), dto).then((res) => res.data);
   },
 
-  /** 生成月报 */
+  /** Generate a monthly report */
   generateMonthly(projectId: string, dto: GenerateMonthlyReportDto): Promise<ApiResponse<Report>> {
     return client.post(buildUrl(projectId, '/monthly'), dto).then((res) => res.data);
   },
 
-  /** 生成自定义报表 */
+  /** Generate a custom report */
   generateCustom(projectId: string, dto: GenerateCustomReportDto): Promise<ApiResponse<Report>> {
     return client.post(buildUrl(projectId, '/custom'), dto).then((res) => res.data);
   },
 
-  /** 生成告警报表 */
+  /** Generate an alarm report */
   generateAlarm(projectId: string, dto: AlarmReportDto): Promise<ApiResponse<Report>> {
     return client.post(buildUrl(projectId, '/alarm'), dto).then((res) => res.data);
   },
 
-  /** 生成趋势报表 */
+  /** Generate a trend report */
   generateTrend(projectId: string, dto: TrendReportDto): Promise<ApiResponse<Report>> {
     return client.post(buildUrl(projectId, '/trend'), dto).then((res) => res.data);
   },
 
   /**
-   * 导出报表
-   * 后端路由为 POST projects/:projectId/reports/:reportId/export（非 GET）
-   */
+     * Export a report
+     * The backend route is POST projects/:projectId/reports/:reportId/export (not GET)
+     */
   exportReport(
     projectId: string,
     reportId: string,
@@ -204,7 +204,7 @@ export const reportApi = {
     return client.post(buildUrl(projectId, `/${reportId}/export`), dto).then((res) => res.data);
   },
 
-  /** 查询报表列表 */
+  /** Query the report list */
   queryReports(
     projectId: string,
     params?: ReportQueryParams,
@@ -212,7 +212,7 @@ export const reportApi = {
     return client.get(buildUrl(projectId, ''), { params }).then((res) => res.data);
   },
 
-  /** 保存报表配置 */
+  /** Save a report configuration */
   saveReportConfig(
     projectId: string,
     dto: SaveReportConfigDto,
@@ -220,7 +220,7 @@ export const reportApi = {
     return client.post(buildUrl(projectId, '/configs'), dto).then((res) => res.data);
   },
 
-  /** 获取报表配置列表 */
+  /** Get the report configuration list */
   getReportConfigs(projectId: string): Promise<ApiResponse<SavedReportConfig[]>> {
     return client.get(buildUrl(projectId, '/configs')).then((res) => res.data);
   },

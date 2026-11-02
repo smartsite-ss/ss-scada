@@ -3,14 +3,14 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * PluginGeneratorAgent 单元测试 — P1-T05
+ * PluginGeneratorAgent unit tests — P1-T05
  *
- * 覆盖:
- *   - 插件配置推断（type/label/category/renderBackend）
- *   - Schema 推断（开关/状态灯/标签/数值/管道）
- *   - 渲染后端推断（Canvas2D/Vue/SVG/CSS/Three3D）
- *   - System Prompt 构建（含所有渲染后端绘制指引）
- *   - 分类关键词映射（工业/图表/表单/自定义）
+ * Covers:
+ *   - Plugin config inference (type/label/category/renderBackend)
+ *   - Schema inference (switch/status lamp/label/numeric/pipe)
+ *   - Render backend inference (Canvas2D/Vue/SVG/CSS/Three3D)
+ *   - System Prompt building (including drawing guides for all render backends)
+ *   - Category keyword mapping (industrial/chart/form/custom)
  */
 
 import { describe, it, expect } from 'vitest';
@@ -19,7 +19,7 @@ import { PluginGeneratorAgent } from '../../ai/plugin-generator-agent';
 describe('PluginGeneratorAgent', () => {
   const agent = new PluginGeneratorAgent();
 
-  // ────── 配置推断 ──────
+  // ────── Config inference ──────
 
   describe('配置推断', () => {
     it('"创建一个带开关和状态灯的阀门插件" → 推断为工业分类', () => {
@@ -55,7 +55,7 @@ describe('PluginGeneratorAgent', () => {
     });
   });
 
-  // ────── Schema 推断 ──────
+  // ────── Schema inference ──────
 
   describe('Schema 推断', () => {
     it('"带开关" → 推断 isOn (boolean)', () => {
@@ -138,7 +138,7 @@ describe('PluginGeneratorAgent', () => {
     });
   });
 
-  // ────── 分类推断 ──────
+  // ────── Category inference ──────
 
   describe('分类推断', () => {
     const categoryCases = [
@@ -175,25 +175,25 @@ describe('PluginGeneratorAgent', () => {
     });
   });
 
-  // ────── 典型场景 ──────
+  // ────── Typical scenarios ──────
 
   describe('典型场景：P1-T05 验收标准', () => {
     it('"创建一个带开关和状态灯的阀门插件" 应生成完整配置', () => {
       const result = agent.analyze('创建一个带开关和状态灯的阀门插件');
 
-      // 验证完整配置结构
+      // Verify the full config structure
       expect(result.config.type).toBeTruthy();
       expect(result.config.label).toContain('阀门');
       expect(result.config.category).toBe('industrial');
       expect(result.config.renderBackend).toBe('canvas2d');
 
-      // Schema 应包含开关和状态灯
+      // The Schema should contain a switch and a status lamp
       const fieldNames = result.config.schema.fields.map((f) => f.name);
       expect(fieldNames).toContain('isOn');
       expect(fieldNames).toContain('statusColor');
       expect(fieldNames).toContain('bodyColor');
 
-      // System Prompt 应包含所有必需部分
+      // The System Prompt should contain all required parts
       expect(result.systemPrompt.length).toBeGreaterThan(500);
       expect(result.systemPrompt).toContain('插件配置');
       expect(result.systemPrompt).toContain('属性 Schema');

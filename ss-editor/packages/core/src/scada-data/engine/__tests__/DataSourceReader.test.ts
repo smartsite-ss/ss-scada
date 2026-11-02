@@ -11,7 +11,7 @@ import {
   type WsStoreLike,
 } from '../DataSourceReader';
 
-// ── 辅助函数 ────────────────────────────────────────────────────────
+// ── Helper functions ────────────────────────────────────────────────────────
 
 function makeWsStore(entries: Record<string, { value: unknown; quality?: string; timestamp?: number }>): WsStoreLike {
   return { tagValues: new Map(Object.entries(entries)) };
@@ -36,7 +36,7 @@ describe('extractTagIds', () => {
 
   it('ds.properties 为空对象时 props 不兜底到 ds.config（仅 falsy 时兜底）', () => {
     const ds = { properties: {}, config: { tagIds: ['x'] } };
-    // properties 为 {} 是 truthy，不会兜底到 config.tagIds
+    // properties as {} is truthy, so it does not fall back to config.tagIds
     expect(extractTagIds(ds)).toEqual([]);
   });
 
@@ -187,7 +187,7 @@ describe('readTagSnapshots', () => {
 // ── buildSourceSummary ───────────────────────────────────────────────
 
 describe('buildSourceSummary', () => {
-  // — tag/device 类型 —
+  // — tag/device types —
   it('tag 类型：单标签汇总值', () => {
     const store = makeWsStore({
       'tag1': { value: 42.5, quality: 'good', timestamp: 1700000000000 },
@@ -246,7 +246,7 @@ describe('buildSourceSummary', () => {
     expect(summary.lastValue).toBe('100');
   });
 
-  // — static 类型 —
+  // — static type —
   it('static 类型：key:value 格式', () => {
     const store = makeWsStore({
       's1': { value: 'hello', quality: 'good', timestamp: 100 },
@@ -271,12 +271,12 @@ describe('buildSourceSummary', () => {
     expect(summary.lastValue).toBe('keyB: —');
   });
 
-  // — api 类型 —
+  // — api type —
   it('api 类型：显示 URL', () => {
     const store = emptyWsStore();
     const summary = buildSourceSummary(
       { type: 'api', url: 'https://example.com/api/data' },
-      ['tag-no-care'],  // API 类型不依赖 tagIds 值，但需要至少一个以进入分支
+      ['tag-no-care'],  // API type does not depend on tagIds values, but at least one is needed to enter the branch
       ['t'],
       store,
     );
@@ -307,7 +307,7 @@ describe('buildSourceSummary', () => {
     expect(summary.lastValue).toBe('https://props.url.com');
   });
 
-  // — 边界情况 —
+  // — Edge cases —
   it('tagIds 为空时返回 null', () => {
     const store = makeWsStore({
       'tag1': { value: 42 },
@@ -336,7 +336,7 @@ describe('buildSourceSummary', () => {
     expect(summary.lastValue).toMatch(/\.\.\.$/);
   });
 
-  // — updatedAt 取最新 —
+  // — updatedAt takes the newest —
   it('updatedAt 取所有标签中最新的 timestamp', () => {
     const store = makeWsStore({
       'old': { value: 1, quality: 'good', timestamp: 1000 },
@@ -352,7 +352,7 @@ describe('buildSourceSummary', () => {
     expect(summary.updatedAt).toBe(3000);
   });
 
-  // — quality 取最差 —
+  // — quality takes the worst —
   it('quality 取最差的（bad 优先于 good）', () => {
     const store = makeWsStore({
       'g1': { value: 1, quality: 'good', timestamp: 100 },
@@ -409,7 +409,7 @@ describe('buildSourceSummary', () => {
     expect(summary.quality).toBe('good');
   });
 
-  // — 未知 type —
+  // — Unknown type —
   it('未知 type（既不是 tag/device/static/api）时 lastValue 为 null', () => {
     const store = makeWsStore({
       'x': { value: 99 },
@@ -425,17 +425,17 @@ describe('buildSourceSummary', () => {
   });
 });
 
-// ── 端到端：模拟 wsStore 数据到达后各函数联动 ──────────────────────────
+// ── End-to-end: simulate the linkage of each function after wsStore data arrives ──────────────────────────
 
 describe('DataSourceReader — 端到端流程', () => {
   it('wsStore 空 → 填充数据 → readTagSnapshot 读取', () => {
     const store = emptyWsStore();
 
-    // 阶段1：无数据
+    // Phase 1: no data
     const snap1 = readTagSnapshot('tag-1', '温度', store);
     expect(snap1.currentValue).toBeUndefined();
 
-    // 阶段2：模拟 WS 推送数据
+    // Phase 2: simulate WS pushing data
     store.tagValues.set('tag-1', { value: 25.5, quality: 'good', timestamp: 1700000000000 });
     const snap2 = readTagSnapshot('tag-1', '温度', store);
     expect(snap2.currentValue).toBe(25.5);
@@ -444,7 +444,7 @@ describe('DataSourceReader — 端到端流程', () => {
   it('buildSourceSummary 正确反映 wsStore 数据变更', () => {
     const store = emptyWsStore();
 
-    // 初始无数据
+    // Initially no data
     const s1 = buildSourceSummary(
       { type: 'tag', name: 'test' },
       ['t1', 't2'],
@@ -453,7 +453,7 @@ describe('DataSourceReader — 端到端流程', () => {
     );
     expect(s1.lastValue).toBe('—, —');
 
-    // 推送第一批
+    // Push the first batch
     store.tagValues.set('t1', { value: 30, quality: 'good', timestamp: 1000 });
     store.tagValues.set('t2', { value: 60, quality: 'good', timestamp: 2000 });
     const s2 = buildSourceSummary(

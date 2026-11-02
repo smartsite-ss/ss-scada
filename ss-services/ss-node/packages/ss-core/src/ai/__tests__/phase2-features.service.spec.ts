@@ -3,14 +3,14 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * Phase2FeaturesService 单元测试 — A004/A005/C002/C003/E003
+ * Phase2FeaturesService unit tests - A004/A005/C002/C003/E003
  *
- * 覆盖：
- *   - A004 智能数据绑定推荐：打分、策略选择、历史偏好
- *   - A005 智能布局优化：grid/flow/cluster/align 四种策略 + 碰撞检测
- *   - C002 上下文感知帮助：图元类型匹配、操作匹配、去重
- *   - C003 智能搜索：完全匹配、关键词匹配、scope 过滤
- *   - E003 自然语言命令解析：意图识别、参数提取、备选意图
+ * Covers:
+ *   - A004 smart data-binding recommendation: scoring, strategy selection, history preference
+ *   - A005 smart layout optimization: grid/flow/cluster/align strategies + collision detection
+ *   - C002 context-aware help: graphic-type matching, operation matching, deduplication
+ *   - C003 smart search: exact match, keyword match, scope filtering
+ *   - E003 natural-language command parsing: intent recognition, parameter extraction, alternative intents
  */
 
 import { Phase2FeaturesService } from '../phase2-features.service';
@@ -23,7 +23,7 @@ describe('Phase2FeaturesService', () => {
   });
 
   // ============================================================
-  // A004 智能数据绑定推荐
+  // A004 smart data-binding recommendation
   // ============================================================
   describe('A004 recommendBindings', () => {
     const baseReq = {
@@ -110,20 +110,20 @@ describe('Phase2FeaturesService', () => {
     });
 
     it('strategy 应按优先级选择：device-priority > historical > unit-match > semantic', () => {
-      // 有 deviceId → device-priority
+      // has deviceId -> device-priority
       expect(service.recommendBindings({ ...baseReq, deviceId: 'device-1' }).strategy).toBe(
         'device-priority',
       );
-      // 有历史记录 → historical
+      // has history -> historical
       expect(
         service.recommendBindings({
           ...baseReq,
           historicalBindings: [{ property: 'flow', tagId: 'tag-1' }],
         }).strategy,
       ).toBe('historical');
-      // 有单位 → unit-match
+      // has unit -> unit-match
       expect(service.recommendBindings(baseReq).strategy).toBe('unit-match');
-      // 无单位 → semantic
+      // no unit -> semantic
       const noUnitReq = {
         graphicType: 'valve',
         properties: [{ type: 'valve', property: 'state', dataType: 'boolean' as const }],
@@ -183,7 +183,7 @@ describe('Phase2FeaturesService', () => {
   });
 
   // ============================================================
-  // A005 智能布局优化
+  // A005 smart layout optimization
   // ============================================================
   describe('A005 optimizeLayout', () => {
     const baseGraphics = [
@@ -206,11 +206,11 @@ describe('Phase2FeaturesService', () => {
     it('grid 策略应自动换行', () => {
       const result = service.optimizeLayout({
         graphics: baseGraphics,
-        canvasWidth: 300, // 强制换行
+        canvasWidth: 300, // force line wrap
         canvasHeight: 600,
         strategy: 'grid',
       });
-      // 第一个图元应在 padding(20) 位置
+      // the first graphic should be at the padding(20) position
       expect(result.graphics[0].x).toBe(20);
       expect(result.graphics[0].y).toBe(20);
     });
@@ -226,7 +226,7 @@ describe('Phase2FeaturesService', () => {
         canvasHeight: 600,
         strategy: 'cluster',
       });
-      // 同类型应相邻
+      // same types should be adjacent
       const valve1 = result.graphics.find((g) => g.id === 'g1');
       const valve2 = result.graphics.find((g) => g.id === 'g3');
       expect(valve1!.y).toBe(valve2!.y);
@@ -279,7 +279,7 @@ describe('Phase2FeaturesService', () => {
         canvasHeight: 600,
         strategy: 'grid',
       });
-      // grid 策略应避免碰撞
+      // the grid strategy should avoid collisions
       expect(result.metrics.collisions).toBe(0);
     });
 
@@ -298,14 +298,14 @@ describe('Phase2FeaturesService', () => {
         graphics: baseGraphics,
         canvasWidth: 800,
         canvasHeight: 600,
-        // strategy 不传
+        // strategy not provided
       });
       expect(result.changes.length).toBeGreaterThanOrEqual(0);
     });
   });
 
   // ============================================================
-  // C002 上下文感知帮助
+  // C002 context-aware help
   // ============================================================
   describe('C002 getContextHelp', () => {
     it('基于选中图元类型匹配帮助文档', async () => {
@@ -340,8 +340,8 @@ describe('Phase2FeaturesService', () => {
     it('应去重匹配的文档', async () => {
       const result = await service.getContextHelp({
         context: {
-          selectedGraphicType: 'valve', // 匹配"图元数据绑定"
-          operation: 'bind', // 也匹配"图元数据绑定"
+          selectedGraphicType: 'valve', // matches the widget data-binding rule (test keyword is CJK)
+          operation: 'bind', // also matches the widget data-binding rule (test keyword is CJK)
         },
       });
       const bindDocs = result.matchedDocs.filter((d) => d.title === '图元数据绑定');
@@ -373,7 +373,7 @@ describe('Phase2FeaturesService', () => {
   });
 
   // ============================================================
-  // C003 智能搜索
+  // C003 smart search
   // ============================================================
   describe('C003 smartSearch', () => {
     it('应返回匹配结果', () => {
@@ -413,7 +413,7 @@ describe('Phase2FeaturesService', () => {
 
     it('limit 应限制返回数量', () => {
       const result = service.smartSearch({
-        query: 'a', // 不会匹配任何结果
+        query: 'a', // matches no results
         limit: 2,
       });
       expect(result.results.length).toBeLessThanOrEqual(2);
@@ -440,7 +440,7 @@ describe('Phase2FeaturesService', () => {
   });
 
   // ============================================================
-  // E003 自然语言命令解析
+  // E003 natural-language command parsing
   // ============================================================
   describe('E003 parseCommand', () => {
     it('空输入应返回 unknown 意图', () => {
@@ -539,7 +539,7 @@ describe('Phase2FeaturesService', () => {
     });
 
     it('可能返回备选意图', () => {
-      // 同时匹配多个意图的输入
+      // input matching multiple intents simultaneously
       const result = service.parseCommand({ input: '创建页面并搜索' });
       if (result.alternatives && result.alternatives.length > 0) {
         expect(result.alternatives[0].confidence).toBeGreaterThan(0);

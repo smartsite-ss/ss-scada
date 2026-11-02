@@ -8,7 +8,7 @@ import { IsolationFactory } from './isolation-factory';
 import { IsolationMode } from '../plugin.types';
 
 /**
- * 隔离体重启跟踪记录
+ * Isolation unit restart tracking record
  */
 interface RestartRecord {
   protocol: string;
@@ -19,7 +19,7 @@ interface RestartRecord {
 }
 
 /**
- * 隔离体告警事件
+ * Isolation unit alarm event
  */
 export interface IsolationAlarmEvent {
   alarmType: 'worker-high-restart' | 'worker-dead' | 'worker-high-latency';
@@ -40,34 +40,34 @@ export interface IsolationAlarmEvent {
 }
 
 /**
- * 隔离模式告警服务
+ * Isolation-mode alarm service
  *
- * 监听 plugin.isolation.crash 事件，跟踪重启次数，
- * 定时检查 executor 健康状态，触发告警：
- * - worker-high-restart: 10 分钟内重启 > 3 次 → warning
- * - worker-dead: executor 状态为 dead → critical
- * - worker-high-latency: avgLatencyMs > 10000 → warning
+ * Listens for the plugin.isolation.crash event, tracks restart counts,
+ * periodically checks the executor health status, and raises alarms:
+ * - worker-high-restart: more than 3 restarts within 10 minutes -> warning
+ * - worker-dead: executor status is dead -> critical
+ * - worker-high-latency: avgLatencyMs > 10000 -> warning
  */
 @Injectable()
 export class IsolationAlarmService implements OnModuleDestroy {
   private readonly logger = new Logger(IsolationAlarmService.name);
 
-  /** 协议重启记录 */
+  /** Protocol restart record */
   private restartRecords = new Map<string, RestartRecord>();
 
-  /** 定时器 */
+  /** Timer */
   private healthCheckTimer: NodeJS.Timeout | null = null;
 
-  /** 健康检查间隔（ms），默认 30s */
+  /** Health-check interval (ms), default 30s */
   private readonly healthCheckIntervalMs = 30000;
 
-  /** 重启窗口（ms），10 分钟 */
+  /** Restart window (ms), 10 minutes */
   private readonly restartWindowMs = 10 * 60 * 1000;
 
-  /** 重启阈值 */
+  /** Restart threshold */
   private readonly restartThreshold = 3;
 
-  /** 延迟阈值（ms） */
+  /** Latency threshold (ms) */
   private readonly latencyThresholdMs = 10000;
 
   constructor(
@@ -78,7 +78,7 @@ export class IsolationAlarmService implements OnModuleDestroy {
     this.startHealthCheck();
   }
 
-  // ==================== 事件订阅 ====================
+  // ==================== Event subscription ====================
 
   private subscribeToCrashEvents(): void {
     if (!this.eventBus) return;
@@ -103,7 +103,7 @@ export class IsolationAlarmService implements OnModuleDestroy {
       `[${protocol}] Isolation crash detected (mode=${mode}, restartCount=${restartCount}): ${error || 'unknown'}`,
     );
 
-    // 记录重启
+    // Record restart
     let record = this.restartRecords.get(protocol);
     if (!record) {
       record = {
@@ -119,11 +119,11 @@ export class IsolationAlarmService implements OnModuleDestroy {
     record.restartCount = restartCount;
     record.lastRestartAt = timestamp;
 
-    // 检查高频重启
+    // Check for frequent restarts
     this.checkHighRestart(protocol, record);
   }
 
-  // ==================== 健康检查 ====================
+  // ==================== Health check ====================
 
   private startHealthCheck(): void {
     this.healthCheckTimer = setInterval(() => {
@@ -137,7 +137,7 @@ export class IsolationAlarmService implements OnModuleDestroy {
     const healthMap = await this.isolationFactory.getAllHealth();
 
     for (const [protocol, health] of healthMap) {
-      // 检查 dead 状态
+      // Check dead status
       if (health.status === 'dead') {
         const plugin = (this.isolationFactory as any).pluginRegistry?.getPlugin?.(protocol);
         const mode = plugin?.meta?.isolationMode ?? IsolationMode.IN_PROCESS;
@@ -155,7 +155,7 @@ export class IsolationAlarmService implements OnModuleDestroy {
         continue;
       }
 
-      // 检查延迟
+      // Check latency
       if (health.avgLatencyMs > this.latencyThresholdMs) {
         const plugin = (this.isolationFactory as any).pluginRegistry?.getPlugin?.(protocol);
         const mode = plugin?.meta?.isolationMode ?? IsolationMode.IN_PROCESS;
@@ -175,7 +175,7 @@ export class IsolationAlarmService implements OnModuleDestroy {
     }
   }
 
-  // ==================== 告警检查 ====================
+  // ==================== Alarm check ====================
 
   private checkHighRestart(protocol: string, record: RestartRecord): void {
     const windowStart = record.firstRestartAt;
@@ -201,7 +201,7 @@ export class IsolationAlarmService implements OnModuleDestroy {
     }
   }
 
-  // ==================== 告警发射 ====================
+  // ==================== Alarm dispatch ====================
 
   private emitAlarm(event: IsolationAlarmEvent): void {
     this.logger.warn(`[IsolationAlarm] ${event.alarmType}: ${event.message}`);
@@ -209,7 +209,7 @@ export class IsolationAlarmService implements OnModuleDestroy {
     this.eventBus?.emit('plugin.isolation.alarm', event);
   }
 
-  // ==================== 生命周期 ====================
+  // ==================== Lifecycle ====================
 
   onModuleDestroy(): void {
     if (this.healthCheckTimer) {
@@ -224,14 +224,14 @@ export class IsolationAlarmService implements OnModuleDestroy {
     this.restartRecords.clear();
   }
 
-  // ==================== 查询接口 ====================
+  // ==================== Query interfaces ====================
 
-  /** 获取所有协议的重启记录 */
+  /** Get restart records for all protocols */
   getRestartRecords(): Map<string, RestartRecord> {
     return new Map(this.restartRecords);
   }
 
-  /** 获取指定协议的重启记录 */
+  /** Get restart records for a specific protocol */
   getRestartRecord(protocol: string): RestartRecord | undefined {
     return this.restartRecords.get(protocol);
   }

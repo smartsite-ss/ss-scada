@@ -15,10 +15,10 @@ export const DEFAULT_LEFT_WIDTH = 220;
 export const DEFAULT_RIGHT_WIDTH = 320;
 export const DEFAULT_COLLAPSED_WIDTH = 16;
 
-// 获取默认状态
+// Get default state
 function getDefaultState() {
   return {
-    // 工具配置
+    // Tool configuration
     tools: {
       selectedTool: 'select', // select, rect, circle, text, image
       fillColor: '#4CAF50',
@@ -28,7 +28,7 @@ function getDefaultState() {
       fontFamily: 'Arial',
     },
 
-    // 画布配置
+    // Canvas configuration
     canvas: {
       grid: true,
       gridSize: 20,
@@ -42,7 +42,7 @@ function getDefaultState() {
       useCanvasSelection: false,
     },
 
-    // 界面配置
+    // UI configuration
     ui: {
       showToolbar: true,
       showPropertyPanel: true,
@@ -56,21 +56,21 @@ function getDefaultState() {
       minPanelWidth: DEFAULT_MIN_PANEL_WIDTH,
       maxPanelWidth: DEFAULT_MAX_PANEL_WIDTH,
       collapsedPanelWidth: DEFAULT_COLLAPSED_WIDTH,
-      headerHeight: 60,       // 顶部栏高度
-      sidebarWidth: 200,      // 侧栏宽度
-      // AI 助手浮动面板配置（数据中台）
-      aiAssistantVisible: true,  // 是否显示 AI 助手浮动按钮
-      aiAssistantX: null as number | null,   // 面板位置 X（null 表示默认右下角）
-      aiAssistantY: null as number | null,   // 面板位置 Y
+      headerHeight: 60,       // Top bar height
+      sidebarWidth: 200,      // Sidebar width
+      // AI assistant floating panel config (data platform)
+      aiAssistantVisible: true,  // Whether to show the AI assistant floating button
+      aiAssistantX: null as number | null,   // Panel X position (null = default bottom-right)
+      aiAssistantY: null as number | null,   // Panel Y position
     },
 
-    // 自动保存配置
+    // Auto-save configuration
     autoSave: {
       enabled: true,
-      interval: 300, // 默认 300 秒
+      interval: 300, // Default 300 seconds
     },
 
-    // 快捷键配置
+    // Shortcut configuration
     shortcuts: DEFAULT_SHORTCUTS as ShortcutConfig[],
   };
 }
@@ -87,7 +87,7 @@ function getInitialState() {
   }));
 }
 
-// 配置状态管理
+// Config state management
 export const useConfigStore = defineStore('config', {
   state: () => getInitialState(),
 
@@ -109,31 +109,31 @@ export const useConfigStore = defineStore('config', {
       }
     },
 
-    // 更新工具配置
+    // Update tool config
     updateToolConfig(config: Partial<Record<string, any>>) {
       Object.assign(this.tools, config);
       this.saveConfig();
     },
 
-    // 更新画布配置
+    // Update canvas config
     updateCanvasConfig(config: Partial<Record<string, any>>) {
       Object.assign(this.canvas, config);
       this.saveConfig();
     },
 
-    // 更新界面配置
+    // Update UI config
     updateUIConfig(config: Partial<Record<string, any>>) {
       Object.assign(this.ui, config);
       this.saveConfig();
     },
 
-    // 更新自动保存配置
+    // Update auto-save config
     updateAutoSaveConfig(config: Partial<{ enabled: boolean; interval: number }>) {
       Object.assign(this.autoSave, config);
       this.saveConfig();
     },
 
-    // 更新单个快捷键
+    // Update a single shortcut
     updateShortcut(id: string, config: Partial<ShortcutConfig>) {
       const index = this.shortcuts.findIndex((s: ShortcutConfig) => s.id === id);
       if (index !== -1) {
@@ -142,7 +142,7 @@ export const useConfigStore = defineStore('config', {
       }
     },
 
-    // 批量更新快捷键
+    // Batch update shortcuts
     updateShortcuts(shortcuts: Partial<ShortcutConfig>[]) {
       shortcuts.forEach(shortcut => {
         if (shortcut.id) {
@@ -151,7 +151,7 @@ export const useConfigStore = defineStore('config', {
       });
     },
 
-    // 重置单个快捷键为默认值
+    // Reset a single shortcut to default
     resetShortcut(id: string) {
       const defaultShortcut = DEFAULT_SHORTCUTS.find((s: ShortcutConfig) => s.id === id);
       if (defaultShortcut) {
@@ -163,23 +163,23 @@ export const useConfigStore = defineStore('config', {
       }
     },
 
-    // 重置所有快捷键为默认值
+    // Reset all shortcuts to default
     resetAllShortcuts() {
       this.shortcuts = [...DEFAULT_SHORTCUTS];
       this.saveConfig();
     },
 
-    // 获取快捷键配置
+    // Get shortcut config
     getShortcut(id: string): ShortcutConfig | undefined {
       return this.shortcuts.find((s: ShortcutConfig) => s.id === id);
     },
 
-    // 获取所有快捷键
+    // Get all shortcuts
     getAllShortcuts(): ShortcutConfig[] {
       return [...this.shortcuts];
     },
 
-    // 检查快捷键是否冲突
+    // Check shortcut conflicts
     checkShortcutConflict(key: string, modifiers: KeyModifiers, context: KeyboardContext, excludeId?: string): boolean {
       return this.shortcuts.some((s: ShortcutConfig) => {
         if (excludeId && s.id === excludeId) return false;
@@ -194,13 +194,13 @@ export const useConfigStore = defineStore('config', {
       });
     },
 
-    // 重置配置
+    // Reset config
     resetConfig() {
       this.$reset();
       this.saveConfig();
     },
 
-    // 导入配置
+    // Import config
     importConfig(data: any) {
       if (data.tools) {
         this.tools = data.tools;
@@ -220,7 +220,7 @@ export const useConfigStore = defineStore('config', {
       this.saveConfig();
     },
 
-    // 导出配置
+    // Export config
     exportConfig() {
       return {
         tools: this.tools,

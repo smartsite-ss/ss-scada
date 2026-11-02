@@ -3,9 +3,9 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * AiController 全端点 API 单元测试
+ * AiController full-endpoint API unit tests
  *
- * 覆盖 ai.controller.ts 的所有 REST API 端点：
+ * Covers all REST API endpoints of ai.controller.ts:
  *   - GET    /status
  *   - GET    /health
  *   - GET    /routing
@@ -54,11 +54,11 @@ import { Response } from 'express';
 import { Writable } from 'stream';
 
 // ============================================================
-// Mock 工具
+// Mock utilities
 // ============================================================
 
 /**
- * 创建基于 Node.js Writable 的 mock response，支持 stream.pipe()
+ * Create a Node.js Writable-based mock response that supports stream.pipe()
  */
 function mockResponse(): Response & { chunks: string[]; headers: Record<string, string> } {
   const chunks: string[] = [];
@@ -69,7 +69,7 @@ function mockResponse(): Response & { chunks: string[]; headers: Record<string, 
       callback();
     },
   });
-  // 合并 Writable 方法与 Response 形状
+  // merge Writable methods with the Response shape
   return Object.assign(writable, {
     chunks,
     headers,
@@ -229,7 +229,7 @@ async function createController(
 }
 
 // ============================================================
-// 测试套件
+// test suites
 // ============================================================
 
 describe('AiController — 全端点 API 测试', () => {
@@ -310,12 +310,12 @@ describe('AiController — 全端点 API 测试', () => {
       controller = await createController({ proxy });
       const res = mockResponse();
       await controller.chatStream({ messages: [{ role: 'user', content: 'hi' }] }, { user: { id: 'user-1' } } as any, res);
-      // 验证 SSE 响应头（同步设置，在 stream.pipe 之前）
+      // verify SSE response headers (set synchronously, before stream.pipe)
       expect(res.headers['content-type']).toBe('text/event-stream');
       expect(res.headers['cache-control']).toBe('no-cache');
       expect(res.headers['connection']).toBe('keep-alive');
       expect(res.headers['x-accel-buffering']).toBe('no');
-      // streamChat 由 Readable.read() 异步调用，属于集成测试范畴
+      // streamChat is called asynchronously by Readable.read(); belongs to integration-test scope
     });
   });
 
@@ -470,7 +470,7 @@ describe('AiController — 全端点 API 测试', () => {
       const res = mockResponse();
       await controller.agentExecute({ messages: [], taskType: 'chat' } as any, { user: { id: 'user-1' } } as any, res);
       expect(res.headers['content-type']).toBe('text/event-stream');
-      // heartbeat 是第一行
+      // heartbeat is the first line
       expect(res.chunks[0]).toContain('heartbeat');
     });
 

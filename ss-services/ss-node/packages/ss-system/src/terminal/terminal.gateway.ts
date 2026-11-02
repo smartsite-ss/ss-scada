@@ -16,8 +16,8 @@ import { Logger, Injectable } from '@nestjs/common';
 import { TerminalService } from './terminal.service';
 
 /**
- * 终端 WebSocket CORS 白名单：与主网关一致的环境变量来源 + Tauri 桌面端源兜底，
- * 否则桌面端（页面源 https://tauri.localhost）终端连接握手被拒。
+ * Terminal WebSocket CORS whitelist: the same env-var sources as the main gateway + a Tauri desktop origin fallback,
+ * otherwise the desktop client's (page origin https://tauri.localhost) terminal handshake is rejected.
  */
 function buildTerminalCorsOrigins(): string[] {
   const origins = (process.env.CORS_ORIGINS || 'http://localhost:5173,http://localhost:4000')

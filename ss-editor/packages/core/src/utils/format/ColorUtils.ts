@@ -3,20 +3,20 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 颜色管理工具类
+ * Color management utility class
  */
 export class ColorUtils {
   /**
-   * RGB颜色接口
+   * RGB color interface
    */
   public static rgbToHex(r: number, g: number, b: number): string {
     return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase()}`;
   }
 
   /**
-   * HEX颜色转换为RGB
-   * @param hex HEX颜色值
-   * @returns RGB颜色对象
+   * Convert HEX color to RGB
+   * @param hex HEX color value
+   * @returns RGB color object
    */
   public static hexToRgb(hex: string): { r: number; g: number; b: number } | null {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -28,11 +28,11 @@ export class ColorUtils {
   }
 
   /**
-   * RGB转换为HSL
-   * @param r 红色通道值 (0-255)
-   * @param g 绿色通道值 (0-255)
-   * @param b 蓝色通道值 (0-255)
-   * @returns HSL颜色对象
+   * Convert RGB to HSL
+   * @param r Red channel value (0-255)
+   * @param g Green channel value (0-255)
+   * @param b Blue channel value (0-255)
+   * @returns HSL color object
    */
   public static rgbToHsl(r: number, g: number, b: number): { h: number; s: number; l: number } {
     r /= 255, g /= 255, b /= 255;
@@ -55,11 +55,11 @@ export class ColorUtils {
   }
 
   /**
-   * HSL转换为RGB
-   * @param h 色相 (0-1)
-   * @param s 饱和度 (0-1)
-   * @param l 亮度 (0-1)
-   * @returns RGB颜色对象
+   * Convert HSL to RGB
+   * @param h Hue (0-1)
+   * @param s Saturation (0-1)
+   * @param l Lightness (0-1)
+   * @returns RGB color object
    */
   public static hslToRgb(h: number, s: number, l: number): { r: number; g: number; b: number } {
     let r, g, b;
@@ -87,10 +87,10 @@ export class ColorUtils {
   }
 
   /**
-   * 调整颜色亮度
-   * @param color HEX颜色值
-   * @param amount 亮度调整量 (-1 到 1)
-   * @returns 调整后的HEX颜色值
+   * Adjust color brightness
+   * @param color HEX color value
+   * @param amount Brightness adjustment amount (-1 to 1)
+   * @returns Adjusted HEX color value
    */
   public static adjustBrightness(color: string, amount: number): string {
     const rgb = this.hexToRgb(color);
@@ -104,11 +104,11 @@ export class ColorUtils {
   }
 
   /**
-   * 混合两种颜色
-   * @param color1 第一种颜色 (HEX)
-   * @param color2 第二种颜色 (HEX)
-   * @param ratio 混合比例 (0-1)
-   * @returns 混合后的HEX颜色值
+   * Mix two colors
+   * @param color1 First color (HEX)
+   * @param color2 Second color (HEX)
+   * @param ratio Mix ratio (0-1)
+   * @returns Mixed HEX color value
    */
   public static mixColors(color1: string, color2: string, ratio: number): string {
     const rgb1 = this.hexToRgb(color1);
@@ -124,26 +124,26 @@ export class ColorUtils {
   }
 
   /**
-   * 生成对比色
-   * @param color HEX颜色值
-   * @returns 对比色 (HEX)
+   * Generate a contrasting color
+   * @param color HEX color value
+   * @returns Contrasting color (HEX)
    */
   public static getContrastColor(color: string): string {
     const rgb = this.hexToRgb(color);
     if (!rgb) return '#000000';
 
-    // 计算亮度
+    // Compute brightness
     const brightness = (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
     return brightness > 128 ? '#000000' : '#FFFFFF';
   }
 
   /**
-   * 解析颜色字符串，支持HEX、RGB、RGBA格式
-   * @param color 颜色字符串
-   * @returns 颜色对象
+   * Parse a color string, supporting HEX, RGB, and RGBA formats
+   * @param color Color string
+   * @returns Color object
    */
   public static parseColor(color: string): { r: number; g: number; b: number; a: number } | null {
-    // 处理HEX格式
+    // Handle HEX format
     if (color.startsWith('#')) {
       const rgb = this.hexToRgb(color);
       if (rgb) {
@@ -151,7 +151,7 @@ export class ColorUtils {
       }
     }
 
-    // 处理RGB格式
+    // Handle RGB format
     const rgbMatch = color.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
     if (rgbMatch) {
       return {
@@ -162,7 +162,7 @@ export class ColorUtils {
       };
     }
 
-    // 处理RGBA格式
+    // Handle RGBA format
     const rgbaMatch = color.match(/^rgba\((\d+),\s*(\d+),\s*(\d+),\s*([0-9.]+)\)$/);
     if (rgbaMatch) {
       return {
@@ -177,26 +177,26 @@ export class ColorUtils {
   }
 
   /**
-   * 将颜色对象转换为RGBA字符串
-   * @param color 颜色对象
-   * @returns RGBA字符串
+   * Convert a color object to an RGBA string
+   * @param color Color object
+   * @returns RGBA string
    */
   public static toRgbaString(color: { r: number; g: number; b: number; a: number }): string {
     return `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`;
   }
 
   /**
-   * 将颜色对象转换为RGB字符串
-   * @param color 颜色对象
-   * @returns RGB字符串
+   * Convert a color object to an RGB string
+   * @param color Color object
+   * @returns RGB string
    */
   public static toRgbString(color: { r: number; g: number; b: number }): string {
     return `rgb(${color.r}, ${color.g}, ${color.b})`;
   }
 
   /**
-   * 解析 hex 颜色为数值（安全版）
-   * 处理 #RRGGBB 和 #RRGGBBAA 格式，输出无符号 32 位整数
+   * Parse a hex color to a numeric value (safe version)
+   * Handles #RRGGBB and #RRGGBBAA formats, outputs an unsigned 32-bit integer
    */
   private static _parseHexForColorMath(hex: string): number {
     let h = hex.replace('#', '');
@@ -206,7 +206,7 @@ export class ColorUtils {
   }
 
   /**
-   * 使颜色变亮（线性偏移），amount 范围 0-1
+   * Lighten a color (linear offset), amount range 0-1
    */
   public static lightenColor(hex: string, amount: number): string {
     const num = this._parseHexForColorMath(hex);
@@ -218,7 +218,7 @@ export class ColorUtils {
   }
 
   /**
-   * 使颜色变暗（线性偏移），amount 范围 0-1
+   * Darken a color (linear offset), amount range 0-1
    */
   public static darkenColor(hex: string, amount: number): string {
     const num = this._parseHexForColorMath(hex);
@@ -230,7 +230,7 @@ export class ColorUtils {
   }
 
   /**
-   * 向白色方向插值，percent 范围 0-100
+   * Interpolate toward white, percent range 0-100
    */
   public static lightenTowardsWhite(hex: string, percent: number): string {
     const rgb = this.parseColor(hex);
@@ -243,7 +243,7 @@ export class ColorUtils {
   }
 
   /**
-   * 向黑色方向插值，percent 范围 0-100
+   * Interpolate toward black, percent range 0-100
    */
   public static darkenTowardsBlack(hex: string, percent: number): string {
     const rgb = this.parseColor(hex);
@@ -256,7 +256,7 @@ export class ColorUtils {
   }
 
   /**
-   * HEX颜色 + 透明度 → RGBA 字符串
+   * HEX color + alpha → RGBA string
    */
   public static hexToRgba(hex: string, alpha: number): string {
     const num = this._parseHexForColorMath(hex);

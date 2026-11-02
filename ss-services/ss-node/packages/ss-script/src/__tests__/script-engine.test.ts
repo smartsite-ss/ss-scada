@@ -380,7 +380,7 @@ describe('ScriptEngineService', () => {
     });
   });
 
-  // ==================== Phase 5.4: runScript 纯执行 ====================
+  // ==================== Phase 5.4: runScript pure execution ====================
   describe('runScript (pure execution without DB writes)', () => {
     it('should execute script without writing to execution repository', async () => {
       jest.clearAllMocks();
@@ -420,7 +420,7 @@ describe('ScriptEngineService', () => {
     });
   });
 
-  // ==================== Phase 5.4: AST 校验 ====================
+  // ==================== Phase 5.4: AST validation ====================
   describe('validateScriptAst', () => {
     it('should accept valid script code', () => {
       const result = service.validateScriptAst('const x = 1; x + 2');
@@ -482,7 +482,7 @@ describe('ScriptEngineService', () => {
     });
 
     it('should NOT reject eval as object property key', () => {
-      // { eval: 1 } 中 eval 是属性键，不应被阻断
+      // In { eval: 1 }, eval is a property key and should not be blocked
       const result = service.validateScriptAst('const obj = { eval: 1 }; obj.eval');
       expect(result.valid).toBe(true);
     });
@@ -506,7 +506,7 @@ describe('ScriptEngineService', () => {
     });
   });
 
-  // ==================== Phase 5.4: 沙箱加固集成 ====================
+  // ==================== Phase 5.4: sandbox hardening integration ====================
   describe('sandbox hardening integration', () => {
     it('should reject script with eval via execute (AST blocks before runtime)', async () => {
       const script = createScript({ code: 'eval("1+1")' });
@@ -527,14 +527,14 @@ describe('ScriptEngineService', () => {
     });
 
     it('should shadow Function global to undefined at runtime', async () => {
-      // Function 作为标识符被 AST 阻断，但即使绕过 AST（如计算属性访问），
-      // 运行时 Function 参数也被影子化为 undefined
+      // Function as an identifier is blocked by AST, but even bypassing AST (e.g. computed property access),
+      // the runtime Function argument is also shadowed to undefined
       const script = createScript({
         code: 'typeof Function',
       });
       const result = await service.execute(script);
 
-      // typeof Function 会被 AST 阻断
+      // typeof Function would be blocked by AST
       expect(result.success).toBe(false);
     });
 

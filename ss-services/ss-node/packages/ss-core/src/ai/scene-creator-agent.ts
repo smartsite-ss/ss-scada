@@ -3,41 +3,41 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 场景创建 Agent — P2-T02 智能画面创建（A001）
+ * Scene-creator Agent - P2-T02 smart canvas creation (A001)
  *
- * 提供：
- *   1. 图元类型关键词映射（自然语言 → 图元类型名）
- *   2. 场景创建专用 System Prompt（含图元库、布局策略、工作流程示例）
- *   3. getSceneCreationSystemPrompt() 供 AgentOrchestrator 在场景意图时使用
+ * Provides:
+ *   1. Widget-type keyword mapping (natural language -> widget type name)
+ *   2. Scene-creation dedicated System Prompt (with widget library, layout strategy, workflow examples)
+ *   3. getSceneCreationSystemPrompt() for AgentOrchestrator when a scene intent is detected
  *
- * 关联决策：
- *   - D-003 ReAct 编排（12 次循环上限）
- *   - D-005 混合模式（复杂意图 → 后端 ReAct + 前端工具委托）
+ * Related decisions:
+ *   - D-003 ReAct orchestration (12-loop cap)
+ *   - D-005 hybrid mode (complex intent -> backend ReAct + frontend tool delegation)
  */
 
-/** 图元类型关键词条目 */
+/** Widget-type keyword entry */
 export interface GraphicTypeEntry {
-  /** 图元类型名（scene.addGraphic 的 type 参数） */
+  /** Widget type name (the type arg of scene.addGraphic) */
   type: string;
-  /** 中文名 */
+  /** Chinese name */
   label: string;
-  /** 所属分类 */
+  /** Category */
   category: string;
-  /** 匹配关键词（用户可能使用的自然语言描述） */
+  /** Matching keywords (natural-language descriptions the user may use) */
   keywords: string[];
-  /** 默认尺寸 [width, height] */
+  /** Default size [width, height] */
   defaultSize: [number, number];
 }
 
 /**
- * 图元类型关键词映射表
+ * Widget-type keyword mapping table
  *
- * 覆盖 7 大分类中的常用图元（工业、电力、矿产、通用）。
- * 每类图元包含多个中文关键词，供 LLM 匹配用户描述。
+ * Covers common widgets across 7 major categories (industrial, electric, mining, general).
+ * Each category includes several Chinese keywords for the LLM to match user descriptions.
  */
 export const GRAPHIC_TYPE_MAP: GraphicTypeEntry[] = [
   // ============================
-  //  工业组件（industrial）
+  //  Industrial components (industrial)
   // ============================
   {
     type: 'waterpump',
@@ -139,7 +139,7 @@ export const GRAPHIC_TYPE_MAP: GraphicTypeEntry[] = [
   },
 
   // ============================
-  //  电力组件（electric）
+  //  Electric components (electric)
   // ============================
   {
     type: 'motor',
@@ -318,7 +318,7 @@ export const GRAPHIC_TYPE_MAP: GraphicTypeEntry[] = [
   },
 
   // ============================
-  //  矿产组件（mining）
+  //  Mining components (mining)
   // ============================
   {
     type: 'conveyerbelt',
@@ -637,7 +637,7 @@ export const GRAPHIC_TYPE_MAP: GraphicTypeEntry[] = [
   },
 
   // ============================
-  //  通用组件（general）
+  //  General components (general)
   // ============================
   {
     type: 'label',
@@ -676,7 +676,7 @@ export const GRAPHIC_TYPE_MAP: GraphicTypeEntry[] = [
   },
 
   // ============================
-  //  图表组件（chart）
+  //  Chart components (chart)
   // ============================
   {
     type: 'chart',
@@ -688,11 +688,11 @@ export const GRAPHIC_TYPE_MAP: GraphicTypeEntry[] = [
 ];
 
 /**
- * 匹配图元类型
- * 根据用户描述的关键词匹配最合适的图元类型
+ * Match widget types
+ * Match the most suitable widget types by keywords in the user description
  *
- * @param description 用户自然语言描述（如"水泵"、"压力表"、"3台泵"）
- * @returns 匹配的图元类型条目数组（按匹配度降序）
+ * @param description user natural-language description (e.g. "water pump", "pressure gauge", "3 pumps")
+ * @returns matched widget-type entry array (descending by match score)
  */
 export function matchGraphicTypes(description: string): GraphicTypeEntry[] {
   const lowerDesc = description.toLowerCase();
@@ -703,7 +703,7 @@ export function matchGraphicTypes(description: string): GraphicTypeEntry[] {
     for (const kw of entry.keywords) {
       const lowerKw = kw.toLowerCase();
       if (lowerDesc.includes(lowerKw)) {
-        // 精确匹配得分更高
+        // Exact match scores higher
         score += lowerKw.length >= 3 ? 3 : 1;
       }
     }
@@ -716,18 +716,18 @@ export function matchGraphicTypes(description: string): GraphicTypeEntry[] {
 }
 
 /**
- * 生成场景创建专用 System Prompt
+ * Generate the scene-creation dedicated System Prompt
  *
- * 包含：
- *   - 可用图元类型速查表（约 60 个常用类型）
- *   - 布局策略建议
- *   - 工作流程示例（泵站/配电/锅炉 场景）
- *   - 布局参数建议
+ * Includes:
+ *   - Available widget-type quick-reference table (~60 common types)
+ *   - Layout strategy suggestions
+ *   - Workflow examples (pump station / power distribution / boiler scenarios)
+ *   - Layout parameter suggestions
  *
- * @returns 场景创建 System Prompt 字符串
+ * @returns scene-creation System Prompt string
  */
 export function getSceneCreationSystemPrompt(): string {
-  // 构建图元速查表（仅列出常用类型，限制 token 消耗）
+  // Build the widget quick-reference table (list only common types to limit token usage)
   const categorySummary = buildCategorySummary();
 
   return `你是一个工业监控画面自动生成专家，可以根据用户描述自动创建 Smart SCADA 组态画面。
@@ -805,14 +805,14 @@ ${categorySummary}
 }
 
 /**
- * 按分类构建图元速查摘要文本
+ * Build the widget quick-reference summary text by category
  */
 function buildCategorySummary(): string {
   const categoryMap = new Map<string, string[]>();
 
   for (const entry of GRAPHIC_TYPE_MAP) {
     const list = categoryMap.get(entry.category) || [];
-    // 格式：type名(label中文名)-keywords
+    // Format: type name (label Chinese name) - keywords
     const keywords = entry.keywords.slice(0, 4).join('/');
     list.push(
       `  - \`${entry.type}\`（${entry.label}，${entry.defaultSize[0]}×${entry.defaultSize[1]}）— ${keywords}`,
@@ -829,7 +829,7 @@ function buildCategorySummary(): string {
 }
 
 /**
- * 根据任务意图判断是否需要使用场景创建专用 Prompt
+ * Determine whether the scene-creation dedicated Prompt is needed based on task intent
  */
 export function isSceneCreationIntent(intent?: string): boolean {
   return intent === 'page_create' || intent === 'graphic_add' || intent === 'scene_create';

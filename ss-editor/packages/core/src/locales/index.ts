@@ -6,8 +6,8 @@ import { createI18n } from 'vue-i18n';
 import enUS from './en-US.json';
 import zhCN from './zh-CN.json';
 
-// ── 单一语言清单：新增语言只需在此登记 + 新增对应 json 文件 ──
-// key 为主语言代码，aliases 为兼容的历史/简写别名
+// ── Single language registry: adding a language only requires registering here + a corresponding json file ──
+// key is the primary language code; aliases are legacy/short aliases for compatibility
 export const SUPPORTED_LOCALES = {
   'zh-CN': { aliases: ['zh'], messages: zhCN },
   'en-US': { aliases: ['en'], messages: enUS },
@@ -37,12 +37,13 @@ function buildFallbackLocale(): Record<string, string[]> {
 }
 
 /**
- * i18n 实例的对外门面类型。
+ * Public facade type for the i18n instance.
  *
- * 背景：TS 5.9 下解析 vue-i18n 9.x Composer['t'] 的泛型重载会触发
- * TS2589（类型实例化过深）。因此通过 unknown 中转账把导出类型收窄为
- * 轻量接口，运行时实例不变，消费方无需任何改动。
- * 注意：app.use(i18n) 处需自行断言（如 `app.use(i18n as any)`）。
+ * Background: under TS 5.9, resolving vue-i18n 9.x Composer['t'] generic overloads triggers
+ * TS2589 (type instantiation too deep). We therefore narrow the exported type to a lightweight
+ * interface via an unknown intermediate cast; the runtime instance is unchanged and consumers
+ * need no modifications.
+ * Note: call sites of app.use(i18n) must assert themselves (e.g. `app.use(i18n as any)`).
  */
 export interface II18nGlobalFacade {
   t: (key: string, params?: Record<string, unknown>) => string;
@@ -55,11 +56,11 @@ export interface II18nFacade {
 }
 
 const i18nInstance = createI18n({
-  legacy: false, // 使用 Composition API 模式，兼容 useI18n()
-  locale: 'zh-CN', // 默认语言
-  fallbackLocale: buildFallbackLocale(), // 回退语言 + 语言代码别名
+  legacy: false, // use Composition API mode, compatible with useI18n()
+  locale: 'zh-CN', // default language
+  fallbackLocale: buildFallbackLocale(), // fallback language + language code aliases
+  globalInjection: true, // globally inject $t and other methods
   messages: buildMessages(),
-  globalInjection: true, // 全局注入 $t 等方法
 });
 
 export const i18n = i18nInstance as unknown as II18nFacade;
@@ -75,13 +76,13 @@ export function setLocale(locale: SupportedLocale): void {
 }
 
 /**
- * 供非组件模块使用的翻译函数（便捷封装，等价于 i18n.global.t(key)）。
+ * Translation function for non-component modules (convenience wrapper, equivalent to i18n.global.t(key)).
  */
 export function translate(key: string): string {
   return i18n.global.t(key);
 }
 
-// ── 语言注册（供插件/子系统统一使用，自动补齐别名） ──
+// ── Language registration (shared by plugins/subsystems, aliases auto-filled) ──
 export function registerLocaleMessages(locale: string, messages: Record<string, any>): void {
   i18n.global.mergeLocaleMessage(locale, messages);
   const definition = (SUPPORTED_LOCALES as Record<string, { aliases?: readonly string[] }>)[locale];
@@ -90,13 +91,13 @@ export function registerLocaleMessages(locale: string, messages: Record<string, 
   }
 }
 
-// 将 import.meta.glob('./locales/*.json', { eager: true }) 的结果批量注册
+// Batch-register the result of import.meta.glob('./locales/*.json', { eager: true })
 export function registerLocaleModules(localeModules: Record<string, any>): void {
   for (const [modulePath, moduleValue] of Object.entries(localeModules)) {
     const fileName = modulePath.split('/').pop() ?? '';
     const locale = fileName.replace(/\.json$/, '');
     if (!locale) continue;
-    // 兼容 import.meta.glob 的两种返回形态：{ default } 或直接对象
+    // Compatible with both import.meta.glob return shapes: { default } or the object directly
     const messages = moduleValue?.default ?? moduleValue;
     registerLocaleMessages(locale, messages);
   }

@@ -9,8 +9,8 @@ import { IProtocolAdapter, IDeviceContext, ITagContext } from '../../types';
 import { IsolationMode } from '../plugin.types';
 
 /**
- * 进程内执行器 —— 直接调用 adapter，零开销
- * 本质是对 adapter 的薄封装 + 连接池管理
+ * In-process executor - invokes the adapter directly with zero overhead
+ * Essentially a thin wrapper around the adapter plus connection pool management
  */
 @Injectable()
 export class InProcessExecutor implements IIsolationExecutor {

@@ -9,10 +9,10 @@ import { EventBusService } from '@ss-node/ss-core';
 import { TagUpdatePayload } from '../interfaces';
 
 /**
- * PublishStep — 数据发布步骤
+ * PublishStep - data-publishing step
  *
- * 改造（P2-2）：使用统一的 TagUpdatePayload 类型，与 PersistStep 的 DataPoint
- * 构造逻辑保持字段命名一致，便于跨步骤追踪与序列化。
+ * Change (P2-2): use the unified TagUpdatePayload type, keeping field naming consistent
+ * with the DataPoint construction logic in PersistStep, for easy cross-step tracing and serialization.
  */
 @Injectable()
 export class PublishStep implements PipelineStep {
@@ -42,7 +42,7 @@ export class PublishStep implements PipelineStep {
         errors: ctx.errors.length > 0 ? ctx.errors : undefined,
       };
 
-      // 有告警时才附带 activeAlarms，无告警不包含此字段（零开销）
+      // Only attach activeAlarms when there is an alarm; omit the field when none (zero overhead)
       if (triggeredAlarms && triggeredAlarms.length > 0) {
         payload.activeAlarms = triggeredAlarms.map((a) => ({
           alarmId: a.alarmId,
@@ -52,12 +52,12 @@ export class PublishStep implements PipelineStep {
         }));
       }
 
-      // 1. WebSocket 推送（实时数据）
+      // 1. WebSocket push (real-time data)
       if (this.eventBus) {
         this.eventBus.emit('data_point_changed', payload);
       }
 
-      // 2. 报警事件推送
+      // 2. Alarm-event push
       if (triggeredAlarms && triggeredAlarms.length > 0) {
         for (const alarm of triggeredAlarms) {
           this.logger.debug(
@@ -71,7 +71,7 @@ export class PublishStep implements PipelineStep {
         }
       }
 
-      // 3. Phase 5: 告警条件恢复正常事件推送
+      // 3. Phase 5: alarm-condition-recovered event push
       const normalizedAlarms = (ctx as any).normalizedAlarms as NormalizedAlarmEvent[] | undefined;
       if (normalizedAlarms && normalizedAlarms.length > 0) {
         for (const normalized of normalizedAlarms) {
@@ -89,7 +89,7 @@ export class PublishStep implements PipelineStep {
       const errorMsg = error instanceof Error ? error.message : 'Unknown publish error';
       this.logger.error(`Publish error for tag ${ctx.tagId}: ${errorMsg}`);
       ctx.errors.push({ step: this.name, message: errorMsg, code: 'PUBLISH_ERROR' });
-      // 发布异常不中断 Pipeline
+      // Publish exceptions do not interrupt the Pipeline
     }
 
     return ctx;

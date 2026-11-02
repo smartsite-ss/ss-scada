@@ -31,17 +31,17 @@ export interface PluginPropertySchemaField {
   max?: number;
   step?: number;
   options?: { value: any; label: string; labelKey?: string }[];
-  /** 动态选项提供者。
-   * - 字符串 key：由属性面板根据已知 key 解析（如 'pageStore.pages'）
-   * - 函数：运行时调用返回选项列表（需确保在 Vue setup 上下文中调用）
+  /** Dynamic options provider.
+   * - String key: resolved by the property panel from a known key (e.g. 'pageStore.pages')
+   * - Function: called at runtime to return the options list (must be called within a Vue setup context)
    */
   optionsProvider?: string | (() => { value: any; label: string }[]);
   group?: string;
   groupKey?: string;
-  /** 标记此字段可被数据源绑定。
-   * - true：该字段出现在 DataPanel 属性选择 UI 的候选列表中
-   * - 未设置：默认不参与数据绑定候选（保守策略，避免误绑定语义不符的字段）
-   * 典型可绑定字段：text / type / disabled / backgroundColor / fontColor / borderColor / targetPage
+  /** Marks this field as data-source bindable.
+   * - true: the field appears in the candidate list of the DataPanel property selection UI
+   * - Unset: by default not included in data binding candidates (conservative policy, avoiding mis-binding semantically mismatched fields)
+   * Typical bindable fields: text / type / disabled / backgroundColor / fontColor / borderColor / targetPage
    */
   dataBindable?: boolean;
 }

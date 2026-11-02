@@ -42,7 +42,7 @@ import {
 export class ReportController {
   constructor(private readonly reportService: ReportService) {}
 
-  // ==================== 日报 ====================
+  // ==================== Daily report ====================
 
   @Post('daily')
   @ApiOperation({ summary: '生成日报' })
@@ -50,7 +50,7 @@ export class ReportController {
     return this.reportService.generateDailyReport(projectId, dto.date);
   }
 
-  // ==================== 月报 ====================
+  // ==================== Monthly report ====================
 
   @Post('monthly')
   @ApiOperation({ summary: '生成月报' })
@@ -58,7 +58,7 @@ export class ReportController {
     return this.reportService.generateMonthlyReport(projectId, dto.month);
   }
 
-  // ==================== 自定义报表 ====================
+  // ==================== Custom reports ====================
 
   @Post('custom')
   @ApiOperation({ summary: '生成自定义报表' })
@@ -66,7 +66,7 @@ export class ReportController {
     return this.reportService.generateCustomReport(projectId, dto);
   }
 
-  // ==================== 报表导出 ====================
+  // ==================== Report export ====================
 
   @Post(':reportId/export')
   @ApiOperation({ summary: '导出报表' })
@@ -89,7 +89,7 @@ export class ReportController {
     response.sendFile(filePath);
   }
 
-  // ==================== 告警报表 ====================
+  // ==================== Alarm report ====================
 
   @Post('alarm')
   @ApiOperation({ summary: '生成告警报表' })
@@ -97,7 +97,7 @@ export class ReportController {
     return this.reportService.generateAlarmReport(projectId, dto);
   }
 
-  // ==================== 趋势报表 ====================
+  // ==================== Trend report ====================
 
   @Post('trend')
   @ApiOperation({ summary: '生成趋势报表' })
@@ -105,7 +105,7 @@ export class ReportController {
     return this.reportService.generateTrendReport(projectId, dto);
   }
 
-  // ==================== 查询报表 ====================
+  // ==================== Report query ====================
 
   @Get()
   @ApiOperation({ summary: '查询报表列表' })
@@ -116,7 +116,7 @@ export class ReportController {
     return this.reportService.queryReports(projectId, query);
   }
 
-  // ==================== 报表配置 ====================
+  // ==================== Report configs ====================
 
   @Post('configs')
   @ApiOperation({ summary: '保存报表配置' })
@@ -136,7 +136,7 @@ export class ReportController {
     return this.reportService.deleteReportConfig(projectId, configId);
   }
 
-  // ==================== 报表模板 ====================
+  // ==================== Report templates ====================
 
   @Post('templates')
   @ApiOperation({ summary: '创建报表模板' })
@@ -173,7 +173,7 @@ export class ReportController {
     return this.reportService.deleteTemplate(projectId, templateId);
   }
 
-  // ==================== 定时导出 ====================
+  // ==================== Scheduled export ====================
 
   @Post('schedules')
   @ApiOperation({ summary: '注册定时导出任务' })

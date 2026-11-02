@@ -9,7 +9,7 @@ import { stateService } from '../services/state.service';
 import { graphicCache } from './graphic-defaults';
 import { getNextGraphicName } from '../utils/graphic/graphicNameUtils';
 
-/** 根据ID获取图形 */
+/** Get a graphic by ID */
 export function getGraphicById(id: string): IGraphic | undefined {
   const pageStore = usePageStore();
   const currentPage = pageStore.currentPage;
@@ -21,13 +21,13 @@ export function getGraphicById(id: string): IGraphic | undefined {
   return (graphics as IGraphic[]).find((g) => g.id === id);
 }
 
-/** 获取当前页面 */
+/** Get the current page */
 export function getCurrentPage() {
   const pageStore = usePageStore();
   return pageStore.currentPage;
 }
 
-/** 获取当前页面的图形列表 */
+/** Get the graphic list of the current page */
 export function getCurrentPageGraphics(): IGraphic[] | undefined {
   const currentPage = getCurrentPage();
   if (!currentPage) return undefined;
@@ -38,7 +38,7 @@ export function getCurrentPageGraphics(): IGraphic[] | undefined {
   return (graphics as { value: IGraphic[] }).value;
 }
 
-/** 根据ID查找图形 */
+/** Find a graphic by ID */
 export function findGraphicById(id: string): IGraphic | undefined {
   const currentPage = getCurrentPage();
   if (!currentPage) return undefined;
@@ -51,7 +51,7 @@ export function findGraphicById(id: string): IGraphic | undefined {
   );
 }
 
-/** 添加图形 */
+/** Add a graphic */
 export function addGraphic(
   type: string,
   x: number,
@@ -72,34 +72,34 @@ export function addGraphic(
   ) as IGraphic;
   if (!graphic) return undefined;
 
-  // ★ 按同类图元最大编码递增名称
+  // Name new graphic by incrementing the max code among same-type elements
   const existingGraphics = currentPage.graphics;
   const graphicsArr = Array.isArray(existingGraphics) ? existingGraphics : (existingGraphics as any).value || [];
   const newName = getNextGraphicName(type, graphicsArr as IGraphic[]);
   graphic.config.name = newName;
 
-  // 添加图形
+  // Add the graphic
   currentPage.addGraphic(graphic as IGraphic);
 
   currentPage.selectGraphic(graphic.id);
 
-  // 失效查找缓存
+  // Invalidate the lookup cache
   graphicCache.invalidate();
 
   return graphic;
 }
 
-/** 删除图形 */
+/** Remove a graphic */
 export function removeGraphic(id: string) {
   const currentPage = getCurrentPage();
   if (!currentPage) return;
   currentPage.removeGraphic(id);
 
-  // 失效查找缓存
+  // Invalidate the lookup cache
   graphicCache.invalidate();
 }
 
-/** 复制页面图形 */
+/** Copy page graphics */
 export function copyPageGraphics(sourcePageId: string, targetPageId: string) {
   const pageStore = usePageStore();
   const sourcePage = pageStore.pages.find((p) => p.id === sourcePageId);
@@ -116,13 +116,13 @@ export function copyPageGraphics(sourcePageId: string, targetPageId: string) {
     return newGraphic;
   });
 
-  // 追加而非替换，保留目标页面原有图元
+  // Append rather than replace, preserving the target page's existing elements
   for (const graphic of copiedGraphics) {
     targetPage.addGraphic(graphic);
   }
 }
 
-/** 删除页面图形 */
+/** Remove page graphics */
 export function removePageGraphics(pageId: string) {
   const pageStore = usePageStore();
   const page = pageStore.pages.find((p) => p.id === pageId);
@@ -134,7 +134,7 @@ export function removePageGraphics(pageId: string) {
   }
 }
 
-/** 切换选择状态 */
+/** Toggle selection state */
 export function toggleSelection(id: string) {
   const currentPage = getCurrentPage();
   if (!currentPage) return;
@@ -145,7 +145,7 @@ export function toggleSelection(id: string) {
   }
 }
 
-/** 调整间距 */
+/** Adjust spacing */
 export function adjustSpacing(spacing: number, direction: 'horizontal' | 'vertical') {
   const currentPage = getCurrentPage();
   if (!currentPage || typeof currentPage.adjustSpacing !== 'function')
@@ -153,19 +153,19 @@ export function adjustSpacing(spacing: number, direction: 'horizontal' | 'vertic
   currentPage.adjustSpacing(spacing, direction);
 }
 
-/** 批量编辑 */
+/** Batch edit */
 export function batchEdit(properties: Partial<IGraphic>) {
   const currentPage = getCurrentPage();
   if (!currentPage || typeof currentPage.batchEdit !== 'function') return;
   currentPage.batchEdit(properties);
 }
 
-/** 模板编辑 - 保存为模板 */
+/** Template editing - save as template */
 export function saveAsTemplate(name: string) {
   return stateService.saveTemplate(name);
 }
 
-/** 模板编辑 - 应用模板 */
+/** Template editing - apply template */
 export function applyTemplate(templateIndex: number) {
   stateService.applyTemplate(templateIndex);
 }

@@ -59,10 +59,10 @@ describe('DeviceOfflineSuppressionService', () => {
     it('should suppress alarms when device goes offline', () => {
       service.onModuleInit();
 
-      // 获取注册的回调函数
+      // Get the registered callback function
       const callback = mockEventBusOn.mock.calls[0][1];
 
-      // 模拟设备离线事件
+      // Simulate a device-offline event
       callback({
         deviceId: 'device-001',
         projectId: 'project-1',
@@ -79,7 +79,7 @@ describe('DeviceOfflineSuppressionService', () => {
       service.onModuleInit();
       const callback = mockEventBusOn.mock.calls[0][1];
 
-      // 两次离线事件
+      // Two offline events
       callback({
         deviceId: 'device-001',
         projectId: 'project-1',
@@ -103,7 +103,7 @@ describe('DeviceOfflineSuppressionService', () => {
       service.onModuleInit();
       const callback = mockEventBusOn.mock.calls[0][1];
 
-      // 设备已经离线，再次收到离线事件（previousStatus=OFFLINE）
+      // Device already offline; receiving another offline event (previousStatus=OFFLINE)
       callback({
         deviceId: 'device-001',
         projectId: 'project-1',
@@ -112,7 +112,7 @@ describe('DeviceOfflineSuppressionService', () => {
         timestamp: Date.now(),
       });
 
-      // 不应该创建抑制规则（因为 previousStatus 已经是 OFFLINE）
+      // Should not create a suppression rule (because previousStatus is already OFFLINE)
       expect(service.isDeviceSuppressed('device-001')).toBe(false);
     });
   });
@@ -122,7 +122,7 @@ describe('DeviceOfflineSuppressionService', () => {
       service.onModuleInit();
       const callback = mockEventBusOn.mock.calls[0][1];
 
-      // 先离线
+      // Go offline first
       callback({
         deviceId: 'device-001',
         projectId: 'project-1',
@@ -132,7 +132,7 @@ describe('DeviceOfflineSuppressionService', () => {
       });
       expect(service.isDeviceSuppressed('device-001')).toBe(true);
 
-      // 再上线
+      // Then go online
       callback({
         deviceId: 'device-001',
         projectId: 'project-1',
@@ -148,7 +148,7 @@ describe('DeviceOfflineSuppressionService', () => {
       service.onModuleInit();
       const callback = mockEventBusOn.mock.calls[0][1];
 
-      // 先离线
+      // Go offline first
       callback({
         deviceId: 'device-001',
         projectId: 'project-1',
@@ -158,7 +158,7 @@ describe('DeviceOfflineSuppressionService', () => {
       });
       expect(service.isDeviceSuppressed('device-001')).toBe(true);
 
-      // 从 CONNECTING 到 ONLINE — 不应该解除抑制
+      // From CONNECTING to ONLINE - should not release the suppression
       callback({
         deviceId: 'device-001',
         projectId: 'project-1',
@@ -195,7 +195,7 @@ describe('DeviceOfflineSuppressionService', () => {
       expect(service.isDeviceSuppressed('device-001')).toBe(true);
       expect(service.isDeviceSuppressed('device-002')).toBe(true);
 
-      // 只恢复 device-001
+      // Only recover device-001
       callback({
         deviceId: 'device-001',
         projectId: 'project-1',

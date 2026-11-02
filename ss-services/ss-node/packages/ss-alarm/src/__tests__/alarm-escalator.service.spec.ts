@@ -3,7 +3,7 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 // ============================================================
-// Mock @ss-node/ss-device — entity 文件中 import DataTag 需要
+// Mock @ss-node/ss-device -- its entity file imports DataTag
 // ============================================================
 jest.mock('@ss-node/ss-device', () => ({
   DataTag: class {},

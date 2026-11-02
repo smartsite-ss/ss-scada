@@ -6,7 +6,7 @@
 import { QualityCode } from '../../scada-data/mocks/data-source-mock';
 
 export const RUNTIME_FIXTURES = {
-  /** 模拟工业温度传感器数据 */
+  /** Simulated industrial temperature sensor data */
   temperatureTags: {
     "reactor.temp": () => ({
       value: 180 + Math.random() * 5,
@@ -25,7 +25,7 @@ export const RUNTIME_FIXTURES = {
     }),
   },
 
-  /** 模拟告警产生序列 */
+  /** Simulated alarm generation sequence */
   alarmScenario: {
     normalOperation: [
       { tag: "reactor.temp", value: 180, quality: QualityCode.GOOD },
@@ -41,7 +41,7 @@ export const RUNTIME_FIXTURES = {
     ],
   },
 
-  /** 模拟OPC-UA地址空间 */
+  /** Simulated OPC-UA address space */
   opcuaAddressSpace: {
     "ns=1;s=production.line1.speed": { value: 1200, type: "Double" },
     "ns=1;s=production.line1.status": { value: 1, type: "Int32" },
@@ -50,7 +50,7 @@ export const RUNTIME_FIXTURES = {
     "ns=1;s=production.line1.emergency_stop": { value: false, type: "Boolean" },
   },
 
-  /** 多设备场景 */
+  /** Multi-device scenario */
   multiDeviceScenario: [
     {
       name: "line1_plc",

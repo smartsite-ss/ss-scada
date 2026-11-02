@@ -6,11 +6,11 @@ import { Logger, OnModuleDestroy } from '@nestjs/common';
 import { IProtocolAdapter, IDeviceContext, ITagContext, ChannelValidationResult } from './types';
 
 /**
- * 采集插件基类
+ * Base class for collector plugins
  *
- * 提供连接池管理、重试、超时、资源释放等通用能力。
- * 插件开发者只需实现 doConnect/doReadTag/doWriteTag/doDisconnect 四个抽象方法。
- * validateChannelConfig() 提供默认空实现，子类按需覆盖。
+ * Provides common capabilities such as connection-pool management, retry, timeout, and resource release.
+ * Plugin developers only need to implement four abstract methods: doConnect/doReadTag/doWriteTag/doDisconnect.
+ * validateChannelConfig() provides a default empty implementation that subclasses can override as needed.
  */
 export abstract class BaseCollectorService implements IProtocolAdapter, OnModuleDestroy {
   protected readonly logger = new Logger(this.constructor.name);
@@ -18,33 +18,33 @@ export abstract class BaseCollectorService implements IProtocolAdapter, OnModule
   private connectionStatus = new Map<string, boolean>();
   private reconnectTimers = new Map<string, NodeJS.Timeout>();
 
-  // ---- 抽象方法（子类必须实现） ----
+  // ---- Abstract methods (must be implemented by subclasses) ----
 
-  /** 建立协议连接，返回协议客户端对象 */
+  /** Establish the protocol connection and return the protocol client object */
   abstract connect(device: IDeviceContext): Promise<any>;
 
-  /** 执行单次标签读取 */
+  /** Perform a single tag read */
   protected abstract doReadTag(
     client: any,
     tag: ITagContext,
   ): Promise<{ tagId: string; value: any; timestamp: Date }>;
 
-  /** 执行单次标签写入 */
+  /** Perform a single tag write */
   protected abstract doWriteTag(client: any, tag: ITagContext, value: any): Promise<void>;
 
-  /** 断开协议连接 */
+  /** Disconnect the protocol connection */
   protected abstract doDisconnect(client: any): Promise<void>;
 
-  // ═══ 校验接口（子类按需覆盖）═══
+  // ═══ Validation interface (override as needed by subclasses) ═══
 
-  /** 校验通道配置 — 默认空实现，子类按需覆盖以添加协议特有语义校验 */
+  /** Validate channel config - default empty implementation; subclasses override as needed to add protocol-specific semantic validation */
   async validateChannelConfig(_config: Record<string, any>): Promise<ChannelValidationResult> {
     return { valid: true, errors: [] };
   }
 
-  // ---- 公共方法（带重试/超时） ----
+  // ---- Public methods (with retry/timeout) ----
 
-  /** 带重试的标签读取 */
+  /** Tag read with retry */
   async readTag(
     client: any,
     tag: ITagContext,
@@ -66,7 +66,7 @@ export abstract class BaseCollectorService implements IProtocolAdapter, OnModule
     throw lastError;
   }
 
-  /** 带重试的标签写入 */
+  /** Tag write with retry */
   async writeTag(client: any, tag: ITagContext, value: any): Promise<void> {
     const maxRetries = tag.maxRetries ?? 2;
     let lastError: Error | null = null;
@@ -84,7 +84,7 @@ export abstract class BaseCollectorService implements IProtocolAdapter, OnModule
     throw lastError;
   }
 
-  /** 断开连接并清理内部状态 */
+  /** Disconnect and clean up internal state */
   async disconnect(client: any): Promise<void> {
     const deviceId = this.findDeviceIdByClient(client);
     try {
@@ -98,10 +98,10 @@ export abstract class BaseCollectorService implements IProtocolAdapter, OnModule
     }
   }
 
-  /** 模块销毁时关闭所有连接 */
+  /** Close all connections when the module is destroyed */
   async onModuleDestroy(): Promise<void> {
     this.logger.log(`Closing all ${this.constructor.name} connections...`);
-    // 停止所有重连定时器
+    // Stop all reconnection timers
     for (const timer of this.reconnectTimers.values()) {
       clearInterval(timer);
     }
@@ -111,7 +111,7 @@ export abstract class BaseCollectorService implements IProtocolAdapter, OnModule
       try {
         await this.doDisconnect(entry.client);
       } catch {
-        // 静默
+        // Silent
       }
     }
     this.clients.clear();
@@ -119,13 +119,13 @@ export abstract class BaseCollectorService implements IProtocolAdapter, OnModule
   }
 
   /**
-   * 连接前的通用检查：生成设备 ID、检查是否已连接
+   * Common pre-connection check: generate the device ID and check whether it is already connected
    *
-   * 子类在 connect() 中调用此方法，避免重复编写设备 ID 生成和连接状态检查逻辑。
+   * Subclasses call this in connect() to avoid duplicating device-ID generation and connection-state check logic.
    *
-   * @param device 设备上下文
-   * @param protocolPrefix 协议前缀（如 'modbus', 'mqtt', 'opcua', 's7'），用于生成默认设备 ID
-   * @returns { deviceId, existingResult } — 如果已连接，existingResult 非 null，调用方应直接返回
+   * @param device device context
+   * @param protocolPrefix protocol prefix (e.g. 'modbus', 'mqtt', 'opcua', 's7'), used to generate the default device ID
+   * @returns { deviceId, existingResult } - if already connected, existingResult is non-null and the caller should return directly
    */
   protected preConnect(
     device: IDeviceContext,
@@ -140,38 +140,38 @@ export abstract class BaseCollectorService implements IProtocolAdapter, OnModule
   }
 
   /**
-   * 连接后的通用收尾：跟踪客户端、标记已连接
+   * Common post-connection wrap-up: track the client and mark as connected
    *
-   * 子类在 connect() 成功建立连接后调用此方法。
+   * Subclasses call this after connect() successfully establishes the connection.
    *
-   * @param deviceId 设备 ID
-   * @param client 协议客户端对象
+   * @param deviceId device ID
+   * @param client protocol client object
    */
   protected postConnect(deviceId: string, client: any): void {
     this.trackClient(deviceId, client);
     this.logger.log(`Device ${deviceId} connected successfully`);
   }
 
-  // ---- 辅助方法 ----
+  // ---- Helper methods ----
 
-  /** 跟踪客户端连接 */
+  /** Track the client connection */
   protected trackClient(deviceId: string, client: any): void {
     this.clients.set(deviceId, { client, connectedAt: new Date() });
     this.connectionStatus.set(deviceId, true);
   }
 
-  /** 获取连接状态 */
+  /** Get the connection status */
   protected getConnectionStatus(deviceId: string): boolean {
     return this.connectionStatus.get(deviceId) ?? false;
   }
 
-  /** 标记设备已断开连接 */
+  /** Mark the device as disconnected */
   protected markDisconnected(deviceId: string): void {
     this.connectionStatus.set(deviceId, false);
     this.clients.delete(deviceId);
   }
 
-  /** 获取设备 ID → 客户端映射（只读） */
+  /** Get the device-ID -> client map (read-only) */
   protected getClientEntries(): ReadonlyMap<string, ClientEntry> {
     return this.clients;
   }
@@ -187,16 +187,16 @@ export abstract class BaseCollectorService implements IProtocolAdapter, OnModule
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
-  // ---- 重连支持 ----
+  // ---- Reconnection support ----
 
   /**
-   * 启动自动重连
+   * Start automatic reconnection
    *
-   * 子类在 connect 失败或连接断开时调用，按固定间隔重试连接。
+   * Subclasses call this when connect fails or the connection drops, retrying at a fixed interval.
    *
-   * @param deviceId 设备 ID
-   * @param reconnectFn 重连函数（通常为 () => this.connect(device)）
-   * @param interval 重连间隔（ms），默认 30000
+   * @param deviceId device ID
+   * @param reconnectFn reconnection function (typically () => this.connect(device))
+   * @param interval reconnection interval (ms), default 30000
    */
   protected startAutoReconnect(
     deviceId: string,
@@ -220,7 +220,7 @@ export abstract class BaseCollectorService implements IProtocolAdapter, OnModule
     this.logger.log(`Auto-reconnect started for device ${deviceId} (interval: ${interval}ms)`);
   }
 
-  /** 停止自动重连 */
+  /** Stop automatic reconnection */
   protected stopAutoReconnect(deviceId: string): void {
     const timer = this.reconnectTimers.get(deviceId);
     if (timer) {

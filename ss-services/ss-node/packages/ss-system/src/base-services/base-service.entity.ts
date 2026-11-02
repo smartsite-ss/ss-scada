@@ -12,76 +12,76 @@ import {
 } from 'typeorm';
 
 /**
- * 基础服务实体 — 管理第三方软件配置
- * 存储在全局数据库 ss-data.db 中
+ * Base-service entity — manages third-party software configuration
+ * Stored in the global database ss-data.db
  */
 @Entity('sys_base_services')
 export class BaseServiceEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  /** 软件唯一标识名称（用于 API 路径参数，如 redis / influxdb / nginx） */
+  /** Unique software identifier name (used as the API path parameter, e.g. redis / influxdb / nginx) */
   @Index({ unique: true })
   @Column({ type: 'varchar', length: 64 })
   name: string;
 
-  /** 显示名称 */
+  /** Display name */
   @Column({ type: 'varchar', length: 128 })
   displayName: string;
 
-  /** 描述信息 */
+  /** Description */
   @Column({ type: 'text', nullable: true })
   description: string;
 
-  /** 可执行文件路径（运行路径） */
+  /** Executable file path (run path) */
   @Column({ name: 'binary_path', type: 'text', nullable: true })
   binaryPath: string;
 
-  /** 启动参数（空格分隔，如 --port 6379） */
+  /** Start arguments (space-separated, e.g. --port 6379) */
   @Column({ name: 'start_args', type: 'text', nullable: true })
   startArgs: string;
 
-  /** 配置文件路径 */
+  /** Configuration file path */
   @Column({ name: 'config_path', type: 'text', nullable: true })
   configPath: string;
 
-  /** 日志目录路径 */
+  /** Log directory path */
   @Column({ name: 'log_dir', type: 'text', nullable: true })
   logDir: string;
 
-  /** 数据目录路径 */
+  /** Data directory path */
   @Column({ name: 'data_dir', type: 'text', nullable: true })
   dataDir: string;
 
-  /** 进程名称（用于状态监控，如 redis-server.exe） */
+  /** Process name (used for status monitoring, e.g. redis-server.exe) */
   @Column({ name: 'process_name', type: 'varchar', length: 128, nullable: true })
   processName: string;
 
-  /** 占用端口（0 表示不检测端口） */
+  /** Occupied port (0 means no port check) */
   @Column({ name: 'port', type: 'integer', nullable: true, default: 0 })
   port: number;
 
-  /** 启动脚本（为空时使用 binaryPath + startArgs 启动） */
+  /** Start script (when empty, binaryPath + startArgs are used to start) */
   @Column({ name: 'start_script', type: 'text', nullable: true })
   startScript: string;
 
-  /** 停止脚本（为空时默认使用 taskkill /F /IM <processName>） */
+  /** Stop script (when empty, taskkill /F /IM <processName> is used by default) */
   @Column({ name: 'stop_script', type: 'text', nullable: true })
   stopScript: string;
 
-  /** 是否启用 */
+  /** Whether enabled */
   @Column({ name: 'enabled', type: 'boolean', default: true })
   enabled: boolean;
 
-  /** 是否自动启动（后端启动时自动拉起） */
+  /** Whether to auto-start (started automatically when the backend starts) */
   @Column({ name: 'auto_start', type: 'boolean', default: false })
   autoStart: boolean;
 
-  /** 是否启用进程守护（定时检测，进程不存在时自动拉起） */
+  /** Whether process guarding is enabled (periodic check; auto-starts the process when missing) */
   @Column({ name: 'process_guard', type: 'boolean', default: false })
   processGuard: boolean;
 
-  /** 排序权重 */
+  /** Sort weight */
   @Column({ name: 'sort_order', type: 'integer', default: 0 })
   sortOrder: number;
 

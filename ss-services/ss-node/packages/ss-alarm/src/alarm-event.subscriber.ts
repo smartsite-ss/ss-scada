@@ -10,15 +10,16 @@ import { Device, DataTag } from '@ss-node/ss-device';
 /**
  * AlarmEventSubscriber
  *
- * 监听采集管道发出的 `alarm_triggered` 事件，将报警记录持久化到项目数据库。
+ * Listens for the `alarm_triggered` event emitted by the collection pipeline and persists the
+ * alarm record to the project database.
  *
- * 事件来源：采集管道 PublishStep 中通过 EventBus 发出的 AlarmEvent
- * 事件格式：{ tagId, deviceId, projectId, condition: { severity, type }, value, timestamp, message }
+ * Event source: the AlarmEvent published via EventBus inside the pipeline's PublishStep
+ * Event format: { tagId, deviceId, projectId, condition: { severity, type }, value, timestamp, message }
  *
- * 持久化逻辑：
- * 1. 根据 tagId 查找匹配的 AlarmRule（获取 ruleId）
- * 2. 同一 ruleId 的活跃报警做抑制去重（更新 triggerValue / message）
- * 3. 无匹配规则时仍创建记录（ruleId 为 null，level 取自 condition.severity）
+ * Persistence logic:
+ * 1. Find the matching AlarmRule by tagId (to obtain ruleId)
+ * 2. Suppress duplicates for the same active ruleId (update triggerValue / message)
+ * 3. Still create a record when no rule matches (ruleId is null, level taken from condition.severity)
  */
 @Injectable()
 export class AlarmEventSubscriber implements OnModuleInit, OnModuleDestroy {
@@ -62,13 +63,13 @@ export class AlarmEventSubscriber implements OnModuleInit, OnModuleDestroy {
       const repo = ds.getRepository(AlarmRecord);
       const ruleRepo = ds.getRepository(AlarmRule);
 
-      // 根据 tagId 查找匹配的报警规则
+      // Find the matching alarm rule by tagId
       const rule = await ruleRepo.findOne({
         where: { tagId: event.tagId, projectId: event.projectId },
       });
 
-      // P1-4 优化：发射 alarm.rule_resolved 内部事件，携带预解析的规则数据，
-      // 避免 AlarmNotificationSubscriber 等下游订阅者重复查询规则表
+      // P1-4 optimization: emit the internal alarm.rule_resolved event carrying pre-parsed rule data,
+      // so downstream subscribers like AlarmNotificationSubscriber avoid re-querying the rule table
       this.eventBus?.emit('alarm.rule_resolved', {
         alarmId: event.alarmId,
         tagId: event.tagId,
@@ -88,7 +89,7 @@ export class AlarmEventSubscriber implements OnModuleInit, OnModuleDestroy {
           : null,
       });
 
-      // 抑制重复：同一 ruleId 的活跃报警不重复创建，只更新 triggerValue / message
+      // Suppress duplicates: the same active ruleId is not created again, only triggerValue / message are updated
       if (rule) {
         const existing = await repo.findOne({
           where: { ruleId: rule.id, projectId: event.projectId, status: AlarmStatus.ACTIVE },
@@ -96,14 +97,14 @@ export class AlarmEventSubscriber implements OnModuleInit, OnModuleDestroy {
         if (existing) {
           existing.triggerValue = String(event.value ?? existing.triggerValue ?? '');
           existing.message = event.message;
-          existing.dispositionType = 'alarm.triggered'; // 重新触发，重置处置类型
+          existing.dispositionType = 'alarm.triggered'; // re-triggered, reset the disposition type
           await repo.save(existing);
           return;
         }
       }
 
-      // 按 alarmId 去重：系统生成的告警（设备通讯/系统健康）已由对应订阅器直接持久化，
-      // 此处 emit('alarm_triggered') 仅用于 WebSocket 实时推送，跳过重复持久化
+      // Dedup by alarmId: system-generated alarms (device communication / system health) are already persisted directly by their subscribers,
+      // so emitting 'alarm_triggered' here is only for real-time WebSocket push; skip duplicate persistence
       if (event.alarmId) {
         const existingById = await repo.findOne({
           where: { id: event.alarmId, projectId: event.projectId },
@@ -116,7 +117,7 @@ export class AlarmEventSubscriber implements OnModuleInit, OnModuleDestroy {
         }
       }
 
-      // 查找设备名称和标签名称
+      // Look up the device name and tag name
       let deviceName: string | null = null;
       let tagName: string | null = null;
       try {
@@ -134,8 +135,8 @@ export class AlarmEventSubscriber implements OnModuleInit, OnModuleDestroy {
         this.logger.warn(`Failed to lookup device/tag names: ${lookupErr.message}`);
       }
 
-      // 创建新记录 — triggerValue 统一转字符串，支持 number/boolean/string 类型
-      // 使用 AlarmCheckStep 预生成的 alarmId 作为主键，实现告警与实时数据的双向关联
+      // Create a new record - triggerValue is uniformly converted to string, supporting number/boolean/string types
+      // Use the pre-generated alarmId from AlarmCheckStep as the primary key, enabling two-way linkage between alarms and real-time data
       const record = repo.create({
         id: event.alarmId,
         projectId: event.projectId,
@@ -148,10 +149,10 @@ export class AlarmEventSubscriber implements OnModuleInit, OnModuleDestroy {
         message: event.message,
         triggerValue: String(event.value ?? ''),
         status: AlarmStatus.ACTIVE,
-        // 告警类型映射：limit（超高限/高限/低限/低低限）→ overlimit，统一归入超限告警分类；
-        // 其余类型沿用规则定义，无规则（脚本触发等）默认 custom
+        // Alarm type mapping: limit (over-high/high/low/over-low) -> overlimit, grouped under the over-limit alarm category;
+        // other types follow the rule definition; when no rule exists (script trigger, etc.) the default is custom
         alarmType: event.condition?.type === 'limit' ? 'overlimit' : (rule?.alarmType ?? 'custom'),
-        // 处置类型初始化为"告警触发"
+        // Disposition type initialized to "alarm triggered"
         dispositionType: 'alarm.triggered',
       });
       await repo.save(record);

@@ -32,7 +32,7 @@ export class ErrorLogService {
     private readonly errorLogRepo: Repository<ErrorLog>,
   ) {}
 
-  /** 捕获并持久化错误 */
+  /** Capture and persist an error */
   async capture(params: {
     level: string;
     message: string;
@@ -62,7 +62,7 @@ export class ErrorLogService {
     }
   }
 
-  /** 查询错误日志 */
+  /** Query error logs */
   async query(
     params: ErrorLogQuery,
   ): Promise<{ data: ErrorLog[]; total: number; page: number; pageSize: number }> {
@@ -87,7 +87,7 @@ export class ErrorLogService {
     return { data, total, page, pageSize };
   }
 
-  /** 错误统计 */
+  /** Error statistics */
   async getStats(): Promise<ErrorStats> {
     const allLogs = await this.errorLogRepo.find({ order: { createdAt: 'DESC' }, take: 10000 });
 
@@ -114,12 +114,12 @@ export class ErrorLogService {
     };
   }
 
-  /** 删除错误日志 */
+  /** Delete error logs */
   async delete(id: string): Promise<void> {
     await this.errorLogRepo.delete(id);
   }
 
-  /** 清理过期错误日志 */
+  /** Clean up expired error logs */
   async cleanupExpired(days: number = 90): Promise<number> {
     const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
     const result = await this.errorLogRepo

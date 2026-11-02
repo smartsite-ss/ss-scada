@@ -13,13 +13,13 @@ import { TdengineAdapterService } from './tdengine-adapter.service';
 import { TdengineDatabaseService } from './tdengine-database.service';
 
 /**
- * TDengine 存储模块。
+ * TDengine storage module.
  *
- * 装配内容：
- * - TdengineAdapterService：实现 StorageAdapter（引擎类型 tdengine）；
- * - TdengineDatabaseService：项目 → database + 超级表/子表管理与自动建库建表；
- * - 向 StorageEngineRouterService 注册 tdengine 引擎，供 STORAGE_DEFAULT_ENGINE /
- *   项目级覆盖按项目路由。
+ * Assembly contents:
+ * - TdengineAdapterService: implements StorageAdapter (engine type tdengine);
+ * - TdengineDatabaseService: project → database + super-table/child-table management and automatic database/table creation;
+ * - Registers the tdengine engine with StorageEngineRouterService, for STORAGE_DEFAULT_ENGINE /
+ *   project-level override routing by project.
  */
 @Module({
   imports: [StorageModule, EventBusModule],

@@ -32,8 +32,8 @@ export class LogViewerService {
   private sseClients: Subject<LogEntry>[] = [];
 
   constructor(private readonly pathResolver: PathResolverService) {
-    // 使用 path.resolve 确保与 main.ts 中 Winston 写入路径完全一致
-    // LOG_DIR 通常由 .env 配置（${DATA_DIR}/logs），fallback 时使用项目根目录
+    // Use path.resolve to match exactly the Winston write path in main.ts
+    // LOG_DIR is usually configured via .env (${DATA_DIR}/logs); the fallback uses the project root
     this.logDir = process.env.LOG_DIR
       ? this.pathResolver.resolve(process.env.LOG_DIR)
       : path.join(this.pathResolver.getProjectRoot(), 'logs');
@@ -43,12 +43,12 @@ export class LogViewerService {
     return this.pathResolver.getProjectRoot();
   }
 
-  /** SSE 实时日志推送 */
+  /** SSE real-time log push */
   subscribeToLogs(filter: LogFilter = {}): Observable<LogEntry> {
     const subject = new Subject<LogEntry>();
     this.sseClients.push(subject);
 
-    // 连接时发送最近 20 条日志
+    // Send the 20 most recent log lines on connect
     this.getRecentLogs(filter, 20)
       .then((logs) => {
         for (const log of logs) {
@@ -59,7 +59,7 @@ export class LogViewerService {
         this.logger.warn(`Failed to fetch recent logs for SSE client: ${err.message}`);
       });
 
-    // 监听主日志文件（combined.log）的变化，实现实时推送
+    // Watch the main log file (combined.log) for changes to implement real-time push
     let watcher: fs.FSWatcher | null = null;
     const primaryLog = this.getPrimaryLogFile();
     if (primaryLog) {
@@ -67,7 +67,7 @@ export class LogViewerService {
       try {
         lastSize = fs.statSync(primaryLog).size;
       } catch {
-        /* 文件可能尚未创建 */
+        /* File may not exist yet */
       }
 
       try {
@@ -76,7 +76,7 @@ export class LogViewerService {
           try {
             const newStat = fs.statSync(primaryLog);
             if (newStat.size > lastSize) {
-              // 读取新增的字节
+              // Read the newly added bytes
               const stream = fs.createReadStream(primaryLog, {
                 encoding: 'utf-8',
                 start: lastSize,
@@ -91,11 +91,11 @@ export class LogViewerService {
               });
               lastSize = newStat.size;
             } else if (newStat.size < lastSize) {
-              // 文件被截断或轮转
+              // File was truncated or rotated
               lastSize = 0;
             }
           } catch {
-            /* 忽略读取异常 */
+            /* Ignore read exceptions */
           }
         });
       } catch (err) {
@@ -105,7 +105,7 @@ export class LogViewerService {
 
     return subject.asObservable().pipe(
       finalize(() => {
-        // 客户端断开时清理 watcher 和客户端列表
+        // Clean up the watcher and client list when the client disconnects
         if (watcher) watcher.close();
         this.sseClients = this.sseClients.filter((c) => c !== subject);
       }),
@@ -113,15 +113,15 @@ export class LogViewerService {
   }
 
   /**
-   * 获取主日志文件，SSE 监听此文件实现实时推送。
+   * Get the main log file that SSE watches for real-time push.
    *
-   * 优先级：
-   * 1. 新目录结构：app/app-YYYY-MM-DD.log（Winston DailyRotateFile 当天日志，全级别）
-   * 2. 兼容旧目录结构：combined.log（Winston File transport）
-   * 3. 回退到最新的 .log 文件
+   * Priority:
+   * 1. New directory layout: app/app-YYYY-MM-DD.log (Winston DailyRotateFile's log for the day, all levels)
+   * 2. Legacy directory layout: combined.log (Winston File transport)
+   * 3. Fall back to the most recent .log file
    */
   private getPrimaryLogFile(): string | null {
-    // 1. 新目录结构：app/app-YYYY-MM-DD.log
+    // 1. New directory layout: app/app-YYYY-MM-DD.log
     const date = new Date();
     const yyyy = date.getFullYear();
     const mm = String(date.getMonth() + 1).padStart(2, '0');
@@ -129,17 +129,17 @@ export class LogViewerService {
     const todayAppLog = path.join(this.logDir, 'app', `app-${yyyy}-${mm}-${dd}.log`);
     if (fs.existsSync(todayAppLog)) return todayAppLog;
 
-    // 2. 兼容旧目录结构：combined.log
+    // 2. Legacy directory layout: combined.log
     const combinedPath = path.join(this.logDir, 'combined.log');
     if (fs.existsSync(combinedPath)) return combinedPath;
 
-    // 3. 回退到最新的 .log 文件
+    // 3. Fall back to the most recent .log file
     const files = this.getLogFiles();
     if (files.length > 0) return path.join(this.logDir, files[files.length - 1]);
     return null;
   }
 
-  /** 推送日志条目 */
+  /** Push a log entry */
   pushLog(entry: LogEntry): void {
     for (const client of this.sseClients) {
       try {
@@ -152,11 +152,11 @@ export class LogViewerService {
     this.sseClients = this.sseClients.filter((c) => !c.closed);
   }
 
-  /** 查询日志（优先读取主日志文件：app/app-YYYY-MM-DD.log 或 combined.log） */
+  /** Query logs (reads the main log file first: app/app-YYYY-MM-DD.log or combined.log) */
   async getRecentLogs(filter: LogFilter = {}, lines: number = 100): Promise<LogEntry[]> {
     const results: LogEntry[] = [];
 
-    // 优先读取主日志文件（Winston 主日志，包含所有级别）
+    // Prefer the main log file (Winston main log, contains all levels)
     const primaryLog = this.getPrimaryLogFile();
     if (primaryLog) {
       const fileLines = await this.readLastLines(primaryLog, lines * 2);
@@ -168,9 +168,9 @@ export class LogViewerService {
       }
     }
 
-    // 如果主日志文件数据不足，回退到读取其他日志文件（排除已读取的主日志）
+    // If the main log file has too little data, fall back to reading other log files (excluding the already-read main log)
     if (results.length < lines) {
-      // 与 getLogFiles() 保持一致：统一正斜杠便于比较
+      // Consistent with getLogFiles(): unified forward slashes for easy comparison
       const primaryRel = primaryLog
         ? path.relative(this.logDir, primaryLog).split(path.sep).join('/')
         : '';
@@ -194,11 +194,11 @@ export class LogViewerService {
     return results.slice(-lines);
   }
 
-  /** 列出日志文件（递归扫描 app/ error/ plugins/ 子目录，返回相对路径）
+  /** List log files (recursively scans the app/ error/ plugins/ subdirectories, returns relative paths)
    *
-   * 返回的相对路径统一使用正斜杠 `/` 作为分隔符（跨平台一致、URL 安全），
-   * 便于前端展示与下载接口拼接。同时跳过 winston-daily-rotate-file 的
-   * 隐藏审计文件（以 `.` 开头，如 `.xxxxx-audit.json`）。
+   * The returned relative paths uniformly use forward slash `/` as separator (cross-platform consistent, URL safe),
+   * making frontend display and download-URL assembly easier. Also skips winston-daily-rotate-file's
+   * hidden audit files (starting with `.`, e.g. `.xxxxx-audit.json`).
    */
   getLogFiles(): string[] {
     try {
@@ -207,7 +207,7 @@ export class LogViewerService {
       const scan = (dir: string, base: string) => {
         const entries = fs.readdirSync(dir, { withFileTypes: true });
         for (const entry of entries) {
-          // 跳过隐藏文件（winston 轮转的 .xxxxx-audit.json 等）
+          // Skip hidden files (winston rotation's .xxxxx-audit.json etc.)
           if (entry.name.startsWith('.')) continue;
           const full = path.join(dir, entry.name);
           const rel = path.relative(base, full).split(path.sep).join('/');
@@ -225,21 +225,21 @@ export class LogViewerService {
     }
   }
 
-  /** 获取日志文件绝对路径。
+  /** Get a log file's absolute path.
    *
-   * 接受正斜杠或反斜杠的相对路径（来自 getLogFiles 的返回值或前端下载请求），
-   * 解析为绝对路径并强制校验必须位于 logDir 内部，防止路径穿越攻击。
+   * Accepts relative paths with forward or backslashes (from getLogFiles' return value or frontend download requests),
+   * resolves them to absolute paths, and enforces that the result stays inside logDir to prevent path-traversal attacks.
    */
   getLogFilePath(filename: string): string {
     if (!filename || typeof filename !== 'string') {
       throw new Error('Filename is required');
     }
-    // 统一为正斜杠后再 normalize，避免 Windows 反斜杠干扰
+    // Unify to forward slashes before normalize, avoiding Windows backslash interference
     const cleaned = filename.replace(/\\/g, '/');
     const normalizedLogDir = path.resolve(this.logDir);
     const filePath = path.resolve(normalizedLogDir, cleaned);
 
-    // 路径穿越保护：解析后的路径必须仍在 logDir 之内
+    // Path-traversal protection: the resolved path must still be inside logDir
     if (filePath !== normalizedLogDir && !filePath.startsWith(normalizedLogDir + path.sep)) {
       throw new Error(`Invalid log file path: ${filename}`);
     }
@@ -255,11 +255,11 @@ export class LogViewerService {
       try {
         const fileSize = fs.statSync(filePath).size;
 
-        // 大文件优化：只读取文件尾部，避免读取整个 GB 级文件导致超时
-        // 按平均每行 ~500 字节估算，读取 maxLines * 2 * 500 字节，最少 64KB，最多 4MB
+        // Large-file optimization: read only the tail of the file, avoiding reading the entire GB-scale file and timing out
+        // Estimate ~500 bytes per line, read maxLines * 2 * 500 bytes, at least 64KB, at most 4MB
         const tailBytes = Math.min(Math.max(maxLines * 1000, 65536), 4 * 1024 * 1024);
         const start = Math.max(0, fileSize - tailBytes);
-        const isPartialRead = start > 0; // 从文件中间开始读取时，首行可能不完整
+        const isPartialRead = start > 0; // when reading from mid-file, the first line may be incomplete
 
         const rl = readline.createInterface({
           input: fs.createReadStream(filePath, { encoding: 'utf-8', start, end: fileSize }),
@@ -268,7 +268,7 @@ export class LogViewerService {
 
         let isFirstLine = true;
         rl.on('line', (line) => {
-          // 从文件中间读取时，跳过首个不完整行
+          // When reading from mid-file, skip the first incomplete line
           if (isPartialRead && isFirstLine) {
             isFirstLine = false;
             return;
@@ -291,9 +291,9 @@ export class LogViewerService {
   private parseLogLine(line: string): LogEntry | null {
     if (!line || !line.trim()) return null;
     try {
-      // Try JSON format first (Winston File transport 输出)
+      // Try JSON format first (Winston File transport output)
       const parsed = JSON.parse(line);
-      // Winston 的 level 可能是 "log"（NestJS Logger.log 映射），统一为 "info"
+      // Winston's level may be "log" (NestJS Logger.log mapping); normalize to "info"
       const rawLevel = parsed.level || parsed.level || 'info';
       const level = rawLevel === 'log' ? 'info' : rawLevel;
       return {
@@ -305,7 +305,7 @@ export class LogViewerService {
       };
     } catch {
       // Try plain text format: [TIMESTAMP] [LEVEL] [MODULE] message
-      // 匹配 Winston Console transport 的 printf 格式：
+      // Match the Winston Console transport's printf format:
       // "2026/07/24 09:03:13     LOG [ChildProcessExecutor] message"
       const winstonMatch = line.match(
         /^(\d{4}\/\d{2}\/\d{2}\s+\d{2}:\d{2}:\d{2})\s+(\w+)\s+\[([^\]]+)\]\s*(.*)$/,
@@ -320,7 +320,7 @@ export class LogViewerService {
           raw: line,
         };
       }
-      // 匹配 ISO 时间戳格式：2026-07-24T01:03:14.068Z [info] [Module] message
+      // Match the ISO timestamp format: 2026-07-24T01:03:14.068Z [info] [Module] message
       const isoMatch = line.match(
         /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[^\s\]]*)\s+\[?(\w+)\]?\s*\[?([^\]]+)\]?\s*(.*)$/,
       );
@@ -333,7 +333,7 @@ export class LogViewerService {
           raw: line,
         };
       }
-      // 无法解析的行，作为纯文本返回
+      // Unparseable lines are returned as plain text
       return {
         timestamp: new Date().toISOString(),
         level: 'info',

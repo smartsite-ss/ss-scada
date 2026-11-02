@@ -29,7 +29,7 @@ import { AlarmLevel, AlarmStatus, DeviceStatus, PaginatedResult } from '@ss-node
 import { DeviceService, DataTag } from '@ss-node/ss-device';
 import { PathResolverService } from '@ss-node/ss-core';
 
-/** 缓存的报表（用于导出功能） */
+/** Cached reports (for the export feature) */
 interface CachedReport {
   id: string;
   type: ReportType;
@@ -42,7 +42,7 @@ interface CachedReport {
   data: ReportData;
 }
 
-/** 保存的报表配置 */
+/** Saved report configs */
 interface SavedReportConfig {
   id: string;
   projectId: string;
@@ -52,7 +52,7 @@ interface SavedReportConfig {
   createdAt: string;
 }
 
-/** 存储的报表模板 */
+/** Stored report templates */
 interface StoredReportTemplate {
   id: string;
   projectId: string;
@@ -63,7 +63,7 @@ interface StoredReportTemplate {
   updatedAt: string;
 }
 
-/** 存储的定时导出任务 */
+/** Stored scheduled-export tasks */
 interface StoredReportSchedule {
   id: string;
   projectId: string;
@@ -77,7 +77,7 @@ interface StoredReportSchedule {
   updatedAt: string;
 }
 
-/** 定时导出执行历史 */
+/** Scheduled-export execution history */
 interface ExportHistoryEntry {
   id: string;
   projectId: string;
@@ -92,7 +92,7 @@ interface ExportHistoryEntry {
 
 type Granularity = 'hour' | 'day' | 'month';
 
-/** 告警摘要数据 */
+/** Alarm summary data */
 interface AlarmSummaryData {
   totalAlarms: number;
   byLevel: Record<string, number>;
@@ -101,7 +101,7 @@ interface AlarmSummaryData {
   ackRate: number;
 }
 
-/** 趋势摘要数据 */
+/** Trend summary data */
 interface TrendSummaryData {
   anomalyCount: number;
   anomalyRate: number;
@@ -123,25 +123,25 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
 
   private readonly CACHE_MAX_SIZE = 100;
 
-  /** 定时调度器检查间隔（毫秒）— 每 60 秒检查一次 cron 匹配 */
+  /** Scheduler check interval (ms) - checks cron matches every 60 seconds */
   private readonly SCHEDULER_INTERVAL_MS = 60 * 1000;
 
-  /** 报表缓存：用于导出功能和报表查询 */
+  /** Report cache: for the export feature and report queries */
   private readonly reportCache = new Map<string, CachedReport>();
 
-  /** 报表配置存储 */
+  /** Report-config store */
   private readonly savedConfigs = new Map<string, SavedReportConfig[]>();
 
-  /** 报表模板存储：templateId -> 模板 */
+  /** Report-template store: templateId -> template */
   private readonly templates = new Map<string, StoredReportTemplate>();
 
-  /** 定时导出任务存储：scheduleId -> 任务 */
+  /** Scheduled-export task store: scheduleId -> task */
   private readonly schedules = new Map<string, StoredReportSchedule>();
 
-  /** 定时导出执行历史 */
+  /** Scheduled-export execution history */
   private readonly exportHistory: ExportHistoryEntry[] = [];
 
-  /** 定时调度器计时器引用 */
+  /** Scheduler timer reference */
   private schedulerTimer: NodeJS.Timeout | null = null;
 
   constructor(
@@ -151,7 +151,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     @Optional() private readonly deviceService?: DeviceService,
   ) {}
 
-  // ==================== 生命周期钩子 ====================
+  // ==================== Lifecycle hooks ====================
 
   async onModuleInit(): Promise<void> {
     this.startScheduler();
@@ -161,7 +161,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     this.stopScheduler();
   }
 
-  // ==================== 日报生成 ====================
+  // ==================== Daily report generation ====================
 
   async generateDailyReport(projectId: string, date: string): Promise<Record<string, unknown>> {
     this.logger.log(`Generating daily report for project ${projectId} on ${date}`);
@@ -187,7 +187,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     return { ...report } as Record<string, unknown>;
   }
 
-  // ==================== 月报生成 ====================
+  // ==================== Monthly report generation ====================
 
   async generateMonthlyReport(projectId: string, month: string): Promise<Record<string, unknown>> {
     this.logger.log(`Generating monthly report for project ${projectId} on ${month}`);
@@ -220,7 +220,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     return { ...report } as Record<string, unknown>;
   }
 
-  // ==================== 自定义报表 ====================
+  // ==================== Custom reports ====================
 
   async generateCustomReport(
     projectId: string,
@@ -242,10 +242,10 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     const granularity = config.granularity ?? 'day';
     const metrics = config.metrics ?? ['avg', 'max', 'min'];
 
-    // 解析需要查询的 tagIds
+    // Resolve the tagIds to query
     const tagIds = await this.resolveTagIds(projectId, config.tagIds, config.deviceIds);
 
-    // 查询历史数据统计
+    // Query historical-data statistics
     const items = await this.buildCustomItems(tagIds, startTime, endTime, metrics);
     const charts = await this.buildCustomCharts(tagIds, startTime, endTime, granularity);
     const summary = await this.buildRealSummary(projectId, startTime, endTime);
@@ -271,7 +271,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     return { ...report } as Record<string, unknown>;
   }
 
-  // ==================== 告警报表 ====================
+  // ==================== Alarm report ====================
 
   async generateAlarmReport(
     projectId: string,
@@ -289,9 +289,9 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     const startTime = new Date(`${config.startDate}T00:00:00.000`);
     const endTime = new Date(`${config.endDate}T23:59:59.999`);
 
-    // 获取报警记录
+    // Get alarm records
     const allRecords = await this.fetchAlarmRecords(projectId);
-    // 仅在指定 deviceIds 时才通过 tagIds 过滤，否则不过滤设备
+    // Filter by tagIds only when deviceIds are specified; otherwise do not filter devices
     const tagIdsSet =
       config.deviceIds && config.deviceIds.length > 0
         ? new Set(await this.resolveTagIds(projectId, undefined, config.deviceIds))
@@ -335,7 +335,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     return { ...report } as Record<string, unknown>;
   }
 
-  // ==================== 趋势报表 ====================
+  // ==================== Trend report ====================
 
   async generateTrendReport(
     projectId: string,
@@ -387,7 +387,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     return { ...report } as Record<string, unknown>;
   }
 
-  // ==================== 报表导出 ====================
+  // ==================== Report export ====================
 
   async exportReport(
     reportId: string,
@@ -413,8 +413,8 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
       const excelBuffer = this.generateExcel(report);
       fs.writeFileSync(filePath, excelBuffer);
     } else {
-      // pdf / html 格式：均生成 HTML 报表文件
-      // 生产环境建议使用 puppeteer 或 pdfkit 生成真正的 PDF
+      // pdf / html formats: both generate an HTML report file
+      // Production should use puppeteer or pdfkit to generate a real PDF
       fileExtension = 'html';
       fileName = `report_${reportId}_${timestamp}.${fileExtension}`;
       filePath = path.resolve(exportsDir, fileName);
@@ -436,8 +436,8 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 解析导出文件绝对路径（供 controller 的 res.sendFile 使用）：
-   * 校验报表存在且归属当前项目，文件名经 basename 防路径穿越，文件不存在时抛 404。
+   * Resolve the export file's absolute path (for the controller's res.sendFile):
+   * validates the report exists and belongs to the current project, guards the file name with basename against traversal, and throws 404 when the file is missing.
    */
   getExportFileAbsolute(projectId: string, reportId: string, fileName: string): string {
     const report = this.reportCache.get(reportId);
@@ -459,7 +459,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     return filePath;
   }
 
-  // ==================== 查询报表 ====================
+  // ==================== Report query ====================
 
   async queryReports(
     projectId: string,
@@ -478,7 +478,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
       filtered.push(report);
     }
 
-    // 按生成时间倒序
+    // Descending by generation time
     filtered.sort((a, b) => b.generatedAt.localeCompare(a.generatedAt));
 
     const page = query.page ?? 1;
@@ -500,7 +500,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     };
   }
 
-  // ==================== 保存报表配置 ====================
+  // ==================== Save report config ====================
 
   async saveReportConfig(
     projectId: string,
@@ -527,7 +527,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     return configs.map((c) => ({ ...c }) as Record<string, unknown>);
   }
 
-  // ==================== 删除报表配置 ====================
+  // ==================== Delete report config ====================
 
   async deleteReportConfig(projectId: string, configId: string): Promise<void> {
     const configs = this.savedConfigs.get(projectId);
@@ -542,7 +542,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     this.savedConfigs.set(projectId, configs);
   }
 
-  // ==================== 报表模板 CRUD ====================
+  // ==================== Report-template CRUD ====================
 
   async createTemplate(
     projectId: string,
@@ -599,7 +599,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
       );
     }
     this.templates.delete(templateId);
-    // 同时将引用该模板的定时任务的 templateId 置空
+    // Also clear the templateId of scheduled tasks referencing this template
     for (const schedule of this.schedules.values()) {
       if (schedule.templateId === templateId) {
         schedule.templateId = null;
@@ -619,7 +619,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
       if (query?.type && template.type !== query.type) continue;
       result.push(template);
     }
-    // 按创建时间倒序
+    // Descending by creation time
     result.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
     return result.map((t) => ({ ...t }) as Record<string, unknown>);
   }
@@ -634,7 +634,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     return { ...template } as Record<string, unknown>;
   }
 
-  // ==================== 定时导出 ====================
+  // ==================== Scheduled export ====================
 
   async scheduleReportExport(
     projectId: string,
@@ -645,11 +645,11 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
       enabled?: boolean;
     },
   ): Promise<Record<string, unknown>> {
-    // 校验 cron 表达式格式
+    // Validate the cron-expression format
     if (!this.isValidCronExpression(config.cronExpression)) {
       throw new Error(`Invalid cron expression: ${config.cronExpression}`);
     }
-    // 若指定了模板，校验模板存在且属于该项目
+    // If a template is specified, validate it exists and belongs to the project
     if (config.templateId) {
       const template = this.templates.get(config.templateId);
       if (!template || template.projectId !== projectId) {
@@ -697,7 +697,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     return result.map((s) => ({ ...s }) as Record<string, unknown>);
   }
 
-  /** 查询定时导出执行历史 */
+  /** Query scheduled-export execution history */
   getExportHistory(projectId: string, limit = 100): ExportHistoryEntry[] {
     return this.exportHistory
       .filter((h) => h.projectId === projectId)
@@ -705,9 +705,9 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
       .reverse();
   }
 
-  // ==================== 私有辅助方法：数据查询 ====================
+  // ==================== Private helpers: data queries ====================
 
-  /** 构建真实的设备与告警摘要 */
+  /** Build the real device and alarm summaries */
   private async buildRealSummary(
     projectId: string,
     startTime: Date,
@@ -718,7 +718,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     let offlineDevices = 0;
     let totalAlarms = 0;
 
-    // 设备统计
+    // Device statistics
     if (this.deviceService) {
       try {
         const devices = await this.deviceService.findAll(projectId, {
@@ -738,7 +738,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
       }
     }
 
-    // 告警统计
+    // Alarm statistics
     if (this.alarmService) {
       try {
         const records = await this.alarmService.getRecords(projectId, 100000);
@@ -751,7 +751,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
       }
     }
 
-    // 平均数据质量（基于最近值的质量字段）
+    // Average data quality (based on the latest values' quality field)
     let avgDataQuality = 0;
     if (this.dataQueryService && this.deviceService) {
       try {
@@ -784,7 +784,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     };
   }
 
-  /** 构建日报指标项 */
+  /** Build daily-report metric items */
   private async buildDailyItems(
     projectId: string,
     startTime: Date,
@@ -792,7 +792,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
   ): Promise<ReportItem[]> {
     const items: ReportItem[] = [];
 
-    // 设备在线率
+    // Device online rate
     if (this.deviceService) {
       try {
         const devices = await this.deviceService.findAll(projectId, {
@@ -819,7 +819,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
       }
     }
 
-    // 告警数
+    // Alarm count
     if (this.alarmService) {
       try {
         const records = await this.alarmService.getRecords(projectId, 100000);
@@ -837,7 +837,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
       }
     }
 
-    // 数据采集点数
+    // Data-collection point count
     if (this.dataQueryService) {
       try {
         const tags = await this.getTagsForProject(projectId);
@@ -848,7 +848,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
             const stats = await this.dataQueryService.getTagStats(tagId, startTime, endTime);
             totalPoints += stats.count;
           }
-          // 估算总数
+          // Estimate the total
           const estimatedTotal =
             tags.length > 0 ? Math.round((totalPoints / sampleTagIds.length) * tags.length) : 0;
           items.push({
@@ -862,7 +862,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
       }
     }
 
-    // 如果没有数据，返回基本信息
+    // Return basic info when there is no data
     if (items.length === 0) {
       items.push({
         label: '报表生成状态',
@@ -874,7 +874,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     return items;
   }
 
-  /** 构建月报指标项 */
+  /** Build monthly-report metric items */
   private async buildMonthlyItems(
     projectId: string,
     startTime: Date,
@@ -882,7 +882,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
   ): Promise<ReportItem[]> {
     const items: ReportItem[] = [];
 
-    // 月累计告警数
+    // Monthly cumulative alarm count
     if (this.alarmService) {
       try {
         const records = await this.alarmService.getRecords(projectId, 100000);
@@ -900,7 +900,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
       }
     }
 
-    // 月平均设备在线率
+    // Monthly average device online rate
     if (this.deviceService) {
       try {
         const devices = await this.deviceService.findAll(projectId, {
@@ -933,7 +933,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     return items;
   }
 
-  /** 构建时间序列图表（用于日报/月报） */
+  /** Build time-series charts (for daily/monthly reports) */
   private async buildTimeSeriesCharts(
     projectId: string,
     startTime: Date,
@@ -952,7 +952,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
         return charts;
       }
 
-      // 取前 3 个有数值的标签做趋势图
+      // Take the first 3 tags with numeric values for the trend chart
       const sampleTags = tags.slice(0, 3);
       const windowMs = this.granularityToWindowMs(granularity);
       const labels: string[] = [];
@@ -998,7 +998,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     return charts;
   }
 
-  /** 构建月度告警分布图表 */
+  /** Build the monthly alarm-distribution chart */
   private async buildMonthlyAlarmCharts(
     projectId: string,
     startTime: Date,
@@ -1042,7 +1042,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     return charts;
   }
 
-  /** 构建自定义报表指标项 */
+  /** Build custom-report metric items */
   private async buildCustomItems(
     tagIds: string[],
     startTime: Date,
@@ -1095,7 +1095,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     return items;
   }
 
-  /** 构建自定义报表图表 */
+  /** Build custom-report charts */
   private async buildCustomCharts(
     tagIds: string[],
     startTime: Date,
@@ -1105,7 +1105,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     return this.buildTrendCharts(tagIds, startTime, endTime, granularity);
   }
 
-  /** 构建趋势图表 */
+  /** Build trend charts */
   private async buildTrendCharts(
     tagIds: string[],
     startTime: Date,
@@ -1159,7 +1159,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     return charts;
   }
 
-  /** 构建趋势摘要 */
+  /** Build the trend summary */
   private async buildTrendSummary(
     tagIds: string[],
     startTime: Date,
@@ -1189,7 +1189,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
         secondHalfAvg += secondStats.avg;
         totalPoints += firstStats.count + secondStats.count;
 
-        // 异常检测：值超出 min/max 范围视为异常（简单启发式）
+        // Anomaly detection: values outside the min/max range count as anomalies (simple heuristic)
         const allStats = await this.dataQueryService.getTagStats(tagId, startTime, endTime);
         if (allStats.max > firstStats.avg * 2 || allStats.min < firstStats.avg * 0.5) {
           anomalyPoints++;
@@ -1201,7 +1201,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
         secondHalfAvg /= tagIds.length;
       }
 
-      // 趋势方向
+      // Trend direction
       const changePercent =
         firstHalfAvg !== 0 ? ((secondHalfAvg - firstHalfAvg) / Math.abs(firstHalfAvg)) * 100 : 0;
       if (changePercent > 5) {
@@ -1224,9 +1224,9 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  // ==================== 私有辅助方法：告警数据处理 ====================
+  // ==================== Private helpers: alarm data processing ====================
 
-  /** 获取报警记录 */
+  /** Get alarm records */
   private async fetchAlarmRecords(projectId: string): Promise<AlarmRecord[]> {
     if (!this.alarmService) {
       return [];
@@ -1239,7 +1239,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  /** 过滤报警记录 */
+  /** Filter alarm records */
   private filterAlarmRecords(
     records: AlarmRecord[],
     startTime: Date,
@@ -1252,14 +1252,14 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     const levelsSet = levels ? new Set(levels) : undefined;
 
     return records.filter((r) => {
-      // 时间范围过滤
+      // Time-range filter
       const t = r.createdAt.getTime();
       if (t < startMs || t > endMs) return false;
 
-      // 级别过滤
+      // Level filter
       if (levelsSet && !levelsSet.has(r.level)) return false;
 
-      // 设备过滤（通过 tagId 关联）
+      // Device filter (associated via tagId)
       if (tagIds && tagIds.size > 0) {
         const ruleTagId = r.rule?.tagId;
         if (!ruleTagId || !tagIds.has(ruleTagId)) return false;
@@ -1269,7 +1269,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     });
   }
 
-  /** 构建告警摘要数据 */
+  /** Build the alarm summary data */
   private buildAlarmSummaryData(records: AlarmRecord[]): AlarmSummaryData {
     const byLevel: Record<string, number> = {};
     const byDevice: Record<string, number> = {};
@@ -1278,14 +1278,14 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     let responseCount = 0;
 
     for (const record of records) {
-      // 按级别统计
+      // Statistics by level
       byLevel[record.level] = (byLevel[record.level] || 0) + 1;
 
-      // 按设备统计（使用 tagId 作为设备标识的代理）
+      // Statistics by device (using tagId as a proxy for the device identity)
       const deviceId = record.rule?.tagId ?? 'unknown';
       byDevice[deviceId] = (byDevice[deviceId] || 0) + 1;
 
-      // 确认率统计
+      // Acknowledgement-rate statistics
       if (
         record.status === AlarmStatus.ACKNOWLEDGED ||
         record.status === AlarmStatus.CLEARED ||
@@ -1294,7 +1294,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
         acknowledged++;
       }
 
-      // 响应时间统计
+      // Response-time statistics
       if (record.acknowledgedAt) {
         const responseTime = record.acknowledgedAt.getTime() - record.createdAt.getTime();
         totalResponseTime += responseTime;
@@ -1311,7 +1311,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     };
   }
 
-  /** 构建告警报表指标项 */
+  /** Build alarm-report metric items */
   private buildAlarmItems(records: AlarmRecord[]): ReportItem[] {
     const items: ReportItem[] = [];
     const levelCounts: Record<string, number> = {};
@@ -1332,7 +1332,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
       }
     }
 
-    // 未知级别
+    // Unknown level
     for (const [level, count] of Object.entries(levelCounts)) {
       if (!levelOrder.includes(level as AlarmLevel)) {
         items.push({
@@ -1354,11 +1354,11 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     return items;
   }
 
-  /** 构建告警图表 */
+  /** Build alarm charts */
   private buildAlarmCharts(records: AlarmRecord[], startTime: Date, endTime: Date): ReportChart[] {
     const charts: ReportChart[] = [];
 
-    // 饼图：告警级别分布
+    // Pie chart: alarm-level distribution
     const levelCounts: Record<string, number> = {};
     for (const record of records) {
       levelCounts[record.level] = (levelCounts[record.level] || 0) + 1;
@@ -1376,7 +1376,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
       });
     }
 
-    // 折线图：告警时间趋势（按天）
+    // Line chart: alarm time trend (by day)
     const duration = endTime.getTime() - startTime.getTime();
     const dayMs = 24 * 60 * 60 * 1000;
     const dayCount = Math.max(1, Math.ceil(duration / dayMs));
@@ -1405,20 +1405,20 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     return charts;
   }
 
-  // ==================== 私有辅助方法：标签与设备解析 ====================
+  // ==================== Private helpers: tag and device resolution ====================
 
-  /** 解析需要查询的 tagIds */
+  /** Resolve the tagIds to query */
   private async resolveTagIds(
     projectId: string,
     tagIds?: string[],
     deviceIds?: string[],
   ): Promise<string[]> {
-    // 如果直接提供了 tagIds，优先使用
+    // Prefer directly provided tagIds
     if (tagIds && tagIds.length > 0) {
       return tagIds;
     }
 
-    // 如果提供了 deviceIds，查询这些设备的标签
+    // If deviceIds are provided, query those devices' tags
     if (deviceIds && deviceIds.length > 0 && this.deviceService) {
       try {
         const result = await this.deviceService.searchTags(
@@ -1436,7 +1436,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
       }
     }
 
-    // 如果都没有提供，查询项目下所有标签
+    // If neither is provided, query all tags in the project
     if (this.deviceService) {
       try {
         const result = await this.deviceService.searchTags(
@@ -1456,7 +1456,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     return [];
   }
 
-  /** 获取项目下的所有标签 */
+  /** Get all tags under a project */
   private async getTagsForProject(projectId: string): Promise<DataTag[]> {
     if (!this.deviceService) {
       return [];
@@ -1476,13 +1476,13 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  // ==================== 私有辅助方法：工具函数 ====================
+  // ==================== Private helpers: utility functions ====================
 
-  /** 缓存报表 */
+  /** Cache a report */
   private cacheReport(report: CachedReport): void {
     this.reportCache.set(report.id, report);
 
-    // 限制缓存大小
+    // Limit the cache size
     if (this.reportCache.size > this.CACHE_MAX_SIZE) {
       const oldestKey = this.reportCache.keys().next().value;
       if (oldestKey) {
@@ -1491,29 +1491,29 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  /** 生成报表 ID */
+  /** Generate a report ID */
   private generateReportId(): string {
     return `rpt_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
   }
 
-  /** 生成报表模板 ID */
+  /** Generate a report-template ID */
   private generateTemplateId(): string {
     return `tpl_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
   }
 
-  /** 生成定时导出任务 ID */
+  /** Generate a scheduled-export task ID */
   private generateScheduleId(): string {
     return `sch_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
   }
 
-  /** 生成历史记录 ID */
+  /** Generate a history-record ID */
   private generateHistoryId(): string {
     return `exp_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
   }
 
-  // ==================== 定时调度器 ====================
+  // ==================== Scheduler ====================
 
-  /** 启动定时调度器 */
+  /** Start the scheduler */
   startScheduler(): void {
     if (this.schedulerTimer) {
       return;
@@ -1526,7 +1526,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     this.logger.log('Report export scheduler started');
   }
 
-  /** 停止定时调度器 */
+  /** Stop the scheduler */
   stopScheduler(): void {
     if (this.schedulerTimer) {
       clearInterval(this.schedulerTimer);
@@ -1536,14 +1536,14 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 检查所有启用的定时任务，对匹配当前时间的任务执行导出。
-   * 公开方法便于测试手动触发。
+   * Check all enabled scheduled tasks and run the export for tasks matching the current time.
+   * Public method so tests can trigger it manually.
    */
   async tickSchedules(now: Date): Promise<void> {
     for (const schedule of this.schedules.values()) {
       if (!schedule.enabled) continue;
       if (!this.matchCron(schedule.cronExpression, now)) continue;
-      // 避免同一分钟内重复执行
+      // Avoid duplicate runs within the same minute
       if (
         schedule.lastRunAt &&
         now.getTime() - schedule.lastRunAt.getTime() < this.SCHEDULER_INTERVAL_MS
@@ -1554,7 +1554,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  /** 执行单次定时导出 */
+  /** Run a single scheduled export */
   private async executeScheduledExport(schedule: StoredReportSchedule): Promise<void> {
     this.logger.log(`Executing scheduled export ${schedule.id}`);
     const template = schedule.templateId ? this.templates.get(schedule.templateId) : undefined;
@@ -1584,7 +1584,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  /** 根据模板生成报表，返回生成的报表对象 */
+  /** Generate a report from a template, returning the generated report object */
   private async generateReportFromTemplate(
     projectId: string,
     template?: StoredReportTemplate,
@@ -1594,7 +1594,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     const currentMonth = today.toISOString().substring(0, 7);
 
     if (!template) {
-      // 无模板时默认生成当日日报
+      // Generate the current day's daily report by default when there is no template
       return this.generateDailyReport(projectId, todayStr);
     }
 
@@ -1635,7 +1635,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  /** 记录导出历史 */
+  /** Record export history */
   private recordExportHistory(
     schedule: StoredReportSchedule,
     reportId: string | null,
@@ -1654,48 +1654,48 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
       errorMessage,
       executedAt: new Date().toISOString(),
     });
-    // 限制历史记录数量
+    // Limit the history-record count
     if (this.exportHistory.length > 1000) {
       this.exportHistory.splice(0, this.exportHistory.length - 1000);
     }
   }
 
-  // ==================== Cron 表达式解析 ====================
+  // ==================== Cron-expression parsing ====================
 
-  /** 校验 cron 表达式是否合法（5 字段） */
+  /** Validate whether a cron expression is legal (5 fields) */
   private isValidCronExpression(cronExpr: string): boolean {
     const parts = cronExpr.trim().split(/\s+/);
     if (parts.length !== 5) return false;
     return parts.every((part) => this.isValidCronField(part));
   }
 
-  /** 校验单个 cron 字段 */
+  /** Validate a single cron field */
   private isValidCronField(field: string): boolean {
     if (field === '*' || field === '?') return true;
-    // 处理逗号分隔
+    // Handle comma separation
     if (field.includes(',')) {
       return field.split(',').every((f) => this.isValidCronField(f));
     }
-    // 处理步长 a-b/n 或 */n
+    // Handle steps a-b/n or */n
     if (field.includes('/')) {
       const [range, stepStr] = field.split('/');
       const step = parseInt(stepStr, 10);
       if (isNaN(step) || step <= 0) return false;
       return this.isValidCronField(range);
     }
-    // 处理范围 a-b
+    // Handle ranges a-b
     if (field.includes('-')) {
       const [start, end] = field.split('-');
       const s = parseInt(start, 10);
       const e = parseInt(end, 10);
       return !isNaN(s) && !isNaN(e) && s <= e;
     }
-    // 单个数字
+    // Single number
     const num = parseInt(field, 10);
     return !isNaN(num);
   }
 
-  /** 判断给定日期是否匹配 cron 表达式 */
+  /** Decide whether a given date matches a cron expression */
   private matchCron(cronExpr: string, date: Date): boolean {
     const parts = cronExpr.trim().split(/\s+/);
     if (parts.length !== 5) return false;
@@ -1709,14 +1709,14 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     );
   }
 
-  /** 匹配单个 cron 字段 */
+  /** Match a single cron field */
   private matchCronField(field: string, value: number, min: number, max: number): boolean {
     if (field === '*' || field === '?') return true;
-    // 处理逗号分隔
+    // Handle comma separation
     if (field.includes(',')) {
       return field.split(',').some((f) => this.matchCronField(f, value, min, max));
     }
-    // 处理步长 a-b/n 或 */n
+    // Handle steps a-b/n or */n
     if (field.includes('/')) {
       const [range, stepStr] = field.split('/');
       const step = parseInt(stepStr, 10);
@@ -1738,13 +1738,13 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
       if (value < start || value > end) return false;
       return (value - start) % step === 0;
     }
-    // 处理范围 a-b
+    // Handle ranges a-b
     if (field.includes('-')) {
       const [start, end] = field.split('-').map((n) => parseInt(n, 10));
       if (isNaN(start) || isNaN(end)) return false;
       return value >= start && value <= end;
     }
-    // 单个数字（day-of-week 中 0 和 7 都表示周日）
+    // Single number (in day-of-week both 0 and 7 mean Sunday)
     const num = parseInt(field, 10);
     if (isNaN(num)) return false;
     if (min === 0 && max === 7) {
@@ -1754,7 +1754,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     return value === num;
   }
 
-  /** 粒度转时间窗口（毫秒） */
+  /** Granularity to time window (ms) */
   private granularityToWindowMs(granularity: Granularity): number {
     switch (granularity) {
       case 'hour':
@@ -1768,7 +1768,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  /** 格式化时间标签 */
+  /** Format a time label */
   private formatTimeLabel(isoString: string, granularity: Granularity): string {
     const date = new Date(isoString);
     switch (granularity) {
@@ -1783,11 +1783,11 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  /** 确保导出目录存在 */
+  /** Ensure the export directory exists */
   private ensureExportsDir(): string {
-    // 使用 DATA_DIR/exports，与 dev/prod 配置保持一致
-    // 之前用 process.cwd()/data/exports，dev 模式下 cwd = apps/ss-node-server，
-    // 导致导出文件分散到 apps/ss-node-server/data/exports，与 prod 模式不一致
+    // Use DATA_DIR/exports, consistent with the dev/prod config
+    // Previously used process.cwd()/data/exports; in dev mode cwd = apps/ss-node-server,
+    // scattering export files into apps/ss-node-server/data/exports, inconsistent with prod mode
     const dataDir = process.env.DATA_DIR || './data';
     const exportsDir = path.resolve(this.resolvePath(dataDir), 'exports');
     if (!fs.existsSync(exportsDir)) {
@@ -1797,25 +1797,25 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 将相对路径解析为绝对路径
+   * Resolve a relative path to an absolute path
    *
-   * 相对路径基准：
-   * - dev 模式：__dirname 上溯 4 级 = ss-services/ss-node（本文件位于 packages/ss-report/dist/）
-   *   .env.dev 中 DATA_DIR 相对于 ss-services/ss-node 解析
-   * - 生产模式：process.cwd() = ss-run/ss/services/ss-node
-   *   .env 中 DATA_DIR=../../data 相对于该目录解析
+   * Relative-path base:
+   * - dev mode: __dirname up 4 levels = ss-services/ss-node (this file lives in packages/ss-report/dist/)
+   *   DATA_DIR in .env.dev is resolved relative to ss-services/ss-node
+   * - production: process.cwd() = ss-run/ss/services/ss-node
+   *   DATA_DIR=../../data in .env is resolved relative to that directory
    *
-   * 与 app.module.ts getDatabaseConfig()、backup.service.ts getProjectRoot() 保持一致。
+   * Kept consistent with app.module.ts getDatabaseConfig() and backup.service.ts getProjectRoot().
    */
   private resolvePath(p: string): string {
     return this.pathResolver.resolve(p);
   }
 
-  /** 生成 CSV 内容 */
+  /** Generate CSV content */
   private generateCSV(report: CachedReport): string {
     const lines: string[] = [];
 
-    // 标题信息
+    // Title info
     lines.push(`报表类型,${report.type}`);
     lines.push(`项目ID,${report.projectId}`);
     if (report.date) lines.push(`日期,${report.date}`);
@@ -1824,7 +1824,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     lines.push(`生成时间,${report.generatedAt}`);
     lines.push('');
 
-    // 摘要
+    // Summary
     if (report.data.summary) {
       lines.push('=== 摘要 ===');
       const summary = report.data.summary;
@@ -1836,7 +1836,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
       lines.push('');
     }
 
-    // 指标项
+    // Metric items
     if (report.data.items && report.data.items.length > 0) {
       lines.push('=== 指标项 ===');
       lines.push('标签,值,单位,趋势,变化百分比');
@@ -1854,7 +1854,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
       lines.push('');
     }
 
-    // 图表数据
+    // Chart data
     if (report.data.charts && report.data.charts.length > 0) {
       lines.push('=== 图表数据 ===');
       for (const chart of report.data.charts) {
@@ -1874,7 +1874,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     return lines.join('\n');
   }
 
-  /** 格式化 CSV 值 */
+  /** Format a CSV value */
   private formatCSVValue(value: unknown): string {
     if (value === null || value === undefined) {
       return '';
@@ -1893,7 +1893,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     return str;
   }
 
-  /** 生成 Excel (.xlsx) 文件 — 使用 Office Open XML 格式 */
+  /** Generate an Excel (.xlsx) file - using Office Open XML format */
   private generateExcel(report: CachedReport): Buffer {
     const sharedStrings: string[] = [];
     const stringMap = new Map<string, number>();
@@ -1907,7 +1907,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
       return idx;
     };
 
-    // 确保空字符串有索引
+    // Ensure empty strings have an index
     if (!stringMap.has('')) {
       getSi('');
     }
@@ -1922,7 +1922,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
 
     const rows: string[][] = [];
 
-    // 标题信息
+    // Title info
     rows.push(['报表类型', String(report.type)]);
     rows.push(['项目ID', report.projectId]);
     if (report.date) rows.push(['日期', report.date]);
@@ -1931,7 +1931,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     rows.push(['生成时间', report.generatedAt]);
     rows.push(['', '']);
 
-    // 摘要
+    // Summary
     if (report.data.summary) {
       rows.push(['=== 摘要 ===', '']);
       for (const [key, value] of Object.entries(report.data.summary)) {
@@ -1940,7 +1940,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
       rows.push(['', '']);
     }
 
-    // 指标项
+    // Metric items
     if (report.data.items && report.data.items.length > 0) {
       rows.push(['=== 指标项 ===', '', '', '', '']);
       rows.push(['标签', '值', '单位', '趋势', '变化百分比']);
@@ -1956,7 +1956,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
       rows.push(['', '', '', '', '']);
     }
 
-    // 图表数据
+    // Chart data
     if (report.data.charts && report.data.charts.length > 0) {
       for (const chart of report.data.charts) {
         rows.push([`图表: ${chart.title} (${chart.type})`, '']);
@@ -1977,7 +1977,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
       }
     }
 
-    // 构建 sheet XML
+    // Build the sheet XML
     let sheetXml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
     sheetXml += '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">';
     sheetXml += '<sheetData>';
@@ -1997,7 +1997,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
 
     sheetXml += '</sheetData></worksheet>';
 
-    // 构建 shared strings XML
+    // Build the shared-strings XML
     let sstXml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
     sstXml += `<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" count="${sharedStrings.length}" uniqueCount="${sharedStrings.length}">`;
     for (const str of sharedStrings) {
@@ -2005,7 +2005,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     }
     sstXml += '</sst>';
 
-    // 构建 XML 文件
+    // Build the XML files
     const contentTypesXml =
       '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
       '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' +
@@ -2047,7 +2047,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
       '<cellXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/></cellXfs>' +
       '</styleSheet>';
 
-    // 组装 ZIP 文件
+    // Assemble the ZIP file
     const files: { name: string; data: Buffer }[] = [
       { name: '[Content_Types].xml', data: Buffer.from(contentTypesXml, 'utf-8') },
       { name: '_rels/.rels', data: Buffer.from(relsXml, 'utf-8') },
@@ -2061,7 +2061,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     return this.createZipBuffer(files);
   }
 
-  /** 生成 HTML 报表文件 */
+  /** Generate an HTML report file */
   private generateHTMLReport(report: CachedReport): string {
     const typeLabels: Record<string, string> = {
       daily: '日报',
@@ -2170,7 +2170,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
 </html>`;
   }
 
-  /** 转义 HTML 特殊字符 */
+  /** Escape HTML special characters */
   private escapeHtml(str: string): string {
     return str
       .replace(/&/g, '&amp;')
@@ -2180,7 +2180,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
       .replace(/'/g, '&#39;');
   }
 
-  /** 创建 ZIP 文件 Buffer（存储模式，不压缩） */
+  /** Create a ZIP file Buffer (stored mode, no compression) */
   private createZipBuffer(files: { name: string; data: Buffer }[]): Buffer {
     const chunks: Buffer[] = [];
     const centralDirEntries: Buffer[] = [];
@@ -2254,7 +2254,7 @@ export class ReportService implements OnModuleInit, OnModuleDestroy {
     return Buffer.concat(chunks);
   }
 
-  /** CRC32 校验值计算 */
+  /** CRC32 checksum computation */
   private crc32(data: Buffer): number {
     let crc = 0xffffffff;
     for (let i = 0; i < data.length; i++) {

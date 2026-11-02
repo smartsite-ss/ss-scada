@@ -3,7 +3,7 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 // SCADA System Management Package
-// 管理端功能包：项目管理、设备管理、事件中心、脚本管理、系统设置
+// Admin feature package: project management, device management, event center, script management, system settings
 
 import { setupSystemLocales } from './locales';
 
@@ -11,7 +11,7 @@ setupSystemLocales();
 
 export { setupSystemLocales };
 
-// 视图组件
+// View components
 export { default as LoginView } from './views/LoginView.vue';
 export { default as SystemHomeView } from './views/home/SystemHomeView.vue';
 export { default as ProjectListView } from './views/projects/ProjectListView.vue';
@@ -26,7 +26,7 @@ export { default as RealtimeAlarmView } from './views/alarms/RealtimeAlarmView.v
 export { default as ScriptListView } from './views/scripts/ScriptListView.vue';
 export { default as ScriptTemplateView } from './views/scripts/ScriptTemplateView.vue';
 
-// ScriptEditor 组件
+// ScriptEditor components
 export { default as ScriptEditor } from './components/script/ScriptEditor.vue';
 export { default as CronEditor } from './components/script/panels/CronEditor.vue';
 export { default as EventBindingPanel } from './components/script/panels/EventBindingPanel.vue';
@@ -66,7 +66,7 @@ export { default as EventLogListView } from './views/audit/EventLogListView.vue'
 export { default as ErrorLogView } from './views/settings/ErrorLogView.vue';
 export { default as AppLogView } from './views/settings/AppLogView.vue';
 
-// 字典 UI 控件
+// Dictionary UI controls
 export { default as DictSelector } from './components/dict/DictSelector.vue';
 export { default as DictLabel } from './components/dict/DictLabel.vue';
 export { default as DictTag } from './components/dict/DictTag.vue';
@@ -74,7 +74,7 @@ export { default as ConnectionBanner } from './components/ConnectionBanner.vue';
 export { useDict } from './composables/useDict';
 export type { SelectOption } from './composables/useDict';
 
-// 设备变量绑定复用能力（变量选择器 + 通用绑定 UI + 绑定逻辑）
+// Device variable binding reuse capabilities (variable selector + common binding UI + binding logic)
 export { default as TagVariableSelector } from './components/tag-variable/TagVariableSelector.vue';
 export { default as TagBindingEditor } from './components/tag-variable/TagBindingEditor.vue';
 export type { SelectableVariable } from './components/tag-variable/types';
@@ -94,7 +94,7 @@ export { default as AlarmStatisticsView } from './views/alarms/AlarmStatisticsVi
 export { default as HistoricalTrendView } from './views/historical-trend/HistoricalTrendView.vue';
 export { default as RealTimeTrendView } from './views/historical-trend/RealTimeTrendView.vue';
 
-// API 模块
+// API modules
 export * from './api/client';
 export { getToken, setToken, getRefreshToken, setRefreshToken } from './api/client';
 export * from './api/modules';
@@ -105,25 +105,25 @@ export type { EventLogItem, EventLogQueryParams, EventLogStatus, SubscriberRecor
 // Stores
 export * from './stores';
 
-// 主题模块
+// Theme modules
 export * from './theme';
 
-// 路由配置（单独导出）
+// Router configuration (exported separately)
 export { systemRouteConfigs, checkAuthToken } from './router';
 
-// 菜单配置（DB 唯一数据源方案：菜单数据来自后端 API，此处仅导出权限码与类型）
+// Menu configuration (DB-as-single-source-of-truth: menu data comes from the backend API; only permission codes and types are exported here)
 export { PermissionCodes, ROLE_PERMISSIONS } from './config/system-menu.config';
 export type { SystemMenuItem, SystemRole, PermissionCode } from './config/system-menu.config';
 
-// 权限组合式函数
+// Permission composables
 export { usePermission } from './composables/usePermission';
 
-// 权限指令
+// Permission directive
 export { vPermission } from './directives/v-permission';
 
-// 调试工具
+// Debug tools
 export { isDebugSkipAuth, setDebugSkipAuth, getDebugToken, DEBUG_USER } from './utils/debug';
 export type { DebugUser } from './utils/debug';
 
-// 路径解析工具
+// Path resolution utilities
 export { resolveAssetPath } from './utils/resolveAssetPath';

@@ -48,10 +48,10 @@ const DEFAULT_CONFIG: CircuitBreakerConfig = {
 export class CircuitBreakerService {
   private readonly logger = new Logger(CircuitBreakerService.name);
 
-  // 存储各个资源（设备/服务）的熔断器
+  // Store the circuit breaker for each resource (device/service)
   private circuitBreakers = new Map<string, CircuitBreaker>();
 
-  // 默认配置
+  // Default configuration
   private defaultConfig: CircuitBreakerConfig = DEFAULT_CONFIG;
 
   constructor(@Optional() config?: Partial<CircuitBreakerConfig>) {
@@ -182,7 +182,7 @@ class CircuitBreaker {
   private openCount: number = 0;
   private recoveryCount: number = 0;
 
-  // 用于计算平均响应时间
+  // Used to compute the average response time
   private responseTimes: number[] = [];
   private readonly maxResponseTimeSamples: number = 100;
 
@@ -197,7 +197,7 @@ class CircuitBreaker {
         return true;
 
       case CircuitState.OPEN:
-        // 检查是否超时，可以进入半开状态
+        // Check whether the timeout has elapsed to allow entering the half-open state
         if (this.shouldAttemptReset()) {
           this.transitionTo(CircuitState.HALF_OPEN);
           this.logger.warn(`Circuit breaker HALF-OPEN for ${this.resourceId}, allowing test call`);
@@ -206,7 +206,7 @@ class CircuitBreaker {
         return false;
 
       case CircuitState.HALF_OPEN:
-        // 半开状态只允许有限数量的调用
+        // The half-open state allows only a limited number of calls
         return this.successCount < this.config.halfOpenMaxCalls;
 
       default:
@@ -226,7 +226,7 @@ class CircuitBreaker {
 
     switch (this.state) {
       case CircuitState.HALF_OPEN:
-        // 半开状态下成功，检查是否达到恢复阈值
+        // Success in half-open state: check whether the recovery threshold is reached
         if (this.successCount >= this.config.successThreshold) {
           this.transitionTo(CircuitState.CLOSED);
           this.recoveryCount++;
@@ -237,7 +237,7 @@ class CircuitBreaker {
         break;
 
       case CircuitState.CLOSED:
-        // 关闭状态下成功，重置失败计数
+        // Success in closed state: reset the failure count
         if (this.failureCount > 0) {
           this.failureCount = Math.max(0, this.failureCount - 1);
         }
@@ -252,13 +252,13 @@ class CircuitBreaker {
 
     switch (this.state) {
       case CircuitState.HALF_OPEN:
-        // 半开状态下失败，立即重新打开
+        // Failure in half-open state: immediately reopen
         this.transitionTo(CircuitState.OPEN);
         this.logger.error(`Circuit breaker RE-OPENED for ${this.resourceId} during test call`);
         break;
 
       case CircuitState.CLOSED:
-        // 检查是否达到失败阈值
+        // Check whether the failure threshold is reached
         if (this.isFailureThresholdReached()) {
           this.transitionTo(CircuitState.OPEN);
           this.openCount++;
@@ -271,7 +271,7 @@ class CircuitBreaker {
   }
 
   getState(): CircuitState {
-    // 自动状态转换检查
+    // Automatic state-transition check
     if (this.state === CircuitState.OPEN && this.shouldAttemptReset()) {
       this.transitionTo(CircuitState.HALF_OPEN);
     }
@@ -322,7 +322,7 @@ class CircuitBreaker {
     const oldState = this.state;
     this.state = newState;
 
-    // 重置相关计数器
+    // Reset related counters
     if (newState === CircuitState.HALF_OPEN || newState === CircuitState.OPEN) {
       this.successCount = 0;
     }
@@ -338,7 +338,7 @@ class CircuitBreaker {
 
   private isFailureThresholdReached(): boolean {
     if (this.config.adaptiveThreshold) {
-      // 自适应阈值：基于历史成功率动态调整
+      // Adaptive threshold: dynamically adjusted based on historical success rate
       const failureRate = this.totalCalls > 0 ? this.failureCount / this.totalCalls : 0;
       const adjustedThreshold = Math.floor(
         this.config.minFailureThreshold +
@@ -361,7 +361,7 @@ class CircuitBreaker {
   private recordResponseTime(time: number): void {
     this.responseTimes.push(time);
 
-    // 保持固定大小的样本窗口
+    // Keep a fixed-size sample window
     if (this.responseTimes.length > this.maxResponseTimeSamples) {
       this.responseTimes.shift();
     }

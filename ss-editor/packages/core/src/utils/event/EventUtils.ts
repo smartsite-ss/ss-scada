@@ -3,14 +3,14 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 事件处理工具类
+ * Event handling utility class
  */
 export class EventUtils {
   /**
-   * 防抖函数
-   * @param func 要防抖的函数
-   * @param wait 等待时间（毫秒）
-   * @returns 防抖后的函数
+   * Debounce function
+   * @param func The function to debounce
+   * @param wait Wait time (milliseconds)
+   * @returns The debounced function
    */
   public static debounce<T extends (...args: any[]) => any>(func: T, wait: number): (...args: Parameters<T>) => void {
     let timeout: ReturnType<typeof setTimeout>;
@@ -21,10 +21,10 @@ export class EventUtils {
   }
 
   /**
-   * 节流函数
-   * @param func 要节流的函数
-   * @param limit 时间限制（毫秒）
-   * @returns 节流后的函数
+   * Throttle function
+   * @param func The function to throttle
+   * @param limit Time limit (milliseconds)
+   * @returns The throttled function
    */
   public static throttle<T extends (...args: any[]) => any>(func: T, limit: number): (...args: Parameters<T>) => void {
     let inThrottle: boolean;
@@ -38,11 +38,11 @@ export class EventUtils {
   }
 
   /**
-   * 事件委托
-   * @param parent 父元素
-   * @param selector 子元素选择器
-   * @param eventType 事件类型
-   * @param handler 事件处理函数
+   * Event delegation
+   * @param parent Parent element
+   * @param selector Child element selector
+   * @param eventType Event type
+   * @param handler Event handler
    */
   public static delegateEvent(parent: Element, selector: string, eventType: string, handler: (event: Event, target: Element) => void): void {
     parent.addEventListener(eventType, (event) => {
@@ -55,24 +55,24 @@ export class EventUtils {
   }
 
   /**
-   * 阻止事件冒泡
-   * @param event 事件对象
+   * Stop event propagation
+   * @param event Event object
    */
   public static stopPropagation(event: Event): void {
     event.stopPropagation();
   }
 
   /**
-   * 阻止默认事件
-   * @param event 事件对象
+   * Prevent default event
+   * @param event Event object
    */
   public static preventDefault(event: Event): void {
     event.preventDefault();
   }
 
   /**
-   * 同时阻止事件冒泡和默认事件
-   * @param event 事件对象
+   * Stop both propagation and default behavior
+   * @param event Event object
    */
   public static stopEvent(event: Event): void {
     event.stopPropagation();
@@ -80,10 +80,10 @@ export class EventUtils {
   }
 
   /**
-   * 获取鼠标在元素内的坐标
-   * @param event 鼠标事件
-   * @param element 元素
-   * @returns 鼠标在元素内的坐标
+   * Get the mouse position relative to an element
+   * @param event Mouse event
+   * @param element Element
+   * @returns Mouse position inside the element
    */
   public static getMousePosition(event: MouseEvent, element: Element): { x: number; y: number } {
     const rect = element.getBoundingClientRect();
@@ -94,10 +94,10 @@ export class EventUtils {
   }
 
   /**
-   * 获取触摸在元素内的坐标
-   * @param event 触摸事件
-   * @param element 元素
-   * @returns 触摸在元素内的坐标
+   * Get the touch position relative to an element
+   * @param event Touch event
+   * @param element Element
+   * @returns Touch position inside the element
    */
   public static getTouchPosition(event: TouchEvent, element: Element): { x: number; y: number } {
     const rect = element.getBoundingClientRect();
@@ -111,10 +111,10 @@ export class EventUtils {
 
 
   /**
-   * 跨浏览器添加事件监听器
-   * @param element 元素
-   * @param eventType 事件类型
-   * @param handler 事件处理函数
+   * Add an event listener in a cross-browser way
+   * @param element Element
+   * @param eventType Event type
+   * @param handler Event handler
    */
   public static addEventListener(element: Element | Window | Document, eventType: string, handler: EventListener): void {
     if (element.addEventListener) {
@@ -125,10 +125,10 @@ export class EventUtils {
   }
 
   /**
-   * 跨浏览器移除事件监听器
-   * @param element 元素
-   * @param eventType 事件类型
-   * @param handler 事件处理函数
+   * Remove an event listener in a cross-browser way
+   * @param element Element
+   * @param eventType Event type
+   * @param handler Event handler
    */
   public static removeEventListener(element: Element | Window | Document, eventType: string, handler: EventListener): void {
     if (element.removeEventListener) {

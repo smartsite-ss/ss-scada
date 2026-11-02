@@ -17,26 +17,26 @@ import { Influxdb3DatabaseService } from './influxdb3-database.service';
 import { Influxdb3SqlQueryBuilder } from './query/influxdb3-sql-query.builder';
 import { Influxdb3JsonParser } from './parse/influxdb3-json.parser';
 
-// CODE-05: 单次 fetch 超时（ms），避免半挂时无限等待阻塞 event loop
+// CODE-05: per-fetch timeout (ms), preventing an indefinitely hung request from blocking the event loop
 const FETCH_TIMEOUT_MS = 5000;
 
 /**
- * InfluxDB 3 Core 适配器（引擎类型 influxdb3）。
+ * InfluxDB 3 Core adapter (engine type influxdb3).
  *
- * P0 实测（InfluxDB 3 Core 3.11.2）对齐：
- * - 写入：POST /api/v3/write_lp?db={database}&precision=ns（Bearer 鉴权，
- *   实测 Token 前缀同样兼容）；
- *   v3 不支持字符串 field（value_text/metadata 会整行失败），序列化时开启
- *   skipStringFields，非数值 value 的点整点跳过并计数告警；
- *   按项目分库（用户决策）：写入前按 projectId 分组，逐库确保存在后写入；
- * - 读取：POST /api/v3/query_sql，body 为 {"db","q"}（实测 sql 字段不被识别）；
- *   响应为稀疏对象数组，未写过的列不在行中出现；
- *   查询按 options.projectId 路由到项目 database；
- * - 健康检查：/health 实测需要 Bearer 鉴权（无 token 返回 401），
- *   响应体为纯文本 "OK"（非 JSON）；
- * - 删除：InfluxDB 3 Core 无 compactor，DELETE 实测报 "DML not supported"，
- *   capabilities.delete = false，delete() 直接抛 NotSupportedError，
- *   上层应在调用前查能力并走保留期/重建 database 兜底。
+ * P0 test (InfluxDB 3 Core 3.11.2) alignment:
+ * - Write: POST /api/v3/write_lp?db={database}&precision=ns (Bearer auth,
+ *   testing shows the token prefix is compatible as well);
+ *   v3 does not support string fields (value_text/metadata fail the whole line), so skipStringFields
+ *   is enabled at serialization; points with non-numeric values are skipped entirely and counted for alerting;
+ *   Per-project databases (user decision): group by projectId before writing, ensure each database exists, then write;
+ * - Read: POST /api/v3/query_sql with body {"db","q"} (tested: the sql field is not recognized);
+ *   the response is a sparse array of objects; columns never written do not appear in the rows;
+ *   queries are routed to the project database by options.projectId;
+ * - Health check: /health requires Bearer auth (401 without a token),
+ *   the response body is plain text "OK" (not JSON);
+ * - Delete: InfluxDB 3 Core has no compactor; DELETE fails with "DML not supported",
+ *   capabilities.delete = false, delete() throws NotSupportedError directly;
+ *   upper layers should check capabilities before calling and fall back to retention expiry / database rebuild.
  */
 @Injectable()
 export class Influxdb3AdapterService
@@ -46,8 +46,8 @@ export class Influxdb3AdapterService
   readonly name = 'InfluxDB 3 Core';
   readonly engineType = STORAGE_ENGINE_TYPES.INFLUXDB3;
   readonly capabilities: AdapterCapabilities = {
-    delete: false, // v3 Core 无 compactor，不支持删除（P0 实测 DML not supported）
-    interpolation: true, // date_bin_gapfill + interpolate/locf 原生支持（P0 实测通过）
+    delete: false, // v3 Core has no compactor, delete not supported (P0 test: DML not supported)
+    interpolation: true, // date_bin_gapfill + interpolate/locf natively supported (P0 test passed)
     aggregation: true,
   };
   protected readonly logger = new Logger(Influxdb3AdapterService.name);
@@ -59,7 +59,7 @@ export class Influxdb3AdapterService
   private influxdb3Url: string;
   private influxdb3Token: string;
 
-  /** 跳过的非数值数据点数（v3 不支持字符串 field，累计用于健康详情与告警） */
+  /** Count of skipped non-numeric data points (v3 does not support string fields; accumulated for health details and alerting) */
   private skippedTextPointCount = 0;
 
   constructor(@Optional() private readonly databaseService?: Influxdb3DatabaseService) {
@@ -80,10 +80,10 @@ export class Influxdb3AdapterService
     void this.close();
   }
 
-  // ──────────── 写入钩子：POST /api/v3/write_lp ────────────
+  // ──────────── Write hook: POST /api/v3/write_lp ────────────
 
   protected async sendBatch(points: DataPoint[]): Promise<void> {
-    // v3 不支持字符串 field：非数值 value 的点整点跳过（写入必然整行失败）
+    // v3 does not support string fields: points with non-numeric values are skipped entirely (the write would fail the whole line anyway)
     const numericPoints = points.filter((point) => {
       if (typeof point.value === 'number') return true;
       this.skippedTextPointCount++;
@@ -101,8 +101,8 @@ export class Influxdb3AdapterService
       return;
     }
 
-    // 按项目分库（用户决策）：按 projectId 分组，逐库确保存在后写入；
-    // 任一分组失败即抛出（由基类重试机制统一处理）
+    // Per-project databases (user decision): group by projectId, ensure each database exists, then write;
+    // any group failure throws (handled uniformly by the base class retry mechanism)
     const pointsByProject = new Map<string, DataPoint[]>();
     for (const point of numericPoints) {
       const projectId = point.projectId || '';
@@ -133,7 +133,7 @@ export class Influxdb3AdapterService
           'Content-Type': 'text/plain; charset=utf-8',
         },
         body: lines,
-        // CODE-05: fetch 加 5s 超时
+        // CODE-05: add a 5s timeout to fetch
         signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
       },
     );
@@ -144,7 +144,7 @@ export class Influxdb3AdapterService
     }
   }
 
-  /** 写入路由：projectId → 项目 database（无 databaseService 时用兜底库名） */
+  /** Write routing: projectId → project database (fallback database name when no databaseService) */
   private async resolveWriteDatabase(projectId: string): Promise<string> {
     if (!projectId) {
       return this.databaseService
@@ -156,7 +156,7 @@ export class Influxdb3AdapterService
       : this.normalizeFallbackDatabaseName(`ss-node-data-${projectId}`);
   }
 
-  /** 无 databaseService 时的本地归一化（与 DatabaseService.normalizeDatabaseName 规则一致） */
+  /** Local normalization when no databaseService (same rules as DatabaseService.normalizeDatabaseName) */
   private normalizeFallbackDatabaseName(name: string): string {
     return name
       .replace(/_/g, '-')
@@ -166,10 +166,10 @@ export class Influxdb3AdapterService
       .slice(0, 64);
   }
 
-  // ──────────── 读取钩子：POST /api/v3/query_sql（SQL） ────────────
+  // ──────────── Read hook: POST /api/v3/query_sql (SQL) ────────────
 
   protected async buildReadRequest(options: QueryOptions): Promise<EngineReadRequest> {
-    // 按项目分库：projectId 路由到项目 database，无 projectId 时用兜底库
+    // Per-project databases: projectId routes to the project database; fallback database when no projectId
     const databaseName = options.projectId
       ? await this.resolveReadDatabase(options.projectId)
       : this.getFallbackDatabaseName();
@@ -183,19 +183,19 @@ export class Influxdb3AdapterService
         'Content-Type': 'application/json',
         Accept: 'application/json',
       },
-      // P0 实测：body 必须为 {"db","q"}，sql 字段不被识别（missing field `q`）
+      // P0 test: the body must be {"db","q"}; the sql field is not recognized (missing field `q`)
       body: JSON.stringify({ db: databaseName, q: sqlQuery }),
     };
   }
 
-  /** 读取路由：projectId → 项目 database */
+  /** Read routing: projectId → project database */
   private async resolveReadDatabase(projectId: string): Promise<string> {
     return this.databaseService
       ? this.databaseService.ensureDatabase(projectId)
       : this.normalizeFallbackDatabaseName(`ss-node-data-${projectId}`);
   }
 
-  /** 兜底 database 名（无 databaseService 时） */
+  /** Fallback database name (when no databaseService) */
   private getFallbackDatabaseName(): string {
     return this.databaseService
       ? this.databaseService.getDefaultDatabase()
@@ -206,11 +206,11 @@ export class Influxdb3AdapterService
     return this.responseParser.parse(rawText);
   }
 
-  // ──────────── delete（受限能力，抛 NotSupportedError） ────────────
+  // ──────────── delete (restricted capability, throws NotSupportedError) ────────────
 
   async delete(_options: { tagIds?: string[]; before?: Date }): Promise<number> {
-    // InfluxDB 3 Core 无 compactor，不支持删除；上层应在调用前检查 capabilities.delete
-    // 并改用「保留期到期 / 重建 database」兜底（方案 §7.2）
+    // InfluxDB 3 Core has no compactor and does not support delete; upper layers should check capabilities.delete before calling
+    // and fall back to "retention expiry / database rebuild" instead (plan §7.2)
     throw new NotSupportedError(
       'InfluxDB 3 Core does not support delete (no compactor); use retention period or recreate database instead',
     );
@@ -220,11 +220,11 @@ export class Influxdb3AdapterService
 
   async health(): Promise<{ status: 'healthy' | 'degraded' | 'unhealthy'; details?: any }> {
     try {
-      // P0 实测：/health 需要 Bearer 鉴权（无 token 返回 401），响应体为纯文本 "OK"
+      // P0 test: /health requires Bearer auth (401 without a token); the response body is plain text "OK"
       const response = await fetch(`${this.influxdb3Url}/health`, {
         method: 'GET',
         headers: { Authorization: `Bearer ${this.influxdb3Token}` },
-        // CODE-05: fetch 加 5s 超时
+        // CODE-05: add a 5s timeout to fetch
         signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
       });
 

@@ -32,14 +32,14 @@ import { CanvasRenderer } from 'echarts/renderers';
 let registered = false;
 
 /**
- * 统一注册 ECharts 图表类型与组件（按需引入）。
- * 供 tag-trend / history-trend 及后续 chart/tag 图表组件复用，
- * 避免各 Graphic 各自调用 use() 造成分散与重复。
+ * Register ECharts chart types and components centrally (on-demand imports).
+ * Shared by tag-trend / history-trend and later chart/tag components,
+ * avoiding each Graphic calling use() separately and causing duplication.
  */
 export function registerChartModules(): void {
   if (registered) return;
   use([
-    // 图表类型
+    // Chart types
     BarChart,
     LineChart,
     PieChart,
@@ -51,7 +51,7 @@ export function registerChartModules(): void {
     TreemapChart,
     SankeyChart,
     GraphChart,
-    // 组件
+    // Components
     TitleComponent,
     TooltipComponent,
     LegendComponent,
@@ -61,7 +61,7 @@ export function registerChartModules(): void {
     GeoComponent,
     DatasetComponent,
     TransformComponent,
-    // 渲染器
+    // Renderer
     CanvasRenderer,
   ]);
   registered = true;

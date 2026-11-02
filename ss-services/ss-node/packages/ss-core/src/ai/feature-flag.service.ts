@@ -3,35 +3,35 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * Feature Flag Service — P1-T07 AI Feature Flag 体系
+ * Feature Flag Service - P1-T07 AI Feature Flag system
  *
- * 7 个 AI Feature Flag，支持：
- *   - 环境变量级开关（AI_FEATURE_*，Production 级门控）
- *   - 运行时查询（供 Guard / Controller 使用）
- *   - 前端响应式 Composable（useFeatureFlag）
+ * 7 AI Feature Flags supporting:
+ *   - Environment-variable level switch (AI_FEATURE_*, production-level gating)
+ *   - Runtime query (for Guard / Controller usage)
+ *   - Frontend reactive Composable (useFeatureFlag)
  *
- * 所有 Flag 默认值 false（安全默认）。
- * Phase 2+ 可迁移为 SystemConfigService 数据库驱动（运行时开关）。
+ * All flags default to false (safe default).
+ * Phase 2+ can migrate to a SystemConfigService database-driven (runtime) switch.
  *
- * 关联决策：D-012（Feature Flag 门控）
+ * Related decision: D-012 (Feature Flag gating)
  */
 
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-/** AI 功能标志键名常量 */
+/** AI feature flag key-name constants */
 export const AI_FEATURE_FLAGS = {
-  /** AI 助手面板（聊天 UI + 流式问答） */
+  /** AI assistant panel (chat UI + streaming Q&A) */
   ASSISTANT: 'ai.assistant.enabled',
-  /** 插件代码生成 */
+  /** Plugin code generation */
   CODEGEN: 'ai.codegen.enabled',
-  /** 脚本代码生成 */
+  /** Script code generation */
   SCRIPT: 'ai.script.enabled',
-  /** 智能画面创建 */
+  /** Smart canvas creation */
   SCENE: 'ai.scene.enabled',
-  /** 知识库问答（RAG） */
+  /** Knowledge-base Q&A (RAG) */
   KB: 'ai.kb.enabled',
-  /** 智能告警分析 */
+  /** Smart alarm analysis */
   ALARM: 'ai.alarm.enabled',
   /** CLI Agent */
   CLI: 'ai.cli.enabled',
@@ -39,7 +39,7 @@ export const AI_FEATURE_FLAGS = {
 
 export type AiFeatureFlag = (typeof AI_FEATURE_FLAGS)[keyof typeof AI_FEATURE_FLAGS];
 
-/** 环境变量映射：Feature Flag → 环境变量名 */
+/** Env var mapping: Feature Flag -> env var name */
 const FLAG_TO_ENV: Record<string, string> = {
   [AI_FEATURE_FLAGS.ASSISTANT]: 'AI_FEATURE_ASSISTANT_ENABLED',
   [AI_FEATURE_FLAGS.CODEGEN]: 'AI_FEATURE_CODEGEN_ENABLED',
@@ -57,9 +57,9 @@ export class FeatureFlagService {
   constructor(private readonly configService: ConfigService) {}
 
   /**
-   * 检查指定 Feature Flag 是否启用
-   * @param flag — 功能标志键名
-   * @returns true = 已启用，false = 未启用
+   * Check whether the given Feature Flag is enabled
+   * @param flag - feature flag key name
+   * @returns true = enabled, false = disabled
    */
   isEnabled(flag: AiFeatureFlag): boolean {
     const envKey = FLAG_TO_ENV[flag];
@@ -72,7 +72,7 @@ export class FeatureFlagService {
   }
 
   /**
-   * 返回当前所有 Flag 的状态快照
+   * Return a snapshot of all current flag statuses
    * @returns { [flag: string]: boolean }
    */
   getAllFlags(): Record<string, boolean> {
@@ -84,14 +84,14 @@ export class FeatureFlagService {
   }
 
   /**
-   * 检查多个 Flag 中是否有任一启用
+   * Check whether any of multiple flags is enabled
    */
   anyEnabled(flags: AiFeatureFlag[]): boolean {
     return flags.some((f) => this.isEnabled(f));
   }
 
   /**
-   * 检查多个 Flag 是否全部启用
+   * Check whether all of multiple flags are enabled
    */
   allEnabled(flags: AiFeatureFlag[]): boolean {
     return flags.every((f) => this.isEnabled(f));

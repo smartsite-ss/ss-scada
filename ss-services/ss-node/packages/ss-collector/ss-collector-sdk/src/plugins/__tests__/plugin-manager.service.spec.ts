@@ -23,7 +23,7 @@ import {
 import { ChannelValidationResult } from '../../types';
 
 // ============================================================
-// Mock 工厂
+// Mock factory
 // ============================================================
 
 function makePluginMeta(overrides: Partial<CollectorPluginMeta> = {}): CollectorPluginMeta {
@@ -168,7 +168,7 @@ function makeMockActiveDeviceTracker() {
 }
 
 // ============================================================
-// 测试套件
+// Test suite
 // ============================================================
 
 describe('PluginManagerService', () => {
@@ -411,8 +411,8 @@ describe('PluginManagerService', () => {
         meta: makePluginMeta({ protocol: 'opcua' }),
       });
       registry.listPlugins
-        .mockReturnValueOnce([activePlugin]) // status: 'active' 过滤
-        .mockReturnValueOnce([activePlugin, inactivePlugin]); // 全部
+        .mockReturnValueOnce([activePlugin]) // status: 'active' filter
+        .mockReturnValueOnce([activePlugin, inactivePlugin]); // all
 
       const result = await service.healthCheck();
 
@@ -490,7 +490,7 @@ describe('PluginManagerService', () => {
         monitor,
         configService,
         isolationFactory,
-        undefined, // 没有 tracker
+        undefined, // no tracker
       );
       expect(svc.getPluginActiveDevices('modbus_tcp')).toEqual([]);
     });
@@ -666,7 +666,7 @@ describe('PluginManagerService', () => {
       });
 
       const result = await service.getMonitorData('modbus_tcp');
-      // 不应抛错，保持 monitor 返回的主进程数据
+      // Should not throw; keep the main-process data returned by monitor
       expect(result.protocol).toBe('modbus_tcp');
     });
   });
@@ -750,12 +750,12 @@ describe('PluginManagerService', () => {
         meta: makePluginMeta({ isolationMode: IsolationMode.IN_PROCESS }),
       });
       registry.getPlugin.mockReturnValue(plugin);
-      const merged: PluginRuntimeConfig = {}; // 没改 isolationMode
+      const merged: PluginRuntimeConfig = {}; // isolationMode unchanged
       configService.saveConfig.mockReturnValue(merged);
 
       await service.updatePluginConfig('modbus_tcp', {});
 
-      expect(plugin.meta.isolationMode).toBe('in_process'); // 保持原值
+      expect(plugin.meta.isolationMode).toBe('in_process'); // value kept
     });
   });
 
@@ -813,7 +813,7 @@ describe('PluginManagerService', () => {
         updater,
         monitor,
         configService,
-        undefined, // 无 isolationFactory
+        undefined, // no isolationFactory
         undefined,
       );
       const plugin = makeRegisteredPlugin({
@@ -890,7 +890,7 @@ describe('PluginManagerService', () => {
       });
 
       const result = await service.listPluginsWithRuntime();
-      // 不应抛错
+      // Should not throw
       expect(result).toHaveLength(1);
       expect(result[0].protocol).toBe('modbus_tcp');
     });

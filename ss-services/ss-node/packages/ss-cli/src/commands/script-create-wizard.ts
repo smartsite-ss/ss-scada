@@ -3,27 +3,27 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * Script Create Wizard — 交互式脚本创建向导
+ * Script Create Wizard - interactive script creation wizard
  *
- * 步骤：选择项目 → 选择触发类型 → 输入脚本名称 → 选择模板（可选）→
- *       输入脚本代码 → 配置触发参数 → 确认创建
+ * Steps: choose project -> choose trigger type -> enter script name -> choose template (optional) ->
+ *       enter script code -> configure trigger params -> confirm creation
  */
 
 import * as readline from 'readline';
 import { InteractivePrompts } from '../core/InteractivePrompts';
 import { ApiClient, ApiError } from '../core/ApiClient';
 
-/** 脚本触发类型 */
+/** Script trigger types */
 type TriggerType = 'manual' | 'scheduled' | 'event' | 'pipeline';
 
-/** 触发类型选项 */
+/** Trigger-type options */
 interface TriggerOption {
   name: string;
   value: TriggerType;
   description: string;
 }
 
-/** 脚本模板 */
+/** Script templates */
 interface ScriptTemplate {
   name: string;
   value: string;
@@ -31,13 +31,13 @@ interface ScriptTemplate {
   description: string;
 }
 
-/** 项目信息 */
+/** Project info */
 interface ProjectInfo {
   id: string;
   name: string;
 }
 
-/** 支持的触发类型 */
+/** Supported trigger types */
 const TRIGGER_OPTIONS: TriggerOption[] = [
   {
     name: 'Manual',
@@ -61,14 +61,14 @@ const TRIGGER_OPTIONS: TriggerOption[] = [
   },
 ];
 
-/** 事件类型选项 */
+/** Event-type options */
 const EVENT_TYPES: { name: string; value: string }[] = [
   { name: 'Alarm Triggered', value: 'alarm.triggered' },
   { name: 'Alarm Cleared', value: 'alarm.cleared' },
   { name: 'Tag Change', value: 'tag.change' },
 ];
 
-/** 内置脚本模板 */
+/** Built-in script templates */
 const SCRIPT_TEMPLATES: ScriptTemplate[] = [
   {
     name: 'Empty (no template)',
@@ -147,7 +147,7 @@ const SCRIPT_TEMPLATES: ScriptTemplate[] = [
   },
 ];
 
-/** 从 API 响应中提取项目列表 */
+/** Extract the project list from the API response */
 function extractList<T>(response: unknown): T[] {
   if (Array.isArray(response)) {
     return response as T[];
@@ -165,25 +165,25 @@ function extractList<T>(response: unknown): T[] {
   return [];
 }
 
-/** 向导选项 */
+/** Wizard options */
 export interface ScriptWizardOptions {
   apiClient: ApiClient;
 }
 
-/** 运行脚本创建向导 */
+/** Run the script-creation wizard */
 export async function runScriptCreateWizard(options: ScriptWizardOptions): Promise<void> {
   const { apiClient } = options;
 
   console.log('\n=== Script Create Wizard ===\n');
 
-  // Step 1: 选择项目
+  // Step 1: choose project
   const projectId = await selectProject(apiClient);
   if (!projectId) {
     console.log('Cancelled.');
     return;
   }
 
-  // Step 2: 选择触发类型
+  // Step 2: choose trigger type
   const triggerChoices = TRIGGER_OPTIONS.map((t) => ({
     name: `${t.name} — ${t.description}`,
     value: t.value,
@@ -193,7 +193,7 @@ export async function runScriptCreateWizard(options: ScriptWizardOptions): Promi
     triggerChoices,
   )) as TriggerType;
 
-  // Step 3: 输入脚本名称
+  // Step 3: enter script name
   const scriptName = await InteractivePrompts.input(
     'Enter script name:',
     undefined,
@@ -203,10 +203,10 @@ export async function runScriptCreateWizard(options: ScriptWizardOptions): Promi
     },
   );
 
-  // Step 4: 输入描述（可选）
+  // Step 4: enter description (optional)
   const description = await InteractivePrompts.input('Enter description (optional):');
 
-  // Step 5: 选择模板
+  // Step 5: choose template
   const templateChoices = SCRIPT_TEMPLATES.map((t) => ({
     name: `${t.name} — ${t.description}`,
     value: t.value,
@@ -218,7 +218,7 @@ export async function runScriptCreateWizard(options: ScriptWizardOptions): Promi
   );
   const template = SCRIPT_TEMPLATES.find((t) => t.value === templateValue);
 
-  // Step 6: 输入/编辑代码
+  // Step 6: enter/edit code
   console.log('\n--- Script Code ---');
   console.log('(Enter your code. Type "EOF" on a new line to finish.)');
   if (template && template.value !== 'empty') {
@@ -229,10 +229,10 @@ export async function runScriptCreateWizard(options: ScriptWizardOptions): Promi
 
   const code = await collectScriptCode(template?.code ?? '');
 
-  // Step 7: 配置触发参数
+  // Step 7: configure trigger parameters
   const triggerConfig = await collectTriggerConfig(triggerType);
 
-  // Step 8: 高级选项（可选）
+  // Step 8: advanced options (optional)
   const timeoutStr = await InteractivePrompts.input(
     'Timeout (ms, optional):',
     '5000',
@@ -246,7 +246,7 @@ export async function runScriptCreateWizard(options: ScriptWizardOptions): Promi
 
   const allowNetwork = await InteractivePrompts.confirm('Allow network access?', false);
 
-  // Step 9: 确认
+  // Step 9: confirm
   console.log('\n--- Script Summary ---');
   console.log(`  Project:      ${projectId}`);
   console.log(`  Name:         ${scriptName}`);
@@ -268,7 +268,7 @@ export async function runScriptCreateWizard(options: ScriptWizardOptions): Promi
     return;
   }
 
-  // Step 10: 调用 API 创建
+  // Step 10: call the API to create
   try {
     const payload: Record<string, unknown> = {
       name: scriptName,
@@ -309,7 +309,7 @@ export async function runScriptCreateWizard(options: ScriptWizardOptions): Promi
   }
 }
 
-/** 选择项目 */
+/** Choose project */
 async function selectProject(apiClient: ApiClient): Promise<string | null> {
   try {
     const response = await apiClient.get<unknown>('/api/v1/projects');
@@ -329,7 +329,7 @@ async function selectProject(apiClient: ApiClient): Promise<string | null> {
   }
 }
 
-/** 收集脚本代码（多行输入） */
+/** Collect script code (multi-line input) */
 async function collectScriptCode(defaultCode: string): Promise<string> {
   if (defaultCode) {
     const useTemplate = await InteractivePrompts.confirm('Use the template code as-is?', true);
@@ -363,7 +363,7 @@ async function collectScriptCode(defaultCode: string): Promise<string> {
   });
 }
 
-/** 收集触发配置 */
+/** Collect trigger configuration */
 async function collectTriggerConfig(triggerType: TriggerType): Promise<string | null> {
   if (triggerType === 'manual') {
     return null;

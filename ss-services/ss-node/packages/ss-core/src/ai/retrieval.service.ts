@@ -3,31 +3,31 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * Retrieval Service — P1-T08 RAG 混合检索服务
+ * Retrieval Service - P1-T08 RAG hybrid retrieval service
  *
- * 融合两种检索方式：
- *   - 语义检索：基于向量相似度（由 VectorStoreService 提供）
- *   - 关键词检索：基于 BM25 的简单关键词匹配
+ * Fuses two retrieval methods:
+ *   - Semantic retrieval: based on vector similarity (provided by VectorStoreService)
+ *   - Keyword retrieval: simple keyword matching based on BM25
  *
- * 结果通过加权融合（RRF/Reciprocal Rank Fusion）排序。
+ * Results are re-ranked via weighted fusion (RRF / Reciprocal Rank Fusion).
  *
- * 用法:
- *   const results = await retrievalService.retrieve('如何配置 Modbus？', { topK: 5 });
+ * Usage:
+ *   const results = await retrievalService.retrieve('How to configure Modbus?', { topK: 5 });
  */
 
 import { Injectable, Logger } from '@nestjs/common';
 import { EmbeddingService } from './embedding.service';
 import { VectorStoreService, SearchResult } from './vector-store.service';
 
-/** 检索配置 */
+/** Retrieval config */
 export interface RetrievalConfig {
-  /** 返回结果数 */
+  /** Number of results to return */
   topK: number;
-  /** 语义检索权重（0-1） */
+  /** Semantic retrieval weight (0-1) */
   semanticWeight: number;
-  /** 最小相似度 */
+  /** Minimum similarity */
   minSimilarity: number;
-  /** 是否融合关键词检索 */
+  /** Whether to fuse keyword retrieval */
   hybrid: boolean;
 }
 
@@ -48,9 +48,9 @@ export class RetrievalService {
   ) {}
 
   /**
-   * 检索
-   * @param query — 用户查询
-   * @param config — 检索配置
+   * Retrieve
+   * @param query - user query
+   * @param config - retrieval config
    */
   async retrieve(query: string, config?: Partial<RetrievalConfig>): Promise<SearchResult[]> {
     const mergedConfig = { ...DEFAULT_RETRIEVAL_CONFIG, ...config };
@@ -60,14 +60,14 @@ export class RetrievalService {
       return [];
     }
 
-    // 1. 语义检索
+    // 1. Semantic retrieval
     const queryVector = await this.embeddingService.embedSingle(query);
     const semanticResults = this.vectorStore.search(queryVector, {
       topK: mergedConfig.topK * 2,
       minSimilarity: mergedConfig.minSimilarity,
     });
 
-    // 2. 关键词检索（如果启用）
+    // 2. Keyword retrieval (if enabled)
     if (mergedConfig.hybrid) {
       const keywordResults = this.keywordSearch(query, mergedConfig.topK * 2);
       return this.fusionRank(
@@ -82,11 +82,11 @@ export class RetrievalService {
   }
 
   // ============================================================
-  //  关键词检索（简化 BM25）
+  //  Keyword retrieval (simplified BM25)
   // ============================================================
 
   private keywordSearch(query: string, topK: number): SearchResult[] {
-    // 查询关键词
+    // Query keywords
     const queryTerms = this.tokenize(query);
 
     const results: SearchResult[] = [];
@@ -95,7 +95,7 @@ export class RetrievalService {
       const chunk = entry.chunk;
       const chunkTerms = this.tokenize(chunk.content);
 
-      // 计算关键词匹配分数（简化 TF-IDF）
+      // Compute keyword match score (simplified TF-IDF)
       let score = 0;
       for (const qt of queryTerms) {
         const tf = chunkTerms.filter((t) => t === qt).length;
@@ -104,7 +104,7 @@ export class RetrievalService {
         }
       }
 
-      // 归一化：按块长度
+      // Normalize: by chunk length
       const normalizedScore =
         chunk.content.length > 0 ? score / Math.log(1 + chunk.content.length / 100) : score;
 
@@ -118,7 +118,7 @@ export class RetrievalService {
   }
 
   /**
-   * RRF (Reciprocal Rank Fusion) 融合排序
+   * RRF (Reciprocal Rank Fusion) re-ranking
    */
   private fusionRank(
     semantic: SearchResult[],
@@ -129,9 +129,9 @@ export class RetrievalService {
     const keywordWeight = 1 - semanticWeight;
     const scoreMap = new Map<string, { chunk: SearchResult['chunk']; score: number }>();
 
-    const k = 60; // RRF 常数
+    const k = 60; // RRF constant
 
-    // 语义检索排名
+    // Semantic retrieval ranking
     for (let i = 0; i < semantic.length; i++) {
       const r = semantic[i];
       const key = r.chunk.id;
@@ -142,7 +142,7 @@ export class RetrievalService {
       });
     }
 
-    // 关键词检索排名
+    // Keyword retrieval ranking
     for (let i = 0; i < keyword.length; i++) {
       const r = keyword[i];
       const key = r.chunk.id;
@@ -162,13 +162,13 @@ export class RetrievalService {
   }
 
   // ============================================================
-  //  分词（简单中文分词）
+  //  Tokenization (simple Chinese word segmentation)
   // ============================================================
 
   private tokenize(text: string): string[] {
     if (!text) return [];
 
-    // 简单分词：按非中文字符分割 + 单字 n-gram
+    // Simple tokenization: split by non-Chinese chars + unigram n-grams
     const segments = text.split(
       /[\s\n\r\t.,;:!?，。；：！？、""''「」【】《》\(\)\[\]{}<>\/\\\-_+=@#$%^&*|`~]+/,
     );
@@ -176,15 +176,15 @@ export class RetrievalService {
     const tokens: string[] = [];
     for (const seg of segments) {
       if (!seg) continue;
-      // 英文词直接按空格分
+      // English words split directly by space
       if (/^[a-zA-Z0-9]+$/.test(seg)) {
         tokens.push(seg.toLowerCase());
       } else {
-        // 中文：bigram
+        // Chinese: bigram
         for (let i = 0; i < seg.length - 1; i++) {
           tokens.push(seg.substring(i, i + 2));
         }
-        // 单字也保留（用于短查询）
+        // Keep unigrams too (for short queries)
         if (seg.length === 1) {
           tokens.push(seg);
         }

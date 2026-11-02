@@ -5,15 +5,15 @@
 import { DataPoint } from '@ss-node/ss-storage';
 
 /**
- * InfluxDB 3 Core SQL 查询 JSON 响应解析器（结果归一化）。
+ * InfluxDB 3 Core SQL query JSON response parser (result normalization).
  *
- * 兼容三种返回形态（v3 format=json 的具体形态待 P0 实测收敛，见方案 §11-2）：
- * 1. { columns: [...], rows: [[...], ...] }（列名 + 行数组）
- * 2. { series: [{ columns: [...], values: [[...], ...] }] }（InfluxQL 风格）
- * 3. [{ time: ..., tagId: ... }, ...]（对象数组）
+ * Supports three response shapes (the exact shape of v3 format=json is pending P0 test convergence, see plan §11-2):
+ * 1. { columns: [...], rows: [[...], ...] } (column names + row arrays)
+ * 2. { series: [{ columns: [...], values: [[...], ...] }] } (InfluxQL style)
+ * 3. [{ time: ..., tagId: ... }, ...] (array of objects)
  *
- * 列映射：time/window_start → timestamp，value/value_text → value（数值优先）。
- * 聚合结果不含 quality（§6.3 质量聚合语义），归一化时 quality 置 0。
+ * Column mapping: time/window_start → timestamp, value/value_text → value (numeric first).
+ * Aggregated results do not contain quality (§6.3 quality aggregation semantics); quality is set to 0 during normalization.
  */
 export class Influxdb3JsonParser {
   parse(rawText: string): DataPoint[] {
@@ -36,14 +36,14 @@ export class Influxdb3JsonParser {
             : [],
         );
       }
-      // 单对象（标量聚合等场景无时间列）→ 无法归一化为 DataPoint，返回空
+      // Single object (scalar aggregation etc., no time column) → cannot be normalized to DataPoint, return empty
       return [];
     }
 
     return [];
   }
 
-  // ──────────── 内部方法 ────────────
+  // ──────────── Internal methods ────────────
 
   private parseColumnarRows(columns: string[], rows: unknown[][]): DataPoint[] {
     const columnIndex = new Map(columns.map((columnName, index) => [columnName, index]));
@@ -65,7 +65,7 @@ export class Influxdb3JsonParser {
       return null;
     }
 
-    // value 数值优先，缺失时回退 value_text（§5.1 非数值分流约定）
+    // value takes numeric first; falls back to value_text when missing (§5.1 non-numeric split convention)
     const numericValue = record['value'];
     const textValue = record['value_text'];
     let value: number | string;

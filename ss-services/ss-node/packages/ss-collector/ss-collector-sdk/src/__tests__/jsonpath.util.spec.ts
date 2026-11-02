@@ -6,7 +6,7 @@ import { JsonPathUtil } from '../jsonpath.util';
 
 describe('JsonPathUtil', () => {
   // -------------------------------------------------------------
-  // extract() — 基础场景
+  // extract() - basic scenarios
   // -------------------------------------------------------------
   describe('extract 基础场景', () => {
     it('data 为 null 时应返回 undefined', () => {
@@ -39,7 +39,7 @@ describe('JsonPathUtil', () => {
   });
 
   // -------------------------------------------------------------
-  // extract() — 根字段
+  // extract() - root field
   // -------------------------------------------------------------
   describe('extract 根字段', () => {
     it('应提取顶层字段 $.field', () => {
@@ -70,7 +70,7 @@ describe('JsonPathUtil', () => {
   });
 
   // -------------------------------------------------------------
-  // extract() — 嵌套字段
+  // extract() - nested field
   // -------------------------------------------------------------
   describe('extract 嵌套字段', () => {
     it('应提取嵌套字段 $.a.b.c', () => {
@@ -108,7 +108,7 @@ describe('JsonPathUtil', () => {
   });
 
   // -------------------------------------------------------------
-  // extract() — 数组索引
+  // extract() - array index
   // -------------------------------------------------------------
   describe('extract 数组索引', () => {
     it('应提取数组元素 $.array[0]', () => {
@@ -136,7 +136,7 @@ describe('JsonPathUtil', () => {
   });
 
   // -------------------------------------------------------------
-  // extract() — 通配符 *
+  // extract() - wildcard *
   // -------------------------------------------------------------
   describe('extract 通配符', () => {
     it('通配符应映射数组所有元素 $.array[*]', () => {
@@ -174,7 +174,7 @@ describe('JsonPathUtil', () => {
   });
 
   // -------------------------------------------------------------
-  // extract() — 混合路径
+  // extract() - mixed path
   // -------------------------------------------------------------
   describe('extract 混合路径', () => {
     it('应支持 $.a[0].b[1].c 混合路径', () => {
@@ -209,18 +209,18 @@ describe('JsonPathUtil', () => {
   });
 
   // -------------------------------------------------------------
-  // extract() — 语法错误
+  // extract() - syntax error
   // -------------------------------------------------------------
   describe('extract 语法错误处理', () => {
     it('未闭合的 [ 应返回空（路径解析为空）', () => {
       const data = { array: [1, 2] };
-      // 未闭合的 [ 会导致 parse 返回空数组，extract 返回 data 本身
+      // An unclosed [ causes parse to return an empty array, and extract returns data itself
       expect(JsonPathUtil.extract(data, '$.array[0')).toBe(data);
     });
 
     it('非数字索引应返回 data（解析失败）', () => {
       const data = { array: [1, 2] };
-      // 非数字索引会导致 parse 返回空数组
+      // A non-numeric index causes parse to return an empty array
       expect(JsonPathUtil.extract(data, '$.array[abc]')).toBe(data);
     });
 
@@ -231,7 +231,7 @@ describe('JsonPathUtil', () => {
   });
 
   // -------------------------------------------------------------
-  // extract() — 标量数据
+  // extract() - scalar data
   // -------------------------------------------------------------
   describe('extract 标量数据', () => {
     it('data 为字符串时按字段访问应返回 undefined', () => {

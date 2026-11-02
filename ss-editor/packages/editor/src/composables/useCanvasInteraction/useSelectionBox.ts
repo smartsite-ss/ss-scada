@@ -18,7 +18,7 @@ export function useSelectionBox(options: CanvasInteractionOptions) {
   const startY = ref(0);
   const selectionMode = ref<SelectionMode>(SelectionMode.SINGLE);
 
-  // 获取当前页面的 SelectionManager
+  // Get the current page's SelectionManager
   const getSelectionManager = () => {
     const currentPage = pageStore.currentPage;
     if (currentPage && 'getSelectionManager' in currentPage) {
@@ -27,7 +27,7 @@ export function useSelectionBox(options: CanvasInteractionOptions) {
     return null;
   };
 
-  // 更新选择模式从按键状态
+  // Update selection mode from key states
   const updateSelectionModeFromKeyState = () => {
     const sm = getSelectionManager();
     const keyState = keyboardService.getCurrentKeyState();
@@ -40,7 +40,7 @@ export function useSelectionBox(options: CanvasInteractionOptions) {
     }
   };
 
-  // 统一同步选择状态
+  // Uniformly sync selection state
   const syncSelectionState = (selectedIds: string[], oldSelectedIds: string[]) => {
     for (const id of oldSelectedIds) {
       if (!selectedIds.includes(id) && graphicDecorators.value[id]) {
@@ -54,7 +54,7 @@ export function useSelectionBox(options: CanvasInteractionOptions) {
     }
   };
 
-  // 结束框选
+  // End rubber-band selection
   const finishSelecting = (drawCanvas: DrawCanvasCallback) => {
     const canvas = document.querySelector('canvas.design-canvas');
     if (canvas) {

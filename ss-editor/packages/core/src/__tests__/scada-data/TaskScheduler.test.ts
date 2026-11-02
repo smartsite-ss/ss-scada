@@ -6,7 +6,7 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { TaskScheduler } from '../../scada-data/engine/TaskScheduler';
 import { ScriptEngine } from '../../scada-data/engine/ScriptEngine';
 
-describe('TaskScheduler', () => { let scheduler: TaskScheduler; beforeEach(() => { vi.useFakeTimers(); /* 重建单例 */ const engine = ScriptEngine.getInstance(); engine.destroy(); /* 注册一个测试脚本 */ engine.registerScript({ id:'script-1',
+describe('TaskScheduler', () => { let scheduler: TaskScheduler; beforeEach(() => { vi.useFakeTimers(); /* rebuild the singleton */ const engine = ScriptEngine.getInstance(); engine.destroy(); /* register a test script */ engine.registerScript({ id:'script-1',
       name: 'Test Script',
       script: 'api.log("info", "executed");',
       type: 'client',
@@ -42,7 +42,7 @@ describe('TaskScheduler', () => { let scheduler: TaskScheduler; beforeEach(() =>
     });
 
     it('should generate unique taskId', () => {
-      const task1 = scheduler.schedule('script-1', '* * * * *'); /* 推进时间以确保不同的 taskId */ vi.advanceTimersByTime(1); const task2 = scheduler.schedule('script-1', '* * * * *');
+      const task1 = scheduler.schedule('script-1', '* * * * *'); /* advance time to ensure different taskIds */ vi.advanceTimersByTime(1); const task2 = scheduler.schedule('script-1', '* * * * *');
       expect(task1.taskId).not.toBe(task2.taskId);
     });
   });
@@ -130,7 +130,7 @@ describe('TaskScheduler', () => { let scheduler: TaskScheduler; beforeEach(() =>
 
   describe('cron execution', () => {
     it('should execute script when cron triggers', () => {
-      const task = scheduler.schedule('script-1', '* * * * *'); const initialRunCount = task.runCount; /* 推进 61 秒，触发定时器 */ vi.advanceTimersByTime(65000); const updatedTask = scheduler.getAll().find((t) => t.taskId === task.taskId); expect(updatedTask?.runCount).toBeGreaterThan(initialRunCount); }); }); describe('destroy', () => {
+      const task = scheduler.schedule('script-1', '* * * * *'); const initialRunCount = task.runCount; /* advance 61 seconds to trigger the timer */ vi.advanceTimersByTime(65000); const updatedTask = scheduler.getAll().find((t) => t.taskId === task.taskId); expect(updatedTask?.runCount).toBeGreaterThan(initialRunCount); }); }); describe('destroy', () => {
     it('should clear all tasks and timers', () => {
       scheduler.schedule('script-1', '* * * * *');
       scheduler.destroy();

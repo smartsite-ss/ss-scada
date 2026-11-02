@@ -5,7 +5,7 @@
 import { ref, watch } from 'vue'
 import { usePageStore, useGraphicStore } from '@scada-editor/core'
 
-// 简单的 debounce 实现
+// Simple debounce implementation
 function debounce<T extends (...args: any[]) => any>(
   fn: T,
   delay: number
@@ -23,14 +23,14 @@ export function useJsonEditor() {
   const pageStore = usePageStore()
   const graphicStore = useGraphicStore()
 
-  // JSON 内容
+  // JSON content
   const jsonContent = ref('')
-  // 是否有错误
+  // Whether there is an error
   const hasError = ref(false)
-  // 错误信息
+  // Error message
   const errorMessage = ref('')
 
-  // 生成 JSON 数据
+  // Generate JSON data
   const generateJsonData = () => {
     const currentPage = pageStore.currentPage
     if (!currentPage) {
@@ -49,7 +49,7 @@ export function useJsonEditor() {
       }
     }
 
-    // 直接使用 BasePage.toJSON() 获取完整数据
+    // Use BasePage.toJSON() directly to get the complete data
     const pageData = currentPage.toJSON()
     
     return {
@@ -70,7 +70,7 @@ export function useJsonEditor() {
     }
   }
 
-  // 刷新 JSON 内容
+  // Refresh JSON content
   const refreshJson = () => {
     try {
       const data = generateJsonData()
@@ -84,7 +84,7 @@ export function useJsonEditor() {
     }
   }
 
-  // 应用 JSON 更改
+  // Apply JSON changes
   const applyJson = (jsonString: string): boolean => {
     try {
       const data = JSON.parse(jsonString)
@@ -96,15 +96,15 @@ export function useJsonEditor() {
         return false
       }
 
-      // 检测数据格式：支持两种格式
-      // 1. JSON面板格式：{ version, page, graphics, timers, groups }
-      // 2. 直接 toJSON 格式：{ id, name, graphics, groups, timers, ... }
+      // Detect the data format: two formats supported
+      // 1. JSON panel format: { version, page, graphics, timers, groups }
+      // 2. Direct toJSON format: { id, name, graphics, groups, timers, ... }
       let pageData = data
       let graphicsData = data.graphics
       let timersData = data.timers
       let groupsData = data.groups
 
-      // 如果是 JSON 面板格式，提取数据
+      // If it is the JSON panel format, extract the data
       if (data.version && data.page) {
         pageData = data.page
         graphicsData = data.graphics
@@ -118,10 +118,10 @@ export function useJsonEditor() {
         return false
       }
 
-      // 保存历史记录
+      // Save a history record
       (graphicStore as any).saveHistory?.()
 
-      // 更新页面属性
+      // Update page properties
       pageStore.updatePage(currentPage.id, {
         name: pageData.name,
         width: pageData.width,
@@ -130,10 +130,10 @@ export function useJsonEditor() {
         backgroundImage: pageData.backgroundImage,
       } as any)
 
-      // 使用页面的 importGraphics 方法，它会正确重建管理器
+      // Use the page's importGraphics method, which correctly rebuilds the managers
       currentPage.importGraphics(graphicsData)
 
-      // 导入 timers
+      // Import timers
       if (timersData && Array.isArray(timersData)) {
         const timerManager = (currentPage as any).timerManager
         if (timerManager && timerManager.fromJSON) {
@@ -141,12 +141,12 @@ export function useJsonEditor() {
         }
       }
 
-      // 导入 groups
+      // Import groups
       if (groupsData && Array.isArray(groupsData)) {
         const groupManager = (currentPage as any).getGroupManager?.()
         if (groupManager && groupManager.fromJSON) {
           groupManager.fromJSON(groupsData)
-          // 确保更新引用
+          // Ensure references are updated
           const graphics =
             'value' in currentPage.graphics
               ? currentPage.graphics.value
@@ -167,7 +167,7 @@ export function useJsonEditor() {
     }
   }
 
-  // 格式化 JSON
+  // Format JSON
   const formatJson = (jsonString: string): string => {
     try {
       const data = JSON.parse(jsonString)
@@ -177,7 +177,7 @@ export function useJsonEditor() {
     }
   }
 
-  // 验证 JSON
+  // Validate JSON
   const validateJson = (jsonString?: string): boolean => {
     try {
       const content = jsonString ?? jsonContent.value
@@ -192,7 +192,7 @@ export function useJsonEditor() {
     }
   }
 
-  // 复制 JSON 到剪贴板（复制整个页面的原始 JSON 数据）
+  // Copy JSON to clipboard (copies the raw JSON data of the entire page)
   const copyJson = async () => {
     try {
       const data = generateJsonData()
@@ -203,7 +203,7 @@ export function useJsonEditor() {
     }
   }
 
-  // 导出 JSON 文件
+  // Export JSON file
   const exportJson = (jsonString: string) => {
     try {
       const blob = new Blob([jsonString], { type: 'application/json' })
@@ -219,7 +219,7 @@ export function useJsonEditor() {
     }
   }
 
-  // 导入 JSON 文件
+  // Import JSON file
   const importJson = () => {
     try {
       const input = document.createElement('input')
@@ -239,10 +239,10 @@ export function useJsonEditor() {
     }
   }
 
-  // 监听页面和图形变化，自动刷新 JSON（带 debounce）
+  // Watch page and graphics changes, auto-refresh JSON (with debounce)
   const debouncedRefresh = debounce(refreshJson, 300)
 
-  // 监听 pageStore 变化来获取 currentPage 的变化
+  // Watch pageStore changes to pick up currentPage changes
   watch(
     () => pageStore.currentPage,
     (newPage) => {
@@ -267,7 +267,7 @@ export function useJsonEditor() {
     { immediate: true }
   )
 
-  // 初始化时刷新一次
+  // Refresh once at initialization
   refreshJson()
 
   return {

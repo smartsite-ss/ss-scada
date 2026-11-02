@@ -13,7 +13,7 @@ export interface SystemMenuButton {
   sortOrder: number;
 }
 
-/** 菜单国际化条目 */
+/** Menu i18n entry */
 export interface MenuI18nItem {
   labelKey: string;
   label: string;
@@ -21,7 +21,7 @@ export interface MenuI18nItem {
   description: string;
 }
 
-/** 菜单国际化表 */
+/** Menu i18n table */
 export interface MenuI18nTable {
   menuId: string;
   menuName: string;
@@ -33,58 +33,58 @@ export interface MenuI18nTable {
 }
 
 export const menuApi = {
-  /** 获取菜单树 */
+  /** Get the menu tree */
   getMenu(subsystem?: string): Promise<SystemMenuItem[]> {
     return client.get('/system/menu/', { params: subsystem ? { subsystem } : {} })
       .then((res) => res.data?.data ?? res.data);
   },
 
-  /** 批量更新菜单树 */
+  /** Batch update the menu tree */
   updateMenu(menus: SystemMenuItem[]): Promise<{ ok: boolean }> {
     return client.put('/system/menu/', { menus }).then((res) => res.data);
   },
 
-  /** 创建单个菜单项 */
+  /** Create a single menu item */
   createMenuItem(item: SystemMenuItem, parentId?: string): Promise<{ ok: boolean }> {
     return client.post('/system/menu/item', { item, parentId }).then((res) => res.data);
   },
 
-  /** 更新单个菜单项 */
+  /** Update a single menu item */
   updateMenuItem(id: string, item: SystemMenuItem, parentId?: string): Promise<{ ok: boolean }> {
     return client.put(`/system/menu/item/${id}`, { item, parentId }).then((res) => res.data);
   },
 
-  /** 删除菜单项 */
+  /** Delete a menu item */
   deleteMenuItem(id: string): Promise<{ ok: boolean }> {
     return client.delete(`/system/menu/${id}`).then((res) => res.data);
   },
 
-  /** 获取所有菜单按钮 */
+  /** Get all menu buttons */
   getButtons(): Promise<SystemMenuButton[]> {
     return client.get('/system/menu/buttons').then((res) => res.data?.data ?? res.data);
   },
 
-  /** 获取指定菜单的按钮 */
+  /** Get the buttons of a specified menu */
   getButtonsByMenu(menuId: string): Promise<SystemMenuButton[]> {
     return client.get(`/system/menu/${menuId}/buttons`).then((res) => res.data?.data ?? res.data);
   },
 
-  /** 批量更新按钮 */
+  /** Batch update buttons */
   updateButtons(buttons: SystemMenuButton[]): Promise<{ ok: boolean }> {
     return client.put('/system/menu/buttons', { buttons }).then((res) => res.data);
   },
 
-  /** 创建单个按钮 */
+  /** Create a single button */
   createButton(btn: SystemMenuButton): Promise<{ ok: boolean }> {
     return client.post('/system/menu/buttons', btn).then((res) => res.data);
   },
 
-  /** 删除按钮 */
+  /** Delete a button */
   deleteButton(id: string): Promise<{ ok: boolean }> {
     return client.delete(`/system/menu/buttons/${id}`).then((res) => res.data);
   },
 
-  /** 获取菜单国际化数据 */
+  /** Get the menu i18n data */
   getMenuI18n(locale?: string, menuId?: string): Promise<MenuI18nTable | MenuI18nTable[]> {
     const params: Record<string, string> = {};
     if (locale) params.locale = locale;
@@ -92,17 +92,17 @@ export const menuApi = {
     return client.get('/system/menu/i18n', { params }).then((res) => res.data?.data ?? res.data);
   },
 
-  /** 批量更新菜单国际化条目 */
+  /** Batch update menu i18n entries */
   updateMenuI18nItems(locale: string, menuId: string, items: MenuI18nItem[]): Promise<{ ok: boolean }> {
     return client.put('/system/menu/i18n/items', { locale, menuId, items }).then((res) => res.data);
   },
 
-  /** 同步菜单国际化数据到 locale JSON 文件 */
+  /** Sync menu i18n data to the locale JSON files */
   syncMenuI18n(locale: string): Promise<{ synced: number; errors: string[] }> {
     return client.post('/system/menu/i18n/sync', { locale }).then((res) => res.data);
   },
 
-  /** 获取支持的语言列表 */
+  /** Get the list of supported languages */
   getMenuI18nLocales(): Promise<string[]> {
     return client.get('/system/menu/i18n/locales').then((res) => res.data?.data ?? res.data);
   },

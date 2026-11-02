@@ -3,9 +3,9 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 视频通道与播放协议适配纯函数。
- * 播放内核（jessibuca / flv.js / hls.js）为浏览器端解码库，需按需引入；
- * 本模块只承载协议映射与网格布局等纯逻辑，便于单测。
+ * Pure functions for video channel and playback protocol adaptation.
+ * Playback cores (jessibuca / flv.js / hls.js) are browser-side decoding libraries loaded on demand;
+ * this module only carries protocol mapping and grid layout pure logic for easy unit testing.
  */
 
 export type VideoProtocol = 'webrtc' | 'http-flv' | 'hls';
@@ -13,29 +13,29 @@ export type VideoProtocol = 'webrtc' | 'http-flv' | 'hls';
 export type VideoLayout = '1x1' | '2x2' | '3x3';
 
 export interface VideoChannel {
-  /** 通道唯一 ID（用于 Vue key / 删除 / 排序） */
+  /** Channel unique ID (used for Vue key / deletion / sorting) */
   id: string;
-  /** 通道名称（如「1 号摄像头」「东门入口」） */
+  /** Channel name (e.g. Camera 1, East Gate entrance) */
   name: string;
-  /** RTSP 源地址（rtsp://user:pass@host:554/...，用于记录/网关配置） */
+  /** RTSP source address (rtsp://user:pass@host:554/..., for records / gateway configuration) */
   sourceUrl: string;
-  /** 网关转流后的播放地址（前端实际消费） */
+  /** Playback address after gateway stream conversion (consumed by the frontend) */
   playUrl: string;
-  /** 播放协议 */
+  /** Playback protocol */
   protocol: VideoProtocol;
-  /** 摄像头认证用户名（可选） */
+  /** Camera authentication username (optional) */
   username: string;
-  /** 摄像头认证密码（可选） */
+  /** Camera authentication password (optional) */
   password: string;
-  /** 是否启用（禁用显示占位） */
+  /** Whether enabled (disabled shows a placeholder) */
   enabled: boolean;
 }
 
 /**
- * 根据协议选择播放内核类型。
- * - hls → 原生 <video>（Safari 原生支持，其余浏览器需 hls.js）
- * - http-flv → 需 flv.js
- * - webrtc → 需 jessibuca / WebRTC 信令
+ * Select the playback core type based on the protocol.
+ * - hls → native <video> (natively supported by Safari; other browsers need hls.js)
+ * - http-flv → requires flv.js
+ * - webrtc → requires jessibuca / WebRTC signaling
  */
 export function resolvePlayerKind(protocol: VideoProtocol): 'native' | 'flv' | 'webrtc' {
   switch (protocol) {
@@ -48,12 +48,12 @@ export function resolvePlayerKind(protocol: VideoProtocol): 'native' | 'flv' | '
   }
 }
 
-/** 校验通道是否可播放：启用且已配置播放地址 */
+/** Validate whether a channel is playable: enabled and a playback address is configured */
 export function isPlayableChannel(channel: VideoChannel): boolean {
   return channel.enabled && Boolean(channel.playUrl);
 }
 
-/** 根据布局返回网格行列数与总槽位数 */
+/** Return the grid rows/columns and total slot count for a layout */
 export function resolveGrid(layout: VideoLayout): { columns: number; rows: number; total: number } {
   const map: Record<VideoLayout, { columns: number; rows: number; total: number }> = {
     '1x1': { columns: 1, rows: 1, total: 1 },
@@ -63,7 +63,7 @@ export function resolveGrid(layout: VideoLayout): { columns: number; rows: numbe
   return map[layout];
 }
 
-/** 根据布局裁剪通道列表到可视槽位数（超出忽略，不足占位） */
+/** Crop the channel list to the visible slot count for a layout (extras ignored, missing slots as placeholders) */
 export function resolveVisibleChannels(channels: VideoChannel[], layout: VideoLayout): VideoChannel[] {
   const { total } = resolveGrid(layout);
   return channels.slice(0, total);

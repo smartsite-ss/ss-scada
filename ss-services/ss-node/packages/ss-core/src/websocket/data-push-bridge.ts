@@ -14,23 +14,23 @@ import type {
 } from '../event-bus/event-bus.types';
 
 /**
- * 数据推送桥接器
+ * Data push bridge
  *
- * 监控消息的"来"过程：EventBus 事件 → DataPushBridge → ScadaWebSocketGateway
+ * Monitors the "incoming" leg of messages: EventBus event -> DataPushBridge -> ScadaWebSocketGateway
  *
- * 每次处理记录：
- * - 消息追踪日志（trace）：事件类型 + 关键字段 + 耗时
- * - 指标计数：bridgeLatency、offlineCache 命中/未命中
+ * Each processing records:
+ * - message trace log (trace): event type + key fields + elapsed time
+ * - metric counters: bridgeLatency, offlineCache hit/miss
  */
 @Injectable()
 export class DataPushBridge implements OnModuleInit {
   private readonly logger = new Logger(DataPushBridge.name);
 
-  /** 日志采样率：高频事件（data_point_changed）每 N 条只记录 1 条日志，避免日志淹没 */
+  /** Log sampling rate: for high-frequency events (data_point_changed) log only 1 of every N entries, avoiding log flooding */
   private static readonly DATA_POINT_LOG_SAMPLE_RATE = 100;
   private dataPointLogCounter = 0;
 
-  /** P2优化：data_point_changed 批量缓冲，200ms 合并窗口 */
+  /** P2 optimization: data_point_changed batch buffer with a 200ms merge window */
   private batchBuffer = new Map<
     string,
     Array<{
@@ -56,12 +56,12 @@ export class DataPushBridge implements OnModuleInit {
       this.handleDataPointChanged(event);
     });
 
-    // 统一事件: DeviceStateManager 发射的 device:statusChanged
+    // Unified event: device:statusChanged emitted by DeviceStateManager
     this.eventBus.on('device:statusChanged', (event: any) => {
       this.handleDeviceStatusChanged(event as DeviceStatusChangedEvent);
     });
 
-    // 兼容旧事件名（后续版本移除）
+    // Legacy event-name compatibility (remove in a later version)
     this.eventBus.on('device_status_changed', (event: DeviceStatusChangedEvent) => {
       this.handleDeviceStatusChanged(event);
     });
@@ -112,7 +112,7 @@ export class DataPushBridge implements OnModuleInit {
     const startMs = Date.now();
     const timestamp = new Date(event.timestamp).toISOString();
 
-    // P2优化：批量缓冲替代逐条 broadcastTagUpdate，200ms 合并窗口内多次推送合并为一次
+    // P2 optimization: batch buffer replaces per-record broadcastTagUpdate; multiple pushes within a 200ms merge window coalesce into one
     const projectBuffer = this.batchBuffer.get(event.projectId) || [];
     projectBuffer.push({
       tagId: event.tagId,
@@ -123,7 +123,7 @@ export class DataPushBridge implements OnModuleInit {
     });
     this.batchBuffer.set(event.projectId, projectBuffer);
 
-    // 启动 200ms 刷新定时器（如未启动，有自停机制）
+    // Start the 200ms flush timer (with a self-stop mechanism if not started)
     if (!this.batchFlushTimer) {
       this.batchFlushTimer = setInterval(
         () => this.flushBatch(),
@@ -134,7 +134,7 @@ export class DataPushBridge implements OnModuleInit {
     const durationMs = Date.now() - startMs;
     this.metricsService.recordBridgeLatency('data_point_changed', durationMs);
 
-    // 采样日志：每 100 条记录一次，避免高频日志淹没
+    // Sampled log: record once every 100 entries, avoiding high-frequency log flooding
     this.dataPointLogCounter++;
     if (this.dataPointLogCounter % DataPushBridge.DATA_POINT_LOG_SAMPLE_RATE === 0) {
       this.logger.log(
@@ -143,10 +143,10 @@ export class DataPushBridge implements OnModuleInit {
     }
   }
 
-  /** P2优化：刷新批量缓冲，调用 gateway broadcastBatchUpdate */
+  /** P2 optimization: flush the batch buffer, calling gateway broadcastBatchUpdate */
   private flushBatch(): void {
     if (this.batchBuffer.size === 0) {
-      // 无数据时停止定时器（自停机制）
+      // No data; stop the timer (self-stop mechanism)
       if (this.batchFlushTimer) {
         clearInterval(this.batchFlushTimer);
         this.batchFlushTimer = null;
@@ -180,7 +180,7 @@ export class DataPushBridge implements OnModuleInit {
       timestamp,
     });
 
-    // 为离线客户端缓存设备状态变更消息
+    // Cache device-status change messages for offline clients
     this.cacheForOffline('device:statusChange', payload);
 
     const durationMs = Date.now() - startMs;
@@ -215,7 +215,7 @@ export class DataPushBridge implements OnModuleInit {
       timestamp,
     });
 
-    // 为离线客户端缓存报警触发消息
+    // Cache alarm-trigger messages for offline clients
     this.cacheForOffline('alarm:trigger', payload);
 
     const durationMs = Date.now() - startMs;
@@ -296,10 +296,10 @@ export class DataPushBridge implements OnModuleInit {
   }
 
   /**
-   * 为离线客户端缓存消息
-   * 查找已注册但当前不在线的客户端，将消息缓存到其离线消息队列
-   * @param event 事件名称
-   * @param data 消息数据
+   * Cache messages for offline clients
+   * Finds registered clients currently offline and caches the message into their offline queues
+   * @param event event name
+   * @param data message data
    */
   cacheForOffline(event: string, data: unknown): void {
     const onlineIds = this.wsGateway.getOnlineUserIds();

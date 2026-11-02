@@ -3,21 +3,21 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * device-commands.ts — 设备管理命令
+ * device-commands.ts - device management commands
  *
- *   device list    — 列出所有设备，支持 --project 过滤
- *   device get     — 查看设备详情
- *   device start   — 启动设备采集
- *   device stop    — 停止设备采集
- *   device status  — 查看设备状态
- *   device test    — 测试设备连接
+ *   device list    - list all devices, with optional --project filter
+ *   device get     - view device details
+ *   device start   - start device collection
+ *   device stop    - stop device collection
+ *   device status  - view device status
+ *   device test    - test device connection
  */
 
 import { ApiError } from '../core/ApiClient';
 import { runDeviceCreateWizard } from './device-create-wizard';
 import type { CommandParser } from '../core/CommandParser';
 
-/** 创建设备管理子命令组 */
+/** Create the device-management subcommand group */
 export function registerCommands(parser: CommandParser): void {
   const program = parser.getProgram();
 
@@ -51,7 +51,7 @@ export function registerCommands(parser: CommandParser): void {
           );
           printDeviceList(result);
         } else {
-          // 无 project 时，先列出所有项目，再逐个查询设备
+          // When no project is given, list all projects first, then query devices per project
           const projects = await apiClient.get<unknown>('/api/v1/projects');
           const projectList = extractList<{ id: string; name: string }>(projects);
           if (projectList.length === 0) {
@@ -68,7 +68,7 @@ export function registerCommands(parser: CommandParser): void {
               }
               allDevices.push(...list);
             } catch {
-              // 忽略单个项目的错误
+              // Ignore errors for a single project
             }
           }
           printDeviceList(allDevices);
@@ -174,7 +174,7 @@ export function registerCommands(parser: CommandParser): void {
     });
 }
 
-/** 从 API 响应中提取列表 */
+/** Extract the list from the API response */
 function extractList<T>(response: unknown): T[] {
   if (Array.isArray(response)) {
     return response as T[];
@@ -192,7 +192,7 @@ function extractList<T>(response: unknown): T[] {
   return [];
 }
 
-/** 格式化输出设备列表 */
+/** Format and print the device list */
 function printDeviceList(data: unknown): void {
   const list = extractList<Record<string, unknown>>(data);
   if (list.length === 0) {
@@ -211,7 +211,7 @@ function printDeviceList(data: unknown): void {
   console.table(rows);
 }
 
-/** 统一错误处理 */
+/** Unified error handling */
 function handleError(context: string, err: unknown): void {
   if (err instanceof ApiError) {
     console.error(`${context}: ${err.message}`);

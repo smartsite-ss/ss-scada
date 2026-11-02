@@ -12,18 +12,18 @@ import { SubscribeMessageService } from './subscribe-message.service';
 import { SubscribeMessageController } from './subscribe-message.controller';
 
 /**
- * 微信小程序订阅消息模块（10 模块）
+ * WeChat mini-program subscribe-message module (Module 10)
  *
- * 注册方式：在 app.module.ts 的 sharedModules 中注册（@Global）。
- * @Global 使 ss-alarm 的 AlarmNotificationService 可通过 @Optional() 注入
- * WechatSubscribeMessageChannel，无需在 AlarmModule 显式 import（未注入时安全降级）。
+ * Registration: registered in app.module.ts sharedModules (@Global).
+ * @Global lets ss-alarm's AlarmNotificationService inject WechatSubscribeMessageChannel via @Optional()
+ * without explicitly importing it in AlarmModule (safely degrades when not injected).
  *
- * 依赖关系：
- *   - imports: TypeOrmModule.forFeature —— User（解析 wechatMpOpenId）、
- *             订阅授权记录、通知偏好（实体经 DatabaseModule synchronize 建表）
- *   - providers: WechatSubscribeMessageChannel（发送通道）、SubscribeMessageService
- *   - controllers: SubscribeMessageController（/wechat/subscribe/*）
- *   - exports: 通道与服务（供跨模块注入）
+ * Dependencies:
+ *   - imports: TypeOrmModule.forFeature -- User (resolve wechatMpOpenId),
+ *             subscribe-authorization records, notification preferences (entities auto-created via DatabaseModule synchronize)
+ *   - providers: WechatSubscribeMessageChannel (send channel), SubscribeMessageService
+ *   - controllers: SubscribeMessageController (/wechat/subscribe/*)
+ *   - exports: channel and service (for cross-module injection)
  */
 @Global()
 @Module({

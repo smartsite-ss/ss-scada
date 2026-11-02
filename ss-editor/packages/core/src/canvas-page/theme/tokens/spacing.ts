@@ -2,14 +2,14 @@
 // https://smartsite.top/
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
-// 空间设计令牌
+// Spacing design tokens
 
-// 基础空间单位
+// Base spacing unit
 export const spacingBase = 4;
 
-// 空间尺寸
+// Spacing sizes
 export const spacing = {
-  // 小空间
+  // Small spacing
   xs: spacingBase * 1, // 4px
   sm: spacingBase * 2, // 8px
   md: spacingBase * 4, // 16px
@@ -17,21 +17,21 @@ export const spacing = {
   xl: spacingBase * 8, // 32px
   xxl: spacingBase * 12, // 48px
   xxxl: spacingBase * 16, // 64px
-  
-  // 常用组合
+
+  // Common combinations
   padding: {
     small: spacingBase * 2, // 8px
     medium: spacingBase * 4, // 16px
     large: spacingBase * 6, // 24px
   },
-  
+
   margin: {
     small: spacingBase * 2, // 8px
     medium: spacingBase * 4, // 16px
     large: spacingBase * 6, // 24px
   },
-  
-  // 布局间距
+
+  // Layout spacing
   layout: {
     container: spacingBase * 8, // 32px
     section: spacingBase * 6, // 24px
@@ -40,14 +40,14 @@ export const spacing = {
   },
 };
 
-// 空间工具函数
+// Spacing utility functions
 export const spacingUtils = {
-  // 生成间距类名
+  // Generate spacing class name
   getSpacingClass: (type: 'm' | 'p', direction: 't' | 'r' | 'b' | 'l' | 'x' | 'y' | '', size: keyof typeof spacing) => {
     if (typeof spacing[size] !== 'number') {
       return '';
     }
-    
+
     if (direction === 'x' || direction === 'y') {
       return `${type}${direction}-${size}`;
     } else if (direction) {
@@ -56,8 +56,8 @@ export const spacingUtils = {
       return `${type}-${size}`;
     }
   },
-  
-  // 获取间距值
+
+  // Get spacing value
   getSpacingValue: (size: keyof typeof spacing) => {
     if (typeof spacing[size] === 'number') {
       return spacing[size];

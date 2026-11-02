@@ -7,33 +7,35 @@ import type { IGraphic } from '@scada-editor/plugin-sdk';
 import type { EnterAnimationEngine } from '../../../animations/EnterAnimationEngine';
 
 /**
- * 页面上下文接口
+ * Page context interface
  *
- * 图元通过此接口感知页面环境，实现图元间联动、数据查询等能力。
- * 由 BasePage 在 addGraphic 时自动注入，插件开发者通过 this.pageContext 访问。
+ * Through this interface a graphic perceives the page environment, enabling
+ * cross-graphic linkage, data queries, and similar capabilities.
+ * Injected automatically by BasePage when addGraphic is called; plugin
+ * developers access it via this.pageContext.
  */
 export interface IPageContext {
-  /** 获取当前页面 */
+  /** Get the current page */
   getPage(): IPage;
 
-  /** 按ID查找任意图元 */
+  /** Find any graphic by ID */
   getGraphicById(id: string): IGraphic | undefined;
 
-  /** 按类型查找所有图元 */
+  /** Find all graphics by type */
   getGraphicsByType(type: string): IGraphic[];
 
-  /** 按分组查找成员 */
+  /** Find members of a group */
   getGroupMembers(groupId: string): IGraphic[];
 
-  /** 触发事件总线 */
+  /** Emit on the event bus */
   emit<T = any>(event: string, payload: T): void;
 
-  /** 监听事件总线，返回取消监听的函数 */
+  /** Listen on the event bus, returns a function to cancel the listener */
   on<T = any>(event: string, handler: (payload: T) => void): () => void;
 
-  /** 进入动画引擎 */
+  /** Enter animation engine */
   animationEngine: EnterAnimationEngine | null;
 
-  /** 设置动画帧回调（由编辑器层注入 drawCanvas） */
+  /** Set the animation frame callback (drawCanvas injected by editor layer) */
   setAnimationFrameCallback(callback: () => void): void;
 }

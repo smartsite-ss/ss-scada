@@ -6,27 +6,27 @@ import { BasePlugin, Graphic, DrawContext, InferSchemaProps, buildDefaultsFromSc
 import { i18n, registerLocaleModules } from '@scada-editor/core';
 import { tagValuePropertySchema } from './tagValuePropertySchema';
 
-// 动态扫描 locales 目录，新增语言只需添加对应 json 文件，无需改动本文件
+// Dynamically scan the locales directory; adding a new language only requires adding the corresponding json file, no changes to this file needed
 registerLocaleModules(import.meta.glob('./locales/*.json', { eager: true }));
 
 import pkg from './package.json';
 
 export type TagValueProps = InferSchemaProps<typeof tagValuePropertySchema> & {
-  /** 设备 UUID 主键（绑定回显/反查用） */
+  /** Device UUID primary key (for binding echo / reverse lookup) */
   deviceId: string;
-  /** 设备编码（用户可读，展示用） */
+  /** Device code (user-readable, for display) */
   deviceCode: string;
-  /** 设备名称（展示用） */
+  /** Device name (for display) */
   deviceName: string;
-  /** 标签 ID（运行态订阅的唯一标识） */
+  /** Tag ID (unique identifier for runtime subscription) */
   tagId: string;
-  /** 标签名称（展示用） */
+  /** Tag name (for display) */
   tagName: string;
-  /** 标签数据类型（用于格式化判断） */
+  /** Tag data type (used for formatting decisions) */
   dataType: string;
-  /** 装饰图片 URL / dataURL（由 TagValueConfig 通过 StateImagePicker 管理） */
+  /** Decoration image URL / dataURL (managed by TagValueConfig via StateImagePicker) */
   decorationImage: string;
-  /** 背景图片 URL / dataURL（由 TagValueConfig 通过 StateImagePicker 管理） */
+  /** Background image URL / dataURL (managed by TagValueConfig via StateImagePicker) */
   backgroundImage: string;
 };
 
@@ -69,7 +69,7 @@ export class TagValuePlugin extends BasePlugin<TagValueProps> {
   };
 
   protected render(_dc: DrawContext): void {
-    // Vue SFC 模式：主渲染由 Vue DOM 层完成
+    // Vue SFC mode: main rendering is done by the Vue DOM layer
   }
 
   constructor(x = 0, y = 0, w = 160, h = 48) {

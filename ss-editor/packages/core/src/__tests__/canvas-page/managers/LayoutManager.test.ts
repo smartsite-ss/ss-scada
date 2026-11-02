@@ -8,7 +8,7 @@ import { BaseGraphic } from '@scada-editor/plugin-sdk';
 
 class TestShape extends BaseGraphic {
   constructor(x: number, y: number, width: number, height: number) {
-    super('test-shape', x, y, width, height); } draw(_ctx: CanvasRenderingContext2D): void { /* 测试用的空实 */ } } describe('LayoutManager', () => {
+    super('test-shape', x, y, width, height); } draw(_ctx: CanvasRenderingContext2D): void { /* empty implementation for tests */ } } describe('LayoutManager', () => {
   let layoutManager: LayoutManager;
 
   beforeEach(() => {
@@ -55,15 +55,15 @@ class TestShape extends BaseGraphic {
 
     layoutManager.gridLayout(graphics, config);
 
-    // 检查第一个图形在 (0, 0)
+    // Check that the first graphic is at (0, 0)
     expect(graphics[0].config.geometry.x).toBe(0);
     expect(graphics[0].config.geometry.y).toBe(0);
 
-    // 检查第二列第一个图形的位置
+    // Check the position of the first graphic in the second column
     expect(graphics[1].config.geometry.x).toBe(110); // 0 + 100 + 10
     expect(graphics[1].config.geometry.y).toBe(0);
 
-    // 检查第二行第一个图形的位置
+    // Check the position of the first graphic in the second row
     expect(graphics[3].config.geometry.x).toBe(0);
     expect(graphics[3].config.geometry.y).toBe(110); // 0 + 100 + 10
   });

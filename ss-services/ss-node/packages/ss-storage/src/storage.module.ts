@@ -10,10 +10,10 @@ import { StorageHealthService } from './storage-health.service';
 import { DownsamplingService } from './services/downsampling.service';
 
 /**
- * 存储管理 NestJS 模块。
+ * Storage management NestJS module.
  *
- * 注册存储引擎路由、归档、健康检查和降采样服务。
- * 降采样服务依赖 InfluxDB 适配器（可选注入），当适配器未注册时优雅降级。
+ * Registers the storage engine router, archive, health check, and downsampling services.
+ * The downsampling service depends on the InfluxDB adapter (optional injection) and degrades gracefully when it is not registered.
  */
 @Module({
   providers: [

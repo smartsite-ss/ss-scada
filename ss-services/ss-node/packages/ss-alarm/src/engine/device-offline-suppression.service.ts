@@ -8,19 +8,20 @@ import { DeviceStatus } from '@ss-node/ss-sdk';
 import { AlarmSuppressionService } from './alarm-suppression.service';
 
 /**
- * 设备离线 → 报警级联抑制服务
+ * Device-offline -> alarm cascade suppression service
  *
- * 监听 device:statusChanged 事件：
- * - 设备变为 OFFLINE → 自动创建 device_offline 抑制规则，抑制该设备所有报警
- * - 设备变为 ONLINE  → 自动解除抑制规则
+ * Listens for the device:statusChanged event:
+ * - Device goes OFFLINE -> automatically create a device_offline suppression rule suppressing all alarms of that device
+ * - Device goes ONLINE  -> automatically remove the suppression rule
  *
- * 这是 P0 优先级优化：防止设备离线后产生大量"通信失败"类报警淹没真正的业务报警。
+ * This is a P0-priority optimization: prevent a flood of "communication failure" alarms after a device goes offline
+ * from drowning out the real business alarms.
  */
 @Injectable()
 export class DeviceOfflineSuppressionService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(DeviceOfflineSuppressionService.name);
 
-  /** deviceId → suppressionRuleId 映射，用于快速查找和解除 */
+  /** deviceId -> suppressionRuleId map, for fast lookup and removal */
   private readonly deviceSuppressionMap = new Map<string, string>();
 
   constructor(
@@ -41,7 +42,7 @@ export class DeviceOfflineSuppressionService implements OnModuleInit, OnModuleDe
   }
 
   /**
-   * 处理设备状态变更事件
+   * Handle the device status-changed event
    */
   private handleDeviceStatusChanged(event: {
     deviceId: string;
@@ -52,22 +53,22 @@ export class DeviceOfflineSuppressionService implements OnModuleInit, OnModuleDe
   }): void {
     const { deviceId, status, previousStatus } = event;
 
-    // 设备变为离线 → 创建抑制规则
+    // Device goes offline -> create a suppression rule
     if (status === DeviceStatus.OFFLINE && previousStatus !== DeviceStatus.OFFLINE) {
       this.suppressDeviceAlarms(deviceId);
     }
 
-    // 设备变为在线 → 解除抑制规则
+    // Device goes online -> remove the suppression rule
     if (status === DeviceStatus.ONLINE && previousStatus === DeviceStatus.OFFLINE) {
       this.releaseDeviceAlarms(deviceId);
     }
   }
 
   /**
-   * 创建设备离线抑制规则
+   * Create a device-offline suppression rule
    */
   private suppressDeviceAlarms(deviceId: string): void {
-    // 避免重复创建
+    // Avoid duplicate creation
     if (this.deviceSuppressionMap.has(deviceId)) {
       return;
     }
@@ -77,7 +78,7 @@ export class DeviceOfflineSuppressionService implements OnModuleInit, OnModuleDe
       type: 'device_offline',
       devices: [deviceId],
       createdAt: Date.now(),
-      // 无过期时间：设备恢复 ONLINE 时手动解除
+      // No expiration: removed manually when the device returns ONLINE
     });
 
     this.deviceSuppressionMap.set(deviceId, ruleId);
@@ -85,7 +86,7 @@ export class DeviceOfflineSuppressionService implements OnModuleInit, OnModuleDe
   }
 
   /**
-   * 解除设备离线抑制规则
+   * Remove the device-offline suppression rule
    */
   private releaseDeviceAlarms(deviceId: string): void {
     const ruleId = this.deviceSuppressionMap.get(deviceId);
@@ -102,21 +103,21 @@ export class DeviceOfflineSuppressionService implements OnModuleInit, OnModuleDe
   }
 
   /**
-   * 获取当前被抑制的设备列表
+   * Get the list of currently suppressed devices
    */
   getSuppressedDevices(): string[] {
     return Array.from(this.deviceSuppressionMap.keys());
   }
 
   /**
-   * 检查指定设备是否被抑制
+   * Check whether a given device is suppressed
    */
   isDeviceSuppressed(deviceId: string): boolean {
     return this.deviceSuppressionMap.has(deviceId);
   }
 
   /**
-   * 手动解除指定设备的抑制
+   * Manually remove the suppression for a given device
    */
   releaseDevice(deviceId: string): boolean {
     const ruleId = this.deviceSuppressionMap.get(deviceId);

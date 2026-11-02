@@ -66,23 +66,23 @@ export interface BatchReadPagesResult {
   pages: PageWithData[];
 }
 
-// ── 大纲相关类型（按需加载） ──
+// ── Outline-related types (loaded on demand) ──
 
 export interface OutlinePageItem {
-  /** page.json 中的唯一 ID（如 page-xxx），仅在文件存在且包含 id 字段时填充 */
+  /** The unique ID inside page.json (e.g. page-xxx), filled only when the file exists and contains an id field */
   id?: string;
-  /** 页面名称（文件夹名去掉 p_ 前缀） */
+  /** Page name (folder name without the p_ prefix) */
   name: string;
   updatedAt: string;
-  /** 预览小图的相对 URL（preview_small.png），仅在文件存在时填充 */
+  /** Preview thumbnail relative URL (preview_small.png), filled only when the file exists */
   previewSmallUrl?: string;
-  /** 页面背景色，从 page.json 读取 */
+  /** Page background color, read from page.json */
   backgroundColor?: string;
-  /** 页面背景图路径（相对路径，如 bg.png），从 page.json 读取 */
+  /** Page background-image path (relative, e.g. bg.png), read from page.json */
   backgroundImage?: string;
-  /** 页面宽度，从 page.json 读取 */
+  /** Page width, read from page.json */
   width?: number;
-  /** 页面高度，从 page.json 读取 */
+  /** Page height, read from page.json */
   height?: number;
 }
 
@@ -142,34 +142,34 @@ export interface ResourceUploadResult {
 }
 
 /**
- * 清理旧版遗留的 backgroundImage 路径。
- * 旧版（< 7.0）将背景图存储在 pages/<page>/resources/bg.jpg 下，
- * 新版统一存储在 pages/p_<page>/bg.png 下。
- * 此函数用于在读取 page.json 时自动修正旧路径，确保前端始终使用正确 URL。
+ * Clean up legacy backgroundImage paths.
+ * Legacy (< 7.0) stored background images under pages/<page>/resources/bg.jpg,
+ * the new version stores them uniformly under pages/p_<page>/bg.png.
+ * This function auto-corrects old paths when reading page.json, ensuring the frontend always uses the correct URL.
  */
 function sanitizeBackgroundImage(bg: string | undefined): string | undefined {
   if (!bg) return undefined;
-  // 旧版遗留路径：resources/bg.jpg → bg.png（后端 uploadPageBackground 统一保存为 bg.png）
+  // Legacy path: resources/bg.jpg -> bg.png (backend uploadPageBackground saves uniformly as bg.png)
   const resourcesMatch = bg.match(/resources\/(.+?)$/);
   if (resourcesMatch) {
     const fileName = resourcesMatch[1];
     const baseName = path.parse(fileName).name;
     return baseName === 'bg' ? 'bg.png' : fileName;
   }
-  // 处理旧版全路径情况：/api/v1/projects/xxx/pages/xxx/resources/bg.jpg → bg.png
+  // Handle legacy full-path cases: /api/v1/projects/xxx/pages/xxx/resources/bg.jpg -> bg.png
   const fullPathMatch = bg.match(/\/resources\/(.+?)$/);
   if (fullPathMatch) {
     const fileName = fullPathMatch[1];
     const baseName = path.parse(fileName).name;
     return baseName === 'bg' ? 'bg.png' : fileName;
   }
-  // 已经是正确格式的相对路径（bg.png 等），直接返回
+  // Already a correctly-formatted relative path (bg.png etc.); return directly
   if (isRelativePath(bg)) return bg;
-  // 新/旧版绝对 API 路径（/api/v1/projects/.../bg.png）→ 提取文件名
+  // New/legacy absolute API paths (/api/v1/projects/.../bg.png) -> extract the file name
   return bg.split('/').pop() || 'bg.png';
 }
 
-/** 判断是否为相对资源文件名（如 bg.png、preview.png） */
+/** Decide whether it is a relative resource file name (e.g. bg.png, preview.png) */
 function isRelativePath(path: string): boolean {
   return !path.startsWith('/') && !path.startsWith('http://') && !path.startsWith('https://') && !path.startsWith('data:') && !path.startsWith('blob:');
 }
@@ -197,7 +197,7 @@ export class PageSaveService {
   private getPageFolderPath(projectName: string, pageName: string, groupName?: string): string {
     const pagesDir = this.getPagesDir(projectName);
     const normalizedPageName = this.normalizePageName(pageName);
-    // 安全去前缀：确保输入中不携带 p_/g_ 前缀（幂等）
+    // Safe prefix removal: ensure the input carries no p_/g_ prefix (idempotent)
     const cleanPageName = normalizedPageName.replace(/^(p_|g_)/, '');
     if (groupName) {
       const cleanGroupName = groupName.replace(/^(p_|g_)/, '');
@@ -208,9 +208,9 @@ export class PageSaveService {
   }
 
   /**
-   * 获取页面预览图文件路径（preview.png / preview_small.png），仅文件存在时返回。
-   * 供 GET preview_small.png 读取接口使用；复用 getPageFolderPath 的规范化与
-   * p_/g_ 前缀清理逻辑，防止目录穿越。
+   * Get the page preview-image file path (preview.png / preview_small.png), returning only when the file exists.
+   * Used by the GET preview_small.png read endpoint; reuses getPageFolderPath's normalization and
+   * p_/g_ prefix-cleanup logic to prevent directory traversal.
    */
   getPreviewImagePath(
     projectName: string,
@@ -225,7 +225,7 @@ export class PageSaveService {
   }
 
   private normalizePageName(name: string): string {
-    // 规范化页面/分组名称：去空格、去非法字符、合并连续 -
+    // Normalize page/group names: trim spaces, remove illegal chars, merge consecutive -
     return (
       name
         .trim()
@@ -366,14 +366,14 @@ export class PageSaveService {
   }
 
   /**
-   * 列出项目所有页面（包括根目录和所有分组），按页面名称去重
-   * 去重规则：保留首次出现的页面（根目录优先于分组中的同名页面）
+   * List all pages of a project (including the root and all groups), deduplicated by page name
+   * Dedupe rule: keep the first occurrence (root takes priority over same-named pages in groups)
    */
   listAllPages(projectName: string): PageListResult {
     const seenNames = new Set<string>();
     const allPages: PageFileInfo[] = [];
 
-    // 1. 先收集根目录页面
+    // 1. Collect root-directory pages first
     const rootResult = this.listPages(projectName);
     for (const page of rootResult.pages) {
       if (!seenNames.has(page.name)) {
@@ -382,7 +382,7 @@ export class PageSaveService {
       }
     }
 
-    // 2. 获取所有分组，逐个收集分组页面（跳过已存在的同名页面）
+    // 2. Get all groups, collecting group pages one by one (skipping already-seen same-named pages)
     const groupsResult = this.listGroups(projectName);
     for (const group of groupsResult.groups) {
       const groupResult = this.listPages(projectName, group.name);
@@ -398,9 +398,9 @@ export class PageSaveService {
   }
 
   /**
-   * P4: 获取项目大纲（分组 + 页面结构），不含 page.json 数据。
-   * 仅扫描目录结构，返回分组及其页面列表、根目录页面列表。
-   * 用于编辑器「先加载大纲 → 按需加载页面数据」的按需加载策略。
+   * P4: Get the project outline (group + page structure), excluding page.json data.
+   * Scans only the directory structure, returning groups with their page lists and the root-page list.
+   * Supports the editor's "load outline first -> load page data on demand" lazy-loading strategy.
    */
   getProjectOutline(projectName: string): ProjectOutlineResult {
     const pagesDir = this.getPagesDir(projectName);
@@ -414,7 +414,7 @@ export class PageSaveService {
     const groups: OutlineGroupItem[] = [];
     const seenIds = new Set<string>();
 
-    // 从 page.json 中读取元数据字段
+    // Read metadata fields from page.json
     function readPageMeta(pageJsonPath: string): {
       id?: string;
       backgroundColor?: string;
@@ -437,7 +437,7 @@ export class PageSaveService {
       }
     }
 
-    // 构建 OutlinePageItem
+    // Build the OutlinePageItem
     function buildPageItem(
       pageJsonPath: string,
       pageName: string,
@@ -446,8 +446,8 @@ export class PageSaveService {
       if (!fs.existsSync(pageJsonPath)) return null;
 
       const meta = readPageMeta(pageJsonPath);
-      // 根目录和分组各自独立，允许同名页面存在于不同分组中
-      // 但使用 id 去重，防止同一页面被重复添加
+      // Root and groups are independent; same-named pages may exist in different groups
+      // But dedupe by id, preventing the same page from being added twice
       if (meta.id && seenIds.has(meta.id)) return null;
       if (meta.id) seenIds.add(meta.id);
 
@@ -471,7 +471,7 @@ export class PageSaveService {
         }
       }
 
-      // 传递 page.json 中的元数据
+      // Pass through the metadata from page.json
       if (meta.backgroundColor) item.backgroundColor = meta.backgroundColor;
       if (meta.backgroundImage) item.backgroundImage = meta.backgroundImage;
       if (meta.width !== undefined) item.width = meta.width;
@@ -480,7 +480,7 @@ export class PageSaveService {
       return item;
     }
 
-    // 处理根目录页面（p_ 前缀）
+    // Handle root-directory pages (p_ prefix)
     for (const entry of entries) {
       if (!entry.isDirectory() || !entry.name.startsWith('p_')) continue;
 
@@ -490,7 +490,7 @@ export class PageSaveService {
       if (item) rootPages.push(item);
     }
 
-    // 处理分组（g_ 前缀）
+    // Handle groups (g_ prefix)
     for (const entry of entries) {
       if (!entry.isDirectory() || !entry.name.startsWith('g_')) continue;
 
@@ -523,14 +523,14 @@ export class PageSaveService {
   }
 
   /**
-   * P3: 获取项目所有页面完整数据（包括根目录和所有分组），按页面名称去重。
-   * 一次调用即返回所有页面的完整 page.json 数据，无需额外逐个 readPage。
+   * P3: Get the full data of all pages in a project (including the root and all groups), deduplicated by page name.
+   * One call returns all pages' complete page.json data, with no need for extra per-page readPage calls.
    */
   readAllPages(projectName: string): ReadAllPagesResult {
     const seenNames = new Set<string>();
     const pages: PageWithData[] = [];
 
-    // 1. 根目录页面
+    // 1. Root-directory pages
     const rootResult = this.listPages(projectName);
     for (const info of rootResult.pages) {
       if (!seenNames.has(info.name)) {
@@ -544,7 +544,7 @@ export class PageSaveService {
       }
     }
 
-    // 2. 分组页面
+    // 2. Group pages
     const groupsResult = this.listGroups(projectName);
     for (const group of groupsResult.groups) {
       const groupResult = this.listPages(projectName, group.name);
@@ -565,8 +565,8 @@ export class PageSaveService {
   }
 
   /**
-   * P2: 批量读取指定页面的完整数据（同一分组下）。
-   * 替代逐个串行 readPage 的 N 次 HTTP 请求，合并为 1 次。
+   * P2: Batch-read the full data of specified pages (within one group).
+   * Replaces N serial readPage HTTP requests with 1.
    */
   batchReadPages(projectName: string, names: string[], groupName?: string): BatchReadPagesResult {
     const pages: PageWithData[] = [];
@@ -592,7 +592,7 @@ export class PageSaveService {
     const content = fs.readFileSync(filePath, 'utf-8');
     const data = JSON.parse(content);
 
-    // 清理旧版遗留的 backgroundImage 路径（resources/ 前缀）
+    // Clean up legacy backgroundImage paths (the resources/ prefix)
     if (data.backgroundImage) {
       data.backgroundImage = sanitizeBackgroundImage(data.backgroundImage) || data.backgroundImage;
     }
@@ -623,7 +623,7 @@ export class PageSaveService {
       updatedAt: new Date().toISOString(),
     };
 
-    // 保留原始 page.json 中的 id，防止前端发送懒页面数据时用 name 覆盖真实 id
+    // Keep the id from the original page.json, preventing the frontend from overwriting the real id with name when sending lazy page data
     if (fs.existsSync(filePath)) {
       try {
         const existingContent = fs.readFileSync(filePath, 'utf-8');
@@ -632,11 +632,11 @@ export class PageSaveService {
           dataToSave.id = existingData.id;
         }
       } catch {
-        // 读取失败时不阻塞保存流程
+        // Read failure does not block the save flow
       }
     }
 
-    // 原子写：临时文件 + rename，避免写一半崩溃导致 page.json 损坏（P0-1）
+    // Atomic write: temp file + rename, avoiding a mid-write crash corrupting page.json (P0-1)
     this.projectFs.atomicWriteJson(filePath, dataToSave);
     this.logger.log(`Page saved: ${projectName}/pages/${safeName}/page.json`);
 
@@ -672,7 +672,7 @@ export class PageSaveService {
     projectName: string,
     pages: Array<Record<string, any>>,
     groupName?: string,
-    // 当前页可选预览图：键为 pageName，值含 preview / previewSmall 的 Buffer
+    // Optional preview images for the current page: keyed by pageName, values contain preview / previewSmall Buffers
     previews?: Record<string, { preview?: Buffer; previewSmall?: Buffer }>,
   ): Promise<SaveAllPagesResult> {
     if (!pages || !Array.isArray(pages)) {
@@ -703,7 +703,7 @@ export class PageSaveService {
         updatedAt: new Date().toISOString(),
       };
 
-      // 保留原始 page.json 中的 id，防止前端发送懒页面数据时用 name 覆盖真实 id
+      // Keep the id from the original page.json, preventing the frontend from overwriting the real id with name when sending lazy page data
       if (fs.existsSync(filePath)) {
         try {
           const existingContent = fs.readFileSync(filePath, 'utf-8');
@@ -712,15 +712,15 @@ export class PageSaveService {
             pageData.id = existingData.id;
           }
         } catch {
-          // 读取失败时不阻塞保存流程
+          // Read failure does not block the save flow
         }
       }
 
-      // 原子写：临时文件 + rename，避免写一半崩溃导致 page.json 损坏（P0-1）
+      // Atomic write: temp file + rename, avoiding a mid-write crash corrupting page.json (P0-1)
       this.projectFs.atomicWriteJson(filePath, pageData);
       this.logger.log(`Page saved: ${projectName}/pages/${safeName}/page.json`);
 
-      // 同步落盘预览图（如有）
+      // Flush preview images to disk synchronously (if any)
       const pagePreviews = previews?.[pageName] || previews?.[pageId];
       if (pagePreviews?.preview) {
         const previewPath = path.join(folderPath, 'preview.png');
@@ -749,7 +749,7 @@ export class PageSaveService {
     const folderPath = this.getPageFolderPath(projectName, pageName, groupName);
     this.ensureDir(folderPath);
 
-    // 统一背景图格式为 bg.png（无论上传的是什么格式）
+    // Normalize the background image format to bg.png (regardless of the uploaded format)
     const fileName = 'bg.png';
     const filePath = path.join(folderPath, fileName);
 
@@ -797,14 +797,14 @@ export class PageSaveService {
       return filePath;
     }
 
-    // 备用查找：如果 groupName 带 g_ 前缀导致路径错误，尝试去掉前缀重试
+    // Fallback lookup: if groupName carries a g_ prefix causing a wrong path, retry without the prefix
     if (groupName && groupName.startsWith('g_')) {
       const altPath = this.getPageFolderPath(projectName, pageName, groupName.slice(2));
       const altFilePath = path.join(altPath, safeName);
       if (fs.existsSync(altFilePath)) return altFilePath;
     }
 
-    // 备用查找：如果 pageName 带 p_/g_ 前缀，尝试去掉前缀重试
+    // Fallback lookup: if pageName carries a p_/g_ prefix, retry without the prefix
     if (/^(p_|g_)/.test(pageName)) {
       const cleanName = pageName.replace(/^(p_|g_)/, '');
       const altPath = this.getPageFolderPath(projectName, cleanName, groupName);
@@ -838,10 +838,10 @@ export class PageSaveService {
   }
 
   /**
-   * 将存量项目数据迁移到新的前缀命名规范（p_ / g_）
-   * 页面目录: {pageName}/ → p_{normalized}/
-   * 分组目录: {groupName}/ → g_{normalized}/ 且内部页面 p_{normalized}/
-   * 去重: 同名页面只保留首次出现（根目录优先于分组）
+   * Migrate legacy project data to the new prefix naming convention (p_ / g_)
+   * Page directories: {pageName}/ -> p_{normalized}/
+   * Group directories: {groupName}/ -> g_{normalized}/ with inner pages p_{normalized}/
+   * Dedupe: same-named pages keep only the first occurrence (root takes priority over groups)
    */
   migrateProject(projectName: string): {
     migratedPages: number;
@@ -861,19 +861,19 @@ export class PageSaveService {
 
     for (const entry of entries) {
       if (!entry.isDirectory()) continue;
-      // 跳过已迁移的
+      // Skip already-migrated ones
       if (entry.name.startsWith('p_') || entry.name.startsWith('g_')) continue;
 
       const fullPath = path.join(pagesDir, entry.name);
 
-      // 判断是分组还是页面：分组目录下有子目录含 page.json
+      // Decide group vs page: a group directory has subdirectories containing page.json
       const subEntries = fs.readdirSync(fullPath, { withFileTypes: true });
       const hasSubPages = subEntries.some(
         (e) => e.isDirectory() && fs.existsSync(path.join(fullPath, e.name, 'page.json')),
       );
 
       if (hasSubPages) {
-        // 这是一个分组 → 重命名为 g_{name}
+        // This is a group -> rename to g_{name}
         const normalizedName = this.normalizePageName(entry.name);
         const newGroupName = `g_${normalizedName}`;
         const newGroupPath = path.join(pagesDir, newGroupName);
@@ -884,18 +884,18 @@ export class PageSaveService {
         }
         migratedGroups++;
 
-        // 迁移分组内页面
+        // Migrate the pages inside the group
         const migrated = this.migratePagesInsideDir(newGroupPath);
         migratedPages += migrated.migratedPages;
         removedDuplicates += migrated.removedDuplicates;
       } else {
-        // 这是一个页面 → 重命名为 p_{name}（规范化名称）
+        // This is a page -> rename to p_{name} (normalized name)
         const normalizedName = this.normalizePageName(entry.name);
         const newPageName = `p_${normalizedName}`;
         const newPagePath = path.join(pagesDir, newPageName);
 
         if (fs.existsSync(newPagePath)) {
-          // 目标已存在（同名页面），删除当前重复项
+          // Target already exists (same-named page); delete the current duplicate
           fs.rmSync(fullPath, { recursive: true, force: true });
           removedDuplicates++;
           this.logger.warn(
@@ -926,7 +926,7 @@ export class PageSaveService {
 
     for (const entry of entries) {
       if (!entry.isDirectory()) continue;
-      // 跳过已迁移的
+      // Skip already-migrated ones
       if (entry.name.startsWith('p_')) continue;
 
       const fullPath = path.join(dirPath, entry.name);
@@ -985,8 +985,8 @@ export class PageSaveService {
   }
 
   /**
-   * 导出所有页面为 ZIP 文件
-   * 打包整个 pages 目录（包括分组子目录）
+   * Export all pages as a ZIP file
+   * Packs the whole pages directory (including group subdirectories)
    */
   async exportPagesZip(projectName: string): Promise<{ filePath: string; fileName: string }> {
     const pagesDir = this.getPagesDir(projectName);
@@ -1016,7 +1016,7 @@ export class PageSaveService {
 
       archive.pipe(output);
 
-      // 打包 pages 目录，保留内部结构（分组/页面文件夹）
+      // Pack the pages directory, keeping the internal structure (group/page folders)
       archive.directory(pagesDir, 'pages');
 
       archive.finalize();
@@ -1026,10 +1026,10 @@ export class PageSaveService {
   }
 
   /**
-   * 从 ZIP 文件导入页面
-   * 支持两种格式：
-   *   1. 包含 pages 根目录的 ZIP（解压后合并到 pages 目录）
-   *   2. 直接包含页面文件夹/JSON 文件的 ZIP
+   * Import pages from a ZIP file
+   * Supports two formats:
+   *   1. A ZIP containing a pages root directory (merged into the pages directory after extraction)
+   *   2. A ZIP directly containing page folders/JSON files
    */
   async importPagesZip(
     projectName: string,
@@ -1049,13 +1049,13 @@ export class PageSaveService {
         throw new BadRequestException('ZIP 文件为空');
       }
 
-      // 安全解压：逐条目校验目标路径在临时目录内，杜绝 Zip Slip（P0-2）
+      // Safe extraction: validate each entry's target path stays inside the temp directory, eliminating Zip Slip (P0-2)
       this.projectFs.extractZipSafely(zip, tmpDir);
 
       const pagesDir = this.getPagesDir(projectName);
       this.ensureDir(pagesDir);
 
-      // 检测 ZIP 结构：是否包含 "pages/" 根目录
+      // Detect the ZIP structure: whether it contains a "pages/" root directory
       const extractedRoot = path.join(tmpDir, 'pages');
       const sourceDir =
         fs.existsSync(extractedRoot) && fs.statSync(extractedRoot).isDirectory()
@@ -1064,7 +1064,7 @@ export class PageSaveService {
 
       let importedCount = 0;
 
-      // 递归导入页面文件
+      // Recursively import page files
       const importFromDir = (srcDir: string, targetBaseDir: string) => {
         const srcEntries = fs.readdirSync(srcDir, { withFileTypes: true });
 
@@ -1073,10 +1073,10 @@ export class PageSaveService {
           const destPath = path.join(targetBaseDir, entry.name);
 
           if (entry.isDirectory()) {
-            // 检查是否是页面文件夹（包含 page.json）
+            // Check whether it is a page folder (containing page.json)
             const pageJsonPath = path.join(srcPath, 'page.json');
             if (fs.existsSync(pageJsonPath)) {
-              // 这是一个页面文件夹
+              // This is a page folder
               if (fs.existsSync(destPath)) {
                 if (options?.overwrite) {
                   fs.rmSync(destPath, { recursive: true, force: true });
@@ -1090,12 +1090,12 @@ export class PageSaveService {
               importedCount++;
               this.logger.log(`Page imported: ${projectName}/pages/${entry.name}`);
             } else {
-              // 这是一个分组目录，递归处理
+              // This is a group directory; process recursively
               this.ensureDir(destPath);
               importFromDir(srcPath, destPath);
             }
           } else if (entry.name.endsWith('.json')) {
-            // 单独的 JSON 文件视为页面数据
+            // Standalone JSON files are treated as page data
             const pageName = entry.name.replace('.json', '');
             const safeName = this.normalizePageName(pageName);
             const pageFolder = path.join(targetBaseDir, `p_${safeName}`);

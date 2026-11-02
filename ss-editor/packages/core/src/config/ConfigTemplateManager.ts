@@ -13,12 +13,12 @@ export interface SchemaField {
   max?: number;
   step?: number;
   options?: { value: string; label: string; labelKey?: string }[];
-  /** 动态选项提供者：string key 由属性面板解析，函数由运行时调用 */
+  /** Dynamic option provider: string keys resolved by the property panel, functions called at runtime */
   optionsProvider?: string | (() => { value: any; label: string }[]);
   defaultValue?: any;
   group?: string;
   groupKey?: string;
-  /** 标记此字段可被数据源绑定（与 plugin-sdk PluginPropertySchemaField.dataBindable 对齐） */
+  /** Marks the field as bindable to data sources (aligned with plugin-sdk PluginPropertySchemaField.dataBindable) */
   dataBindable?: boolean;
 }
 

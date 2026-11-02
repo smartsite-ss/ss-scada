@@ -29,7 +29,7 @@ import {
   WechatMpTokenPair,
 } from './wechat-auth.types';
 
-/** 项目权限级别权重（同项目多条授权取最高） */
+/** Project permission-level weight (take the highest among multiple grants in the same project) */
 const PERMISSION_RANK: Record<WechatMpAuthorizedProject['permissionLevel'], number> = {
   read: 1,
   write: 2,
@@ -37,16 +37,16 @@ const PERMISSION_RANK: Record<WechatMpAuthorizedProject['permissionLevel'], numb
 };
 
 /**
- * 微信小程序授权登录服务
+ * WeChat mini-program authorized-login service
  *
- * 流程（区别于开放平台网站扫码登录）：
- *   1. login：wx.login code → code2session 换 openid → 查绑定关系
- *      - 已绑定：校验激活 → 签发双 Token + 用户信息 + 授权项目快照
- *      - 未绑定：返回 bindingRequired=true，前端引导账密绑定
- *   2. bind：重新 code2session（code 一次性）→ 校验系统账号账密 → 写入绑定关系 → 签发
- *   3. unbind：清空绑定关系（已登录用户操作，走 JWT 鉴权）
+ * Flow (differs from the open-platform web scan login):
+ *   1. login: wx.login code -> code2session to exchange openid -> check binding relation
+ *      - Bound: verify active -> issue dual token + user info + authorized-projects snapshot
+ *      - Unbound: return bindingRequired=true, frontend guides to account-password binding
+ *   2. bind: re-run code2session (code is one-time) -> verify system account/password -> write binding -> issue
+ *   3. unbind: clear binding relation (operation by a logged-in user, via JWT auth)
  *
- * session_key 仅后端临时持有（本次请求内），不落库、不下发。
+ * session_key is held by the backend only temporarily (within this request); not persisted, not issued.
  */
 @Injectable()
 export class WechatMpAuthService {
@@ -63,10 +63,10 @@ export class WechatMpAuthService {
   ) {}
 
   /**
-   * 小程序微信登录
+   * Mini-program WeChat login
    *
-   * @returns 已绑定：tokenPair + userInformation + authorizedProjects
-   *          未绑定：bindingRequired=true（tokenPair/userInformation 为 null）
+   * @returns bound: tokenPair + userInformation + authorizedProjects
+   *          unbound: bindingRequired=true (tokenPair/userInformation are null)
    */
   async login(loginCode: string, auditContext?: AuditContext): Promise<WechatMpLoginResponse> {
     const session = await this.wechatApiService.getCode2Session(loginCode);
@@ -104,7 +104,7 @@ export class WechatMpAuthService {
       throw new UnauthorizedException('账号已被禁用，请联系管理员');
     }
 
-    // 重新加载带角色关系的用户（roleNames 展示需要）
+    // Reload the user with role relation (roleNames needed for display)
     const userWithRole = await this.userService.findById(boundUser.id);
     const tokenPair = await this.authService.generateTokensForUser({
       id: userWithRole.id,
@@ -135,10 +135,10 @@ export class WechatMpAuthService {
   }
 
   /**
-   * 账密绑定（首次微信登录引导页提交）
+   * Account-password binding (submitted from the first WeChat-login guide page)
    *
-   * 注意：loginCode 必须由前端提交时新取（code 一次性 + 5 分钟时效）。
-   * 冲突场景：该 openid 已绑定其他账号，或目标账号已绑定其他 openid → ACCOUNT_ALREADY_BOUND
+   * Note: loginCode must be freshly fetched by the frontend at submit time (code is one-time + 5-min validity).
+   * Conflict scenario: this openid already bound to another account, or target account already bound to another openid -> ACCOUNT_ALREADY_BOUND
    */
   async bind(
     loginCode: string,
@@ -233,10 +233,10 @@ export class WechatMpAuthService {
   }
 
   /**
-   * 账密登录（不依赖微信 code，直接用系统账号密码登录）
+   * Account-password login (does not depend on WeChat code, uses system account/password directly)
    *
-   * 与微信登录的区别：不涉及 code2session / openid 绑定，仅校验系统账号密码后签发双 Token。
-   * 响应结构与 bind 一致（tokenPair + userInformation + authorizedProjects），前端 applySession 统一处理。
+   * Difference from WeChat login: does not involve code2session / openid binding, only verifies system account/password then issues dual token.
+   * Response structure is consistent with bind (tokenPair + userInformation + authorizedProjects); the frontend applySession handles uniformly.
    */
   async loginWithPassword(
     username: string,
@@ -289,7 +289,7 @@ export class WechatMpAuthService {
     };
   }
 
-  /** 解绑当前登录用户的小程序微信（走 JWT 鉴权，由 Controller 注入 userId） */
+  /** Unbind the current logged-in user's mini-program WeChat (via JWT auth, userId injected by Controller) */
   async unbind(userId: string, auditContext?: AuditContext): Promise<{ message: string }> {
     await this.userService.unbindWechatMpOpenId(userId);
     this.logger.log(`[小程序解绑] 解绑成功 | userId="${userId}"`);
@@ -303,7 +303,7 @@ export class WechatMpAuthService {
     return { message: '微信绑定已解除' };
   }
 
-  /** 构建登录用户信息（与前端 LoginUserInfo 对齐） */
+  /** Build login user info (aligned with frontend LoginUserInfo) */
   private buildLoginUserInfo(user: User): WechatMpLoginUserInfo {
     return {
       userId: user.id,
@@ -315,10 +315,10 @@ export class WechatMpAuthService {
   }
 
   /**
-   * 查询用户角色的授权项目快照
+   * Query the authorized-projects snapshot for the user's roles
    *
-   * 同一项目多条授权取最高权限级别（admin > write > read）；
-   * projectName 从 {PROJECTS_DIR}/{projectId}/projectinfo.json 读取，缺失时回退 projectId。
+   * Take the highest permission level among multiple grants in the same project (admin > write > read);
+   * projectName is read from {PROJECTS_DIR}/{projectId}/projectinfo.json, falling back to projectId when missing.
    */
   private async listAuthorizedProjects(user: User): Promise<WechatMpAuthorizedProject[]> {
     if (!user.roleId) return [];
@@ -342,7 +342,7 @@ export class WechatMpAuthService {
     return Array.from(mergedByProjectId.values());
   }
 
-  /** 权限级别归一化（非法值降级为 read） */
+  /** Normalize permission level (illegal value downgraded to read) */
   private normalizePermissionLevel(permission: string): WechatMpAuthorizedProject['permissionLevel'] {
     if (permission === 'admin' || permission === 'write' || permission === 'read') {
       return permission;
@@ -350,7 +350,7 @@ export class WechatMpAuthService {
     return 'read';
   }
 
-  /** 从 projectinfo.json 读取项目显示名（兼容旧 name 字段），失败回退 projectId */
+  /** Read the project display name from projectinfo.json (compatible with the old name field); fall back to projectId on failure */
   private readProjectName(projectId: string): string {
     try {
       const projectsDirectory = this.pathResolver.resolveEnv('PROJECTS_DIR', './data/projects');
@@ -368,5 +368,5 @@ export class WechatMpAuthService {
   }
 }
 
-/** 供 Controller 使用的 Token 对类型（保持类型集中管理） */
+/** Token-pair type for Controller use (keep types centrally managed) */
 export type { WechatMpTokenPair };

@@ -67,7 +67,7 @@ export class DeviceTemplateController {
   }
 
   /**
-   * ⚠️ 静态路由必须定义在 @Get(':id') 之前，否则 "index"/"loaded" 会被当作 :id 参数
+   * ⚠️ Static routes must be defined before @Get(':id'), otherwise "index"/"loaded" would be treated as the :id parameter
    */
   @Get('index')
   @ReadRoles()
@@ -130,7 +130,7 @@ export class DeviceTemplateController {
       };
     }
 
-    // 回退：返回缓存的模板数据
+    // Fallback: return the cached template data
     return {
       code: 200,
       data: loaded,
@@ -253,7 +253,7 @@ export class DeviceTemplateController {
     };
   }
 
-  // ===== 索引文件管理（目录结构操作）=====
+  // ===== Index file management (directory structure operations) =====
 
   @Get('index/structure')
   @ReadRoles()
@@ -267,7 +267,7 @@ export class DeviceTemplateController {
   @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: '从目录结构重建指定语言的 index.json 文件' })
   async rebuildIndex(@Query('locale') locale?: string) {
-    // 多语言: 重建并重载指定语言的索引，默认 zh-CN
+    // Multi-language: rebuild and reload the index for the given language, default zh-CN
     const index = await this.templateLoader.rebuildAndReload(locale);
     return {
       code: 200,

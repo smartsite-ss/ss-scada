@@ -7,20 +7,20 @@ import { IPage } from '../../graphic-editing/graphic/base/IPage';
 import { ScriptError, errorService } from '../../utils/core/errors';
 
 /**
- * 定时器管理器
- * 负责管理页面的所有定时器
+ * Timer manager
+ * Manages all timers of a page
  */
 export class TimerManager {
   private timers: Map<string, ITimerConfig> = new Map();
-  private runningTimers: Map<string, any> = new Map(); // 存储setTimeout/setInterval的ID
+  private runningTimers: Map<string, any> = new Map(); // Stores setTimeout/setInterval IDs
   private executionLogs: Map<string, ITimerExecutionResult[]> = new Map();
-  
+
   private readonly MAX_LOGS_PER_TIMER = 100;
 
   /**
-   * 自动生成定时器名称
-   * 格式：定时器01, 定时器02... 基于已存在名称的最大编号+1
-   * 中间删除后不会复用已删除编号
+   * Auto-generate a timer name
+   * Format: timer-01, timer-02... based on the max number of existing names + 1
+   * Deleted numbers in the middle are not reused
    */
   private generateTimerName(): string {
     let maxNum = 0;
@@ -35,27 +35,27 @@ export class TimerManager {
   }
 
   /**
-   * 构造函数
+   * Constructor
    */
   constructor() {}
 
   /**
-   * 获取所有定时器
+   * Get all timers
    */
   getAllTimers(): ITimerConfig[] {
     return Array.from(this.timers.values());
   }
 
   /**
-   * 获取单个定时器
+   * Get a single timer
    */
   getTimer(id: string): ITimerConfig | null {
     return this.timers.get(id) || null;
   }
 
   /**
-   * 添加定时器
-   * 名称按"定时器01, 定时器02..."格式自动生成（基于已存在名称最大编号+1）
+   * Add a timer
+   * Names are auto-generated in the "timer-01, timer-02..." format (based on the max existing number + 1)
    */
   addTimer(timerConfig: Omit<ITimerConfig, 'id' | 'lastExecuteTime' | 'executeCount'>): ITimerConfig {
     const isNameExplicitlySet = timerConfig.name !== undefined && timerConfig.name !== '';
@@ -68,7 +68,7 @@ export class TimerManager {
       executeCount: 0,
     };
 
-    // 未显式传入名称时（或名称沿用默认值），按"定时器01"格式自动生成
+    // When the name is not explicitly provided (or still uses the default), auto-generate in the timer-01 format
     if (!isNameExplicitlySet || timer.name === DEFAULT_TIMER_CONFIG.name) {
       timer.name = this.generateTimerName();
     }
@@ -79,16 +79,16 @@ export class TimerManager {
   }
 
   /**
-   * 更新定时器
+   * Update a timer
    */
   updateTimer(id: string, config: Partial<ITimerConfig>): void {
     const timer = this.timers.get(id);
     if (timer) {
-      // 如果是更新enabled状态，需要先停止再启动
+      // If updating the enabled state, stop first then start
       const wasEnabled = timer.enabled;
-      
+
       Object.assign(timer, config);
-      
+
       if (config.enabled !== undefined && config.enabled !== wasEnabled) {
         if (config.enabled) {
           this.startTimer(id);
@@ -100,7 +100,7 @@ export class TimerManager {
   }
 
   /**
-   * 删除定时器
+   * Delete a timer
    */
   removeTimer(id: string): void {
     this.stopTimer(id);
@@ -109,7 +109,7 @@ export class TimerManager {
   }
 
   /**
-   * 启用定时器
+   * Enable a timer
    */
   enableTimer(id: string): void {
     const timer = this.timers.get(id);
@@ -119,7 +119,7 @@ export class TimerManager {
   }
 
   /**
-   * 禁用定时器
+   * Disable a timer
    */
   disableTimer(id: string): void {
     const timer = this.timers.get(id);
@@ -130,7 +130,7 @@ export class TimerManager {
   }
 
   /**
-   * 启动单个定时器
+   * Start a single timer
    */
   startTimer(id: string, page?: IPage): void {
     const timer = this.timers.get(id);
@@ -138,10 +138,10 @@ export class TimerManager {
       return;
     }
 
-    // 如果已经在运行，先停止
+    // If already running, stop first
     this.stopTimer(id);
 
-    // 创建执行器
+    // Create the executor
     const execute = () => {
       try {
         if (page) {
@@ -156,13 +156,13 @@ export class TimerManager {
 
     let intervalId: ReturnType<typeof setTimeout>;
     if (timer.type === 'interval') {
-      // 间隔定时器
+      // Interval timer
       intervalId = setInterval(execute, timer.interval) as unknown as ReturnType<typeof setTimeout>;
     } else {
-      // 超时定时器，支持重复
+      // Timeout timer, with repeat support
       const executeTimeout = (remaining: number) => {
         if (remaining <= 0) return;
-        
+
         intervalId = setTimeout(() => {
           try {
             if (page) {
@@ -177,10 +177,10 @@ export class TimerManager {
             console.error(`Timer ${timer.id} execution error:`, error);
           }
         }, timer.interval);
-        
+
         this.runningTimers.set(id, intervalId);
       };
-      
+
       executeTimeout(timer.repeatCount || Infinity);
       return;
     }
@@ -189,7 +189,7 @@ export class TimerManager {
   }
 
   /**
-   * 停止单个定时器
+   * Stop a single timer
    */
   stopTimer(id: string): void {
     const intervalId = this.runningTimers.get(id);
@@ -201,7 +201,7 @@ export class TimerManager {
   }
 
   /**
-   * 启动所有启用的定时器
+   * Start all enabled timers
    */
   startAllTimers(): void {
     for (const [id, timer] of this.timers.entries()) {
@@ -212,7 +212,7 @@ export class TimerManager {
   }
 
   /**
-   * 停止所有定时器
+   * Stop all timers
    */
   stopAllTimers(): void {
     for (const id of this.runningTimers.keys()) {
@@ -221,8 +221,8 @@ export class TimerManager {
   }
 
   /**
-   * 执行定时器脚本
-   * @param page 可选页面对象，传入后脚本可通过 page API 访问图元和脚本引擎接口
+   * Execute the timer script
+   * @param page Optional page object; when passed, the script can access graphics and the script engine interface through the page API
    */
   executeTimer(timer: ITimerConfig, page?: IPage): ITimerExecutionResult {
     const result: ITimerExecutionResult = {
@@ -231,11 +231,11 @@ export class TimerManager {
     };
 
     try {
-      // 创建沙箱执行环境（传入 page 时，脚本可通过 page 对象访问图元及脚本引擎接口）
+      // Create the sandbox execution environment (when page is passed, the script can access graphics and the script engine interface through the page object)
       const output = this.executeScriptInSandbox(timer.script, timer.id, page || null);
       result.output = output;
 
-      // 更新执行统计
+      // Update execution statistics
       timer.lastExecuteTime = Date.now();
       timer.executeCount = (timer.executeCount || 0) + 1;
     } catch (error) {
@@ -243,13 +243,13 @@ export class TimerManager {
       result.error = error instanceof Error ? error.message : String(error);
     }
 
-    // 记录执行日志
+    // Record the execution log
     this.addExecutionLog(timer.id, result);
     return result;
   }
 
   /**
-   * 执行定时器脚本（带page参数）
+   * Execute the timer script (with page parameter)
    */
   executeTimerScript(timer: ITimerConfig, page: IPage): ITimerExecutionResult {
     const result: ITimerExecutionResult = {
@@ -258,11 +258,11 @@ export class TimerManager {
     };
 
     try {
-      // 创建沙箱执行环境
+      // Create the sandbox execution environment
       const output = this.executeScriptInSandbox(timer.script, timer.id, page);
       result.output = output;
 
-      // 更新执行统计
+      // Update execution statistics
       timer.lastExecuteTime = Date.now();
       timer.executeCount = (timer.executeCount || 0) + 1;
     } catch (error) {
@@ -270,43 +270,43 @@ export class TimerManager {
       result.error = error instanceof Error ? error.message : String(error);
     }
 
-    // 记录执行日志
+    // Record the execution log
     this.addExecutionLog(timer.id, result);
     return result;
   }
 
   /**
-   * 在沙箱中执行脚本
+   * Execute a script in the sandbox
    */
   private executeScriptInSandbox(script: string, timerId: string, page: IPage | null): string {
     const output: string[] = [];
-    
-    // 创建沙箱执行环境
+
+    // Create the sandbox execution environment
     const sandbox: Record<string, any> = {
-      // 页面相关 API
+      // Page-related API
       page: page ? {
         id: page.id,
         name: page.name,
         width: page.width,
         height: page.height,
-        // 获取所有图元
+        // Get all graphics
         getGraphics: () => page.getGraphics(),
-        // 根据 ID 获取图元
+        // Get a graphic by ID
         getGraphicById: (id: string) => {
-          // 使用 BasePage 的 findGraphicById 方法，它会从 graphicManager 中查找
+          // Use BasePage's findGraphicById, which looks up from the graphicManager
           const graphic = page.findGraphicById(id);
           if (!graphic) {
             return null;
           }
-          // 返回一个简化但可靠的图元对象包装
+          // Return a simplified but reliable graphic object wrapper
           return {
             id: graphic.id,
             type: graphic.type,
-            // 直接访问属性的方法
+            // Method to directly access properties
             getProperty: (path: string, defaultValue?: any) => {
               return this.getNestedProperty(graphic, path, defaultValue);
             },
-            // 直接访问位置
+            // Directly access position
             getPosition: () => {
               const geometry = graphic.config?.geometry || {};
               return {
@@ -323,46 +323,46 @@ export class TimerManager {
             }
           };
         },
-        // 更新图元属性
+        // Update graphic property
         updateGraphicProperty: (id: string, propertyPath: string, value: any) => {
-          
-          // 构建正确的属性对象 - 注意，只需要 config 下面的属性！
+
+          // Build the correct property object - note: only properties under config are needed!
           const keys = propertyPath.split('.');
           const properties: Record<string, any> = {};
-          
-          // 确保我们跳过 'config' 前缀（如果有的话）
+
+          // Make sure we skip the 'config' prefix (if present)
           let startIndex = 0;
           if (keys.length >= 2 && keys[0] === 'config' && keys[1] === 'config') {
             startIndex = 2;
           }
-          
-          // 构建嵌套属性对象
+
+          // Build the nested property object
           let current = properties;
           for (let i = startIndex; i < keys.length - 1; i++) {
             current[keys[i]] = {};
             current = current[keys[i]];
           }
           current[keys[keys.length - 1]] = value;
-          
+
           page.updateGraphic(id, properties);
         },
-        // 移动图元（更方便的方法）
+        // Move a graphic (a more convenient method)
         moveGraphic: (id: string, x: number, y: number) => {
           page.moveGraphic(id, x, y);
         },
-        // 批量更新图元
+        // Batch update graphics
         batchUpdateGraphics: (updates: Array<{ id: string; properties: Record<string, any> }>) => {
           updates.forEach(u => {
             page.updateGraphic(u.id, u.properties);
           });
         },
-        // 刷新显示
+        // Refresh display
         refreshDisplay: () => {},
       } : null,
-      // 工具函数
+      // Utility functions
       utils: {
         log: (...args: any[]) => {
-          output.push(args.map(arg => 
+          output.push(args.map(arg =>
             typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
           ).join(' '));
         },
@@ -377,13 +377,13 @@ export class TimerManager {
           return new Promise((resolve) => setTimeout(resolve, ms));
         },
       },
-      // 定时器相关API
+      // Timer-related API
       timer: {
         id: timerId,
         getCurrentTimer: () => this.getTimer(timerId),
         getExecutionCount: () => (this.getTimer(timerId)?.executeCount || 0),
       },
-      // 数据绑定API（占位）
+      // Data binding API (placeholder)
       data: {
         getValue: (_key: string) => null,
         setValue: (_key: string, _value: any) => {},
@@ -391,9 +391,9 @@ export class TimerManager {
     };
 
     // ══════════════════════════════════════════════════════
-    // 注入顶级 API（与 ScriptEngine ScriptAPI 保持兼容）
+    // Inject top-level APIs (kept compatible with ScriptEngine ScriptAPI)
     // ══════════════════════════════════════════════════════
-    // 图元操作 API
+    // Graphic operation API
     sandbox.showGraphic = (id: string) => {
       if (page) page.updateGraphic(id, { visible: true });
     };
@@ -406,7 +406,7 @@ export class TimerManager {
     sandbox.moveGraphic = (id: string, x: number, y: number) => {
       if (page) page.moveGraphic(id, x, y);
     };
-    // 前端定时器 API（基于浏览器原生 setTimeout/setInterval）
+    // Front-end timer API (based on the browser-native setTimeout/setInterval)
     sandbox.setTimeout = (callback: (...args: any[]) => any, delay: number): number => {
       return setTimeout(callback, delay) as unknown as number;
     };
@@ -419,19 +419,19 @@ export class TimerManager {
     sandbox.clearInterval = (id: number): void => {
       clearInterval(id);
     };
-    // sleep（与 ClientScriptAPI 保持兼容，返回 Promise）
+    // sleep (kept compatible with ClientScriptAPI, returns a Promise)
     sandbox.sleep = (ms: number): Promise<void> => {
       return new Promise((resolve) => setTimeout(resolve, ms));
     };
 
-    // 创建安全的脚本执行环境（支持 async/await）
+    // Create a safe script execution environment (supports async/await)
     try {
       const sandboxKeys = Object.keys(sandbox);
       const sandboxValues = Object.values(sandbox);
-      // 用 async IIFE 包裹，使 await sleep() 等异步调用可用
+      // Wrap with an async IIFE so async calls like await sleep() can be used
       const fn = new Function(...sandboxKeys, `return (async () => {\n${script}\n})();`);
       const result = fn(...sandboxValues);
-      // 如果结果是 Promise，不阻塞执行（避免阻塞 interval 循环）
+      // If the result is a Promise, do not block execution (avoid blocking the interval loop)
       if (result instanceof Promise) {
         result.catch((error: any) => {
           const err = new ScriptError(
@@ -453,24 +453,24 @@ export class TimerManager {
   }
 
   /**
-   * 获取嵌套属性
+   * Get a nested property
    */
   private getNestedProperty(obj: any, path: string, defaultValue?: any): any {
     const keys = path.split('.');
     let current = obj;
-    
+
     for (let i = 0; i < keys.length; i++) {
       if (current === null || current === undefined) {
         return defaultValue;
       }
       current = current[keys[i]];
     }
-    
+
     return current !== undefined ? current : defaultValue;
   }
 
   /**
-   * 添加执行日志
+   * Add an execution log
    */
   private addExecutionLog(timerId: string, result: ITimerExecutionResult): void {
     let logs = this.executionLogs.get(timerId);
@@ -479,22 +479,22 @@ export class TimerManager {
       this.executionLogs.set(timerId, logs);
     }
     logs.push(result);
-    
-    // 限制日志数量
+
+    // Limit the number of logs
     if (logs.length > this.MAX_LOGS_PER_TIMER) {
       logs.shift();
     }
   }
 
   /**
-   * 获取执行日志
+   * Get execution logs
    */
   getExecutionLogs(timerId: string): ITimerExecutionResult[] {
     return this.executionLogs.get(timerId) || [];
   }
 
   /**
-   * 清除执行日志
+   * Clear execution logs
    */
   clearExecutionLogs(timerId?: string): void {
     if (timerId) {
@@ -507,29 +507,29 @@ export class TimerManager {
   }
 
   /**
-   * 检查定时器是否在运行
+   * Check whether a timer is running
    */
   isTimerRunning(id: string): boolean {
     return this.runningTimers.has(id);
   }
 
   /**
-   * 序列化为JSON（用于持久化）
+   * Serialize to JSON (for persistence)
    */
   toJSON(): ITimerConfig[] {
     return this.getAllTimers();
   }
 
   /**
-   * 从JSON恢复
+   * Restore from JSON
    */
   fromJSON(timersData: ITimerConfig[]): void {
     this.stopAllTimers();
     this.timers.clear();
     this.executionLogs.clear();
-    
+
     for (const timerData of timersData) {
-      // 验证数据
+      // Validate data
       const timer: ITimerConfig = {
         id: timerData.id || `timer-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         name: timerData.name || 'New Timer',
@@ -547,7 +547,7 @@ export class TimerManager {
   }
 
   /**
-   * 清理资源
+   * Clean up resources
    */
   destroy(): void {
     this.stopAllTimers();

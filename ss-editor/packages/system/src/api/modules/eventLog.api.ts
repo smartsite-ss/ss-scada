@@ -10,34 +10,34 @@ import type {
 } from '../types/api';
 
 /**
- * 事件日志 API — 调用后端 /system/event-logs 接口
+ * Event log API — calls the backend /system/event-logs endpoints
  *
- * 参考 system.api.ts 的 getOperationLogs 模式：
- * - 使用 client（axios 实例）发送 GET 请求
- * - 通过 params 传递查询参数
- * - 返回 ApiResponse<T> 格式
+ * Follows the getOperationLogs pattern of system.api.ts:
+ * - Sends GET requests via client (the axios instance)
+ * - Passes query parameters via params
+ * - Returns the ApiResponse<T> format
  */
 export const eventLogApi = {
-  /** 查询事件日志（分页，支持多维筛选） */
+  /** Query event logs (paged, multi-dimensional filtering supported) */
   getEventLogs(
     params?: EventLogQueryParams,
   ): Promise<ApiResponse<{ items: EventLogItem[]; total: number }>> {
     return client.get('/system/event-logs', { params }).then((res) => res.data);
   },
 
-  /** 查询事件日志详情（含订阅者追踪记录和业务效果） */
+  /** Query event log details (including subscriber tracing records and business effects) */
   getEventLogDetail(id: string): Promise<ApiResponse<EventLogItem>> {
     return client.get(`/system/event-logs/${id}`).then((res) => res.data);
   },
 
-  /** 查询失败/部分失败的事件（运维诊断，不分页） */
+  /** Query failed/partially failed events (ops diagnostics, not paged) */
   getFailedEventLogs(
     params?: { projectId?: string; startTime?: string; endTime?: string },
   ): Promise<ApiResponse<EventLogItem[]>> {
     return client.get('/system/event-logs/failed', { params }).then((res) => res.data);
   },
 
-  /** 清空所有事件日志（运维操作，不可恢复） */
+  /** Clear all event logs (ops operation, irreversible) */
   clearEventLogs(): Promise<ApiResponse<{ deleted: number }>> {
     return client.delete('/system/event-logs').then((res) => res.data);
   },

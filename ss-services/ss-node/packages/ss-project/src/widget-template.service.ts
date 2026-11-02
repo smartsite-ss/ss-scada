@@ -3,19 +3,19 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * Widget Template Service（组件模板服务）
+ * Widget Template Service
  *
- * 与 CanvasTemplateService（页面模板）保持完全一致的存储与返回结构，
- * 但面向"画布内可复用图元零件库"——组件模板包装一个 Graphics 数组
- * （通常是一个 GroupGraphic，内部含多图元）并携带 `variables` 占位符。
+ * Storage and return structures kept fully consistent with CanvasTemplateService (page templates),
+ * but aimed at a "reusable graphic-parts library inside the canvas" -- a widget template wraps a Graphics array
+ * (usually one GroupGraphic containing multiple graphics) and carries `variables` placeholders.
  *
- * 存储布局：
- *   {systemDir}/widget-templates/{id}.json        # 完整数据（含 graphics + variables）
- *   {systemDir}/widget-templates/{id}_meta.json   # 元数据（列表用，不含 graphics）
- *   {projectDir}/{projectId}/canvas/widget-templates/{id}.json     # 项目级
+ * Storage layout:
+ *   {systemDir}/widget-templates/{id}.json        # full data (including graphics + variables)
+ *   {systemDir}/widget-templates/{id}_meta.json   # metadata (for lists, excluding graphics)
+ *   {projectDir}/{projectId}/canvas/widget-templates/{id}.json     # project-level
  *   {projectDir}/{projectId}/canvas/widget-templates/{id}_meta.json
  *
- * 内置组件模板通过 seedBuiltinWidgetTemplates() 在 onModuleInit 时落地。
+ * Built-in widget templates are materialized at onModuleInit via seedBuiltinWidgetTemplates().
  */
 
 import {
@@ -28,19 +28,19 @@ import { ConfigService } from '@nestjs/config';
 import { PathResolverService } from '@ss-node/ss-core';
 import * as fs from 'fs';
 import * as path from 'path';
-// Node 内置 crypto 生成 v4 UUID，替代外部 uuid 依赖（uuid 包类型文件在本机 pnpm store 中残缺）
+// Node's built-in crypto generates v4 UUIDs, replacing the external uuid dependency (the uuid package's type files are incomplete in the local pnpm store)
 import { randomUUID as uuidv4 } from 'node:crypto';
 
-/** 组件模板内的变量定义 */
+/** Variable definitions inside a widget template */
 export interface WidgetTemplateVariable {
-  key: string; // 占位符键，如 "title"
-  label: string; // 展示名
+  key: string; // placeholder key, e.g. "title"
+  label: string; // display name
   type: 'text' | 'number' | 'color' | 'bind-tag';
   defaultValue?: string | number;
-  targetPath?: string; // 注入目标，如 "graphics[0].props.text"
+  targetPath?: string; // injection target, e.g. "graphics[0].props.text"
 }
 
-/** 组件模板完整数据结构 */
+/** Widget-template full data structure */
 export interface WidgetTemplateData {
   id: string;
   name: string;
@@ -57,7 +57,7 @@ export interface WidgetTemplateData {
   tags?: string[];
 }
 
-/** 组件模板元数据（列表返回，排除 graphics 与 variables 以减轻体积） */
+/** Widget-template metadata (returned in lists, excluding graphics and variables to reduce size) */
 export interface WidgetTemplateMeta {
   id: string;
   name: string;
@@ -98,9 +98,9 @@ export interface WidgetTemplateDeleteResult {
 }
 
 const SCHEMA_VERSION = 2;
-const WIDGET_TYPE = 'both'; // 组件模板同时支持内置/用户/项目级
+const WIDGET_TYPE = 'both'; // widget templates support built-in/user/project levels simultaneously
 
-/** 预置内置组件模板 */
+/** Preset built-in widget templates */
 const BUILTIN_WIDGET_TEMPLATES: WidgetTemplateData[] = [
   {
     id: 'sys-water-tank',
@@ -230,7 +230,7 @@ export class WidgetTemplateService {
     this.seedBuiltinWidgetTemplates();
   }
 
-  // ─── 路径解析 ───
+  // ─── Path resolution ───
 
   private getDirs(projectId?: string): { base: string; meta: string } {
     const base = projectId
@@ -258,7 +258,7 @@ export class WidgetTemplateService {
     }
   }
 
-  // ─── 内置模板种子 ───
+  // ─── Built-in template seeds ───
 
   private seedBuiltinWidgetTemplates(): void {
     const { base } = this.getDirs();
@@ -286,7 +286,7 @@ export class WidgetTemplateService {
     }
   }
 
-  // ─── 元数据转换 ───
+  // ─── Metadata conversion ───
 
   private toMeta(data: WidgetTemplateData): WidgetTemplateMeta {
     return {
@@ -306,7 +306,7 @@ export class WidgetTemplateService {
     };
   }
 
-  // ─── 列表 ───
+  // ─── List ───
 
   listTemplates(
     category?: string,
@@ -340,7 +340,7 @@ export class WidgetTemplateService {
     }
   }
 
-  // ─── 读取完整数据 ───
+  // ─── Read full data ───
 
   readTemplate(
     templateId: string,
@@ -355,7 +355,7 @@ export class WidgetTemplateService {
     return { success: true, data, source: 'fs' };
   }
 
-  // ─── 创建 ───
+  // ─── Create ───
 
   createTemplate(
     body: Partial<WidgetTemplateData>,
@@ -365,7 +365,7 @@ export class WidgetTemplateService {
       throw new InternalServerErrorException('缺少 name 字段');
     }
     const now = new Date().toISOString();
-    // 保留调用方传入的 id（导入/外部指定场景），否则生成新 id
+    // Keep the caller-provided id (import/external-specification scenarios), otherwise generate a new id
     const id = body.id && body.id.trim() ? body.id.trim() : `wt-${uuidv4().slice(0, 8)}`;
     const data: WidgetTemplateData = {
       id,
@@ -390,7 +390,7 @@ export class WidgetTemplateService {
     };
   }
 
-  // ─── 更新 ───
+  // ─── Update ───
 
   updateTemplate(
     templateId: string,
@@ -422,7 +422,7 @@ export class WidgetTemplateService {
     };
   }
 
-  /** 写入完整数据 + 元数据 */
+  /** Write full data + metadata */
   private writeTemplate(data: WidgetTemplateData, projectId?: string): void {
     const { base } = this.getDirs(projectId);
     fs.mkdirSync(base, { recursive: true });
@@ -438,7 +438,7 @@ export class WidgetTemplateService {
     );
   }
 
-  // ─── 删除 ───
+  // ─── Delete ───
 
   deleteTemplate(
     templateId: string,
@@ -464,7 +464,7 @@ export class WidgetTemplateService {
     }
   }
 
-  // ─── 导入 / 导出 ───
+  // ─── Import / export ───
 
   importTemplate(json: string): WidgetTemplateWriteResult {
     let parsed: WidgetTemplateData;
@@ -492,7 +492,7 @@ export class WidgetTemplateService {
     return JSON.stringify(data, null, 2);
   }
 
-  // ─── 项目级提升为内置（系统级） ───
+  // ─── Promote project-level to built-in (system-level) ───
 
   promoteToSystem(
     projectId: string,

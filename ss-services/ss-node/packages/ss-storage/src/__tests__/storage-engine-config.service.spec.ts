@@ -124,7 +124,7 @@ describe('StorageEngineConfigService', () => {
   });
 });
 
-// ──────────── 引擎类型注册表 ────────────
+// ──────────── Engine type registry ────────────
 
 describe('storage-engine-types', () => {
   describe('resolveStorageEngineType', () => {

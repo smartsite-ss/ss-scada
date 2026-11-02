@@ -3,14 +3,14 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 存储引擎类型注册表（字符串常量表，替代原固定枚举）。
+ * Storage engine type registry (string constant table, replacing the former fixed enum).
  *
- * 新增一个时序库 / 数据源引擎时只需：
- * 1. 在此表增加引擎类型；
- * 2. 实现 StorageAdapter 并在模块装配处注册；
- * 3. 通过 STORAGE_DEFAULT_ENGINE / 项目级覆盖路由。
+ * To add a new time-series / data-source engine you only need to:
+ * 1. add the engine type to this table;
+ * 2. implement StorageAdapter and register it at module assembly;
+ * 3. route via STORAGE_DEFAULT_ENGINE / project-level overrides.
  *
- * 命名规范：配置名用全称（influxdb2 / influxdb3），不用 i2/i3 缩写。
+ * Naming rule: config names use full names (influxdb2 / influxdb3), not abbreviations like i2/i3.
  */
 export const STORAGE_ENGINE_TYPES = {
   INFLUXDB2: 'influxdb2',
@@ -18,21 +18,21 @@ export const STORAGE_ENGINE_TYPES = {
   TDENGINE: 'tdengine',
   SQLITE: 'sqlite',
   MYSQL: 'mysql',
-  // 未来扩展：IOTDB / VICTORIAMETRICS / FILE 等
+  // Future extensions: IOTDB / VICTORIAMETRICS / FILE etc.
 } as const;
 
 export type StorageEngineType = (typeof STORAGE_ENGINE_TYPES)[keyof typeof STORAGE_ENGINE_TYPES];
 
 /**
- * 存量别名兼容表：历史配置中的 'influxdb' 统一归一化为 'influxdb2'，避免存量配置失效。
+ * Legacy alias compatibility table: 'influxdb' in historical configs is normalized to 'influxdb2' to keep legacy configs working.
  */
 const STORAGE_ENGINE_TYPE_ALIASES: Readonly<Record<string, StorageEngineType>> = {
   influxdb: STORAGE_ENGINE_TYPES.INFLUXDB2,
 };
 
 /**
- * 校验字符串是否为已注册的引擎类型（先做别名归一化）。
- * @returns 归一化后的合法引擎类型；未注册返回 null。
+ * Validate whether a string is a registered engine type (alias normalization applied first).
+ * @returns the normalized valid engine type; null if not registered.
  */
 export function resolveStorageEngineType(candidate: string): StorageEngineType | null {
   const normalized = candidate.trim().toLowerCase();

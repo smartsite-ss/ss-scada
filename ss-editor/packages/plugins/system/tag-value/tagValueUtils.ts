@@ -2,22 +2,22 @@
 // https://smartsite.top/
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
-/** 标签值组件形态 */
+/** Tag value component shape */
 export type TagValueShape = 'rectangle' | 'circle';
 
-/** 装饰图片位置 */
+/** Decoration image position */
 export type DecorationImagePosition = 'left' | 'right' | 'background' | 'center';
 
 /**
- * 解析显示名：别名（非空）> 标签名称 > 标签 ID。
- * alias 为组件级字段（DataTag 无 alias），故在此做三级回退。
+ * Resolve the display name: alias (non-empty) > tag name > tag ID.
+ * alias is a component-level field (DataTag has no alias), hence the three-level fallback here.
  */
 export function resolveDisplayName(alias: string, tagName: string, tagId: string): string {
   return (alias ?? '').trim() || tagName || tagId || '';
 }
 
 /**
- * 按小数位格式化实时值；布尔与非数值（字符串）原样返回，空值返回占位符。
+ * Format the real-time value by decimal places; booleans and non-numeric values (strings) are returned as-is, empty values return a placeholder.
  */
 export function formatTagValue(raw: unknown, decimalPlaces: number): string {
   if (raw === null || raw === undefined || raw === '') return '--';
@@ -30,8 +30,8 @@ export function formatTagValue(raw: unknown, decimalPlaces: number): string {
 }
 
 /**
- * 背景图片填充样式 → CSS background-size。
- * fill 映射为 100% 100%（拉伸铺满）；scale-down 无 background-size 原生值，近似用 contain。
+ * Background image fill style → CSS background-size.
+ * fill maps to 100% 100% (stretched to fill); scale-down has no native background-size value, approximated with contain.
  */
 export function resolveBackgroundSize(fit: string): string {
   switch (fit) {

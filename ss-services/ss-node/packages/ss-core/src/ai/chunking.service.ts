@@ -3,56 +3,56 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * Chunking Service — P1-T08 RAG 文档分块器
+ * Chunking Service - P1-T08 RAG document chunker
  *
- * 将 Markdown 文档按语义边界拆分为重叠的文本块。
- * 支持两种分块策略：
- *   - heading：按 Markdown 标题分块
- *   - fixed：固定大小 + 重叠窗口分块
+ * Splits Markdown documents into overlapping text chunks by semantic boundaries.
+ * Supports two chunking strategies:
+ *   - heading: split by Markdown headings
+ *   - fixed: fixed-size + overlapping-window chunking
  *
- * Phase 1 实现：简单版（不依赖 NLP 分句器）。
+ * Phase 1 implementation: simple version (no NLP sentence splitter dependency).
  *
- * 用法:
+ * Usage:
  *   const chunks = chunkingService.chunk(markdownText, { strategy: 'heading' });
  */
 
 import { Injectable, Optional } from '@nestjs/common';
 
-/** 文本块 */
+/** Text chunk */
 export interface TextChunk {
-  /** 块 ID */
+  /** Chunk ID */
   id: string;
-  /** 块内容 */
+  /** Chunk content */
   content: string;
-  /** 来源文档路径 */
+  /** Source document path */
   sourcePath: string;
-  /** 文档内序号（0-based） */
+  /** In-document index (0-based) */
   chunkIndex: number;
-  /** 元数据（标题层级等） */
+  /** Metadata (heading level, etc.) */
   metadata: {
-    /** 所属章节标题 */
+    /** Section heading it belongs to */
     heading?: string;
-    /** 标题层级（1-6） */
+    /** Heading level (1-6) */
     headingLevel?: number;
-    /** 块起始字符位置 */
+    /** Chunk start character position */
     startPos: number;
-    /** 块结束字符位置 */
+    /** Chunk end character position */
     endPos: number;
   };
 }
 
-/** 分块策略 */
+/** Chunking strategy */
 export type ChunkStrategy = 'heading' | 'fixed';
 
-/** 分块配置 */
+/** Chunking config */
 export interface ChunkConfig {
-  /** 分块策略 */
+  /** Chunking strategy */
   strategy: ChunkStrategy;
-  /** 固定分块大小（字符数，fixed 策略时） */
+  /** Fixed chunk size (char count, for the fixed strategy) */
   chunkSize: number;
-  /** 块间重叠字符数 */
+  /** Inter-chunk overlap character count */
   overlap: number;
-  /** 最小块大小（小于此值的块合并到上一块） */
+  /** Minimum chunk size (chunks smaller than this are merged into the previous chunk) */
   minChunkSize: number;
 }
 
@@ -72,10 +72,10 @@ export class ChunkingService {
   }
 
   /**
-   * 分块主入口
-   * @param text — 文档全文
-   * @param sourcePath — 来源路径
-   * @param options — 可覆盖默认配置
+   * Chunking main entry point
+   * @param text - full document text
+   * @param sourcePath - source path
+   * @param options - overrides for the default config
    */
   chunk(text: string, sourcePath: string, options?: Partial<ChunkConfig>): TextChunk[] {
     const cfg = { ...this.config, ...options };
@@ -85,7 +85,7 @@ export class ChunkingService {
   }
 
   // ============================================================
-  //  按标题分块
+  //  Chunk by heading
   // ============================================================
 
   private chunkByHeading(text: string, sourcePath: string, cfg: ChunkConfig): TextChunk[] {
@@ -102,7 +102,7 @@ export class ChunkingService {
       const headingMatch = line.match(/^(#{1,6})\s+(.+)/);
 
       if (headingMatch) {
-        // 保存当前块
+        // save the current chunk
         if (currentContent.length > 0) {
           const content = currentContent.join('\n').trim();
           if (content.length >= cfg.minChunkSize) {
@@ -131,7 +131,7 @@ export class ChunkingService {
       }
     }
 
-    // 最后一块
+    // last chunk
     if (currentContent.length > 0) {
       const content = currentContent.join('\n').trim();
       if (content.length >= cfg.minChunkSize) {
@@ -154,7 +154,7 @@ export class ChunkingService {
   }
 
   // ============================================================
-  //  固定大小分块
+  //  Fixed-size chunking
   // ============================================================
 
   private chunkByFixedSize(text: string, sourcePath: string, cfg: ChunkConfig): TextChunk[] {
@@ -179,7 +179,7 @@ export class ChunkingService {
     while (start < text.length) {
       let end = Math.min(start + chunkSize, text.length);
 
-      // 尝试在段落边界分割
+      // try to split at a paragraph boundary
       if (end < text.length) {
         const paragraphBreak = text.lastIndexOf('\n\n', end);
         if (paragraphBreak > start + minChunkSize) {

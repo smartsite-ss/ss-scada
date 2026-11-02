@@ -23,8 +23,8 @@ export const useAlarmStore = defineStore('alarm', () => {
     records.value.filter((r: AlarmRecord) => r.status === 'active').length,
   );
 
-  /** 实时告警计数（isActive=true，含 active/acknowledged/shelved 未恢复）。
-   *  Phase 5.6：基于 isActive 字段显式统计，用于"实时告警"子标签徽标 */
+  /** Real-time alarm count (isActive=true, covering active/acknowledged/shelved not yet cleared).
+   *  Phase 5.6: counted explicitly by the isActive field, used for the "Real-time alarms" sub-tab badge */
   const realtimeCount = computed(() =>
     records.value.filter((r: AlarmRecord) => r.isActive === true).length,
   );
@@ -98,7 +98,7 @@ export const useAlarmStore = defineStore('alarm', () => {
     error.value = null;
     try {
       await alarmApi.batchAcknowledge(projectId, ids);
-      // 更新本地状态
+      // Update local state
       for (const id of ids) {
         const idx = records.value.findIndex((r: AlarmRecord) => r.id === id);
         if (idx !== -1) {

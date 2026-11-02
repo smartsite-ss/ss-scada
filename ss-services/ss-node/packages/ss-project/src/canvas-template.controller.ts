@@ -43,7 +43,7 @@ export class CanvasTemplateController {
     private readonly configService: ConfigService,
   ) {}
 
-  /** GET /api/v1/canvas-templates/config — 获取模板配置（含应用模式） */
+  /** GET /api/v1/canvas-templates/config - get the template config (including the apply mode) */
   @Get('config')
   @ApiOperation({ summary: '获取模板配置' })
   getConfig(): { templateMode: string } {
@@ -51,7 +51,7 @@ export class CanvasTemplateController {
     return { templateMode };
   }
 
-  /** GET /api/v1/canvas-templates — 获取全部模板列表 */
+  /** GET /api/v1/canvas-templates - get the full template list */
   @Get()
   @ApiOperation({ summary: '获取模板列表' })
   @ApiQuery({ name: 'category', required: false, description: '按分类筛选' })
@@ -63,7 +63,7 @@ export class CanvasTemplateController {
     return this.canvasTemplateService.listTemplates(category, source);
   }
 
-  /** GET /api/v1/canvas-templates/:templateId — 获取单个模板 */
+  /** GET /api/v1/canvas-templates/:templateId - get a single template */
   @Get(':templateId')
   @ApiOperation({ summary: '获取单个模板详情' })
   readTemplate(@Param('templateId') templateId: string): TemplateReadResult {
@@ -74,7 +74,7 @@ export class CanvasTemplateController {
     return result;
   }
 
-  /** POST /api/v1/canvas-templates — 新建用户模板 */
+  /** POST /api/v1/canvas-templates - create a user template */
   @Post()
   @ApiOperation({ summary: '新建用户模板' })
   createTemplate(@Body() body: CanvasTemplateData): TemplateWriteResult {
@@ -88,7 +88,7 @@ export class CanvasTemplateController {
     }
   }
 
-  /** PUT /api/v1/canvas-templates/:templateId — 更新用户模板 */
+  /** PUT /api/v1/canvas-templates/:templateId - update a user template */
   @Put(':templateId')
   @ApiOperation({ summary: '更新用户模板（禁止修改内置模板）' })
   updateTemplate(
@@ -108,7 +108,7 @@ export class CanvasTemplateController {
     }
   }
 
-  /** DELETE /api/v1/canvas-templates/:templateId — 删除用户模板 */
+  /** DELETE /api/v1/canvas-templates/:templateId - delete a user template */
   @Delete(':templateId')
   @ApiOperation({ summary: '删除用户模板（禁止删除内置模板）' })
   deleteTemplate(@Param('templateId') templateId: string): TemplateDeleteResult {
@@ -125,7 +125,7 @@ export class CanvasTemplateController {
     }
   }
 
-  /** POST /api/v1/canvas-templates/import — 导入模板 JSON */
+  /** POST /api/v1/canvas-templates/import - import a template JSON */
   @Post('import')
   @ApiOperation({ summary: '导入模板 JSON' })
   importTemplate(@Body() body: { json: string }): TemplateWriteResult {
@@ -143,7 +143,7 @@ export class CanvasTemplateController {
     }
   }
 
-  /** GET /api/v1/canvas-templates/:templateId/export — 导出模板 JSON */
+  /** GET /api/v1/canvas-templates/:templateId/export - export the template JSON */
   @Get(':templateId/export')
   @ApiOperation({ summary: '导出模板 JSON 文件下载' })
   exportTemplate(
@@ -170,7 +170,7 @@ export class CanvasTemplateController {
   }
 }
 
-// ─── 项目级路由 ───
+// ─── Project-level routes ───
 
 @ApiTags('画布模板-项目级')
 @ApiBearerAuth()

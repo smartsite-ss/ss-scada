@@ -3,7 +3,7 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 // ============================================================
-// Mock @ss-node/ss-device — entity 文件中 import DataTag 需要
+// Mock @ss-node/ss-device -- its entity file imports DataTag
 // ============================================================
 jest.mock('@ss-node/ss-device', () => ({
   DataTag: class {},
@@ -97,7 +97,7 @@ function makeShelvedRecord(overrides: Partial<AlarmRecord> = {}): AlarmRecord {
     shelvedAt: new Date('2026-07-31T10:00:00Z'),
     shelvedBy: 'user-001',
     shelveReason: '维护中',
-    shelvedUntil: new Date('2026-07-31T10:30:00Z'), // 已到期
+    shelvedUntil: new Date('2026-07-31T10:30:00Z'), // already due
     preShelveStatus: AlarmStatus.ACTIVE,
     alarmType: 'data',
     dispositionType: 'alarm.acknowledged',
@@ -129,7 +129,7 @@ describe('AlarmShelveRecoveryService', () => {
       getLoadedProjectNames: jest.fn().mockReturnValue([]),
       getLoadedSystemDb: jest.fn().mockReturnValue(undefined),
     };
-    // 默认 unified 模式，扫描间隔设大避免触发真实定时器
+    // Default unified mode; set a large scan interval to avoid triggering the real timer
     mockConfigService = {
       get: jest.fn((key: string, def?: any) => {
         if (key === 'PROJECT_DB_MODE') return 'unified';
@@ -152,17 +152,17 @@ describe('AlarmShelveRecoveryService', () => {
   });
 
   afterEach(() => {
-    // 销毁服务以清理 setInterval 定时器
+    // Destroy the service to clean up the setInterval timer
     service.onModuleDestroy();
   });
 
-  // ==================== unified 模式：到期恢复 ====================
+  // ==================== unified mode: expiry recovery ====================
   describe('periodicCheck (unified mode)', () => {
     it('TC-ALM-SHR-001: should recover expired shelved alarms and revert to preShelveStatus', async () => {
       const expired = makeShelvedRecord({
         id: 'rec-1',
         preShelveStatus: AlarmStatus.ACKNOWLEDGED,
-        shelvedUntil: new Date(Date.now() - 1000), // 已过期
+        shelvedUntil: new Date(Date.now() - 1000), // already expired
       });
       mockRecordRepo.find!.mockResolvedValue([expired]);
       mockRecordRepo.save!.mockResolvedValue(expired);
@@ -174,9 +174,9 @@ describe('AlarmShelveRecoveryService', () => {
       expect(saved.status).toBe(AlarmStatus.ACKNOWLEDGED);
       expect(saved.shelvedUntil).toBeNull();
       expect(saved.preShelveStatus).toBeNull();
-      // 暂缓恢复后处置类型更新为 alarm.shelve.expired
+      // After shelve recovery, disposition type updates to alarm.shelve.expired
       expect(saved.dispositionType).toBe('alarm.shelve.expired');
-      // 审计字段保留
+      // Audit fields are preserved
       expect(saved.shelvedBy).toBe('user-001');
       expect(saved.shelveReason).toBe('维护中');
     });
@@ -225,8 +225,8 @@ describe('AlarmShelveRecoveryService', () => {
     });
   });
 
-  // ==================== isolated 模式：跨项目扫描 ====================
-  // 注意：dbMode 在构造函数中缓存，需直接 new 一个 isolated 模式实例
+  // ==================== isolated mode: cross-project scan ====================
+  // Note: dbMode is cached in the constructor, so a fresh isolated-mode instance must be created with new
   describe('periodicCheck (isolated mode)', () => {
     function makeIsolatedService(): AlarmShelveRecoveryService {
       const isolatedConfig = {
@@ -265,7 +265,7 @@ describe('AlarmShelveRecoveryService', () => {
       proj1Repo.save!.mockResolvedValue(expired1);
       proj2Repo.save!.mockResolvedValue(expired2);
 
-      // 模拟每个项目返回独立的 Repository
+      // Simulate each project returning its own Repository
       mockProjectDb.getLoadedSystemDb.mockImplementation((projectName: string) => {
         if (projectName === 'proj-1') return { getRepository: () => proj1Repo };
         if (projectName === 'proj-2') return { getRepository: () => proj2Repo };
@@ -291,7 +291,7 @@ describe('AlarmShelveRecoveryService', () => {
     });
   });
 
-  // ==================== 生命周期 ====================
+  // ==================== lifecycle ====================
   describe('lifecycle', () => {
     it('TC-ALM-SHR-007: should start and stop periodic timer without throwing', () => {
       expect(() => service.onModuleInit()).not.toThrow();

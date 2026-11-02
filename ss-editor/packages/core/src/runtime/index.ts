@@ -2,7 +2,7 @@
 // https://smartsite.top/
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
-// 运行态子系统 - 运行模式状态管理
+// Runtime subsystem - runtime mode state management
 export * from './managers/TimerManager';
 export * from './managers/CarouselManager';
 export * from './types/CarouselConfig';

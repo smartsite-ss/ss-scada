@@ -22,15 +22,15 @@ import {
 } from './simulation-config.types';
 
 /**
- * 仿真器工厂 — 管理所有仿真器实例，支持按 tagId 获取/创建/更新/删除。
- * 优先使用 tagConfig 中的 simulation 配置，未配置时按 dataType 自动推断默认策略。
+ * Simulator factory - manages all simulator instances, supports get/create/update/delete by tagId.
+ * Prefers the simulation config from tagConfig; when absent, infers a default strategy from dataType.
  */
 @Injectable()
 export class SimulatorFactory {
   private simulators = new Map<string, CachedSimulator>();
 
   /**
-   * 获取或创建变量仿真器。
+   * Get or create a variable simulator.
    */
   getOrCreate(tagId: string, tagConfig: Record<string, any> | undefined): VariableSimulator {
     const existing = this.simulators.get(tagId);
@@ -43,12 +43,12 @@ export class SimulatorFactory {
     return cached;
   }
 
-  /** 获取已有仿真器 */
+  /** Get an existing simulator */
   get(tagId: string): VariableSimulator | undefined {
     return this.simulators.get(tagId);
   }
 
-  /** 更新仿真器配置 */
+  /** Update simulator config */
   update(tagId: string, config: VariableSimulationConfig): void {
     const simulator = this.simulators.get(tagId);
     if (simulator) {
@@ -56,22 +56,22 @@ export class SimulatorFactory {
     }
   }
 
-  /** 移除指定 tag 的仿真器 */
+  /** Remove the simulator for the specified tag */
   remove(tagId: string): void {
     this.simulators.delete(tagId);
   }
 
-  /** 清除所有仿真器 */
+  /** Clear all simulators */
   clear(): void {
     this.simulators.clear();
   }
 
-  /** 获取所有仿真器数量 */
+  /** Get the count of all simulators */
   get size(): number {
     return this.simulators.size;
   }
 
-  /** 从 tagConfig 提取仿真配置，未配置时按 dataType 推断默认策略 */
+  /** Extract simulation config from tagConfig; infer a default strategy from dataType when absent */
   private extractSimConfig(tagConfig: Record<string, any> | undefined): VariableSimulationConfig {
     if (tagConfig?.simulation?.enabled) {
       return tagConfig.simulation as VariableSimulationConfig;
@@ -79,7 +79,7 @@ export class SimulatorFactory {
     return this.getDefaultSimulation(tagConfig?.dataType || 'float32');
   }
 
-  /** 根据配置创建仿真器 */
+  /** Create a simulator from config */
   private createFromConfig(config: VariableSimulationConfig): VariableSimulator {
     switch (config.mode) {
       case 'fixed':
@@ -99,7 +99,7 @@ export class SimulatorFactory {
     }
   }
 
-  /** 未配置仿真时，按数据类型自动推断默认策略（兼容点表规范字符串 'boolean'） */
+  /** When simulation is not configured, auto-infer the default strategy from data type (also handles the point-table spec string 'boolean') */
   private getDefaultSimulation(dataType: string): VariableSimulationConfig {
     if (isBooleanDataType(dataType)) {
       return {
@@ -118,7 +118,7 @@ export class SimulatorFactory {
           params: { values: ['OK', 'WARN', 'ERR'], switchMode: 'sequential' } as StringParams,
         };
       default:
-        // 数值型默认：范围随机游走
+        // Numeric types default to: range random walk
         return {
           enabled: true,
           mode: 'range',

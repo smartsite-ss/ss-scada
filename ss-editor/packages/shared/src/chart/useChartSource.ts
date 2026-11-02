@@ -13,21 +13,23 @@ import type {
   DatabaseDataSourceDeps,
 } from './data-source';
 
-/** 组合式函数可用的完整依赖（在 DatabaseDataSourceDeps 基础上扩展实时刷新所需字段） */
+/** Full dependencies available to the composable (extends DatabaseDataSourceDeps with realtime-refresh fields) */
 export interface ChartSourceDeps extends DatabaseDataSourceDeps {
   wsStore: DatabaseDataSourceDeps['wsStore'] & {
-    /** WS 批量刷新版本号（变化时触发 latest 模式实时刷新） */
+    /** WS batch-refresh version (triggers latest-mode realtime refresh when changed) */
     tagFlushVersion?: number;
-    /** 连接状态（供断线补偿，可省略） */
+    /** Connection status (for reconnect compensation; optional) */
     isConnected?: boolean;
   };
 }
 
 /**
- * 图表数据源组合式函数：统一管理「创建 → 订阅 → 加载 → 实时刷新 → 卸载清理」生命周期。
- * - static / api：挂载时 load，api 轮询通过 onChange 推送；
- * - database(latest)：额外监听 wsStore.tagFlushVersion，变化时调用 readLatest 刷新；
- * - 配置（数据源类型 / 模式 / 绑定变量）变化时自动重建数据源并重新加载。
+ * Chart data source composable: centrally manages the lifecycle of
+ * "create → subscribe → load → realtime refresh → unmount cleanup".
+ * - static / api: load on mount; api polling pushes via onChange;
+ * - database(latest): additionally watches wsStore.tagFlushVersion and refreshes via readLatest on change;
+ * - automatically rebuilds the data source and reloads when the config
+ *   (data source type / mode / bound variables) changes.
  */
 export function useChartSource(
   getConfig: () => ChartDataSourceConfig,
@@ -42,7 +44,7 @@ export function useChartSource(
     result.value = await current.load();
   }
 
-  /** 创建 / 重建数据源：退订旧源、创建新源、订阅并加载基线 */
+  /** Create / rebuild the data source: unsubscribe from the old source, create the new one, subscribe and load the baseline */
   async function resetSource() {
     source.value?.unsubscribe();
     let next: ChartDataSource;
@@ -71,12 +73,12 @@ export function useChartSource(
     void resetSource();
   });
 
-  // 数据源配置 / 绑定变更（编辑态增删变量、切换类型 / 模式）时重建
+  // Rebuild when the data source config / bindings change (e.g. editing adds/removes variables, switches type / mode)
   watch(getConfig, () => {
     void resetSource();
   });
 
-  // 数据库 latest 模式：WS 批量刷新后读取实时最新值
+  // Database latest mode: read realtime latest values after a WS batch refresh
   watch(
     () => deps?.wsStore?.tagFlushVersion,
     () => {
@@ -87,8 +89,9 @@ export function useChartSource(
     },
   );
 
-  // 编辑态 wsStore 可能在图元绑定后才建立连接；连接建立后补订阅。
-  // DatabaseDataSource.subscribe 内部幂等，未连接时不会提前注册。
+  // In edit mode the wsStore connection may be established only after the graphic is bound;
+  // subscribe again once the connection is established.
+  // DatabaseDataSource.subscribe is idempotent internally and won't register early when not connected.
   watch(
     () => deps?.wsStore?.isConnected,
     (connected) => {

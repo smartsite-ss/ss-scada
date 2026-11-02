@@ -176,7 +176,7 @@ export class ModbusRTUService extends BaseCollectorService {
     return result;
   }
 
-  /** 覆写 readTag：添加错误捕获，返回 bad quality 而非抛出 */
+  /** Override readTag: add error capture, return bad quality instead of throwing */
   async readTag(client: any, tag: ITagContext): Promise<CollectorReadResult> {
     const tagId = tag.id || 'unknown-tag';
     try {

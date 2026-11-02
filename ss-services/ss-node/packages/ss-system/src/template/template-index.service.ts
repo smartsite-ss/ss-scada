@@ -8,7 +8,7 @@ import { PathResolverService } from '@ss-node/ss-core';
 import * as fs from 'fs';
 import * as path from 'path';
 
-// ===== 树形索引类型（匹配目录结构）=====
+// ===== Tree index types (matching the directory structure) =====
 
 export interface TemplateEntry {
   type: 'template';
@@ -54,7 +54,7 @@ export interface TemplateTreeIndex {
   industries: IndustryNode[];
 }
 
-// ===== 目录结构操作 DTO =====
+// ===== Directory structure operation DTOs =====
 
 export interface CreateCategoryDto {
   industryName: string;
@@ -87,15 +87,15 @@ export class TemplateIndexService {
   }
 
   /**
-   * 将相对路径解析为绝对路径
+   * Resolve a relative path to an absolute path
    *
-   * 相对路径基准：
-   * - dev 模式：__dirname 上溯 4 级 = ss-services/ss-node（本文件位于 packages/ss-system/dist/template/）
-   *   .env.dev 中 TEMPLATES_DIR 相对于 ss-services/ss-node 解析
-   * - 生产模式：process.cwd() = ss-run/ss/services/ss-node
-   *   .env 中 TEMPLATES_DIR=../../data/templates 相对于该目录解析
+   * Relative-path baselines:
+   * - dev mode: go up 4 levels from __dirname = ss-services/ss-node (this file lives in packages/ss-system/dist/template/)
+   *   TEMPLATES_DIR in .env.dev resolves against ss-services/ss-node
+   * - production mode: process.cwd() = ss-run/ss/services/ss-node
+   *   TEMPLATES_DIR=../../data/templates in .env resolves against that directory
    *
-   * 与 app.module.ts getDatabaseConfig()、backup.service.ts getProjectRoot() 保持一致。
+   * Kept consistent with app.module.ts getDatabaseConfig() and backup.service.ts getProjectRoot().
    */
   private resolvePath(p: string): string {
     return this.pathResolver.resolve(p);
@@ -106,9 +106,9 @@ export class TemplateIndexService {
   }
 
   /**
-   * 从目录结构重建 index.json
-   * 遍历 templates/ 目录，构建树形索引
-   * ✨ 同时为每个 BCP 47 语言子目录（zh-CN, en-US 等）重建各自的 index.json
+   * Rebuild index.json from the directory structure
+   * Walks the templates/ directory and builds a tree index
+   * ✨ Also rebuilds each BCP 47 language subdirectory's (zh-CN, en-US etc.) own index.json
    */
   rebuildIndex(): TemplateTreeIndex {
     if (!fs.existsSync(this.templatesBasePath)) {
@@ -116,12 +116,12 @@ export class TemplateIndexService {
       return this.createEmptyIndex();
     }
 
-    // 1. 重建根目录 index.json（向后兼容）
+    // 1. Rebuild the root index.json (backward compatible)
     const index = this.rebuildIndexAtPath(this.templatesBasePath, '根目录');
     const indexPath = path.join(this.templatesBasePath, 'index.json');
     this.writeIndexFile(indexPath, index);
 
-    // 2. ✨ 遍历 BCP 47 语言子目录，为每种语言重建 index.json
+    // 2. ✨ Walk BCP 47 language subdirectories and rebuild each language's index.json
     const dirEntries = fs.readdirSync(this.templatesBasePath, { withFileTypes: true });
     for (const entry of dirEntries) {
       if (entry.isDirectory() && /^[a-z]{2}-[A-Z]{2}$/.test(entry.name)) {
@@ -139,7 +139,7 @@ export class TemplateIndexService {
   }
 
   /**
-   * 在指定路径下扫描目录结构，构建索引对象（不写入文件）
+   * Scan the directory structure under the given path and build the index object (without writing files)
    */
   private rebuildIndexAtPath(basePath: string, label: string): TemplateTreeIndex {
     const industries = this.scanDirectory(basePath);
@@ -162,7 +162,7 @@ export class TemplateIndexService {
   }
 
   /**
-   * 读取当前 index.json
+   * Read the current index.json
    */
   loadIndex(): TemplateTreeIndex | null {
     const indexPath = path.join(this.templatesBasePath, 'index.json');
@@ -179,7 +179,7 @@ export class TemplateIndexService {
   }
 
   /**
-   * 创建空索引
+   * Create an empty index
    */
   private createEmptyIndex(): TemplateTreeIndex {
     return {
@@ -195,8 +195,8 @@ export class TemplateIndexService {
   }
 
   /**
-   * 递归扫描模板目录，构建行业树
-   * @param basePath 扫描的根路径，默认为 templatesBasePath
+   * Recursively scan the template directory and build the industry tree
+   * @param basePath root path to scan, defaults to templatesBasePath
    */
   private scanDirectory(basePath?: string): IndustryNode[] {
     const scanPath = basePath ?? this.templatesBasePath;
@@ -205,11 +205,11 @@ export class TemplateIndexService {
     const industries: IndustryNode[] = [];
 
     for (const entry of entries) {
-      // 跳过非目录、跳过隐藏目录
+      // Skip non-directories and hidden directories
       if (!entry.isDirectory() || entry.name.startsWith('.')) continue;
 
-      // 仅在扫描根目录时跳过 BCP 47 语言目录（如 zh-CN, en-US）
-      // 扫描语言子目录内部时不跳过（否则无法扫描行业目录）
+      // Skip BCP 47 language directories (e.g. zh-CN, en-US) only when scanning the root directory
+      // Do not skip when scanning inside a language subdirectory (otherwise industry directories would be missed)
       if (isRootScan && /^[a-z]{2}-[A-Z]{2}$/.test(entry.name)) continue;
 
       const industryPath = path.join(scanPath, entry.name);
@@ -226,13 +226,13 @@ export class TemplateIndexService {
       });
     }
 
-    // 按名称排序
+    // Sort by name
     industries.sort((a, b) => a.name.localeCompare(b.name, 'zh-CN'));
     return industries;
   }
 
   /**
-   * 扫描行业目录下的所有分类子目录
+   * Scan all category subdirectories under an industry directory
    */
   private scanIndustryDirectory(dirPath: string, industryName: string): CategoryNode[] {
     if (!fs.statSync(dirPath).isDirectory()) return [];
@@ -260,7 +260,7 @@ export class TemplateIndexService {
   }
 
   /**
-   * 扫描分类目录下的所有模板JSON文件
+   * Scan all template JSON files under a category directory
    */
   private scanCategoryDirectory(
     dirPath: string,
@@ -309,7 +309,7 @@ export class TemplateIndexService {
   }
 
   /**
-   * 写入索引文件
+   * Write the index file
    */
   private writeIndexFile(indexPath: string, index: TemplateTreeIndex): void {
     const dir = path.dirname(indexPath);
@@ -317,16 +317,16 @@ export class TemplateIndexService {
       fs.mkdirSync(dir, { recursive: true });
     }
 
-    // 原子写入: 先写临时文件，再重命名
+    // Atomic write: temp file first, then rename
     const tmpPath = indexPath + '.tmp';
     fs.writeFileSync(tmpPath, JSON.stringify(index, null, 2), 'utf-8');
     fs.renameSync(tmpPath, indexPath);
   }
 
-  // ===== 目录结构管理操作 =====
+  // ===== Directory structure management operations =====
 
   /**
-   * 创建分类目录（在行业下创建子目录）
+   * Create a category directory (a subdirectory under an industry)
    */
   async createCategory(dto: CreateCategoryDto): Promise<{ success: boolean; path: string }> {
     const dirPath = path.join(this.templatesBasePath, dto.industryName, dto.categoryName);
@@ -335,7 +335,7 @@ export class TemplateIndexService {
       throw new Error(`分类目录已存在: ${dto.categoryName}`);
     }
 
-    // 确保行业目录存在
+    // Ensure the industry directory exists
     const industryPath = path.join(this.templatesBasePath, dto.industryName);
     if (!fs.existsSync(industryPath)) {
       fs.mkdirSync(industryPath, { recursive: true });
@@ -343,7 +343,7 @@ export class TemplateIndexService {
 
     fs.mkdirSync(dirPath, { recursive: true });
 
-    // 重建索引
+    // Rebuild the index
     this.rebuildIndex();
 
     return {
@@ -353,7 +353,7 @@ export class TemplateIndexService {
   }
 
   /**
-   * 重命名分类目录
+   * Rename a category directory
    */
   async renameCategory(
     dto: RenameCategoryDto,
@@ -369,12 +369,12 @@ export class TemplateIndexService {
       throw new Error(`目标分类目录已存在: ${dto.newCategoryName}`);
     }
 
-    // 如果目录下有模板文件，需要更新它们的 industry/category 字段
+    // If the directory contains template files, their industry/category fields need updating
     this.updateTemplateFilesMetadata(oldPath, dto.industryName, dto.newCategoryName);
 
     fs.renameSync(oldPath, newPath);
 
-    // 重建索引
+    // Rebuild the index
     this.rebuildIndex();
 
     return {
@@ -385,7 +385,7 @@ export class TemplateIndexService {
   }
 
   /**
-   * 删除分类目录
+   * Delete a category directory
    */
   async deleteCategory(dto: DeleteCategoryDto): Promise<{ success: boolean }> {
     const dirPath = path.join(this.templatesBasePath, dto.industryName, dto.categoryName);
@@ -394,7 +394,7 @@ export class TemplateIndexService {
       throw new Error(`分类目录不存在: ${dto.categoryName}`);
     }
 
-    // 检查目录下是否有模板文件
+    // Check whether the directory contains template files
     const files = fs.readdirSync(dirPath);
     const templateFiles = files.filter((f) => f.endsWith('.json'));
     if (templateFiles.length > 0) {
@@ -403,14 +403,14 @@ export class TemplateIndexService {
 
     fs.rmdirSync(dirPath);
 
-    // 重建索引
+    // Rebuild the index
     this.rebuildIndex();
 
     return { success: true };
   }
 
   /**
-   * 更新目录下所有模板文件的 industry/category 元数据
+   * Update the industry/category metadata of all template files under a directory
    */
   private updateTemplateFilesMetadata(
     dirPath: string,
@@ -441,12 +441,12 @@ export class TemplateIndexService {
   }
 
   /**
-   * 获取目录结构（可用于UI展示）
+   * Get the directory structure (usable for UI display)
    */
   getDirectoryStructure(): IndustryNode[] {
     const index = this.loadIndex();
     if (!index) {
-      // 如果没有index.json，尝试重建
+      // If index.json is missing, try rebuilding
       return this.rebuildIndex().industries;
     }
     return index.industries;

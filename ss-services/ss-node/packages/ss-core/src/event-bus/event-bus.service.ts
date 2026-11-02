@@ -18,9 +18,9 @@ import {
 import { Logger } from '@nestjs/common';
 
 /**
- * emit 钩子函数类型
- * - 监听所有事件发射
- * - 用于 EventLogService 记录事件日志（不阻塞主流程）
+ * emit hook function type
+ * - Listens to all event emissions
+ * - Used by EventLogService to record event logs (does not block the main flow)
  */
 export type EmitHook = (eventType: string, payload: any) => void | Promise<void>;
 
@@ -29,7 +29,7 @@ export class EventBusService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(EventBusService.name);
   private readonly listeners = new Map<string, Set<(data: any) => void>>();
 
-  /** emit 钩子集合（用于 EventLogService 记录事件日志） */
+  /** emit hook collection (used by EventLogService to record event logs) */
   private readonly emitHooks = new Set<EmitHook>();
 
   constructor(private readonly eventEmitter: EventEmitter2) {}
@@ -44,10 +44,10 @@ export class EventBusService implements OnModuleInit, OnModuleDestroy {
 
   emit<T extends EventType>(eventType: T, payload: any): void {
     try {
-      // 先触发 emit 钩子（用于 EventLogService 记录事件日志）
-      // 同步调用，异步钩子在后台运行；缓存 logId 让订阅者能找到
+      // Fire emit hooks first (used by EventLogService to record event logs)
+      // Synchronous call; async hooks run in the background; the logId is cached so subscribers can find it
       this.triggerEmitHooks(eventType, payload);
-      // 再发射事件给订阅者
+      // Then emit the event to subscribers
       this.eventEmitter.emit(eventType, payload);
       this.logEvent(eventType, payload);
     } catch (error) {
@@ -56,17 +56,17 @@ export class EventBusService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 异步发射事件 — 等待所有异步监听器完成后返回
-   * 用于需要确保监听器完成资源清理后再继续的场景（如项目删除前关闭 DB 连接）
+   * Emit an event asynchronously - returns after all async listeners complete
+   * Used in scenarios that must ensure listeners finish resource cleanup before continuing (e.g. closing DB connections before project deletion)
    *
-   * 注意：emit 钩子（写入事件日志）在订阅者之前触发并等待完成，
-   * 以确保订阅者能通过 findRecentLogId 找到对应的 logId。
+   * Note: emit hooks (writing the event log) fire before subscribers and are awaited,
+   * so subscribers can find the corresponding logId via findRecentLogId.
    */
   async emitAsync<T extends EventType>(eventType: T, payload: any): Promise<void> {
     try {
-      // 先触发并等待 emit 钩子完成（写入事件日志），让订阅者能找到 logId
+      // Fire and await emit hooks first (writes the event log) so subscribers can find the logId
       await this.triggerEmitHooksAsync(eventType, payload);
-      // 再执行订阅者
+      // Then run subscribers
       await this.eventEmitter.emitAsync(eventType, payload);
       this.logEvent(eventType, payload);
     } catch (error) {
@@ -75,12 +75,12 @@ export class EventBusService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 注册 emit 钩子 — 监听所有事件发射
+   * Register an emit hook - listens to all event emissions
    *
-   * 用于 EventLogService 在 onModuleInit 时调用，记录配置变更类事件。
-   * 钩子函数可以同步或异步，但失败不影响主流程。
+   * Called by EventLogService in onModuleInit to record config-change events.
+   * Hooks may be sync or async; failures do not affect the main flow.
    *
-   * @returns 注销函数，调用后移除钩子
+   * @returns an unregister function that removes the hook when called
    */
   registerEmitHook(hook: EmitHook): () => void {
     this.emitHooks.add(hook);
@@ -91,10 +91,10 @@ export class EventBusService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 触发所有 emit 钩子（异步，不阻塞主流程）
+   * Fire all emit hooks (async, does not block the main flow)
    *
-   * 用于同步 emit() 场景：钩子可能在后台异步执行（如写入事件日志），
-   * 不等待完成即返回。订阅者通过 findRecentLogId 兜底查数据库。
+   * Used in the synchronous emit() path: hooks may run in the background (e.g. writing the event log),
+   * returning without awaiting completion. Subscribers fall back to querying the DB via findRecentLogId.
    */
   private triggerEmitHooks(eventType: string, payload: any): void {
     if (this.emitHooks.size === 0) return;
@@ -102,7 +102,7 @@ export class EventBusService implements OnModuleInit, OnModuleDestroy {
     for (const hook of this.emitHooks) {
       try {
         const result = hook(eventType, payload);
-        // 如果是 Promise，捕获错误但不等待
+        // If it is a Promise, catch errors but do not await
         if (result && typeof (result as Promise<void>).catch === 'function') {
           (result as Promise<void>).catch((err) => {
             this.logger.warn(`Emit hook failed: ${err.message}`);
@@ -115,12 +115,12 @@ export class EventBusService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 触发所有 emit 钩子并等待完成（异步）
+   * Fire all emit hooks and await completion (async)
    *
-   * 用于 emitAsync() 场景：确保事件日志写入完成后再执行订阅者，
-   * 让订阅者能通过 findRecentLogId 在内存索引中找到 logId。
+   * Used in the emitAsync() path: ensures the event log is written before subscribers run,
+   * so subscribers can find the logId in the in-memory index via findRecentLogId.
    *
-   * 单个钩子失败不影响其他钩子，仅 warn 日志。
+   * A single hook's failure does not affect other hooks; only a warn log is emitted.
    */
   private async triggerEmitHooksAsync(eventType: string, payload: any): Promise<void> {
     if (this.emitHooks.size === 0) return;
@@ -130,7 +130,7 @@ export class EventBusService implements OnModuleInit, OnModuleDestroy {
       try {
         const result = hook(eventType, payload);
         if (result && typeof (result as Promise<void>).then === 'function') {
-          // 包装：单个钩子失败不中断其他钩子
+          // Wrap: a single hook's failure does not interrupt other hooks
           hookPromises.push(
             (result as Promise<void>).catch((err) => {
               this.logger.warn(`Emit hook failed: ${(err as Error).message}`);
@@ -145,9 +145,9 @@ export class EventBusService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 统一的事件日志输出：打印事件类型与关键负载字段
-   * 使用纯文本 [Event] 前缀，与 StructuredLogger 的 [LEVEL]/[context] 风格保持一致，
-   * 避免 emoji 在 Windows 控制台/日志收集系统中渲染异常
+   * Unified event-log output: prints the event type and key payload fields
+   * Uses a plain-text [Event] prefix, consistent with StructuredLogger's [LEVEL]/[context] style,
+   * avoiding emoji rendering issues in Windows consoles/log collection systems
    */
   private logEvent(eventType: string, payload: any): void {
     const summary = this.buildPayloadSummary(payload);
@@ -155,16 +155,16 @@ export class EventBusService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 从 payload 提取可读摘要（最多 3 个关键字段）
+   * Extract a readable summary from the payload (up to 3 key fields)
    */
   private buildPayloadSummary(payload: any): string {
     if (!payload || typeof payload !== 'object') return '';
     const parts: string[] = [];
-    // 通用标识字段
+    // Common identifier fields
     if (payload.tagId) parts.push(`tag=${payload.tagId}`);
     if (payload.deviceId) parts.push(`device=${payload.deviceId}`);
     if (payload.projectId) parts.push(`project=${payload.projectId}`);
-    // 值字段：优先使用已格式化的 displayValue，否则对数值做舍入
+    // Value fields: prefer the already-formatted displayValue, otherwise round numeric values
     if (payload.value !== undefined) {
       const displayVal =
         payload.displayValue ??
@@ -173,7 +173,7 @@ export class EventBusService implements OnModuleInit, OnModuleDestroy {
     }
     if (payload.level) parts.push(`level=${payload.level}`);
     if (payload.status) parts.push(`status=${payload.status}`);
-    // 报警特有
+    // Alarm-specific
     if (payload.message && typeof payload.message === 'string') {
       parts.push(`msg=${payload.message.substring(0, 80)}`);
     }
@@ -212,7 +212,7 @@ export class EventBusService implements OnModuleInit, OnModuleDestroy {
     this.emit('health_recovered', event);
   }
 
-  // ---- 插件生命周期事件 ----
+  // ---- Plugin lifecycle events ----
 
   emitPluginDiscovered(event: PluginLifecycleEvent): void {
     this.emit('plugin.discovered', event);

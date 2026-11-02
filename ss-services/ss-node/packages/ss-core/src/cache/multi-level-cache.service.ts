@@ -48,19 +48,19 @@ const DEFAULT_CONFIG: MultiLevelCacheConfig = {
 export class MultiLevelCacheService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(MultiLevelCacheService.name);
 
-  // L1: 内存缓存（最快，容量有限）
+  // L1: in-memory cache (fastest, limited capacity)
   private l1Cache = new Map<string, CacheEntry<any>>();
 
-  // L3: 长期存储（SQLite/InfluxDB替代方案）
+  // L3: long-term storage (SQLite/InfluxDB alternative)
   private l3Storage = new Map<string, CacheEntry<any>>();
 
-  // LRU访问顺序追踪
+  // LRU access-order tracking
   private accessOrder: string[] = [];
 
-  // 配置
+  // Config
   private config: MultiLevelCacheConfig = DEFAULT_CONFIG;
 
-  // 统计信息
+  // Statistics
   private stats: CacheStats = {
     l1Size: 0,
     l1HitCount: 0,
@@ -73,7 +73,7 @@ export class MultiLevelCacheService implements OnModuleInit, OnModuleDestroy {
     cleanupCount: 0,
   };
 
-  // 清理定时器
+  // Cleanup timer
   private cleanupInterval: NodeJS.Timeout | null = null;
 
   onModuleInit(): void {
@@ -111,7 +111,7 @@ export class MultiLevelCacheService implements OnModuleInit, OnModuleDestroy {
 
     const l3Result = await this.getL3<T>(key);
     if (l3Result !== undefined) {
-      // 回填到L1
+      // Backfill to L1
       this.setL1(key, l3Result);
       return l3Result;
     }
@@ -133,10 +133,10 @@ export class MultiLevelCacheService implements OnModuleInit, OnModuleDestroy {
   }
 
   async set<T>(key: string, value: T, options?: { ttl?: number; skipL3?: boolean }): Promise<void> {
-    // 写入L1
+    // Write to L1
     this.setL1(key, value, options?.ttl);
 
-    // 写入L3（除非明确跳过）
+    // Write to L3 (unless explicitly skipped)
     if (!options?.skipL3) {
       this.setL3(key, value, options?.ttl);
     }
@@ -152,7 +152,7 @@ export class MultiLevelCacheService implements OnModuleInit, OnModuleDestroy {
     const l1Deleted = this.l1Cache.delete(key);
     const l3Deleted = this.l3Storage.delete(key);
 
-    // 从访问顺序中移除
+    // Remove from access order
     this.accessOrder = this.accessOrder.filter((k) => k !== key);
 
     return l1Deleted || l3Deleted;
@@ -161,7 +161,7 @@ export class MultiLevelCacheService implements OnModuleInit, OnModuleDestroy {
   async invalidateByPrefix(prefix: string): Promise<number> {
     let count = 0;
 
-    // 清理L1
+    // Clean L1
     for (const key of this.l1Cache.keys()) {
       if (key.startsWith(prefix)) {
         this.l1Cache.delete(key);
@@ -170,7 +170,7 @@ export class MultiLevelCacheService implements OnModuleInit, OnModuleDestroy {
       }
     }
 
-    // 清理L3
+    // Clean L3
     for (const key of this.l3Storage.keys()) {
       if (key.startsWith(prefix)) {
         this.l3Storage.delete(key);
@@ -232,11 +232,11 @@ export class MultiLevelCacheService implements OnModuleInit, OnModuleDestroy {
 
     this.logger.log(`Starting cache warm-up for ${keys.length} keys`);
 
-    // 分批处理
+    // Process in batches
     for (let i = 0; i < keys.length; i += batchSize) {
       const batch = keys.slice(i, i + batchSize);
 
-      // 并发加载
+      // Concurrent loading
       const promises = batch.map(async (key) => {
         if (this.has(key)) {
           skipped++;
@@ -254,7 +254,7 @@ export class MultiLevelCacheService implements OnModuleInit, OnModuleDestroy {
         }
       });
 
-      // 控制并发数
+      // Limit concurrency
       const chunks = [];
       for (let j = 0; j < promises.length; j += concurrency) {
         chunks.push(promises.slice(j, j + concurrency));
@@ -281,7 +281,7 @@ export class MultiLevelCacheService implements OnModuleInit, OnModuleDestroy {
       return undefined;
     }
 
-    // 检查TTL
+    // Check TTL
     if (entry.ttl && this.isExpired(entry)) {
       this.l1Cache.delete(key);
       this.accessOrder = this.accessOrder.filter((k) => k !== key);
@@ -293,7 +293,7 @@ export class MultiLevelCacheService implements OnModuleInit, OnModuleDestroy {
       return undefined;
     }
 
-    // 更新访问记录
+    // Update access record
     entry.accessCount++;
     this.updateAccessOrder(key);
 
@@ -312,7 +312,7 @@ export class MultiLevelCacheService implements OnModuleInit, OnModuleDestroy {
       return undefined;
     }
 
-    // 检查TTL
+    // Check TTL
     if (entry.ttl && this.isExpired(entry)) {
       this.l3Storage.delete(key);
       return undefined;
@@ -322,7 +322,7 @@ export class MultiLevelCacheService implements OnModuleInit, OnModuleDestroy {
   }
 
   private setL1<T>(key: string, value: T, ttl?: number): void {
-    // 容量检查和淘汰
+    // Capacity check and eviction
     if (this.l1Cache.size >= this.config.l1MaxSize) {
       this.evictOldest();
     }
@@ -339,9 +339,9 @@ export class MultiLevelCacheService implements OnModuleInit, OnModuleDestroy {
   }
 
   private setL3<T>(key: string, value: T, ttl?: number): void {
-    // 容量检查
+    // Capacity check
     if (this.l3Storage.size >= this.config.l3MaxSize) {
-      // L3采用FIFO策略淘汰最旧条目
+      // L3 uses FIFO to evict the oldest entries
       const oldestKey = this.l3Storage.keys().next().value;
       if (oldestKey) {
         this.l3Storage.delete(oldestKey);
@@ -361,20 +361,20 @@ export class MultiLevelCacheService implements OnModuleInit, OnModuleDestroy {
   private updateAccessOrder(key: string): void {
     if (!this.config.enableLRU) return;
 
-    // 移除现有位置
+    // Remove existing position
     const index = this.accessOrder.indexOf(key);
     if (index !== -1) {
       this.accessOrder.splice(index, 1);
     }
 
-    // 添加到末尾（最近访问）
+    // Add to the end (most recently accessed)
     this.accessOrder.push(key);
   }
 
   private evictOldest(): void {
     if (this.accessOrder.length === 0) return;
 
-    // LRU: 淘汰最久未访问的条目
+    // LRU: evict the least-recently-used entry
     const oldestKey = this.accessOrder.shift();
     if (oldestKey && this.l1Cache.has(oldestKey)) {
       this.l1Cache.delete(oldestKey);
@@ -394,7 +394,7 @@ export class MultiLevelCacheService implements OnModuleInit, OnModuleDestroy {
     let cleaned = 0;
     const now = Date.now();
 
-    // 清理L1过期条目
+    // Clean expired L1 entries
     for (const [key, entry] of this.l1Cache.entries()) {
       if (entry.ttl && now - entry.timestamp.getTime() > entry.ttl) {
         this.l1Cache.delete(key);
@@ -403,7 +403,7 @@ export class MultiLevelCacheService implements OnModuleInit, OnModuleDestroy {
       }
     }
 
-    // 清理L3过期条目
+    // Clean expired L3 entries
     for (const [key, entry] of this.l3Storage.entries()) {
       if (entry.ttl && now - entry.timestamp.getTime() > entry.ttl) {
         this.l3Storage.delete(key);

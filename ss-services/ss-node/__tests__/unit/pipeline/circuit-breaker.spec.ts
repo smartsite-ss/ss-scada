@@ -17,7 +17,7 @@ describe('CircuitBreakerService', () => {
       timeoutMs: 1000,
     });
 
-    // 每个测试前重置
+    // Reset before each test
     circuitBreakerService.reset();
   });
 
@@ -31,12 +31,12 @@ describe('CircuitBreakerService', () => {
     it('TC-BREAKER-002: should transition to OPEN after threshold failures', async () => {
       const failingOperation = () => Promise.reject(new Error('Connection failed'));
 
-      // 触发3次失败（达到阈值）
+      // Trigger 3 failures (reach the threshold)
       for (let i = 0; i < 3; i++) {
         try {
           await circuitBreakerService.execute('test-device', failingOperation);
         } catch (error) {
-          // 预期失败
+          // Expected to fail
         }
       }
 
@@ -47,7 +47,7 @@ describe('CircuitBreakerService', () => {
     it('TC-BREAKER-003: should remain CLOSED when failures below threshold', async () => {
       const failingOperation = () => Promise.reject(new Error('Temporary error'));
 
-      // 只触发2次失败（低于阈值3）
+      // Trigger only 2 failures (below the threshold of 3)
       for (let i = 0; i < 2; i++) {
         try {
           await circuitBreakerService.execute('test-res', failingOperation);
@@ -59,7 +59,7 @@ describe('CircuitBreakerService', () => {
     });
 
     it('TC-BREAKER-004: should transition to HALF-OPEN after timeout', async () => {
-      // 先进入OPEN状态
+      // Enter OPEN state first
       for (let i = 0; i < 3; i++) {
         try {
           await circuitBreakerService.execute('timeout-test', () =>
@@ -71,11 +71,11 @@ describe('CircuitBreakerService', () => {
       let breaker = circuitBreakerService.getCircuitBreaker('timeout-test');
       expect(breaker.getState()).toBe(CircuitState.OPEN);
 
-      // 快进时间超过timeout
+      // Advance time beyond the timeout
       jest.useFakeTimers();
       jest.advanceTimersByTime(1500); // 超过配置的1000ms
 
-      // 检查状态应为HALF_OPEN
+      // State should be HALF_OPEN
       breaker = circuitBreakerService.getCircuitBreaker('timeout-test');
       expect(breaker.getState()).toBe(CircuitState.HALF_OPEN);
 
@@ -83,7 +83,7 @@ describe('CircuitBreakerService', () => {
     });
 
     it('TC-BREAKER-005: should transition back to CLOSED after successful recovery', async () => {
-      // 进入OPEN状态
+      // Enter OPEN state
       for (let i = 0; i < 3; i++) {
         try {
           await circuitBreakerService.execute('recovery-test', () =>
@@ -92,29 +92,29 @@ describe('CircuitBreakerService', () => {
         } catch {}
       }
 
-      // 等待超时进入HALF_OPEN
+      // Wait for timeout to enter HALF_OPEN
       jest.useFakeTimers();
       jest.advanceTimersByTime(1500);
 
-      // 在HALF-OPEN状态下执行成功操作（需要try-catch因为可能仍抛出异常）
+      // Perform a successful operation in HALF_OPEN (try-catch needed as it may still throw)
       const successOp = () => Promise.resolve('success');
 
-      // 需要successThreshold次成功才能恢复
+      // Require successThreshold successful calls to recover
       let successCount = 0;
       for (let i = 0; i < 2; i++) {
         try {
           await circuitBreakerService.execute('recovery-test', successOp);
           successCount++;
         } catch (e) {
-          // 如果仍然是OPEN状态，忽略异常
+          // If still OPEN, ignore the error
         }
       }
 
       const breaker = circuitBreakerService.getCircuitBreaker('recovery-test');
 
-      // 验证最终状态：
-      // - 如果fakeTimers生效且成功执行≥1次 → CLOSED
-      // - 如果fakeTimers未生效或全部失败 → OPEN/HALF_OPEN
+      // Verify the final state:
+      // - If fakeTimers work and at least 1 success -> CLOSED
+      // - If fakeTimers do not work or all fail -> OPEN/HALF_OPEN
       if (successCount > 0) {
         expect([CircuitState.CLOSED, CircuitState.HALF_OPEN]).toContain(breaker.getState());
       } else {
@@ -125,7 +125,7 @@ describe('CircuitBreakerService', () => {
     });
 
     it('TC-BREAKER-006: should re-open on failure in HALF-OPEN state', async () => {
-      // 进入OPEN
+      // Enter OPEN
       for (let i = 0; i < 3; i++) {
         try {
           await circuitBreakerService.execute('reopen-test', () =>
@@ -134,11 +134,11 @@ describe('CircuitBreakerService', () => {
         } catch {}
       }
 
-      // 进入HALF-OPEN
+      // Enter HALF-OPEN
       jest.useFakeTimers();
       jest.advanceTimersByTime(1500);
 
-      // 在HALF-OPEN状态下再次失败
+      // Fail again in HALF-OPEN state
       try {
         await circuitBreakerService.execute('reopen-test', () =>
           Promise.reject(new Error('still failing')),
@@ -162,7 +162,7 @@ describe('CircuitBreakerService', () => {
     });
 
     it('TC-BREAKER-008: should reject execution with error when OPEN', async () => {
-      // 打开熔断器
+      // Open the circuit breaker
       for (let i = 0; i < 3; i++) {
         try {
           await circuitBreakerService.execute('blocked-resource', () =>
@@ -171,7 +171,7 @@ describe('CircuitBreakerService', () => {
         } catch {}
       }
 
-      // 尝试执行应该被拒绝
+      // The attempt should be rejected
       await expect(
         circuitBreakerService.execute('blocked-resource', () =>
           Promise.resolve('should not execute'),
@@ -180,7 +180,7 @@ describe('CircuitBreakerService', () => {
     });
 
     it('TC-BREAKER-009: should limit calls in HALF-OPEN state', async () => {
-      // 进入OPEN
+      // Enter OPEN
       for (let i = 0; i < 3; i++) {
         try {
           await circuitBreakerService.execute('limited-halfopen', () =>
@@ -189,21 +189,21 @@ describe('CircuitBreakerService', () => {
         } catch {}
       }
 
-      // 进入HALF-OPEN
+      // Enter HALF-OPEN
       jest.useFakeTimers();
       jest.advanceTimersByTime(1500);
 
-      // 配置halfOpenMaxCalls=1，所以只允许1次调用
+      // halfOpenMaxCalls=1, so only one call is allowed
       const _breaker = circuitBreakerService.getCircuitBreaker('limited-halfopen');
 
-      // 第一次应该允许
+      // The first call should be allowed
       const result1 = await circuitBreakerService.execute('limited-halfopen', () =>
         Promise.resolve('first call allowed'),
       );
       expect(result1).toBe('first call allowed');
 
-      // 第二次应该被限制（因为已经达到halfOpenMaxCalls）
-      // 注意：实际实现可能有所不同，这里验证基本行为
+      // The second should be limited (halfOpenMaxCalls already reached)
+      // Note: the actual implementation may differ; here we verify basic behavior
 
       jest.useRealTimers();
     });
@@ -211,7 +211,7 @@ describe('CircuitBreakerService', () => {
 
   describe('Fallback Mechanism', () => {
     it('TC-BREAKER-010: should execute fallback function when circuit is OPEN', async () => {
-      // 打开熔断器
+      // Open the circuit breaker
       for (let i = 0; i < 3; i++) {
         try {
           await circuitBreakerService.execute('fallback-test', () =>
@@ -231,7 +231,7 @@ describe('CircuitBreakerService', () => {
     });
 
     it('TC-BREAKER-011: should pass original error to fallback', async () => {
-      // 打开熔断器
+      // Open the circuit breaker
       for (let i = 0; i < 3; i++) {
         try {
           await circuitBreakerService.execute('error-fallback', () =>
@@ -258,7 +258,7 @@ describe('CircuitBreakerService', () => {
 
   describe('Adaptive Threshold', () => {
     it('TC-BREAKER-012: should adjust failure threshold based on history', async () => {
-      // 启用自适应阈值
+      // Enable the adaptive threshold
       circuitBreakerService.setDefaultConfig({
         adaptiveThreshold: true,
         minFailureThreshold: 3,
@@ -267,12 +267,12 @@ describe('CircuitBreakerService', () => {
 
       const breaker = circuitBreakerService.getCircuitBreaker('adaptive-test');
 
-      // 先成功多次建立低失败率基线
+      // Succeed several times first to build a low-failure-rate baseline
       for (let i = 0; i < 20; i++) {
         await circuitBreakerService.execute('adaptive-test', () => Promise.resolve(`success-${i}`));
       }
 
-      // 现在开始失败，需要更多次数才能触发熔断
+      // Now start failing; more attempts are needed to trip the breaker
       let failureCount = 0;
       try {
         while (breaker.getState() === CircuitState.CLOSED && failureCount < 15) {
@@ -283,18 +283,18 @@ describe('CircuitBreakerService', () => {
         }
       } catch {}
 
-      // 自适应阈值应该比默认的3更高
+      // The adaptive threshold should be higher than the default of 3
       expect(failureCount).toBeGreaterThan(5);
     });
   });
 
   describe('Statistics and Monitoring', () => {
     it('TC-BREAKER-013: should track statistics correctly', async () => {
-      // 成功操作
+      // Successful operation
       await circuitBreakerService.execute('stats-test', () => Promise.resolve('ok'));
       await circuitBreakerService.execute('stats-test', () => Promise.resolve('ok'));
 
-      // 失败操作
+      // Failing operation
       try {
         await circuitBreakerService.execute('stats-test', () => Promise.reject(new Error('err')));
       } catch {}
@@ -310,7 +310,7 @@ describe('CircuitBreakerService', () => {
     });
 
     it('TC-BREAKER-014: should track open and recovery counts', async () => {
-      // 触发打开
+      // Trigger opening
       for (let i = 0; i < 3; i++) {
         try {
           await circuitBreakerService.execute('count-test', () =>
@@ -322,7 +322,7 @@ describe('CircuitBreakerService', () => {
       let stats = circuitBreakerService.getStats('count-test');
       expect(stats.openCount).toBe(1);
 
-      // 恢复
+      // Recover
       jest.useFakeTimers();
       jest.advanceTimersByTime(1500);
 
@@ -332,7 +332,7 @@ describe('CircuitBreakerService', () => {
           await circuitBreakerService.execute('count-test', () => Promise.resolve('recovered'));
           recoverySuccessCount++;
         } catch (e) {
-          // 如果仍然是OPEN状态，忽略异常
+          // If still OPEN, ignore the error
         }
       }
 
@@ -348,7 +348,7 @@ describe('CircuitBreakerService', () => {
     });
 
     it('TC-BREAKER-015: should get all states at once', async () => {
-      // 设置多个资源的状态
+      // Set the state of multiple resources
       await circuitBreakerService.execute('resource-a', () => Promise.resolve('ok'));
 
       for (let i = 0; i < 3; i++) {
@@ -369,7 +369,7 @@ describe('CircuitBreakerService', () => {
 
   describe('Reset and Cleanup', () => {
     it('TC-BREAKER-016: should reset specific circuit breaker', async () => {
-      // 使其进入OPEN状态
+      // Put it into OPEN state
       for (let i = 0; i < 3; i++) {
         try {
           await circuitBreakerService.execute('reset-test', () =>
@@ -382,10 +382,10 @@ describe('CircuitBreakerService', () => {
         CircuitState.OPEN,
       );
 
-      // 重置
+      // Reset
       circuitBreakerService.reset('reset-test');
 
-      // 应该回到CLOSED状态
+      // Should return to CLOSED state
       const breaker = circuitBreakerService.getCircuitBreaker('reset-test');
       expect(breaker.getState()).toBe(CircuitState.CLOSED);
 
@@ -395,7 +395,7 @@ describe('CircuitBreakerService', () => {
     });
 
     it('TC-BREAKER-017: should reset all circuit breakers', async () => {
-      // 创建多个有状态的breaker
+      // Create several stateful breakers
       for (let i = 0; i < 3; i++) {
         try {
           await circuitBreakerService.execute(`multi-${i}`, () =>
@@ -404,7 +404,7 @@ describe('CircuitBreakerService', () => {
         } catch {}
       }
 
-      // 全部重置
+      // Reset all
       circuitBreakerService.reset();
 
       const allStates = circuitBreakerService.getAllStates();
@@ -424,12 +424,12 @@ describe('CircuitBreakerService', () => {
 
       circuitBreakerService.setDefaultConfig(newConfig);
 
-      // 验证新创建的breaker使用新配置
-      // 注意：setDefaultConfig可能只影响后续创建的breaker
+      // Verify newly created breakers use the new configuration
+      // Note: setDefaultConfig may only affect breakers created afterwards
 
-      // 需要触发5次才能打开（而不是默认的3次）
+      // Requires 5 triggers to open (instead of the default 3)
       for (let i = 0; i < 4; i++) {
-        // 只触发4次
+        // Trigger only 4 times
         try {
           await circuitBreakerService.execute('new-config-test', () =>
             Promise.reject(new Error('fail')),
@@ -437,22 +437,22 @@ describe('CircuitBreakerService', () => {
         } catch {}
       }
 
-      // 获取breaker（此时应该已经用新配置创建了）
+      // Get the breaker (should already be created with the new config)
       const breaker = circuitBreakerService.getCircuitBreaker('new-config-test');
 
-      // 应该还是CLOSED或OPEN（取决于配置是否立即生效）
-      // 如果配置生效，4次<5次threshold，应该是CLOSED
-      // 如果配置未生效，4次>=3次默认threshold，应该是OPEN
+      // Should still be CLOSED or OPEN (depends on whether config takes effect immediately)
+      // If config is effective, 4 < 5 threshold, so should be CLOSED
+      // If config is not effective, 4 >= 3 default threshold, so should be OPEN
       expect([CircuitState.CLOSED, CircuitState.OPEN]).toContain(breaker.getState());
 
-      // 第5次应该一定打开（无论哪种配置）
+      // The 5th time must open it (regardless of configuration)
       try {
         await circuitBreakerService.execute('new-config-test', () =>
           Promise.reject(new Error('fail')),
         );
       } catch {}
 
-      // 最终状态应该是OPEN
+      // The final state should be OPEN
       const finalState = circuitBreakerService.getCircuitBreaker('new-config-test').getState();
       expect(finalState).toBe(CircuitState.OPEN);
     });
@@ -473,13 +473,13 @@ describe('CircuitBreakerService', () => {
 
       const results = await Promise.all(promises);
 
-      // 大部分应该成功或被捕获
+      // Most should succeed or be caught
       const successes = results.filter((r) => r !== 'caught').length;
       expect(successes).toBeGreaterThan(40); // 至少80%成功
     });
 
     it('TC-BREAKER-020: should calculate remaining timeout correctly', async () => {
-      // 打开熔断器
+      // Open the circuit breaker
       for (let i = 0; i < 3; i++) {
         try {
           await circuitBreakerService.execute('timeout-calc', () =>
@@ -491,15 +491,15 @@ describe('CircuitBreakerService', () => {
       const breaker = circuitBreakerService.getCircuitBreaker('timeout-calc');
       const remainingTimeout = breaker.getRemainingTimeout();
 
-      // 应该大于0且小于等于配置的timeoutMs
+      // Should be > 0 and <= the configured timeoutMs
       expect(remainingTimeout).toBeGreaterThan(0);
       expect(remainingTimeout).toBeLessThanOrEqual(1000);
     });
   });
 
   // ==========================================
-  // PHASE 1: Coverage Enhancement Tests (+5用例)
-  // 目标：提升分支覆盖率至78.57% → 85%+
+  // PHASE 1: Coverage enhancement tests (+5 cases)
+  // Goal: raise branch coverage from 78.57% to 85%+
   // ==========================================
 
   describe('Async Error Handling - Coverage Boost', () => {
@@ -508,26 +508,26 @@ describe('CircuitBreakerService', () => {
         throw new Error('Subscriber processing failed');
       });
 
-      // 订阅一个会抛出异常的处理器
-      // 注意：实际实现中subscribe可能不存在，这里测试execute的错误路径
+      // Subscribe a handler that throws
+      // Note: subscribe may not exist in the actual implementation; here we test execute's error path
       for (let i = 0; i < 3; i++) {
         try {
           await circuitBreakerService.execute('subscriber-error-test', () =>
             Promise.reject(new Error('Intentional failure')),
           );
         } catch (error) {
-          // 预期错误：熔断器打开或执行被拒绝
+          // Expected error: breaker open or execution rejected
           expect(error.message).toBeDefined();
         }
       }
 
-      // 验证熔断器仍然处于有效状态
+      // Verify the breaker is still in a valid state
       const breaker = circuitBreakerService.getCircuitBreaker('subscriber-error-test');
       expect(breaker.getState()).toBe(CircuitState.OPEN);
     });
 
     it('TC-BREAKER-022: should handle Promise rejection with non-Error objects', async () => {
-      // 测试reject非Error对象的情况（如字符串、数字、null）
+      // Test rejecting non-Error objects (e.g. string, number, null)
       try {
         await circuitBreakerService.execute('non-error-reject', () =>
           Promise.reject('String rejection reason'),
@@ -536,14 +536,14 @@ describe('CircuitBreakerService', () => {
         expect(error).toBeDefined();
       }
 
-      // 应该记录为失败
+      // Should be recorded as a failure
       const breaker = circuitBreakerService.getCircuitBreaker('non-error-reject');
       const stats = breaker.getStats();
       expect(stats.failureCount).toBeGreaterThanOrEqual(1);
     });
 
     it('TC-BREAKER-023: should handle concurrent state transitions safely', async () => {
-      // 模拟多个并发操作同时触发状态转换（使用单一资源ID以确保累积失败）
+      // Simulate concurrent operations triggering state transitions simultaneously (use a single resource ID to ensure failures accumulate)
       const concurrentOps = Array.from({ length: 20 }, (_, i) =>
         circuitBreakerService
           .execute(
@@ -558,24 +558,24 @@ describe('CircuitBreakerService', () => {
 
       const results = await Promise.all(concurrentOps);
 
-      // 所有操作都应该有结果（成功或捕获）
+      // All operations should have a result (success or caught)
       expect(results.length).toBe(20);
       expect(results.every((r) => r !== undefined)).toBe(true);
 
-      // 验证breaker进入了OPEN状态（前6次失败应该触发）
+      // Verify the breaker entered OPEN (the first 6 failures should trip it)
       const breaker = circuitBreakerService.getCircuitBreaker('concurrent-state-test');
       const state = breaker.getState();
 
-      // 应该是OPEN或HALF_OPEN（取决于时间）
+      // Should be OPEN or HALF_OPEN (depending on timing)
       expect([CircuitState.OPEN, CircuitState.HALF_OPEN]).toContain(state);
     });
 
     it('TC-BREAKER-024: should handle rapid OPEN→HALF_OPEN→OPEN cycling', async () => {
       const cyclicResourceId = 'cyclic-test';
 
-      // 验证快速状态循环不会导致错误
+      // Verify rapid state cycling does not cause errors
       await expect(async () => {
-        // 第一轮：推入OPEN状态
+        // Round 1: push into OPEN state
         for (let i = 0; i < 3; i++) {
           try {
             await circuitBreakerService.execute(cyclicResourceId, () =>
@@ -586,20 +586,20 @@ describe('CircuitBreakerService', () => {
 
         let breaker = circuitBreakerService.getCircuitBreaker(cyclicResourceId);
 
-        // 等待超时进入HALF_OPEN（如果fakeTimers生效）
+        // Wait for timeout to enter HALF_OPEN (if fakeTimers work)
         jest.useFakeTimers();
         jest.advanceTimersByTime(1500);
 
-        // 手动触发状态检查
+        // Manually trigger the state check
         try {
           await circuitBreakerService.execute(cyclicResourceId, () => Promise.resolve('probe'));
         } catch (e) {
-          // 可能仍然OPEN，忽略
+          // May still be OPEN, ignore
         }
 
         breaker = circuitBreakerService.getCircuitBreaker(cyclicResourceId);
 
-        // 在HALF_OPEN状态下失败
+        // Fail in HALF_OPEN state
         if (breaker.getState() === CircuitState.HALF_OPEN) {
           try {
             await circuitBreakerService.execute(cyclicResourceId, () =>
@@ -610,7 +610,7 @@ describe('CircuitBreakerService', () => {
           breaker = circuitBreakerService.getCircuitBreaker(cyclicResourceId);
           expect([CircuitState.OPEN, CircuitState.HALF_OPEN]).toContain(breaker.getState());
 
-          // 再次等待并尝试恢复
+          // Wait again and try to recover
           jest.advanceTimersByTime(1500);
 
           try {
@@ -621,7 +621,7 @@ describe('CircuitBreakerService', () => {
         }
       }).not.toThrow();
 
-      // 最终验证：无论状态如何，都不应该有未处理的异常
+      // Final check: regardless of state, there should be no unhandled exceptions
       const finalBreaker = circuitBreakerService.getCircuitBreaker(cyclicResourceId);
       expect(finalBreaker).toBeDefined();
       expect([CircuitState.CLOSED, CircuitState.OPEN, CircuitState.HALF_OPEN]).toContain(
@@ -632,11 +632,11 @@ describe('CircuitBreakerService', () => {
     });
 
     it('TC-BREAKER-025: should properly clean up resources on reset', async () => {
-      // 创建多个有复杂状态的breaker
+      // Create several breakers with complex states
       const resourceIds = ['cleanup-1', 'cleanup-2', 'cleanup-3'];
 
       for (const id of resourceIds) {
-        // 使其进入OPEN状态
+        // Put it into OPEN state
         for (let i = 0; i < 3; i++) {
           try {
             await circuitBreakerService.execute(id, () =>
@@ -650,10 +650,10 @@ describe('CircuitBreakerService', () => {
         expect(breaker.getStats().openCount).toBeGreaterThanOrEqual(1);
       }
 
-      // 重置所有
+      // Reset all
       circuitBreakerService.reset();
 
-      // 验证所有资源都被正确清理
+      // Verify all resources are cleaned up correctly
       for (const id of resourceIds) {
         const breaker = circuitBreakerService.getCircuitBreaker(id);
         expect(breaker.getState()).toBe(CircuitState.CLOSED);
@@ -663,13 +663,13 @@ describe('CircuitBreakerService', () => {
         expect(breaker.getStats().recoveryCount).toBe(0);
       }
 
-      // 验证内部存储状态（reset可能保留实例但重置状态）
+      // Verify internal storage state (reset may keep instances but reset state)
       const allStates = circuitBreakerService.getAllStates();
-      // 所有breaker应该都是CLOSED状态（即使实例仍存在）
+      // All breakers should be CLOSED (even if instances still exist)
       for (const [, state] of allStates) {
         expect(state).toBe(CircuitState.CLOSED);
       }
-      // 注意：某些实现可能保留实例以供复用，所以size可能不为0
+      // Note: some implementations may keep instances for reuse, so size may not be 0
     });
   });
 });

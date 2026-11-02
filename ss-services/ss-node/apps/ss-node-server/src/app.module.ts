@@ -107,16 +107,16 @@ import * as fs from 'fs';
 import * as os from 'os';
 
 /**
- * 产品模式类型
- * - full:  集成部署（ss-scada + ss-data 全部能力）
- * - scada: ss-scada 独立部署（仅组态编辑/运行）
- * - data:  ss-data 独立部署（仅数据中台/系统管理）
+ * Product mode types
+ * - full:  integrated deployment (all ss-scada + ss-data capabilities)
+ * - scada: ss-scada standalone deployment (configuration editing/runtime only)
+ * - data:  ss-data standalone deployment (data platform / system management only)
  */
 export type ProductMode = 'full' | 'scada' | 'data';
 
 /**
- * 获取当前产品模式
- * 通过环境变量 APP_PRODUCT_MODE 控制，默认为 full（兼容现状）
+ * Get the current product mode
+ * Controlled by the APP_PRODUCT_MODE environment variable; defaults to full (for compatibility)
  */
 export function getProductMode(): ProductMode {
   const mode = (process.env.APP_PRODUCT_MODE || 'full').toLowerCase();
@@ -127,17 +127,18 @@ export function getProductMode(): ProductMode {
 }
 
 /**
- * 初始化项目根目录并设置到全局环境变量 SS_NODE_ROOT
+ * Initialize the project root directory and set it on the global env var SS_NODE_ROOT
  *
- * 项目根定义：
- * - dev 模式：ss-services/ss-node/（.env.base / .env.dev 相对路径基准）
- * - prod 模式：ss-run/ss/services/ss-node/（.env 相对路径基准）
+ * Project root definition:
+ * - dev mode:  ss-services/ss-node/ (the relative-path base for .env.base / .env.dev)
+ * - prod mode: ss-run/ss/services/ss-node/ (the relative-path base for .env)
  *
- * 本文件位于 apps/ss-node-server/src/（或 dist/），3 级上溯到 ss-services/ss-node/ 稳定不变。
- * 设置到 process.env.SS_NODE_ROOT 后，packages 下所有服务可通过 PathResolverService
- * 获取项目根，无需再依赖 __dirname 上溯。
+ * This file lives in apps/ss-node-server/src/ (or dist/); going up 3 levels to
+ * ss-services/ss-node/ is stable. After setting process.env.SS_NODE_ROOT, every service
+ * under packages can resolve the project root via PathResolverService without relying on
+ * __dirname traversal.
  *
- * 必须在 ConfigModule.forRoot() 之前调用，确保 env 文件加载时 SS_NODE_ROOT 已可用。
+ * Must be called before ConfigModule.forRoot() so SS_NODE_ROOT is available when env files load.
  */
 function initProjectRoot(): string {
   if (process.env.SS_NODE_ROOT) return process.env.SS_NODE_ROOT;
@@ -150,7 +151,7 @@ function initProjectRoot(): string {
   return projectRoot;
 }
 
-// 模块加载时立即初始化（在 ConfigModule.forRoot 之前）
+// Initialize immediately at module load (before ConfigModule.forRoot)
 const SS_NODE_ROOT = initProjectRoot();
 
 function getDatabaseConfig(configService: ConfigService): TypeOrmModuleOptions {
@@ -172,18 +173,18 @@ function getDatabaseConfig(configService: ConfigService): TypeOrmModuleOptions {
   }
 
   const dbPath = configService.get<string>('DATABASE_PATH') || './data/ss-node.db';
-  // 使用 initProjectRoot() 设置的 SS_NODE_ROOT 作为路径解析基准，
-  // 与 packages 下各服务的 PathResolverService 保持一致。
-  // - dev 模式：SS_NODE_ROOT = ss-services/ss-node/
-  // - prod 模式：SS_NODE_ROOT = ss-run/ss/services/ss-node/
+  // Use the SS_NODE_ROOT set by initProjectRoot() as the path-resolution base,
+  // keeping it consistent with the PathResolverService of each package service.
+  // - dev mode:  SS_NODE_ROOT = ss-services/ss-node/
+  // - prod mode: SS_NODE_ROOT = ss-run/ss/services/ss-node/
   const absoluteDbPath = path.isAbsolute(dbPath) ? dbPath : path.resolve(SS_NODE_ROOT, dbPath);
 
-  // CODE-08: 生产环境关闭 synchronize，避免每次启动自动改表结构带来的数据风险与启动开销
-  // （开发环境保留 true 便于实体变更快速生效；生产应走 migration）
+  // CODE-08: disable synchronize in production to avoid the data risk and startup cost of auto-altering table schema on every boot
+  // (dev keeps true so entity changes apply quickly; production should use migrations)
   const isProduction = process.env.NODE_ENV === 'production';
-  // CODE-06: SQLite PRAGMA 通过 extra.pragma 配置，作用于连接池中所有连接
-  // （原 main.ts 用 ds.query('PRAGMA ...') 仅作用于单个连接，cache_size 优化实测未生效）
-  // cache_size=-16000 ≈ 16MB，在 1.8G 小内存机器上较 64MB 更合适
+  // CODE-06: configure SQLite PRAGMA via extra.pragma, applying to every connection in the pool
+  // (the original main.ts used ds.query('PRAGMA ...') which only affects a single connection, so the cache_size optimization had no real effect)
+  // cache_size=-16000 ~= 16MB, which suits a 1.8GB low-memory machine better than 64MB
   const sqlitePragma = [
     'journal_mode=WAL',
     'synchronous=NORMAL',
@@ -196,30 +197,31 @@ function getDatabaseConfig(configService: ConfigService): TypeOrmModuleOptions {
     database: absoluteDbPath,
     autoLoadEntities: true,
     synchronize: !isProduction,
-    // 表结构变更的权威入口：glob 与 data-source.ts（TypeORM CLI 用）保持一致，
-    // 保证 `npm run migration:*` 与启动时 runMigrations 看到同一批 migration
+    // Authoritative entry for schema changes: keep glob consistent with data-source.ts (used by TypeORM CLI),
+    // so that `npm run migration:*` and runMigrations at startup see the same set of migrations
     migrations: [path.resolve(__dirname, 'migrations', '*{.ts,.js}')],
     migrationsTableName: 'migrations',
     logging: false,
     extra: {
       busyTimeout: 10000,
-      // CODE-06: sqlite3 驱动支持 pragma 数组，对连接池内每个新连接自动执行
+      // CODE-06: the sqlite3 driver supports a pragma array, auto-executed on every new pooled connection
       pragma: sqlitePragma,
     },
   };
 }
 
 /**
- * 构建 env 文件加载路径
- * 优先级（生产部署）：process.cwd()/.env（单一文件，含全部配置）
- * 优先级（开发环境）：.env.local（本地覆盖，不入库） → .env.{productMode} → .env.base
- * 兼容：如未配置 APP_PRODUCT_MODE，回退到 .env.{APP_ENV|dev} + .env.base
+ * Build the env file load paths
+ * Priority (production deploy): process.cwd()/.env (single file with all config)
+ * Priority (dev): .env.local (local overrides, not committed) -> .env.{productMode} -> .env.base
+ * Compatibility: if APP_PRODUCT_MODE is unset, fall back to .env.{APP_ENV|dev} + .env.base
  *
- * .env.local 用途：存放本地机密凭证（如微信小程序 APPID/SECRET），
- * 已被 .gitignore 覆盖（.env.local 规则），优先级最高（dotenv 数组首个文件胜出）。
+ * .env.local purpose: holds local secrets (e.g. WeChat mini-program APPID/SECRET). It is
+ * covered by .gitignore (.env.local rule) and has the highest priority (first file in the
+ * dotenv array wins).
  */
 function buildEnvFilePaths(): string[] {
-  // 生产部署：.env 文件位于服务目录（process.cwd()），由 publish-node.bat 生成
+  // Production deploy: the .env file lives in the service directory (process.cwd()), generated by publish-node.bat
   if (process.env.NODE_ENV === 'production') {
     const cwdEnv = path.resolve(process.cwd(), '.env');
     if (fs.existsSync(cwdEnv)) {
@@ -227,15 +229,15 @@ function buildEnvFilePaths(): string[] {
     }
   }
 
-  // 使用 initProjectRoot() 设置的 SS_NODE_ROOT（dev 模式 = ss-services/ss-node/）
+  // Use the SS_NODE_ROOT set by initProjectRoot() (dev mode = ss-services/ss-node/)
   const projectRoot = SS_NODE_ROOT;
   const productMode = getProductMode();
 
-  // .env.local 本地覆盖文件（存在才加载，凭证不入库）
+  // .env.local local override file (loaded only if present; secrets are not committed)
   const localEnv = path.resolve(projectRoot, '.env.local');
   const localEnvPaths = fs.existsSync(localEnv) ? [localEnv] : [];
 
-  // 配置了产品模式：加载 .env.local + .env.{mode} + .env.base
+  // Product mode configured: load .env.local + .env.{mode} + .env.base
   if (process.env.APP_PRODUCT_MODE) {
     return [
       ...localEnvPaths,
@@ -244,7 +246,7 @@ function buildEnvFilePaths(): string[] {
     ];
   }
 
-  // 未配置产品模式：加载 .env.local + .env.{APP_ENV|dev} + .env.base
+  // No product mode configured: load .env.local + .env.{APP_ENV|dev} + .env.base
   return [
     ...localEnvPaths,
     path.resolve(projectRoot, `.env.${process.env.APP_ENV || 'dev'}`),
@@ -252,23 +254,23 @@ function buildEnvFilePaths(): string[] {
   ];
 }
 
-// 产品模式（模块加载时计算一次）
+// Product mode (computed once at module load)
 const PRODUCT_MODE = getProductMode();
 
-// 启动日志：明确标注当前产品模式
+// Startup log: explicitly mark the current product mode
 if (require.main === module || process.env.NODE_ENV !== 'test') {
-  // 仅在应用主进程启动时打印，避免测试环境噪音
+  // Print only when the application main process boots, to avoid test-env noise
   try {
     // eslint-disable-next-line no-console
     console.log(`\n[SS-Platform] Product Mode: ${PRODUCT_MODE}\n`);
   } catch {
-    // 忽略日志错误
+    // Ignore log errors
   }
 }
 
 /**
- * 共享模块（所有产品模式均注册）
- * 包含：配置、数据库、认证、用户、项目、WebSocket、i18n、EventBus、缓存、健康检查
+ * Shared modules (registered in every product mode)
+ * Include: config, database, auth, user, project, WebSocket, i18n, EventBus, cache, health check
  */
 const sharedModules: any[] = [
   ConfigModule.forRoot({
@@ -276,8 +278,8 @@ const sharedModules: any[] = [
     envFilePath: buildEnvFilePaths(),
     expandVariables: true,
   }),
-  // CODE-11: Throttler 配置改为读取环境变量，与 .env 中 RATE_LIMIT_MAX / RATE_LIMIT_TTL_MS 对齐
-  // 默认 ttl=60s / limit=100（保守值），生产可通过 .env 放宽（如 RATE_LIMIT_MAX=6000）
+  // CODE-11: Throttler config now reads env vars, aligned with RATE_LIMIT_MAX / RATE_LIMIT_TTL_MS in .env
+  // Default ttl=60s / limit=100 (conservative); production can relax via .env (e.g. RATE_LIMIT_MAX=6000)
   ThrottlerModule.forRoot([
     {
       ttl: Number(process.env.RATE_LIMIT_TTL_MS) || 60000,
@@ -291,9 +293,9 @@ const sharedModules: any[] = [
   }),
   I18nModule.forRoot({
     fallbackLanguage: 'zh-CN',
-    // 使用 initProjectRoot() 设置的 SS_NODE_ROOT 作为路径解析基准
-    // dev 模式：SS_NODE_ROOT = ss-services/ss-node/ → packages/ss-sdk/src/i18n/
-    // prod 模式：SS_NODE_ROOT = ss-run/ss/services/ss-node/ → cwd/i18n/
+    // Use the SS_NODE_ROOT set by initProjectRoot() as the path-resolution base
+    // dev mode:  SS_NODE_ROOT = ss-services/ss-node/ -> packages/ss-sdk/src/i18n/
+    // prod mode: SS_NODE_ROOT = ss-run/ss/services/ss-node/ -> cwd/i18n/
     loaderPath:
       process.env.NODE_ENV === 'production'
         ? path.resolve(SS_NODE_ROOT, 'i18n')
@@ -305,11 +307,11 @@ const sharedModules: any[] = [
   CacheModule,
   HealthModule,
   ConnectionModule,
-  // S-M02: 审计日志独立通道（全局模块，需在 AuthModule 之前注册）
+  // S-M02: independent audit-log channel (global module, must register before AuthModule)
   AuditLoggerModule,
   AuthModule,
-  // WechatAuthModule 移出 sharedModules，改为条件注册（见下方 WECHAT_LOGIN_ENABLED）
-  // 订阅消息模块（@Global）：提供小程序订阅消息通道与偏好接口，供报警分发器 @Optional 注入
+  // WechatAuthModule moved out of sharedModules into conditional registration (see WECHAT_LOGIN_ENABLED below)
+  // Subscription-message module (@Global): provides mini-program subscription-message channel and preference APIs, injected @Optional by the alarm dispatcher
   WechatSubscribeMessageModule,
   UserModule,
   ProjectModule,
@@ -320,21 +322,22 @@ const sharedModules: any[] = [
 ];
 
 /**
- * ss-scada 专有模块（full + scada 模式注册）
- * 包含：图元插件存储
+ * ss-scada specific modules (registered in full + scada modes)
+ * Include: graphic plugin storage
  */
 const scadaModules: any[] = [DiscoveryModule, PluginModule.forRoot({ autoDiscover: true })];
 
 /**
- * ss-data 专有模块（full + data 模式注册）
- * 包含：设备、报警、采集、存储、协议、系统管理、数据标签、报表、脚本、数据源、AI
+ * ss-data specific modules (registered in full + data modes)
+ * Include: device, alarm, collector, storage, protocol, system management, data tag, report, script, data source, AI
  *
- * CODE-07: AiModule 按 AI_ENABLED 条件导入。
- * 关闭 AI（AI_ENABLED !== 'true'）时不加载 AiModule，节省内存与启动时间；
- * 同步地，BACKEND_TOOLS_INIT provider 也会被门控（避免注入未提供的 AgentOrchestratorService）。
+ * CODE-07: AiModule is imported conditionally based on AI_ENABLED.
+ * When AI is off (AI_ENABLED !== 'true'), AiModule is not loaded, saving memory and startup time;
+ * correspondingly, the BACKEND_TOOLS_INIT provider is also gated (to avoid injecting the
+ * unavailable AgentOrchestratorService).
  */
 const AI_ENABLED = process.env.AI_ENABLED === 'true';
-// 微信扫码登录功能总开关：关闭时不注册 WechatAuthModule，前端通过 /auth/features 接口获取状态
+// Master switch for WeChat QR-code login: when off, WechatAuthModule is not registered and the frontend learns the state via /auth/features
 const WECHAT_LOGIN_ENABLED = process.env.WECHAT_LOGIN_ENABLED === 'true';
 
 const dataModules: any[] = [
@@ -343,7 +346,7 @@ const dataModules: any[] = [
   DeviceModule,
   AlarmModule,
   DataModule,
-  // 时序存储适配层：InfluxDB 3 Core / TDengine 适配器注册（按 STORAGE_DEFAULT_ENGINE / 项目级覆盖路由）
+  // Time-series storage adapter layer: register InfluxDB 3 Core / TDengine adapters (routed by STORAGE_DEFAULT_ENGINE / per-project override)
   Influxdb3StorageModule,
   TdengineStorageModule,
   PipelineModule,
@@ -361,21 +364,21 @@ const dataModules: any[] = [
   DataSourceModule,
   DataExportModule,
   DashboardModule,
-  // CODE-07: AiModule 仅在 AI_ENABLED=true 时加载
+  // CODE-07: AiModule loads only when AI_ENABLED=true
   ...(AI_ENABLED ? [AiModule] : []),
 ];
 
 @Module({
   imports: [
     ...sharedModules,
-    // 微信扫码登录模块仅在 WECHAT_LOGIN_ENABLED=true 时注册
-    // 关闭时 WechatAuthController 不存在，/auth/wechat/* 端点返回 404
+    // The WeChat QR-code login module registers only when WECHAT_LOGIN_ENABLED=true
+    // When off, WechatAuthController does not exist and /auth/wechat/* endpoints return 404
     ...(WECHAT_LOGIN_ENABLED ? [WechatAuthModule] : []),
-    // scada 模式：加载共享 + scada 专有模块
-    // full 模式：加载共享 + scada + data 全部模块
+    // scada mode: load shared + scada-specific modules
+    // full mode:  load shared + scada + data modules
     ...(PRODUCT_MODE !== 'data' ? scadaModules : []),
-    // data 模式：加载共享 + data 专有模块
-    // full 模式：加载共享 + scada + data 全部模块
+    // data mode:  load shared + data-specific modules
+    // full mode:  load shared + scada + data modules
     ...(PRODUCT_MODE !== 'scada' ? dataModules : []),
   ],
   controllers: [VersionController],
@@ -396,7 +399,7 @@ const dataModules: any[] = [
       provide: APP_INTERCEPTOR,
       useClass: ResponseI18nInterceptor,
     },
-    // 操作日志拦截器：仅在 OPERATION_LOG_ENABLED !== 'false' 时注册
+    // Operation-log interceptor: register only when OPERATION_LOG_ENABLED !== 'false'
     ...(process.env.OPERATION_LOG_ENABLED !== 'false'
       ? [
           {
@@ -414,9 +417,9 @@ const dataModules: any[] = [
       provide: APP_GUARD,
       useClass: RateLimitGuard,
     },
-    // P2-T01: 注册后端 MCP 工具（替换 stub 为真实实现）
-    // CODE-07: 仅在 AI_ENABLED=true 时注册 — 该工厂注入 AgentOrchestratorService（由 AiModule 提供），
-    // 关闭 AI 时不加载 AiModule，此处也必须跳过，否则启动时依赖注入会失败。
+    // P2-T01: register backend MCP tools (replace stub with real implementation)
+    // CODE-07: register only when AI_ENABLED=true - this factory injects AgentOrchestratorService (provided by AiModule),
+    // so when AI is off and AiModule is not loaded, this must also be skipped, otherwise DI fails at startup.
     ...(AI_ENABLED
       ? [
           {
@@ -437,7 +440,7 @@ const dataModules: any[] = [
         reportService: ReportService,
         scriptService: ScriptService,
         datatagService: DataTagService,
-        // 批次 E-I 新增服务
+        // Batches E-I: newly added services
         userAdminService: UserAdminService,
         userService: UserService,
         roleService: RoleService,
@@ -458,7 +461,7 @@ const dataModules: any[] = [
         backupService: BackupService,
       ) => {
         const tools = createAllBackendTools({
-          // 原有服务
+          // Original services
           deviceService,
           alarmService: {
             getRecords: (projectId, limit) => alarmService.getRecords(projectId, limit),
@@ -540,7 +543,7 @@ const dataModules: any[] = [
             createDevice: (dto, projectId) => deviceService.create(dto as any, projectId),
           },
           dictService: dictLoaderService as any,
-          // 新增服务
+          // Newly added services
           dbConnectionService: {
             findAll: (projectId) => dbConnectionService.findAll(projectId),
             create: (projectId, dto) => dbConnectionService.create(projectId, dto as any),
@@ -613,7 +616,7 @@ const dataModules: any[] = [
             create: (dto) => scriptService.create(dto as any),
             executeScript: (id, projectId) => scriptService.executeScript(id, projectId) as any,
           },
-          // ──────────── 批次 E: 报警处理与运维 (7 工具) ────────────
+          // ──────────── Batch E: alarm handling & operations (7 tools) ────────────
           alarmOpsService: {
             acknowledge: (recordId, userId, projectId) =>
               alarmService.acknowledgeAlarm(recordId, userId, projectId),
@@ -631,7 +634,7 @@ const dataModules: any[] = [
             getSuppressionRules: (_projectId) =>
               Promise.resolve((alarmSuppressionService as any).getRules?.() ?? []),
           },
-          // ──────────── 批次 F: 设备运维管理 (6 工具) ────────────
+          // ──────────── Batch F: device ops management (6 tools) ────────────
           deviceOpsService: {
             update: (id, dto, projectId) => deviceService.update(id, dto as any, projectId),
             remove: (id, projectId) => deviceService.remove(id, projectId),
@@ -660,7 +663,7 @@ const dataModules: any[] = [
             runDiagnostic: (deviceId, action, params) =>
               (deviceDiagnosticService as any).runDiagnostic({ id: deviceId, ...params }, action),
           },
-          // ──────────── 批次 G: 用户权限管理 (5 工具) ────────────
+          // ──────────── Batch G: user permission management (5 tools) ────────────
           userService: {
             findAll: (query) => userAdminService.listUsers(query as any),
             adminCreateUser: (dto) => userService.createUser(dto as any),
@@ -712,7 +715,7 @@ const dataModules: any[] = [
             getMenuButtons: () => menuConfigService.getMenuButtons(),
             updateMenuButtons: (buttons) => menuConfigService.updateMenuButtons(buttons),
           },
-          // ──────────── 批次 H: 采集器与服务运维 (7 工具) ────────────
+          // ──────────── Batch H: collector & service ops (7 tools) ────────────
           pluginManagerService: {
             listPlugins: (query) =>
               (pluginManagerService as any).listPluginsWithRuntime(query as any),
@@ -791,7 +794,7 @@ const dataModules: any[] = [
             triggerRestart: (username) => systemRestartService.triggerRestart(username),
             getRestartStatus: () => systemRestartService.getRestartStatus(),
           },
-          // ──────────── 批次 I: 数据治理与备份 (5 工具) ────────────
+          // ──────────── Batch I: data governance & backup (5 tools) ────────────
           dataExportService: {
             exportCsv: (tagId, startTime, endTime) =>
               (dataExportService as any).exportCsv?.(tagId, startTime, endTime) ??
@@ -851,7 +854,7 @@ const dataModules: any[] = [
         ReportService,
         ScriptService,
         DataTagService,
-        // 批次 E-I 新增服务
+        // Batches E-I: newly added services
         UserAdminService,
         UserService,
         RoleService,
@@ -879,8 +882,8 @@ const dataModules: any[] = [
 export class AppModule implements NestModule, OnModuleInit {
   private readonly logger = new Logger('AppModule');
 
-  // CODE-07: BACKEND_TOOLS_INIT 现为条件 provider（仅 AI_ENABLED=true 时注册），
-  // 故注入需标记 @Optional()，避免关闭 AI 时启动报错（NestFactory 会对缺失的非可选依赖抛异常）
+  // CODE-07: BACKEND_TOOLS_INIT is now a conditional provider (registered only when AI_ENABLED=true),
+  // so its injection must be marked @Optional() to avoid a startup error when AI is off (NestFactory throws on a missing non-optional dependency)
   constructor(@Optional() @Inject('BACKEND_TOOLS_INIT') _toolsInit: void) {
     this.logger.log(`Product Mode: ${PRODUCT_MODE}`);
     this.logger.log(
@@ -896,8 +899,8 @@ export class AppModule implements NestModule, OnModuleInit {
   }
 
   onModuleInit() {
-    // 基础服务（共享模块 + 业务模块）初始化完成
-    // 使用 console.log 与 main.ts 启动阶段日志保持一致
+    // Base services (shared + business modules) initialized
+    // Use console.log to stay consistent with the startup-phase logs in main.ts
     console.log(`[Startup] ✅ 基础服务（共享模块/业务模块）初始化完成`);
   }
 

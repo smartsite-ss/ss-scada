@@ -10,9 +10,9 @@ import { DataTag } from '../entities/data-tag.entity';
 import { DeviceGroup } from '../entities/device-group.entity';
 import { ProjectDatabaseService } from '@ss-node/ss-core';
 
-/** 备份数据结构 */
+/** Backup data structure */
 export interface DeviceBackup {
-  /** 备份元数据 */
+  /** Backup metadata */
   metadata: {
     backupId: string;
     projectId: string;
@@ -23,9 +23,9 @@ export interface DeviceBackup {
     deviceCount?: number;
     tagCount?: number;
   };
-  /** 设备配置 */
+  /** Device configs */
   devices: DeviceBackupEntry[];
-  /** 分组信息 */
+  /** Group info */
   groups?: GroupBackupEntry[];
 }
 
@@ -98,7 +98,7 @@ export interface BackupListItem {
   version: string;
 }
 
-/** 备份验证结果 */
+/** Backup verification result */
 export interface BackupValidationResult {
   valid: boolean;
   errors: string[];
@@ -108,7 +108,7 @@ export interface BackupValidationResult {
 @Injectable()
 export class DeviceBackupService {
   private readonly logger = new Logger(DeviceBackupService.name);
-  /** 内存存储备份（生产环境应替换为持久化存储） */
+  /** In-memory backup store (production should replace with persistent storage) */
   private readonly backupStore = new Map<string, DeviceBackup>();
   private readonly dbMode: string;
 
@@ -142,7 +142,7 @@ export class DeviceBackupService {
   }
 
   /**
-   * 备份单个设备配置到 JSON
+   * Back up a single device's config to JSON
    */
   async backupDevice(deviceId: string, projectId: string): Promise<DeviceBackup> {
     const { deviceRepo, dataTagRepo } = await this.getRepos(projectId);
@@ -177,7 +177,7 @@ export class DeviceBackupService {
   }
 
   /**
-   * 备份项目中所有设备配置到 JSON
+   * Back up all device configs in a project to JSON
    */
   async backupProject(projectId: string): Promise<DeviceBackup> {
     const { deviceRepo, dataTagRepo, deviceGroupRepo } = await this.getRepos(projectId);
@@ -228,7 +228,7 @@ export class DeviceBackupService {
   }
 
   /**
-   * 从备份数据恢复单个设备
+   * Restore a single device from backup data
    */
   async restoreDevice(backupData: DeviceBackup, projectId: string): Promise<Device> {
     this.validateBackup(backupData);
@@ -243,7 +243,7 @@ export class DeviceBackupService {
       throw new BadRequestException('备份数据中没有设备信息');
     }
 
-    // 检查是否已存在同编码设备
+    // Check whether a device with the same code already exists
     const existing = await deviceRepo.findOne({
       where: { deviceCode: entry.deviceCode, projectId },
     });
@@ -263,12 +263,12 @@ export class DeviceBackupService {
       });
       await deviceRepo.save(existing);
 
-      // 恢复 tags
+      // Restore tags
       await this.restoreTags(existing.id, entry.tags, dataTagRepo);
       return existing;
     }
 
-    // 创建新设备
+    // Create the new device
     const device = deviceRepo.create({
       deviceCode: entry.deviceCode,
       deviceName: entry.deviceName,
@@ -285,7 +285,7 @@ export class DeviceBackupService {
     } as any);
     const savedDevice = await deviceRepo.save(device);
 
-    // 恢复 tags
+    // Restore tags
     await this.restoreTags((savedDevice as any).id, entry.tags, dataTagRepo);
 
     this.logger.log(`Device restored: ${(savedDevice as any).id} from backup`);
@@ -293,7 +293,7 @@ export class DeviceBackupService {
   }
 
   /**
-   * 从备份数据恢复整个项目的设备
+   * Restore a whole project's devices from backup data
    */
   async restoreProject(
     backupData: DeviceBackup,
@@ -311,7 +311,7 @@ export class DeviceBackupService {
     let tagsRestored = 0;
     let groupsRestored = 0;
 
-    // 恢复分组
+    // Restore groups
     if (backupData.groups) {
       for (const groupEntry of backupData.groups) {
         const existing = await deviceGroupRepo.findOne({
@@ -336,7 +336,7 @@ export class DeviceBackupService {
       }
     }
 
-    // 恢复设备
+    // Restore devices
     for (const entry of backupData.devices) {
       const existing = await deviceRepo.findOne({
         where: { deviceCode: entry.deviceCode, projectId },
@@ -378,7 +378,7 @@ export class DeviceBackupService {
       }
       devicesRestored++;
 
-      // 恢复 tags
+      // Restore tags
       const restoredTags = await this.restoreTags(deviceId, entry.tags, dataTagRepo);
       tagsRestored += restoredTags;
     }
@@ -390,7 +390,7 @@ export class DeviceBackupService {
   }
 
   /**
-   * 验证备份文件结构
+   * Validate the backup file structure
    */
   validateBackup(data: any): BackupValidationResult {
     const errors: string[] = [];
@@ -444,7 +444,7 @@ export class DeviceBackupService {
   }
 
   /**
-   * 列出可用的备份
+   * List available backups
    */
   listBackups(projectId?: string): BackupListItem[] {
     const backups: BackupListItem[] = [];
@@ -470,7 +470,7 @@ export class DeviceBackupService {
   }
 
   /**
-   * 删除备份
+   * Delete a backup
    */
   deleteBackup(backupId: string): boolean {
     const existed = this.backupStore.has(backupId);
@@ -484,13 +484,13 @@ export class DeviceBackupService {
   }
 
   /**
-   * 获取备份数据
+   * Get backup data
    */
   getBackup(backupId: string): DeviceBackup | undefined {
     return this.backupStore.get(backupId);
   }
 
-  // ──────────── 私有方法 ────────────
+  // ──────────── Private methods ────────────
 
   private generateBackupId(): string {
     const timestamp = Date.now().toString(36);

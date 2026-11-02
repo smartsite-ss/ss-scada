@@ -370,15 +370,15 @@ describe('DeviceTemplateService', () => {
     mockDeviceRepo = createMockDeviceRepo();
     mockTagRepo = createMockTagRepo();
 
-    // Mock ConfigService — 用于 resolveProjectsDir / discoverProjects
+    // Mock ConfigService — used for resolveProjectsDir / discoverProjects
     mockConfigService = {
       get: jest.fn().mockReturnValue('/test/projects'),
     };
 
-    // Mock ProjectDatabaseService — 项目级 DB 返回 mockDataSource
+    // Mock ProjectDatabaseService — project-level DB returns mockDataSource
     const mockDataSource = {
       getRepository: jest.fn().mockImplementation((entity: any) => {
-        // 根据实体类型返回对应 mock repo
+        // Return the corresponding mock repo based on the entity type
         const name = entity?.name || '';
         if (name === 'Device' || name === 'FakeDevice') return mockDeviceRepo;
         if (name === 'DataTag' || name === 'FakeDataTag') return mockTagRepo;
@@ -421,7 +421,7 @@ describe('DeviceTemplateService', () => {
     (fs.renameSync as jest.Mock).mockImplementation(() => undefined);
     (fs.unlinkSync as jest.Mock).mockImplementation(() => undefined);
     (fs.readdirSync as jest.Mock).mockImplementation((_dir: string) => {
-      // 模拟项目目录：大多数测试只用到 project-001
+      // Simulate the project directories: most tests only use project-001
       return [
         { name: 'project-001', isDirectory: () => true },
         { name: 'some-file.txt', isDirectory: () => false },
@@ -711,7 +711,7 @@ describe('DeviceTemplateService', () => {
       expect(result.isDefault).toBe(true);
     });
 
-    // ==================== 变量属性变更 ====================
+    // ==================== Variable property changes ====================
     it('TC-DTM-046: should update variable direction (read → read-write) on draft template', async () => {
       const template = makeLoadedTemplate({
         id: 'template-001',
@@ -1617,7 +1617,7 @@ describe('DeviceTemplateService', () => {
   });
 
   // ============================================================
-  // P6-11: Phase 6 — GUID 匹配 + 孤儿删除 + 批量通知 + 存量迁移
+  // P6-11: Phase 6 — GUID matching + orphan deletion + batch notification + legacy migration
   // ============================================================
 
   describe('sync - Phase 6: GUID matching & orphan deletion', () => {
@@ -1721,7 +1721,7 @@ describe('DeviceTemplateService', () => {
       });
       const manualTag = makeTag({
         id: 'tag-manual', name: 'manual_value', deviceId: 'device-001',
-        templateVariableGuid: null, // ★ 手动创建的标签
+        templateVariableGuid: null, // manually created tag
       });
       mockDeviceRepo.find!.mockResolvedValue([device]);
       // mockTagRepo.find had { where: { deviceId, templateVariableGuid: Not(IsNull()) } }
@@ -1850,7 +1850,7 @@ describe('DeviceTemplateService', () => {
   });
 
   // ============================================================
-  // P6-5: 存量迁移测试
+  // P6-5: legacy migration tests
   // ============================================================
 
   describe('migrateTemplateGuids', () => {

@@ -37,16 +37,16 @@ import { ChannelConfigService } from './channel/channel-config.service';
 import { TemplateLoaderService } from '@ss-node/ss-system';
 
 /**
- * TemplateLoaderService 的最小接口定义（用于类型安全）。
- * ss-device 现在直接依赖 @ss-node/ss-system（已在 package.json 中声明），
- * 循环依赖通过 NestJS forwardRef 处理，不再需要 require() hack。
+ * Minimal interface definition of TemplateLoaderService (for type safety).
+ * ss-device now depends directly on @ss-node/ss-system (declared in package.json);
+ * the circular dependency is handled via NestJS forwardRef, no more require() hack.
  */
 interface ITemplateVariable {
   order: number;
   name: string;
   address: string;
   dataType: string;
-  [key: string]: any; // 允许 TemplateVariable 的所有其他属性
+  [key: string]: any; // allow all other TemplateVariable properties
 }
 
 interface ITemplate {
@@ -61,12 +61,12 @@ interface ITemplateLoaderService {
   getTemplate(templateId: string): ITemplate | undefined;
 }
 
-/** 项目设备树节点（三级：项目→分组→设备） */
+/** Project device-tree node (three levels: project -> group -> device) */
 export interface ProjectDeviceTree {
   projectId: string;
   projectName: string;
   groups: DeviceTree[];
-  /** 未分组的设备（groupId 为空），挂载在项目节点下 */
+  /** Ungrouped devices (empty groupId), mounted under the project node */
   rootDevices: DeviceSummary[];
 }
 
@@ -89,7 +89,7 @@ export interface DeviceSummary {
   status: string;
 }
 
-/** 设备统计信息 */
+/** Device statistics */
 export interface DeviceStats {
   total: number;
   online: number;
@@ -100,7 +100,7 @@ export interface DeviceStats {
   totalTags: number;
 }
 
-/** 项目级 Repository 集合 */
+/** Project-level Repository collection */
 interface ProjectRepos {
   deviceRepo: Repository<Device>;
   dataTagRepo: Repository<DataTag>;
@@ -110,7 +110,7 @@ interface ProjectRepos {
 @Injectable()
 export class DeviceService {
   private readonly logger = new Logger(DeviceService.name);
-  /** 数据库模式：isolated=项目独立DB, unified=全局DB */
+  /** Database mode: isolated=per-project DB, unified=global DB */
   private readonly dbMode: string;
   private readonly err: ErrorFactory;
 
@@ -148,7 +148,7 @@ export class DeviceService {
   ) {
     this.dbMode = this.configService.get<string>('PROJECT_DB_MODE', 'isolated');
     this.err = new ErrorFactory(this.i18nService);
-    // 诊断日志：确认 TemplateLoaderService 是否成功注入
+    // Diagnostic log: confirm whether TemplateLoaderService was successfully injected
     if (this.templateLoaderService) {
       this.logger.log('TemplateLoaderService injected successfully — template binding is active');
     } else {
@@ -160,9 +160,9 @@ export class DeviceService {
   }
 
   /**
-   * 根据项目ID获取对应的 Repository 集合
-   * - isolated 模式：通过 ProjectDatabaseService 获取项目级 DataSource
-   * - unified 模式：使用全局注入的 Repository（兼容旧行为）
+   * Get the Repository collection for a project by ID
+   * - isolated mode: gets the project-level DataSource via ProjectDatabaseService
+   * - unified mode: uses the globally injected Repository (backward-compatible behavior)
    */
   private async getRepos(projectId: string): Promise<ProjectRepos> {
     if (this.dbMode === 'isolated' && this.projectDbService) {
@@ -191,17 +191,17 @@ export class DeviceService {
       this.err.conflict('error.device.DEV_002', { deviceCode: createDeviceDto.deviceCode });
     }
 
-    // Validate channel config（自动注入 protocol 字段，避免前端重复传递）
+    // Validate channel config (auto-injects the protocol field, avoiding the frontend passing it repeatedly)
     if (this.channelConfigService && createDeviceDto.connection) {
       const connection = { ...createDeviceDto.connection, protocol: createDeviceDto.driver };
       this.channelConfigService.validate(connection as any);
     }
 
-    // ⭐ 调用采集插件的 validateChannelConfig() 做协议特有校验
+    // Call the collection plugin's validateChannelConfig() for protocol-specific validation
     await this.validateWithPlugin(createDeviceDto.driver, createDeviceDto.connection);
 
-    // 从模板推导设备类型（提示词.md 要求：选择设备模板，而非手动选择设备类型）
-    let deviceType = 'modbus_tcp'; // 默认值
+    // Derive the device type from the template (per the prompt doc: choose a device template rather than picking a device type manually)
+    let deviceType = 'modbus_tcp'; // default value
     let templateVersion: string | undefined;
     if (this.templateLoaderService && createDeviceDto.templateId) {
       const template = this.templateLoaderService.getTemplate(createDeviceDto.templateId);
@@ -223,7 +223,7 @@ export class DeviceService {
     });
     const saved = await deviceRepo.save(device);
 
-    // 自动实例化模板标签：根据模板变量创建 DataTag
+    // Auto-instantiate template tags: create DataTags from template variables
     if (this.templateLoaderService && createDeviceDto.templateId) {
       const template = this.templateLoaderService.getTemplate(createDeviceDto.templateId);
       if (template && template.variables?.length) {
@@ -271,7 +271,7 @@ export class DeviceService {
       }
     }
 
-    // 通知采集层：设备已创建，需建立连接 + 注册采集任务
+    // Notify the collection layer: device created; needs connection + collection-task registration
     this.eventBus?.emit('device.created', {
       deviceId: saved.id,
       projectId: saved.projectId,
@@ -297,17 +297,17 @@ export class DeviceService {
 
     const baseWhere: any = { projectId };
 
-    // ───── 设备授权过滤 ─────
+    // ───── Device-authorization filtering ─────
     if (roleId && this.authorizationService) {
       const accessibleIds = await this.authorizationService.getAccessibleDeviceIds(roleId, projectId);
       if (accessibleIds.length === 0) {
-        // 角色在此项目下未授权任何设备 → 返回空列表
+        // Role has no authorized devices in this project -> return an empty list
         return { data: [], pagination: { page, pageSize, total: 0, totalPages: 0 } };
       }
       if (accessibleIds[0] !== '*') {
         baseWhere.id = In(accessibleIds);
       }
-      // accessibleIds[0] === '*' → 不添加过滤，返回全部
+      // accessibleIds[0] === '*' -> no filter added, return everything
     }
 
     if (query?.deviceCode) {
@@ -349,7 +349,7 @@ export class DeviceService {
       order,
     });
 
-    // 合并 DeviceStateManager 内存中的实时状态
+    // Merge the real-time state from DeviceStateManager's memory
     const merged = data.map((d) => this.mergeMemoryStatus(d));
 
     return {
@@ -364,13 +364,13 @@ export class DeviceService {
   }
 
   /**
-   * 获取设备统计信息（总数、各状态数量、标签总数）
-   * 用于系统概览页面的设备状态分布展示
+   * Get device statistics (total, per-status counts, total tags)
+   * Used for the system-overview page's device-status distribution display
    */
   async getDeviceStats(projectId: string, roleId?: string): Promise<DeviceStats> {
     const { deviceRepo, dataTagRepo } = await this.getRepos(projectId);
 
-    // ───── 设备授权过滤 ─────
+    // ───── Device-authorization filtering ─────
     const deviceWhere: any = { projectId };
     if (roleId && this.authorizationService) {
       const accessibleIds = await this.authorizationService.getAccessibleDeviceIds(roleId, projectId);
@@ -396,12 +396,12 @@ export class DeviceService {
 
     const now = Date.now();
     for (const device of devices) {
-      // 合并内存实时状态
+      // Merge in-memory real-time state
       const memState = this.deviceStateManager?.getState(device.id);
       let status: string = memState ? memState.status : device.status;
 
-      // 心跳超时兜底：即使 status 标记为 online，若最近数据时间超过 offlinePeriod，判定为离线。
-      // deviceStateManager 可能未注入或未及时更新，用 lastDataAt + offlinePeriod 做实时兜底。
+      // Heartbeat-timeout fallback: even if status is marked online, if the last data time exceeds offlinePeriod, treat it as offline.
+      // deviceStateManager may not be injected or not updated in time; use lastDataAt + offlinePeriod as a real-time fallback.
       if (status === 'online' && device.lastDataAt) {
         const offlineThreshold = device.offlinePeriod || 30000;
         if (now - device.lastDataAt.getTime() > offlineThreshold) {
@@ -448,18 +448,18 @@ export class DeviceService {
       where: { id, projectId },
     });
     if (!device) this.err.notFound('error.device.DEV_001', { id });
-    // 查询设备关联的数据标签（模板实例化生成 + 手动添加）
+    // Query the device's associated data tags (template-instantiated + manually added)
     let tags = await dataTagRepo.find({ where: { deviceId: id } });
 
-    // 自动修复：如果设备已绑定模板但点表为空（可能因历史 DI 失败导致模板未实例化），
-    // 在此自动重新应用模板。applyTemplate 是幂等的（按名称去重），不会重复创建。
+    // Auto-repair: if the device has a bound template but an empty tag table (possibly because a historical DI failure prevented instantiation),
+    // automatically re-apply the template here. applyTemplate is idempotent (dedupes by name) and will not duplicate.
     if (device.templateId && (tags?.length ?? 0) === 0 && this.templateLoaderService) {
       this.logger.log(
         `Device ${id} has templateId "${device.templateId}" but 0 tags — auto-applying template to fix missing tags`,
       );
       try {
         await this.applyTemplate(id, device.templateId, projectId);
-        // 重新加载标签
+        // Reload tags
         tags = await dataTagRepo.find({ where: { deviceId: id } });
         this.logger.log(`Auto-apply completed: ${tags.length} tags now exist for device ${id}`);
       } catch (err: any) {
@@ -470,13 +470,13 @@ export class DeviceService {
     }
 
     (device as any).tags = tags;
-    // 合并内存实时状态 + 密码脱敏
+    // Merge in-memory real-time state + password desensitization
     return this.desensitizeDevice(this.mergeMemoryStatus(device));
   }
 
   /**
-   * 用 DeviceStateManager 内存中的实时状态覆盖 DB 返回的设备状态。
-   * 前端列表显示以内存状态为准（最新采集回调更新的状态）。
+   * Override the DB-returned device status with DeviceStateManager's in-memory real-time state.
+   * The frontend list display uses the in-memory state (updated by the latest collection callbacks).
    */
   private mergeMemoryStatus(device: Device): Device {
     const memoryState = this.deviceStateManager?.getState(device.id);
@@ -491,14 +491,14 @@ export class DeviceService {
       if (memoryState.lastDataAt) {
         device.lastDataAt = new Date(memoryState.lastDataAt) as any;
       }
-      // 合并运行时错误信息
+      // Merge runtime error info
       if (memoryState.lastErrorMessage) {
         (device as any).lastErrorMsg = memoryState.lastErrorMessage;
       }
-      // 合并运行时错误计数：failingTags 数量
+      // Merge the runtime error count: the number of failingTags
       const failingCount = memoryState.failingTags?.length ?? 0;
       (device as any).errorCount = failingCount;
-      // 合并采集诊断数据
+      // Merge collection diagnostics
       if (memoryState.diagnostics) {
         (device as any)._diagnostics = {
           retryCount: memoryState.diagnostics.retryCount,
@@ -523,12 +523,12 @@ export class DeviceService {
       }
     }
 
-    // ⭐ 如果更新 connection 配置，调用插件校验接口
+    // When the connection config is updated, call the plugin validation interface
     if (updateDeviceDto.connection) {
       await this.validateWithPlugin(device.driver, updateDeviceDto.connection);
     }
 
-    // 检测变更字段（用于通知采集层执行增量操作）
+    // Detect changed fields (for notifying the collection layer to perform incremental operations)
     const changedFields: string[] = [];
     const changes: Record<string, { old: any; new: any }> = {};
     if (
@@ -554,7 +554,7 @@ export class DeviceService {
       changes.groupId = { old: device.groupId, new: updateDeviceDto.groupId };
     }
 
-    // 检测 templateId 是否变更：编辑设备绑定/切换模板时需实例化点表
+    // Detect whether templateId changed: editing the device binding / switching templates requires instantiating the tag table
     const oldTemplateId = device.templateId ?? null;
     const newTemplateId = updateDeviceDto.templateId ?? null;
     const templateChanged = newTemplateId !== oldTemplateId;
@@ -562,12 +562,12 @@ export class DeviceService {
       changedFields.push('tags');
       changes.tags = { old: oldTemplateId, new: newTemplateId };
     }
-    // 检测采集驱动是否变更
+    // Detect whether the collection driver changed
     if (updateDeviceDto.driver && updateDeviceDto.driver !== device.driver) {
       changedFields.push('driver');
       changes.driver = { old: device.driver, new: updateDeviceDto.driver };
     }
-    // 修复历史问题：如果模板未变更但设备没有点表（可能因之前 DI 失败），也需重新应用
+    // Fix a historical issue: if the template did not change but the device has no tag table (possibly from an earlier DI failure), also re-apply
     const effectiveTemplateId = newTemplateId ?? oldTemplateId;
     const needsReapply =
       !templateChanged && effectiveTemplateId && ((device as any).tags?.length ?? 0) === 0;
@@ -575,7 +575,7 @@ export class DeviceService {
     Object.assign(device, updateDeviceDto);
     const saved = await deviceRepo.save(device);
 
-    // 模板变更时实例化标签（与创建设备时的自动实例化逻辑一致）
+    // Instantiate tags on template change (same auto-instantiation logic as device creation)
     if (templateChanged && newTemplateId) {
       this.logger.log(
         `Template changed for device ${saved.id}: ${oldTemplateId || '(none)'} → ${newTemplateId}, applying template...`,
@@ -583,7 +583,7 @@ export class DeviceService {
       await this.applyTemplate(saved.id, newTemplateId, projectId);
     }
 
-    // 模板未变更但点表为空，重新应用模板修复历史问题
+    // Template unchanged but the tag table is empty; re-apply the template to fix the historical issue
     if (needsReapply) {
       this.logger.log(
         `Template unchanged for device ${saved.id} but 0 tags found — re-applying template ${effectiveTemplateId} to fix missing tags`,
@@ -591,7 +591,7 @@ export class DeviceService {
       await this.applyTemplate(saved.id, effectiveTemplateId!, projectId);
     }
 
-    // 通知采集层：设备配置变更（通道/频率/驱动/状态等）
+    // Notify the collection layer: device config changed (channel/frequency/driver/status etc.)
     if (changedFields.length > 0) {
       this.eventBus?.emit('device.updated', {
         deviceId: saved.id,
@@ -618,7 +618,7 @@ export class DeviceService {
     const { deviceRepo, dataTagRepo } = await this.getRepos(projectId);
     const device = await this.findOne(id, projectId);
 
-    // 1. 删除设备关联的所有数据标签（先清理外键依赖）
+    // 1. Delete all data tags associated with the device (clean up FK dependencies first)
     const tags = await dataTagRepo.find({ where: { deviceId: id } });
     if (tags.length > 0) {
       const tagIds = tags.map((t) => t.id);
@@ -637,10 +637,10 @@ export class DeviceService {
       this.logger.log(`Cascade deleted ${tags.length} tags for device ${id}`);
     }
 
-    // 2. 删除设备 (SQLite 外键级联：dev_device_status_log, dev_device_group_members)
+    // 2. Delete the device (SQLite FK cascade: dev_device_status_log, dev_device_group_members)
     await deviceRepo.remove(device);
 
-    // 3. 通知采集层：设备已删除，需断开连接 + 注销采集任务
+    // 3. Notify the collection layer: device deleted; needs disconnect + collection-task unregistration
     this.eventBus?.emit('device.deleted', {
       deviceId: id,
       projectId,
@@ -682,7 +682,7 @@ export class DeviceService {
     await this.findOne(deviceId, projectId);
     const tag = await dataTagRepo.findOne({ where: { id: tagId, deviceId } });
     if (!tag) this.err.notFound('error.data.DATA_005', { tagId });
-    // 先清理外键依赖记录
+    // Clean up FK-dependent records first
     if (this.dbMode === 'isolated' && this.projectDbService) {
       const ds = await this.projectDbService.getSystemDb(projectId);
       await ds.query('DELETE FROM alm_alarm_rules WHERE tagId = ?', [tagId]);
@@ -755,10 +755,10 @@ export class DeviceService {
   }
 
   /**
-   * 移动设备到指定分组（支持跨多级分组移动）
-   * @param deviceId 设备ID
-   * @param targetGroupId 目标分组ID，null 表示移出分组（未分组）
-   * @param projectId 项目ID
+   * Move a device to a target group (supports moving across multi-level groups)
+   * @param deviceId device ID
+   * @param targetGroupId target group ID; null means moving out of any group (ungrouped)
+   * @param projectId project ID
    */
   async moveDevice(
     deviceId: string,
@@ -768,7 +768,7 @@ export class DeviceService {
     const { deviceRepo, deviceGroupRepo } = await this.getRepos(projectId);
     const device = await this.findOne(deviceId, projectId);
 
-    // 校验目标分组存在且属于当前项目
+    // Validate that the target group exists and belongs to the current project
     if (targetGroupId) {
       const targetGroup = await deviceGroupRepo.findOne({
         where: { id: targetGroupId, projectId },
@@ -779,11 +779,11 @@ export class DeviceService {
     }
 
     const oldGroupId = device.groupId;
-    // groupId 实体类型为 string，但列允许 null；targetGroupId 为 null 时 TypeORM 存 null
+    // The groupId entity type is string, but the column allows null; when targetGroupId is null, TypeORM stores null
     device.groupId = targetGroupId as string;
     const saved = await deviceRepo.save(device);
 
-    // 通知采集层：设备分组变更
+    // Notify the collection layer: device group changed
     this.eventBus?.emit('device.updated', {
       deviceId: saved.id,
       projectId: saved.projectId,
@@ -800,11 +800,11 @@ export class DeviceService {
   }
 
   /**
-   * 获取分组的完整路径（从根到当前分组）
-   * 通过 parentId 链向上遍历，带循环引用检测防止无限循环
-   * @param groupId 分组ID
-   * @param projectId 项目ID
-   * @returns 路径数组，索引 0 为根分组，末尾为当前分组
+   * Get a group's full path (from root to the current group)
+   * Walks up the parentId chain, with cycle detection to prevent infinite loops
+   * @param groupId group ID
+   * @param projectId project ID
+   * @returns path array; index 0 is the root group, the last is the current group
    */
   async getGroupPath(groupId: string, projectId: string): Promise<DeviceGroup[]> {
     const { deviceGroupRepo } = await this.getRepos(projectId);
@@ -814,7 +814,7 @@ export class DeviceService {
     let currentId: string | null = groupId;
 
     while (currentId) {
-      // 循环引用检测：如果已访问过该节点，中止遍历
+      // Cycle detection: abort traversal if this node was already visited
       if (visited.has(currentId)) {
         this.logger.warn(
           `Cycle detected in group path at groupId=${currentId}, aborting path traversal`,
@@ -828,7 +828,7 @@ export class DeviceService {
       });
       if (!group) break;
 
-      path.unshift(group); // 插入到头部，最终顺序为根→当前
+      path.unshift(group); // insert at the head; final order is root to current
       currentId = group.parentId;
     }
 
@@ -836,8 +836,8 @@ export class DeviceService {
   }
 
   /**
-   * 获取设备分组树（三级：项目→分组→设备）
-   * 提示词.md 第4条要求：设备树显示 项目→分组→设备 三级
+   * Get the device-group tree (three levels: project -> group -> device)
+   * Per the prompt doc requirement #4: the device tree displays project -> group -> device, three levels
    */
   async getGroupTree(projectId: string, projectName?: string, roleId?: string): Promise<ProjectDeviceTree> {
     const { deviceGroupRepo, deviceRepo } = await this.getRepos(projectId);
@@ -848,7 +848,7 @@ export class DeviceService {
       order: { sortOrder: 'ASC' },
     });
 
-    // ───── 设备授权过滤 ─────
+    // ───── Device-authorization filtering ─────
     let authorizedDeviceIds: string[] | null = null;
     if (roleId && this.authorizationService) {
       const accessibleIds = await this.authorizationService.getAccessibleDeviceIds(roleId, projectId);
@@ -868,7 +868,7 @@ export class DeviceService {
     const deviceMap = new Map<string, DeviceSummary[]>();
     const rootDevices: DeviceSummary[] = [];
     for (const device of devices) {
-      // 合并内存实时状态
+      // Merge in-memory real-time state
       const memState = this.deviceStateManager?.getState(device.id);
       const displayStatus = memState ? memState.status : device.status;
 
@@ -882,7 +882,7 @@ export class DeviceService {
 
       const key = device.groupId;
       if (!key) {
-        // 未分组的设备挂载到项目根
+        // Ungrouped devices mount at the project root
         rootDevices.push(summary);
       } else {
         if (!deviceMap.has(key)) deviceMap.set(key, []);
@@ -902,15 +902,15 @@ export class DeviceService {
   }
 
   /**
-   * 密码脱敏：掩码设备连接配置中的敏感字段
-   * 适用于 findAll 列表场景下的密码保护
+   * Password desensitization: mask sensitive fields in the device connection config
+   * Applies to password protection in findAll list scenarios
    */
   desensitizeDevices(devices: Device[]): Device[] {
     return devices.map((d) => this.desensitizeDevice(d));
   }
 
   /**
-   * 调用采集插件的 validateChannelConfig() 做协议特有语义校验
+   * Call the collection plugin's validateChannelConfig() for protocol-specific semantic validation
    */
   private async validateWithPlugin(driver: string, connection: Record<string, any>): Promise<void> {
     if (!this.pluginRegistry || !connection) return;
@@ -1025,11 +1025,11 @@ export class DeviceService {
   }
 
   /**
-   * 按设备查询数据标签列表（"管理端与移动端共用的唯一权威入口"，
-   * 详见架构设计 07-接口设计规范 §3.3 / §4.1）。
-   * - 校验设备在项目下存在（不存在抛 DEV_001）
-   * - 按 deviceId 过滤，支持 keyword（按 name 模糊）、dataType、enabled 过滤
-   * - 分页返回 { data, pagination }（与 ss-device / ss-datatag findAll 统一结构）
+   * Query a device's data-tag list ("the single authoritative entry shared by the admin and mobile ends",
+   * see architecture doc 07 API design spec sections 3.3 / 4.1).
+   * - Validates the device exists in the project (throws DEV_001 otherwise)
+   * - Filters by deviceId; supports keyword (fuzzy on name), dataType, and enabled filters
+   * - Returns paginated { data, pagination } (unified structure with ss-device / ss-datatag findAll)
    */
   async findTagsByDevice(
     projectId: string,
@@ -1037,7 +1037,7 @@ export class DeviceService {
     query: { page?: number; pageSize?: number; keyword?: string; dataType?: string; enabled?: boolean } = {},
   ): Promise<PaginatedResult<DataTag>> {
     const { deviceRepo, dataTagRepo } = await this.getRepos(projectId);
-    // 校验设备存在性（复用 findOne 的存在性检查，但不触发模板自动应用副作用）
+    // Validate device existence (reusing findOne's existence check, but without the auto-apply side effect)
     const device = await deviceRepo.findOne({ where: { id: deviceId, projectId }, select: ['id'] });
     if (!device) this.err.notFound('error.device.DEV_001', { id: deviceId });
 
@@ -1097,12 +1097,12 @@ export class DeviceService {
   }
 
   /**
-   * 应用设备模板：从模板加载变量定义，实例化为 DataTag
-   * 提示词.md 第1条要求：添加设备时需选择设备模板
+   * Apply a device template: load variable definitions from the template and instantiate DataTags
+   * Per the prompt doc requirement #1: adding a device requires selecting a device template
    */
   async applyTemplate(deviceId: string, templateId: string, projectId: string): Promise<DataTag[]> {
     const { deviceRepo, dataTagRepo } = await this.getRepos(projectId);
-    // ⚠️ 使用 deviceRepo.findOne 而非 this.findOne，避免与 findOne 中的自动修复逻辑形成无限递归
+    // Use deviceRepo.findOne rather than this.findOne, avoiding infinite recursion with findOne's auto-repair logic
     const device = await deviceRepo.findOne({ where: { id: deviceId, projectId } });
     if (!device) {
       this.err.notFound('error.device.DEV_001', { id: deviceId });
@@ -1122,11 +1122,11 @@ export class DeviceService {
           `Template ${templateId} found but has no variables — no tags will be created`,
         );
       } else {
-        // 检查已存在的标签，避免重复创建
+        // Check existing tags to avoid duplicate creation
         const existingTags = await dataTagRepo.find({ where: { deviceId } });
         const existingNames = new Set(existingTags.map((t) => t.name));
 
-        // 过滤掉已存在的标签（同名标签视为已实例化）
+        // Filter out already-existing tags (same-name tags count as instantiated)
         const newVariables = template.variables.filter((v) => !existingNames.has(v.name));
         const skippedCount = template.variables.length - newVariables.length;
 
@@ -1190,7 +1190,7 @@ export class DeviceService {
     device.templateAppliedAt = new Date();
     await deviceRepo.save(device);
 
-    // 通知采集层：设备标签已变更
+    // Notify the collection layer: device tags changed
     if (createdTags.length > 0) {
       this.eventBus?.emit('device.updated', {
         deviceId,
@@ -1233,7 +1233,7 @@ export class DeviceService {
     let added = 0;
     let removed = 0;
 
-    // 更新已有 tag 或新增
+    // Update existing tags or add new ones
     for (const v of template.variables) {
       const existing = existingNameMap.get(v.name);
       if (existing) {
@@ -1327,17 +1327,17 @@ export class DeviceService {
       }
     }
 
-    // 删除模板中已不存在的 tag（先清理外键依赖记录）
+    // Delete tags no longer present in the template (clean up FK-dependent records first)
     if (existingNameMap.size > 0) {
       const staleTagIds = Array.from(existingNameMap.values()).map((t) => t.id);
       if (this.dbMode === 'isolated' && this.projectDbService) {
         const ds = await this.projectDbService.getSystemDb(projectId);
-        // 删除关联的报警规则（alm_alarm_rules.tagId FK → dev_data_tags.id）
+        // Delete associated alarm rules (alm_alarm_rules.tagId FK -> dev_data_tags.id)
         await ds.query(
           `DELETE FROM alm_alarm_rules WHERE tagId IN (${staleTagIds.map(() => '?').join(',')})`,
           staleTagIds,
         );
-        // 清理关联的历史数据（data_historical_data.tagId FK → dev_data_tags.id）
+        // Clean up associated historical data (data_historical_data.tagId FK -> dev_data_tags.id)
         await ds.query(
           `DELETE FROM data_historical_data WHERE tagId IN (${staleTagIds.map(() => '?').join(',')})`,
           staleTagIds,
@@ -1361,8 +1361,8 @@ export class DeviceService {
   }
 
   /**
-   * 解绑设备模板：清除 templateId/templateVersion/templateAppliedAt
-   * @param deleteTags 是否删除模板生成的 Tag（默认 false，保留已实例化的 Tag）
+   * Unbind a device template: clears templateId/templateVersion/templateAppliedAt
+   * @param deleteTags whether to delete tags generated by the template (default false, keeping instantiated tags)
    */
   async unbindTemplate(
     deviceId: string,

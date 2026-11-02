@@ -5,9 +5,9 @@
 import { PipelineContext, PipelineStep } from './pipeline/pipeline-orchestrator';
 
 /**
- * 插件测试夹具 — 在无真实设备环境下测试插件 Pipeline
+ * Plugin test harness - test the plugin Pipeline without a real device environment
  *
- * 使用方式：
+ * Usage:
  *   const harness = new PluginTestHarness(steps);
  *   const ctx = await harness.simulateRead({
  *     tagId: 'test-1',
@@ -20,11 +20,11 @@ export class PluginTestHarness {
   constructor(private readonly steps: PipelineStep[]) {}
 
   /**
-   * 模拟一次 Pipeline 完整执行
+   * Simulate one full Pipeline execution
    *
-   * @param config.rawValue - 模拟的原始值（替代真实协议读取）
-   * @param config.tagConfig - 标签配置
-   * @param config.deviceType - 设备类型（影响协议适配器选择）
+   * @param config.rawValue - simulated raw value (replaces the real protocol read)
+   * @param config.tagConfig - tag config
+   * @param config.deviceType - device type (affects protocol-adapter selection)
    */
   async simulateRead(config: {
     tagId: string;
@@ -86,7 +86,7 @@ export class PluginTestHarness {
   }
 
   /**
-   * 批量模拟读取（用于压力测试）
+   * Simulated batch read (for stress testing)
    */
   async simulateBatch(
     configs: Array<{

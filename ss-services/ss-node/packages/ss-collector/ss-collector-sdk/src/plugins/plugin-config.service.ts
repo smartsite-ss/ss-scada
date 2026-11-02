@@ -9,35 +9,35 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 // ---------------------------------------------------------------------------
-// 类型
+// Types
 // ---------------------------------------------------------------------------
 
 export interface PluginRuntimeConfig {
-  /** 隔离模式：in_process | worker_thread | child_process */
+  /** Isolation mode: in_process | worker_thread | child_process */
   isolationMode?: string;
-  /** 插件激活状态（持久化，重启后恢复） */
+  /** Plugin activation state (persisted, restored after restart) */
   activated?: boolean;
 }
 
 // ---------------------------------------------------------------------------
-// 服务
+// Services
 // ---------------------------------------------------------------------------
 
 /**
- * 采集插件运行时配置持久化服务
+ * Collection plugin runtime configuration persistence service
  *
- * - 每个插件的配置独立存储在 {PLUGIN_CONFIG_DIR}/{protocol}.json
- * - 启动时自动加载所有已有配置
- * - 运行时读写通过内存缓存 + 即时写盘
+ * - each plugin's config is stored separately at {PLUGIN_CONFIG_DIR}/{protocol}.json
+ * - all existing configs are auto-loaded at startup
+ * - runtime read/write goes through an in-memory cache + immediate disk write
  */
 @Injectable()
 export class PluginConfigService implements OnModuleInit {
   private readonly logger = new Logger(PluginConfigService.name);
 
-  /** 配置存储根目录 */
+  /** Config storage root directory */
   private readonly configDir: string;
 
-  /** 内存缓存：protocol → PluginRuntimeConfig */
+  /** In-memory cache: protocol -> PluginRuntimeConfig */
   private readonly cache = new Map<string, PluginRuntimeConfig>();
 
   constructor(
@@ -52,14 +52,14 @@ export class PluginConfigService implements OnModuleInit {
   }
 
   /**
-   * 获取 ss-services/ss-node 项目根目录的绝对路径
+   * Get the absolute path of the ss-services/ss-node project root directory
    *
-   * 相对路径基准：
-   * - dev 模式：__dirname 上溯 5 级 = ss-services/ss-node
-   *   （本文件位于 packages/ss-collector/ss-collector-sdk/dist/plugins/）
-   * - 生产模式：process.cwd() = ss-run/ss/services/ss-node
+   * Relative-path basis:
+   * - dev mode: walk up 5 levels from __dirname = ss-services/ss-node
+   *   (this file lives at packages/ss-collector/ss-collector-sdk/dist/plugins/)
+   * - production mode: process.cwd() = ss-run/ss/services/ss-node
    *
-   * 与 app.module.ts getDatabaseConfig()、collector-bootstrap.service.ts resolveProjectsDir() 保持一致。
+   * Kept consistent with app.module.ts getDatabaseConfig() and collector-bootstrap.service.ts resolveProjectsDir().
    */
   private getProjectRoot(): string {
     return this.pathResolver.getProjectRoot();
@@ -76,39 +76,39 @@ export class PluginConfigService implements OnModuleInit {
   }
 
   // -----------------------------------------------------------------------
-  //  读
+  //  Read
   // -----------------------------------------------------------------------
 
-  /** 获取某个插件的运行时配置（优先内存缓存） */
+  /** Get the runtime config of a plugin (memory cache first) */
   getConfig(protocol: string): PluginRuntimeConfig {
     return this.cache.get(protocol) ?? {};
   }
 
-  /** 获取某个插件的隔离模式配置，未配置返回 undefined */
+  /** Get the isolation-mode config of a plugin; returns undefined if not configured */
   getIsolationMode(protocol: string): string | undefined {
     return this.cache.get(protocol)?.isolationMode;
   }
 
-  /** 获取所有已配置插件的配置映射 */
+  /** Get the config map of all configured plugins */
   getAllConfigs(): ReadonlyMap<string, PluginRuntimeConfig> {
     return this.cache;
   }
 
   // -----------------------------------------------------------------------
-  //  写
+  //  Write
   // -----------------------------------------------------------------------
 
   /**
-   * 更新某个插件的运行时配置
+   * Update the runtime config of a plugin
    *
-   * - 同时更新内存缓存和磁盘文件
-   * - 传入 null / undefined 的字段不覆盖（保持原值）
+   * - updates both the in-memory cache and the disk file
+   * - fields passed as null / undefined are not overwritten (original value kept)
    */
   saveConfig(protocol: string, partial: Partial<PluginRuntimeConfig>): PluginRuntimeConfig {
     const existing = this.cache.get(protocol) ?? {};
     const merged: PluginRuntimeConfig = { ...existing, ...partial };
 
-    // 清理 undefined 字段
+    // Drop undefined fields
     for (const key of Object.keys(merged) as (keyof PluginRuntimeConfig)[]) {
       if (merged[key] === undefined) delete merged[key];
     }
@@ -121,23 +121,23 @@ export class PluginConfigService implements OnModuleInit {
   }
 
   /**
-   * 更新插件隔离模式（便捷方法）
+   * Update the plugin isolation mode (convenience method)
    */
   setIsolationMode(protocol: string, mode: string): PluginRuntimeConfig {
     return this.saveConfig(protocol, { isolationMode: mode });
   }
 
-  /** 获取插件的持久化激活状态 */
+  /** Get the persisted activation state of a plugin */
   getActivated(protocol: string): boolean | undefined {
     return this.cache.get(protocol)?.activated;
   }
 
-  /** 持久化插件的激活状态 */
+  /** Persist the activation state of a plugin */
   setActivated(protocol: string, activated: boolean): PluginRuntimeConfig {
     return this.saveConfig(protocol, { activated });
   }
 
-  /** 删除某个插件的配置文件 */
+  /** Delete the config file of a plugin */
   deleteConfig(protocol: string): void {
     this.cache.delete(protocol);
     const filePath = this.getConfigFilePath(protocol);
@@ -148,14 +148,14 @@ export class PluginConfigService implements OnModuleInit {
   }
 
   // -----------------------------------------------------------------------
-  //  文件 I/O
+  //  File I/O
   // -----------------------------------------------------------------------
 
   private getConfigFilePath(protocol: string): string {
     return path.join(this.configDir, `${protocol}.json`);
   }
 
-  /** 启动时扫描并加载所有 *.json 配置文件 */
+  /** Scan and load all *.json config files at startup */
   private async loadAllConfigs(): Promise<void> {
     if (!fs.existsSync(this.configDir)) return;
 
@@ -177,7 +177,7 @@ export class PluginConfigService implements OnModuleInit {
     try {
       const raw = fs.readFileSync(filePath, 'utf-8');
       const parsed = JSON.parse(raw) as PluginRuntimeConfig;
-      // 基础校验
+      // Basic validation
       if (typeof parsed !== 'object' || parsed === null) {
         this.logger.warn(`Invalid plugin config: ${filePath}`);
         return null;

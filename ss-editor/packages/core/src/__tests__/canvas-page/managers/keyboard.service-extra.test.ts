@@ -6,7 +6,7 @@
  * @vitest-environment jsdom
  */
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { KeyboardService, KeyboardContext } from '../../../canvas-page/keyboard.service'; /** * KeyboardService 补充测试：触发真实键盘事件 */ describe('KeyboardService - 键盘事件派发补充测试', () => {
+import { KeyboardService, KeyboardContext } from '../../../canvas-page/keyboard.service'; /** * KeyboardService supplementary tests: trigger real keyboard events */ describe('KeyboardService - 键盘事件派发补充测试', () => {
   let keyboardService: KeyboardService;
 
   beforeEach(() => {
@@ -21,7 +21,7 @@ import { KeyboardService, KeyboardContext } from '../../../canvas-page/keyboard.
   describe('startListening / stopListening', () => {
     it('startListening 后键盘事件应被处理', () => {
       const handler = vi.fn();
-      keyboardService.registerKey('z', handler, { ctrl: true }); /* registerKey 内部会 startListening */ const event = new KeyboardEvent('keydown', {
+      keyboardService.registerKey('z', handler, { ctrl: true }); /* registerKey internally calls startListening */ const event = new KeyboardEvent('keydown', {
         key: 'z', ctrlKey: true, bubbles: true, cancelable: true
       });
       document.dispatchEvent(event);

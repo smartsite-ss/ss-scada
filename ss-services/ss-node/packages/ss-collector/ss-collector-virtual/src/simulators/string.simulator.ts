@@ -5,7 +5,7 @@
 import { VariableSimulator } from './variable-simulator.interface';
 import { VariableSimulationConfig, StringParams } from '../simulation-config.types';
 
-/** 字符串仿真器 */
+/** String simulator */
 export class StringSimulator implements VariableSimulator {
   private values: string[];
   private switchMode: 'sequential' | 'random' | 'fixed';

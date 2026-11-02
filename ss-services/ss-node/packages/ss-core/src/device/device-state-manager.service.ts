@@ -9,10 +9,10 @@ import { EventLogService } from '../event-log/event-log.service';
 import { DeviceStatus } from '@ss-node/ss-sdk';
 
 // ---------------------------------------------------------------------------
-// 类型定义
+// Type definitions
 // ---------------------------------------------------------------------------
 
-/** 设备统计信息（按协议分组） */
+/** Device statistics (grouped by protocol) */
 export interface DeviceStats {
   total: number;
   online: number;
@@ -21,83 +21,83 @@ export interface DeviceStats {
   other: number;
 }
 
-/** 设备内存状态记录的诊断数据 */
+/** Diagnostic data of a device in-memory state record */
 export interface DeviceDiagnostics {
-  /** 采集调度器重试次数 */
+  /** Collection-scheduler retry count */
   retryCount?: number;
-  /** 熔断器状态 */
+  /** Circuit-breaker state */
   circuitState?: 'closed' | 'open' | 'half-open';
-  /** 连续失败次数 */
+  /** Consecutive failure count */
   consecutiveFailures?: number;
-  /** 最近一次错误发生时间（epoch ms） */
+  /** Last error time (epoch ms) */
   lastErrorAt?: number;
 }
 
-/** 设备内存状态记录 */
+/** Device in-memory state record */
 export interface DeviceStateRecord {
   deviceId: string;
   projectId: string;
   protocol: string;
   status: DeviceStatus;
-  /** 最近一次成功采集的时间戳 */
+  /** Last successful collection timestamp */
   lastHeartbeat: number;
-  /** 最近一次数据时间 */
+  /** Last data time */
   lastDataAt: number | null;
-  /** 最近一次在线时间 */
+  /** Last online time */
   lastOnlineAt: number | null;
-  /** 最近一次离线时间 */
+  /** Last offline time */
   lastOfflineAt: number | null;
-  /** 采集周期（ms）；0 = 不启用检测 */
+  /** Collection period (ms); 0 = detection disabled */
   scanRate: number;
-  /** 离线周期（ms），超过此周期无数据上报视为离线 */
+  /** Offline period (ms); no data report beyond this period is treated as offline */
   offlinePeriod: number;
-  /** DEGRADED 状态下的失败标签列表 */
+  /** Failed-tag list while in DEGRADED state */
   failingTags: string[];
-  /** 标签总数（用于健康度计算） */
+  /** Total tag count (for health computation) */
   totalTags: number;
-  /** 在线标签数 */
+  /** Online tag count */
   onlineTags: number;
-  /** 最近一次错误信息 */
+  /** Last error message */
   lastErrorMessage: string | null;
-  /** 采集诊断数据（调度器/插件层推送） */
+  /** Collection diagnostics (pushed by scheduler/plugin layer) */
   diagnostics: DeviceDiagnostics | null;
 }
 
-/** 按协议分组的设备统计 */
+/** Device statistics grouped by protocol */
 export interface AllDeviceStats {
   [protocol: string]: DeviceStats;
 }
 
 // ---------------------------------------------------------------------------
-// 服务
+// Service
 // ---------------------------------------------------------------------------
 
 /**
- * 统一设备状态管理器 (UDSM)
+ * Unified Device State Manager (UDSM)
  *
- * 作为系统中设备状态的唯一权威数据源。所有模块（采集器、插件管理、前端 API、
- * WebSocket 推送）都通过此类读写设备状态。
+ * The single authoritative source of device state in the system. All modules (collector,
+ * plugin management, frontend API, WebSocket push) read/write device state through this class.
  *
- * 职责：
- * - 维护 deviceId → DeviceStateRecord 的内存映射
- * - 状态变更时通过 EventBus 发射统一事件 `device:statusChanged`
- * - 内置心跳检测定时器（@Cron 每 5 秒）
- * - 提供按协议/全量的统计查询
+ * Responsibilities:
+ * - Maintain the in-memory deviceId -> DeviceStateRecord map
+ * - Emit the unified `device:statusChanged` event via EventBus on state change
+ * - Built-in heartbeat detection timer (@Cron every 5 seconds)
+ * - Provide per-protocol/global statistics queries
  */
 @Injectable()
 export class DeviceStateManager implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(DeviceStateManager.name);
 
-  /** 设备状态内存映射 */
+  /** Device-state in-memory map */
   private readonly stateMap = new Map<string, DeviceStateRecord>();
 
-  /** 心跳超时倍数：scanRate × 4 */
+  /** Heartbeat timeout multiplier: scanRate x 4 */
   private readonly HEARTBEAT_TIMEOUT_MULTIPLIER = 4;
-  /** 默认 scanRate（30 秒） */
+  /** Default scanRate (30 seconds) */
   private readonly DEFAULT_SCAN_RATE_MS = 30_000;
-  /** 心跳检测间隔（5 秒） */
+  /** Heartbeat-check interval (5 seconds) */
   private readonly HEARTBEAT_CHECK_INTERVAL_MS = 5_000;
-  /** 心跳定时器 */
+  /** Heartbeat timer */
   private heartbeatTimer: ReturnType<typeof setInterval> | null = null;
 
   constructor(
@@ -112,7 +112,7 @@ export class DeviceStateManager implements OnModuleInit, OnModuleDestroy {
       this.HEARTBEAT_CHECK_INTERVAL_MS;
     this.startHeartbeatTimer(interval);
 
-    // wrap helper：通过 EventLogService.wrapSubscriber 自动追踪处理结果和业务效果
+    // wrap helper: auto-trace handling result and business effect via EventLogService.wrapSubscriber
     const wrap = <T extends any[]>(
       eventType: string,
       handler: (...args: T) => Promise<Record<string, any> | void>,
@@ -126,7 +126,7 @@ export class DeviceStateManager implements OnModuleInit, OnModuleDestroy {
       };
     };
 
-    // 订阅定时器配置变更事件，支持运行时热更新
+    // Subscribe to timer-config change events, supporting runtime hot updates
     this.eventBus.on('timer:configChanged', wrap('timer:configChanged', async (payload: { id: string; interval: number }) => {
       if (payload.id === 'DEVICE_HEARTBEAT_CHECK_INTERVAL_MS') {
         this.restartHeartbeatTimer(payload.interval);
@@ -134,7 +134,7 @@ export class DeviceStateManager implements OnModuleInit, OnModuleDestroy {
       }
     }));
 
-    // 订阅设备更新事件，支持 scanRate / offlinePeriod 热更新
+    // Subscribe to device-update events, supporting scanRate / offlinePeriod hot updates
     this.eventBus.on(
       'device.updated',
       wrap('device.updated', async (payload: {
@@ -177,7 +177,7 @@ export class DeviceStateManager implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  /** 启动/重启心跳检测定时器 */
+  /** Start/restart the heartbeat-detection timer */
   private startHeartbeatTimer(interval: number): void {
     if (this.heartbeatTimer) {
       clearInterval(this.heartbeatTimer);
@@ -185,17 +185,17 @@ export class DeviceStateManager implements OnModuleInit, OnModuleDestroy {
     this.heartbeatTimer = setInterval(() => this.checkHeartbeats(), interval);
   }
 
-  /** 运行时热更新心跳检测间隔 */
+  /** Hot-update the heartbeat-check interval at runtime */
   restartHeartbeatTimer(newInterval: number): void {
     this.startHeartbeatTimer(newInterval);
     this.logger.log(`Heartbeat check interval hot-reloaded to ${newInterval}ms`);
   }
 
   // -------------------------------------------------------------------------
-  // 状态写入
+  // State writes
   // -------------------------------------------------------------------------
 
-  /** 注册或更新设备追踪记录 */
+  /** Register or update a device tracking record */
   registerDevice(params: {
     deviceId: string;
     projectId: string;
@@ -240,19 +240,19 @@ export class DeviceStateManager implements OnModuleInit, OnModuleDestroy {
     return record;
   }
 
-  /** 注销设备追踪 */
+  /** Unregister device tracking */
   unregisterDevice(deviceId: string): void {
     this.stateMap.delete(deviceId);
   }
 
   /**
-   * 注销某个项目下所有设备的追踪记录（项目停用时调用）
+   * Unregister tracking records for all devices under a project (called when a project is disabled)
    *
-   * 遍历内存状态表，移除所有 projectId 匹配的设备。
-   * 不直接访问项目 DB，调用方负责持久化与任务调度清理。
+   * Iterates the in-memory state table and removes all devices matching projectId.
+   * Does not access the project DB directly; the caller handles persistence and task-scheduler cleanup.
    *
-   * @param projectId 项目 ID
-   * @returns 被注销的设备 ID 列表（供调用方进一步清理任务调度器/插件）
+   * @param projectId project ID
+   * @returns the unregistered device ID list (for the caller to further clean up task schedulers/plugins)
    */
   unregisterProjectDevices(projectId: string): string[] {
     const removedDeviceIds: string[] = [];
@@ -265,7 +265,7 @@ export class DeviceStateManager implements OnModuleInit, OnModuleDestroy {
     return removedDeviceIds;
   }
 
-  /** 设置设备在线（采集成功） */
+  /** Set device online (collection succeeded) */
   setOnline(deviceId: string, dataTimestamp?: number): void {
     const record = this.stateMap.get(deviceId);
     if (!record) {
@@ -279,17 +279,17 @@ export class DeviceStateManager implements OnModuleInit, OnModuleDestroy {
     record.lastHeartbeat = now;
     record.lastDataAt = dataTimestamp ?? now;
     record.lastErrorMessage = null;
-    record.diagnostics = null; // 恢复后清空诊断数据
+    record.diagnostics = null; // clear diagnostic data after recovery
 
     if (prevStatus !== DeviceStatus.ONLINE) {
-      // 只在状态切换（非在线→在线）时更新最近上线时间，避免跟随实时数据跳动
+      // Update last-online time only on state transition (not-online -> online), avoiding jitter with real-time data
       record.lastOnlineAt = now;
       this.logger.log(`Device ${deviceId}: ${prevStatus} → online`);
       this.emitStatusChanged(record, prevStatus);
     }
   }
 
-  /** 设置设备离线 */
+  /** Set device offline */
   setOffline(deviceId: string, reason?: string): void {
     const record = this.stateMap.get(deviceId);
     if (!record) return;
@@ -304,7 +304,7 @@ export class DeviceStateManager implements OnModuleInit, OnModuleDestroy {
     this.emitStatusChanged(record, prevStatus);
   }
 
-  /** 设置设备错误 */
+  /** Set device error */
   setError(deviceId: string, errorMessage?: string): void {
     const record = this.stateMap.get(deviceId);
     if (!record) return;
@@ -319,14 +319,14 @@ export class DeviceStateManager implements OnModuleInit, OnModuleDestroy {
     this.emitStatusChanged(record, prevStatus);
   }
 
-  /** 设置设备采集诊断数据（调度器/插件层推送） */
+  /** Set device collection diagnostics (pushed by scheduler/plugin layer) */
   setDiagnostics(deviceId: string, diagnostics: DeviceDiagnostics): void {
     const record = this.stateMap.get(deviceId);
     if (!record) return;
     record.diagnostics = { ...record.diagnostics, ...diagnostics };
   }
 
-  /** 设置设备为 DEGRADED（部分标签失败） */
+  /** Set device to DEGRADED (some tags failing) */
   setDegraded(deviceId: string, failingTagIds: string[], errorMessage?: string): void {
     const record = this.stateMap.get(deviceId);
     if (!record) return;
@@ -343,7 +343,7 @@ export class DeviceStateManager implements OnModuleInit, OnModuleDestroy {
     this.emitStatusChanged(record, prevStatus);
   }
 
-  /** 更新 DEGRADED 设备的失败标签列表 */
+  /** Update the failed-tag list of a DEGRADED device */
   updateFailingTags(deviceId: string, failingTagIds: string[]): void {
     const record = this.stateMap.get(deviceId);
     if (!record) return;
@@ -352,22 +352,22 @@ export class DeviceStateManager implements OnModuleInit, OnModuleDestroy {
     record.onlineTags = record.totalTags - failingTagIds.length;
 
     if (failingTagIds.length === 0 && record.status === DeviceStatus.DEGRADED) {
-      // 所有标签恢复 → 回到 ONLINE
+      // All tags recovered -> back to ONLINE
       this.setOnline(deviceId);
     } else if (failingTagIds.length > 0 && record.status === DeviceStatus.ONLINE) {
-      // 出现失败标签 → 进入 DEGRADED
+      // Failed tags present -> enter DEGRADED
       this.setDegraded(deviceId, failingTagIds);
     }
   }
 
-  /** 获取设备标签健康度（0-1） */
+  /** Get a device's tag health (0-1) */
   getTagHealth(deviceId: string): number | null {
     const record = this.stateMap.get(deviceId);
     if (!record || record.totalTags === 0) return null;
     return record.onlineTags / record.totalTags;
   }
 
-  /** 更新心跳时间戳 */
+  /** Update the heartbeat timestamp */
   touchHeartbeat(deviceId: string): void {
     const record = this.stateMap.get(deviceId);
     if (record) {
@@ -376,7 +376,7 @@ export class DeviceStateManager implements OnModuleInit, OnModuleDestroy {
   }
 
   // -------------------------------------------------------------------------
-  // 状态读取
+  // State reads
   // -------------------------------------------------------------------------
 
   getState(deviceId: string): DeviceStateRecord | undefined {
@@ -387,7 +387,7 @@ export class DeviceStateManager implements OnModuleInit, OnModuleDestroy {
     return this.stateMap;
   }
 
-  /** 获取某个协议下的活跃设备 ID 列表 */
+  /** Get the active device ID list under a protocol */
   getDeviceIdsByProtocol(protocol: string): string[] {
     const ids: string[] = [];
     for (const [id, record] of this.stateMap) {
@@ -398,7 +398,7 @@ export class DeviceStateManager implements OnModuleInit, OnModuleDestroy {
     return ids;
   }
 
-  /** 按协议获取统计 */
+  /** Get statistics by protocol */
   getStatsByProtocol(protocol: string): DeviceStats {
     let total = 0;
     let online = 0;
@@ -427,7 +427,7 @@ export class DeviceStateManager implements OnModuleInit, OnModuleDestroy {
     return { total, online, offline, error, other };
   }
 
-  /** 获取所有协议统计 */
+  /** Get statistics for all protocols */
   getAllStats(): AllDeviceStats {
     const result: AllDeviceStats = {};
     for (const [, record] of this.stateMap) {
@@ -458,17 +458,17 @@ export class DeviceStateManager implements OnModuleInit, OnModuleDestroy {
   }
 
   // -------------------------------------------------------------------------
-  // 心跳检测
+  // Heartbeat detection
   // -------------------------------------------------------------------------
 
-  /** 心跳检测（每 5 秒由 setInterval 触发） */
+  /** Heartbeat check (triggered by setInterval every 5 seconds) */
   private checkHeartbeats(): void {
     const now = Date.now();
     for (const [deviceId, record] of this.stateMap) {
-      // 只检测在线状态
+      // Only check online state
       if (record.status !== DeviceStatus.ONLINE) continue;
 
-      // offlinePeriod 或 scanRate 为 0 表示不启用心跳检测
+      // offlinePeriod or scanRate of 0 means heartbeat detection is disabled
       const offlinePeriod =
         record.offlinePeriod > 0
           ? record.offlinePeriod
@@ -482,7 +482,7 @@ export class DeviceStateManager implements OnModuleInit, OnModuleDestroy {
   }
 
   // -------------------------------------------------------------------------
-  // 内部方法
+  // Internal methods
   // -------------------------------------------------------------------------
 
   private emitStatusChanged(record: DeviceStateRecord, prevStatus: DeviceStatus): void {

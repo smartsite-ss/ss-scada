@@ -32,16 +32,16 @@ jest.mock('@nestjs/swagger', () => {
 });
 
 // ============================================================
-// Mock JWT guard + UserRole（避免触发 ss-datatag 链式导入）
+// Mock the JWT guard + UserRole (avoiding the ss-datatag transitive-import chain)
 // ============================================================
-// JwtAuthGuard 必须是 class（@UseGuards 装饰器校验），不能是对象实例
+// JwtAuthGuard must be a class (validated by @UseGuards), not an object instance
 jest.mock('@ss-node/ss-core', () => {
   class JwtAuthGuardMock {
     canActivate() {
       return true;
     }
   }
-  // ProjectScopedEntity / BaseEntity stubs：实体类继承时需要
+  // ProjectScopedEntity / BaseEntity stubs: needed when entity classes inherit them
   class BaseEntity {}
   class ProjectScopedEntity extends BaseEntity {
     id: string;
@@ -61,7 +61,7 @@ jest.mock('@ss-node/ss-core', () => {
 });
 
 // ============================================================
-// Mock 数据源依赖（避免 transitive 加载 ss-datatag/ss-device 控制器链）
+// Mock data-source dependencies (avoiding transitive loading of the ss-datatag/ss-device controller chains)
 // ============================================================
 jest.mock('@ss-node/ss-storage-influx', () => ({
   DataQueryService: class {},

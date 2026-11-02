@@ -4,12 +4,14 @@
 
 import type { ChartContainerStyleInput } from './types';
 
-/** 透明色占位值（编辑态默认背景/边框/阴影使用，运行时视为透明） */
+/** Transparent color placeholder (used for default background/border/shadow in edit mode; treated as transparent at runtime) */
 const TRANSPARENT = '#00000000';
 
 /**
- * 构建图表容器基础样式（背景/边框/圆角/阴影），供 tag-trend / history-trend / 新图表统一复用。
- * 历史趋势等需要纵向布局的组件可在 extra 中追加 display/flexDirection 等样式。
+ * Build the base styles for a chart container (background/border/radius/shadow),
+ * shared by tag-trend / history-trend / new charts.
+ * Components needing a vertical layout (e.g. history trend) can append styles like
+ * display/flexDirection via extra.
  */
 export function buildContainerStyle(
   props: ChartContainerStyleInput,

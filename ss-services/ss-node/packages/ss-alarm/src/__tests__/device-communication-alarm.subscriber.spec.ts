@@ -120,7 +120,7 @@ describe('DeviceCommunicationAlarmSubscriber', () => {
 
     it('TC-ALM-COMM-003: should create communication alarm when device goes offline', async () => {
       mockRecordRepo.findOne.mockResolvedValue(null); // no existing alarm
-      // L3 重构后设备实体字段为 deviceName(不再是 name),mock 需与之对齐
+      // After the L3 refactor the device entity field is deviceName (no longer name); the mock must align
       mockDeviceRepo.findOne.mockResolvedValue({ id: 'dev-001', deviceName: '泵站A' });
       const savedRecord = { id: 'comm-offline-dev-001' };
       mockRecordRepo.create.mockReturnValue(savedRecord);
@@ -154,7 +154,7 @@ describe('DeviceCommunicationAlarmSubscriber', () => {
 
     it('TC-ALM-COMM-004: should emit alarm_triggered event when device goes offline', async () => {
       mockRecordRepo.findOne.mockResolvedValue(null);
-      // L3 重构后设备实体字段为 deviceName(不再是 name),mock 需与之对齐
+      // After the L3 refactor the device entity field is deviceName (no longer name); the mock must align
       mockDeviceRepo.findOne.mockResolvedValue({ id: 'dev-001', deviceName: '泵站A' });
       mockRecordRepo.create.mockReturnValue({});
       mockRecordRepo.save.mockResolvedValue({});

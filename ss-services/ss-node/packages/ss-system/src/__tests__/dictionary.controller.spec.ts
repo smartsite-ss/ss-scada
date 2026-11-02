@@ -84,7 +84,7 @@ describe('DictionaryController', () => {
     jest.clearAllMocks();
   });
 
-  // ==================== 分类管理 ====================
+  // ==================== Category management ====================
 
   describe('createCategory (POST /dicts/categories)', () => {
     it('should create a new category', () => {
@@ -135,7 +135,7 @@ describe('DictionaryController', () => {
     });
   });
 
-  // ==================== 字典表管理 ====================
+  // ==================== Dictionary-table management ====================
 
   describe('createTable (POST /dicts/tables)', () => {
     it('should create a new dictionary table', () => {

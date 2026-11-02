@@ -3,8 +3,9 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 预览存储工具类
- * 封装预览功能相关的 IndexedDB 操作（替代 sessionStorage，解决 QuotaExceeded 问题）
+ * Preview storage utility
+ * Wraps the IndexedDB operations related to preview functionality
+ * (replacing sessionStorage to avoid QuotaExceeded issues)
  */
 
 import { i18n } from '../../locales';
@@ -13,17 +14,17 @@ function t(key: string, params?: Record<string, string | number>): string {
   return i18n.global.t(`previewStorage.${key}`, params as Record<string, unknown>) as string;
 }
 
-// ─── IndexedDB 常量 ───
+// ─── IndexedDB Constants ───
 
 const DB_NAME = 'ScadaPreviewDB';
 const DB_VERSION = 1;
 const STORE_NAME = 'previewPages';
 
-/** 数据过期时间（5 分钟） */
+/** Data expiration time (5 minutes) */
 export const DATA_EXPIRY_MS = 5 * 60 * 1000;
 
 /**
- * 打开 IndexedDB 数据库
+ * Open the IndexedDB database
  */
 function openDB(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
@@ -42,7 +43,7 @@ function openDB(): Promise<IDBDatabase> {
 }
 
 /**
- * 清理过期数据（超过 5 分钟的旧数据）
+ * Clean up expired data (older than 5 minutes)
  */
 async function cleanExpiredData(): Promise<void> {
   try {
@@ -71,7 +72,7 @@ async function cleanExpiredData(): Promise<void> {
   }
 }
 
-// ─── 类型定义 ───
+// ─── Type Definitions ───
 
 export interface PageDataValidationResult {
   valid: boolean;
@@ -93,7 +94,7 @@ export interface LoadPreviewResult {
   error?: string;
 }
 
-// ─── Blob URL 处理 ───
+// ─── Blob URL Handling ───
 
 async function blobToBase64(blobUrl: string): Promise<string | null> {
   try {
@@ -152,10 +153,10 @@ function safeStringify(obj: any): string {
   });
 }
 
-// ─── IndexedDB 存储 API ───
+// ─── IndexedDB Storage API ───
 
 /**
- * 保存当前页面预览数据到 IndexedDB
+ * Save the current page's preview data to IndexedDB
  */
 export async function savePreviewData(pageData: any, pageName: string = 'Page'): Promise<SavePreviewResult> {
   try {
@@ -192,7 +193,7 @@ export async function savePreviewData(pageData: any, pageName: string = 'Page'):
 }
 
 /**
- * 保存所有页面数据到 IndexedDB（供 PageBrowser 等图元使用）
+ * Save all page data to IndexedDB (used by widgets such as PageBrowser)
  */
 export async function saveAllPagesData(pages: Array<{ name: string; data: any }>): Promise<void> {
   try {
@@ -223,7 +224,7 @@ export async function saveAllPagesData(pages: Array<{ name: string; data: any }>
 }
 
 /**
- * 从 IndexedDB 加载当前页面预览数据
+ * Load the current page's preview data from IndexedDB
  */
 export async function loadPreviewData(pageId?: string): Promise<LoadPreviewResult> {
   try {
@@ -234,14 +235,14 @@ export async function loadPreviewData(pageId?: string): Promise<LoadPreviewResul
     let record: any = null;
 
     if (pageId) {
-      // 按 pageId 精确查找
+      // Look up by exact pageId
       record = await new Promise((resolve) => {
         const request = store.get(pageId);
         request.onsuccess = () => resolve(request.result);
         request.onerror = () => resolve(null);
       });
     } else {
-      // 取最新的记录
+      // Take the most recent record
       const cursorRequest = store.openCursor(null, 'prev');
       record = await new Promise((resolve) => {
         cursorRequest.onsuccess = (event) => {
@@ -277,7 +278,7 @@ export async function loadPreviewData(pageId?: string): Promise<LoadPreviewResul
 }
 
 /**
- * 从 IndexedDB 加载所有页面数据
+ * Load all page data from IndexedDB
  */
 export async function loadAllPagesData(): Promise<Array<{ name: string; data: any }>> {
   try {
@@ -300,10 +301,10 @@ export async function loadAllPagesData(): Promise<Array<{ name: string; data: an
   }
 }
 
-// ─── 向下兼容的 sessionStorage API（保留旧接口） ───
+// ─── Backward-compatible sessionStorage API (legacy interface retained) ───
 
 /**
- * @deprecated 使用 IndexedDB 版本 loadPreviewData(pageId?)
+ * @deprecated Use the IndexedDB version loadPreviewData(pageId?)
  */
 export async function loadPreviewDataFromSession(): Promise<LoadPreviewResult> {
   const pageDataString = sessionStorage.getItem('previewPageData');
@@ -321,7 +322,7 @@ export async function loadPreviewDataFromSession(): Promise<LoadPreviewResult> {
   }
 }
 
-// ─── 工具函数 ───
+// ─── Utility Functions ───
 
 export function validatePageData(data: any): PageDataValidationResult {
   if (!data) {

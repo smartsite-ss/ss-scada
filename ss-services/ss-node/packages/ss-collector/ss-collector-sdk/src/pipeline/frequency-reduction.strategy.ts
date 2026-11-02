@@ -53,7 +53,7 @@ export class FrequencyReductionStrategy {
   }
 
   /**
-   * 根据原始扫描频率和当前压力等级，计算降频后的扫描频率
+   * Compute the reduced scan frequency from the original scan frequency and the current pressure level
    */
   calculateReducedRate(originalRate: number, pressureLevel?: PressureLevel): number {
     const level = pressureLevel ?? this.currentPressureLevel;
@@ -62,8 +62,8 @@ export class FrequencyReductionStrategy {
   }
 
   /**
-   * 判断某个 tag 在当前周期是否应该跳过采集
-   * 使用轮询跳过策略：根据降频比例，周期性地跳过部分 tag
+   * Decide whether a given tag should be skipped in the current cycle
+   * Uses a round-robin skip policy: periodically skip some tags based on the reduction ratio
    */
   shouldSkip(tagId: string, currentRate: number, originalRate?: number): boolean {
     if (originalRate && currentRate >= originalRate) {
@@ -89,7 +89,7 @@ export class FrequencyReductionStrategy {
   }
 
   /**
-   * 根据队列状态获取当前系统压力等级
+   * Get the current system pressure level based on queue state
    */
   getCurrentPressureLevel(queueStats?: QueueStats): PressureLevel {
     if (!queueStats) {
@@ -114,7 +114,7 @@ export class FrequencyReductionStrategy {
   }
 
   /**
-   * 更新压力等级（基于队列状态）
+   * Update the pressure level (based on queue state)
    */
   updatePressureLevel(queue: BoundedBackpressureQueue<any>): PressureLevel {
     const stats = queue.getStats();
@@ -122,21 +122,21 @@ export class FrequencyReductionStrategy {
   }
 
   /**
-   * 获取当前保持的压力等级
+   * Get the currently held pressure level
    */
   get pressureLevel(): PressureLevel {
     return this.currentPressureLevel;
   }
 
   /**
-   * 获取当前降频倍率
+   * Get the current reduction factor
    */
   get currentRateMultiplier(): number {
     return PRESSURE_RATE_MAP[this.currentPressureLevel];
   }
 
   /**
-   * 获取跳过统计
+   * Get skip statistics
    */
   getSkipStats(): { totalSkipped: number; totalProcessed: number; skipRate: number } {
     const skipRate = this.totalProcessed > 0 ? this.totalSkipped / this.totalProcessed : 0;
@@ -148,7 +148,7 @@ export class FrequencyReductionStrategy {
   }
 
   /**
-   * 重置所有状态到正常频率
+   * Reset all state to the normal frequency
    */
   reset(): void {
     this.currentPressureLevel = PressureLevel.NORMAL;
@@ -159,7 +159,7 @@ export class FrequencyReductionStrategy {
   }
 
   /**
-   * 更新配置
+   * Update configuration
    */
   updateConfig(config: Partial<FrequencyReductionConfig>): void {
     this.config = { ...this.config, ...config };

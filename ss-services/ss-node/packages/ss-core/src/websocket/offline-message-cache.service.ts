@@ -4,49 +4,49 @@
 
 import { Injectable, Logger, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 
-/** 离线缓存消息格式 */
+/** Offline cached-message format */
 export interface CachedMessage {
   event: string;
   data: unknown;
   timestamp: number;
 }
 
-/** 缓存统计信息 */
+/** Cache statistics */
 export interface CacheStats {
   totalClients: number;
   totalMessages: number;
 }
 
 /**
- * WebSocket 离线消息缓存服务
+ * WebSocket offline-message cache service
  *
- * 使用内存 Map + 环形缓冲区，为每个客户端缓存离线消息。
- * 客户端重连后自动补发待发消息，超过 5 分钟的消息自动清除。
+ * Uses an in-memory Map + ring buffer to cache offline messages per client.
+ * After reconnection, pending messages are auto-replayed; messages older than 5 minutes are auto-cleared.
  *
- * - 每个客户端最多缓存 100 条消息，超出时丢弃最旧的消息
- * - 消息过期机制：超过 5 分钟的消息自动清除
- * - 缓存为内存级别，适合单实例部署
+ * - Each client caches at most 100 messages; the oldest are dropped when exceeded
+ * - Expiry: messages older than 5 minutes are auto-cleared
+ * - Cache is in-memory only, suitable for single-instance deployments
  */
 @Injectable()
 export class OfflineMessageCacheService implements OnModuleInit, OnModuleDestroy {
-  /** 每个客户端最多缓存的消息数 */
+  /** Max cached messages per client */
   private static readonly MAX_MESSAGES_PER_CLIENT = 100;
 
-  /** 消息过期时间（毫秒），默认 5 分钟 */
+  /** Message expiry (ms), default 5 minutes */
   private static readonly MESSAGE_TTL_MS = 5 * 60 * 1000;
 
-  /** 自动清理间隔（毫秒），默认 1 分钟 */
+  /** Auto-cleanup interval (ms), default 1 minute */
   private static readonly CLEANUP_INTERVAL_MS = 60 * 1000;
 
   private static readonly LOG_CONTEXT = 'OfflineMessageCacheService';
 
-  /** 消息缓存：clientId -> CachedMessage[] */
+  /** Message cache: clientId -> CachedMessage[] */
   private readonly cache = new Map<string, CachedMessage[]>();
 
-  /** 已注册的客户端集合（曾经连接过的客户端） */
+  /** Set of registered clients (clients that have ever connected) */
   private readonly registeredClients = new Set<string>();
 
-  /** 过期消息清理定时器 */
+  /** Expired-message cleanup timer */
   private cleanupTimer: ReturnType<typeof setInterval> | null = null;
 
   private readonly logger = new Logger(OfflineMessageCacheService.name);
@@ -70,16 +70,16 @@ export class OfflineMessageCacheService implements OnModuleInit, OnModuleDestroy
   }
 
   /**
-   * 注册客户端（标记为已知客户端，用于离线消息缓存追踪）
-   * @param clientId 客户端标识（通常为已认证用户的 userId）
+   * Register a client (marks it known, for offline-message cache tracking)
+   * @param clientId client identifier (usually the authenticated user's userId)
    */
   registerClient(clientId: string): void {
     this.registeredClients.add(clientId);
   }
 
   /**
-   * 注销客户端（同时清除缓存）
-   * @param clientId 客户端标识
+   * Unregister a client (also clears the cache)
+   * @param clientId client identifier
    */
   unregisterClient(clientId: string): void {
     this.registeredClients.delete(clientId);
@@ -87,10 +87,10 @@ export class OfflineMessageCacheService implements OnModuleInit, OnModuleDestroy
   }
 
   /**
-   * 缓存离线消息
-   * @param clientId 客户端标识
-   * @param event 事件名称
-   * @param data 消息数据
+   * Cache an offline message
+   * @param clientId client identifier
+   * @param event event name
+   * @param data message data
    */
   cacheMessage(clientId: string, event: string, data: unknown): void {
     if (!this.cache.has(clientId)) {
@@ -100,7 +100,7 @@ export class OfflineMessageCacheService implements OnModuleInit, OnModuleDestroy
     const messages = this.cache.get(clientId)!;
     messages.push({ event, data, timestamp: Date.now() });
 
-    // 环形缓冲区：超出上限时丢弃最旧的消息
+    // Ring buffer: drop the oldest messages when over the cap
     if (messages.length > OfflineMessageCacheService.MAX_MESSAGES_PER_CLIENT) {
       const removedCount = messages.length - OfflineMessageCacheService.MAX_MESSAGES_PER_CLIENT;
       messages.splice(0, removedCount);
@@ -110,7 +110,7 @@ export class OfflineMessageCacheService implements OnModuleInit, OnModuleDestroy
       );
     }
 
-    // 同步注册客户端
+    // Register the client synchronously
     this.registeredClients.add(clientId);
 
     this.logger.debug(
@@ -120,9 +120,9 @@ export class OfflineMessageCacheService implements OnModuleInit, OnModuleDestroy
   }
 
   /**
-   * 获取客户端待补发消息（自动过滤已过期消息）
-   * @param clientId 客户端标识
-   * @returns 未过期的待补发消息列表
+   * Get a client's pending replay messages (expired ones filtered automatically)
+   * @param clientId client identifier
+   * @returns the list of unexpired pending messages
    */
   getPendingMessages(clientId: string): CachedMessage[] {
     const messages = this.cache.get(clientId);
@@ -135,7 +135,7 @@ export class OfflineMessageCacheService implements OnModuleInit, OnModuleDestroy
       (m) => now - m.timestamp < OfflineMessageCacheService.MESSAGE_TTL_MS,
     );
 
-    // 如果有过期消息被过滤，更新缓存
+    // If expired messages were filtered, update the cache
     if (valid.length < messages.length) {
       this.cache.set(clientId, valid);
     }
@@ -144,8 +144,8 @@ export class OfflineMessageCacheService implements OnModuleInit, OnModuleDestroy
   }
 
   /**
-   * 清除客户端所有缓存消息（保留客户端注册状态）
-   * @param clientId 客户端标识
+   * Clear all of a client's cached messages (keeps the client's registration)
+   * @param clientId client identifier
    */
   clearMessages(clientId: string): void {
     this.cache.set(clientId, []);
@@ -156,7 +156,7 @@ export class OfflineMessageCacheService implements OnModuleInit, OnModuleDestroy
   }
 
   /**
-   * 获取缓存统计信息
+   * Get cache statistics
    */
   getCacheStats(): CacheStats {
     let totalMessages = 0;
@@ -171,9 +171,9 @@ export class OfflineMessageCacheService implements OnModuleInit, OnModuleDestroy
   }
 
   /**
-   * 获取离线客户端列表（已注册但当前不在线的客户端）
-   * @param onlineIds 当前在线的客户端标识集合
-   * @returns 离线客户端标识列表
+   * Get the offline client list (registered but currently offline)
+   * @param onlineIds set of currently online client identifiers
+   * @returns the list of offline client identifiers
    */
   getOfflineClientIds(onlineIds: Set<string>): string[] {
     const offline: string[] = [];
@@ -186,8 +186,8 @@ export class OfflineMessageCacheService implements OnModuleInit, OnModuleDestroy
   }
 
   /**
-   * 清理所有客户端的过期消息
-   * @returns 清理的消息总数
+   * Clean up all clients' expired messages
+   * @returns the total number of cleaned messages
    */
   private cleanupExpiredMessages(): number {
     const now = Date.now();
@@ -204,7 +204,7 @@ export class OfflineMessageCacheService implements OnModuleInit, OnModuleDestroy
         totalCleaned += before - remaining.length;
       }
 
-      // 如果客户端已注销且没有消息，清理缓存条目
+      // If the client is unregistered and has no messages, clean up the cache entry
       if (remaining.length === 0 && !this.registeredClients.has(clientId)) {
         this.cache.delete(clientId);
       }

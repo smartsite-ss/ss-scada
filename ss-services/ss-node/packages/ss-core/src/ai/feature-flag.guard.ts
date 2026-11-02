@@ -3,17 +3,17 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * Feature Flag Guard — P1-T07 AI Feature Flag 门控
+ * Feature Flag Guard - P1-T07 AI Feature Flag gating
  *
- * 与 @RequireFeatureFlag() 装饰器配合使用。
- * 在 Flag 关闭时返回 403 Forbidden。
+ * Used together with the @RequireFeatureFlag() decorator.
+ * Returns 403 Forbidden when the flag is off.
  *
- * 用法:
+ * Usage:
  *   @UseGuards(JwtAuthGuard, FeatureFlagGuard)
  *   @RequireFeatureFlag(AI_FEATURE_FLAGS.CODEGEN)
  *   async generatePlugin() { ... }
  *
- * 关联决策：D-012（Feature Flag 门控）
+ * Related decision: D-012 (Feature Flag gating)
  */
 
 import {
@@ -26,12 +26,12 @@ import {
 import { Reflector } from '@nestjs/core';
 import { FeatureFlagService, AiFeatureFlag } from './feature-flag.service';
 
-/** 装饰器元数据键 */
+/** Decorator metadata key */
 export const FEATURE_FLAG_KEY = 'ai:feature-flag';
 
 /**
- * Feature Flag 装饰器 — 标记端点需要的 Feature Flag
- * @param flag — 功能标志键名
+ * Feature Flag decorator - marks the flag required by an endpoint
+ * @param flag - feature flag key name
  */
 import { SetMetadata } from '@nestjs/common';
 export const RequireFeatureFlag = (flag: AiFeatureFlag) => SetMetadata(FEATURE_FLAG_KEY, flag);
@@ -49,7 +49,7 @@ export class FeatureFlagGuard implements CanActivate {
       context.getClass(),
     ]);
 
-    // 未标记 Flag 的端点放行
+    // Endpoints without a flag marker are allowed through
     if (!requiredFlag) {
       return true;
     }

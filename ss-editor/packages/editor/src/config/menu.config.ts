@@ -2,8 +2,8 @@
 // https://smartsite.top/
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
-// 菜单配置文件
-// 定义菜单项数据结构和默认菜单配置
+// Menu configuration file
+// Defines the menu item data structure and the default menu configuration
 
 import { i18n } from '@scada-editor/core'
 import { iconMap } from '../common/icons'
@@ -14,9 +14,9 @@ export interface MenuItem {
   icon: string | (() => any);
   type: 'normal' | 'dropdown' | 'submenu';
   children?: MenuItem[];
-  category?: string; // 用于图元分类
-  shortcut?: string; // 快捷键
-  action?: string; // 动作类型
+  category?: string; // used for graphic classification
+  shortcut?: string; // keyboard shortcut
+  action?: string; // action type
 }
 
 const t = (key: string) => i18n.global.t(key)

@@ -7,13 +7,13 @@ import { SetMetadata } from '@nestjs/common';
 export const DATA_ACCESS_KEY = 'data_access';
 
 /**
- * 数据访问装饰器
+ * Data-access decorator
  *
- * 声明接口需要检查的资源类型，配合 DataAccessGuard 使用。
+ * Declares the resource type an endpoint needs to check, used together with DataAccessGuard.
  *
- * 用法:
- *   @DataAccess('project')     — 检查用户对 projectId 参数的访问权限
- *   @DataAccess('device')      — 检查用户对 deviceId 参数的访问权限
- *   @DataAccess('deviceGroup') — 检查用户对 groupId 参数的访问权限
+ * Usage:
+ *   @DataAccess('project')     - check the user's access to the projectId param
+ *   @DataAccess('device')      - check the user's access to the deviceId param
+ *   @DataAccess('deviceGroup') - check the user's access to the groupId param
  */
 export const DataAccess = (...resources: string[]) => SetMetadata(DATA_ACCESS_KEY, resources);

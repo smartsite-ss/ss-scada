@@ -29,8 +29,8 @@ type WorkerMsg = {
 };
 
 /**
- * 子进程执行器 —— 与 WorkerThreadExecutor 共享同一条消息协议、同一个 worker 脚本
- * 区别：fork() vs new Worker()、child.kill() vs worker.terminate()
+ * Child-process executor - shares the same message protocol and the same worker script as WorkerThreadExecutor
+ * Difference: fork() vs new Worker(), child.kill() vs worker.terminate()
  */
 @Injectable()
 export class ChildProcessExecutor implements IIsolationExecutor, OnModuleDestroy {
@@ -48,7 +48,7 @@ export class ChildProcessExecutor implements IIsolationExecutor, OnModuleDestroy
   private restartCount = 0;
   private startedAt = 0;
   private stats = { requestCount: 0, errorCount: 0, totalLatencyMs: 0 };
-  /** 子进程启动阶段的 fatal 错误（供 waitForReady 立即 reject 使用） */
+  /** Fatal error during the child-process startup phase (for waitForReady to reject immediately) */
   private _fatalError: Error | null = null;
 
   constructor(
@@ -56,14 +56,14 @@ export class ChildProcessExecutor implements IIsolationExecutor, OnModuleDestroy
     @Optional() private readonly pluginMonitor?: PluginMonitorService,
   ) {}
 
-  /** 同时输出到 NestJS Logger 和插件日志文件 */
+  /** Output to both the NestJS Logger and the plugin log file */
   private writeLog(level: 'INFO' | 'WARN' | 'ERROR', message: string): void {
     const prefix = `[${this.protocol}]`;
     const msg = `${prefix} ${message}`;
     if (level === 'ERROR') this.logger.error(msg);
     else if (level === 'WARN') this.logger.warn(msg);
     else this.logger.log(msg);
-    // 写入插件专属日志文件
+    // Write to the plugin-specific log file
     if (this.pluginMonitor && this.protocol) {
       try {
         this.pluginMonitor.writeLog(this.protocol, level, message);
@@ -72,34 +72,34 @@ export class ChildProcessExecutor implements IIsolationExecutor, OnModuleDestroy
   }
 
   /**
-   * 确保子进程显示名称 exe 副本存在（仅 Windows）。
+   * Ensure a copy of the renamed node.exe display name exists (Windows only).
    *
-   * 设计决策：
-   *   - 不随发布包分发（避免多协议时包体积膨胀 80MB×N）
-   *   - 首次启动时从 node.exe 复制到应用目录的 .ss-collector-isolation/ 下
-   *   - 应用目录（cwd）由 start.bat / start-service.bat 固定，通常可写
-   *   - node.exe 所在目录（如 C:\Program Files\nodejs\）在发布环境通常不可写，
-   *     只作为开发环境的候选
+   * Design decisions:
+   *   - Not shipped with the release package (avoids 80MB x N package bloat with multiple protocols)
+   *   - On first startup, copy from node.exe into .ss-collector-isolation/ under the app directory
+   *   - The app directory (cwd) is fixed by start.bat / start-service.bat and is normally writable
+   *   - The node.exe directory (e.g. C:\Program Files\nodejs\) is usually not writable in release environments,
+   *     and is only a candidate in dev environments
    *
-   * 最终效果：tasklist / 任务管理器显示 ss-collector-{protocol}.exe
+   * Net effect: tasklist / Task Manager shows ss-collector-{protocol}.exe
    */
   private ensureNodeExe(protocol: string): string {
     if (process.platform !== 'win32') return process.execPath;
 
     const exeName = `ss-collector-${protocol}.exe`;
 
-    // 候选位置：应用目录优先（发布/开发均可写），node.exe 目录作为旧副本兼容
+    // Candidate locations: app directory first (writable in both release and dev), node.exe dir as legacy-copy fallback
     const candidates = [
       path.join(process.cwd(), '.ss-collector-isolation', exeName),
       path.join(path.dirname(process.execPath), '.ss-collector-isolation', exeName),
     ];
 
-    // Phase 1 — 检查是否已有副本
+    // Phase 1 - check whether a copy already exists
     for (const f of candidates) {
       if (fs.existsSync(f)) return f;
     }
 
-    // Phase 2 — 没有副本则创建一份到应用目录（始终可写）
+    // Phase 2 - if no copy, create one in the app directory (always writable)
     const targetDir = path.join(process.cwd(), '.ss-collector-isolation');
     const targetPath = path.join(targetDir, exeName);
     try {
@@ -129,7 +129,7 @@ export class ChildProcessExecutor implements IIsolationExecutor, OnModuleDestroy
   private async startChild(): Promise<void> {
     const workerPath = this.config.entryScript || path.join(__dirname, 'collector-worker.js');
 
-    // Windows: 使用重命名的 node.exe 使进程在 tasklist/任务管理器中显示为 ss-collector-{protocol}.exe
+    // Windows: use the renamed node.exe so the process shows as ss-collector-{protocol}.exe in tasklist/Task Manager
     const execPath = this.ensureNodeExe(this.protocol);
 
     this.writeLog(
@@ -233,7 +233,7 @@ export class ChildProcessExecutor implements IIsolationExecutor, OnModuleDestroy
 
     if (msg.type === 'fatal') {
       this.writeLog('ERROR', `Child process fatal: ${msg.error?.message || 'unknown'}`);
-      // 存储 fatal 错误供 waitForReady 消费
+      // Store the fatal error for waitForReady to consume
       this._fatalError = new Error(msg.error?.message || 'Child process fatal error');
       return;
     }

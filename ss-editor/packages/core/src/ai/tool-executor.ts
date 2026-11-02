@@ -3,22 +3,22 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * Tool Executor — P1-T03 前端工具执行器
+ * Tool Executor — P1-T03 frontend tool executor
  *
- * 管理前端可用工具的注册与执行。
- * 工具通过 MCP 协议与本地系统交互（编辑器 cmd / 数据中台 query）。
+ * Manages registration and execution of frontend-available tools.
+ * Tools interact with local systems via the MCP protocol (editor cmd / data-platform query).
  *
- * 工具分为两类：
- *   - Local：直接操作编辑器的工具（scene.*, plugin.*）
- *   - Remote：调用后端 API 的工具（alarm.*, device.*, script.*）
+ * Tools fall into two categories:
+ *   - Local: tools operating the editor directly (scene.*, plugin.*)
+ *   - Remote: tools calling backend APIs (alarm.*, device.*, script.*)
  *
- * 关联决策：D-005（混合模式），D-013（MCP 工具协议）
+ * Related decisions: D-005 (hybrid mode), D-013 (MCP tool protocol)
  *
- * 用法:
+ * Usage:
  *   const result = await toolExecutor.execute('scene_addGraphic', { type: 'pump', x: 100 });
  */
 
-/** 工具参数 Schema */
+/** Tool parameter schema */
 export interface ToolParam {
   name: string;
   type: 'string' | 'number' | 'boolean' | 'object' | 'array';
@@ -26,37 +26,37 @@ export interface ToolParam {
   required: boolean;
 }
 
-/** 工具定义 */
+/** Tool definition */
 export interface ToolDefinition {
   name: string;
   description: string;
   category: 'scene' | 'plugin' | 'script' | 'alarm' | 'device' | 'datatag' | 'kb' | 'layout';
   params: ToolParam[];
-  /** 执行工具的回调 */
+  /** Callback executing the tool */
   execute: (params: Record<string, unknown>) => Promise<ToolResult>;
 }
 
-/** 工具执行结果 */
+/** Tool execution result */
 export interface ToolResult {
   success: boolean;
   data?: unknown;
   error?: string;
 }
 
-/** 工具执行选项 */
+/** Tool execution options */
 export interface ToolExecuteOptions {
-  /** 调用方标识 */
+  /** Caller identifier */
   caller?: string;
-  /** 超时毫秒 */
+  /** Timeout in ms */
   timeout?: number;
 }
 
-/** 工具注册表 */
+/** Tool registry */
 const toolRegistry = new Map<string, ToolDefinition>();
 
 export class ToolExecutor {
   /**
-   * 注册一个工具
+   * Register a tool
    */
   register(tool: ToolDefinition): void {
     if (toolRegistry.has(tool.name)) {
@@ -66,7 +66,7 @@ export class ToolExecutor {
   }
 
   /**
-   * 注册多个工具
+   * Register multiple tools
    */
   registerAll(tools: ToolDefinition[]): void {
     for (const tool of tools) {
@@ -75,14 +75,14 @@ export class ToolExecutor {
   }
 
   /**
-   * 获取所有已注册的工具列表（用于生成 system prompt）
+   * Get all registered tools (for system prompt generation)
    */
   getToolList(): ToolDefinition[] {
     return Array.from(toolRegistry.values());
   }
 
   /**
-   * 生成工具 Schema（用于 LLM function calling）
+   * Generate tool schemas (for LLM function calling)
    */
   getToolSchemas(): Array<{
     type: 'function';
@@ -112,7 +112,7 @@ export class ToolExecutor {
   }
 
   /**
-   * 按名称执行工具
+   * Execute a tool by name
    */
   async execute(
     toolName: string,
@@ -141,19 +141,19 @@ export class ToolExecutor {
   }
 
   /**
-   * 执行多个工具调用
+   * Execute multiple tool calls
    */
   async executeBatch(toolCalls: Array<{ name: string; params: Record<string, unknown> }>): Promise<ToolResult[]> {
     return Promise.all(toolCalls.map((tc) => this.execute(tc.name, tc.params)));
   }
 
   /**
-   * 注销工具
+   * Unregister a tool
    */
   unregister(toolName: string): boolean {
     return toolRegistry.delete(toolName);
   }
 }
 
-/** 单例 */
+/** Singleton */
 export const toolExecutor = new ToolExecutor();

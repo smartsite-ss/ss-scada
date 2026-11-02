@@ -19,7 +19,7 @@ export class DeviceAuthorization {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  /** 授权给哪个角色 */
+  /** Which role is authorized */
   @Column({ name: 'role_id' })
   roleId: string;
 
@@ -27,15 +27,15 @@ export class DeviceAuthorization {
   @JoinColumn({ name: 'role_id' })
   role: Role;
 
-  /** 所属项目 */
+  /** Owning project */
   @Column({ name: 'project_id' })
   projectId: string;
 
-  /** 设备 ID */
+  /** Device ID */
   @Column({ name: 'device_id' })
   deviceId: string;
 
-  /** 权限级别：read | write */
+  /** Permission level: read | write */
   @Column({ default: 'read' })
   permission: string;
 

@@ -8,8 +8,8 @@ import type { IGraphic } from '@scada-editor/core';
 import { useWsStore } from '@scada-editor/system';
 import { showAlert } from '../utils/messageBox';
 
-// 数据刷新信号（模块级单例，所有 useGraphic 实例共享）
-// WS 数据到达时 wsStore.tagFlushVersion 递增（Pinia 响应式），非 WS 数据由 EventBus 触发
+// Data refresh signal (module-level singleton, shared by all useGraphic instances)
+// wsStore.tagFlushVersion increments on WS data arrival (Pinia reactive); non-WS data is triggered via EventBus
 const dataRefreshVersion = ref(0);
 let tagValueUnsubscribe: (() => void) | null = null;
 
@@ -330,8 +330,8 @@ export function useGraphic() {
     selectedGraphicId: getPage()?.selectedGraphicId || null,
     selectedGraphicIds: pageStore.selectedGraphicIds || [],
     sortedGraphics: computed(() => {
-      // 依赖数据刷新信号：WS 驱动（tagFlushVersion）+ 非 WS 驱动（EventBus → dataRefreshVersion）
-      // setProperty 仅做内存写入不改变数组引用，需通过这两信号触发 computed 重算
+      // Depend on the data refresh signals: WS-driven (tagFlushVersion) + non-WS-driven (EventBus → dataRefreshVersion)
+      // setProperty only writes memory without changing the array reference; these two signals are needed to trigger computed recalculation
       void wsStore.tagFlushVersion;
       void dataRefreshVersion.value;
 

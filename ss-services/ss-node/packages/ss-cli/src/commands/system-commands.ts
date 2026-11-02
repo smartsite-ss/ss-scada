@@ -3,16 +3,16 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * system-commands.ts — 系统管理命令
+ * system-commands.ts - system management commands
  *
- *   system health — 系统健康检查
- *   system info   — 系统信息
+ *   system health - system health check
+ *   system info   - system information
  */
 
 import { ApiError } from '../core/ApiClient';
 import type { CommandParser } from '../core/CommandParser';
 
-/** 创建系统管理子命令组 */
+/** Create the system-management subcommand group */
 export function registerCommands(parser: CommandParser): void {
   const program = parser.getProgram();
 
@@ -49,7 +49,7 @@ export function registerCommands(parser: CommandParser): void {
     });
 }
 
-/** 格式化输出健康状态 */
+/** Format and print the health status */
 function printHealthStatus(data: Record<string, unknown>): void {
   const status = (data.status as string) ?? 'unknown';
   const icon = status === 'ok' || status === 'healthy' ? '✓' : '✗';
@@ -65,7 +65,7 @@ function printHealthStatus(data: Record<string, unknown>): void {
     console.log(`  Timestamp:  ${data.timestamp}`);
   }
 
-  // 打印子组件状态
+  // Print sub-component status
   if (data.components) {
     const components = data.components as Record<string, unknown>;
     console.log('\n  Components:');
@@ -77,7 +77,7 @@ function printHealthStatus(data: Record<string, unknown>): void {
   }
 }
 
-/** 格式化 uptime（秒 → 可读字符串） */
+/** Format uptime (seconds -> human-readable string) */
 function formatUptime(seconds: number): string {
   if (seconds < 60) return `${seconds}s`;
   if (seconds < 3600) return `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
@@ -86,7 +86,7 @@ function formatUptime(seconds: number): string {
   return `${h}h ${m}m`;
 }
 
-/** 统一错误处理 */
+/** Unified error handling */
 function handleError(context: string, err: unknown): void {
   if (err instanceof ApiError) {
     console.error(`${context}: ${err.message}`);

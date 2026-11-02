@@ -5,9 +5,9 @@
 import { FieldError } from './types';
 
 /**
- * 采集通道配置校验工具
+ * Collector channel-config validation utilities
  *
- * 从 Modbus / S7 / MQTT 插件中提取的公共校验逻辑
+ * Common validation logic extracted from the Modbus / S7 / MQTT plugins
  */
 export class ConfigValidator {
   private static readonly IPV4_REGEX = /^(\d{1,3}\.){3}\d{1,3}$/;
@@ -15,7 +15,7 @@ export class ConfigValidator {
     /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
 
   /**
-   * 校验主机地址（IP / 主机名 / localhost）
+   * Validate a host address (IP / hostname / localhost)
    */
   static isValidHost(host: string): boolean {
     return (
@@ -26,21 +26,21 @@ export class ConfigValidator {
   }
 
   /**
-   * 校验端口号范围
+   * Validate a port-number range
    */
   static isValidPort(port: number): boolean {
     return port >= 1 && port <= 65535;
   }
 
   /**
-   * 校验数值范围
+   * Validate a numeric range
    */
   static isInRange(value: number, min: number, max: number): boolean {
     return value >= min && value <= max;
   }
 
   /**
-   * 校验主机地址并返回错误项（用于 validateChannelConfig）
+   * Validate the host address and return error entries (used by validateChannelConfig)
    */
   static validateHost(
     host: string,
@@ -54,7 +54,7 @@ export class ConfigValidator {
   }
 
   /**
-   * 校验端口范围并返回错误项
+   * Validate the port range and return error entries
    */
   static validatePort(
     port: number | undefined,
@@ -68,7 +68,7 @@ export class ConfigValidator {
   }
 
   /**
-   * 校验数值范围并返回错误项
+   * Validate the numeric range and return error entries
    */
   static validateRange(
     value: number | undefined,
@@ -84,7 +84,7 @@ export class ConfigValidator {
   }
 
   /**
-   * 校验 URL 前缀
+   * Validate a URL prefix
    */
   static validateUrlPrefix(
     url: string | undefined,
@@ -99,7 +99,7 @@ export class ConfigValidator {
   }
 
   /**
-   * 校验枚举值
+   * Validate an enum value
    */
   static validateEnum(
     value: any | undefined,

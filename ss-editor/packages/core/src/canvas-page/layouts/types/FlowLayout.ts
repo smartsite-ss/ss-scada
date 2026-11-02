@@ -5,7 +5,7 @@
 import { BaseLayout } from '../base/BaseLayout';
 import { IGraphic } from '@scada-editor/plugin-sdk';
 
-// 流式布局类
+// Flow layout class
 export class FlowLayout extends BaseLayout {
   clone(): FlowLayout {
     const cloned = new FlowLayout();
@@ -20,12 +20,12 @@ export class FlowLayout extends BaseLayout {
     });
   }
 
-  // 应用布局
+  // Apply the layout
   applyLayout(graphics: IGraphic[]): void {
     this.arrange(graphics);
   }
 
-  // 排列图形
+  // Arrange the graphics
   arrange(graphics: IGraphic[]): void {
     const { direction, spacing, padding } = this.properties;
     let x = padding;
@@ -34,9 +34,9 @@ export class FlowLayout extends BaseLayout {
 
     for (const graphic of graphics) {
       if (direction === 'horizontal') {
-        // 水平方向布局
+        // Horizontal layout
         if (x + graphic.config.geometry.width > 800) {
-          // 假设容器宽度为 800
+          // Assume container width is 800
           x = padding;
           y += maxHeight + spacing;
           maxHeight = 0;
@@ -48,7 +48,7 @@ export class FlowLayout extends BaseLayout {
         x += graphic.config.geometry.width + spacing;
         maxHeight = Math.max(maxHeight, graphic.config.geometry.height);
       } else {
-        // 垂直方向布局
+        // Vertical layout
         graphic.config.geometry.x = x;
         graphic.config.geometry.y = y;
 

@@ -5,16 +5,16 @@
 import { TransformConfig } from './types';
 
 /**
- * 值变换工具 — 提供线性变换（scale/offset/precision）
+ * Value transform utility - provides linear transform (scale/offset/precision)
  *
- * 从 Modbus / S7 插件中提取的公共逻辑
+ * Common logic extracted from the Modbus / S7 plugins
  */
 export class ValueTransformUtil {
   /**
-   * 应用线性变换: transformed = rawValue * scale + offset
-   * @param rawValue 原始值
-   * @param config 变换配置（scale/offset/precision）
-   * @returns 变换后的值，若 rawValue 为 null/undefined 则返回 null
+   * Apply linear transform: transformed = rawValue * scale + offset
+   * @param rawValue the raw value
+   * @param config the transform config (scale/offset/precision)
+   * @returns the transformed value; returns null if rawValue is null/undefined
    */
   static apply(rawValue: number | null | undefined, config?: TransformConfig): number | null {
     if (rawValue === null || rawValue === undefined) return null;
@@ -31,10 +31,10 @@ export class ValueTransformUtil {
   }
 
   /**
-   * 从 tagConfig 中提取变换配置并应用
-   * @param rawValue 原始值
-   * @param tagConfig 标签配置（包含 transform 字段）
-   * @returns 变换后的值
+   * Extract the transform config from tagConfig and apply it
+   * @param rawValue the raw value
+   * @param tagConfig the tag config (contains the transform field)
+   * @returns the transformed value
    */
   static applyFromConfig(
     rawValue: number | null | undefined,

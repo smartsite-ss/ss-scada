@@ -6,19 +6,19 @@
 import { ITransferableData } from '../../services/InterpageTransferService';
 
 export interface IClipboardData {
-  /** 序列化的图元数据 */
+  /** Serialized graphic data */
   data: ITransferableData[];
-  /** 剪贴板操作模式 */
+  /** Clipboard operation mode */
   mode: 'cut' | 'copy';
-  /** 源页面ID */
+  /** Source page ID */
   sourcePageId: string;
-  /** 组合元数据（源数据来自组合时为非空） */
+  /** Group metadata (non-empty when source data comes from a group) */
   groupMetadata?: {
-    /** 是否为组合拷贝 */
+    /** Whether this is a group copy */
     isGroupCopy: boolean;
-    /** 源组合ID */
+    /** Source group ID */
     sourceGroupId: string;
-    /** 源组合名称 */
+    /** Source group name */
     groupName: string;
   };
 }
@@ -35,11 +35,11 @@ export class ClipboardManager {
     } | null = null;
 
     /**
-     * 设置剪贴板数据
+     * Set clipboard data
      */
     setData(
-        data: ITransferableData[], 
-        mode: 'copy' | 'cut', 
+        data: ITransferableData[],
+        mode: 'copy' | 'cut',
         sourcePageId: string
     ): void {
         this.clipboardData = [...data];
@@ -48,30 +48,30 @@ export class ClipboardManager {
         this.pasteCount = 0;
         this.groupMetadata = null;
     }
- 
+
     /**
-     * 增加粘贴计数
+     * Increment the paste count
      */
     incrementPasteCount(): void {
         this.pasteCount++;
     }
 
     /**
-     * 获取粘贴计数
+     * Get the paste count
      */
     getPasteCount(): number {
         return this.pasteCount;
     }
 
     /**
-     * 获取剪贴板数据
+     * Get clipboard data
      */
     getData(): ITransferableData[] {
         return [...this.clipboardData];
     }
 
     /**
-     * 清空剪贴板数据
+     * Clear clipboard data
      */
     clearData(): void {
         this.clipboardData = [];
@@ -82,42 +82,42 @@ export class ClipboardManager {
     }
 
     /**
-     * 检查剪贴板是否为空
+     * Check whether the clipboard is empty
      */
     isEmpty(): boolean {
         return this.clipboardData.length === 0;
     }
 
     /**
-     * 获取源页面 ID
+     * Get the source page ID
      */
     getSourcePageId(): string | null {
         return this.sourcePageId;
     }
 
     /**
-     * 获取剪贴板模式
+     * Get the clipboard mode
      */
     getClipboardMode(): 'copy' | 'cut' {
         return this.clipboardMode;
     }
 
     /**
-     * 获取剪贴板内容数量
+     * Get the number of items in the clipboard
      */
     get itemCount(): number {
         return this.clipboardData.length;
     }
 
     /**
-     * 设置组合元数据（copy 时源数据来自组合调用）
+     * Set group metadata (called when the source data comes from a group copy)
      */
     setGroupMetadata(metadata: { isGroupCopy: boolean; sourceGroupId: string; groupName: string }): void {
         this.groupMetadata = { ...metadata };
     }
 
     /**
-     * 获取组合元数据
+     * Get group metadata
      */
     getGroupMetadata(): { isGroupCopy: boolean; sourceGroupId: string; groupName: string } | null {
         return this.groupMetadata;

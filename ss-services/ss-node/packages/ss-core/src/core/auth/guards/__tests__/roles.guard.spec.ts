@@ -18,7 +18,7 @@ describe('RolesGuard', () => {
     guard = new RolesGuard(mockReflector);
   });
 
-  /** 构造模拟 ExecutionContext，注入 user 对象 */
+  /** Build a mock ExecutionContext, injecting the user object */
   function createMockContext(user: any): ExecutionContext {
     const mockRequest: any = { user };
     return {
@@ -31,9 +31,9 @@ describe('RolesGuard', () => {
     } as any;
   }
 
-  /** ReadRoles 等价：[ADMIN, USER, VIEWER] */
+  /** ReadRoles equivalent: [ADMIN, USER, VIEWER] */
   const READ_ROLES = [UserRole.ADMIN, UserRole.USER, UserRole.VIEWER];
-  /** WriteRoles 等价：[ADMIN, USER] */
+  /** WriteRoles equivalent: [ADMIN, USER] */
   const WRITE_ROLES = [UserRole.ADMIN, UserRole.USER];
 
   describe('canActivate - 无角色要求', () => {

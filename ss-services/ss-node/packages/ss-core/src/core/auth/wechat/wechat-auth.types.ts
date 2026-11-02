@@ -3,61 +3,61 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 微信扫码登录类型定义
+ * WeChat scan-login type definitions
  *
- * 个人微信开放平台网站应用 OAuth2 流程：
- *   1. 前端请求二维码 → 后端生成 state（CSRF 防护）+ wechatUrl
- *   2. 用户扫码确认 → 微信回调后端 /callback?code=CODE&state=STATE
- *   3. 后端用 code 换 access_token + openid，拉取用户信息
- *   4. 按 openid 查找/创建用户，标记 state=confirmed
- *   5. 前端轮询 /status，confirmed 时后端下发 Cookie + 返回 user
+ * Personal WeChat open-platform web-app OAuth2 flow:
+ *   1. Frontend requests QR code -> backend generates state (CSRF protection) + wechatUrl
+ *   2. User scans and confirms -> WeChat redirects backend to /callback?code=CODE&state=STATE
+ *   3. Backend exchanges code for access_token + openid, pulls user info
+ *   4. Look up/create user by openid, mark state=confirmed
+ *   5. Frontend polls /status; on confirmed, backend issues Cookie + returns user
  */
 
 /**
- * 扫码状态枚举
- * - pending：已生成二维码，等待用户扫码
- * - scanned：用户已扫码，等待手机确认（真实模式中间态）
- * - confirmed：用户已确认，登录成功，可下发 Token
- * - expired：二维码已过期（5 分钟）
- * - cancelled：用户取消扫码
+ * Scan-status enum
+ * - pending: QR code generated, waiting for user to scan
+ * - scanned: user scanned, waiting for phone confirmation (real-mode intermediate state)
+ * - confirmed: user confirmed, login success, Token can be issued
+ * - expired: QR code expired (5 minutes)
+ * - cancelled: user cancelled the scan
  */
 export type ScanStatus = 'pending' | 'scanned' | 'confirmed' | 'expired' | 'cancelled';
 
 /**
- * 扫码会话状态（存储在 Redis/内存 Map 中）
+ * Scan-session status (stored in Redis / in-memory Map)
  *
- * 生命周期：generateQrcode 创建 → 用户扫码更新为 scanned →
- * 确认后更新为 confirmed → /status 接口下发 Token 后删除（一次性消费）
+ * Lifecycle: generateQrcode creates -> user scan updates to scanned ->
+ * after confirmation updates to confirmed -> /status issues Token then deletes (one-time consume)
  */
 export interface ScanState {
-  /** state 参数（CSRF 防护 + 会话标识，32 字符随机串） */
+  /** state param (CSRF protection + session id, 32-char random string) */
   state: string;
-  /** 当前状态 */
+  /** Current status */
   status: ScanStatus;
-  /** 创建时间戳（毫秒） */
+  /** Creation timestamp (ms) */
   createdAt: number;
-  /** 过期时间戳（毫秒，创建后 5 分钟） */
+  /** Expiration timestamp (ms, 5 minutes after creation) */
   expiresAt: number;
-  /** 扫码确认后填充：微信 openid */
+  /** Filled after scan confirm: WeChat openid */
   wechatOpenId?: string;
-  /** 扫码确认后填充：微信 unionid（可选） */
+  /** Filled after scan confirm: WeChat unionid (optional) */
   wechatUnionId?: string;
-  /** 扫码确认后填充：微信昵称 */
+  /** Filled after scan confirm: WeChat nickname */
   nickname?: string;
-  /** 扫码确认后填充：微信头像 URL */
+  /** Filled after scan confirm: WeChat avatar URL */
   avatarUrl?: string;
-  /** confirmed 后填充：本系统 userId */
+  /** Filled after confirmed: this system's userId */
   userId?: string;
-  /** 客户端 IP（审计用） */
+  /** Client IP (for audit) */
   clientIp?: string;
-  /** User-Agent（审计用） */
+  /** User-Agent (for audit) */
   userAgent?: string;
 }
 
 /**
- * 微信 OAuth2 access_token 响应
+ * WeChat OAuth2 access_token response
  *
- * GET https://api.weixin.qq.com/sns/oauth2/access_token 返回结构
+ * GET https://api.weixin.qq.com/sns/oauth2/access_token return structure
  */
 export interface WechatAccessTokenResponse {
   access_token: string;
@@ -66,15 +66,15 @@ export interface WechatAccessTokenResponse {
   openid: string;
   scope: string;
   unionid?: string;
-  /** 错误时存在的字段 */
+  /** Field present on error */
   errcode?: number;
   errmsg?: string;
 }
 
 /**
- * 微信 OAuth2 userinfo 响应
+ * WeChat OAuth2 userinfo response
  *
- * GET https://api.weixin.qq.com/sns/userinfo 返回结构
+ * GET https://api.weixin.qq.com/sns/userinfo return structure
  */
 export interface WechatUserInfoResponse {
   openid: string;
@@ -86,36 +86,36 @@ export interface WechatUserInfoResponse {
   headimgurl: string;
   privilege: string[];
   unionid?: string;
-  /** 错误时存在的字段 */
+  /** Field present on error */
   errcode?: number;
   errmsg?: string;
 }
 
 /**
- * 二维码生成响应
+ * QR-code generation response
  *
- * Mock 模式下 mock=true，前端显示占位 UI + "模拟扫码"按钮
- * 真实模式 mock=false，前端加载 wxLogin.js 渲染内嵌二维码
+ * In Mock mode mock=true, the frontend shows a placeholder UI + "simulate scan" button
+ * In real mode mock=false, the frontend loads wxLogin.js to render the embedded QR code
  */
 export interface QrcodeResponse {
-  /** state 参数（前端轮询 /status 时传回） */
+  /** state param (returned by the frontend when polling /status) */
   state: string;
-  /** 微信扫码授权 URL（真实模式前端用 WxLogin JS 渲染） */
+  /** WeChat scan-authorization URL (rendered by the frontend WxLogin JS in real mode) */
   wechatUrl: string;
-  /** 是否为 Mock 模式（前端据此决定渲染方式） */
+  /** Whether in Mock mode (frontend decides the rendering accordingly) */
   mock: boolean;
-  /** 过期时间戳（毫秒） */
+  /** Expiration timestamp (ms) */
   expiresAt: number;
 }
 
 /**
- * 扫码状态查询响应
+ * Scan-status query response
  *
- * confirmed 时 user 字段非空，前端拿到后跳转
+ * When confirmed, the user field is non-null; the frontend jumps after receiving it
  */
 export interface ScanStatusResponse {
   status: ScanStatus;
-  /** confirmed 时返回 user 信息（前端用于直接展示和跳转） */
+  /** Return user info when confirmed (frontend uses it for direct display and jump) */
   user?: {
     id: string;
     username: string;
@@ -123,12 +123,12 @@ export interface ScanStatusResponse {
     role: string;
     avatar?: string;
   };
-  /** 剩余有效秒数（前端用于倒计时显示） */
+  /** Remaining valid seconds (frontend uses for countdown display) */
   remainingSeconds: number;
 }
 
 /**
- * 微信用户资料（loginOrCreateUser 接收参数）
+ * WeChat user profile (params received by loginOrCreateUser)
  */
 export interface WechatUserProfile {
   wechatOpenId: string;
@@ -137,30 +137,30 @@ export interface WechatUserProfile {
   avatarUrl?: string;
 }
 
-// ──────── 小程序登录（01-账号与认证）────────
+// -------- Mini-program login (01 - account & auth) --------
 
 /**
- * 小程序 code2session 响应
+ * Mini-program code2session response
  *
- * GET https://api.weixin.qq.com/sns/jscode2session 返回结构
- * session_key 仅后端持有（解密用户敏感数据用），严禁下发前端
+ * GET https://api.weixin.qq.com/sns/jscode2session return structure
+ * session_key is held only by the backend (for decrypting sensitive user data); never issue to the frontend
  */
 export interface WechatMpCode2SessionResponse {
   openid: string;
   session_key: string;
   unionid?: string;
-  /** 错误时存在的字段 */
+  /** Field present on error */
   errcode?: number;
   errmsg?: string;
 }
 
-/** 双 Token 对（复用 ss-data 机制：Access 15min + Refresh 7d） */
+/** Dual token pair (reuses the ss-data mechanism: Access 15min + Refresh 7d) */
 export interface WechatMpTokenPair {
   accessToken: string;
   refreshToken: string;
 }
 
-/** 小程序登录用户信息（与前端 LoginUserInfo 对齐） */
+/** Mini-program login user info (aligned with frontend LoginUserInfo) */
 export interface WechatMpLoginUserInfo {
   userId: string;
   username: string;
@@ -169,14 +169,14 @@ export interface WechatMpLoginUserInfo {
   roleNames: string[];
 }
 
-/** 授权项目（数据权限快照：项目级 read/write/admin） */
+/** Authorized projects (data-permission snapshot: project-level read/write/admin) */
 export interface WechatMpAuthorizedProject {
   projectId: string;
   projectName: string;
   permissionLevel: 'read' | 'write' | 'admin';
 }
 
-/** 小程序登录响应（已绑定签发 Token；未绑定 bindingRequired=true） */
+/** Mini-program login response (issue Token if bound; bindingRequired=true if not bound) */
 export interface WechatMpLoginResponse {
   tokenPair: WechatMpTokenPair | null;
   userInformation: WechatMpLoginUserInfo | null;
@@ -184,7 +184,7 @@ export interface WechatMpLoginResponse {
   authorizedProjects: WechatMpAuthorizedProject[];
 }
 
-/** 绑定/换绑响应 */
+/** Bind / rebind response */
 export interface WechatMpBindResponse {
   tokenPair: WechatMpTokenPair;
   userInformation: WechatMpLoginUserInfo;

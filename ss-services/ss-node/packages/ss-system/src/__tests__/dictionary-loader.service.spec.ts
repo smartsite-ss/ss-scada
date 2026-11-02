@@ -74,7 +74,7 @@ describe('DictionaryLoaderService - CRUD', () => {
     service = new DictionaryLoaderService(mockConfigService as any, mockPathResolverService as any);
   });
 
-  // ==================== 分类 CRUD ====================
+  // ==================== Category CRUD ====================
 
   describe('createCategory()', () => {
     it('should create a directory for the new category', () => {
@@ -147,7 +147,7 @@ describe('DictionaryLoaderService - CRUD', () => {
     });
   });
 
-  // ==================== 字典表 CRUD ====================
+  // ==================== Dictionary-table CRUD ====================
 
   describe('createTable()', () => {
     it('should create a JSON file for the new table', () => {
@@ -334,7 +334,7 @@ describe('DictionaryLoaderService - CRUD', () => {
     });
   });
 
-  // ==================== toFileName 边界测试（通过 updateTable 间接测试） ====================
+  // ==================== toFileName boundary tests (tested indirectly via updateTable) ====================
 
   describe('toFileName (via updateTable — camelCase to kebab-case)', () => {
     beforeEach(() => {
@@ -405,7 +405,7 @@ describe('DictionaryLoaderService - CRUD', () => {
     });
   });
 
-  // ==================== updateTable 完整流程测试 ====================
+  // ==================== updateTable full-flow tests ====================
 
   describe('updateTable — full flow with deviceType scenario', () => {
     const deviceTypeTable: DictTable = {

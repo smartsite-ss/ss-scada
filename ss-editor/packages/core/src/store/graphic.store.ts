@@ -10,10 +10,10 @@ import { BasePage } from '../graphic-editing/graphic/base/BasePage';
 import { ClipboardManager } from '../graphic-editing/managers/ClipboardManager';
 import { InterpageTransferService } from '../services/InterpageTransferService';
 
-// 子模块: 默认值、常量、缓存
+// Submodule: defaults, constants, cache
 import { graphicCache } from './graphic-defaults';
 
-// 子模块: CRUD 操作
+// Submodule: CRUD operations
 import {
   getGraphicById,
   getCurrentPage,
@@ -30,7 +30,7 @@ import {
   applyTemplate,
 } from './graphic-crud';
 
-// 子模块: 剪贴板操作
+// Submodule: clipboard operations
 import {
   copyHelper,
   cutHelper,
@@ -39,7 +39,7 @@ import {
   duplicateGroupHelper,
 } from './graphic-clipboard';
 
-// 子模块: 样式操作
+// Submodule: style operations
 import {
   applyStyleHelper,
   copyStyleHelper,
@@ -49,7 +49,7 @@ import {
   applyQualityIndicatorHelper,
 } from './graphic-style';
 
-// 子模块: 数据绑定、事件、动画
+// Submodule: data binding, events, animation
 import {
   bindDataHelper,
   unbindDataHelper,
@@ -64,15 +64,15 @@ import {
   removeAnimationHelper,
 } from './graphic-binding';
 
-// 图形状态管理
+// Graphic state management
 export const useGraphicStore = defineStore('graphic', {
   state: () => ({
-    // 样式剪贴板（多个页面共享）
+    // Style clipboard (shared across pages)
     styleClipboard: null as Record<string, any> | null,
-    // 图形剪贴板（跨页面共享）
+    // Graphic clipboard (shared across pages)
     clipboardManager: new ClipboardManager(),
     transferService: new InterpageTransferService(),
-    // 性能优化相关
+    // Performance optimization related
     isBatchOperating: false,
     batchDepth: 0,
     useGraphicCache: false,
@@ -80,7 +80,7 @@ export const useGraphicStore = defineStore('graphic', {
   }),
 
   getters: {
-    // 获取当前页面的图形列表
+    // Get the graphic list of the current page
     graphics: (): IGraphic[] => {
       const pageStore = usePageStore();
       const currentPage = pageStore.currentPage;
@@ -92,8 +92,8 @@ export const useGraphicStore = defineStore('graphic', {
     },
 
     /**
-     * 排序后的图形列表（带缓存，避免每次 getter 都重新 sort）
-     * 缓存在 graphicCache 中，invalidate 后重建
+     * Sorted graphic list (cached to avoid re-sorting on every getter call)
+     * Cache lives in graphicCache; rebuilt after invalidate
      */
     sortedGraphics: (): IGraphic[] => {
       const pageStore = usePageStore();
@@ -135,7 +135,7 @@ export const useGraphicStore = defineStore('graphic', {
     },
 
     /**
-     * 选中的图形列表（使用 ID Map 加速过滤）
+     * Selected graphic list (uses an ID set for faster filtering)
      */
     selectedGraphics: (): IGraphic[] => {
       const pageStore = usePageStore();
@@ -151,29 +151,29 @@ export const useGraphicStore = defineStore('graphic', {
   },
 
   actions: {
-    // ========== CRUD 操作 (委托到 graphic-crud.ts) ==========
+    // ========== CRUD operations (delegated to graphic-crud.ts) ==========
 
-    /** 根据ID获取图形 */
+    /** Get graphic by ID */
     getGraphicById(id: string): IGraphic | undefined {
       return getGraphicById(id);
     },
 
-    /** 获取当前页面 */
+    /** Get current page */
     getCurrentPage() {
       return getCurrentPage();
     },
 
-    /** 获取当前页面的图形列表 */
+    /** Get the graphic list of the current page */
     getCurrentPageGraphics(): IGraphic[] | undefined {
       return getCurrentPageGraphics();
     },
 
-    /** 根据ID查找图形 */
+    /** Find graphic by ID */
     findGraphicById(id: string): IGraphic | undefined {
       return findGraphicById(id);
     },
 
-    /** 添加图形 */
+    /** Add graphic */
     addGraphic(
       type: string,
       x: number,
@@ -184,165 +184,165 @@ export const useGraphicStore = defineStore('graphic', {
       return addGraphic(type, x, y, width, height);
     },
 
-    /** 删除图形 */
+    /** Remove graphic */
     removeGraphic(id: string) {
       removeGraphic(id);
     },
 
-    /** 切换选择状态 */
+    /** Toggle selection state */
     toggleSelection(id: string) {
       toggleSelection(id);
     },
 
-    /** 复制页面图形 */
+    /** Copy page graphics */
     copyPageGraphics(sourcePageId: string, targetPageId: string) {
       copyPageGraphics(sourcePageId, targetPageId);
     },
 
-    /** 删除页面图形 */
+    /** Remove page graphics */
     removePageGraphics(pageId: string) {
       removePageGraphics(pageId);
     },
 
-    /** 调整间距 */
+    /** Adjust spacing */
     adjustSpacing(spacing: number, direction: 'horizontal' | 'vertical') {
       adjustSpacing(spacing, direction);
     },
 
-    /** 批量编辑 */
+    /** Batch edit */
     batchEdit(properties: Partial<IGraphic>) {
       batchEdit(properties);
     },
 
-    /** 模板编辑 - 保存为模板 */
+    /** Template editing - save as template */
     saveAsTemplate(name: string) {
       return saveAsTemplate(name);
     },
 
-    /** 模板编辑 - 应用模板 */
+    /** Template editing - apply template */
     applyTemplate(templateIndex: number) {
       applyTemplate(templateIndex);
     },
 
-    // ========== 剪贴板操作 (委托到 graphic-clipboard.ts) ==========
+    // ========== Clipboard operations (delegated to graphic-clipboard.ts) ==========
 
-    /** 复制选中的图形到剪贴板 */
+    /** Copy selected graphics to clipboard */
     copy() {
       copyHelper(this as any);
     },
 
-    /** 剪切选中的图形到剪贴板 */
+    /** Cut selected graphics to clipboard */
     cut() {
       cutHelper(this as any);
     },
 
-    /** 从剪贴板粘贴图形到当前页面 */
+    /** Paste graphics from clipboard to the current page */
     paste(offsetX: number = 20, offsetY: number = 20): IGraphic[] {
       return pasteHelper(this as any, offsetX, offsetY);
     },
 
-    /** 复制图形（支持单个图元和组合） */
+    /** Duplicate a graphic (supports single element and group) */
     duplicateGraphic(id: string) {
       return duplicateGraphicHelper(id);
     },
 
-    /** 复制整个组合（createGroupCopy） */
+    /** Duplicate an entire group (createGroupCopy) */
     duplicateGroup(groupId: string): { groupId: string; memberIds: string[] } | null {
       return duplicateGroupHelper(groupId);
     },
 
-    // ========== 样式操作 (委托到 graphic-style.ts) ==========
+    // ========== Style operations (delegated to graphic-style.ts) ==========
 
-    /** 样式管理 - 应用样式 */
+    /** Style management - apply style */
     applyStyle(graphicId: string, style: Record<string, any>) {
       applyStyleHelper(graphicId, style);
     },
 
-    /** 样式管理 - 复制样式 */
+    /** Style management - copy style */
     copyStyle(sourceGraphicId: string) {
       return copyStyleHelper(this, sourceGraphicId);
     },
 
-    /** 样式管理 - 粘贴样式 */
+    /** Style management - paste style */
     pasteStyle(targetGraphicId: string) {
       return pasteStyleHelper(this, targetGraphicId);
     },
 
-    /** 样式管理 - 重置样式 */
+    /** Style management - reset style */
     resetStyle(graphicId: string) {
       return resetStyleHelper(graphicId);
     },
 
-    /** 应用属性到图元 */
+    /** Apply a property to a graphic */
     applyProperty(graphicId: string, propertyPath: string, value: any) {
       applyPropertyHelper(graphicId, propertyPath, value);
     },
 
-    /** 应用质量指示器 */
+    /** Apply quality indicator */
     applyQualityIndicator(graphicId: string, quality: string) {
       applyQualityIndicatorHelper(graphicId, quality);
     },
 
-    // ========== 数据绑定 + 事件 + 动画 (委托到 graphic-binding.ts) ==========
+    // ========== Data binding + events + animation (delegated to graphic-binding.ts) ==========
 
-    /** 数据绑定 - 绑定数据 */
+    /** Data binding - bind data */
     bindData(graphicId: string, dataSource: string, dataField: string) {
       bindDataHelper(graphicId, dataSource, dataField);
     },
 
-    /** 数据绑定 - 解除绑定 */
+    /** Data binding - unbind */
     unbindData(graphicId: string) {
       unbindDataHelper(graphicId);
     },
 
-    /** 数据绑定 - 应用数据 */
+    /** Data binding - apply data */
     applyData(data: Record<string, any>) {
       applyDataHelper(data);
     },
 
-    /** 事件交互 - 添加事件 */
+    /** Event interaction - add event */
     addEvent(graphicId: string, eventType: string) {
       addEventHandlerHelper(graphicId, eventType);
     },
 
-    /** 事件交互 - 删除事件 */
+    /** Event interaction - remove event */
     removeEvent(graphicId: string, eventId: string) {
       removeEventHandlerHelper(graphicId, eventId);
     },
 
-    /** 事件交互 - 添加动作 */
+    /** Event interaction - add action */
     addAction(graphicId: string, eventId: string, actionType: string) {
       addActionHelper(graphicId, eventId, actionType);
     },
 
-    /** 事件交互 - 删除动作 */
+    /** Event interaction - remove action */
     removeAction(graphicId: string, eventId: string, actionId: string) {
       removeActionHelper(graphicId, eventId, actionId);
     },
 
-    /** 事件交互 - 触发事件 */
+    /** Event interaction - trigger event */
     triggerEvent(graphicId: string, eventType: string, eventData?: any) {
       triggerEventHandlerHelper(graphicId, eventType, eventData);
     },
 
-    /** 事件交互 - 执行动作 */
+    /** Event interaction - execute action */
     executeAction(action: any, _graphicId?: string, _eventData?: any) {
       executeActionHelper(action, _graphicId, _eventData);
     },
 
-    /** 动画效果 - 添加动画 */
+    /** Animation effects - add animation */
     addAnimation(graphicId: string, animation: any) {
       addAnimationHelper(graphicId, animation);
     },
 
-    /** 动画效果 - 移除动画 */
+    /** Animation effects - remove animation */
     removeAnimation(graphicId: string, animationIndex: number) {
       removeAnimationHelper(graphicId, animationIndex);
     },
 
-    // ========== 组操作 ==========
+    // ========== Group operations ==========
 
-    // 从组合中移除图形
+    // Remove graphic from group
     removeFromGroup(graphicId: string) {
       const currentPage = this.getCurrentPage();
       if (!currentPage || typeof currentPage.removeFromGroup !== 'function')
@@ -351,14 +351,14 @@ export const useGraphicStore = defineStore('graphic', {
       currentPage.selectGraphic(graphicId);
     },
 
-    // 添加图形到组合
+    // Add graphic to group
     addToGroup(graphicId: string, groupId: string) {
       const currentPage = this.getCurrentPage();
       if (!currentPage || typeof currentPage.addToGroup !== 'function') return;
       currentPage.addToGroup(graphicId, groupId);
     },
 
-    // 更新组合边界
+    // Update group bounds
     updateGroupBounds(groupId: string) {
       const currentPage = this.getCurrentPage();
       if (!currentPage || typeof currentPage.updateGroupBounds !== 'function')
@@ -366,7 +366,7 @@ export const useGraphicStore = defineStore('graphic', {
       currentPage.updateGroupBounds(groupId);
     },
 
-    // 选择组合中的所有图形
+    // Select all graphics in a group
     selectGroupMembers(groupId: string) {
       const currentPage = this.getCurrentPage();
       if (!currentPage || typeof currentPage.selectGroupMembers !== 'function')
@@ -374,9 +374,9 @@ export const useGraphicStore = defineStore('graphic', {
       currentPage.selectGroupMembers(groupId);
     },
 
-    // ========== 批量操作 ==========
+    // ========== Batch operations ==========
 
-    // 开始批量操作（支持嵌套）
+    // Begin batch operation (supports nesting)
     startBatchOperation(): void {
       this.batchDepth++;
       if (this.batchDepth === 1) {
@@ -384,19 +384,19 @@ export const useGraphicStore = defineStore('graphic', {
       }
     },
 
-    // 结束批量操作
+    // End batch operation
     endBatchOperation(): void {
       this.batchDepth = Math.max(0, this.batchDepth - 1);
       if (this.batchDepth === 0) {
         this.isBatchOperating = false;
-        // 批量操作结束，失效缓存触发重建
+        // Batch operation finished; invalidate cache to trigger rebuild
         graphicCache.invalidate();
       }
     },
 
     /**
-     * 批量更新包装器 - 将多个操作合并为单次响应式通知
-     * @param fn 要执行的函数，内部所有 store 变更会被延迟到 fn 完成后统一触发
+     * Batch-update wrapper - merges multiple operations into a single reactive notification
+     * @param fn The function to run; all store mutations inside are deferred until fn completes
      */
     async batchUpdate<T>(fn: () => T | Promise<T>): Promise<T> {
       this.startBatchOperation();
@@ -409,7 +409,7 @@ export const useGraphicStore = defineStore('graphic', {
     },
 
     /**
-     * 同步版本的 batchUpdate（适用于同步操作）
+     * Synchronous version of batchUpdate (for synchronous operations)
      */
     batchUpdateSync<T>(fn: () => T): T {
       this.startBatchOperation();
@@ -420,9 +420,9 @@ export const useGraphicStore = defineStore('graphic', {
       }
     },
 
-    // ========== 组合分组 ==========
+    // ========== Grouping ==========
 
-    // 组合分组 - 委托给 BasePage.groupGraphics() 以记录历史
+    // Grouping - delegate to BasePage.groupGraphics() to record history
     groupGraphics(ids: string[]) {
       const currentPage = this.getCurrentPage();
       if (currentPage) {
@@ -439,7 +439,7 @@ export const useGraphicStore = defineStore('graphic', {
       if (groupManager) {
         const isGroup = groupManager.isGroup(groupId);
         if (isGroup) {
-          // 使用 BasePage.ungroupGraphic() 以记录历史
+          // Use BasePage.ungroupGraphic() to record history
           currentPage.ungroupGraphic(groupId);
         } else {
           const graphics = currentPage.graphics;
@@ -452,7 +452,7 @@ export const useGraphicStore = defineStore('graphic', {
 
             const childIds = (groupGraphic.config?.groupMembers ||
                              groupGraphic.children || []) as string[];
-                            
+
             const childGraphics = childIds
               .map((childId) => graphics.find((g) => g.id === childId))
               .filter(Boolean) as IGraphic[];
@@ -465,26 +465,26 @@ export const useGraphicStore = defineStore('graphic', {
       }
     },
 
-    // ========== 项目管理 ==========
+    // ========== Project management ==========
 
-    // 项目管理 - 保存项目
+    // Project management - save project
     saveProject(name: string) {
       return stateService.saveProject(name);
     },
 
-    // 项目管理 - 加载项目
+    // Project management - load project
     loadProject(projectIndex: number) {
       return stateService.loadProject(projectIndex);
     },
 
-    // 项目管理 - 删除项目
+    // Project management - delete project
     deleteProject(projectIndex: number) {
       return stateService.deleteProject(projectIndex);
     },
 
-    // ========== 导出发布 ==========
+    // ========== Export & publish ==========
 
-    // 导出发布 - 导出为JSON
+    // Export & publish - export as JSON
     exportAsJSON() {
       const pageStore = usePageStore();
       const project = {
@@ -495,7 +495,7 @@ export const useGraphicStore = defineStore('graphic', {
       return JSON.stringify(project, null, 2);
     },
 
-    // 导出发布 - 导出为HTML
+    // Export & publish - export as HTML
     exportAsHTML() {
       const jsonData = this.exportAsJSON();
       const html = `
@@ -522,7 +522,7 @@ export const useGraphicStore = defineStore('graphic', {
   <canvas id="canvas"></canvas>
   <script>
     const projectData = JSON.parse('${jsonData.replace(/'/g, "\\'")}');
-    // 在这里添加渲染逻辑
+    // Add rendering logic here
 
   </script>
 </body>
@@ -532,7 +532,7 @@ export const useGraphicStore = defineStore('graphic', {
       return html;
     },
 
-    // 导出发布 - 下载文件
+    // Export & publish - download file
     downloadFile(content: string, filename: string, type: string) {
       const blob = new Blob([content], { type });
       const url = URL.createObjectURL(blob);
@@ -545,9 +545,9 @@ export const useGraphicStore = defineStore('graphic', {
       URL.revokeObjectURL(url);
     },
 
-    // ========== 协作功能 ==========
+    // ========== Collaboration ==========
 
-    // 协作功能 - 生成分享链接
+    // Collaboration - generate share link
     generateShareLink() {
       const projectData = this.exportAsJSON();
       const encodedData = btoa(unescape(encodeURIComponent(projectData)));
@@ -555,7 +555,7 @@ export const useGraphicStore = defineStore('graphic', {
       return shareUrl;
     },
 
-    // 协作功能 - 加载分享的项目
+    // Collaboration - load shared project
     loadSharedProject() {
       const urlParams = new URLSearchParams(window.location.search);
       const shareData = urlParams.get('share');
@@ -566,7 +566,7 @@ export const useGraphicStore = defineStore('graphic', {
         const project = JSON.parse(decodedData);
 
         const pageStore = usePageStore();
-        // 确保创建 BasePage 实例
+        // Ensure BasePage instances are created
         pageStore.pages = project.pages.map((pageData: any) => {
           const page = new BasePage();
           page.fromJSON(pageData);
@@ -582,14 +582,14 @@ export const useGraphicStore = defineStore('graphic', {
       }
     },
 
-    // ========== 性能优化 ==========
+    // ========== Performance optimization ==========
 
-    // 性能优化 - 批量操作
+    // Performance optimization - batch operation
     batchOperation(operations: Array<{ type: string; payload: any }>) {
       stateService.batchOperation(operations);
     },
 
-    // 性能优化 - 图形缓存
+    // Performance optimization - graphic cache
     enableGraphicCache() {
       this.useGraphicCache = true;
     },
@@ -598,15 +598,15 @@ export const useGraphicStore = defineStore('graphic', {
       this.useGraphicCache = false;
     },
 
-    // ========== 扩展集成 ==========
+    // ========== Extensibility ==========
 
-    // 扩展集成 - 导入外部组件
+    // Extensibility - import external component
     importExternalComponent(componentUrl: string) {
       return new Promise((resolve, reject) => {
         const script = document.createElement('script');
         script.src = componentUrl;
         script.onload = () => {
-          // 假设外部组件注册到全局变量
+          // Assume the external component is registered on a global variable
           const component = (window as any)['ExternalComponent'];
           if (component) {
             resolve(component);
@@ -621,7 +621,7 @@ export const useGraphicStore = defineStore('graphic', {
       });
     },
 
-    // 扩展集成 - 注册自定义图元
+    // Extensibility - register custom primitive
     registerCustomPrimitive(type: string, primitiveClass: any) {
       if (!(window as any)['customPrimitives']) {
         (window as any)['customPrimitives'] = {};
@@ -629,9 +629,9 @@ export const useGraphicStore = defineStore('graphic', {
       (window as any)['customPrimitives'][type] = primitiveClass;
     },
 
-    // ========== 高级功能 ==========
+    // ========== Advanced features ==========
 
-    // 高级功能 - 自动保存
+    // Advanced - auto save
     enableAutoSave(interval: number = 30000) {
       this.autoSaveInterval = setInterval(() => {
         this.saveProject('Auto Save');
@@ -645,7 +645,7 @@ export const useGraphicStore = defineStore('graphic', {
       }
     },
 
-    // 高级功能 - 画布快照
+    // Advanced - canvas snapshot
     takeCanvasSnapshot() {
       const canvas = document.getElementById('canvas') as HTMLCanvasElement;
       if (canvas) {
@@ -657,8 +657,8 @@ export const useGraphicStore = defineStore('graphic', {
 });
 
 /**
- * 便捷工具：获取当前页面实例
- * 替代图形操作中 38 处重复的 usePageStore().currentPage 模式
+ * Convenience helper: get the current page instance
+ * Replaces 38 repeated usePageStore().currentPage patterns in graphic operations
  */
 export function useCurrentPage() {
   return usePageStore().currentPage;

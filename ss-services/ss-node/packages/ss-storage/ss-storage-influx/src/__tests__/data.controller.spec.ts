@@ -578,7 +578,7 @@ describe('DataController', () => {
       });
     });
 
-    // ──────────── 窗口聚合参数（三期增强：08 #6）────────────
+    // ──────────── Window aggregation parameters (Phase 3 enhancement: 08 #6) ────────────
 
     it('TC-DDC-075: should pass valid aggregation parameters to queryTrendData', async () => {
       mockDataQueryService.queryTrendData.mockResolvedValue({ data: [], pagination: { total: 0 } });

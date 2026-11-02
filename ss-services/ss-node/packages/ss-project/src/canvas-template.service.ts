@@ -9,10 +9,10 @@ import * as path from 'path';
 import { PathResolverService } from '@ss-node/ss-core';
 
 /**
- * 画布页面模板管理服务
+ * Canvas-page template management service
  *
- * 管理 data/canvas-templates/pages/ 目录下的模板 JSON 文件，
- * 启动时自动 seed 7 套内置模板。
+ * Manages template JSON files under the data/canvas-templates/pages/ directory,
+ * automatically seeding 7 built-in templates at startup.
  */
 
 export interface CanvasTemplateData {
@@ -59,7 +59,7 @@ export interface TemplateDeleteResult {
   id: string;
 }
 
-/** 内置模板种子数据（首次启动时若目录为空则写入） */
+/** Built-in template seed data (written at first startup when the directory is empty) */
 const BUILTIN_SEED: CanvasTemplateData[] = [
   {
     id: 'builtin-blank', name: '空白页面', description: '全空白页面，1920×1080，适合从零开始设计',
@@ -178,7 +178,7 @@ export class CanvasTemplateService implements OnModuleInit {
     this.seedBuiltinTemplates();
   }
 
-  /** 获取模板目录路径（系统级或项目级） */
+  /** Get the template directory path (system-level or project-level) */
   getTemplatesDir(projectId?: string): string {
     const projectsDirRaw = this.configService.get<string>('PROJECTS_DIR') || './data/projects';
     const projectsDir = this.pathResolver.resolve(projectsDirRaw);
@@ -189,12 +189,12 @@ export class CanvasTemplateService implements OnModuleInit {
     return path.join(path.dirname(projectsDir), 'canvas-templates', 'pages');
   }
 
-  /** 获取单个模板文件路径 */
+  /** Get a single template's file path */
   private getTemplateFilePath(templateId: string, projectId?: string): string {
     return path.join(this.getTemplatesDir(projectId), `${templateId}.json`);
   }
 
-  /** Seed 内置模板（仅系统级） */
+  /** Seed built-in templates (system-level only) */
   private seedBuiltinTemplates(): void {
     const dir = this.getTemplatesDir();
     this.ensureDir(dir);
@@ -216,7 +216,7 @@ export class CanvasTemplateService implements OnModuleInit {
 
   // ─── CRUD ───
 
-  /** 列出所有模板，支持按 category 和 source 筛选 */
+  /** List all templates, supporting category and source filters */
   listTemplates(category?: string, source?: string, projectId?: string): TemplateListResult {
     const dir = this.getTemplatesDir(projectId);
     if (!fs.existsSync(dir)) {
@@ -244,7 +244,7 @@ export class CanvasTemplateService implements OnModuleInit {
     return { success: true, count: templates.length, templates };
   }
 
-  /** 读取单个模板 */
+  /** Read a single template */
   readTemplate(templateId: string, projectId?: string): TemplateReadResult {
     const filePath = this.getTemplateFilePath(templateId, projectId);
     if (!fs.existsSync(filePath)) {
@@ -261,7 +261,7 @@ export class CanvasTemplateService implements OnModuleInit {
     }
   }
 
-  /** 创建模板 */
+  /** Create a template */
   createTemplate(data: CanvasTemplateData, projectId?: string): TemplateWriteResult {
     const dir = this.getTemplatesDir(projectId);
     this.ensureDir(dir);
@@ -284,13 +284,13 @@ export class CanvasTemplateService implements OnModuleInit {
     return { success: true, data: template };
   }
 
-  /** 更新模板（系统级禁止修改内置模板，项目级无限制） */
+  /** Update a template (system-level forbids modifying built-ins; project-level unrestricted) */
   updateTemplate(templateId: string, updates: Partial<CanvasTemplateData>, projectId?: string): TemplateWriteResult {
     const existing = this.readTemplate(templateId, projectId);
     if (!existing.success || !existing.data) {
       throw new Error(`模板不存在: ${templateId}`);
     }
-    // 系统级内置模板禁止修改
+    // System-level built-in templates cannot be modified
     if (!projectId && existing.data.source === 'builtin') {
       throw new Error(`不允许修改内置模板: ${templateId}`);
     }
@@ -308,7 +308,7 @@ export class CanvasTemplateService implements OnModuleInit {
     return { success: true, data: merged };
   }
 
-  /** 删除模板（系统级禁止删除内置模板） */
+  /** Delete a template (system-level forbids deleting built-ins) */
   deleteTemplate(templateId: string, projectId?: string): TemplateDeleteResult {
     const existing = this.readTemplate(templateId, projectId);
     if (!existing.success || !existing.data) {
@@ -324,7 +324,7 @@ export class CanvasTemplateService implements OnModuleInit {
     return { success: true, id: templateId };
   }
 
-  /** 导出模板 JSON 字符串 */
+  /** Export the template as a JSON string */
   exportTemplate(templateId: string, projectId?: string): string {
     const result = this.readTemplate(templateId, projectId);
     if (!result.success || !result.data) {
@@ -333,7 +333,7 @@ export class CanvasTemplateService implements OnModuleInit {
     return JSON.stringify(result.data, null, 2);
   }
 
-  /** 将项目级模板提升为系统级模板 */
+  /** Promote a project-level template to a system-level template */
   promoteToSystem(projectId: string, templateId: string): TemplateWriteResult {
     const existing = this.readTemplate(templateId, projectId);
     if (!existing.success || !existing.data) {
@@ -345,11 +345,11 @@ export class CanvasTemplateService implements OnModuleInit {
     const targetDir = this.getTemplatesDir();
     this.ensureDir(targetDir);
 
-    // 生成新的系统级 ID（避免与现有系统模板冲突）
+    // Generate a new system-level ID (avoiding conflicts with existing system templates)
     const systemId = `tpl-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
     const targetFile = this.getTemplateFilePath(systemId);
 
-    // 清理项目级字段后复制到系统目录
+    // Clean project-level fields, then copy to the system directory
     const systemTemplate: CanvasTemplateData = {
       ...existing.data,
       id: systemId,
@@ -363,7 +363,7 @@ export class CanvasTemplateService implements OnModuleInit {
     return { success: true, data: systemTemplate };
   }
 
-  /** 导入模板 JSON */
+  /** Import a template JSON */
   importTemplate(json: string, projectId?: string): TemplateWriteResult {
     let raw: CanvasTemplateData;
     try {

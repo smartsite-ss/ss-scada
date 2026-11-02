@@ -3,15 +3,15 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 简易 Cookie 工具
- * 用于存储非敏感的客户端配置（如标签页状态）
+ * Simple Cookie utility
+ * Used to store non-sensitive client-side configuration (e.g. tab state)
  */
 
 const COOKIE_MAX_AGE_DAYS = 365;
 const COOKIE_PATH = '/';
 
 /**
- * 设置 cookie
+ * Set a cookie
  */
 export function setCookie(name: string, value: string, maxAgeDays: number = COOKIE_MAX_AGE_DAYS): void {
   const maxAge = maxAgeDays * 24 * 60 * 60;
@@ -19,7 +19,7 @@ export function setCookie(name: string, value: string, maxAgeDays: number = COOK
 }
 
 /**
- * 获取 cookie 值，返回 null 表示不存在
+ * Get a cookie value, returns null if it does not exist
  */
 export function getCookie(name: string): string | null {
   const prefix = `${encodeURIComponent(name)}=`;
@@ -34,21 +34,21 @@ export function getCookie(name: string): string | null {
 }
 
 /**
- * 删除 cookie
+ * Delete a cookie
  */
 export function deleteCookie(name: string): void {
   document.cookie = `${encodeURIComponent(name)}=;path=${COOKIE_PATH};max-age=0;SameSite=Lax`;
 }
 
 /**
- * 设置 JSON cookie
+ * Set a JSON cookie
  */
 export function setJsonCookie<T>(name: string, value: T, maxAgeDays?: number): void {
   setCookie(name, JSON.stringify(value), maxAgeDays);
 }
 
 /**
- * 获取 JSON cookie
+ * Get a JSON cookie
  */
 export function getJsonCookie<T>(name: string): T | null {
   const raw = getCookie(name);

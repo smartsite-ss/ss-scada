@@ -35,7 +35,7 @@ export class ConditionEvaluator {
           return value <= this.parseNumeric(conditionValue);
 
         case AlarmCondition.EQ:
-          // value == threshold (浮点容差)
+          // value == threshold (float tolerance)
           return Math.abs(value - this.parseNumeric(conditionValue)) < 0.001;
 
         case AlarmCondition.NEQ:
@@ -55,16 +55,16 @@ export class ConditionEvaluator {
         }
 
         case AlarmCondition.CHANGED: {
-          // 值发生变化时触发：需要 lastValue 进行比较
+          // Trigger when the value changes: needs lastValue for comparison
           if (lastValue === null || lastValue === undefined) {
-            // 首次采集，无历史值，不触发
+            // First collection, no history value, do not trigger
             return false;
           }
           return Math.abs(value - lastValue) >= 0.001;
         }
 
         case AlarmCondition.RATE: {
-          // 变化率超过阈值时触发：rate = (value - lastValue) / timeDelta(seconds)
+          // Trigger when the rate of change exceeds the threshold: rate = (value - lastValue) / timeDelta(seconds)
           if (lastValue === null || lastValue === undefined) {
             return false;
           }

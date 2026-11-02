@@ -3,9 +3,9 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * KonvaRenderer 多层渲染测试（需浏览器环境）
+ * KonvaRenderer multi-layer rendering test (requires a browser environment)
  * 
- * 运行方式: pnpm run dev，在浏览器控制台查看性能输出
+ * How to run: pnpm run dev, then check the performance output in the browser console
  */
 
 import { describe, it, expect, vi } from 'vitest';

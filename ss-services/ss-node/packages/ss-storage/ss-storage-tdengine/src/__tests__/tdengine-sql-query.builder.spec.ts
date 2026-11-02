@@ -11,7 +11,7 @@ describe('TdengineSqlQueryBuilder', () => {
     builder = new TdengineSqlQueryBuilder();
   });
 
-  // ──────────── 原始点查询 ────────────
+  // ──────────── Raw point queries ────────────
 
   describe('buildRawQuery', () => {
     it('TC-TDE-QB-001: should build raw query with ts column and tag_values supertable', () => {
@@ -43,7 +43,7 @@ describe('TdengineSqlQueryBuilder', () => {
     });
   });
 
-  // ──────────── 聚合查询 ────────────
+  // ──────────── Aggregate queries ────────────
 
   describe('buildAggregationQuery', () => {
     it('TC-TDE-QB-010: should build scalar aggregation (no interval) grouped by tagId', () => {
@@ -95,7 +95,7 @@ describe('TdengineSqlQueryBuilder', () => {
     });
   });
 
-  // ──────────── 注入防护 ────────────
+  // ──────────── Injection protection ────────────
 
   describe('injection protection', () => {
     it('TC-TDE-QB-020: should escape single quotes in tagId (a\'b";DROP)', () => {

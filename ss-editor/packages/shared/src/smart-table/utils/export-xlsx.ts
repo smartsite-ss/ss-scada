@@ -11,7 +11,7 @@ export function resolveCellValue(col: SmartTableColumn, row: any): string {
   return applyFormatter(value, col.formatter, col.render as any, row, -1);
 }
 
-/** xlsx 动态导入，仅在导出按钮点击时加载，减少首屏体积 ~400KB */
+/** Lazily import xlsx, loaded only when the export button is clicked, reducing initial bundle by ~400KB */
 let xlsxModule: typeof import('xlsx') | null = null;
 
 async function getXlsx(): Promise<typeof import('xlsx')> {

@@ -22,7 +22,7 @@ import { ScriptTemplateService } from './script-template.service';
 import { EventBusModule, CacheModule } from '@ss-node/ss-core';
 import { DatatagModule } from '@ss-node/ss-datatag';
 import { AlarmModule } from '@ss-node/ss-alarm';
-// DataModule（@ss-node/ss-storage-influx）是 @Global，DataQueryService 全局可注入，无需显式导入
+// DataModule (@ss-node/ss-storage-influx) is @Global; DataQueryService is injectable everywhere, no explicit import needed
 
 @Module({
   imports: [

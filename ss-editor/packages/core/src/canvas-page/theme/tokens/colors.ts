@@ -2,7 +2,7 @@
 // https://smartsite.top/
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
-// 颜色设计令牌
+// Color design tokens
 
 export const colors = {
   primary: {

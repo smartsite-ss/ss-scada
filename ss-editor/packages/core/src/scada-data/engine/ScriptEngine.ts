@@ -23,7 +23,7 @@ export class ScriptEngine {
   private eventBindings: Map<string, EventBinding> = new Map();
   private logs: ScriptLog[] = [];
   private eventBus: any = null;
-  /** 图元变更处理器：运行态下由调用方注入，用于将脚本中的图元操作直接应用到渲染层 */
+  /** Graphic change handler: injected by the caller at runtime to apply script graphic operations directly to the render layer */
   private graphicChangeHandler: ((graphicId: string, props: Record<string, any>) => void) | null = null;
 
   static getInstance(): ScriptEngine {
@@ -38,16 +38,16 @@ export class ScriptEngine {
   }
 
   /**
-   * 设置图元变更处理器
-   * 运行态下由调用方（如 PageBrowser）注入，用于将脚本中的图元操作
-   * （moveGraphic / setGraphicProps / showGraphic / hideGraphic 等）
-   * 直接应用到渲染层，无需通过 apiCalls 返回值间接处理。
+   * Set the graphic change handler
+   * Injected by the caller at runtime (e.g. PageBrowser) to apply script graphic operations
+   * (moveGraphic / setGraphicProps / showGraphic / hideGraphic etc.) directly to the render layer,
+   * without indirectly handling them through apiCalls return values.
    */
   setGraphicChangeHandler(handler: ((graphicId: string, props: Record<string, any>) => void) | null): void {
     this.graphicChangeHandler = handler;
   }
 
-  // ─── 脚本注册管理 ───
+  // ─── Script registration management ───
 
   registerScript(definition: ScriptDefinition): void {
     this.scripts.set(definition.id, definition);
@@ -59,7 +59,7 @@ export class ScriptEngine {
   unregisterScript(scriptId: string): void {
     this.scripts.delete(scriptId);
     this.executionHistory.delete(scriptId);
-    // 清理事件绑定
+    // Clean up event bindings
     for (const [key, binding] of this.eventBindings) {
       if (binding.scriptId === scriptId) {
         binding.unsubscribe();
@@ -84,7 +84,7 @@ export class ScriptEngine {
     return this.logs;
   }
 
-  // ─── 脚本执行 ───
+  // ─── Script execution ───
 
   executeScript(script: string, context: ScriptContext): ScriptResult {
     const startTime = performance.now();
@@ -93,7 +93,7 @@ export class ScriptEngine {
     const api = ClientScriptAPIFactory.create(context, {
       onGraphicChange: (graphicId, props) => {
         apiCalls.push({ method: 'setGraphicProps', args: [graphicId, props] });
-        // 运行态下直接通过 handler 应用到渲染层
+        // At runtime, apply directly to the render layer via the handler
         this.graphicChangeHandler?.(graphicId, props);
       },
       onTagWrite: (tagId, value) => apiCalls.push({ method: 'writeTag', args: [tagId, value] }),
@@ -131,7 +131,7 @@ export class ScriptEngine {
     }
   }
 
-  /** 异步执行脚本（支持 timeout 和 retry） */
+  /** Execute a script asynchronously (supports timeout and retry) */
   async executeAsync(scriptId: string, triggerType: ScriptTrigger = 'manual'): Promise<ScriptResult> {
     const definition = this.scripts.get(scriptId);
     if (!definition) {
@@ -216,12 +216,12 @@ export class ScriptEngine {
     });
   }
 
-  /** 编辑态测试执行（不记录历史） */
+  /** Edit-mode test execution (no history recording) */
   testExecute(script: string, context: ScriptContext): ScriptResult {
     return this.executeScript(script, context);
   }
 
-  /** 验证脚本语法是否合法 */
+  /** Validate script syntax */
   validateScript(script: string): { valid: boolean; error?: string } {
     try {
       new Function('"use strict";' + script);
@@ -232,21 +232,21 @@ export class ScriptEngine {
   }
 
   /**
-   * 执行过滤脚本（统一入口，替代 DataPipeline / DataDriverEngine 中散落的 new Function）。
+   * Execute a filter script (unified entry, replacing the scattered new Function in DataPipeline / DataDriverEngine).
    *
-   * 沙箱策略：使用 Proxy 拦截 BLOCKED_GLOBALS（window/document/fetch/eval 等），
-   * 步数计数器防死循环，仅暴露 ALLOWED_GLOBALS（Math/Date/JSON 等纯函数）。
+   * Sandbox strategy: uses a Proxy to intercept BLOCKED_GLOBALS (window/document/fetch/eval etc.),
+   * a step counter to prevent infinite loops, and exposes only ALLOWED_GLOBALS (Math/Date/JSON and other pure functions).
    *
-   * 脚本参数兼容：
-   * - `value` / `data` 均指向同一数据（filter 脚本惯用 `value`，GraphicData 脚本惯用 `data`）
-   * - `res` 为上下文对象（tagId/tagName/quality/dataType/unit 等）
-   * - `api` 为内置 helpers（clamp/mapRange/colorForValue/formatNumber 等）
+   * Script parameter compatibility:
+   * - `value` / `data` both point to the same data (filter scripts conventionally use `value`, GraphicData scripts use `data`)
+   * - `res` is the context object (tagId/tagName/quality/dataType/unit etc.)
+   * - `api` is the built-in helpers (clamp/mapRange/colorForValue/formatNumber etc.)
    *
-   * @param script 用户编写的过滤脚本
-   * @param data 原始数据（fullDataSet ?? rawValue）
-   * @param res 上下文对象
-   * @returns 脚本返回值
-   * @throws 脚本执行错误（由调用方按自身错误策略处理）
+   * @param script the user-written filter script
+   * @param data raw data (fullDataSet ?? rawValue)
+   * @param res context object
+   * @returns the script's return value
+   * @throws script execution error (handled by the caller's own error strategy)
    */
   executeFilterScript(
     script: string,
@@ -254,26 +254,26 @@ export class ScriptEngine {
     res: Record<string, unknown>,
   ): unknown {
     try {
-      // 同时以 value / data 暴露同一数据，兼容两种脚本写法
+      // Expose the same data as both value / data, compatible with both script styles
       const sandbox = this._createLightweightSandbox({ value: data, data, res });
       const fn = new Function('value', 'data', 'res', 'api', '"use strict";\n' + script);
       return fn.call(sandbox, data, data, res, sandbox.api);
     } catch (err: unknown) {
-      // 记录日志后重新抛出，让调用方按自身错误策略处理（DataPipeline.executeChain 的 stop/skip/defaultValue 策略）
+      // Log then re-throw, letting the caller handle it per its own error strategy (DataPipeline.executeChain's stop/skip/defaultValue strategies)
       console.error('[ScriptEngine] executeFilterScript error:', err);
       throw err;
     }
   }
 
   /**
-   * 执行驱动脚本（统一入口，替代 DataDriverEngine 中的 new Function）。
+   * Execute a driver script (unified entry, replacing new Function in DataDriverEngine).
    *
-   * @param script 用户编写的驱动脚本，签名 (data, allData, graphic, api) => void
-   * @param data 当前图元数据
-   * @param allData 全部数据点
-   * @param graphic 图元上下文
-   * @param api 驱动脚本 API（setText/setBackground/setVisible 等）
-   * @returns 脚本是否执行成功
+   * @param script the user-written driver script, signature (data, allData, graphic, api) => void
+   * @param data the current graphic data
+   * @param allData all data points
+   * @param graphic the graphic context
+   * @param api driver script API (setText/setBackground/setVisible etc.)
+   * @returns whether the script executed successfully
    */
   executeDriverScript(
     script: string,
@@ -283,8 +283,8 @@ export class ScriptEngine {
     api: Record<string, unknown>,
   ): boolean {
     try {
-      // 将调用方传入的 api（setText/setBackground 等图元操作）合并到 sandbox.api，
-      // 使脚本内 api.setText(...) 能正确路由到调用方实现，修复原 {} as DriverScriptAPI 导致副作用失效
+      // Merge the caller-provided api (setText/setBackground etc. graphic operations) into sandbox.api,
+      // so api.setText(...) in scripts routes correctly to the caller's implementation; fixes the original {} as DriverScriptAPI making side effects fail
       const sandbox = this._createLightweightSandbox({ data, allData, graphic }, api);
       const fn = new Function('data', 'allData', 'graphic', 'api', '"use strict";\n' + script);
       fn.call(sandbox, data, allData, graphic, sandbox.api);
@@ -296,11 +296,11 @@ export class ScriptEngine {
   }
 
   /**
-   * 求值表达式（统一入口，替代 BindingManager / ExpressionDataSource 中的 new Function）。
+   * Evaluate an expression (unified entry, replacing new Function in BindingManager / ExpressionDataSource).
    *
-   * @param expression 表达式字符串，如 "val * 1.8 + 32"
-   * @param val 输入值
-   * @returns 求值结果，失败时返回原值
+   * @param expression expression string, e.g. "val * 1.8 + 32"
+   * @param val input value
+   * @returns the evaluation result; returns the original value on failure
    */
   evaluateExpression(expression: string, val: unknown): unknown {
     try {
@@ -314,13 +314,13 @@ export class ScriptEngine {
   }
 
   /**
-   * 创建轻量级沙箱（无 ScriptAPI 依赖），用于 filter/driver/expression 脚本执行。
-   * 复用 createSandbox 的 Proxy + BLOCKED_GLOBALS + 步数计数器机制。
+   * Create a lightweight sandbox (no ScriptAPI dependency) for filter/driver/expression script execution.
+   * Reuses createSandbox's Proxy + BLOCKED_GLOBALS + step-counter mechanism.
    *
-   * @param vars 脚本可见变量
-   * @param apiOverride 调用方传入的 api（如 DriverScriptAPI 的 setText/setBackground 等），
-   *                    会与内置 helpers（clamp/mapRange/colorForValue 等）合并；
-   *                    传入的同名方法会覆盖内置 helper。
+   * @param vars variables visible to the script
+   * @param apiOverride caller-provided api (e.g. DriverScriptAPI's setText/setBackground etc.),
+   *                    merged with the built-in helpers (clamp/mapRange/colorForValue etc.);
+   *                    same-named methods provided override the built-in helpers.
    */
   private _createLightweightSandbox(
     vars: Record<string, unknown>,
@@ -361,7 +361,7 @@ export class ScriptEngine {
     }) as any;
   }
 
-  /** 构建脚本工具函数 API（clamp/mapRange/colorForValue 等），单一来源消除重复 */
+  /** Build the script utility API (clamp/mapRange/colorForValue etc.), a single source eliminating duplication */
   private _buildScriptHelpers(): Record<string, unknown> {
     return {
       Math,
@@ -386,7 +386,7 @@ export class ScriptEngine {
     };
   }
 
-  /** 构建沙箱 console（日志收集，不污染全局 console） */
+  /** Build the sandbox console (log collection, does not pollute the global console) */
   private _buildSandboxConsole(): { log: (...args: unknown[]) => void; warn: (...args: unknown[]) => void; error: (...args: unknown[]) => void } {
     return {
       log: (...args: unknown[]) => console.log('[sandbox]', ...args),
@@ -395,7 +395,7 @@ export class ScriptEngine {
     };
   }
 
-  // ─── 沙箱创建 ───
+  // ─── Sandbox creation ───
 
   private createSandbox(context: ScriptContext, api: ScriptAPI): SandboxEnv {
     const sandboxConsole = {
@@ -416,13 +416,13 @@ export class ScriptEngine {
       console: sandboxConsole,
     };
 
-    // 步数计数器：防止无限循环导致浏览器卡死
+    // Step counter: prevents infinite loops from freezing the browser
     let stepCount = 0;
     const MAX_STEPS = 50000;
 
     return new Proxy(env, {
       get(target, prop) {
-        // 每访问一个属性计为一步，超过阈值抛出异常
+        // Each property access counts as one step; throw when the threshold is exceeded
         stepCount++;
         if (stepCount > MAX_STEPS) {
           throw new Error(`脚本执行超过最大步数限制 (${MAX_STEPS})，可能存在无限循环`);
@@ -449,7 +449,7 @@ export class ScriptEngine {
     }) as unknown as SandboxEnv;
   }
 
-  // ─── 事件绑定 ───
+  // ─── Event binding ───
 
   bindToEvent(scriptId: string, eventFullName: string, condition?: string): EventBinding {
     const key = `${scriptId}:${eventFullName}:${condition ?? ''}`;
@@ -490,7 +490,7 @@ export class ScriptEngine {
     }
   }
 
-  // ─── 日志记录 ───
+  // ─── Logging ───
 
   private recordLog(
     definition: ScriptDefinition,
@@ -511,13 +511,13 @@ export class ScriptEngine {
       apiCalls: result.apiCalls ?? [],
     });
 
-    // 保持日志上限 1000 条
+    // Keep the log cap at 1000 entries
     if (this.logs.length > 1000) {
       this.logs = this.logs.slice(-1000);
     }
   }
 
-  // ─── 清理 ───
+  // ─── Cleanup ───
 
   destroy(): void {
     for (const binding of this.eventBindings.values()) {

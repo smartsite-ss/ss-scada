@@ -2,7 +2,7 @@
 // https://smartsite.top/
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
-// 路由配置（不含组件，组件由宿主应用注入）
+// Router configuration (without components; components are injected by the host app)
 export const systemRouteConfigs = [
   {
     path: '/login',
@@ -64,7 +64,7 @@ export const systemRouteConfigs = [
   },
 ] as import('vue-router').RouteRecordRaw[];
 
-// Token 检查工具函数（内联实现，避免导入依赖）
+// Token check utility (inlined to avoid import dependencies)
 export function checkAuthToken(): string | null {
   if (typeof window === 'undefined') return null;
   return localStorage.getItem('auth_token');

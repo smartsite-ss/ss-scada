@@ -77,7 +77,7 @@ export class LayerManager {
                 pageId,
                 graphic,
             });
-            // 同时触发被交换图元的事件，确保 UI 同步更新
+            // Also trigger the swapped graphic's event to ensure UI stays in sync
             eventBus.emit(Events.GRAPHIC_UPDATED, {
                 graphicId: nextGraphic.id,
                 properties: { zIndex: tempZIndex },
@@ -121,7 +121,7 @@ export class LayerManager {
                 pageId,
                 graphic,
             });
-            // 同时触发被交换图元的事件，确保 UI 同步更新
+            // Also trigger the swapped graphic's event to ensure UI stays in sync
             eventBus.emit(Events.GRAPHIC_UPDATED, {
                 graphicId: prevGraphic.id,
                 properties: { zIndex: tempZIndex },

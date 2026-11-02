@@ -7,15 +7,15 @@ import loader from '@monaco-editor/loader';
 import type { ScriptEditorMode } from '../ScriptEditor.types';
 import { themeManager } from '@scada-editor/core';
 
-// 配置 Monaco 使用稳定版本，避免最新版可能的性能回归
-// 0.52.0 是 AMD 构建废弃前的最后一个有注释的稳定版本
+// Configure Monaco to use a stable version, avoiding possible performance regressions in the latest release
+// 0.52.0 is the last stable annotated release before AMD builds were deprecated
 loader.config({
   paths: {
     vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.52.0/min/vs',
   },
 });
 
-/** 根据应用主题名判断属于深色还是浅色主题 */
+/** Determine whether an app theme name is dark or light */
 function isDarkTheme(themeName: string): boolean {
   const darkThemes = new Set(['dark', 'techDarkBlue', 'blueDark', 'greenTech', 'highContrast']);
   return darkThemes.has(themeName);
@@ -30,13 +30,13 @@ export function useMonacoSetup(
     editorOverrides?: Record<string, any>;
   },
 ) {
-  // 使用 shallowRef 存储 Monaco 实例，防止 Vue3 深度响应式代理
-  // Monaco editor / monaco 对象是巨大的对象树，若被 Vue3 的 ref() 深度
-  // 包装为 reactive Proxy，会导致：
-  //   1. 初始化时遍历整个对象树创建 Proxy → 主线程长时间阻塞
-  //   2. 每次属性访问都经过 Proxy getter 触发 track() → 运行时性能急剧下降
-  //   3. onDidChangeModelContent 回调中调用 getValue()/setModelMarkers()
-  //      均通过 Proxy 层层传递，叠加后导致浏览器 tab 卡死
+  // Store the Monaco instance in a shallowRef to prevent Vue3 deep reactive proxying
+  // The Monaco editor / monaco objects are huge object trees; if wrapped by Vue3 ref() into
+  // a reactive Proxy, it causes:
+  //   1. Traversing the entire object tree to create Proxies at init → long main-thread blocking
+  //   2. Every property access goes through Proxy getters triggering track() → severe runtime slowdown
+  //   3. getValue()/setModelMarkers() calls inside the onDidChangeModelContent callback
+  //      also pass through the Proxy layer, and the compounding effect can freeze the browser tab
   const editorRef = shallowRef<any>(null);
   const monacoRef = shallowRef<any>(null);
   let disposeEditor: (() => void) | null = null;
@@ -170,7 +170,7 @@ export function useMonacoSetup(
       },
     });
 
-    // 根据当前应用主题选择 Monaco 主题
+    // Choose the Monaco theme based on the current app theme
     const currentTheme = themeManager.getCurrentThemeName();
     const monacoTheme = isDarkTheme(currentTheme) ? 'scada-dark' : 'scada-light';
 
@@ -197,7 +197,7 @@ export function useMonacoSetup(
       ...options?.editorOverrides,
     });
 
-    // 订阅应用主题变化，同步更新 Monaco 编辑器主题
+    // Subscribe to app theme changes and keep the Monaco editor theme in sync
     disposeTheme = themeManager.subscribe((_theme) => {
       const newMonacoTheme = isDarkTheme(themeManager.getCurrentThemeName())
         ? 'scada-dark'
@@ -209,14 +209,14 @@ export function useMonacoSetup(
       value.value = editor.getValue();
     });
 
-    // ── 复制功能支持 ──
-    // Monaco Editor 的 clipboard 模块在某些 CDN 环境或浏览器中可能无法正常工作，
-    // 导致 Ctrl+C / 右键复制不可用。通过以下三层机制确保复制功能可用：
-    //   1. 原生 copy 事件监听：捕获浏览器 copy 事件，写入选中文本
-    //   2. 右键菜单 action：提供可靠的右键复制入口
-    //   3. execCommand 回退：当 Clipboard API 不可用时的降级方案
+    // ── Copy support ──
+    // The Monaco Editor clipboard module may not work in some CDN environments or browsers,
+    // breaking Ctrl+C / right-click copy. Three layers of mechanisms ensure copy works:
+    //   1. Native copy event listener: capture the browser copy event and write the selected text
+    //   2. Context-menu action: provide a reliable right-click copy entry
+    //   3. execCommand fallback: degraded solution when the Clipboard API is unavailable
 
-    // 监听浏览器原生 copy 事件，将 Monaco 选中文本写入剪贴板
+    // Listen to the native browser copy event and write the Monaco selected text to the clipboard
     const copyHandler = (e: ClipboardEvent) => {
       const selection = editor.getSelection();
       if (selection && !selection.isEmpty()) {
@@ -229,7 +229,7 @@ export function useMonacoSetup(
     };
     containerRef.value.addEventListener('copy', copyHandler);
 
-    // 右键菜单复制命令
+    // Context-menu copy command
     editor.addAction({
       id: 'scada-copy',
       label: 'Copy',

@@ -62,7 +62,7 @@ export class ResourceMonitorService {
     this.startMonitoring();
   }
 
-  /** 启动监控（每分钟采集） */
+  /** Start monitoring (samples every minute) */
   startMonitoring(): void {
     if (this.intervalId) return;
     this.intervalId = setInterval(() => {
@@ -73,7 +73,7 @@ export class ResourceMonitorService {
     this.logger.log('Resource monitoring started');
   }
 
-  /** 停止监控 */
+  /** Stop monitoring */
   stopMonitoring(): void {
     if (this.intervalId) {
       clearInterval(this.intervalId);
@@ -81,7 +81,7 @@ export class ResourceMonitorService {
     }
   }
 
-  /** 采集快照 */
+  /** Collect a snapshot */
   async collectSnapshot(): Promise<ResourceSnapshot> {
     const snapshot = await this.gatherMetrics();
     this.history.push(snapshot);
@@ -92,12 +92,12 @@ export class ResourceMonitorService {
     return snapshot;
   }
 
-  /** 获取最新快照 */
+  /** Get the latest snapshot */
   getLatest(): ResourceSnapshot | null {
     return this.history.length > 0 ? this.history[this.history.length - 1] : null;
   }
 
-  /** 获取历史数据 */
+  /** Get historical data */
   getHistory(hours: number = 24): ResourceSnapshot[] {
     const cutoff = Date.now() - hours * 60 * 60 * 1000;
     return this.history.filter((s) => s.timestamp.getTime() >= cutoff);
@@ -152,7 +152,7 @@ export class ResourceMonitorService {
     usagePercent: number;
   }> {
     try {
-      // 使用项目根目录而非 process.cwd()，与 health.service.ts 保持一致
+      // Use the project root instead of process.cwd(), consistent with health.service.ts
       const diskPath = this.getProjectRoot();
       if (fs.existsSync(diskPath)) {
         // Fallback: estimate disk usage
@@ -170,13 +170,13 @@ export class ResourceMonitorService {
   }
 
   /**
-   * 获取 ss-services/ss-node 项目根目录的绝对路径
+   * Get the absolute path of the ss-services/ss-node project root
    *
-   * 相对路径基准：
-   * - dev 模式：__dirname 上溯 4 级 = ss-services/ss-node（本文件位于 packages/ss-system/dist/monitor/）
-   * - 生产模式：process.cwd() = ss-run/ss/services/ss-node
+   * Relative-path baselines:
+   * - dev mode: go up 4 levels from __dirname = ss-services/ss-node (this file lives in packages/ss-system/dist/monitor/)
+   * - production mode: process.cwd() = ss-run/ss/services/ss-node
    *
-   * 与 app.module.ts getDatabaseConfig()、backup.service.ts getProjectRoot() 保持一致。
+   * Kept consistent with app.module.ts getDatabaseConfig() and backup.service.ts getProjectRoot().
    */
   private getProjectRoot(): string {
     return this.pathResolver.getProjectRoot();

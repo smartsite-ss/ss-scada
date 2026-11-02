@@ -5,13 +5,13 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { TagDataType } from '@ss-node/ss-datatag';
 
-/** 验证错误级别 */
+/** Validation error severity */
 export enum ValidationSeverity {
   ERROR = 'error',
   WARNING = 'warning',
 }
 
-/** 单条验证结果 */
+/** A single validation result */
 export interface ValidationIssue {
   severity: ValidationSeverity;
   field: string;
@@ -20,7 +20,7 @@ export interface ValidationIssue {
   tagName?: string;
 }
 
-/** 总体验证结果 */
+/** Overall validation result */
 export interface ValidationResult {
   valid: boolean;
   errors: ValidationIssue[];
@@ -33,13 +33,13 @@ export interface ValidationResult {
   };
 }
 
-/** 允许的 dataType 值集合 */
+/** Set of allowed dataType values */
 const ALLOWED_DATA_TYPES = new Set<string>(Object.values(TagDataType).map((v) => String(v)));
 
-/** 必填字段 */
+/** Required fields */
 const REQUIRED_FIELDS = ['name', 'address', 'dataType'] as const;
 
-/** 允许的字段名集合（用于检测未知字段） */
+/** Set of allowed field names (for detecting unknown fields) */
 const ALLOWED_FIELDS = new Set([
   'name',
   'address',
@@ -87,7 +87,7 @@ export class ImportValidatorService {
   private readonly logger = new Logger(ImportValidatorService.name);
 
   /**
-   * 验证导入的标签数据
+   * Validate imported tag data
    */
   validate(tags: Array<Record<string, any>>): ValidationResult {
     const errors: ValidationIssue[] = [];
@@ -110,7 +110,7 @@ export class ImportValidatorService {
       const rowIndex = tag.rowIndex ?? i + 1;
       const tagName = tag.name;
 
-      // 1. 必填字段检查
+      // 1. Required-field check
       for (const field of REQUIRED_FIELDS) {
         const value = tag[field];
         if (value === undefined || value === null || String(value).trim() === '') {
@@ -124,7 +124,7 @@ export class ImportValidatorService {
         }
       }
 
-      // 如果必填字段缺失，跳过后续对此行数据的验证
+      // If a required field is missing, skip the remaining validations for this row
       if (
         !tag.name ||
         String(tag.name).trim() === '' ||
@@ -134,7 +134,7 @@ export class ImportValidatorService {
         continue;
       }
 
-      // 2. dataType 有效性检查
+      // 2. dataType validity check
       const dataType = String(tag.dataType).trim().toLowerCase();
       if (!ALLOWED_DATA_TYPES.has(dataType)) {
         errors.push({
@@ -146,7 +146,7 @@ export class ImportValidatorService {
         });
       }
 
-      // 3. 重复名称检查
+      // 3. Duplicate name check
       if (tagNames.has(tag.name)) {
         errors.push({
           severity: ValidationSeverity.ERROR,
@@ -159,7 +159,7 @@ export class ImportValidatorService {
         tagNames.set(tag.name, rowIndex);
       }
 
-      // 4. 重复地址检查（仅当 address 非空时）
+      // 4. Duplicate address check (only when address is non-empty)
       if (tag.address && String(tag.address).trim() !== '') {
         if (tagAddresses.has(tag.address)) {
           warnings.push({
@@ -174,7 +174,7 @@ export class ImportValidatorService {
         }
       }
 
-      // 5. 值范围验证
+      // 5. Value-range validation
       const minValue =
         tag.minValue !== undefined && tag.minValue !== null ? Number(tag.minValue) : undefined;
       const maxValue =
@@ -216,7 +216,7 @@ export class ImportValidatorService {
         });
       }
 
-      // 6. scanRate 有效性检查
+      // 6. scanRate validity check
       if (tag.scanRate !== undefined && tag.scanRate !== null) {
         const scanRate = Number(tag.scanRate);
         if (isNaN(scanRate) || scanRate <= 0) {
@@ -230,7 +230,7 @@ export class ImportValidatorService {
         }
       }
 
-      // 7. name 长度检查
+      // 7. name length check
       if (tag.name.length > 128) {
         warnings.push({
           severity: ValidationSeverity.WARNING,
@@ -241,10 +241,10 @@ export class ImportValidatorService {
         });
       }
 
-      // 8. 未知字段警告
+      // 8. Unknown-field warning
       for (const key of Object.keys(tag)) {
         if (!ALLOWED_FIELDS.has(key) && typeof tag[key] !== 'undefined') {
-          // 跳过 rowIndex 和内部字段
+          // Skip rowIndex and internal fields
           warnings.push({
             severity: ValidationSeverity.WARNING,
             field: key,
@@ -260,7 +260,7 @@ export class ImportValidatorService {
   }
 
   /**
-   * 构建验证结果
+   * Build the validation result
    */
   private buildResult(
     total: number,

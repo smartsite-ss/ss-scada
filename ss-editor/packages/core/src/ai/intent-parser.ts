@@ -3,21 +3,21 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * Intent Parser — P1-T03 前端意图识别器
+ * Intent Parser — P1-T03 frontend intent recognizer
  *
- * 基于关键词 + 规则的轻量级意图分类器（< 5KB）。
- * 简单意图 → 前端 SingleStepAgent 直接执行；
- * 复杂意图 → 发送到后端 ReAct 编排器 (/api/v1/ai/agent/execute)。
+ * Lightweight keyword + rule based intent classifier (< 5KB).
+ * Simple intents → executed directly by the frontend SingleStepAgent;
+ * complex intents → sent to the backend ReAct orchestrator (/api/v1/ai/agent/execute).
  *
- * 关联决策：D-005（混合模式：前端简单意图 / 后端复杂意图）
+ * Related decision: D-005 (hybrid mode: frontend simple intents / backend complex intents)
  *
- * 用法:
+ * Usage:
  *   const parser = new IntentParser();
  *   const result = parser.parse(userInput);
- *   if (result.complexity === 'simple') { // 前端执行 }
+ *   if (result.complexity === 'simple') { // execute on the frontend }
  */
 
-/** 意图类型 */
+/** Intent type */
 export type IntentType =
   | 'page_create'
   | 'graphic_add'
@@ -31,26 +31,26 @@ export type IntentType =
   | 'kb_query'
   | 'unknown';
 
-/** 意图复杂度 */
+/** Intent complexity */
 export type IntentComplexity = 'simple' | 'complex';
 
-/** 意图解析结果 */
+/** Intent parsing result */
 export interface IntentResult {
-  /** 识别出的意图类型 */
+  /** Recognized intent type */
   intent: IntentType;
-  /** 复杂度：simple = 前端执行，complex = 后端 ReAct */
+  /** Complexity: simple = frontend execution, complex = backend ReAct */
   complexity: IntentComplexity;
-  /** 置信度 0-1 */
+  /** Confidence 0-1 */
   confidence: number;
-  /** 提取的参数 */
+  /** Extracted parameters */
   params: Record<string, string | number | boolean>;
-  /** 需要调用的工具列表 */
+  /** Tools to invoke */
   suggestedTools: string[];
-  /** 原始输入 */
+  /** Raw input */
   rawInput: string;
 }
 
-/** 意图规则定义 */
+/** Intent rule definition */
 interface IntentRule {
   intent: IntentType;
   complexity: IntentComplexity;
@@ -58,7 +58,7 @@ interface IntentRule {
   toolHints: string[];
 }
 
-/** 意图规则表（权重递减） */
+/** Intent rule table (weights decreasing) */
 const INTENT_RULES: IntentRule[] = [
   {
     intent: 'page_create',
@@ -124,7 +124,7 @@ const INTENT_RULES: IntentRule[] = [
 
 export class IntentParser {
   /**
-   * 解析用户输入，识别意图
+   * Parse user input and recognize the intent
    */
   parse(input: string): IntentResult {
     const normalized = input.trim().toLowerCase();
@@ -145,7 +145,7 @@ export class IntentParser {
       }
     }
 
-    // 兜底：chat
+    // Fallback: chat
     if (!bestMatch || bestScore === 0) {
       return {
         intent: 'chat',
@@ -159,7 +159,7 @@ export class IntentParser {
 
     const confidence = Math.min(bestScore / bestMatch.keywords.length, 0.95);
 
-    // 多意图关键词检测 → 强制 complex
+    // Multi-intent keyword detection → force complex
     if (this.isMultiStep(normalized)) {
       return {
         intent: bestMatch.intent,
@@ -182,7 +182,7 @@ export class IntentParser {
   }
 
   /**
-   * 检测是否包含多步骤指令关键词
+   * Detect whether the input contains multi-step instruction keywords
    */
   private isMultiStep(input: string): boolean {
     const multiStepKeywords = ['然后', '接着', '之后', '再', '并且', '同时', '还有', '以及'];
@@ -190,24 +190,24 @@ export class IntentParser {
   }
 
   /**
-   * 从输入中提取参数
+   * Extract parameters from the input
    */
   private extractParams(input: string, _intent: IntentType): Record<string, string | number | boolean> {
     const params: Record<string, string | number | boolean> = {};
 
-    // 提取数量
+    // Extract quantity
     const numMatch = input.match(/(\d+)\s*(个|台|只|张|条)/);
     if (numMatch) {
       params.count = parseInt(numMatch[1], 10);
     }
 
-    // 提取页面名称
+    // Extract the page name
     const nameMatch = input.match(/叫[「「](.+?)[」」]/) || input.match(/名为[「「](.+?)[」」]/);
     if (nameMatch) {
       params.name = nameMatch[1];
     }
 
-    // 提取尺寸
+    // Extract dimensions
     const sizeMatch = input.match(/(\d+)\s*[x×X]\s*(\d+)/);
     if (sizeMatch) {
       params.width = parseInt(sizeMatch[1], 10);
@@ -218,5 +218,5 @@ export class IntentParser {
   }
 }
 
-/** 单例 */
+/** Singleton */
 export const intentParser = new IntentParser();

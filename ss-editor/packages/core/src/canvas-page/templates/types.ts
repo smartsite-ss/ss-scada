@@ -3,50 +3,50 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 页面模板管理 — 类型定义
- * 
- * 归属模块：ss-editor / 画布与页面 / 模板管理
+ * Page template management — type definitions
+ *
+ * Module: ss-editor / canvas and page / template management
  */
 
-/** 模板分类 */
+/** Template category */
 export type TemplateCategory =
-  | 'blank'          // 空白
-  | 'login'          // 登录页
-  | 'dashboard'      // 仪表盘
-  | 'industrial'     // 工业监控
-  | 'data-screen'    // 数据大屏
-  | 'mobile'         // 移动端
-  | 'custom';        // 自定义
+  | 'blank'          // Blank
+  | 'login'          // Login page
+  | 'dashboard'      // Dashboard
+  | 'industrial'     // Industrial monitoring
+  | 'data-screen'    // Data screen
+  | 'mobile'         // Mobile
+  | 'custom';        // Custom
 
-/** 模板来源 */
+/** Template source */
 export type TemplateSource = 'builtin' | 'user' | 'market';
 
-/** 布局类型 */
+/** Layout type */
 export type TemplateLayoutType = 'free' | 'grid' | 'flow' | 'circle';
 
-/** 页面模板 */
+/** Page template */
 export interface PageTemplate {
-  /** 模板唯一标识 */
+  /** Template unique identifier */
   id: string;
-  /** 模板名称 */
+  /** Template name */
   name: string;
-  /** 模板描述 */
+  /** Template description */
   description?: string;
-  /** 分类 */
+  /** Category */
   category: TemplateCategory;
-  /** 图标（emoji 或 URL） */
+  /** Icon (emoji or URL) */
   icon?: string;
-  /** 缩略图（dataURL 或远程 URL） */
+  /** Thumbnail (dataURL or remote URL) */
   thumbnail?: string;
 
-  /** 来源标识 */
+  /** Source identifier */
   source: TemplateSource;
-  /** 作者 */
+  /** Author */
   author?: string;
-  /** 版本号 */
+  /** Version number */
   version: string;
 
-  /** 页面配置 */
+  /** Page config */
   pageConfig: {
     width: number;
     height: number;
@@ -56,25 +56,25 @@ export interface PageTemplate {
     themeName?: string;
   };
 
-  /** 图元 JSON 数组 */
+  /** Graphic JSON array */
   graphics: unknown[];
 
-  /** 标签 */
+  /** Tags */
   tags?: string[];
-  /** 创建时间 */
+  /** Creation time */
   createdAt: number;
-  /** 更新时间 */
+  /** Update time */
   updatedAt: number;
 }
 
-/** 模板分类元数据 */
+/** Template category metadata */
 export interface TemplateCategoryMeta {
   key: TemplateCategory;
   labelKey: string;
   icon: string;
 }
 
-/** 模板分类列表 */
+/** Template category list */
 export const TEMPLATE_CATEGORIES: TemplateCategoryMeta[] = [
   { key: 'blank',       labelKey: 'template.category.blank',       icon: '📄' },
   { key: 'login',       labelKey: 'template.category.login',       icon: '🔑' },

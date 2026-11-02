@@ -8,7 +8,7 @@ export class AddPagesTable1700400000000 implements MigrationInterface {
   name = 'AddPagesTable1700400000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    // 存在性防御：InitialSchema 已建全量权威 schema，表已存在则跳过（幂等）
+    // Existence guard: InitialSchema already created the full authoritative schema; skip if the table exists (idempotent)
     const existing = await queryRunner.getTable('prj_pages');
     if (existing) return;
 

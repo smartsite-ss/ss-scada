@@ -19,10 +19,10 @@ describe('End-to-end complete workflow test', () => {
       
       expect(page1.name).toBe('Main Overview');
       expect(page2.name).toBe('Detailed View');
-      // @ts-expect-error 抽象类测试实例
+      // @ts-expect-error abstract class test instance
       const g1 = new BaseGraphic('rectangle', 100, 100, 200, 100);
       g1.id = 'g1';
-      // @ts-expect-error 抽象类测试实例
+      // @ts-expect-error abstract class test instance
       const g2 = new BaseGraphic('text', 150, 120, 200, 50);
       g2.id = 'g2';
       
@@ -41,7 +41,7 @@ describe('End-to-end complete workflow test', () => {
     it('should handle complex operations with multiple graphics', () => {
       const editor = new Editor({ name: 'Complex Operations' });
       const page = editor.createPage({ name: 'Complex Page'}); const graphics = []; for (let i = 0; i < 10; i++) {
-        // @ts-expect-error 抽象类测试实例
+        // @ts-expect-error abstract class test instance
         const graphic = new BaseGraphic('rectangle', i * 80, i * 40, 60, 30);
         graphic.id = `g-${i}`;
         graphics.push(graphic);
@@ -67,10 +67,10 @@ describe('End-to-end complete workflow test', () => {
       const editor = new Editor({ name: 'Clipboard Test' });
       const page1 = editor.createPage({ name: 'Source Page' });
       const page2 = editor.createPage({ name: 'Target Page'});
-      // @ts-expect-error 抽象类测试实例
+      // @ts-expect-error abstract class test instance
       const g1 = new BaseGraphic('rectangle', 100, 100, 100, 50);
       g1.id = 'g1';
-      // @ts-expect-error 抽象类测试实例
+      // @ts-expect-error abstract class test instance
       const g2 = new BaseGraphic('text', 220, 120, 100, 50);
       g2.id = 'g2';
       

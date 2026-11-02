@@ -3,12 +3,12 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 分产品拆分配置驱动验证脚本
- * 验证 getProductMode() 与模块动态注册逻辑
+ * Product-split configuration driven verification script
+ * Verifies getProductMode() and the dynamic module registration logic
  */
 
-// Mock node-opcua：该包以 TypeScript 源码发布，Jest 无法直接解析。
-// 本测试仅验证 getProductMode()，不需要真实的 OPC UA 实现。
+// Mock node-opcua: this package ships TypeScript sources that Jest cannot parse directly.
+// This test only verifies getProductMode(); a real OPC UA implementation is not needed.
 jest.mock('node-opcua', () => ({
   SecurityPolicy: {
     None: 'None',

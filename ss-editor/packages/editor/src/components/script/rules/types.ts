@@ -3,21 +3,21 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 脚本示例类型定义
+ * Script example type definitions
  *
- * 所有示例文件的统一类型接口，用于在 Vue 组件中渲染示例列表。
+ * Unified type interface for all example files, used to render example lists in Vue components.
  */
 
-/** 脚本示例分类 */
+/** Script example category */
 export type ExampleCategory =
-  | 'data-driven'        // 数据驱动
-  | 'scheduled-task'     // 定时任务
-  | 'event-driven'       // 事件驱动
-  | 'multi-tag-linking'  // 多标签联动
-  | 'graphic-operation'  // 图元操作
-  | 'alarm-management';  // 告警管理
+  | 'data-driven'        // data-driven
+  | 'scheduled-task'     // scheduled task
+  | 'event-driven'       // event-driven
+  | 'multi-tag-linking'  // multi-tag linking
+  | 'graphic-operation'  // graphic operations
+  | 'alarm-management';  // alarm management
 
-/** 示例分类中文标签 */
+/** Example category Chinese labels */
 export const EXAMPLE_CATEGORY_LABELS: Record<ExampleCategory, string> = {
   'data-driven': '数据驱动',
   'scheduled-task': '定时任务',
@@ -27,7 +27,7 @@ export const EXAMPLE_CATEGORY_LABELS: Record<ExampleCategory, string> = {
   'alarm-management': '告警管理',
 };
 
-/** 示例分类图标 */
+/** Example category icons */
 export const EXAMPLE_CATEGORY_ICONS: Record<ExampleCategory, string> = {
   'data-driven': '📊',
   'scheduled-task': '⏱',
@@ -37,36 +37,36 @@ export const EXAMPLE_CATEGORY_ICONS: Record<ExampleCategory, string> = {
   'alarm-management': '🔔',
 };
 
-/** 触发方式 */
+/** Trigger mode */
 export type TriggerType = 'dataChange' | 'schedule' | 'event' | 'manual' | 'expression';
 
-/** 单个脚本示例 */
+/** A single script example */
 export interface ScriptExample {
-  /** 唯一标识 */
+  /** Unique identifier */
   id: string;
-  /** 示例标题 */
+  /** Example title */
   title: string;
-  /** 示例描述 */
+  /** Example description */
   description: string;
-  /** 所属分类 */
+  /** Category it belongs to */
   category: ExampleCategory;
-  /** 触发方式 */
+  /** Trigger mode */
   triggerType: TriggerType;
-  /** Cron 表达式（定时任务时使用） */
+  /** Cron expression (used for scheduled tasks) */
   cronExpression?: string;
-  /** 事件名称（事件驱动时使用） */
+  /** Event name (used for event-driven) */
   eventName?: string;
-  /** 依赖的标签列表 */
+  /** List of dependent tags */
   requiredTags?: string[];
-  /** 标签（用于筛选） */
+  /** Tag (used for filtering) */
   tags: string[];
-  /** 难度等级 */
+  /** Difficulty level */
   difficulty: 'easy' | 'medium' | 'hard';
-  /** 脚本代码 */
+  /** Script code */
   code: string;
 }
 
-/** 按分类分组的示例集合 */
+/** Collection of examples grouped by category */
 export interface ExampleGroup {
   category: ExampleCategory;
   label: string;

@@ -98,7 +98,7 @@ describe('BaseServicesView', () => {
   beforeEach(() => {
     setActivePinia(createPinia());
     vi.clearAllMocks();
-    // 重置默认 mock 返回值
+    // Reset the default mock return values
     mockBaseServicesApi.list.mockResolvedValue({ data: [] });
     mockBaseServicesApi.listConfig.mockResolvedValue({ data: [] });
     mockBaseServicesApi.start.mockResolvedValue({ data: { success: true, name: 'redis', action: 'start', message: 'ok', durationMs: 100 } });
@@ -106,7 +106,7 @@ describe('BaseServicesView', () => {
     mockBaseServicesApi.restart.mockResolvedValue({ data: { success: true, name: 'redis', action: 'restart', message: 'ok', durationMs: 100 } });
   });
 
-  // ================ 渲染测试 ================
+  // ================ Rendering tests ================
   describe('rendering', () => {
     it('TC-BSV-001: 应渲染页面标题和操作按钮', async () => {
       const wrapper = await mountView();
@@ -176,7 +176,7 @@ describe('BaseServicesView', () => {
     });
   });
 
-  // ================ 新增/编辑服务模态框 ================
+  // ================ Add/Edit service modal ================
   describe('form modal', () => {
     it('TC-BSV-010: 点击新增按钮应打开模态框', async () => {
       const wrapper = await mountView();
@@ -195,7 +195,7 @@ describe('BaseServicesView', () => {
       await addBtn!.trigger('click');
       const modal = wrapper.find('.modal-overlay');
       expect(modal.find('input[placeholder]').exists()).toBe(true);
-      // 验证有多个 form-field
+      // Verify there are multiple form-field elements
       expect(modal.findAll('.form-field').length).toBeGreaterThanOrEqual(10);
     });
 
@@ -204,7 +204,7 @@ describe('BaseServicesView', () => {
       await flushPromises();
       const addBtn = wrapper.findAll('.sys-btn-primary').find((b) => b.text().includes('addService'));
       await addBtn!.trigger('click');
-      // 不填写任何内容，直接点保存
+      // Fill in nothing and click save directly
       const saveBtn = wrapper.findAll('.modal-footer button').find((b) => b.text().includes('save'));
       await saveBtn!.trigger('click');
       await flushPromises();
@@ -217,11 +217,11 @@ describe('BaseServicesView', () => {
       const addBtn = wrapper.findAll('.sys-btn-primary').find((b) => b.text().includes('addService'));
       await addBtn!.trigger('click');
 
-      // 填写表单
+      // Fill in the form
       const inputs = wrapper.findAll('.form-input');
-      // name 字段
+      // name field
       await inputs[0].setValue('nginx');
-      // displayName 字段
+      // displayName field
       await inputs[1].setValue('Nginx');
 
       const saveBtn = wrapper.findAll('.modal-footer button').find((b) => b.text().includes('save'));
@@ -284,7 +284,7 @@ describe('BaseServicesView', () => {
       await editBtn!.trigger('click');
       await flushPromises();
 
-      // 修改 displayName
+      // Modify displayName
       const inputs = wrapper.findAll('.form-input');
       await inputs[1].setValue('Redis Updated');
 
@@ -292,10 +292,10 @@ describe('BaseServicesView', () => {
       await saveBtn!.trigger('click');
       await flushPromises();
 
-      // 验证 update 调用未包含 name 字段
+      // Verify the update call does not include the name field
       const updateCall = mockBaseServicesApi.update.mock.calls[0];
       expect(updateCall[0]).toBe('redis'); // URL param
-      expect(updateCall[1]).not.toHaveProperty('name'); // 不应在 body 中包含 name
+      expect(updateCall[1]).not.toHaveProperty('name'); // should not include name in the body
       expect(updateCall[1]).toHaveProperty('displayName', 'Redis Updated');
     });
 
@@ -312,7 +312,7 @@ describe('BaseServicesView', () => {
     });
   });
 
-  // ================ 服务操作 ================
+  // ================ Service operations ================
   describe('service actions', () => {
     it('TC-BSV-020: 点击启动按钮应调用 start API', async () => {
       mockBaseServicesApi.list.mockResolvedValue({
@@ -437,7 +437,7 @@ describe('BaseServicesView', () => {
     });
   });
 
-  // ================ 配置文件模态框 ================
+  // ================ Config file modal ================
   describe('config modal', () => {
     it('TC-BSV-030: 点击配置按钮应打开配置模态框', async () => {
       mockBaseServicesApi.list.mockResolvedValue({
@@ -475,7 +475,7 @@ describe('BaseServicesView', () => {
     });
   });
 
-  // ================ 日志模态框 ================
+  // ================ Log modal ================
   describe('logs modal', () => {
     it('TC-BSV-040: 点击日志按钮应打开日志模态框', async () => {
       mockBaseServicesApi.list.mockResolvedValue({
@@ -575,7 +575,7 @@ describe('BaseServicesView', () => {
     });
   });
 
-  // ================ 数据加载 ================
+  // ================ Data loading ================
   describe('data loading', () => {
     it('TC-BSV-050: 挂载时应调用 list API', async () => {
       await mountView();
@@ -604,7 +604,7 @@ describe('BaseServicesView', () => {
     });
   });
 
-  // ================ 状态显示 ================
+  // ================ Status display ================
   describe('status display', () => {
     it('TC-BSV-060: running 状态应显示对应徽章样式', async () => {
       mockBaseServicesApi.list.mockResolvedValue({
@@ -655,8 +655,8 @@ describe('BaseServicesView', () => {
       await flushPromises();
       const checks = wrapper.findAll('.check-item');
       expect(checks.length).toBeGreaterThanOrEqual(3);
-      expect(checks[0].classes()).toContain('ok'); // binary 存在
-      expect(checks[1].classes()).toContain('fail'); // config 不存在
+      expect(checks[0].classes()).toContain('ok'); // binary exists
+      expect(checks[1].classes()).toContain('fail'); // config does not exist
     });
 
     it('TC-BSV-065: 应显示 autoStart 标志标签', async () => {

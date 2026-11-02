@@ -3,16 +3,16 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 请求去重工具
+ * Request deduplication utility
  *
- * 相同参数的 GET 请求在 pending 期间共享同一个 Promise，
- * 避免多个组件同时发起相同请求造成的重复网络开销。
+ * GET requests with identical parameters share the same Promise while pending,
+ * avoiding duplicate network overhead when multiple components fire the same request simultaneously.
  *
- * 使用方式：
+ * Usage:
  *   const dedupKey = `GET:/api/v1/projects/${projectId}/devices`;
  *   const result = await requestDedup.dedup(dedupKey, () => client.get(url));
  *
- * 组件卸载时取消请求：
+ * Cancel requests on component unmount:
  *   const controller = new AbortController();
  *   onMounted(() => fetchData(controller.signal));
  *   onUnmounted(() => controller.abort());
@@ -27,10 +27,10 @@ class RequestDedup {
   private pending = new Map<string, PendingEntry>();
 
   /**
-   * 执行去重请求：相同 key 的请求在 pending 期间共享同一个 Promise
-   * @param key 去重键（建议格式：`METHOD:URL`）
-   * @param fn 请求工厂函数，接收 AbortSignal
-   * @returns 请求结果
+   * Execute a deduplicated request: requests with the same key share the same Promise while pending
+   * @param key Dedup key (recommended format: `METHOD:URL`)
+   * @param fn Request factory function receiving an AbortSignal
+   * @returns The request result
    */
   async dedup<T>(key: string, fn: (signal: AbortSignal) => Promise<T>): Promise<T> {
     const existing = this.pending.get(key);
@@ -41,7 +41,7 @@ class RequestDedup {
     const controller = new AbortController();
     const promise = fn(controller.signal)
       .finally(() => {
-        // 请求完成后从 pending 中移除，无论成功或失败
+        // Remove from pending after the request completes, regardless of success or failure
         this.pending.delete(key);
       });
 
@@ -50,7 +50,7 @@ class RequestDedup {
   }
 
   /**
-   * 取消指定 key 的 pending 请求
+   * Cancel the pending request of a specified key
    */
   cancel(key: string): void {
     const entry = this.pending.get(key);
@@ -61,7 +61,7 @@ class RequestDedup {
   }
 
   /**
-   * 取消所有 pending 请求
+   * Cancel all pending requests
    */
   cancelAll(): void {
     this.pending.forEach((entry) => {
@@ -71,7 +71,7 @@ class RequestDedup {
   }
 
   /**
-   * 检查是否有 pending 的请求
+   * Check whether there are pending requests
    */
   hasPending(key: string): boolean {
     return this.pending.has(key);

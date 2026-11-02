@@ -3,40 +3,40 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 脚本引擎 API 规则注册文件
+ * Script engine API rule registry file
  *
- * === 用途 ===
- * 本文件是脚本引擎所有 API 接口的**唯一数据源**（Single Source of Truth）。
- * 所有脚本编辑器中的 API 补全提示、模板下拉、帮助文档均从此文件读取数据。
+ * === Purpose ===
+ * This file is the **Single Source of Truth** for all script engine API interfaces.
+ * All API completion hints, template dropdowns and help documentation in the script editor read data from this file.
  *
- * === 更新指南 ===
- * 1. 新增 API：在 API_REGISTRY 数组中添加一项，Vue 组件自动生效
- * 2. 修改签名/注释：更新对应项的 detail/signature/documentation 字段
- * 3. 移除 API：从数组中删除对应项
- * 4. 调整分类：修改 category 字段
- * 5. 无需修改任何 Vue 组件代码
+ * === Update guide ===
+ * 1. Add an API: add an entry to the API_REGISTRY array; Vue components take effect automatically
+ * 2. Modify a signature/comment: update the corresponding entry's detail/signature/documentation fields
+ * 3. Remove an API: delete the corresponding entry from the array
+ * 4. Adjust a category: modify the category field
+ * 5. No Vue component code needs to be modified
  *
- * === 与设计文档对齐 ===
- * - 设计文档：docs/02-详细设计/ss-editor/05-脚本引擎/01-脚本引擎.md §2.4
- * - 源码实现：packages/core/src/scada-data/engine/ClientScriptAPI.ts
- * - 类型定义：packages/core/src/scada-data/types/script.types.ts
+ * === Alignment with design docs ===
+ * - Design doc: docs/02-detailed-design/ss-editor/05-script-engine/01-script-engine.md §2.4
+ * - Source implementation: packages/core/src/scada-data/engine/ClientScriptAPI.ts
+ * - Type definitions: packages/core/src/scada-data/types/script.types.ts
  */
 
 // ═══════════════════════════════════════════════════════════════
-// 类型定义
+// Type definitions
 // ═══════════════════════════════════════════════════════════════
 
-/** API 方法分类 */
+/** API method category */
 export type ApiCategory =
-  | 'data'       // 数据读写
-  | 'graphic'    // 图元操作
-  | 'alarm'      // 告警操作
-  | 'page'       // 页面操作
-  | 'network'    // 网络请求
-  | 'timer'      // 定时器
-  | 'utility';   // 工具函数
+  | 'data'       // data read/write
+  | 'graphic'    // graphic operations
+  | 'alarm'      // alarm operations
+  | 'page'       // page operations
+  | 'network'    // network requests
+  | 'timer'      // timers
+  | 'utility';   // utility functions
 
-/** API 分类中文标签 */
+/** API category Chinese labels */
 export const API_CATEGORY_LABELS: Record<ApiCategory, string> = {
   data: '数据读写',
   graphic: '图元操作',
@@ -47,7 +47,7 @@ export const API_CATEGORY_LABELS: Record<ApiCategory, string> = {
   utility: '工具函数',
 };
 
-/** API 分类图标（emoji，用于 UI 展示） */
+/** API category icons (emoji, for UI display) */
 export const API_CATEGORY_ICONS: Record<ApiCategory, string> = {
   data: '📊',
   graphic: '🎨',
@@ -58,57 +58,57 @@ export const API_CATEGORY_ICONS: Record<ApiCategory, string> = {
   utility: '🔧',
 };
 
-/** 单个 API 方法的完整定义 */
+/** Complete definition of a single API method */
 export interface ApiMethodDef {
-  /** 方法名 */
+  /** Method name */
   name: string;
-  /** 所属分类 */
+  /** Category it belongs to */
   category: ApiCategory;
-  /** 类型签名（如 "(tagId: string) => any | null"） */
+  /** Type signature (e.g. "(tagId: string) => any | null") */
   signature: string;
-  /** 中文说明（一句话） */
+  /** One-line description */
   summary: string;
-  /** 详细说明（支持多行） */
+  /** Detailed description (multi-line supported) */
   description: string;
-  /** 参数说明 */
+  /** Parameter descriptions */
   params: ApiParamDef[];
-  /** 返回值说明 */
+  /** Return value description */
   returns: string;
-  /** 可用环境：client | server | sandbox */
+  /** Available environments: client | server | sandbox */
   availableIn: string[];
-  /** 使用注意（可选） */
+  /** Usage notes (optional) */
   notes?: string;
-  /** 基础用法示例代码（可选） */
+  /** Basic usage example code (optional) */
   example?: string;
-  /** Monaco 补全详情 */
+  /** Monaco completion details */
   detail: string;
-  /** Monaco 补全插入文本（支持 snippet 语法） */
+  /** Monaco completion insert text (snippet syntax supported) */
   insertText: string;
-  /** Monaco 补全排序权重 */
+  /** Monaco completion sort weight */
   sortText: string;
 }
 
-/** API 参数定义 */
+/** API parameter definition */
 export interface ApiParamDef {
-  /** 参数名 */
+  /** Parameter name */
   name: string;
-  /** 参数类型 */
+  /** Parameter type */
   type: string;
-  /** 是否必填 */
+  /** Whether required */
   required: boolean;
-  /** 参数说明 */
+  /** Parameter description */
   description: string;
-  /** 默认值（可选） */
+  /** Default value (optional) */
   defaultValue?: string;
 }
 
 // ═══════════════════════════════════════════════════════════════
-// API 注册表（26 个方法，与设计文档 §2.4 严格对齐）
+// API registry (26 methods, strictly aligned with design doc §2.4)
 // ═══════════════════════════════════════════════════════════════
 
 export const API_REGISTRY: ApiMethodDef[] = [
   // ───────────────────────────────────────────────────────────
-  // 一、数据读写（3 个）
+  // I. Data read/write (3)
   // ───────────────────────────────────────────────────────────
   {
     name: 'readTag',
@@ -164,7 +164,7 @@ export const API_REGISTRY: ApiMethodDef[] = [
   },
 
   // ───────────────────────────────────────────────────────────
-  // 二、图元操作（5 个，仅客户端脚本可用）
+  // II. Graphic operations (5, client scripts only)
   // ───────────────────────────────────────────────────────────
   {
     name: 'setGraphicProps',
@@ -253,7 +253,7 @@ export const API_REGISTRY: ApiMethodDef[] = [
   },
 
   // ───────────────────────────────────────────────────────────
-  // 三、告警操作（4 个）
+  // III. Alarm operations (4)
   // ───────────────────────────────────────────────────────────
   {
     name: 'triggerAlarm',
@@ -322,7 +322,7 @@ export const API_REGISTRY: ApiMethodDef[] = [
   },
 
   // ───────────────────────────────────────────────────────────
-  // 四、页面操作（2 个，仅客户端脚本可用）
+  // IV. Page operations (2, client scripts only)
   // ───────────────────────────────────────────────────────────
   {
     name: 'switchPage',
@@ -357,7 +357,7 @@ export const API_REGISTRY: ApiMethodDef[] = [
   },
 
   // ───────────────────────────────────────────────────────────
-  // 五、网络请求（1 个）
+  // V. Network requests (1)
   // ───────────────────────────────────────────────────────────
   {
     name: 'fetch',
@@ -381,7 +381,7 @@ export const API_REGISTRY: ApiMethodDef[] = [
   },
 
   // ───────────────────────────────────────────────────────────
-  // 六、定时器（4 个，容器内管理，页面卸载自动清理）
+  // VI. Timers (4, managed within the container, auto-cleaned on page unload)
   // ───────────────────────────────────────────────────────────
   {
     name: 'setTimeout',
@@ -453,7 +453,7 @@ export const API_REGISTRY: ApiMethodDef[] = [
   },
 
   // ───────────────────────────────────────────────────────────
-  // 七、工具函数（7 个）
+  // VII. Utility functions (7)
   // ───────────────────────────────────────────────────────────
   {
     name: 'sleep',
@@ -602,15 +602,15 @@ export const API_REGISTRY: ApiMethodDef[] = [
 ];
 
 // ═══════════════════════════════════════════════════════════════
-// 便捷查询函数
+// Convenience query functions
 // ═══════════════════════════════════════════════════════════════
 
-/** 按分类获取 API 列表 */
+/** Get API list by category */
 export function getApiByCategory(category: ApiCategory): ApiMethodDef[] {
   return API_REGISTRY.filter((api) => api.category === category);
 }
 
-/** 按分类分组获取所有 API */
+/** Get all APIs grouped by category */
 export function getApiGroupedByCategory(): Record<string, ApiMethodDef[]> {
   const groups: Record<string, ApiMethodDef[]> = {};
   for (const api of API_REGISTRY) {
@@ -621,22 +621,22 @@ export function getApiGroupedByCategory(): Record<string, ApiMethodDef[]> {
   return groups;
 }
 
-/** 按运行环境过滤 API */
+/** Filter APIs by runtime environment */
 export function getApiByEnvironment(env: 'client' | 'server' | 'sandbox'): ApiMethodDef[] {
   return API_REGISTRY.filter((api) => api.availableIn.includes(env));
 }
 
-/** 按名称查找 API */
+/** Find an API by name */
 export function getApiByName(name: string): ApiMethodDef | undefined {
   return API_REGISTRY.find((api) => api.name === name);
 }
 
-/** 获取所有 API 名称列表 */
+/** Get the list of all API names */
 export function getApiNames(): string[] {
   return API_REGISTRY.map((api) => api.name);
 }
 
-/** 获取 API 总数 */
+/** Get the total number of APIs */
 export function getApiCount(): number {
   return API_REGISTRY.length;
 }

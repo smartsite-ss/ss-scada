@@ -11,7 +11,7 @@ import * as path from 'path';
 const DEFAULT_LOCALE = 'zh-CN';
 const LOCALE_PATTERN = /^[a-z]{2}-[A-Z]{2}$/;
 
-/** 字典条目 */
+/** Dictionary entry */
 export interface DictItem {
   value: string;
   label: string;
@@ -19,7 +19,7 @@ export interface DictItem {
   description: string;
 }
 
-/** 字典表定义 */
+/** Dictionary table definition */
 export interface DictTable {
   dictId: string;
   dictName: string;
@@ -30,7 +30,7 @@ export interface DictTable {
   items: DictItem[];
 }
 
-/** 字典分类（一级目录） */
+/** Dictionary category (first-level directory) */
 export interface DictCategory {
   category: string;
   tables: DictTable[];
@@ -45,7 +45,7 @@ export class DictionaryLoaderService implements OnModuleInit {
   private cache = new Map<string, Map<string, DictTable>>();
   /** locale → categories[] */
   private categoryCache = new Map<string, DictCategory[]>();
-  /** 支持的语言列表 */
+  /** Supported language list */
   private supportedLocales: string[] = [];
 
   constructor(
@@ -58,15 +58,15 @@ export class DictionaryLoaderService implements OnModuleInit {
   }
 
   /**
-   * 将相对路径解析为绝对路径
+   * Resolve a relative path to an absolute path
    *
-   * 相对路径基准：
-   * - dev 模式：__dirname 上溯 4 级 = ss-services/ss-node（本文件位于 packages/ss-system/dist/dict/）
-   *   .env.dev 中 DICTS_DIR 相对于 ss-services/ss-node 解析
-   * - 生产模式：process.cwd() = ss-run/ss/services/ss-node
-   *   .env 中 DICTS_DIR=../../data/dicts 相对于该目录解析
+   * Relative-path baselines:
+   * - dev mode: go up 4 levels from __dirname = ss-services/ss-node (this file lives in packages/ss-system/dist/dict/)
+   *   DICTS_DIR in .env.dev resolves against ss-services/ss-node
+   * - production mode: process.cwd() = ss-run/ss/services/ss-node
+   *   DICTS_DIR=../../data/dicts in .env resolves against that directory
    *
-   * 与 app.module.ts getDatabaseConfig()、backup.service.ts getProjectRoot() 保持一致。
+   * Kept consistent with app.module.ts getDatabaseConfig() and backup.service.ts getProjectRoot().
    */
   private resolvePath(p: string): string {
     return this.pathResolver.resolve(p);
@@ -77,7 +77,7 @@ export class DictionaryLoaderService implements OnModuleInit {
   }
 
   /**
-   * 重新加载所有语言的所有字典
+   * Reload all dictionaries of all languages
    */
   async reloadAll(): Promise<void> {
     this.cache.clear();
@@ -88,7 +88,7 @@ export class DictionaryLoaderService implements OnModuleInit {
       return;
     }
 
-    // 扫描根目录，识别 locale 子目录
+    // Scan the root directory to identify locale subdirectories
     this.supportedLocales = fs
       .readdirSync(this.dictsBasePath, { withFileTypes: true })
       .filter((dirent) => dirent.isDirectory())
@@ -111,7 +111,7 @@ export class DictionaryLoaderService implements OnModuleInit {
   }
 
   /**
-   * 重新加载指定语言
+   * Reload a given language
    */
   async reloadLocale(locale: string): Promise<void> {
     const localePath = path.join(this.dictsBasePath, locale);
@@ -121,7 +121,7 @@ export class DictionaryLoaderService implements OnModuleInit {
       return;
     }
 
-    // 初始化该语言的缓存
+    // Initialize the cache for this language
     const localeCache = new Map<string, DictTable>();
     const localeCategories: DictCategory[] = [];
 
@@ -143,7 +143,7 @@ export class DictionaryLoaderService implements OnModuleInit {
         const filePath = path.join(categoryDir, file);
         try {
           let content = fs.readFileSync(filePath, 'utf-8');
-          // 去除 UTF-8 BOM（\uFEFF），避免 JSON.parse 失败
+          // Strip the UTF-8 BOM (\uFEFF) to avoid JSON.parse failure
           if (content.charCodeAt(0) === 0xfeff) {
             content = content.slice(1);
           }
@@ -173,14 +173,14 @@ export class DictionaryLoaderService implements OnModuleInit {
   }
 
   /**
-   * 根据 dictId 获取字典表
-   * @param dictId 字典标识
-   * @param locale 语言，默认 zh-CN
+   * Get a dictionary table by dictId
+   * @param dictId dictionary identifier
+   * @param locale language, default zh-CN
    */
   getDict(dictId: string, locale: string = DEFAULT_LOCALE): DictTable | undefined {
     const localeCache = this.cache.get(locale);
     if (!localeCache) {
-      // 降级到默认语言
+      // Fall back to the default language
       const defaultCache = this.cache.get(DEFAULT_LOCALE);
       return defaultCache?.get(dictId);
     }
@@ -188,16 +188,16 @@ export class DictionaryLoaderService implements OnModuleInit {
   }
 
   /**
-   * 获取所有字典分类（按分类分组）
-   * @param locale 语言，默认 zh-CN
+   * Get all dictionary categories (grouped by category)
+   * @param locale language, default zh-CN
    */
   getAllCategories(locale: string = DEFAULT_LOCALE): DictCategory[] {
     return this.categoryCache.get(locale) || this.categoryCache.get(DEFAULT_LOCALE) || [];
   }
 
   /**
-   * 获取所有字典表（平铺列表）
-   * @param locale 语言，默认 zh-CN
+   * Get all dictionary tables (flat list)
+   * @param locale language, default zh-CN
    */
   getAllDicts(locale: string = DEFAULT_LOCALE): DictTable[] {
     const localeCache = this.cache.get(locale) || this.cache.get(DEFAULT_LOCALE);
@@ -205,37 +205,37 @@ export class DictionaryLoaderService implements OnModuleInit {
   }
 
   /**
-   * 获取支持的语言列表
+   * Get the supported language list
    */
   getSupportedLocales(): string[] {
     return [...this.supportedLocales];
   }
 
   /**
-   * 获取字典基础路径
+   * Get the base path of the dictionaries
    */
   getBasePath(): string {
     return this.dictsBasePath;
   }
 
   /**
-   * 查找并加载单个字典表（缓存未命中时从磁盘扫描）
+   * Find and load a single dictionary table (scans the disk on cache miss)
    *
-   * 当某个字典文件是在服务启动后才添加时，缓存中没有该字典。
-   * 此方法会扫描该 locale 下所有分类目录，找到匹配的文件并加载到缓存中。
+   * When a dictionary file is added after service startup, it is not in the cache.
+   * This method scans all category directories under that locale, finds the matching file and loads it into the cache.
    *
-   * @param dictId 字典标识
-   * @param locale 语言
-   * @returns 找到的字典表，或 undefined
+   * @param dictId dictionary identifier
+   * @param locale language
+   * @returns the found dictionary table, or undefined
    */
   loadSingleDict(dictId: string, locale: string = DEFAULT_LOCALE): DictTable | undefined {
-    // 1. 先查缓存
+    // 1. Check the cache first
     const localeCache = this.cache.get(locale);
     if (localeCache?.has(dictId)) {
       return localeCache.get(dictId);
     }
 
-    // 2. 缓存未命中，扫描磁盘
+    // 2. Cache miss; scan the disk
     const localePath = path.join(this.dictsBasePath, locale);
     if (!fs.existsSync(localePath)) {
       return undefined;
@@ -259,7 +259,7 @@ export class DictionaryLoaderService implements OnModuleInit {
           }
           const table = JSON.parse(content) as DictTable;
           if (table.dictId === dictId && table.dictName && Array.isArray(table.items)) {
-            // 加载到缓存
+            // Load into the cache
             if (!localeCache) {
               const newCache = new Map<string, DictTable>();
               newCache.set(dictId, table);
@@ -267,7 +267,7 @@ export class DictionaryLoaderService implements OnModuleInit {
             } else {
               localeCache.set(dictId, table);
             }
-            // 同时更新 categoryCache
+            // Also update categoryCache
             this.updateCategoryCache(locale, category, table);
             this.logger.log(`从磁盘加载单个字典: ${locale}/${category}/${file}`);
             return table;
@@ -281,7 +281,7 @@ export class DictionaryLoaderService implements OnModuleInit {
     return undefined;
   }
 
-  /** 将单个字典表追加到分类缓存中 */
+  /** Append a single dictionary table to the category cache */
   private updateCategoryCache(locale: string, category: string, table: DictTable): void {
     let categories = this.categoryCache.get(locale);
     if (!categories) {
@@ -298,25 +298,25 @@ export class DictionaryLoaderService implements OnModuleInit {
     }
   }
 
-  // ==================== 写操作 ====================
+  // ==================== Write operations ====================
 
-  /** camelCase → kebab-case，用于文件名 */
+  /** camelCase → kebab-case, for file names */
   private toFileName(id: string): string {
     return id.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
   }
 
-  /** 获取某个 locale 下的分类目录路径 */
+  /** Get the category directory path under a given locale */
   private getCategoryDir(locale: string, category: string): string {
     return path.join(this.dictsBasePath, locale, category);
   }
 
-  /** 获取某个字典表的文件路径 */
+  /** Get a dictionary table's file path */
   private getTablePath(locale: string, category: string, dictId: string): string {
     return path.join(this.dictsBasePath, locale, category, `${this.toFileName(dictId)}.json`);
   }
 
   /**
-   * 创建分类（目录）
+   * Create a category (directory)
    */
   createCategory(locale: string, categoryName: string): void {
     const dir = this.getCategoryDir(locale, categoryName);
@@ -324,7 +324,7 @@ export class DictionaryLoaderService implements OnModuleInit {
       throw new Error(`分类 "${categoryName}" 已存在`);
     }
     fs.mkdirSync(dir, { recursive: true });
-    // 更新缓存，使前端刷新能获取到新分类
+    // Update the cache so the frontend refresh picks up the new category
     let categories = this.categoryCache.get(locale);
     if (!categories) {
       categories = [];
@@ -337,7 +337,7 @@ export class DictionaryLoaderService implements OnModuleInit {
   }
 
   /**
-   * 重命名分类（目录）
+   * Rename a category (directory)
    */
   renameCategory(locale: string, oldName: string, newName: string): void {
     const oldDir = this.getCategoryDir(locale, oldName);
@@ -349,7 +349,7 @@ export class DictionaryLoaderService implements OnModuleInit {
       throw new Error(`分类 "${newName}" 已存在`);
     }
     fs.renameSync(oldDir, newDir);
-    // 更新缓存
+    // Update the cache
     const categories = this.categoryCache.get(locale);
     if (categories) {
       const cat = categories.find((c) => c.category === oldName);
@@ -362,7 +362,7 @@ export class DictionaryLoaderService implements OnModuleInit {
   }
 
   /**
-   * 删除分类（目录及所有字典文件）
+   * Delete a category (directory and all dictionary files)
    */
   deleteCategory(locale: string, categoryName: string): void {
     const dir = this.getCategoryDir(locale, categoryName);
@@ -370,7 +370,7 @@ export class DictionaryLoaderService implements OnModuleInit {
       throw new Error(`分类 "${categoryName}" 不存在`);
     }
     fs.rmSync(dir, { recursive: true, force: true });
-    // 更新缓存
+    // Update the cache
     const categories = this.categoryCache.get(locale);
     if (categories) {
       const idx = categories.findIndex((c) => c.category === categoryName);
@@ -382,14 +382,14 @@ export class DictionaryLoaderService implements OnModuleInit {
   }
 
   /**
-   * 创建字典表（JSON 文件）
+   * Create a dictionary table (JSON file)
    */
   createTable(locale: string, category: string, table: DictTable): void {
     const filePath = this.getTablePath(locale, category, table.dictId);
     if (fs.existsSync(filePath)) {
       throw new Error(`字典表 "${table.dictId}" 已存在`);
     }
-    // 确保分类目录存在
+    // Ensure the category directory exists
     const dir = this.getCategoryDir(locale, category);
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
@@ -399,7 +399,7 @@ export class DictionaryLoaderService implements OnModuleInit {
   }
 
   /**
-   * 更新字典表（覆盖 JSON 文件）
+   * Update a dictionary table (overwrites the JSON file)
    */
   updateTable(locale: string, category: string, dictId: string, table: Partial<DictTable>): void {
     const filePath = this.getTablePath(locale, category, dictId);
@@ -409,13 +409,13 @@ export class DictionaryLoaderService implements OnModuleInit {
     let content = fs.readFileSync(filePath, 'utf-8');
     if (content.charCodeAt(0) === 0xfeff) content = content.slice(1);
     const existing = JSON.parse(content) as DictTable;
-    const merged = { ...existing, ...table, dictId }; // 保证 dictId 不变
+    const merged = { ...existing, ...table, dictId }; // keep dictId unchanged
     fs.writeFileSync(filePath, JSON.stringify(merged, null, 2), 'utf-8');
     this.logger.log(`更新字典表: ${locale}/${category}/${dictId}`);
   }
 
   /**
-   * 删除字典表（删除 JSON 文件）
+   * Delete a dictionary table (deletes the JSON file)
    */
   deleteTable(locale: string, category: string, dictId: string): void {
     const filePath = this.getTablePath(locale, category, dictId);
@@ -427,7 +427,7 @@ export class DictionaryLoaderService implements OnModuleInit {
   }
 
   /**
-   * 导出字典表（返回原始 JSON 对象）
+   * Export a dictionary table (returns the raw JSON object)
    */
   exportTable(locale: string, category: string, dictId: string): DictTable {
     const filePath = this.getTablePath(locale, category, dictId);
@@ -440,7 +440,7 @@ export class DictionaryLoaderService implements OnModuleInit {
   }
 
   /**
-   * 导入字典表（创建或覆盖 JSON 文件）
+   * Import a dictionary table (creates or overwrites the JSON file)
    */
   importTable(locale: string, category: string, dictId: string, table: DictTable): void {
     const dir = this.getCategoryDir(locale, category);

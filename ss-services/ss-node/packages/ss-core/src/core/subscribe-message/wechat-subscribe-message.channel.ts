@@ -3,15 +3,15 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 微信小程序订阅消息通道（10 模块）
+ * WeChat mini-program subscribe-message channel (Module 10)
  *
- * 配置驱动 + 未配置降级：
- *   - 模板 ID：WECHAT_SUBSCRIBE_TEMPLATE_ALARM（微信后台外部申请项，未配置时跳过发送并告警日志）
- *   - 字段映射：WECHAT_SUBSCRIBE_TEMPLATE_FIELDS（JSON，载荷字段 → 模板字段名），缺省走默认映射
- *   - 限频：WECHAT_SUBSCRIBE_RATE_LIMIT_PER_HOUR（每用户每小时上限，默认 20）
+ * Config-driven + degrade when unconfigured:
+ *   - Template ID: WECHAT_SUBSCRIBE_TEMPLATE_ALARM (externally applied in the WeChat console; skipped with warn log when unconfigured)
+ *   - Field mapping: WECHAT_SUBSCRIBE_TEMPLATE_FIELDS (JSON, payload field -> template field name), default mapping when absent
+ *   - Rate limit: WECHAT_SUBSCRIBE_RATE_LIMIT_PER_HOUR (per-user hourly cap, default 20)
  *
- * 配额模型：一次性订阅，授权 accept +1 / 成功下发 -1；43101（用户拒收）清零。
- * Mock 模式（WECHAT_MOCK=true）：仅记录日志不实际调用微信 API。
+ * Quota model: one-time subscribe, authorization accept +1 / successful send -1; 43101 (user rejected) resets to 0.
+ * Mock mode (WECHAT_MOCK=true): logs only, no actual WeChat API call.
  */
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -26,27 +26,27 @@ import {
   WechatNotificationPreference,
 } from './entities/wechat-notification-preference.entity';
 
-/** 订阅消息载荷（与 ss-alarm 通道载荷形状一致；ss-core 不反向依赖，独立声明） */
+/** Subscribe-message payload (same shape as the ss-alarm channel payload; ss-core does not reverse-depend, declared independently) */
 export interface SubscribeMessagePayload {
   title: string;
   message: string;
   level: string;
   deviceName?: string;
-  /** 报警记录 ID（二期 10 #7：随跳转页携带，供小程序冷启动直达报警详情） */
+  /** Alarm-record ID (Phase2 10 #7: carried with the landing page so the mini-program cold-start jumps straight to alarm detail) */
   alarmRecordId?: string;
   timestamp: Date;
 }
 
-/** 设备状态订阅消息载荷（二期 10 #6：仅离线/故障推送） */
+/** Device-status subscribe-message payload (Phase2 10 #6: offline/fault push only) */
 export interface DeviceStatusSubscribePayload {
   deviceName: string;
-  /** 设备状态（DeviceStatus 枚举值，如 offline/error） */
+  /** Device status (DeviceStatus enum value, e.g. offline/error) */
   status: string;
   projectId?: string;
   timestamp: Date;
 }
 
-/** 模板字段映射：载荷字段 → 微信模板字段名 */
+/** Template field mapping: payload field -> WeChat template field name */
 interface TemplateFieldMapping {
   title: string;
   message: string;
@@ -54,7 +54,7 @@ interface TemplateFieldMapping {
   time: string;
 }
 
-/** 设备状态模板字段映射 */
+/** Device-status template field mapping */
 interface DeviceStatusTemplateFieldMapping {
   device: string;
   status: string;
@@ -74,14 +74,14 @@ const DEFAULT_DEVICE_STATUS_FIELD_MAPPING: DeviceStatusTemplateFieldMapping = {
   time: 'time3',
 };
 
-/** Mock 模式下设备状态模板占位 ID（未配置真实模板时仍可走通流程） */
+/** Device-status template placeholder ID in Mock mode (flow still works when no real template is configured) */
 export const MOCK_DEVICE_STATUS_TEMPLATE_ID = 'mock-device-status-template';
 
-/** 微信字段长度约束（thing 20 字 / phrase 5 字，超限截断） */
+/** WeChat field-length constraints (thing 20 chars / phrase 5 chars, truncated when exceeded) */
 const THING_FIELD_MAX_LENGTH = 20;
 const PHRASE_FIELD_MAX_LENGTH = 5;
 
-/** 用户级发送限频滑动窗口（毫秒） */
+/** Per-user send rate-limit sliding window (ms) */
 const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
 
 @Injectable()
@@ -98,9 +98,9 @@ export class WechatSubscribeMessageChannel {
   private readonly deviceStatusFieldMapping: DeviceStatusTemplateFieldMapping;
   private readonly rateLimitPerHour: number;
 
-  /** 小程序全局 access_token 缓存（提前 60s 过期） */
+  /** Mini-program global access_token cache (expires 60s early) */
   private cachedAccessToken: { token: string; expireAt: number } | null = null;
-  /** 每用户发送时间戳窗口（限频用） */
+  /** Per-user send-timestamp window (for rate limiting) */
   private readonly sentTimestampsByOpenId = new Map<string, number[]>();
 
   constructor(
@@ -125,25 +125,25 @@ export class WechatSubscribeMessageChannel {
     }
   }
 
-  /** 报警模板 ID（前端授权流程使用；未配置返回空字符串） */
+  /** Alarm template ID (used by the frontend authorization flow; empty string when unconfigured) */
   getAlarmTemplateId(): string {
     return this.alarmTemplateId;
   }
 
-  /** 设备状态模板 ID（前端授权流程使用；未配置返回空字符串） */
+  /** Device-status template ID (used by the frontend authorization flow; empty string when unconfigured) */
   getDeviceStatusTemplateId(): string {
     return this.deviceStatusTemplateId;
   }
 
-  /** 模板配置完整（或处于 Mock 模式） */
+  /** Template config complete (or in Mock mode) */
   isConfigured(): boolean {
     if (this.isMock) return true;
     return Boolean(this.alarmTemplateId && this.mpAppId && this.mpAppSecret);
   }
 
   /**
-   * 向全部已订阅用户下发报警通知（供报警分发器调用）
-   * 过滤条件：授权配额 > 0 + 通知偏好开启 + 级别达到偏好阈值 + 用户限频未超
+   * Send alarm notifications to all subscribed users (called by the alarm dispatcher)
+   * Filters: authorization quota > 0 + notification preference enabled + level reaches preference threshold + user rate limit not exceeded
    */
   async notifySubscribedUsers(payload: SubscribeMessagePayload): Promise<boolean> {
     if (!this.isConfigured()) {
@@ -171,7 +171,7 @@ export class WechatSubscribeMessageChannel {
     let sentCount = 0;
     for (const authorization of authorizations) {
       const preference = preferenceByUserId.get(authorization.userId);
-      // 无偏好记录视为默认接收（实体默认 enabled），但仍需满足级别阈值
+      // No preference record counts as default receive (entity default enabled), but the level threshold must still be met
       if (preference) {
         if (!preference.alarmNotificationEnabled) {
           continue;
@@ -200,9 +200,9 @@ export class WechatSubscribeMessageChannel {
   }
 
   /**
-   * 向全部已订阅用户下发设备状态通知（二期 10 #6，供 ss-device 事件订阅器调用）
-   * 复用配额模型与用户限频；未配置设备状态模板时跳过并告警日志（Mock 模式走占位模板）。
-   * 说明：设备状态通知不受报警偏好（开关/级别阈值）约束，为独立通知类别。
+   * Send device-status notifications to all subscribed users (Phase2 10 #6, called by the ss-device event subscriber)
+   * Reuses the quota model and per-user rate limit; skipped with warn log when the device-status template is unconfigured (Mock mode uses the placeholder template).
+   * Note: device-status notifications are not constrained by alarm preferences (switch/level threshold); they are an independent notification category.
    */
   async notifyDeviceStatus(payload: DeviceStatusSubscribePayload): Promise<boolean> {
     if (!this.isDeviceStatusConfigured()) {
@@ -246,20 +246,20 @@ export class WechatSubscribeMessageChannel {
     return sentCount > 0;
   }
 
-  /** 设备状态模板配置完整（或处于 Mock 模式） */
+  /** Device-status template config complete (or in Mock mode) */
   private isDeviceStatusConfigured(): boolean {
     if (this.isMock) return true;
     return Boolean(this.deviceStatusTemplateId && this.mpAppId && this.mpAppSecret);
   }
 
-  /** 级别是否达到用户偏好阈值 */
+  /** Whether the level reaches the user's preference threshold */
   private levelMeetsThreshold(level: string, minimumLevel: MinimumAlarmLevel): boolean {
     const severity = ALARM_LEVEL_SEVERITY[level as MinimumAlarmLevel];
     if (severity === undefined) return true;
     return severity >= ALARM_LEVEL_SEVERITY[minimumLevel];
   }
 
-  /** 报警订阅消息跳转页（二期 10 #7：有记录 ID 时附带参数，小程序冷启动解析后直达详情） */
+  /** Alarm subscribe-message landing page (Phase2 10 #7: params attached when a record ID exists; parsed on mini-program cold start to jump straight to detail) */
   private resolveAlarmNavigationPage(payload: SubscribeMessagePayload): string {
     if (!payload.alarmRecordId) {
       return 'pages/alarm/list';
@@ -267,7 +267,7 @@ export class WechatSubscribeMessageChannel {
     return `pages/alarm/list?alarmRecordId=${encodeURIComponent(payload.alarmRecordId)}`;
   }
 
-  /** 用户限频检查（滑动窗口计数） */
+  /** Per-user rate-limit check (sliding-window counting) */
   private isRateLimited(openId: string): boolean {
     const now = Date.now();
     const timestamps = (this.sentTimestampsByOpenId.get(openId) || []).filter(
@@ -277,7 +277,7 @@ export class WechatSubscribeMessageChannel {
     return timestamps.length >= this.rateLimitPerHour;
   }
 
-  /** 向单个授权记录下发并维护配额（模板/跳转页/数据由调用方指定，报警与设备状态共用） */
+  /** Send to a single authorization record and maintain quota (template/landing page/data specified by caller; shared by alarm and device status) */
   private async sendToOpenId(
     authorization: WechatSubscribeAuthorization,
     templateId: string,
@@ -317,7 +317,7 @@ export class WechatSubscribeMessageChannel {
         this.recordSent(authorization.mpOpenId);
         return true;
       }
-      // 43101：用户拒绝接受消息（授权已失效）→ 配额清零，等待前端续订
+      // 43101: user rejected messages (authorization expired) -> quota reset to 0, waiting for frontend renewal
       if (data.errcode === 43101) {
         authorization.quotaRemaining = 0;
         await this.authorizationRepo.save(authorization);
@@ -327,7 +327,7 @@ export class WechatSubscribeMessageChannel {
       );
       return false;
     } catch (error) {
-      // 发送失败降级为日志，不阻塞报警主流程
+      // Send failure degrades to a log, not blocking the main alarm flow
       this.logger.error(`[SUBSCRIBE] 下发异常：${(error as Error).message}`);
       return false;
     }
@@ -339,7 +339,7 @@ export class WechatSubscribeMessageChannel {
     this.sentTimestampsByOpenId.set(openId, timestamps);
   }
 
-  /** 按字段映射构建模板 data（类型前缀约束：thing 20 字 / phrase 5 字） */
+  /** Build template data by field mapping (type-prefix constraints: thing 20 chars / phrase 5 chars) */
   private buildTemplateData(payload: SubscribeMessagePayload): Record<string, { value: string }> {
     const levelLabels: Record<string, string> = {
       info: '提示',
@@ -364,7 +364,7 @@ export class WechatSubscribeMessageChannel {
     return text.length > maxLength ? `${text.slice(0, maxLength - 1)}…` : text;
   }
 
-  /** 设备状态模板 data（设备名 thing 20 字 / 状态文案 phrase 5 字 / 时间） */
+  /** Device-status template data (device name thing 20 chars / status text phrase 5 chars / time) */
   private buildDeviceStatusTemplateData(
     payload: DeviceStatusSubscribePayload,
   ): Record<string, { value: string }> {
@@ -385,7 +385,7 @@ export class WechatSubscribeMessageChannel {
     };
   }
 
-  /** 小程序全局 access_token（7200s 有效期，提前 60s 刷新） */
+  /** Mini-program global access_token (7200s validity, refreshed 60s early) */
   private async getMpAccessToken(): Promise<string> {
     const now = Date.now();
     if (this.cachedAccessToken && this.cachedAccessToken.expireAt > now) {
@@ -409,7 +409,7 @@ export class WechatSubscribeMessageChannel {
     return data.access_token;
   }
 
-  /** 字段映射解析：WECHAT_SUBSCRIBE_TEMPLATE_FIELDS JSON 覆盖默认映射 */
+  /** Field-mapping resolution: WECHAT_SUBSCRIBE_TEMPLATE_FIELDS JSON overrides the default mapping */
   private resolveFieldMapping(): TemplateFieldMapping {
     const rawMapping = process.env.WECHAT_SUBSCRIBE_TEMPLATE_FIELDS;
     if (!rawMapping) {
@@ -424,7 +424,7 @@ export class WechatSubscribeMessageChannel {
     }
   }
 
-  /** 设备状态字段映射解析：WECHAT_SUBSCRIBE_TEMPLATE_DEVICE_FIELDS JSON 覆盖默认映射 */
+  /** Device-status field-mapping resolution: WECHAT_SUBSCRIBE_TEMPLATE_DEVICE_FIELDS JSON overrides the default mapping */
   private resolveDeviceStatusFieldMapping(): DeviceStatusTemplateFieldMapping {
     const rawMapping = process.env.WECHAT_SUBSCRIBE_TEMPLATE_DEVICE_FIELDS;
     if (!rawMapping) {

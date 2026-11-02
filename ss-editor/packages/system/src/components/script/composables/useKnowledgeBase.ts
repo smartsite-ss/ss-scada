@@ -3,10 +3,10 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 知识库 Composable (system 包)
+ * Knowledge base composable (system package)
  *
- * 从远程加载知识库 JSON 数据，提供 API 注册表、示例、图元 Schema 等查询能力。
- * 支持远程加载 → 缓存 → 内置 fallback 三级降级策略。
+ * Loads knowledge base JSON data remotely, providing queries for the API registry, examples and graphic schemas.
+ * Supports the three-level fallback strategy: remote load → cache → built-in fallback.
  */
 
 import { ref, computed, readonly, type DeepReadonly } from 'vue';
@@ -15,7 +15,7 @@ import type { ApiMethodDefinition } from '../utils/api-definitions';
 import { API_DEFINITIONS } from '../utils/api-definitions';
 
 // ═══════════════════════════════════════════════════════════════
-// 类型定义
+// Type definitions
 // ═══════════════════════════════════════════════════════════════
 
 export interface KbMeta {
@@ -95,7 +95,7 @@ export interface VersionsJson {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 全局状态（单例）
+// Global state (singleton)
 // ═══════════════════════════════════════════════════════════════
 
 const kbData = ref<KnowledgeBaseJson | null>(null);
@@ -107,11 +107,11 @@ const fromFallback = ref(false);
 const versionsInfo = ref<VersionsJson | null>(null);
 
 // ═══════════════════════════════════════════════════════════════
-// 配置
+// Configuration
 // ═══════════════════════════════════════════════════════════════
 
 const STORAGE_KEY = 'scada_knowledge_base_cache';
-const CACHE_TTL = 3600000; // 1 小时
+const CACHE_TTL = 3600000; // 1 hour
 const FETCH_TIMEOUT = 10000;
 
 function resolveKbUrl(): string {
@@ -131,7 +131,7 @@ function getAppVersion(): string {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 计算属性
+// Computed properties
 // ═══════════════════════════════════════════════════════════════
 
 const isLoaded = computed(() => kbData.value !== null);
@@ -169,7 +169,7 @@ const apiByCategory = computed(() => {
 const kbVersion = computed(() => meta.value?.version ?? 'builtin');
 
 // ═══════════════════════════════════════════════════════════════
-// 核心方法
+// Core methods
 // ═══════════════════════════════════════════════════════════════
 
 async function loadKb(forceRefresh = false, url?: string): Promise<boolean> {
@@ -181,7 +181,7 @@ async function loadKb(forceRefresh = false, url?: string): Promise<boolean> {
   fromFallback.value = false;
 
   try {
-    // 步骤 1：尝试从缓存加载
+    // Step 1: try loading from cache
     if (!forceRefresh) {
       const cached = loadFromCache();
       if (cached) {
@@ -193,7 +193,7 @@ async function loadKb(forceRefresh = false, url?: string): Promise<boolean> {
       }
     }
 
-    // 步骤 2：从远程加载
+    // Step 2: load from remote
     const result = await fetchKnowledgeBase(url);
     if (result) {
       kbData.value = result;
@@ -203,7 +203,7 @@ async function loadKb(forceRefresh = false, url?: string): Promise<boolean> {
       return true;
     }
 
-    // 步骤 3：fallback
+    // Step 3: fallback
     kbData.value = buildFallbackKb();
     fromFallback.value = true;
     versionCheck.value = checkVersionCompat(kbData.value.meta);
@@ -279,12 +279,12 @@ function getExamplesByCategory(category: string): ScriptExample[] {
   return cat?.items ?? [];
 }
 
-/** 根据图元插件类型获取其属性 Schema */
+/** Get the property schema of a graphic plugin type */
 function getGraphicSchema(pluginType: string): GraphicSchema | undefined {
   return graphicSchemas.value.find((s) => s.pluginType === pluginType);
 }
 
-/** 搜索图元类型 */
+/** Search graphic types */
 function searchGraphicSchema(keyword: string): GraphicSchema[] {
   const lower = keyword.toLowerCase();
   return graphicSchemas.value.filter(
@@ -295,7 +295,7 @@ function searchGraphicSchema(keyword: string): GraphicSchema[] {
   );
 }
 
-/** 获取所有图元类型列表 */
+/** Get the list of all graphic types */
 function getAllGraphicTypes(): { pluginType: string; displayName: string; category: string }[] {
   return graphicSchemas.value.map((s) => ({
     pluginType: s.pluginType,
@@ -313,12 +313,12 @@ async function loadVersions(): Promise<void> {
       versionsInfo.value = await response.json();
     }
   } catch {
-    // 忽略
+    // Ignore
   }
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 辅助函数
+// Helper functions
 // ═══════════════════════════════════════════════════════════════
 
 function getCategoryLabel(category: string): string {
@@ -378,7 +378,7 @@ function compareVersion(v1: string, v2: string): number {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 本地缓存
+// Local cache
 // ═══════════════════════════════════════════════════════════════
 
 function loadFromCache(): KnowledgeBaseJson | null {
@@ -400,7 +400,7 @@ function saveToCache(data: KnowledgeBaseJson): void {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ data, timestamp: Date.now() }));
   } catch {
-    // 忽略
+    // Ignore
   }
 }
 
@@ -408,17 +408,17 @@ function clearCache(): void {
   try {
     localStorage.removeItem(STORAGE_KEY);
   } catch {
-    // 忽略
+    // Ignore
   }
 }
 
 // ═══════════════════════════════════════════════════════════════
-// Composable 导出
+// Composable export
 // ═══════════════════════════════════════════════════════════════
 
 export function useKnowledgeBase() {
   return {
-    // 状态
+    // State
     kbData: readonly(kbData) as DeepReadonly<typeof kbData>,
     isLoading: readonly(isLoading),
     loadError: readonly(loadError),
@@ -427,7 +427,7 @@ export function useKnowledgeBase() {
     fromFallback: readonly(fromFallback),
     versionsInfo: readonly(versionsInfo),
 
-    // 计算属性
+    // Computed properties
     isLoaded,
     meta,
     apiRegistry,
@@ -437,7 +437,7 @@ export function useKnowledgeBase() {
     apiByCategory,
     kbVersion,
 
-    // 方法
+    // Methods
     loadKb,
     refreshKb,
     getApiByName,

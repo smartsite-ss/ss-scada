@@ -430,6 +430,36 @@ findOne(@Param('projectId') projectId: string, @Param('deviceId') deviceId: stri
 | 事件 payload 用 `tid`                                        | 事件 payload 用 `projectId` + `tenantId`                                                           | 事件契约已更新                                                      |
 | 参数名 `projectName` 却传 tid 值                             | 参数名 `projectId`，值 = projectId                                                                 | 名实一致                                                            |
 
+### 5.6 标识符、文件名与脚本语言规范（强制）
+
+> **核心原则：所有代码相关的标识符与文件名必须使用英文（ASCII），禁止出现中文或其他非 ASCII 字符。**
+
+**适用范围**：
+
+| 类别 | 示例 | 要求 |
+| --- | --- | --- |
+| 源代码文件名 | `device.api.ts`、`DeviceListView.vue` | 英文 + 既定大小写（见 §5.3） |
+| 测试文件名 | `device.service.spec.ts`、`App.test.tsx` | 英文，禁止中文 |
+| 批处理文件（`.bat`） | `start.bat`、`kill-node.bat` | 文件名英文；文件内注释/输出信息统一英文（见 §5.2 #5） |
+| 构建/运维脚本 | `build.sh`、`deploy.ps1`、`ci.yml` | 文件名与内部变量英文 |
+| 目录名 | `device/`、`data-tag/` | kebab-case 或小写英文（如 `图片/` → `images/`、`用户手册.md` → `05-user-manual.md`） |
+| 代码标识符 | 变量 `projectId`、函数 `handleSave`、类 `DeviceService`、常量 `DEFAULT_SCAN_RATE` | 纯英文（结合 §5.5 全称命名） |
+| 配置键 / 环境变量 | `VITE_API_BASE_URL`、`PORT` | 英文大写 / kebab |
+
+**禁止示例**：
+
+- ❌ 中文文件名：`用户手册.md`、`部署运维.md`（已统一改为 `05-user-manual.md` / `06-deployment-ops.md`）
+- ❌ 中文目录名：`图片/`（已改为 `images/`）
+- ❌ 中文变量/函数名：`用户列表`、`设备数量`
+
+**允许例外**（非代码标识符，可使用中文 / 本地语言）：
+
+- 用户可见的业务数据值：如 `projectName` 字段存 `测试工程`
+- i18n 翻译值：`zh-CN.json` 中的界面文本
+- 文档正文（设计文档、README 说明文字）
+
+**与现有规则关系**：本规范是 §5.2 #5（`.bat` 文件 UTF-8 + 英文注释/输出）与 §5.5（标识符全称英文命名）在「语言」层面的统一收紧——不仅注释和输出，连**文件名、目录名、变量名本身**也不得包含中文等非 ASCII 字符。
+
 ---
 
 ## 6. 架构关键模式
@@ -922,7 +952,8 @@ pnpm --filter @scada-editor/core build
 | v1.5 | 2026-08-03 | 修正 §5.5.1/§5.5.5/§5.5.10：`device.tid`（设备编码）推荐全称由 `tagId` 改为 `deviceCode`——经查 `tagId` 已固化含义为 DataTag UUID（后端 1325 + 前端 872 = 2197 处），若用于设备编码将造成一名两义                                                                                                                                                                                       | GLM-5.2         |
 | v1.6 | 2026-08-03 | L3 重构实施完成：`device.tid` → `device.deviceCode` 全量落地。后端 ss-device（实体/DTO/Service/导入导出/备份/错误常量）+ ss-collector-sdk（IDeviceContext）+ ss-cli（设备创建向导/命令）+ ss-core/ai（backend-tools）；前端 api types + device.api.ts + 6 视图组件 + i18n；后端 9 个 spec + 前端 5 个测试文件同步更新；DB 列名保留 `tid`（策略 A 零 migration）；导入兼容旧 `tid` 字段 | GLM-5.2         |
 | v1.7 | 2026-08-03 | 策略 B 实施完成：DB 列名 `tid`→`device_code` / `name`→`device_name`（snake_case）。更新 §5.5.5/§5.5.10：实体 `@Column` name 属性更新；init-system-db.sql + 001-initial-schema.sql 同步；新增 `renameDeviceColumnsPreSync` pre-sync 迁移（复用 `migrateNullProjectIdsPreSync` 模式）；11 个现有项目 DB 全部自动迁移成功，数据零丢失；467 测试全通过；设备 CRUD API 验证通过             | GLM-5.2         |
+| v1.8 | 2026-11-01 | 新增 §5.6 标识符、文件名与脚本语言规范（强制）：代码/测试文件、`.bat`、构建运维脚本、目录名、代码标识符一律使用英文（ASCII），禁止中文等非 ASCII 字符；明确允许例外（用户可见业务数据、i18n 翻译值、文档正文）；与 §5.2 #5、§5.5 在语言层面统一收紧 | Hy3          |
 
 ---
 
-最后更新：2026-08-03
+最后更新：2026-11-01

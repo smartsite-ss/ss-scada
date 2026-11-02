@@ -116,13 +116,16 @@ export type DataAction =
   | DataActionTriggerAction
 
 /**
- * 数据管道告警事件（简化版）。
+ * Simplified data-pipeline alarm event.
  *
- * 与 alarm.types.ts 的 AlarmRecord（完整告警记录）不同：
- * - 本接口用于 DataDriverEngine 数据管道输出，仅包含驱动脚本触发的告警基本信息
- * - alarm.types.ts 的 AlarmRecord 用于告警系统完整记录，包含 definitionId/state/escalationLevel 等
+ * Unlike AlarmRecord in alarm.types.ts (the full alarm record):
+ * - This interface is used for DataDriverEngine pipeline output and only carries basic
+ *   alarm info triggered by driver scripts
+ * - AlarmRecord in alarm.types.ts is the complete record used by the alarm system
+ *   (definitionId / state / escalationLevel, etc.)
  *
- * 两者不合并以避免数据管道依赖告警系统的完整字段定义。
+ * The two are kept separate to avoid the data pipeline depending on the alarm
+ * system's full field definitions.
  */
 export interface AlarmRecord {
   id: string

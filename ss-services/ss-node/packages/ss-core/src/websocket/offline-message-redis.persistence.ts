@@ -7,13 +7,13 @@ import type Redis from 'ioredis';
 import type { OfflineMessage } from './offline-message.service';
 
 /**
- * OfflineMessage Redis 持久化辅助类
+ * OfflineMessage Redis persistence helper
  *
- * 作为 OfflineMessageService 的可选持久化层，在服务重启后恢复离线消息。
- * 设计原则：
- * - 所有方法 async + try-catch，失败时 warn 日志，不阻断主流程
- * - Redis 不可用时降级为纯内存模式
- * - key 格式：ws:offline:msg:{userId} → JSON string of OfflineMessage[]
+ * Serves as an optional persistence layer for OfflineMessageService, restoring offline messages after service restart.
+ * Design principles:
+ * - All methods async + try-catch; failures warn and do not block the main flow
+ * - Degrades to pure in-memory mode when Redis is unavailable
+ * - key format: ws:offline:msg:{userId} -> JSON string of OfflineMessage[]
  */
 @Injectable()
 export class OfflineMessageRedisPersistence implements OnModuleDestroy {
@@ -27,8 +27,8 @@ export class OfflineMessageRedisPersistence implements OnModuleDestroy {
   }
 
   /**
-   * 从 Redis 加载所有用户的离线消息（服务启动时调用）
-   * @returns userId → OfflineMessage[] 的 Map
+   * Load all users' offline messages from Redis (called at service startup)
+   * @returns a Map of userId -> OfflineMessage[]
    */
   async loadAllMessages(): Promise<Map<string, OfflineMessage[]>> {
     const result = new Map<string, OfflineMessage[]>();
@@ -62,7 +62,7 @@ export class OfflineMessageRedisPersistence implements OnModuleDestroy {
   }
 
   /**
-   * 持久化用户的离线消息列表
+   * Persist a user's offline-message list
    */
   async persistMessages(userId: string, messages: OfflineMessage[]): Promise<void> {
     try {
@@ -77,7 +77,7 @@ export class OfflineMessageRedisPersistence implements OnModuleDestroy {
   }
 
   /**
-   * 删除用户的离线消息
+   * Delete a user's offline messages
    */
   async deleteMessages(userId: string): Promise<void> {
     try {
@@ -88,7 +88,7 @@ export class OfflineMessageRedisPersistence implements OnModuleDestroy {
   }
 
   /**
-   * 删除所有离线消息（谨慎使用）
+   * Delete all offline messages (use with caution)
    */
   async deleteAllMessages(): Promise<void> {
     try {
@@ -103,7 +103,7 @@ export class OfflineMessageRedisPersistence implements OnModuleDestroy {
   }
 
   /**
-   * 使用 SCAN 扫描匹配的 key（避免 KEYS 阻塞）
+   * Scan matching keys with SCAN (avoiding KEYS blocking)
    */
   private async scanKeys(pattern: string): Promise<string[]> {
     const result: string[] = [];
@@ -118,7 +118,7 @@ export class OfflineMessageRedisPersistence implements OnModuleDestroy {
 
   onModuleDestroy(): void {
     this.client.quit().catch(() => {
-      // 忽略关闭错误
+      // Ignore close errors
     });
   }
 }

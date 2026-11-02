@@ -4,7 +4,7 @@
 
 import { SelectionMode, ISelectionState } from '../../types';
 
-// 回调配置接口
+// Callback configuration interface
 interface Subscription {
   id: string;
   callback: (state: ISelectionState) => void;
@@ -24,8 +24,8 @@ export class SelectionManager {
     height: 0,
   };
   private subscriptions: Subscription[] = [];
-  
-  // 历史记录
+
+  // History records
   private history: ISelectionState[] = [];
   private historyIndex = -1;
   private maxHistoryLength = 50;
@@ -34,7 +34,7 @@ export class SelectionManager {
     if (onChange) {
       this.subscribe(onChange);
     }
-    // 保存初始状态
+    // Save the initial state
     this.saveCurrentState();
   }
 
@@ -47,22 +47,22 @@ export class SelectionManager {
       selectionRect: { ...this.selectionRect },
     };
   }
-  
-  // 获取选择框状态
+
+  // Get the selection box state
   getIsSelecting(): boolean {
     return this.isSelecting;
   }
-  
+
   setIsSelecting(isSelecting: boolean): void {
     this.isSelecting = isSelecting;
     this.notifyChange();
   }
-  
-  // 获取选择框矩形
+
+  // Get the selection box rectangle
   getSelectionRect(): { left: number; top: number; width: number; height: number } {
     return { ...this.selectionRect };
   }
-  
+
   setSelectionRect(rect: { left: number; top: number; width: number; height: number }): void {
     this.selectionRect = { ...rect };
     this.notifyChange();
@@ -82,7 +82,7 @@ export class SelectionManager {
     const subscription: Subscription = { id, callback, priority, once };
     this.subscriptions.push(subscription);
     this.subscriptions.sort((a, b) => b.priority - a.priority);
-    
+
     return () => this.unsubscribe(id);
   }
 
@@ -241,9 +241,9 @@ export class SelectionManager {
     if (this.historyIndex < this.history.length - 1) {
       this.history = this.history.slice(0, this.historyIndex + 1);
     }
-    
+
     this.history.push(this.getState());
-    
+
     if (this.history.length > this.maxHistoryLength) {
       this.history.shift();
     } else {
@@ -322,7 +322,7 @@ export class SelectionManager {
   private notifyChange(): void {
     const state = this.getState();
     const toRemove: string[] = [];
-    
+
     for (const subscription of this.subscriptions) {
       try {
         subscription.callback(state);
@@ -333,7 +333,7 @@ export class SelectionManager {
         console.error('Error in selection callback:', error);
       }
     }
-    
+
     for (const id of toRemove) {
       this.unsubscribe(id);
     }

@@ -6,18 +6,18 @@ import type { IDataSourceDriver } from './IDataSourceDriver';
 import type { DataSourceConfig, DataSourceStatus, TagValue, TagMeta } from '../types/data-source.types';
 
 /**
- * AbstractBaseDriver — 数据源驱动抽象基类
+ * AbstractBaseDriver — abstract base class for data source drivers
  *
- * 封装 5 个 driver 共有的样板逻辑：
- * - _callbacks 数组 + onData / offData / _notify 三件套
- * - _tags 集合 + subscribe / unsubscribe 默认实现
- * - _status 字段 + getStatus
- * - write() 默认抛 UnsupportedError
- * - getAvailableTags() 默认返回空数组
- * - 指数退避重试工具方法 _withRetry
- * - staleData 降级推送，统一质量码为 'stale'
+ * Encapsulates boilerplate shared by the 5 drivers:
+ * - _callbacks array + the onData / offData / _notify trio
+ * - _tags set + default subscribe / unsubscribe implementations
+ * - _status field + getStatus
+ * - write() defaults to throwing UnsupportedError
+ * - getAvailableTags() defaults to an empty array
+ * - Exponential-backoff retry utility _withRetry
+ * - staleData degradation push, with the unified quality code 'stale'
  *
- * 子类只需实现：connect / disconnect / _fetchOnce（业务逻辑）
+ * Subclasses only implement: connect / disconnect / _fetchOnce (business logic)
  */
 export abstract class AbstractBaseDriver implements IDataSourceDriver {
   protected _status: DataSourceStatus = 'disconnected';
@@ -25,25 +25,25 @@ export abstract class AbstractBaseDriver implements IDataSourceDriver {
   protected _tags: string[] = [];
   protected _staleData: TagValue[] | null = null;
 
-  /** 子类共享的配置，connect 时由子类解析后写入 */
+  /** Shared config for subclasses; resolved and written by the subclass on connect */
   protected _rawConfig: DataSourceConfig | null = null;
 
-  /** 默认最大重试次数，子类可覆盖 */
+  /** Default max retry count; subclasses can override */
   protected _maxRetries = 3;
 
-  /** 当前重试计数（每次成功后归零） */
+  /** Current retry count (reset to zero after each success) */
   protected _retryCount = 0;
 
   abstract connect(config: DataSourceConfig): Promise<void>;
 
   abstract disconnect(): Promise<void>;
 
-  /** 默认订阅实现：合并去重；子类可覆盖以添加事件监听等副作用 */
+  /** Default subscribe implementation: merge and dedupe; subclasses can override to add event listeners etc. */
   subscribe(tagIds: string[]): void {
     this._tags = [...new Set([...this._tags, ...tagIds])];
   }
 
-  /** 默认取消订阅实现：差集过滤 */
+  /** Default unsubscribe implementation: difference filtering */
   unsubscribe(tagIds: string[]): void {
     this._tags = this._tags.filter((t) => !tagIds.includes(t));
   }
@@ -60,7 +60,7 @@ export abstract class AbstractBaseDriver implements IDataSourceDriver {
     return this._status;
   }
 
-  /** 默认不支持写操作；StaticDataSource 等可写驱动覆盖此方法 */
+  /** Write operations not supported by default; writable drivers such as StaticDataSource override this */
   async write(_tagId: string, _value: unknown): Promise<void> {
     throw new Error(`${this.constructor.name} does not support write operations`);
   }
@@ -70,7 +70,7 @@ export abstract class AbstractBaseDriver implements IDataSourceDriver {
   }
 
   /**
-   * 通知所有 onData 回调，每个回调独立 try/catch 避免单回调异常影响其他回调。
+   * Notify all onData callbacks; each callback has its own try/catch so one failure does not affect others.
    */
   protected _notify(values: TagValue[]): void {
     for (const cb of this._callbacks) {
@@ -79,8 +79,9 @@ export abstract class AbstractBaseDriver implements IDataSourceDriver {
   }
 
   /**
-   * 推送 stale 降级数据。统一质量码为 'stale'，消除 HttpPolling/SqlQuery 之前的语义分歧。
-   * @param fallbackQuality 可选，覆盖默认的 'stale'（用于保留 driver 特有语义）
+   * Push stale degradation data. Unified quality code 'stale', eliminating the pre-existing
+   * semantic divergence between HttpPolling/SqlQuery.
+   * @param fallbackQuality optional, overrides the default 'stale' (to preserve driver-specific semantics)
    */
   protected _notifyStaleData(fallbackQuality: TagValue['quality'] = 'stale'): void {
     if (!this._staleData || this._staleData.length === 0) return;
@@ -93,13 +94,13 @@ export abstract class AbstractBaseDriver implements IDataSourceDriver {
   }
 
   /**
-   * 指数退避重试工具方法。
-   * - 退避公式：min(1000 * 2^(retry-1), 30000)
-   * - 成功时 _retryCount 归零
-   * - 超过 _maxRetries 时推送 stale 降级数据并抛出最后一次错误
+   * Exponential-backoff retry utility.
+   * - Backoff formula: min(1000 * 2^(retry-1), 30000)
+   * - On success _retryCount resets to zero
+   * - Beyond _maxRetries, push stale degradation data and throw the last error
    *
-   * @param fn 待重试的异步操作
-   * @param staleFallbackQuality 降级时使用的质量码
+   * @param fn the async operation to retry
+   * @param staleFallbackQuality quality code used on degradation
    */
   protected async _withRetry<T>(
     fn: () => Promise<T>,
@@ -119,7 +120,7 @@ export abstract class AbstractBaseDriver implements IDataSourceDriver {
         return this._withRetry(fn, staleFallbackQuality);
       }
 
-      // 超过最大重试次数，推送降级数据
+      // Beyond max retries, push degradation data
       this._notifyStaleData(staleFallbackQuality);
       throw err;
     }

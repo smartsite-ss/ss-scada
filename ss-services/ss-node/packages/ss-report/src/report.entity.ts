@@ -99,7 +99,7 @@ export interface ReportChart {
 }
 
 /**
- * 报表模板 — 可复用的报表配置，支持基于模板快速生成报表或定时导出。
+ * Report template - a reusable report config, supporting quick report generation or scheduled export from a template.
  */
 @Entity('prj_report_templates')
 export class ReportTemplate extends ProjectScopedEntity {
@@ -114,7 +114,7 @@ export class ReportTemplate extends ProjectScopedEntity {
 }
 
 /**
- * 定时导出任务 — 按 cron 表达式定时生成报表并导出为文件。
+ * Scheduled-export task - generates a report on a cron schedule and exports it to a file.
  */
 @Entity('prj_report_schedules')
 export class ReportSchedule extends ProjectScopedEntity {
@@ -138,7 +138,7 @@ export class ReportSchedule extends ProjectScopedEntity {
 }
 
 /**
- * 定时导出历史记录 — 记录每次定时导出执行结果。
+ * Scheduled-export history - records each scheduled export's execution result.
  */
 @Entity('prj_report_export_history')
 export class ReportExportHistory {

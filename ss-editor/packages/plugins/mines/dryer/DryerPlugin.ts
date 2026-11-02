@@ -7,17 +7,17 @@ import { dryerPropertySchema } from './dryerPropertySchema';
 import { i18n, registerLocaleModules } from '@scada-editor/core';
 registerLocaleModules(import.meta.glob('./locales/*.json', { eager: true }));
 export type DryerProps = InferSchemaProps<typeof dryerPropertySchema> & {
-  /** 设备 UUID 主键（绑定回显/反查用） */
+  /** Device UUID primary key (for binding echo / reverse lookup) */
   deviceId: string;
-  /** 设备编码（用户可读，展示用） */
+  /** Device code (user-readable, for display) */
   deviceCode: string;
-  /** 设备名称（展示用） */
+  /** Device name (for display) */
   deviceName: string;
-  /** 标签 ID（运行态订阅的唯一标识） */
+  /** Tag ID (unique identifier for runtime subscription) */
   tagId: string;
-  /** 标签名称（展示用） */
+  /** Tag name (for display) */
   tagName: string;
-  /** 标签数据类型（用于格式化判断） */
+  /** Tag data type (used for formatting decisions) */
   dataType: string;
 };
 

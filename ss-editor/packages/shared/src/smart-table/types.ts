@@ -5,34 +5,34 @@
 import type { VNode } from 'vue';
 
 // ============================================================
-// Column 配置
+// Column configuration
 // ============================================================
 
-/** 内置格式化器 */
+/** Built-in formatters */
 export type FormatterType =
   | 'time'      // → "07-09 14:30"
   | 'period'    // → "1.0s" / "30.0s" / "2.0min"
-  | 'status'    // → 渲染 status-badge
-  | 'bool'      // → "是" / "否"
-  | 'number'    // → 千分位
+  | 'status'    // → renders status-badge
+  | 'bool'      // → e.g. "Yes" / "No"
+  | 'number'    // → thousands separator
   | 'percent';  // → "85.0%"
 
-/** 列编辑器类型 */
+/** Column editor type */
 export type ColumnEditor = 'text' | 'number' | 'select' | 'date';
 
-/** 编辑器下拉选项 */
+/** Editor dropdown options */
 export interface EditorOption {
   label: string;
   value: string | number | boolean;
 }
 
-/** 单元格合并信息 */
+/** Cell span info */
 export interface CellSpan {
   colspan: number;
   rowspan: number;
 }
 
-/** 合并单元格方法 */
+/** Cell span method */
 export type SpanMethod<T = any> = (
   row: T,
   column: SmartTableColumn<T>,
@@ -40,7 +40,7 @@ export type SpanMethod<T = any> = (
   columnIndex: number,
 ) => CellSpan;
 
-/** 列定义 */
+/** Column definition */
 export interface SmartTableColumn<T = any> {
   key: string;
   title: string | ((col: SmartTableColumn<T>) => string);
@@ -58,20 +58,20 @@ export interface SmartTableColumn<T = any> {
   headerClassName?: string;
   exportTitle?: string;
   excludeFromExport?: boolean;
-  /** 该列是否可编辑（需配合 editable prop 开启） */
+  /** Whether this column is editable (requires the editable prop enabled) */
   editable?: boolean;
-  /** 编辑器类型，默认 'text' */
+  /** Editor type, defaults to 'text' */
   editor?: ColumnEditor;
-  /** select 编辑器的选项 */
+  /** Options for the select editor */
   editorOptions?: EditorOption[];
-  /** 列级 colspan 计算（返回数字，默认 1） */
+  /** Column-level colspan calculation (returns a number, default 1) */
   colspan?: (row: T, rowIndex: number) => number;
-  /** 列级 rowspan 计算（返回数字，默认 1） */
+  /** Column-level rowspan calculation (returns a number, default 1) */
   rowspan?: (row: T, rowIndex: number) => number;
 }
 
 // ============================================================
-// 分页
+// Pagination
 // ============================================================
 
 export interface PaginationConfig {
@@ -87,7 +87,7 @@ export interface PageChangeEvent {
 }
 
 // ============================================================
-// 列配置持久化
+// Column config persistence
 // ============================================================
 
 export interface ColumnPersist {
@@ -96,7 +96,7 @@ export interface ColumnPersist {
 }
 
 // ============================================================
-// 导出
+// Export
 // ============================================================
 
 export type ExportFormat = 'xlsx' | 'csv' | 'png';
@@ -108,7 +108,7 @@ export interface ExportEvent {
 }
 
 // ============================================================
-// 排序
+// Sorting
 // ============================================================
 
 export interface SortConfig {
@@ -122,10 +122,10 @@ export interface SortChangeEvent {
 }
 
 // ============================================================
-// 行编辑
+// Row editing
 // ============================================================
 
-/** 行编辑事件 payload */
+/** Row edit event payload */
 export interface RowEditEvent<T = any> {
   row: T;
   rowId: any;
@@ -133,20 +133,20 @@ export interface RowEditEvent<T = any> {
 }
 
 // ============================================================
-// 树形表格
+// Tree table
 // ============================================================
 
-/** 扁平化后的树节点行 */
+/** Flattened tree node row */
 export interface FlatTreeRow<T = any> {
   row: T;
   level: number;
   hasChildren: boolean;
   rawIndex: number;
-  /** 在原始 data 中的父级路径，用于事件回传 */
+  /** Parent path in the original data, used for event callback */
   parentKey?: any;
 }
 
-/** 树展开/折叠事件 payload */
+/** Tree expand/collapse event payload */
 export interface TreeExpandEvent<T = any> {
   row: T;
   rowKey: any;

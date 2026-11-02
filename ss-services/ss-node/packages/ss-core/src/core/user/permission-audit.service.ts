@@ -8,29 +8,29 @@ import { Repository, FindOptionsWhere } from 'typeorm';
 import { PermissionAuditLog } from './entities/permission-audit-log.entity';
 
 /**
- * 审计日志查询参数
+ * Audit-log query params
  */
 export interface AuditLogQueryDto {
-  /** 页码（从 1 开始） */
+  /** Page number (starting from 1) */
   page?: number;
-  /** 每页条数 */
+  /** Items per page */
   pageSize?: number;
-  /** 操作人 ID */
+  /** Operator ID */
   operatorId?: string;
-  /** 操作类型 */
+  /** Operation type */
   action?: string;
-  /** 目标类型 */
+  /** Target type */
   targetType?: string;
-  /** 目标 ID */
+  /** Target ID */
   targetId?: string;
-  /** 开始时间 */
+  /** Start time */
   startDate?: string;
-  /** 结束时间 */
+  /** End time */
   endDate?: string;
 }
 
 /**
- * 审计日志创建参数
+ * Audit-log creation params
  */
 export interface CreateAuditLogDto {
   operatorId: string;
@@ -43,13 +43,13 @@ export interface CreateAuditLogDto {
 }
 
 /**
- * 权限变更审计服务 — v7.0 新增
+ * Permission-change audit service - added in v7.0
  *
- * 记录所有权限相关变更操作：
- *   - 角色创建/删除
- *   - 角色权限码修改
- *   - 数据授权变更（项目/分组/设备）
- *   - 用户角色分配/撤销
+ * Records all permission-related change operations:
+ *   - Role creation/deletion
+ *   - Role permission-code modification
+ *   - Data-authorization changes (project/group/device)
+ *   - User role assignment/revocation
  */
 @Injectable()
 export class PermissionAuditService {
@@ -59,7 +59,7 @@ export class PermissionAuditService {
   ) {}
 
   /**
-   * 记录一条审计日志
+   * Record one audit log
    */
   async log(dto: CreateAuditLogDto): Promise<PermissionAuditLog> {
     const log = this.auditRepo.create({
@@ -75,7 +75,7 @@ export class PermissionAuditService {
   }
 
   /**
-   * 查询审计日志（支持分页和筛选）
+   * Query audit logs (supports pagination and filtering)
    */
   async findAll(
     query: AuditLogQueryDto = {},
@@ -108,7 +108,7 @@ export class PermissionAuditService {
   }
 
   /**
-   * 按操作人查询审计日志
+   * Query audit logs by operator
    */
   async findByOperator(
     operatorId: string,
@@ -119,7 +119,7 @@ export class PermissionAuditService {
   }
 
   /**
-   * 按目标查询审计日志
+   * Query audit logs by target
    */
   async findByTarget(
     targetType: string,
@@ -131,7 +131,7 @@ export class PermissionAuditService {
   }
 
   /**
-   * 按时间范围查询审计日志
+   * Query audit logs by time range
    */
   async findByDateRange(
     startDate: string,
@@ -163,7 +163,7 @@ export class PermissionAuditService {
   }
 
   /**
-   * 获取最新的 N 条审计日志
+   * Get the latest N audit logs
    */
   async findRecent(limit = 50): Promise<PermissionAuditLog[]> {
     return this.auditRepo.find({

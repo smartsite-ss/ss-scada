@@ -6,19 +6,20 @@ import { Injectable, Logger } from '@nestjs/common';
 import * as path from 'path';
 
 /**
- * 路径解析服务（全局单例）
+ * Path-resolution service (global singleton)
  *
- * 统一封装项目根目录的获取与相对路径解析，消除 packages 下各服务对 __dirname 上溯的依赖。
+ * Unified wrapper for obtaining the project root and resolving relative paths,
+ * eliminating the __dirname upward-traversal dependency across services under packages.
  *
- * 项目根来源于 process.env.SS_NODE_ROOT，由 app.module.ts 中的 initProjectRoot()
- * 在应用启动时（ConfigModule.forRoot 之前）设置：
+ * The project root comes from process.env.SS_NODE_ROOT, set by initProjectRoot() in app.module.ts
+ * at application startup (before ConfigModule.forRoot):
  *
- *   - dev 模式：SS_NODE_ROOT = ss-services/ss-node/
- *   - prod 模式：SS_NODE_ROOT = ss-run/ss/services/ss-node/
+ *   - dev mode: SS_NODE_ROOT = ss-services/ss-node/
+ *   - prod mode: SS_NODE_ROOT = ss-run/ss/services/ss-node/
  *
- * Fallback：若 SS_NODE_ROOT 未设置（如独立运行的脚本），回退到 process.cwd()。
+ * Fallback: if SS_NODE_ROOT is not set (e.g. standalone scripts), fall back to process.cwd().
  *
- * 使用方式：
+ * Usage:
  *
  *   constructor(private readonly pathResolver: PathResolverService) {}
  *
@@ -36,16 +37,16 @@ export class PathResolverService {
     this.logger.log(`SS_NODE_ROOT resolved to: ${this.projectRoot}`);
   }
 
-  /** 获取项目根目录绝对路径 */
+  /** Get the project-root absolute path */
   getProjectRoot(): string {
     return this.projectRoot;
   }
 
   /**
-   * 将相对路径解析为绝对路径（相对于项目根）
-   * - 空路径返回项目根
-   * - 绝对路径原样返回
-   * - 相对路径相对于项目根解析
+   * Resolve a relative path to an absolute path (relative to the project root)
+   * - Empty path returns the project root
+   * - Absolute paths returned as-is
+   * - Relative paths resolved against the project root
    */
   resolve(relativePath: string): string {
     if (!relativePath) return this.projectRoot;
@@ -54,9 +55,9 @@ export class PathResolverService {
   }
 
   /**
-   * 便捷方法：解析环境变量指定的路径
-   * @param envVar 环境变量名（如 'PROJECTS_DIR'）
-   * @param defaultValue 默认值（环境变量未设置时使用）
+   * Convenience method: resolve the path specified by an env var
+   * @param envVar env var name (e.g. 'PROJECTS_DIR')
+   * @param defaultValue default value (used when the env var is unset)
    */
   resolveEnv(envVar: string, defaultValue: string): string {
     const configured = process.env[envVar] || defaultValue;

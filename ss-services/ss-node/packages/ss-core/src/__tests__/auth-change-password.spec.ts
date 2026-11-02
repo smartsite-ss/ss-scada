@@ -25,7 +25,7 @@ const mockJwtService = {
   sign: jest.fn(),
 };
 
-// Mock AuditLoggerService（S-M02: 审计日志，无需实际写入文件）
+// Mock AuditLoggerService (S-M02: audit log, no real file writes needed)
 const mockAuditLoggerService = {
   logSecurityEvent: jest.fn(),
 };

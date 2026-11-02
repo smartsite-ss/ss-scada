@@ -13,7 +13,7 @@ export interface CreateRoleDto {
   code: string;
   description?: string;
   permissions?: string[];
-  /** 角色可见菜单 ID 列表（全量替换） */
+  /** List of menu IDs visible to the role (full replacement) */
   menuIds?: string[];
   sortOrder?: number;
 }
@@ -22,12 +22,12 @@ export interface UpdateRoleDto {
   name?: string;
   description?: string;
   permissions?: string[];
-  /** 角色可见菜单 ID 列表（全量替换） */
+  /** List of menu IDs visible to the role (full replacement) */
   menuIds?: string[];
   sortOrder?: number;
 }
 
-/** 系统内置角色默认权限码（来自 permission-codes.ts，与设计文档 §3.3 保持一致） */
+/** Default permission codes of system built-in roles (from permission-codes.ts, consistent with design doc section 3.3) */
 const SYSTEM_ROLE_PERMISSIONS: Record<string, string[]> = {
   admin: DEFAULT_ROLE_PERMISSIONS.admin as string[],
   user: DEFAULT_ROLE_PERMISSIONS.user as string[],
@@ -77,7 +77,7 @@ export class RoleService {
     if (dto.name !== undefined) role.name = dto.name;
     if (dto.description !== undefined) role.description = dto.description;
     if (dto.permissions !== undefined) role.permissions = dto.permissions;
-    // 菜单 ID 列表采用全量替换策略：前端提交当前所有勾选项，直接覆盖
+    // Menu ID list uses full replacement: the frontend submits all currently checked items, overwriting directly
     if (dto.menuIds !== undefined) role.menuIds = dto.menuIds;
     if (dto.sortOrder !== undefined) role.sortOrder = dto.sortOrder;
     return this.roleRepository.save(role);
@@ -90,12 +90,12 @@ export class RoleService {
   }
 
   /**
-   * 一次性迁移：为已存在的 user/viewer 系统角色填充默认 menuIds
+   * One-time migration: fill default menuIds for existing user/viewer system roles
    *
-   * 仅当 menuIds 为空时填充，避免覆盖管理员已手动配置的数据；幂等。
-   * 在 onApplicationBootstrap 调用，确保 ss-system 的 syncDefaultMenus 已执行、sys_menus 表已填充。
-   * - admin 不处理（filterByMenuIds 会通过 isAdmin bypass 显示全部）
-   * - test 等用户自建角色不处理（由管理员在角色编辑页手动配置）
+   * Fills only when menuIds is empty, to avoid overwriting data manually configured by the admin; idempotent.
+   * Called in onApplicationBootstrap, ensuring ss-system's syncDefaultMenus has run and the sys_menus table is populated.
+   * - admin is not processed (filterByMenuIds shows everything via the isAdmin bypass)
+   * - user-created roles like test are not processed (configured manually by the admin in the role editor)
    */
   async migrateSystemRoleMenuIds(): Promise<void> {
     const allMenuIds = await this.queryAllMenuIds();
@@ -121,10 +121,10 @@ export class RoleService {
   }
 
   /**
-   * 每次启动时同步系统角色的默认权限（补充缺失的，不删除已有的）
+   * Sync system roles' default permissions on every startup (add missing ones, never delete existing)
    *
-   * 适用场景：DEFAULT_ROLE_PERMISSIONS 新增权限码后，已部署的系统角色自动补全。
-   * 只追加不删除，避免覆盖管理员在角色编辑页手动新增的权限。
+   * Scenario: after DEFAULT_ROLE_PERMISSIONS adds new permission codes, deployed system roles are auto-completed.
+   * Append-only, no deletion, to avoid overwriting permissions the admin manually added in the role editor.
    */
   async migrateSystemRolePermissions(): Promise<void> {
     const targets = await this.roleRepository.find({
@@ -153,8 +153,8 @@ export class RoleService {
   }
 
   /**
-   * 查询 sys_menus 表全部菜单 ID
-   * 使用裸 SQL 避免 import ss-system 的 Menu 实体导致 ss-core → ss-system 循环依赖
+   * Query all menu IDs from the sys_menus table
+   * Uses bare SQL to avoid importing ss-system's Menu entity, which would create a ss-core -> ss-system circular dependency
    */
   private async queryAllMenuIds(): Promise<string[]> {
     try {
@@ -168,21 +168,21 @@ export class RoleService {
     }
   }
 
-  /** 获取角色的权限码列表 */
+  /** Get a role's permission-code list */
   async getPermissions(roleId: string): Promise<string[]> {
     const role = await this.findById(roleId);
     return role.permissions || [];
   }
 
   /**
-   * 首次启动时初始化系统内置角色
-   * 如果 roles 表为空，则插入 admin/user/viewer 三个系统角色
+   * Initialize system built-in roles on first startup
+   * If the roles table is empty, insert the three system roles admin/user/viewer
    */
   async initSystemRoles(): Promise<void> {
     const count = await this.roleRepository.count();
     if (count > 0) return;
 
-    // 查询当前全部菜单 ID（首次启动时 sys_menus 可能尚未 sync，为空则填 []，由 migrateSystemRoleMenuIds 兜底）
+    // Query all current menu IDs (sys_menus may not be synced yet on first startup; fill [] when empty, migrateSystemRoleMenuIds is the fallback)
     const allMenuIds = await this.queryAllMenuIds();
 
     const systemRoles = [
@@ -191,7 +191,7 @@ export class RoleService {
         code: 'admin',
         description: '系统内置超级管理员角色，拥有所有权限',
         permissions: SYSTEM_ROLE_PERMISSIONS.admin,
-        // admin 通过 filterByMenuIds 的 isAdmin bypass 显示全部，无需配置 menuIds
+        // admin shows all menus via filterByMenuIds' isAdmin bypass; no menuIds config needed
         menuIds: [],
         isSystem: true,
         sortOrder: 0,
@@ -201,7 +201,7 @@ export class RoleService {
         code: 'user',
         description: '系统内置普通用户角色，拥有基本操作权限',
         permissions: SYSTEM_ROLE_PERMISSIONS.user,
-        // 默认可见全部菜单（与 v7.0 item.roles=['admin','user'] 行为对齐，避免切换后菜单变空）
+        // Default visible to all menus (aligned with v7.0 item.roles=['admin','user'] behavior, avoiding empty menus after switching)
         menuIds: [...allMenuIds],
         isSystem: true,
         sortOrder: 1,

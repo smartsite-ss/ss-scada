@@ -3,32 +3,32 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 数据查询相关类型定义
- * 与后端 ss-storage DataQueryController 对齐
+ * Data query type definitions
+ * Aligned with the backend ss-storage DataQueryController
  */
 
-/** 历史数据查询参数 */
+/** Historical data query parameters */
 export interface HistoryQueryParams {
-  /** 标签 ID 列表 */
+  /** Tag ID list */
   tagIds?: string[];
-  /** 开始时间 */
+  /** Start time */
   startTime?: Date;
-  /** 结束时间 */
+  /** End time */
   endTime?: Date;
-  /** 返回条数限制 */
+  /** Result limit */
   limit?: number;
-  /** 偏移量 */
+  /** Offset */
   offset?: number;
-  /** 排序方式 */
+  /** Sort order */
   order?: 'asc' | 'desc';
-  /** 聚合配置 */
+  /** Aggregation configuration */
   aggregation?: {
     function: 'avg' | 'max' | 'min' | 'sum' | 'count';
     interval?: string;
   };
 }
 
-/** 数据点 */
+/** Data point */
 export interface DataPoint {
   tagId: string;
   value: number | string | boolean | null;
@@ -36,7 +36,7 @@ export interface DataPoint {
   quality?: string;
 }
 
-/** 聚合数据点 */
+/** Aggregated data point */
 export interface AggregatedPoint {
   tagId: string;
   value: number;
@@ -44,7 +44,7 @@ export interface AggregatedPoint {
   count?: number;
 }
 
-/** 聚合查询参数 */
+/** Aggregation query parameters */
 export interface AggregatedQueryParams {
   tagIds: string[];
   startTime: Date;

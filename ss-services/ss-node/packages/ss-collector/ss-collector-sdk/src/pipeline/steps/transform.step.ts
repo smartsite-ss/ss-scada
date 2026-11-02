@@ -16,7 +16,7 @@ export class TransformStep implements PipelineStep {
 
   async process(ctx: PipelineContext): Promise<PipelineContext> {
     try {
-      // 如果 rawValue 为 null（通信错误），直接传递
+      // If rawValue is null (comm error), pass through directly
       if (ctx.rawValue === null || ctx.rawValue === undefined) {
         ctx.transformedValue = null;
         return ctx;
@@ -25,10 +25,10 @@ export class TransformStep implements PipelineStep {
       const tagConfig = ctx.tagConfig || {};
       const dataType: string = tagConfig.dataType || 'float32';
 
-      // 1. 基础类型转换 — 按 dataType 保留原始语义（兼容点表规范字符串 'boolean'）
-      //    - bool: 保留 boolean，避免被转成 0/1
-      //    - string: 保留字符串，避免 parseFloat 丢失非数字字符串
-      //    - 数值型: parseRawValue 转为 number
+      // 1. Basic type conversion - keep original semantics per dataType (compatible with tag-table spec string 'boolean')
+      //    - bool: keep boolean, avoid being converted to 0/1
+      //    - string: keep string, avoid parseFloat losing non-numeric strings
+      //    - numeric: parseRawValue converts to number
       let value: PipelineValue;
       if (isBooleanDataType(dataType)) {
         value = this.parseBoolValue(ctx.rawValue);
@@ -65,12 +65,12 @@ export class TransformStep implements PipelineStep {
         value = numValue;
       }
 
-      // 2. 应用转换配置（仅对数值型生效；bool/string 跳过线性/多项式转换）
+      // 2. Apply conversion config (only for numeric; bool/string skip linear/polynomial conversion)
       if (tagConfig.transform && typeof value === 'number') {
         value = this.applyTransform(value, tagConfig.transform, ctx);
       }
 
-      // 3. 转换结果验证（仅对数值型）
+      // 3. Conversion-result validation (numeric only)
       if (typeof value === 'number' && !isFinite(value)) {
         this.logger.warn(`Transform result is not finite for tag ${ctx.tagId}: ${value}`);
         ctx.transformedValue = null;
@@ -90,7 +90,7 @@ export class TransformStep implements PipelineStep {
       const errorMsg = error instanceof Error ? error.message : 'Unknown transform error';
       this.logger.error(`Data transformation error for tag ${ctx.tagId}: ${errorMsg}`);
 
-      // 降级：使用原始值
+      // Fallback: use the original value
       ctx.transformedValue = typeof ctx.rawValue === 'number' ? ctx.rawValue : null;
       ctx.quality = 'uncertain';
       ctx.errors.push({ step: this.name, message: errorMsg, code: 'TRANSFORM_ERROR' });
@@ -99,7 +99,7 @@ export class TransformStep implements PipelineStep {
     }
   }
 
-  /** 解析布尔值 — 支持 boolean / 0|1 / "true"|"false" / "0"|"1" */
+  /** Parse a boolean value - supports boolean / 0|1 / "true"|"false" / "0"|"1" */
   private parseBoolValue(rawValue: any): boolean | null {
     if (typeof rawValue === 'boolean') return rawValue;
     if (typeof rawValue === 'number') {
@@ -116,7 +116,7 @@ export class TransformStep implements PipelineStep {
     return null;
   }
 
-  /** 解析字符串值 — 任意值都转字符串，不会丢失 */
+  /** Parse a string value - any value becomes a string, nothing is lost */
   private parseStringValue(rawValue: any): string {
     if (typeof rawValue === 'string') return rawValue;
     return String(rawValue);
@@ -168,12 +168,12 @@ export class TransformStep implements PipelineStep {
         }
         const entry = transform.table.find((e: any) => e.raw === value);
         if (entry) return entry.eng;
-        // 线性插值
+        // Linear interpolation
         return this.interpolateTable(value, transform.table);
       }
 
       case 'script': {
-        // 脚本转换由 ScriptEngine 处理，这里仅做占位
+        // Script conversion is handled by ScriptEngine; this is only a placeholder
         this.logger.warn(`Script transform not yet implemented for tag ${ctx.tagId}`);
         return value;
       }
@@ -187,11 +187,11 @@ export class TransformStep implements PipelineStep {
   private interpolateTable(value: number, table: Array<{ raw: number; eng: number }>): number {
     const sorted = [...table].sort((a, b) => a.raw - b.raw);
 
-    // 边界外
+    // Out of bounds
     if (value <= sorted[0].raw) return sorted[0].eng;
     if (value >= sorted[sorted.length - 1].raw) return sorted[sorted.length - 1].eng;
 
-    // 查找区间
+    // Find the interval
     for (let i = 0; i < sorted.length - 1; i++) {
       if (value >= sorted[i].raw && value <= sorted[i + 1].raw) {
         const ratio = (value - sorted[i].raw) / (sorted[i + 1].raw - sorted[i].raw);

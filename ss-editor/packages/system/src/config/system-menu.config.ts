@@ -2,55 +2,55 @@
 // https://smartsite.top/
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
-// 系统菜单配置 — 集中化、国际化与权限控制
-// DB 唯一数据源方案：菜单结构仅存储于后端 sys_menus 表，前端通过 API 获取。
-// 本文件仅保留类型定义、权限码与角色权限映射，不再内置菜单默认值。
+// System menu configuration — centralization, i18n and permission control
+// DB-as-single-source-of-truth: menu structure is stored only in the backend sys_menus table; the frontend fetches it via API.
+// This file keeps only type definitions, permission codes and role-permission mappings; no built-in menu defaults.
 
-/** 系统角色枚举（与后端 UserRole 对齐） */
+/** System role enum (aligned with the backend UserRole) */
 export type SystemRole = 'admin' | 'user' | 'viewer';
 
-/** 系统菜单项 */
+/** System menu item */
 export interface SystemMenuItem {
-  /** 唯一标识，对应路由 name（如 'projects'） */
+  /** Unique identifier, corresponds to the route name (e.g. 'projects') */
   id: string;
-  /** i18n 翻译 key，用于 $t(key) 获取显示文本 */
+  /** i18n translation key, used by $t(key) to get the display text */
   labelKey: string;
-  /** 路由路径，相对于 /system（'' 表示 /system，'/projects' 表示 /system/projects） */
+  /** Route path relative to /system ('' means /system, '/projects' means /system/projects) */
   path: string;
-  /** 图标名称，映射到 SystemMenuIcon 组件 */
+  /** Icon name, mapped to the SystemMenuIcon component */
   icon: string;
-  /** 子菜单项（可选） */
+  /** Sub-menu items (optional) */
   children?: SystemMenuItem[];
-  /** 权限角色要求，undefined/null 表示所有用户可访问 */
+  /** Required permission roles; undefined/null means accessible to all users */
   roles?: SystemRole[];
-  /** 是否在顶栏导航显示（默认 true） */
+  /** Whether to show in the top-bar navigation (default true) */
   showInTopbar?: boolean;
-  /** 是否在侧栏显示（默认 true） */
+  /** Whether to show in the sidebar (default true) */
   showInSidebar?: boolean;
-  /** 是否为详情页（不在菜单中显示，但路由存在），如 device-detail */
+  /** Whether it is a detail page (not shown in menus, but the route exists), e.g. device-detail */
   isDetail?: boolean;
-  /** 排序权重，数字越小越靠前 */
+  /** Sort weight; smaller numbers come first */
   order?: number;
-  /** 子系统标识，NULL/undefined 表示全局菜单（所有子系统可见） */
+  /** Subsystem identifier; NULL/undefined means a global menu (visible in all subsystems) */
   subsystem?: string | null;
 }
 
-// ──────────── 权限码体系（方案B增强） ────────────
+// ──────────── Permission code system (Plan B enhancement) ────────────
 
 /**
- * 权限码枚举
- * 格式：{模块}:{操作}
- * 用于按钮/操作级别的细粒度权限控制
+ * Permission code enum
+ * Format: {module}:{operation}
+ * Used for button/action-level fine-grained permission control
  */
 export const PermissionCodes = {
-  // 项目管理
+  // Project management
   PROJECT_CREATE: 'project:create',
   PROJECT_EDIT: 'project:edit',
   PROJECT_DELETE: 'project:delete',
   PROJECT_VIEW: 'project:view',
   PROJECT_CONFIG: 'project:config',
 
-  // 设备管理
+  // Device management
   DEVICE_CREATE: 'device:create',
   DEVICE_EDIT: 'device:edit',
   DEVICE_DELETE: 'device:delete',
@@ -59,13 +59,13 @@ export const PermissionCodes = {
   DEVICE_EXPORT: 'device:export',
   DEVICE_CONNECT: 'device:connect',
 
-  // 设备分组管理
+  // Device group management
   DEVICE_GROUP_CREATE: 'device_group:create',
   DEVICE_GROUP_EDIT: 'device_group:edit',
   DEVICE_GROUP_DELETE: 'device_group:delete',
   DEVICE_GROUP_VIEW: 'device_group:view',
 
-  // 数据标签管理
+  // Data tag management
   DATATAG_CREATE: 'datatag:create',
   DATATAG_EDIT: 'datatag:edit',
   DATATAG_DELETE: 'datatag:delete',
@@ -74,14 +74,14 @@ export const PermissionCodes = {
   DATATAG_EXPORT: 'datatag:export',
   DATATAG_WRITE: 'datatag:write',
 
-  // 采集管理
+  // Collection management
   PLUGIN_CREATE: 'plugin:create',
   PLUGIN_EDIT: 'plugin:edit',
   PLUGIN_DELETE: 'plugin:delete',
   PLUGIN_VIEW: 'plugin:view',
   PLUGIN_CONFIG: 'plugin:config',
 
-  // 报警中心
+  // Alarm center
   ALARM_VIEW: 'alarm:view',
   ALARM_ACK: 'alarm:ack',
   ALARM_CONFIGURE: 'alarm:configure',
@@ -90,21 +90,21 @@ export const PermissionCodes = {
   ALARM_RULE_EDIT: 'alarm:rule:edit',
   ALARM_RULE_DELETE: 'alarm:rule:delete',
 
-  // 脚本管理
+  // Script management
   SCRIPT_CREATE: 'script:create',
   SCRIPT_EDIT: 'script:edit',
   SCRIPT_DELETE: 'script:delete',
   SCRIPT_EXECUTE: 'script:execute',
   SCRIPT_VIEW: 'script:view',
 
-  // 数据报表
+  // Data reports
   REPORT_CREATE: 'report:create',
   REPORT_EDIT: 'report:edit',
   REPORT_DELETE: 'report:delete',
   REPORT_VIEW: 'report:view',
   REPORT_EXPORT: 'report:export',
 
-  // 模板管理
+  // Template management
   TEMPLATE_CREATE: 'template:create',
   TEMPLATE_EDIT: 'template:edit',
   TEMPLATE_DELETE: 'template:delete',
@@ -112,7 +112,7 @@ export const PermissionCodes = {
   TEMPLATE_EXPORT: 'template:export',
   TEMPLATE_VIEW: 'template:view',
 
-  // 系统管理
+  // System management
   SYSTEM_SETTINGS: 'system:settings',
   SYSTEM_DICT: 'system:dict',
   SYSTEM_INFO: 'system:info',
@@ -123,7 +123,7 @@ export const PermissionCodes = {
   SYSTEM_BASE_SERVICES: 'system:base_services',
   SYSTEM_OPERATION_LOG: 'system:operation_log',
 
-  // 用户管理（v6.0 新增，v7.0 增强）
+  // User management (added in v6.0, enhanced in v7.0)
   USER_CREATE: 'system:user:create',
   USER_EDIT: 'system:user:edit',
   USER_DELETE: 'system:user:delete',
@@ -133,7 +133,7 @@ export const PermissionCodes = {
   SYSTEM_USER_DELETE: 'system:user:delete',
   SYSTEM_USER_VIEW: 'system:user:view',
 
-  // 角色管理（v6.0 新增，v7.0 增强）
+  // Role management (added in v6.0, enhanced in v7.0)
   ROLE_CREATE: 'system:role:create',
   ROLE_EDIT: 'system:role:edit',
   ROLE_DELETE: 'system:role:delete',
@@ -143,28 +143,28 @@ export const PermissionCodes = {
   SYSTEM_ROLE_DELETE: 'system:role:delete',
   SYSTEM_ROLE_VIEW: 'system:role:view',
 
-  // 岗位管理（v6.0 新增）
+  // Position management (added in v6.0)
   POSITION_CREATE: 'system:position:create',
   POSITION_EDIT: 'system:position:edit',
   POSITION_DELETE: 'system:position:delete',
   POSITION_VIEW: 'system:position:view',
 
-  // 通用
+  // General
   ALL: '*:*',
 
-  // 历史趋势
+  // Historical trends
   HISTORICAL_TREND_VIEW: 'trend:view',
-  // 实时趋势
+  // Real-time trends
   REALTIME_TREND_VIEW: 'trend:realtime:view',
 } as const;
 
 export type PermissionCode = (typeof PermissionCodes)[keyof typeof PermissionCodes];
 
 /**
- * 角色 → 权限码默认映射
+ * Role → default permission code mapping
  *
- * @deprecated v8.0：DB 为权限码唯一数据源，ROLE_PERMISSIONS 仅作为后端种子数据参考，
- *             不再用于前端运行时权限判断。保留此常量供测试代码使用。
+ * @deprecated v8.0: the DB is the single source of truth for permission codes; ROLE_PERMISSIONS serves only as a reference for backend seed data
+ *             and is no longer used for frontend runtime permission checks. Kept for test code.
  */
 export const ROLE_PERMISSIONS: Record<SystemRole, PermissionCode[]> = {
   admin: [PermissionCodes.ALL],
@@ -202,9 +202,9 @@ export const ROLE_PERMISSIONS: Record<SystemRole, PermissionCode[]> = {
     PermissionCodes.TEMPLATE_EXPORT, PermissionCodes.TEMPLATE_VIEW,
     // system:info
     PermissionCodes.SYSTEM_INFO,
-    // 历史趋势
+    // Historical trends
     PermissionCodes.HISTORICAL_TREND_VIEW,
-    // 实时趋势
+    // Real-time trends
     PermissionCodes.REALTIME_TREND_VIEW,
   ],
 
@@ -218,9 +218,9 @@ export const ROLE_PERMISSIONS: Record<SystemRole, PermissionCode[]> = {
     PermissionCodes.REPORT_VIEW,
     PermissionCodes.TEMPLATE_VIEW,
     PermissionCodes.SYSTEM_INFO,
-    // 历史趋势
+    // Historical trends
     PermissionCodes.HISTORICAL_TREND_VIEW,
-    // 实时趋势
+    // Real-time trends
     PermissionCodes.REALTIME_TREND_VIEW,
   ],
 };

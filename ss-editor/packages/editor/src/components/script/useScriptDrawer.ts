@@ -4,66 +4,66 @@
 
 import { reactive } from 'vue';
 
-/** 抽屉中打开的脚本标签 */
+/** Script tabs opened in the drawer */
 export interface ScriptDrawerTab {
-  /** 唯一标识 */
+  /** Unique identifier */
   id: string;
-  /** 标签标题 */
+  /** Tab title */
   title: string;
-  /** 脚本内容 */
+  /** Script content */
   script: string;
-  /** 脚本模式 */
+  /** Script mode */
   mode: 'timer' | 'driver' | 'filter' | 'interaction' | 'expression';
-  /** 来源信息（用于回写） */
+  /** Source info (used for write-back) */
   source: {
     type: 'timer' | 'datasource' | 'interaction' | 'filter';
-    /** 来源组件标识，如 timerId */
+    /** Source component identifier, e.g. timerId */
     sourceId: string;
   };
-  /** 是否已修改 */
+  /** Whether modified */
   dirty: boolean;
 }
 
-/** 脚本抽屉共享状态 */
+/** Script drawer shared state */
 const drawerState = reactive({
-  /** 抽屉是否可见 */
+  /** Whether the drawer is visible */
   visible: false,
-  /** 抽屉高度（px） */
+  /** Drawer height (px) */
   height: 280,
-  /** 已打开的标签列表 */
+  /** List of opened tabs */
   tabs: [] as ScriptDrawerTab[],
-  /** 当前激活的标签ID */
+  /** Currently active tab ID */
   activeTabId: null as string | null,
-  /** 最小高度 */
+  /** Minimum height */
   minHeight: 100,
-  /** 最大高度 */
+  /** Maximum height */
   maxHeight: 600,
 });
 
-/** 回调：当脚本内容更新时，通知来源组件 */
+/** Callback: notify the source component when script content is updated */
 type ScriptUpdateCallback = (script: string) => void;
 
 const updateCallbacks = new Map<string, ScriptUpdateCallback>();
 
 /**
- * 脚本抽屉 composable
- * 用于在编辑器底部打开/关闭脚本编辑抽屉
+ * Script drawer composable
+ * Used to open/close the script editing drawer at the bottom of the editor
  */
 export function useScriptDrawer() {
   /**
-   * 打开或切换到指定脚本标签
+   * Open or switch to the specified script tab
    */
   function openScript(tab: Omit<ScriptDrawerTab, 'dirty'>, onUpdate?: ScriptUpdateCallback): void {
     const existing = drawerState.tabs.find((t) => t.id === tab.id);
     if (existing) {
-      // 已存在，切换到该标签
+      // Already exists, switch to that tab
       drawerState.activeTabId = tab.id;
-      // 更新内容（可能来源组件已修改）
+      // Update content (the source component may have modified it)
       if (existing.script !== tab.script) {
         existing.script = tab.script;
       }
     } else {
-      // 新建标签
+      // Create a new tab
       const newTab: ScriptDrawerTab = { ...tab, dirty: false };
       drawerState.tabs.push(newTab);
       drawerState.activeTabId = tab.id;
@@ -77,7 +77,7 @@ export function useScriptDrawer() {
   }
 
   /**
-   * 关闭指定标签
+   * Close the specified tab
    */
   function closeTab(tabId: string): void {
     const idx = drawerState.tabs.findIndex((t) => t.id === tabId);
@@ -95,7 +95,7 @@ export function useScriptDrawer() {
   }
 
   /**
-   * 关闭所有标签
+   * Close all tabs
    */
   function closeAll(): void {
     drawerState.tabs = [];
@@ -105,14 +105,14 @@ export function useScriptDrawer() {
   }
 
   /**
-   * 切换抽屉可见性
+   * Toggle drawer visibility
    */
   function toggle(): void {
     drawerState.visible = !drawerState.visible;
   }
 
   /**
-   * 更新脚本内容（由 ScriptEditor 触发）
+   * Update script content (triggered by ScriptEditor)
    */
   function updateScript(tabId: string, script: string): void {
     const tab = drawerState.tabs.find((t) => t.id === tabId);
@@ -121,7 +121,7 @@ export function useScriptDrawer() {
       tab.dirty = true;
     }
 
-    // 通知来源组件
+    // Notify the source component
     const cb = updateCallbacks.get(tabId);
     if (cb) {
       cb(script);
@@ -129,8 +129,8 @@ export function useScriptDrawer() {
   }
 
   /**
-   * 保存脚本（由保存按钮触发）
-   * 将脚本内容持久化，并标记 tab 为已保存
+   * Save the script (triggered by the save button)
+   * Persists the script content and marks the tab as saved
    */
   function saveScript(tabId: string, script: string): void {
     const tab = drawerState.tabs.find((t) => t.id === tabId);
@@ -139,7 +139,7 @@ export function useScriptDrawer() {
       tab.dirty = false;
     }
 
-    // 通知来源组件保存
+    // Notify the source component to save
     const cb = updateCallbacks.get(tabId);
     if (cb) {
       cb(script);
@@ -147,7 +147,7 @@ export function useScriptDrawer() {
   }
 
   /**
-   * 设置抽屉高度
+   * Set the drawer height
    */
   function setHeight(h: number): void {
     drawerState.height = Math.max(drawerState.minHeight, Math.min(drawerState.maxHeight, h));

@@ -14,7 +14,7 @@ export default defineConfig({
     vue() as any,
   ],
   esbuild: {
-    // 插件源文件使用 @Graphic({}) 装饰器（experimentalDecorators），esbuild 默认不支持
+    // Plugin source files use the @Graphic({}) decorator (experimentalDecorators), which esbuild does not support by default
     tsconfigRaw: {
       compilerOptions: {
         experimentalDecorators: true,

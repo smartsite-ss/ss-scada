@@ -3,37 +3,37 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 定时器相关类型定义
+ * Timer-related type definitions
  */
 
 /**
- * 单个定时器配置
+ * Configuration for a single timer
  */
 export interface ITimerConfig {
-  id: string;                    // 定时器唯一ID
-  name: string;                  // 定时器名称
-  enabled: boolean;              // 是否启用
-  interval: number;              // 执行间隔（毫秒）
-  script: string;                // JavaScript脚本内容
-  type: 'interval' | 'timeout';  // 定时器类型
-  repeatCount?: number;          // 重复次数（仅timeout类型有效）
-  lastExecuteTime?: number;      // 上次执行时间
-  executeCount?: number;         // 已执行次数
+  id: string;                    // Unique timer ID
+  name: string;                  // Timer name
+  enabled: boolean;              // Whether enabled
+  interval: number;              // Execution interval (ms)
+  script: string;                // JavaScript script content
+  type: 'interval' | 'timeout';  // Timer type
+  repeatCount?: number;          // Repeat count (only valid for timeout type)
+  lastExecuteTime?: number;      // Last execution time
+  executeCount?: number;         // Execution count
 }
 
 /**
- * 页面定时器上下文
+ * Page timer context
  */
 export interface ITimerContext {
-  page: any;                     // 当前页面对象
-  getGraphics: () => any[];      // 获取所有图元
-  getGraphicById: (id: string) => any | null; // 根据ID获取图元
-  updateGraphicProperty: (id: string, propertyPath: string, value: any) => void; // 更新图元属性
-  refreshDisplay: () => void;    // 刷新显示
+  page: any;                     // Current page object
+  getGraphics: () => any[];      // Get all graphics
+  getGraphicById: (id: string) => any | null; // Get a graphic by ID
+  updateGraphicProperty: (id: string, propertyPath: string, value: any) => void; // Update graphic property
+  refreshDisplay: () => void;    // Refresh display
 }
 
 /**
- * 定时器执行结果
+ * Timer execution result
  */
 export interface ITimerExecutionResult {
   success: boolean;
@@ -43,7 +43,7 @@ export interface ITimerExecutionResult {
 }
 
 /**
- * 默认定时器配置
+ * Default timer configuration
  */
 export const DEFAULT_TIMER_CONFIG: Partial<ITimerConfig> = {
   name: 'New Timer',

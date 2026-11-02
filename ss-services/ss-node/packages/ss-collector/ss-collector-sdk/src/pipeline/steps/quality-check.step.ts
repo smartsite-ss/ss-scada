@@ -13,13 +13,13 @@ export class QualityCheckStep implements PipelineStep {
   private readonly logger = new Logger(QualityCheckStep.name);
 
   async process(ctx: PipelineContext): Promise<PipelineContext> {
-    // 如果前面步骤已标记异常，不再覆盖（除非需要升级）
+    // If an earlier step already flagged an error, do not overwrite (unless upgrading)
     if (ctx.quality && ctx.quality !== 'unknown' && ctx.quality !== 'good') {
       return ctx;
     }
 
     try {
-      // 1. 空值检查
+      // 1. Null check
       if (ctx.transformedValue === null || ctx.transformedValue === undefined) {
         ctx.quality = 'bad';
         ctx.errors.push({
@@ -30,14 +30,14 @@ export class QualityCheckStep implements PipelineStep {
         return ctx;
       }
 
-      // 非数值类型（bool/string）跳过 NaN/Infinity 和量程检查
-      // 这类类型无需量程校验，直接标记为 good
+      // Non-numeric types (bool/string) skip NaN/Infinity and range checks
+      // These types need no range validation; mark as good directly
       if (typeof ctx.transformedValue === 'boolean' || typeof ctx.transformedValue === 'string') {
         ctx.quality = 'good';
         return ctx;
       }
 
-      // 2. NaN/Infinity 检查
+      // 2. NaN/Infinity check
       if (!isFinite(Number(ctx.transformedValue))) {
         ctx.quality = 'bad';
         ctx.errors.push({
@@ -51,7 +51,7 @@ export class QualityCheckStep implements PipelineStep {
       const tagConfig = ctx.tagConfig || {};
       const value = Number(ctx.transformedValue);
 
-      // 3. 量程检查
+      // 3. Range check
       if (tagConfig.rangeMin !== undefined && value < tagConfig.rangeMin) {
         ctx.quality = 'out_of_range';
         ctx.errors.push({
@@ -74,7 +74,7 @@ export class QualityCheckStep implements PipelineStep {
         return ctx;
       }
 
-      // 4. 数据有效期检查
+      // 4. Data-validity-period check
       if (tagConfig.maxAge && ctx.rawTimestamp) {
         const ageMs = Date.now() - new Date(ctx.rawTimestamp).getTime();
         if (ageMs > tagConfig.maxAge * 1000) {
@@ -89,7 +89,7 @@ export class QualityCheckStep implements PipelineStep {
         }
       }
 
-      // 5. 通过所有检查
+      // 5. Passed all checks
       ctx.quality = 'good';
 
       return ctx;

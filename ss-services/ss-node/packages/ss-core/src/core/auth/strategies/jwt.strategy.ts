@@ -10,21 +10,21 @@ import { UserService } from '../../user/user.service';
 import { I18nService } from '@ss-node/ss-i18n';
 
 /**
- * S-C03: JWT 提取器
+ * S-C03: JWT extractor
  *
- * 优先从 HttpOnly Cookie 读取 accessToken（主路径，XSS 安全），
- * 若 Cookie 不存在则回退到 Authorization: Bearer Header（兼容 Swagger 调试和 API 客户端）。
+ * Prefer reading accessToken from the HttpOnly Cookie (main path, XSS-safe);
+ * if the Cookie is absent, fall back to the Authorization: Bearer Header (compatible with Swagger debugging and API clients).
  *
- * 日志：在请求上标注 Token 来源（cookie / bearer / none），供 validate() 使用。
+ * Logging: mark the token source (cookie / bearer / none) on the request for use by validate().
  */
 function extractJwtFromRequest(req: Request): string | null {
-  // 1. 优先从 HttpOnly Cookie 提取
+  // 1. Prefer extraction from HttpOnly Cookie
   if (req.cookies?.accessToken) {
     (req as any)._jwtSource = 'cookie';
     return req.cookies.accessToken as string;
   }
 
-  // 2. 回退到 Authorization Bearer Header（Swagger / API 客户端）
+  // 2. Fall back to Authorization Bearer Header (Swagger / API clients)
   const authHeader = req.headers?.authorization;
   if (authHeader && authHeader.startsWith('Bearer ')) {
     (req as any)._jwtSource = 'bearer';
@@ -52,8 +52,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
-    // payload 由 JWT 解码得到，此时签名已验证通过
-    // payload.exp 可能为 undefined（测试 payload 或无过期时间的 token），需防御性处理
+    // payload is obtained by JWT decoding; the signature has already been verified at this point
+    // payload.exp may be undefined (test payload or token without expiration); handle defensively
     const expStr = payload.exp
       ? new Date(payload.exp * 1000).toISOString()
       : 'N/A';

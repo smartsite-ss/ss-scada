@@ -3,7 +3,7 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 对话持久化 Service 单元测试 — P2-T08
+ * Conversation persistence Service unit tests - P2-T08
  */
 
 import { ConversationService, ContextWindowConfig } from '../conversation.service';
@@ -150,7 +150,7 @@ describe('ConversationService — 上下文窗口管理', () => {
     };
     const history = await service.getConversationHistory('conv-1', config);
     expect(history.length).toBeLessThanOrEqual(10);
-    // 应保留最后一条
+    // the last entry should be kept
     expect(history[history.length - 1].content).toContain('59');
   });
 
@@ -206,7 +206,7 @@ describe('ConversationService — 上下文窗口管理', () => {
 
   it('应自动生成标题（超长截断）', async () => {
     const { service, mockConvRepo } = makeService();
-    // 超过 30 个字符限制
+    // exceeds the 30-character limit
     const longMsg = '这是一段非常非常长的用户输入文本消息用来测试标题自动截断功能是否能够正常工作';
     await service.autoGenerateTitle('conv-1', longMsg);
     expect(mockConvRepo.update).toHaveBeenCalledWith('conv-1', {

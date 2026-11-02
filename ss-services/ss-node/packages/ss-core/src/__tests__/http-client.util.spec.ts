@@ -3,16 +3,16 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * HTTP 客户端工具单元测试 — P1-T01
+ * HTTP client utility unit tests - P1-T01
  *
- * 重点验证 SSE 流解析逻辑（parseSSEStream）
- * 不测试实际网络请求（需集成测试）
+ * Focus on SSE stream parsing logic (parseSSEStream)
+ * Actual network requests are not tested (require integration tests)
  */
 
 import { parseSSEStream } from '../ai/http-client.util';
 
 const NL = String.fromCharCode(10); // \n
-const SEP = NL + NL; // 事件分隔符
+const SEP = NL + NL; // event separator
 const DONE = 'data: [DONE]' + SEP;
 
 async function* fromChunks(chunks: string[]): AsyncGenerator<string, void, unknown> {

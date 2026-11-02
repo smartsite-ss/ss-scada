@@ -102,7 +102,7 @@ describe('RoleService', () => {
     };
 
     it('should create a new role successfully', async () => {
-      roleRepo.findOne.mockResolvedValue(null); // code 不存在
+      roleRepo.findOne.mockResolvedValue(null); // code not found
       roleRepo.create.mockReturnValue({ ...dto, isSystem: false } as Role);
       roleRepo.save.mockResolvedValue({ ...dto, id: 'new-id', isSystem: false } as Role);
 
@@ -338,7 +338,7 @@ describe('RoleService', () => {
   });
 });
 
-/** 创建模拟 Repository */
+/** Create a mock Repository */
 function createMockRepo<T>(): jest.Mocked<Repository<T>> {
   return {
     find: jest.fn().mockResolvedValue([]),

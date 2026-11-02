@@ -3,27 +3,27 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * AI 客户端 — P1-T04 前端 AI 助手面板
+ * AI client — P1-T04 frontend AI assistant panel
  *
- * 提供与后端 AI 服务网关（/api/v1/ai/*）的通信能力：
- *   - chat()       非流式对话
- *   - streamChat() 流式对话（基于 fetch ReadableStream，支持 POST + Bearer Token）
- *   - embed()      文本嵌入
- *   - getStatus()  AI 功能开关
- *   - getHealth()  Provider 健康状态
+ * Provides communication with the backend AI service gateway (/api/v1/ai/*):
+ *   - chat()       non-streaming chat
+ *   - streamChat() streaming chat (based on fetch ReadableStream, supports POST + Bearer Token)
+ *   - embed()      text embedding
+ *   - getStatus()  AI feature flags
+ *   - getHealth()  provider health status
  *
- * 设计要点：
- *   - 不依赖 axios（避免拦截器干扰流式响应），直接使用 fetch API
- *   - Token 从 localStorage 读取（与 system/src/api/client.ts 一致）
- *   - SSE 解析：逐块读取 ReadableStream，按 \n\n 分割事件
+ * Design notes:
+ *   - No axios dependency (avoids interceptors interfering with streaming responses); uses the fetch API directly
+ *   - Token is read from localStorage (consistent with system/src/api/client.ts)
+ *   - SSE parsing: reads the ReadableStream chunk by chunk, splitting events on \n\n
  *
- * 关联决策：
- *   - D-009 SSE 流式输出
- *   - D-010 多供应商路由（taskType 由调用方指定）
+ * Related decisions:
+ *   - D-009 SSE streaming output
+ *   - D-010 multi-provider routing (taskType specified by the caller)
  */
 
 // ============================================================
-// 类型定义（与后端 llm.types.ts 对齐）
+// Type definitions (aligned with the backend llm.types.ts)
 // ============================================================
 
 export type LLMProviderId = 'deepseek' | 'zhipu';
@@ -53,7 +53,7 @@ export interface ToolDefinition {
 export interface ChatRequest {
   messages: ChatMessage[];
   taskType?: TaskType;
-  /** 指定供应商（覆盖任务类型路由，优先使用该供应商） */
+  /** Specify a provider (overrides task-type routing; this provider takes precedence) */
   providerId?: string;
   model?: string;
   temperature?: number;
@@ -62,9 +62,9 @@ export interface ChatRequest {
   toolChoice?: any;
   stop?: string[];
   user?: string;
-  /** 会话 ID（缺省时由后端自动创建） */
+  /** Session ID (auto-created by the backend when omitted) */
   conversationId?: string;
-  /** 项目 ID（创建新会话时使用） */
+  /** Project ID (used when creating a new session) */
   projectId?: string;
 }
 
@@ -85,7 +85,7 @@ export interface ChatResponse {
   provider: LLMProviderId;
   finishReason: 'stop' | 'length' | 'tool_calls' | 'content_filter';
   latencyMs?: number;
-  /** 本次对话所属会话 ID */
+  /** Session ID this conversation belongs to */
   conversationId?: string;
 }
 
@@ -98,7 +98,7 @@ export interface ChatStreamChunk {
     completionTokens: number;
     totalTokens: number;
   };
-  /** done=true 时携带，标识本次对话所属会话 */
+  /** Carried when done=true, identifying the session this conversation belongs to */
   conversationId?: string;
 }
 
@@ -119,34 +119,34 @@ export interface ProviderHealth {
 }
 
 /**
- * AI 功能状态（D-015 离线降级契约）
- *   - enabled      正常可用
- *   - disabled     未启用（AI_ENABLED=false 或无可用供应商）
- *   - unauthorized 认证失败（401/403，需重新登录）
- *   - unreachable  服务不可达（网络错误/5xx）
+ * AI feature status (D-015 offline degradation contract)
+ *   - enabled      normally available
+ *   - disabled     not enabled (AI_ENABLED=false or no available provider)
+ *   - unauthorized authentication failed (401/403, re-login required)
+ *   - unreachable  service unreachable (network error/5xx)
  */
 export type AiStatusState = 'enabled' | 'disabled' | 'unauthorized' | 'unreachable';
 
 export interface AiStatus {
   state: AiStatusState;
-  /** 后端返回的原因（如 no_available_provider），仅 disabled 时可能存在 */
+  /** Reason returned by the backend (e.g. no_available_provider); may exist only when disabled */
   reason?: string;
 }
 
 // ============================================================
-// AI 客户端实现
+// AI client implementation
 // ============================================================
 
 const TOKEN_KEY = 'scada_access_token';
 const API_BASE = '/api/v1/ai';
 
 /**
- * S-C03: Token 通过 HttpOnly Cookie 传输，JS 不可读取。
- * getToken() 始终返回 null，认证依赖 fetch 的 credentials: 'include'。
- * authHeaders() 保留为空对象，兼容已有调用点。
+ * S-C03: the Token is transmitted via HttpOnly Cookie and cannot be read by JS.
+ * getToken() always returns null; authentication relies on fetch's credentials: 'include'.
+ * authHeaders() is kept as an empty object for compatibility with existing call sites.
  */
 function getToken(): string | null {
-  // S-C03: Token 不再存储在 localStorage，通过 HttpOnly Cookie 自动传输
+  // S-C03: the token is no longer stored in localStorage; it is transmitted automatically via HttpOnly Cookie
   return localStorage.getItem(TOKEN_KEY);
 }
 
@@ -156,28 +156,28 @@ function authHeaders(): Record<string, string> {
 }
 
 /**
- * S-C03: 所有 fetch 调用的通用选项（携带 Cookie 凭证）
+ * S-C03: common options for all fetch calls (carrying Cookie credentials)
  */
 const FETCH_CREDENTIALS: RequestInit = { credentials: 'include' };
 
 /**
- * 解包后端 TransformInterceptor 的标准响应格式 { code, data, message, timestamp }
- * 提取内层 data 字段，兼容无包装的直接响应
+ * Unwraps the backend TransformInterceptor's standard response { code, data, message, timestamp }
+ * Extracts the inner data field; compatible with unwrapped direct responses
  */
 function unwrap<T>(resp: any): T {
-  // 后端 TransformInterceptor 包装格式：{ code, data, message, timestamp }
+  // Backend TransformInterceptor wrapper format: { code, data, message, timestamp }
   if (resp && typeof resp === 'object' && 'code' in resp && 'data' in resp) {
     return resp.data as T;
   }
-  // 兼容：无包装的直接响应
+  // Compatible with unwrapped direct responses
   return resp as T;
 }
 
 /**
- * AI 功能状态检测（D-015）
+ * AI feature status detection (D-015)
  *
- * 不抛异常：网络/认证错误映射为对应状态，调用方必须区分
- * disabled（未启用）与 unreachable/unauthorized（故障），禁止静默吞错。
+ * Never throws: network/auth errors map to the corresponding status; callers must distinguish
+ * disabled (not enabled) from unreachable/unauthorized (faults); silently swallowing errors is forbidden.
  */
 export async function getAiStatus(): Promise<AiStatus> {
   let resp: Response;
@@ -187,7 +187,7 @@ export async function getAiStatus(): Promise<AiStatus> {
       headers: { ...authHeaders() },
     });
   } catch {
-    // 网络层失败（后端未启动/断网）
+    // Network-level failure (backend not started / offline)
     return { state: 'unreachable' };
   }
   if (resp.status === 401 || resp.status === 403) {
@@ -204,7 +204,7 @@ export async function getAiStatus(): Promise<AiStatus> {
   return { state: 'disabled', reason: data?.reason };
 }
 
-/** 获取 Provider 健康状态 */
+/** Get provider health status */
 export async function getAiHealth(): Promise<ProviderHealth[]> {
   const resp = await fetch(`${API_BASE}/health`, {
     ...FETCH_CREDENTIALS,
@@ -216,7 +216,7 @@ export async function getAiHealth(): Promise<ProviderHealth[]> {
   return data?.providers || [];
 }
 
-/** 已启用供应商的模型选项（供 AI 助手面板下拉选择） */
+/** Model options of enabled providers (for the AI assistant panel dropdown) */
 export interface EnabledProviderOption {
   providerId: string;
   name: string;
@@ -225,10 +225,10 @@ export interface EnabledProviderOption {
 }
 
 /**
- * 获取已配置并启用的供应商及其模型列表
+ * Get configured and enabled providers with their model lists
  *
- * 用于 AI 助手对话面板的模型选择器：用户只能从此列表中选择模型。
- * 失败时返回空数组（不抛异常，避免阻塞面板初始化）。
+ * Used by the AI assistant chat panel's model selector: users can only pick models from this list.
+ * Returns an empty array on failure (does not throw, to avoid blocking panel initialization).
  */
 export async function getEnabledProviders(): Promise<EnabledProviderOption[]> {
   let resp: Response;
@@ -254,7 +254,7 @@ export async function getEnabledProviders(): Promise<EnabledProviderOption[]> {
     }));
 }
 
-/** 非流式对话 */
+/** Non-streaming chat */
 export async function chat(req: ChatRequest): Promise<ChatResponse> {
   const resp = await fetch(`${API_BASE}/chat`, {
     ...FETCH_CREDENTIALS,
@@ -274,12 +274,12 @@ export async function chat(req: ChatRequest): Promise<ChatResponse> {
 }
 
 /**
- * 流式对话（SSE）
+ * Streaming chat (SSE)
  *
- * 使用 fetch + ReadableStream 实现，支持 POST 请求和 Bearer Token。
- * 返回 AsyncGenerator，逐块 yield ChatStreamChunk。
+ * Implemented with fetch + ReadableStream; supports POST requests and Bearer Token.
+ * Returns an AsyncGenerator that yields ChatStreamChunk chunk by chunk.
  *
- * 用法：
+ * Usage:
  *   for await (const chunk of streamChat(req)) {
  *     if (chunk.delta) appendToUI(chunk.delta);
  *     if (chunk.done) break;
@@ -321,13 +321,13 @@ export async function* streamChat(
 
       buffer += decoder.decode(value, { stream: true });
 
-      // 按双换行分割 SSE 事件
+      // Split SSE events on double newlines
       let sepIdx: number;
       while ((sepIdx = buffer.indexOf('\n\n')) !== -1) {
         const rawEvent = buffer.slice(0, sepIdx);
         buffer = buffer.slice(sepIdx + 2);
 
-        // 提取 data: 字段
+        // Extract the data: field
         const dataLine = rawEvent
           .split('\n')
           .filter((l) => l.startsWith('data:'))
@@ -342,7 +342,7 @@ export async function* streamChat(
           const chunk = JSON.parse(dataLine) as ChatStreamChunk;
           yield chunk;
         } catch {
-          // 跳过无法解析的行
+          // Skip unparseable lines
           console.warn('[AI] SSE 解析失败，跳过:', dataLine.slice(0, 200));
         }
       }
@@ -352,7 +352,7 @@ export async function* streamChat(
   }
 }
 
-/** 文本嵌入 */
+/** Text embedding */
 export async function embed(
   inputs: string[],
   model?: string,
@@ -375,7 +375,7 @@ export async function embed(
 }
 
 // ============================================================
-// 会话管理 API（P2-T08 对话持久化）
+// Session management APIs (P2-T08 conversation persistence)
 // ============================================================
 
 export interface ConversationSummary {
@@ -447,7 +447,7 @@ export interface PromptVersion {
   createdAt: string;
 }
 
-/** 通用 JSON 请求封装（复用 fetch + unwrap 逻辑） */
+/** Generic JSON request wrapper (reuses fetch + unwrap logic) */
 async function requestJson<T>(url: string, init?: RequestInit): Promise<T> {
   const resp = await fetch(url, {
     ...FETCH_CREDENTIALS,
@@ -466,7 +466,7 @@ async function requestJson<T>(url: string, init?: RequestInit): Promise<T> {
   return unwrap<T>(body);
 }
 
-/** 获取用户会话列表 */
+/** Get the user's session list */
 export async function listConversations(projectId?: string): Promise<ConversationSummary[]> {
   const query = projectId ? `?projectId=${encodeURIComponent(projectId)}` : '';
   const data = await requestJson<ConversationSummary[] | { conversations?: ConversationSummary[] }>(
@@ -475,12 +475,12 @@ export async function listConversations(projectId?: string): Promise<Conversatio
   return Array.isArray(data) ? data : (data.conversations || []);
 }
 
-/** 获取会话详情 */
+/** Get session details */
 export async function getConversation(id: string): Promise<ConversationSummary> {
   return requestJson<ConversationSummary>(`${API_BASE}/conversations/${id}`);
 }
 
-/** 获取会话消息列表 */
+/** Get the session's message list */
 export async function getConversationMessages(id: string): Promise<ConversationMessage[]> {
   const data = await requestJson<{ messages: ConversationMessage[] }>(
     `${API_BASE}/conversations/${id}/messages`,
@@ -488,7 +488,7 @@ export async function getConversationMessages(id: string): Promise<ConversationM
   return data.messages;
 }
 
-/** 更新会话标题 */
+/** Update the session title */
 export async function updateConversationTitle(id: string, title: string): Promise<void> {
   await requestJson(`${API_BASE}/conversations/${id}/title`, {
     method: 'PUT',
@@ -496,7 +496,7 @@ export async function updateConversationTitle(id: string, title: string): Promis
   });
 }
 
-/** 归档/取消归档会话 */
+/** Archive/unarchive a session */
 export async function archiveConversation(id: string, archived: boolean): Promise<void> {
   await requestJson(`${API_BASE}/conversations/${id}/archive`, {
     method: 'PUT',
@@ -504,12 +504,12 @@ export async function archiveConversation(id: string, archived: boolean): Promis
   });
 }
 
-/** 删除会话 */
+/** Delete a session */
 export async function deleteConversation(id: string): Promise<void> {
   await requestJson(`${API_BASE}/conversations/${id}`, { method: 'DELETE' });
 }
 
-/** 获取用量统计 */
+/** Get usage statistics */
 export async function getUsageStats(params?: {
   startDate?: string;
   endDate?: string;
@@ -525,18 +525,18 @@ export async function getUsageStats(params?: {
   return requestJson<UsageStats>(`${API_BASE}/usage/stats${query}`);
 }
 
-/** 获取月度预算状态 */
+/** Get the monthly budget status */
 export async function getUsageBudget(): Promise<BudgetStatus> {
   return requestJson<BudgetStatus>(`${API_BASE}/usage/budget`);
 }
 
-/** 获取 Prompt 模板列表 */
+/** Get the Prompt template list */
 export async function listPrompts(): Promise<PromptTemplate[]> {
   const data = await requestJson<{ prompts: PromptTemplate[] }>(`${API_BASE}/prompts`);
   return data.prompts;
 }
 
-/** 创建 Prompt 模板 */
+/** Create a Prompt template */
 export async function createPrompt(dto: {
   key: string;
   name: string;
@@ -549,7 +549,7 @@ export async function createPrompt(dto: {
   });
 }
 
-/** 更新 Prompt 模板 */
+/** Update a Prompt template */
 export async function updatePrompt(
   id: string,
   dto: Partial<{ name: string; description: string }>,
@@ -560,7 +560,7 @@ export async function updatePrompt(
   });
 }
 
-/** 获取 Prompt 版本列表 */
+/** Get the Prompt version list */
 export async function listPromptVersions(promptId: string): Promise<PromptVersion[]> {
   const data = await requestJson<{ versions: PromptVersion[] }>(
     `${API_BASE}/prompts/${promptId}/versions`,
@@ -568,7 +568,7 @@ export async function listPromptVersions(promptId: string): Promise<PromptVersio
   return data.versions;
 }
 
-/** 创建 Prompt 新版本 */
+/** Create a new Prompt version */
 export async function createPromptVersion(
   promptId: string,
   dto: {
@@ -585,17 +585,17 @@ export async function createPromptVersion(
   });
 }
 
-/** 发布 Prompt 版本 */
+/** Publish a Prompt version */
 export async function publishPromptVersion(versionId: string): Promise<void> {
   await requestJson(`${API_BASE}/prompts/versions/${versionId}/publish`, { method: 'PUT' });
 }
 
-/** 归档 Prompt 版本 */
+/** Archive a Prompt version */
 export async function archivePromptVersion(versionId: string): Promise<void> {
   await requestJson(`${API_BASE}/prompts/versions/${versionId}/archive`, { method: 'PUT' });
 }
 
-/** 回滚 Prompt 版本 */
+/** Roll back a Prompt version */
 export async function rollbackPromptVersion(versionId: string): Promise<void> {
   await requestJson(`${API_BASE}/prompts/versions/${versionId}/rollback`, { method: 'PUT' });
 }
@@ -607,17 +607,17 @@ export const aiClient = {
   chat,
   streamChat,
   embed,
-  // P2-T08 会话管理
+  // P2-T08 session management
   listConversations,
   getConversation,
   getConversationMessages,
   updateConversationTitle,
   archiveConversation,
   deleteConversation,
-  // P2-T08 用量统计
+  // P2-T08 usage statistics
   getUsageStats,
   getUsageBudget,
-  // P2-T08 Prompt 管理
+  // P2-T08 Prompt management
   listPrompts,
   createPrompt,
   updatePrompt,

@@ -31,30 +31,30 @@ export interface ProjectSnapshot {
 }
 
 /**
- * DeviceDataService — 设备最新值读写服务
+ * DeviceDataService - device latest-value read/write service
  *
- * 数据源(改造后):Redis 实时最新值(v3 层级结构)
- * - 设备 Key：ss:latest:{projectId}:{deviceCode}  （Hash，field=tagId，value=JSON 全语义）
- * - tree 索引：ss:latest:tree:{projectId}          （Hash，field=deviceId，value=JSON{deviceCode,deviceName}）
- * - 读取:委托 LatestValueRedisService(HGETALL / pipeline HGETALL)
- * - 写入:委托 LatestValueRedisService.write(供模拟器 / 设备控制 / API 手动下发使用)
+ * Data source (after rework): Redis real-time latest values (v3 hierarchy)
+ * - Device Key: ss:latest:{projectId}:{deviceCode}  (Hash, field=tagId, value=JSON full semantics)
+ * - Tree index: ss:latest:tree:{projectId}          (Hash, field=deviceId, value=JSON{deviceCode,deviceName})
+ * - Reads: delegated to LatestValueRedisService (HGETALL / pipeline HGETALL)
+ * - Writes: delegated to LatestValueRedisService.write (for simulators / device control / manual API dispatch)
  *
- * v3 适配说明:
- * Redis Key 改用 deviceCode(人类可读编码)体现 `项目→设备` 层级,
- * 但本服务对外 API 仍以 deviceId(UUID 主键)为参数(调用方持 deviceId)。
- * 因此 read 路径先通过 deviceRepo 查设备实体获取 deviceCode 再读 Redis;
- * write 路径同样查设备实体获取 deviceCode/deviceName 后写入。
+ * v3 adaptation notes:
+ * Redis Keys now use deviceCode (human-readable code) to express the `project->device` hierarchy,
+ * but this service's external API still takes deviceId (UUID primary key) as the parameter (callers hold deviceId).
+ * So the read path first queries the device entity via deviceRepo for the deviceCode, then reads Redis;
+ * the write path likewise queries the entity for deviceCode/deviceName before writing.
  *
- * 改造历史:
- * 原先读写项目级 SQLite `dev_tag_latest_values` 表(TagLatestValue 实体),
- * 但采集 Pipeline 不写该表(只写 Redis),导致前端 API 拿不到实时采集数据。
- * 现统一以 Redis 为唯一权威源,删除 SQLite 最新值表与实体,消除数据不一致。
+ * Rework history:
+ * Previously read/wrote the project-level SQLite dev_tag_latest_values table (TagLatestValue entity),
+ * but the collection Pipeline never wrote that table (Redis only), so the frontend API got no real-time data.
+ * Now Redis is the single authoritative source; the SQLite latest-value table and entity are removed, eliminating inconsistency.
  *
- * 同时修复 getDevicesLatestValues 多设备查询 bug:
- * 旧实现 `where: { deviceId: deviceIds.length === 1 ? deviceIds[0] : undefined }`
- * 多设备时 deviceId=undefined 返回全表;现用 Redis pipeline 按指定 deviceIds 精确查询。
+ * Also fixes the getDevicesLatestValues multi-device query bug:
+ * the old implementation `where: { deviceId: deviceIds.length === 1 ? deviceIds[0] : undefined }`
+ * returned the whole table when deviceId=undefined for multiple devices; now uses the Redis pipeline to query exactly the given deviceIds.
  *
- * 历史数据查询(getTagHistory)仍走 influx DataQueryService,本服务仅负责最新值。
+ * History queries (getTagHistory) still go through the influx DataQueryService; this service handles latest values only.
  */
 @Injectable()
 export class DeviceDataService {
@@ -68,12 +68,12 @@ export class DeviceDataService {
   ) {}
 
   /**
-   * 获取设备下所有 Tag 的最新值(从 Redis HGETALL)
+   * Get the latest values of all tags under a device (from Redis HGETALL)
    *
-   * v3: Redis Key 用 deviceCode,需先通过 deviceRepo 查设备实体获取 deviceCode。
+   * v3: the Redis Key uses deviceCode, so the device entity must be queried via deviceRepo first.
    *
-   * @param deviceId 设备 ID(UUID 主键)
-   * @param projectId 项目 ID(Redis key 必需;未传时返回空,兼容旧签名)
+   * @param deviceId device ID (UUID primary key)
+   * @param projectId project ID (required for the Redis key; returns empty when omitted, backward-compatible signature)
    */
   async getDeviceLatestValues(
     deviceId: string,
@@ -81,7 +81,7 @@ export class DeviceDataService {
   ): Promise<Record<string, TagValueEntry>> {
     if (!projectId || !this.latestValueRedisService) return {};
     try {
-      // v3: readDevice 需要 deviceCode,通过 deviceRepo 查设备实体获取
+      // v3: readDevice needs deviceCode; get it by querying the device entity via deviceRepo
       const device = await this.deviceRepo.findOne({ where: { id: deviceId } });
       if (!device?.deviceCode) return {};
       const entries = await this.latestValueRedisService.readDevice(projectId, device.deviceCode);
@@ -102,13 +102,13 @@ export class DeviceDataService {
   }
 
   /**
-   * 批量获取多台设备的最新值(从 Redis pipeline HGETALL)
+   * Batch-get the latest values of multiple devices (from Redis pipeline HGETALL)
    *
-   * v3: Redis Key 用 deviceCode,需先通过 deviceRepo 批量查设备实体获取
-   * deviceId→deviceCode 映射,readDevices 返回 Map<deviceCode, entries>后按 deviceId 重组。
+   * v3: the Redis Key uses deviceCode, so device entities are batch-queried via deviceRepo first to build
+   * the deviceId->deviceCode map; after readDevices returns Map<deviceCode, entries>, results are regrouped by deviceId.
    *
-   * 修复 bug:旧 SQLite 实现 multi-device 查询返回全表(详见类注释)。
-   * 现用 LatestValueRedisService.readDevices 按指定 deviceCodes 精确批量查询。
+   * Bug fix: the old SQLite implementation returned the whole table for multi-device queries (see the class comment).
+   * Now uses LatestValueRedisService.readDevices to batch-query exactly the given deviceCodes.
    */
   async getDevicesLatestValues(
     deviceIds: string[],
@@ -117,7 +117,7 @@ export class DeviceDataService {
     const result = new Map<string, Record<string, TagValueEntry>>();
     if (!projectId || !this.latestValueRedisService || deviceIds.length === 0) return result;
     try {
-      // v3: 批量查设备实体,建立 deviceId→deviceCode 映射
+      // v3: batch-query device entities, building the deviceId->deviceCode map
       const devices = await this.deviceRepo.find({
         where: { id: In(deviceIds) },
         select: ['id', 'deviceCode'],
@@ -132,7 +132,7 @@ export class DeviceDataService {
       }
       if (deviceCodes.length === 0) return result;
 
-      // readDevices 返回 Map<deviceCode, entries>,按 deviceId 重新组装返回值
+      // readDevices returns Map<deviceCode, entries>; regroup the return value by deviceId
       const deviceEntries = await this.latestValueRedisService.readDevices(projectId, deviceCodes);
       for (const [deviceId, deviceCode] of idToCode) {
         const entries = deviceEntries.get(deviceCode) ?? {};
@@ -154,7 +154,7 @@ export class DeviceDataService {
     }
   }
 
-  /** 获取指定 Tag 的历史数据 (stub for InfluxDB integration) */
+  /** Get a specific tag's historical data (stub for InfluxDB integration) */
   async getTagHistory(
     tagId: string,
     range: { start: Date; end: Date },
@@ -165,7 +165,7 @@ export class DeviceDataService {
     return [];
   }
 
-  /** 导出项目数据快照(设备列表来自 DB,Tag 最新值来自 Redis) */
+  /** Export a project data snapshot (device list from DB, tag latest values from Redis) */
   async exportProjectSnapshot(projectId: string): Promise<ProjectSnapshot> {
     const devices = await this.deviceRepo.find({ where: { projectId } });
     const snapshot: ProjectSnapshot = {
@@ -174,7 +174,7 @@ export class DeviceDataService {
       devices: [],
     };
 
-    // 一次性读取项目下所有设备的最新值(若 Redis 不可用则 tags 为空)
+    // Read all devices' latest values in the project in one shot (tags empty when Redis is unavailable)
     const deviceLatestMap: Map<string, Record<string, LatestValueEntry>> = this
       .latestValueRedisService
       ? await this.latestValueRedisService.readAll(projectId).catch((err: Error) => {
@@ -204,18 +204,18 @@ export class DeviceDataService {
   }
 
   /**
-   * 写入 Tag 最新值(供模拟器 / 设备控制 / API 手动下发使用)
+   * Write a tag's latest value (for simulators / device control / manual API dispatch)
    *
-   * v3: 写入 Redis(HSET 设备 Hash `ss:latest:{projectId}:{deviceCode}` + HSET tree 索引),
-   * 与采集 Pipeline 的 RedisLatestValuePersistWriter 写入同一 key,保证读取一致。
+   * v3: writes Redis (HSET device Hash `ss:latest:{projectId}:{deviceCode}` + HSET tree index),
+   * the same keys as the collection Pipeline's RedisLatestValuePersistWriter, ensuring read consistency.
    *
-   * 需通过 deviceRepo 查设备实体获取 deviceCode/deviceName/projectId(v3 Redis Key 必需)。
+   * The device entity must be queried via deviceRepo for deviceCode/deviceName/projectId (required by v3 Redis Keys).
    *
-   * @param tagId 标签 ID
-   * @param deviceId 设备 ID(UUID 主键)
-   * @param value 标签值
-   * @param quality 数据质量
-   * @param projectId 项目 ID(未传时通过 deviceRepo 反查设备所属项目)
+   * @param tagId tag ID
+   * @param deviceId device ID (UUID primary key)
+   * @param value tag value
+   * @param quality data quality
+   * @param projectId project ID (when omitted, the device's owning project is reverse-queried via deviceRepo)
    */
   async updateLatestValue(
     tagId: string,
@@ -229,7 +229,7 @@ export class DeviceDataService {
       return;
     }
 
-    // 查设备实体:获取 deviceCode/deviceName,并在 projectId 缺失时反查所属项目
+    // Query the device entity: get deviceCode/deviceName, and reverse-lookup the owning project when projectId is missing
     let device: any = null;
     try {
       device = await this.deviceRepo.findOne({ where: { id: deviceId } });

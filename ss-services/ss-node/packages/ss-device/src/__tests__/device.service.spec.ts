@@ -76,7 +76,7 @@ describe('DeviceService', () => {
   beforeEach(async () => {
     deviceRepo = createMockRepo<Device>();
     dataTagRepo = createMockRepo<DataTag>();
-    // findOne() 在 templateId 存在时会访问 tags.length，find 必须返回数组
+    // findOne() accesses tags.length when templateId exists; find must return an array
     dataTagRepo.find!.mockResolvedValue([]);
     deviceGroupRepo = createMockRepo<DeviceGroup>();
 
@@ -212,9 +212,9 @@ describe('DeviceService', () => {
   describe('TC-DEV-005: update device name', () => {
     it('should update device name successfully', async () => {
       deviceRepo.findOne!.mockResolvedValue(mockDevice);
-      // save 需将变更同步回原始 mock 对象，模拟数据库持久化
-      // （findOne 内部 desensitizeDevice 会创建副本，Object.assign 修改的是副本，
-      // 需通过 save 回写到原始对象，使 update 末尾的 findOne 能返回更新后的数据）
+      // save must sync changes back to the original mock object, simulating DB persistence
+      // (findOne internally calls desensitizeDevice which creates a copy; Object.assign modifies the copy,
+      // so save must write back to the original object, letting the update-final findOne return the updated data)
       deviceRepo.save!.mockImplementation((d: any) => {
         Object.assign(mockDevice, d);
         return Promise.resolve(d);
@@ -378,7 +378,7 @@ describe('DeviceService', () => {
     });
   });
 
-  // ==================== 新增测试：分组管理 ====================
+  // ==================== New tests: group management ====================
 
   describe('TC-DEV-016: create device group', () => {
     it('should create a device group', async () => {
@@ -452,7 +452,7 @@ describe('DeviceService', () => {
     });
   });
 
-  // ==================== 新增测试：密码脱敏 ====================
+  // ==================== New tests: password desensitization ====================
 
   describe('TC-DEV-019: desensitize devices connection', () => {
     it('should mask password in connection config', () => {
@@ -498,7 +498,7 @@ describe('DeviceService', () => {
     });
   });
 
-  // ==================== 新增测试：模板应用 ====================
+  // ==================== New tests: template application ====================
 
   describe('TC-DEV-020: apply template to device', () => {
     it('should apply template and create tags', async () => {
@@ -559,7 +559,7 @@ describe('DeviceService', () => {
     });
   });
 
-  // ==================== 新增测试：多级分组（深度测试） ====================
+  // ==================== New tests: multi-level groups (deep testing) ====================
 
   describe('TC-DEV-023: create multi-level group hierarchy', () => {
     it('should create child group with parentId', async () => {
@@ -678,7 +678,7 @@ describe('DeviceService', () => {
 
       const result = await service.getGroupTree(projectId);
 
-      // 未分组设备挂载在 rootDevices 中
+      // Ungrouped devices are mounted in rootDevices
       expect(result.groups).toEqual([]);
       expect(result.rootDevices).toHaveLength(1);
       expect(result.rootDevices[0].deviceName).toBe('未分组设备');
@@ -721,7 +721,7 @@ describe('DeviceService', () => {
     });
   });
 
-  // ==================== 新增测试：设备创建 - 不同驱动类型 ====================
+  // ==================== New tests: device creation - different driver types ====================
 
   describe('TC-DEV-026: create device with different driver types', () => {
     const baseDto = {
@@ -806,7 +806,7 @@ describe('DeviceService', () => {
     });
   });
 
-  // ==================== 新增测试：设备创建 - 不同模板 ====================
+  // ==================== New tests: device creation - different templates ====================
 
   describe('TC-DEV-027: create device with different templates', () => {
     beforeEach(() => {
@@ -848,7 +848,7 @@ describe('DeviceService', () => {
     });
   });
 
-  // ==================== 新增测试：设备创建 - 不同项目隔离 ====================
+  // ==================== New tests: device creation - different project isolation ====================
 
   describe('TC-DEV-028: create device in different projects (project isolation)', () => {
     const projectA = 'proj-a';
@@ -876,7 +876,7 @@ describe('DeviceService', () => {
     });
 
     it('should allow same tid in different projects', async () => {
-      // 项目A创建设备
+      // Create a device in project A
       await service.create(
         {
           deviceCode: 'same-tid',
@@ -888,7 +888,7 @@ describe('DeviceService', () => {
         projectA,
       );
 
-      // 项目B查询时tid不存在（隔离）
+      // The tid does not exist when queried from project B (isolation)
       deviceRepo.findOne!.mockResolvedValue(null);
 
       const result = await service.create(
@@ -907,7 +907,7 @@ describe('DeviceService', () => {
     });
   });
 
-  // ==================== 新增测试：设备创建 - 分配到分组 ====================
+  // ==================== New tests: device creation - assigned to a group ====================
 
   describe('TC-DEV-029: create device with group assignment', () => {
     beforeEach(() => {
@@ -948,7 +948,7 @@ describe('DeviceService', () => {
     });
   });
 
-  // ==================== 新增测试：设备创建 - 默认值验证 ====================
+  // ==================== New tests: device creation - default-value validation ====================
 
   describe('TC-DEV-030: create device with default values', () => {
     beforeEach(() => {
@@ -1025,7 +1025,7 @@ describe('DeviceService', () => {
     });
   });
 
-  // ==================== 新增测试：设备创建 - 带描述和别名 ====================
+  // ==================== New tests: device creation - with description and alias ====================
 
   describe('TC-DEV-031: create device with description and nameAlias', () => {
     beforeEach(() => {
@@ -1067,7 +1067,7 @@ describe('DeviceService', () => {
     });
   });
 
-  // ==================== 新增测试：分组查询含设备数量 ====================
+  // ==================== New tests: group query with device counts ====================
 
   describe('TC-DEV-032: find all groups with child relations', () => {
     it('should return groups with children relation', async () => {
@@ -1084,7 +1084,7 @@ describe('DeviceService', () => {
     });
   });
 
-  // ==================== 新增测试：findOneGroup含children ====================
+  // ==================== New tests: findOneGroup with children ====================
 
   describe('TC-DEV-033: find one group with children', () => {
     it('should return group with children relation loaded', async () => {
@@ -1111,7 +1111,7 @@ describe('DeviceService', () => {
     });
   });
 
-  // ==================== 新增测试：removeGroup 无子分组 ====================
+  // ==================== New tests: removeGroup without subgroups ====================
 
   describe('TC-DEV-034: remove group without children', () => {
     it('should remove group with no children', async () => {
@@ -1133,7 +1133,7 @@ describe('DeviceService', () => {
     });
   });
 
-  // ==================== 新增测试：设备查询含分组过滤 ====================
+  // ==================== New tests: device query with group filter ====================
 
   describe('TC-DEV-035: filter devices by groupId', () => {
     it('should filter devices by groupId', async () => {

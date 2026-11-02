@@ -29,18 +29,18 @@ import type {
 } from './knowledge.types';
 
 /**
- * 知识库控制器（v2.0 多产品架构）
+ * Knowledge base controller (v2.0 multi-product architecture)
  *
- * 路由前缀：/api/v1/kb
- * 读取类 API：所有登录用户可访问
- * 写入类 API：仅 admin 可访问
+ * Route prefix: /api/v1/kb
+ * Read APIs: accessible to all logged-in users
+ * Write APIs: admin only
  *
- * 产品参数：
- *   - 所有 API 的 ?product= 缺省时使用默认产品 ss-data（向后兼容）
+ * Product parameter:
+ *   - when ?product= is omitted on any API, the default product ss-data is used (backward compatible)
  *
- * 语言参数：
- *   - 读取类 API 的 ?lang= 缺省时使用 KB_DEFAULT_LANG
- *   - 写入类 API 的 lang 必填（指明本次编辑的语言版本）
+ * Language parameter:
+ *   - when ?lang= is omitted on read APIs, KB_DEFAULT_LANG is used
+ *   - lang is required on write APIs (identifies the language edition being edited)
  */
 @ApiTags('知识库')
 @Controller('kb')

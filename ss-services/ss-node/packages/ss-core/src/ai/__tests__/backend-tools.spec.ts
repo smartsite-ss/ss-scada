@@ -3,31 +3,31 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 后端 MCP 工具单元测试 — P2-T01
+ * Backend MCP tools unit tests - P2-T01
  *
- * 验证 78 组工具工厂的正确性：
- *   - 原有 12 组：data_query / data_aggregate / device_getStatus / device_getHistory /
+ * Verifies 78 tool-factory groups:
+ *   - original 12 groups: data_query / data_aggregate / device_getStatus / device_getHistory /
  *                  alarm_getHistory / knowledge_search / system_getHealth /
  *                  template_list / template_detail / template_create / driver_list / device_create
- *   - 字典 5 组：dict_list / dict_detail / dict_create / dict_addItems / dict_search
- *   - 批次 A 9 组：db_connection_* / project_list / project_info / project_export / project_import
- *   - 批次 B 8 组：tag_list / trend_* / project_manage_info / project_diagnose / project_init_resources / system_health_detailed
- *   - 批次 C 9 组：report_* / alarm_rule_* / alarm_suppression_add / datatag_configure / datatag_batch_configure
- *   - 批次 D 5 组：script_*
- *   - 批次 E 7 组：alarm_acknowledge / alarm_clear / alarm_shelve / alarm_statistics /
+ *   - dictionary 5 groups: dict_list / dict_detail / dict_create / dict_addItems / dict_search
+ *   - batch A 9 groups: db_connection_* / project_list / project_info / project_export / project_import
+ *   - batch B 8 groups: tag_list / trend_* / project_manage_info / project_diagnose / project_init_resources / system_health_detailed
+ *   - batch C 9 groups: report_* / alarm_rule_* / alarm_suppression_add / datatag_configure / datatag_batch_configure
+ *   - batch D 5 groups: script_*
+ *   - batch E 7 groups: alarm_acknowledge / alarm_clear / alarm_shelve / alarm_statistics /
  *                  alarm_escalation_list / alarm_suppression_list / alarm_rule_toggle
- *   - 批次 F 6 组：device_list / device_update / device_delete / device_group_manage /
+ *   - batch F 6 groups: device_list / device_update / device_delete / device_group_manage /
  *                  device_diagnostic / device_write_tag
- *   - 批次 G 5 组：user_manage / role_manage / menu_manage / session_manage / audit_log_query
- *   - 批次 H 7 组：plugin_manage / pipeline_diagnose / offline_cache_manage /
+ *   - batch G 5 groups: user_manage / role_manage / menu_manage / session_manage / audit_log_query
+ *   - batch H 7 groups: plugin_manage / pipeline_diagnose / offline_cache_manage /
  *                  collector_diagnostic / base_service_manage / influxdb_admin / system_config_manage
- *   - 批次 I 5 组：data_export / database_status / database_maintain / backup_manage / backup_log_query
+ *   - batch I 5 groups: data_export / database_status / database_maintain / backup_manage / backup_log_query
  *
- * 每个工具测试包含：
- *   1. 创建后 schema 验证（参数、分类、frontend 标记）
- *   2. 正常调用验证（传入 mock service 返回正确 JSON）
- *   3. 异常处理验证（service 抛异常时返回错误 JSON）
- *   4. 参数校验验证（无效参数返回错误 JSON）
+ * Each tool test includes:
+ *   1. post-creation schema validation (params, category, frontend flag)
+ *   2. normal-call validation (pass a mock service and verify correct JSON)
+ *   3. exception-handling validation (returns error JSON when the service throws)
+ *   4. parameter-validation validation (returns error JSON on invalid params)
  */
 
 import {
@@ -79,7 +79,7 @@ import {
   createScriptDryRunTool,
   createScriptCreateTool,
   createScriptExecuteTool,
-  // 批次 E: 报警处理与运维 (7)
+  // Batch E: alarm handling & operations (7)
   createAlarmAcknowledgeTool,
   createAlarmClearTool,
   createAlarmShelveTool,
@@ -87,20 +87,20 @@ import {
   createAlarmEscalationListTool,
   createAlarmSuppressionListTool,
   createAlarmRuleToggleTool,
-  // 批次 F: 设备运维管理 (6)
+  // Batch F: device ops management (6)
   createDeviceListTool,
   createDeviceUpdateTool,
   createDeviceDeleteTool,
   createDeviceGroupManageTool,
   createDeviceDiagnosticTool,
   createDeviceWriteTagTool,
-  // 批次 G: 用户权限管理 (5)
+  // Batch G: user & permission management (5)
   createUserManageTool,
   createRoleManageTool,
   createMenuManageTool,
   createSessionManageTool,
   createAuditLogQueryTool,
-  // 批次 H: 采集器与服务运维 (7)
+  // Batch H: collector & service ops (7)
   createPluginManageTool,
   createPipelineDiagnoseTool,
   createOfflineCacheManageTool,
@@ -108,7 +108,7 @@ import {
   createBaseServiceManageTool,
   createInfluxdbAdminTool,
   createSystemConfigManageTool,
-  // 批次 I: 数据治理与备份 (5)
+  // Batch I: data governance & backup (5)
   createDataExportTool,
   createDatabaseStatusTool,
   createDatabaseMaintainTool,
@@ -210,7 +210,7 @@ function mockKnowledgeService() {
 }
 
 function mockHealthService() {
-  // 实现使用原始字节数，由工具转换为 MB/GB
+  // the implementation uses raw byte counts, converted to MB/GB by the tool
   return {
     getDetailed: jest.fn().mockResolvedValue({
       status: 'healthy',
@@ -614,7 +614,7 @@ function mockExtendedAlarmService() {
 }
 
 // ============================================================
-// 批次 E-I Mock Services
+// Batch E-I mock services
 // ============================================================
 
 function mockAlarmOpsService() {
@@ -910,7 +910,7 @@ function makeServices(overrides: Partial<BackendToolServices> = {}): BackendTool
     reportService: mockReportService(),
     datatagService: mockDatatagService(),
     scriptService: mockScriptService(),
-    // 批次 E-I 新增服务
+    // newly added services for batch E-I
     alarmOpsService: mockAlarmOpsService(),
     deviceOpsService: mockDeviceOpsService(),
     deviceGroupService: mockDeviceGroupService(),
@@ -1191,7 +1191,7 @@ describe('system_getHealth', () => {
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('system_getHealth');
     expect(tool!.category).toBe('system');
-    expect(tool!.params.length).toBe(0); // 无参数
+    expect(tool!.params.length).toBe(0); // no parameters
   });
 
   it('应返回 null（缺少 service）', () => {
@@ -1384,7 +1384,7 @@ describe('driver_list', () => {
     expect(tool!.name).toBe('driver_list');
     expect(tool!.category).toBe('device');
     expect(tool!.frontend).toBe(false);
-    expect(tool!.params.length).toBe(0); // 无参数
+    expect(tool!.params.length).toBe(0); // no parameters
   });
 
   it('无需 service 即可创建', () => {
@@ -1675,7 +1675,7 @@ describe('dict_search', () => {
 });
 
 // ============================================================
-// 批次 A: 外部数据库接入 (5) + 项目管理 (4)
+// Batch A: external DB access (5) + project management (4)
 // ============================================================
 
 describe('db_connection_list', () => {
@@ -1964,7 +1964,7 @@ describe('project_import', () => {
 });
 
 // ============================================================
-// 批次 B: 趋势数据 (4) + 项目诊断 (4)
+// Batch B: trend data (4) + project diagnosis (4)
 // ============================================================
 
 describe('tag_list', () => {
@@ -2216,7 +2216,7 @@ describe('system_health_detailed', () => {
 });
 
 // ============================================================
-// 批次 C: 报表 (4) + 报警 (3) + 标签 (2)
+// Batch C: reports (4) + alarms (3) + tags (2)
 // ============================================================
 
 describe('report_template_list', () => {
@@ -2520,7 +2520,7 @@ describe('datatag_batch_configure', () => {
 });
 
 // ============================================================
-// 批次 D: 脚本 (5)
+// Batch D: scripts (5)
 // ============================================================
 
 describe('script_api_list', () => {
@@ -2689,7 +2689,7 @@ describe('script_execute', () => {
 });
 
 // ============================================================
-// 批次 E: 报警处理与运维 (7)
+// Batch E: alarm handling & operations (7)
 // ============================================================
 
 describe('alarm_acknowledge', () => {
@@ -2932,7 +2932,7 @@ describe('alarm_rule_toggle', () => {
 });
 
 // ============================================================
-// 批次 F: 设备运维管理 (6)
+// Batch F: device ops management (6)
 // ============================================================
 
 describe('device_list', () => {
@@ -3177,7 +3177,7 @@ describe('device_write_tag', () => {
 });
 
 // ============================================================
-// 批次 G: 用户权限管理 (5)
+// Batch G: user & permission management (5)
 // ============================================================
 
 describe('user_manage', () => {
@@ -3386,7 +3386,7 @@ describe('audit_log_query', () => {
 });
 
 // ============================================================
-// 批次 H: 采集器与服务运维 (7)
+// Batch H: collector & service ops (7)
 // ============================================================
 
 describe('plugin_manage', () => {
@@ -3653,7 +3653,7 @@ describe('system_config_manage', () => {
 });
 
 // ============================================================
-// 批次 I: 数据治理与备份 (5)
+// Batch I: data governance & backup (5)
 // ============================================================
 
 describe('data_export', () => {
@@ -3901,7 +3901,7 @@ describe('createAllBackendTools', () => {
   });
 
   it('缺少 service 时仅创建可用工具', () => {
-    // 仅提供 deviceService 和 dataQueryService
+    // only deviceService and dataQueryService are provided
     const tools = createAllBackendTools({
       deviceService: mockDeviceService(),
       dataQueryService: mockDataQueryService(),

@@ -23,7 +23,7 @@ export class PluginDiscoveryService implements OnModuleInit {
   }
 
   /**
-   * 扫描已安装的采集插件
+   * Scan installed collection plugins
    */
   async discoverPlugins(): Promise<DiscoveredPlugin[]> {
     const discovered: DiscoveredPlugin[] = [];
@@ -63,18 +63,18 @@ export class PluginDiscoveryService implements OnModuleInit {
   }
 
   /**
-   * 获取扫描路径列表
+   * Get the list of scan paths
    *
-   * 相对路径基准：
-   * - dev 模式：__dirname 上溯 5 级 = ss-services/ss-node
-   *   （本文件位于 packages/ss-collector/ss-collector-sdk/dist/plugins/）
-   *   dev 模式下扫描 packages/ss-collector/（源码插件），node_modules/@ss-data 不存在
-   * - 生产模式：process.cwd() = ss-run/ss/services/ss-node
-   *   prod 模式下扫描 node_modules/@ss-data（已安装的插件），packages/ss-collector 不存在
+   * Relative-path basis:
+   * - dev mode: walk up 5 levels from __dirname = ss-services/ss-node
+   *   (this file lives at packages/ss-collector/ss-collector-sdk/dist/plugins/)
+   *   in dev mode it scans packages/ss-collector/ (source plugins); node_modules/@ss-data does not exist
+   * - production mode: process.cwd() = ss-run/ss/services/ss-node
+   *   in prod mode it scans node_modules/@ss-data (installed plugins); packages/ss-collector does not exist
    *
-   * 修复历史：之前用 process.cwd() 解析，dev 模式下 cwd = apps/ss-node-server，
-   * 导致 packages/ss-collector 被解析为 apps/ss-node-server/packages/ss-collector（不存在），
-   * dev 模式下找不到插件。
+   * Fix history: previously resolved via process.cwd(), but in dev mode cwd = apps/ss-node-server,
+   * which resolved packages/ss-collector to apps/ss-node-server/packages/ss-collector (non-existent),
+   * so plugins could not be found in dev mode.
    */
   private getScanPaths(): string[] {
     const paths: string[] = [];
@@ -94,7 +94,7 @@ export class PluginDiscoveryService implements OnModuleInit {
   }
 
   /**
-   * 加载单个插件的元数据
+   * Load the metadata of a single plugin
    */
   private async loadPluginMeta(pkgPath: string): Promise<DiscoveredPlugin | null> {
     const pkgJsonPath = path.join(pkgPath, 'package.json');
@@ -121,7 +121,7 @@ export class PluginDiscoveryService implements OnModuleInit {
       status: 'discovered',
     };
 
-    // 尝试动态加载模块
+    // Attempt to dynamically load the module
     try {
       const module = await import(pkgJson.name);
       if (module && module.default?.adapterToken) {
@@ -138,7 +138,7 @@ export class PluginDiscoveryService implements OnModuleInit {
   }
 
   /**
-   * 验证插件元数据
+   * Validate plugin metadata
    */
   private validateMeta(meta: CollectorPluginMeta): void {
     const required: (keyof CollectorPluginMeta)[] = [

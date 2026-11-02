@@ -3,19 +3,19 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * Phase 2 智能功能服务 — A004/A005/C002/C003/E003
+ * Phase 2 intelligent features service - A004/A005/C002/C003/E003
  *
- * 五项功能的后端实现：
- *   - A004 智能数据绑定推荐：基于图元属性类型 + 设备关联 + 标签语义推荐候选数据标签
- *   - A005 智能布局优化：对页面图元进行自动对齐、间距调整、避让、美化
- *   - C002 上下文感知帮助：基于当前上下文（选中图元/页面/操作）检索相关帮助
- *   - C003 智能搜索：跨模块（页面/图元/标签/告警/文档）的语义搜索
- *   - E003 自然语言命令：解析自然语言意图，映射到具体命令执行
+ * Backend implementation of five features:
+ *   - A004 Smart data-binding recommendation: recommend candidate data tags based on widget property type + device association + tag semantics
+ *   - A005 Smart layout optimization: auto-align, spacing, avoidance, and beautify page widgets
+ *   - C002 Context-aware help: retrieve relevant help based on current context (selected widget/page/action)
+ *   - C003 Smart search: semantic search across modules (pages/widgets/tags/alarms/docs)
+ *   - E003 Natural-language commands: parse NL intent and map to specific command execution
  *
- * 设计原则：
- *   - 每个功能独立方法，便于单测
- *   - 不直接依赖 LLM（避免测试时的网络调用），需要 LLM 增强的场景由调用方传入 LLM 结果
- *   - 依赖注入使用 @Optional()，避免缺少依赖时启动失败
+ * Design principles:
+ *   - Each feature is an independent method, easy to unit-test
+ *   - Does not directly depend on LLM (avoid network calls in tests); LLM-enhanced scenarios take LLM results passed in by the caller
+ *   - Dependency injection uses @Optional() to avoid startup failure when a dependency is missing
  */
 
 import { Injectable, Optional, Inject, Logger } from '@nestjs/common';
@@ -23,10 +23,10 @@ import { LLMProxyService } from './llm-proxy.service';
 import { RAGQAService } from './rag-qa.service';
 
 // ============================================================
-// 类型定义
+// Type definitions
 // ============================================================
 
-/** 图元属性描述（用于绑定推荐） */
+/** Widget property description (for binding recommendation) */
 export interface GraphicProperty {
   type: string;
   property: string;
@@ -35,7 +35,7 @@ export interface GraphicProperty {
   description?: string;
 }
 
-/** 数据标签候选（用于绑定推荐） */
+/** Data tag candidate (for binding recommendation) */
 export interface DataTagCandidate {
   tagId: string;
   tagName: string;
@@ -48,15 +48,15 @@ export interface DataTagCandidate {
   matchReasons: string[];
 }
 
-/** 绑定推荐请求 */
+/** Binding recommendation request */
 export interface BindingRecommendRequest {
   graphicType: string;
   graphicId?: string;
   properties: GraphicProperty[];
   deviceId?: string;
-  /** 历史绑定记录，用于学习用户偏好 */
+  /** Historical binding records, used to learn user preferences */
   historicalBindings?: Array<{ property: string; tagId: string }>;
-  /** 可选的标签池（不传则由调用方自行查询） */
+  /** Optional tag pool (if not provided, the caller queries it) */
   candidateTags?: Array<{
     tagId: string;
     tagName: string;
@@ -68,7 +68,7 @@ export interface BindingRecommendRequest {
   }>;
 }
 
-/** 绑定推荐响应 */
+/** Binding recommendation response */
 export interface BindingRecommendResponse {
   recommendations: Array<{
     property: string;
@@ -77,7 +77,7 @@ export interface BindingRecommendResponse {
   strategy: 'semantic' | 'unit-match' | 'device-priority' | 'historical';
 }
 
-/** 图元位置（用于布局优化） */
+/** Widget position (for layout optimization) */
 export interface GraphicRect {
   id: string;
   x: number;
@@ -87,7 +87,7 @@ export interface GraphicRect {
   type?: string;
 }
 
-/** 布局优化请求 */
+/** Layout optimization request */
 export interface LayoutOptimizeRequest {
   graphics: GraphicRect[];
   canvasWidth: number;
@@ -97,7 +97,7 @@ export interface LayoutOptimizeRequest {
   gap?: number;
 }
 
-/** 布局优化响应 */
+/** Layout optimization response */
 export interface LayoutOptimizeResponse {
   graphics: GraphicRect[];
   changes: Array<{
@@ -113,7 +113,7 @@ export interface LayoutOptimizeResponse {
   };
 }
 
-/** 上下文感知帮助请求 */
+/** Context-aware help request */
 export interface ContextHelpRequest {
   context: {
     pageId?: string;
@@ -125,7 +125,7 @@ export interface ContextHelpRequest {
   question?: string;
 }
 
-/** 上下文感知帮助响应 */
+/** Context-aware help response */
 export interface ContextHelpResponse {
   matchedDocs: Array<{
     title: string;
@@ -137,14 +137,14 @@ export interface ContextHelpResponse {
   relatedOperations: string[];
 }
 
-/** 智能搜索请求 */
+/** Smart search request */
 export interface SmartSearchRequest {
   query: string;
   scopes?: Array<'page' | 'graphic' | 'tag' | 'alarm' | 'device' | 'document'>;
   limit?: number;
 }
 
-/** 智能搜索响应 */
+/** Smart search response */
 export interface SmartSearchResponse {
   results: Array<{
     scope: string;
@@ -158,7 +158,7 @@ export interface SmartSearchResponse {
   elapsed: number;
 }
 
-/** 自然语言命令解析请求 */
+/** Natural-language command parse request */
 export interface CommandParseRequest {
   input: string;
   context?: {
@@ -167,7 +167,7 @@ export interface CommandParseRequest {
   };
 }
 
-/** 命令意图 */
+/** Command intent */
 export type CommandIntent =
   | 'page.create'
   | 'page.switch'
@@ -181,7 +181,7 @@ export type CommandIntent =
   | 'help'
   | 'unknown';
 
-/** 自然语言命令解析响应 */
+/** Natural-language command parse response */
 export interface CommandParseResponse {
   intent: CommandIntent;
   confidence: number;
@@ -191,7 +191,7 @@ export interface CommandParseResponse {
 }
 
 // ============================================================
-// 服务实现
+// Service implementation
 // ============================================================
 
 @Injectable()
@@ -204,18 +204,18 @@ export class Phase2FeaturesService {
   ) {}
 
   // ============================================================
-  // A004 智能数据绑定推荐
+  // A004 Smart data-binding recommendation
   // ============================================================
 
   /**
-   * 为图元属性推荐候选数据标签
+   * Recommend candidate data tags for a widget property
    *
-   * 打分策略（加权求和）：
-   *   - 数据类型匹配：+40
-   *   - 单位匹配：+25
-   *   - 同设备优先：+20
-   *   - 名称语义相似：+15
-   *   - 历史绑定偏好：+10
+   * Scoring strategy (weighted sum):
+   *   - Data type match: +40
+   *   - Unit match: +25
+   *   - Same device priority: +20
+   *   - Name semantic similarity: +15
+   *   - Historical binding preference: +10
    */
   recommendBindings(req: BindingRecommendRequest): BindingRecommendResponse {
     const candidates = req.candidateTags || [];
@@ -227,25 +227,25 @@ export class Phase2FeaturesService {
         const matchReasons: string[] = [];
         let score = 0;
 
-        // 数据类型匹配
+        // Data type match
         if (this.matchDataType(prop.dataType, tag.dataType)) {
           score += 40;
           matchReasons.push('数据类型匹配');
         }
 
-        // 单位匹配
+        // Unit match
         if (prop.unit && tag.unit && prop.unit.toLowerCase() === tag.unit.toLowerCase()) {
           score += 25;
           matchReasons.push('单位匹配');
         }
 
-        // 同设备优先
+        // Same device priority
         if (req.deviceId && tag.deviceId === req.deviceId) {
           score += 20;
           matchReasons.push('同设备优先');
         }
 
-        // 名称语义相似（简化版：子串匹配）
+        // Name semantic similarity (simplified: substring match)
         if (
           this.semanticMatch(
             prop.description || prop.property,
@@ -256,7 +256,7 @@ export class Phase2FeaturesService {
           matchReasons.push('名称语义相似');
         }
 
-        // 历史绑定偏好
+        // Historical binding preference
         const historicalHit = historical.some(
           (h) => h.property === prop.property && h.tagId === tag.tagId,
         );
@@ -278,7 +278,7 @@ export class Phase2FeaturesService {
         };
       });
 
-      // 降序排序，取前 5
+      // Sort descending, take top 5
       scored.sort((a, b) => b.score - a.score);
       recommendations.push({
         property: prop.property,
@@ -286,7 +286,7 @@ export class Phase2FeaturesService {
       });
     }
 
-    // 策略判定：优先级 device-priority > historical > unit-match > semantic
+    // Strategy: device-priority > historical > unit-match > semantic
     const strategy: BindingRecommendResponse['strategy'] = req.deviceId
       ? 'device-priority'
       : historical.length > 0
@@ -310,7 +310,7 @@ export class Phase2FeaturesService {
       );
     if (propType === 'string') return tagLower === 'string' || tagLower === 'text';
     if (propType === 'boolean') return tagLower === 'boolean' || tagLower === 'bool';
-    if (propType === 'enum') return true; // enum 兼容所有
+    if (propType === 'enum') return true; // enum is compatible with everything
     return false;
   }
 
@@ -318,26 +318,26 @@ export class Phase2FeaturesService {
     if (!a || !b) return false;
     const aLower = a.toLowerCase();
     const bLower = b.toLowerCase();
-    // 子串匹配
+    // Substring match
     if (aLower.includes(bLower) || bLower.includes(aLower)) return true;
-    // 关键词匹配（按空格分词）
+    // Keyword match (split by space)
     const aWords = aLower.split(/\s+/).filter((w) => w.length >= 2);
     const bWords = bLower.split(/\s+/).filter((w) => w.length >= 2);
     return aWords.some((w) => bWords.some((bw) => bw.includes(w) || w.includes(bw)));
   }
 
   // ============================================================
-  // A005 智能布局优化
+  // A005 Smart layout optimization
   // ============================================================
 
   /**
-   * 对页面图元进行布局优化
+   * Optimize the layout of page widgets
    *
-   * 支持策略：
-   *   - grid：网格对齐（默认）
-   *   - flow：流式布局
-   *   - cluster：聚类布局（按图元类型分组）
-   *   - align：仅对齐（不改变大小）
+   * Supported strategies:
+   *   - grid: grid alignment (default)
+   *   - flow: flow layout
+   *   - cluster: cluster layout (group by widget type)
+   *   - align: align only (keep size)
    */
   optimizeLayout(req: LayoutOptimizeRequest): LayoutOptimizeResponse {
     const strategy = req.strategy || 'grid';
@@ -366,7 +366,7 @@ export class Phase2FeaturesService {
         break;
     }
 
-    // 记录变化
+    // Record changes
     for (const g of optimized) {
       const original = req.graphics.find((og) => og.id === g.id);
       if (original && (original.x !== g.x || original.y !== g.y)) {
@@ -379,10 +379,10 @@ export class Phase2FeaturesService {
       }
     }
 
-    // 碰撞检测
+    // Collision detection
     const collisions = this.detectCollisions(optimized);
 
-    // 统计
+    // Statistics
     const aligned = changes.filter(
       (c) => Math.abs(c.from.x - c.to.x) < 1 || Math.abs(c.from.y - c.to.y) < 1,
     ).length;
@@ -395,7 +395,7 @@ export class Phase2FeaturesService {
     };
   }
 
-  /** 网格布局：按行排列，自动换行 */
+  /** Grid layout: arrange by row, auto-wrap */
   private layoutGrid(
     graphics: GraphicRect[],
     canvasWidth: number,
@@ -409,7 +409,7 @@ export class Phase2FeaturesService {
 
     return sorted.map((g) => {
       if (currentX + g.width > canvasWidth - padding) {
-        // 换行
+        // Line wrap
         currentX = padding;
         currentY += rowMaxHeight + gap;
         rowMaxHeight = 0;
@@ -421,7 +421,7 @@ export class Phase2FeaturesService {
     });
   }
 
-  /** 流式布局：按从左到右、从上到下顺序排列 */
+  /** Flow layout: arrange left-to-right, top-to-bottom */
   private layoutFlow(
     graphics: GraphicRect[],
     canvasWidth: number,
@@ -431,7 +431,7 @@ export class Phase2FeaturesService {
     return this.layoutGrid(graphics, canvasWidth, padding, gap);
   }
 
-  /** 聚类布局：按图元类型分组 */
+  /** Cluster layout: group by widget type */
   private layoutCluster(graphics: GraphicRect[], padding: number, gap: number): GraphicRect[] {
     const groups = new Map<string, GraphicRect[]>();
     for (const g of graphics) {
@@ -455,7 +455,7 @@ export class Phase2FeaturesService {
     return result;
   }
 
-  /** 对齐布局：按最小 X/Y 对齐到网格 */
+  /** Align layout: align to grid by min X/Y */
   private layoutAlign(graphics: GraphicRect[]): GraphicRect[] {
     const gridSize = 5;
     return graphics.map((g) => ({
@@ -465,7 +465,7 @@ export class Phase2FeaturesService {
     }));
   }
 
-  /** 检测碰撞 */
+  /** Detect collisions */
   private detectCollisions(graphics: GraphicRect[]): number {
     let count = 0;
     for (let i = 0; i < graphics.length; i++) {
@@ -486,26 +486,26 @@ export class Phase2FeaturesService {
   }
 
   // ============================================================
-  // C002 上下文感知帮助
+  // C002 Context-aware help
   // ============================================================
 
   /**
-   * 基于当前编辑器上下文检索相关帮助文档
+   * Retrieve relevant help docs based on current editor context
    *
-   * 优先级：
-   *   1. 若有具体问题，调用 RAG 检索
-   *   2. 否则基于上下文（选中图元类型、操作）匹配内置帮助库
+   * Priority:
+   *   1. If there is a specific question, call RAG retrieval
+   *   2. Otherwise match the built-in help library by context (selected widget type, action)
    */
   async getContextHelp(req: ContextHelpRequest): Promise<ContextHelpResponse> {
     const { context, question } = req;
 
-    // 内置帮助文档库（按图元类型分类）
+    // Built-in help doc library (categorized by widget type)
     const builtinDocs = this.getBuiltinHelpDocs();
     const matchedDocs: ContextHelpResponse['matchedDocs'] = [];
     const suggestions: string[] = [];
     const relatedOperations: string[] = [];
 
-    // 若有具体问题且 RAG 可用，使用 RAG 检索
+    // If there is a specific question and RAG is available, use RAG retrieval
     if (question && this.ragQA) {
       try {
         const ragResult = await this.ragQA.ask({ question });
@@ -522,7 +522,7 @@ export class Phase2FeaturesService {
       }
     }
 
-    // 基于选中图元类型匹配
+    // Match by selected widget type
     if (context.selectedGraphicType) {
       const docs = builtinDocs.filter((d) =>
         d.graphicTypes?.includes(context.selectedGraphicType!),
@@ -539,7 +539,7 @@ export class Phase2FeaturesService {
       }
     }
 
-    // 基于操作匹配
+    // Match by action
     if (context.operation) {
       const opDocs = builtinDocs.filter((d) => d.matchOperations?.includes(context.operation!));
       for (const doc of opDocs) {
@@ -554,7 +554,7 @@ export class Phase2FeaturesService {
       }
     }
 
-    // 去重
+    // Deduplicate
     const seen = new Set<string>();
     const deduped = matchedDocs.filter((m) => {
       if (seen.has(m.title)) return false;
@@ -610,14 +610,14 @@ export class Phase2FeaturesService {
   }
 
   // ============================================================
-  // C003 智能搜索
+  // C003 Smart search
   // ============================================================
 
   /**
-   * 跨模块语义搜索
+   * Cross-module semantic search
    *
-   * 当前实现为本地匹配（基于关键词+子串）。
-   * 生产环境可结合向量检索（需要候选数据源注入）。
+   * Current implementation is local matching (keyword + substring based).
+   * Production can combine vector search (requires candidate data source injection).
    */
   smartSearch(req: SmartSearchRequest): SmartSearchResponse {
     const start = Date.now();
@@ -629,7 +629,7 @@ export class Phase2FeaturesService {
       return { results: [], total: 0, elapsed: 0 };
     }
 
-    // 内置可搜索数据（实际场景由调用方注入或从 DB 查询）
+    // Built-in searchable data (in real scenarios injected by caller or queried from DB)
     const corpus = this.getSearchableCorpus();
     const scored = corpus
       .filter((item) => scopes.includes(item.scope as any))
@@ -650,14 +650,14 @@ export class Phase2FeaturesService {
 
   private scoreMatch(query: string, text: string): number {
     let score = 0;
-    // 完全匹配
+    // Exact match
     if (text.includes(query)) score += 50;
-    // 关键词匹配
+    // Keyword match
     const words = query.split(/\s+/).filter((w) => w.length >= 2);
     for (const w of words) {
       if (text.includes(w)) score += 10;
     }
-    // 前缀匹配
+    // Prefix match
     if (text.startsWith(query)) score += 15;
     return score;
   }
@@ -669,7 +669,7 @@ export class Phase2FeaturesService {
     snippet: string;
     metadata?: Record<string, unknown>;
   }> {
-    // 实际场景应从 DB 查询；此处返回内置示例数据用于测试与展示
+    // Real scenarios should query from DB; here return built-in sample data for tests and demos
     return [
       {
         scope: 'page',
@@ -694,23 +694,23 @@ export class Phase2FeaturesService {
   }
 
   // ============================================================
-  // E003 自然语言命令解析
+  // E003 Natural-language command parsing
   // ============================================================
 
   /**
-   * 解析自然语言命令意图
+   * Parse natural-language command intent
    *
-   * 采用规则匹配（生产环境可结合 LLM 增强）：
-   *   - "创建/新建/添加 页面" → page.create
-   *   - "切换/打开 页面" → page.switch
-   *   - "添加/放置 阀门/泵" → graphic.add
-   *   - "选中/选择" → graphic.select
-   *   - "删除/移除" → graphic.delete
-   *   - "修改/更新 属性" → graphic.update
-   *   - "绑定 数据" → binding.set
-   *   - "执行/运行 脚本" → script.run
-   *   - "搜索/查找" → search
-   *   - "帮助/怎么" → help
+   * Uses rule matching (production can combine LLM enhancement):
+   *   - "create/new/add page" -> page.create
+   *   - "switch/open page" -> page.switch
+   *   - "add/place valve/pump" -> graphic.add
+   *   - "select" -> graphic.select
+   *   - "delete/remove" -> graphic.delete
+   *   - "modify/update property" -> graphic.update
+   *   - "bind data" -> binding.set
+   *   - "execute/run script" -> script.run
+   *   - "search/find" -> search
+   *   - "help/how" -> help
    */
   parseCommand(req: CommandParseRequest): CommandParseResponse {
     const input = req.input.trim().toLowerCase();
@@ -719,7 +719,7 @@ export class Phase2FeaturesService {
       return { intent: 'unknown', confidence: 0, params: {}, description: '空输入' };
     }
 
-    // 规则匹配表
+    // Rule matching table
     const rules: Array<{
       patterns: RegExp[];
       intent: CommandIntent;
@@ -785,11 +785,11 @@ export class Phase2FeaturesService {
       for (const pattern of rule.patterns) {
         const match = input.match(pattern);
         if (match) {
-          // 简单置信度计算：匹配长度 / 输入长度
+          // Simple confidence calc: match length / input length
           const confidence = Math.min(1, match[0].length / input.length + 0.3);
           const params = rule.paramExtractor ? rule.paramExtractor(match) : {};
 
-          // 收集备选意图
+          // Collect candidate intents
           for (const other of rules) {
             if (other.intent !== rule.intent) {
               for (const p of other.patterns) {

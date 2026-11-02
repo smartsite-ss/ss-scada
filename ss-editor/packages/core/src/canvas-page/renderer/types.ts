@@ -77,7 +77,7 @@ export interface IRenderer {
   destroy(): void;
   resize(width: number, height: number): void;
   setScale(scale: number): void;
-  /** 设置非均匀缩放（X/Y 轴独立缩放），用于 stretch 模式 */
+  /** Set non-uniform scaling (independent X/Y axes), used for stretch mode */
   setScaleXY?(scaleX: number, scaleY: number): void;
   setPan(x: number, y: number): void;
   getContext(): RenderContext | null;

@@ -2,7 +2,7 @@
 // https://smartsite.top/
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
-// 主题配置
+// Theme configuration
 
 export interface ButtonTokens {
   background: string;
@@ -93,7 +93,7 @@ export interface Theme {
 }
 
 // ============================================================
-// 轻色系列
+// Light color series
 // ============================================================
 
 export const lightTheme: Theme = {
@@ -650,7 +650,7 @@ export const orangeWarmTheme: Theme = {
 };
 
 // ============================================================
-// 暗色系列
+// Dark color series
 // ============================================================
 
 export const darkTheme: Theme = {
@@ -970,7 +970,7 @@ export const greenTechTheme: Theme = {
 };
 
 // ============================================================
-// 主题映射
+// Theme mapping
 // ============================================================
 
 export const themes: Record<string, Theme> = {

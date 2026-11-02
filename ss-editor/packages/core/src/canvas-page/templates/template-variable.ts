@@ -3,20 +3,20 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 模板变量注入与解析
+ * Template variable injection and resolution
  *
- * 组件模板（WidgetTemplate）图元 JSON 中以 `{{key}}` 形式书写占位符，
- * 实例化时根据 variables 定义进行替换。
+ * Component templates (WidgetTemplate) write `{{key}}` placeholders in graphic JSON;
+ * they are replaced at instantiation time based on the variables definitions.
  *
- * 与设备模板变量（DeviceTemplateVariable，${expr} 采集点）完全不同：
- * 此处仅做 UI 占位符的字符串/数值替换，不生成 DataTag、不做采集。
+ * Completely different from device template variables (DeviceTemplateVariable, ${expr} collection points):
+ * this only does UI placeholder string/numeric replacement; it never creates DataTags or collects data.
  */
 
 import type { WidgetTemplateVariable } from './widget-template.types';
 
 const PLACEHOLDER_RE = /\{\{\s*([\w.-]+)\s*\}\}/g;
 
-/** 提取字符串中的所有占位符键 */
+/** Extract all placeholder keys from a string */
 export function extractPlaceholders(text: string): string[] {
   const keys: string[] = [];
   let m: RegExpExecArray | null;
@@ -27,7 +27,7 @@ export function extractPlaceholders(text: string): string[] {
   return keys;
 }
 
-/** 将单个字符串中的占位符替换为变量值 */
+/** Replace placeholders in a single string with variable values */
 export function resolveText(
   text: string,
   values: Record<string, string | number>,
@@ -40,8 +40,8 @@ export function resolveText(
 }
 
 /**
- * 深度遍历 graphics JSON，对 props / text / fill 等字段执行占位符替换。
- * 同时处理 targetPath 形式的精确注入（覆盖默认文本替换）。
+ * Deep-walk the graphics JSON and perform placeholder replacement on fields like props / text / fill.
+ * Also handles precise injection via targetPath (overriding the default text replacement).
  */
 export function applyVariables(
   graphics: any[],
@@ -56,10 +56,10 @@ export function applyVariables(
 
   const clone = JSON.parse(JSON.stringify(graphics));
 
-  // 1) 默认：对字符串字段做占位符替换
+  // 1) Default: placeholder replacement on string fields
   deepResolve(clone, merged);
 
-  // 2) 精确注入：targetPath 显式指定路径
+  // 2) Precise injection: targetPath explicitly specifies the path
   for (const v of variables) {
     if (v.targetPath) {
       setByPath(clone, v.targetPath, merged[v.key] ?? '');
@@ -86,7 +86,7 @@ function deepResolve(node: any, values: Record<string, string | number>): void {
   }
 }
 
-/** 按路径设置值，如 "graphics[0].props.text" */
+/** Set a value by path, e.g. "graphics[0].props.text" */
 function setByPath(root: any, path: string, value: any): void {
   const segs = path
     .replace(/\[(\d+)\]/g, '.$1')

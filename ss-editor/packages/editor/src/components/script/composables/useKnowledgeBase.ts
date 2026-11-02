@@ -3,10 +3,10 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 知识库 Composable
+ * Knowledge base Composable
  *
- * 提供知识库的加载、缓存、查询、刷新等能力。
- * 作为 Vue 组合式函数，可在组件中复用。
+ * Provides knowledge base loading, caching, querying and refreshing capabilities.
+ * As a Vue composition function it can be reused in components.
  */
 
 import { ref, computed, readonly, type DeepReadonly } from 'vue';
@@ -31,47 +31,47 @@ import type { ScriptExample } from '../rules/types';
 import { API_REGISTRY } from '../rules/script-api-registry';
 
 // ═══════════════════════════════════════════════════════════════
-// 全局状态（单例）
+// Global state (singleton)
 // ═══════════════════════════════════════════════════════════════
 
-/** 知识库数据 */
+/** Knowledge base data */
 const kbData = ref<KnowledgeBaseJson | null>(null);
-/** 加载状态 */
+/** Loading state */
 const isLoading = ref(false);
-/** 加载错误 */
+/** Load error */
 const loadError = ref<string | null>(null);
-/** 版本检查结果 */
+/** Version check result */
 const versionCheck = ref<VersionCheckResult | null>(null);
-/** 是否从缓存加载 */
+/** Whether loaded from cache */
 const fromCache = ref(false);
-/** 是否从 fallback 加载 */
+/** Whether loaded from fallback */
 const fromFallback = ref(false);
-/** 版本清单 */
+/** Version manifest */
 const versionsInfo = ref<VersionsJson | null>(null);
 
 // ═══════════════════════════════════════════════════════════════
-// 计算属性
+// Computed properties
 // ═══════════════════════════════════════════════════════════════
 
-/** 是否已加载 */
+/** Whether loaded */
 const isLoaded = computed(() => kbData.value !== null);
 
-/** 元信息 */
+/** Meta info */
 const meta = computed<KbMeta | null>(() => kbData.value?.meta ?? null);
 
-/** API 注册表 */
+/** API registry */
 const apiRegistry = computed<ApiMethodDef[]>(() => {
   if (kbData.value?.apiRegistry) {
     return kbData.value.apiRegistry;
   }
-  // fallback：使用内置注册表
+  // fallback: use the built-in registry
   return API_REGISTRY;
 });
 
-/** 示例分类 */
+/** Example categories */
 const examples = computed<KbExampleCategory[]>(() => kbData.value?.examples ?? []);
 
-/** 所有示例（扁平化） */
+/** All examples (flattened) */
 const allExamples = computed<ScriptExample[]>(() => {
   const result: ScriptExample[] = [];
   for (const category of examples.value) {
@@ -80,7 +80,7 @@ const allExamples = computed<ScriptExample[]>(() => {
   return result;
 });
 
-/** API 按分类分组 */
+/** APIs grouped by category */
 const apiByCategory = computed(() => {
   const groups: Record<string, ApiMethodDef[]> = {};
   for (const api of apiRegistry.value) {
@@ -91,23 +91,23 @@ const apiByCategory = computed(() => {
   return groups;
 });
 
-/** 图元 Schema */
+/** Graphic schema */
 const graphicSchemas = computed(() => kbData.value?.graphicSchemas ?? []);
 
-/** 知识库版本 */
+/** Knowledge base version */
 const kbVersion = computed(() => meta.value?.version ?? 'unknown');
 
 // ═══════════════════════════════════════════════════════════════
-// 核心方法
+// Core methods
 // ═══════════════════════════════════════════════════════════════
 
 /**
- * 加载知识库
- * @param forceRefresh 是否强制刷新（忽略缓存）
- * @param url 自定义 URL（可选）
+ * Load the knowledge base
+ * @param forceRefresh whether to force refresh (ignore cache)
+ * @param url custom URL (optional)
  */
 async function loadKb(forceRefresh = false, url?: string): Promise<boolean> {
-  // 如果已加载且不强制刷新，直接返回
+  // If already loaded and not forcing refresh, return directly
   if (isLoaded.value && !forceRefresh) {
     return true;
   }
@@ -118,7 +118,7 @@ async function loadKb(forceRefresh = false, url?: string): Promise<boolean> {
   fromFallback.value = false;
 
   try {
-    // 步骤 1：尝试从缓存加载（如果不强制刷新）
+    // Step 1: try loading from cache (when not forcing refresh)
     if (!forceRefresh) {
       const cached = loadFromCache();
       if (cached) {
@@ -130,27 +130,27 @@ async function loadKb(forceRefresh = false, url?: string): Promise<boolean> {
       }
     }
 
-    // 步骤 2：从远程加载
+    // Step 2: load from remote
     const result = await fetchKnowledgeBase(url);
 
     if (result.success && result.data) {
       kbData.value = result.data;
       fromCache.value = false;
 
-      // 保存到缓存
+      // Save to cache
       saveToCache(result.data);
 
-      // 版本检查
+      // Version check
       versionCheck.value = validateVersion(result.data.meta);
 
       isLoading.value = false;
       return true;
     }
 
-    // 步骤 3：远程加载失败，尝试 fallback（内置数据）
+    // Step 3: remote load failed; try the fallback (built-in data)
     console.warn('[KnowledgeBase] Remote load failed:', result.error);
 
-    // 使用内置注册表构建最小知识库
+    // Build a minimal knowledge base from the built-in registry
     const fallbackData = buildFallbackKb();
     kbData.value = fallbackData;
     fromFallback.value = true;
@@ -168,7 +168,7 @@ async function loadKb(forceRefresh = false, url?: string): Promise<boolean> {
 }
 
 /**
- * 刷新知识库（清除缓存并重新加载）
+ * Refresh the knowledge base (clear cache and reload)
  */
 async function refreshKb(): Promise<boolean> {
   clearCache();
@@ -178,21 +178,21 @@ async function refreshKb(): Promise<boolean> {
 }
 
 /**
- * 获取指定名称的 API
+ * Get an API by name
  */
 function getApiByName(name: string): ApiMethodDef | undefined {
   return apiRegistry.value.find((api) => api.name === name);
 }
 
 /**
- * 按分类获取 API 列表
+ * Get the API list by category
  */
 function getApiByCategory(category: string): ApiMethodDef[] {
   return apiRegistry.value.filter((api) => api.category === category);
 }
 
 /**
- * 搜索 API
+ * Search APIs
  */
 function searchApi(keyword: string): ApiMethodDef[] {
   const lower = keyword.toLowerCase();
@@ -205,7 +205,7 @@ function searchApi(keyword: string): ApiMethodDef[] {
 }
 
 /**
- * 搜索示例
+ * Search examples
  */
 function searchExamples(keyword: string): ScriptExample[] {
   const lower = keyword.toLowerCase();
@@ -219,7 +219,7 @@ function searchExamples(keyword: string): ScriptExample[] {
 }
 
 /**
- * 按分类获取示例
+ * Get examples by category
  */
 function getExamplesByCategory(category: string): ScriptExample[] {
   const cat = examples.value.find((c) => c.category === category);
@@ -227,21 +227,21 @@ function getExamplesByCategory(category: string): ScriptExample[] {
 }
 
 /**
- * 获取版本清单
+ * Get the version manifest
  */
 async function loadVersions(): Promise<void> {
   versionsInfo.value = await fetchVersions();
 }
 
 /**
- * 根据图元插件类型获取其属性 Schema
+ * Get a graphic plugin type's property schema
  */
 function getGraphicSchema(pluginType: string): GraphicSchema | undefined {
   return graphicSchemas.value.find((s) => s.pluginType === pluginType);
 }
 
 /**
- * 搜索图元类型
+ * Search graphic types
  */
 function searchGraphicSchema(keyword: string): GraphicSchema[] {
   const lower = keyword.toLowerCase();
@@ -254,7 +254,7 @@ function searchGraphicSchema(keyword: string): GraphicSchema[] {
 }
 
 /**
- * 获取所有图元类型列表
+ * Get all graphic types
  */
 function getAllGraphicTypes(): { pluginType: string; displayName: string; category: string }[] {
   return graphicSchemas.value.map((s) => ({
@@ -265,10 +265,10 @@ function getAllGraphicTypes(): { pluginType: string; displayName: string; catego
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 辅助函数
+// Helper functions
 // ═══════════════════════════════════════════════════════════════
 
-/** 获取分类中文标签 */
+/** Get the category's Chinese label */
 function getCategoryLabel(category: string): string {
   const labels: Record<string, string> = {
     data: '数据读写',
@@ -282,7 +282,7 @@ function getCategoryLabel(category: string): string {
   return labels[category] || category;
 }
 
-/** 构建 fallback 知识库（使用内置数据） */
+/** Build the fallback knowledge base (using built-in data) */
 function buildFallbackKb(): KnowledgeBaseJson {
   return {
     meta: {
@@ -298,12 +298,12 @@ function buildFallbackKb(): KnowledgeBaseJson {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// Composable 导出
+// Composable export
 // ═══════════════════════════════════════════════════════════════
 
 export function useKnowledgeBase() {
   return {
-    // 状态
+    // State
     kbData: readonly(kbData) as DeepReadonly<typeof kbData>,
     isLoading: readonly(isLoading),
     loadError: readonly(loadError),
@@ -312,7 +312,7 @@ export function useKnowledgeBase() {
     fromFallback: readonly(fromFallback),
     versionsInfo: readonly(versionsInfo),
 
-    // 计算属性
+    // Computed properties
     isLoaded,
     meta,
     apiRegistry,
@@ -322,7 +322,7 @@ export function useKnowledgeBase() {
     apiByCategory,
     kbVersion,
 
-    // 方法
+    // Methods
     loadKb,
     refreshKb,
     getApiByName,

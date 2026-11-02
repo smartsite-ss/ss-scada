@@ -5,13 +5,13 @@
 import client from '../client';
 import type { ApiResponse } from '../types/api';
 
-/** 服务名称（字符串类型，支持自定义第三方服务） */
+/** Service name (string type, supports custom third-party services) */
 export type BaseServiceName = string;
 
-/** 服务运行状态 */
+/** Service running state */
 export type ServiceRunStatus = 'running' | 'stopped' | 'error' | 'unknown';
 
-/** 服务状态信息 */
+/** Service status information */
 export interface ServiceStatus {
   id: string;
   name: BaseServiceName;
@@ -32,7 +32,7 @@ export interface ServiceStatus {
   errorMessage?: string;
 }
 
-/** 服务操作结果 */
+/** Service operation result */
 export interface ServiceActionResult {
   success: boolean;
   action: 'start' | 'stop' | 'restart';
@@ -42,7 +42,7 @@ export interface ServiceActionResult {
   durationMs: number;
 }
 
-/** 服务配置实体 */
+/** Service configuration entity */
 export interface BaseServiceConfig {
   id: string;
   name: string;
@@ -65,7 +65,7 @@ export interface BaseServiceConfig {
   updatedAt?: string;
 }
 
-/** 创建服务 DTO */
+/** Create service DTO */
 export interface CreateBaseServiceDto {
   name: string;
   displayName: string;
@@ -85,10 +85,10 @@ export interface CreateBaseServiceDto {
   sortOrder?: number;
 }
 
-/** 更新服务 DTO */
+/** Update service DTO */
 export type UpdateBaseServiceDto = Partial<CreateBaseServiceDto>
 
-/** 配置文件信息 */
+/** Config file information */
 export interface ServiceConfig {
   content: string;
   path: string;
@@ -96,14 +96,14 @@ export interface ServiceConfig {
   updatedAt?: string;
 }
 
-/** 保存配置结果 */
+/** Save config result */
 export interface SaveConfigResult {
   success: boolean;
   path: string;
   backupPath?: string;
 }
 
-/** 日志条目 */
+/** Log entry */
 export interface ServiceLogEntry {
   filename: string;
   size: number;
@@ -112,19 +112,19 @@ export interface ServiceLogEntry {
   totalLines: number;
 }
 
-/** 清理日志结果 */
+/** Log cleanup result */
 export interface ClearLogsResult {
   cleared: string[];
 }
 
-/** InfluxDB Setup 状态 */
+/** InfluxDB Setup status */
 export interface InfluxSetupStatus {
   reachable: boolean;
   initialized: boolean;
   tokenConfigured: boolean;
 }
 
-/** InfluxDB Setup 结果 */
+/** InfluxDB Setup result */
 export interface InfluxSetupResult {
   success: boolean;
   message: string;
@@ -134,7 +134,7 @@ export interface InfluxSetupResult {
   details?: Record<string, any>;
 }
 
-/** InfluxDB 健康状态 */
+/** InfluxDB health status */
 export interface InfluxHealthStatus {
   status: 'healthy' | 'degraded' | 'unhealthy';
   version?: string;
@@ -153,15 +153,15 @@ export interface InfluxBucket {
   storageBytes?: number;
   createdAt?: string;
   updatedAt?: string;
-  /** measurement 数量 */
+  /** measurement count */
   measurementCount?: number;
-  /** 最后写入时间（ISO 字符串） */
+  /** Last write time (ISO string) */
   lastWriteAt?: string;
-  /** 数据点总数（近似） */
+  /** Total data points (approximate) */
   dataPointCount?: number;
 }
 
-/** InfluxDB 环境配置 */
+/** InfluxDB environment configuration */
 export interface InfluxConfig {
   url: string;
   org: string;
@@ -170,7 +170,7 @@ export interface InfluxConfig {
   tokenMasked: string;
 }
 
-/** NanoMQ 健康状态 */
+/** NanoMQ health status */
 export interface NanomqHealthStatus {
   reachable: boolean;
   responseTimeMs?: number;
@@ -178,95 +178,95 @@ export interface NanomqHealthStatus {
 }
 
 export const baseServicesApi = {
-  /** 获取所有基础服务状态 */
+  /** Get all base service statuses */
   list(): Promise<ApiResponse<ServiceStatus[]>> {
     return client.get('/base-services').then((res) => res.data);
   },
 
-  /** 获取所有服务配置列表 */
+  /** Get all service configuration list */
   listConfig(): Promise<ApiResponse<BaseServiceConfig[]>> {
     return client.get('/base-services/config/list').then((res) => res.data);
   },
 
-  /** 新增服务 */
+  /** Add a service */
   create(dto: CreateBaseServiceDto): Promise<ApiResponse<BaseServiceConfig>> {
     return client.post('/base-services', dto).then((res) => res.data);
   },
 
-  /** 更新服务配置 */
+  /** Update a service configuration */
   update(name: string, dto: UpdateBaseServiceDto): Promise<ApiResponse<BaseServiceConfig>> {
     return client.put(`/base-services/${name}`, dto).then((res) => res.data);
   },
 
-  /** 删除服务 */
+  /** Delete a service */
   remove(name: string): Promise<ApiResponse<{ success: boolean }>> {
     return client.delete(`/base-services/${name}`).then((res) => res.data);
   },
 
-  /** 获取单个服务状态 */
+  /** Get a single service status */
   getStatus(name: BaseServiceName): Promise<ApiResponse<ServiceStatus>> {
     return client.get(`/base-services/${name}/status`).then((res) => res.data);
   },
 
-  /** 启动服务 */
+  /** Start a service */
   start(name: BaseServiceName): Promise<ApiResponse<ServiceActionResult>> {
     return client.post(`/base-services/${name}/start`).then((res) => res.data);
   },
 
-  /** 停止服务 */
+  /** Stop a service */
   stop(name: BaseServiceName): Promise<ApiResponse<ServiceActionResult>> {
     return client.post(`/base-services/${name}/stop`).then((res) => res.data);
   },
 
-  /** 重启服务 */
+  /** Restart a service */
   restart(name: BaseServiceName): Promise<ApiResponse<ServiceActionResult>> {
     return client.post(`/base-services/${name}/restart`).then((res) => res.data);
   },
 
-  /** 读取配置文件 */
+  /** Read the config file */
   getConfig(name: BaseServiceName): Promise<ApiResponse<ServiceConfig>> {
     return client.get(`/base-services/${name}/config`).then((res) => res.data);
   },
 
-  /** 保存配置文件 */
+  /** Save the config file */
   saveConfig(name: BaseServiceName, content: string): Promise<ApiResponse<SaveConfigResult>> {
     return client.put(`/base-services/${name}/config`, { content }).then((res) => res.data);
   },
 
-  /** 获取日志 */
+  /** Get logs */
   getLogs(name: BaseServiceName, limit?: number): Promise<ApiResponse<ServiceLogEntry[]>> {
     const params = limit ? { limit } : {};
     return client.get(`/base-services/${name}/logs`, { params }).then((res) => res.data);
   },
 
-  /** 清理日志 */
+  /** Clear logs */
   clearLogs(name: BaseServiceName): Promise<ApiResponse<ClearLogsResult>> {
     return client.delete(`/base-services/${name}/logs`).then((res) => res.data);
   },
 
-  // ==================== InfluxDB 初始化 ====================
+  // ==================== InfluxDB initialization ====================
 
-  /** 检测 InfluxDB setup 状态 */
+  /** Detect the InfluxDB setup status */
   checkInfluxSetup(): Promise<ApiResponse<InfluxSetupStatus>> {
     return client.get('/base-services/influxdb/setup/status').then((res) => res.data);
   },
 
-  /** 检测 InfluxDB 运行健康状态 */
+  /** Detect the InfluxDB running health status */
   checkInfluxHealth(): Promise<ApiResponse<InfluxHealthStatus>> {
     return client.get('/base-services/influxdb/health').then((res) => res.data);
   },
 
-  /** 一键初始化 InfluxDB */
+  /** One-click InfluxDB initialization */
   setupInfluxDB(body?: { username?: string; password?: string; org?: string; bucket?: string }): Promise<ApiResponse<InfluxSetupResult>> {
     return client.post('/base-services/influxdb/setup', body).then((res) => res.data);
   },
 
-  /** 获取 InfluxDB Bucket 列表 */
+  /** Get the InfluxDB bucket list */
   listInfluxBuckets(): Promise<ApiResponse<InfluxBucket[]>> {
     return client.get('/base-services/influxdb/buckets').then((res) => res.data);
   },
 
-  /** 导出 InfluxDB Bucket 数据为 CSV（返回 Blob，携带鉴权） */
+  /** Export InfluxDB bucket data as CSV (returns a Blob, carries authentication) */
   exportBucketData(bucketName: string, start?: string): Promise<Blob> {
     return client
       .get(`/base-services/influxdb/buckets/${encodeURIComponent(bucketName)}/export`, {
@@ -276,14 +276,14 @@ export const baseServicesApi = {
       .then((res) => res.data);
   },
 
-  /** 获取 InfluxDB 环境配置 */
+  /** Get the InfluxDB environment configuration */
   getInfluxConfig(): Promise<ApiResponse<InfluxConfig>> {
     return client.get('/base-services/influxdb/config').then((res) => res.data);
   },
 
-  // ==================== NanoMQ 健康检测 ====================
+  // ==================== NanoMQ health detection ====================
 
-  /** 检测 NanoMQ MQTT Broker 健康状态 */
+  /** Detect the NanoMQ MQTT broker health status */
   checkNanomqHealth(): Promise<ApiResponse<NanomqHealthStatus>> {
     return client.get('/base-services/nanomq/health').then((res) => res.data);
   },

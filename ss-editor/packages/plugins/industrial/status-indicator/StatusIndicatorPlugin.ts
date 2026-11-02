@@ -51,6 +51,6 @@ export class StatusIndicatorPlugin extends BasePlugin<StatusIndicatorProps> {
   }
 
   protected render(_dc: DrawContext): void {
-    // Vue SFC 模式：主渲染由 Vue DOM 层完成（见 StatusIndicatorGraphic.vue）
+    // Vue SFC mode: main rendering is done by the Vue DOM layer (see StatusIndicatorGraphic.vue)
   }
 }

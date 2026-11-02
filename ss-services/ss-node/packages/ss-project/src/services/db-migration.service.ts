@@ -10,26 +10,26 @@ import * as path from 'path';
 import * as fs from 'fs';
 
 /**
- * 迁移脚本元数据
+ * Migration-script metadata
  */
 export interface MigrationScript {
-  /** 文件名 */
+  /** File name */
   name: string;
-  /** 文件路径 */
+  /** File path */
   filePath: string;
-  /** 迁移版本号（从文件名中提取） */
+  /** Migration version number (extracted from the file name) */
   version: number;
-  /** 迁移类型 */
+  /** Migration type */
   targetDb: 'system';
 }
 
 /**
- * 项目级数据库迁移管理服务
+ * Project-level database migration management service
  *
- * 职责：
- * 1. 管理项目级数据库迁移脚本（db/migration/ 目录）
- * 2. 追踪已执行的迁移版本（存储在 projectinfo.json 中）
- * 3. 按序执行待迁移脚本
+ * Responsibilities:
+ * 1. Manage project-level database migration scripts (the db/migration/ directory)
+ * 2. Track executed migration versions (stored in projectinfo.json)
+ * 3. Execute pending migration scripts in order
  */
 @Injectable()
 export class DbMigrationService {
@@ -41,17 +41,17 @@ export class DbMigrationService {
   ) {}
 
   /**
-   * 获取项目迁移脚本目录
+   * Get the project migration-script directory
    *
-   * 相对路径基准：
-   * - dev 模式：__dirname 上溯 4 级 = ss-services/ss-node
-   *   （本文件编译后位于 packages/ss-project/dist/services/，4 级上溯：
-   *    dist/services/ → dist/ → ss-project/ → packages/ → ss-node/）
-   * - 生产模式：process.cwd() = ss-run/ss/services/ss-node
+   * Relative-path base:
+   * - dev mode: __dirname up 4 levels = ss-services/ss-node
+   *   (after compilation this file lives in packages/ss-project/dist/services/, 4 levels up:
+   *    dist/services/ -> dist/ -> ss-project/ -> packages/ -> ss-node/)
+   * - production: process.cwd() = ss-run/ss/services/ss-node
    *
-   * 修复历史：之前用 3 级上溯且不区分 dev/prod，dev 模式下解析到 packages/（错误），
-   * 生产模式下 __dirname 位于 node_modules/@ss-node/ss-project/dist/services/，
-   * 3 级上溯到 node_modules/（错误）。与 project-database.service.ts getProjectDbDir() 保持一致。
+   * Fix history: previously used 3-level traversal without distinguishing dev/prod; in dev mode it resolved to packages/ (wrong),
+   * and in production __dirname lives in node_modules/@ss-node/ss-project/dist/services/, where 3 levels reaches node_modules/ (wrong).
+   * Kept consistent with project-database.service.ts getProjectDbDir().
    */
   getMigrationDir(projectName: string): string {
     const projectsDir = this.configService.get<string>('PROJECTS_DIR') || './data/projects';
@@ -60,10 +60,10 @@ export class DbMigrationService {
   }
 
   /**
-   * 扫描项目迁移脚本目录，返回待执行的迁移脚本列表
+   * Scan the project migration-script directory, returning the list of pending migration scripts
    *
-   * 文件命名规范：{序号}_system_{描述}.sql
-   * 示例：
+   * File naming convention: {index}_system_{description}.sql
+   * Examples:
    *   001_system_init.sql
    *   002_system_add_alarm_priority.sql
    */
@@ -76,7 +76,7 @@ export class DbMigrationService {
     const files = fs
       .readdirSync(migrationDir)
       .filter((f) => f.endsWith('.sql'))
-      .sort(); // 按文件名排序
+      .sort(); // sort by file name
 
     const migrations: MigrationScript[] = [];
     for (const file of files) {
@@ -97,7 +97,7 @@ export class DbMigrationService {
   }
 
   /**
-   * 获取已执行的迁移版本列表
+   * Get the list of executed migration versions
    */
   getExecutedMigrations(projectName: string): string[] {
     const infoPath = this.getProjectInfoPath(projectName);
@@ -114,7 +114,7 @@ export class DbMigrationService {
   }
 
   /**
-   * 记录已执行的迁移
+   * Record an executed migration
    */
   recordMigration(projectName: string, migrationName: string): void {
     const infoPath = this.getProjectInfoPath(projectName);
@@ -133,7 +133,7 @@ export class DbMigrationService {
   }
 
   /**
-   * 获取当前数据库结构版本号
+   * Get the current database schema version number
    */
   getDbSchemaVersion(projectName: string): number {
     const infoPath = this.getProjectInfoPath(projectName);
@@ -150,7 +150,7 @@ export class DbMigrationService {
   }
 
   /**
-   * 更新数据库结构版本号
+   * Update the database schema version number
    */
   setDbSchemaVersion(projectName: string, version: number): void {
     const infoPath = this.getProjectInfoPath(projectName);
@@ -162,11 +162,11 @@ export class DbMigrationService {
   }
 
   /**
-   * 执行项目数据库迁移
+   * Execute project database migrations
    *
-   * @param projectName 项目名称
-   * @param systemDs    system.db DataSource
-   * @returns 本次执行的迁移数量
+   * @param projectName project name
+   * @param systemDs    the system.db DataSource
+   * @returns the number of migrations executed this time
    */
   async migrateProject(projectName: string, systemDs: DataSource): Promise<number> {
     const migrations = this.scanMigrations(projectName);
@@ -198,7 +198,7 @@ export class DbMigrationService {
           `[${projectName}] Migration "${migration.name}" failed: ${(err as Error).message}`,
           (err as Error).stack,
         );
-        // 不中断后续迁移
+        // Do not interrupt subsequent migrations
       }
     }
 
@@ -207,11 +207,11 @@ export class DbMigrationService {
   }
 
   /**
-   * 生成空白迁移脚本文件
+   * Generate a blank migration-script file
    *
-   * @param projectName 项目名称
-   * @param description 迁移描述
-   * @param targetDb    目标数据库
+   * @param projectName project name
+   * @param description migration description
+   * @param targetDb    target database
    */
   createMigrationFile(projectName: string, description: string, targetDb: 'system'): string {
     const migrationDir = this.getMigrationDir(projectName);
@@ -239,9 +239,9 @@ export class DbMigrationService {
   }
 
   /**
-   * 获取项目的 projectinfo.json 路径
+   * Get the project's projectinfo.json path
    *
-   * 路径基准与 getMigrationDir() 一致：dev 模式 4 级上溯，生产模式 process.cwd()。
+   * Path base matches getMigrationDir(): 4-level traversal in dev mode, process.cwd() in production.
    */
   private getProjectInfoPath(projectName: string): string {
     const projectsDir = this.configService.get<string>('PROJECTS_DIR') || './data/projects';

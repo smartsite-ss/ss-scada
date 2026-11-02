@@ -6,56 +6,56 @@ import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 /**
- * InfluxDB 桶元数据
+ * InfluxDB bucket metadata
  */
 export interface InfluxBucketInfo {
-  /** 桶名称 */
+  /** Bucket name */
   name: string;
-  /** 对应的项目 ID */
+  /** The corresponding project ID */
   projectId: string;
-  /** 组织名称 */
+  /** Organization name */
   org: string;
-  /** 创建时间 */
+  /** Creation time */
   createdAt: string;
-  /** 数据保留策略（小时），0 表示永久保留 */
+  /** Data retention policy (hours); 0 means permanent retention */
   retentionHours: number;
 }
 
 /**
- * InfluxDB 数据点路由信息
+ * InfluxDB data-point routing info
  */
 export interface DataPointRoute {
-  /** 目标桶名称 */
+  /** Target bucket name */
   bucket: string;
-  /** 目标组织 */
+  /** Target organization */
   org: string;
-  /** 度量名称 */
+  /** Measurement name */
   measurement: string;
-  /** 标签 */
+  /** Tags */
   tags: Record<string, string>;
-  /** 字段值 */
+  /** Field values */
   fields: Record<string, number | string | boolean>;
-  /** 时间戳（ISO 8601） */
+  /** Timestamp (ISO 8601) */
   timestamp?: string;
 }
 
 /**
- * InfluxDB 项目桶隔离服务
+ * InfluxDB project-bucket isolation service
  *
- * 职责：
- * 1. 为每个项目创建独立的 InfluxDB 桶（bucket）
- * 2. 桶命名规范：project-{projectId}
- * 3. 根据 projectId 自动路由数据到对应桶
- * 4. 项目删除时清理对应的桶和数据
+ * Responsibilities:
+ * 1. Create an independent InfluxDB bucket for each project
+ * 2. Bucket naming convention: project-{projectId}
+ * 3. Auto-route data to the corresponding bucket by projectId
+ * 4. Clean the corresponding bucket and data on project deletion
  */
 @Injectable()
 export class InfluxdbProjectIsolationService implements OnModuleDestroy {
   private readonly logger = new Logger(InfluxdbProjectIsolationService.name);
 
-  /** 项目 ID → 桶信息映射 */
+  /** Project ID -> bucket-info map */
   private readonly bucketRegistry = new Map<string, InfluxBucketInfo>();
 
-  /** InfluxDB 连接配置 */
+  /** InfluxDB connection config */
   private readonly influxUrl: string;
   private readonly influxToken: string;
   private readonly influxOrg: string;
@@ -69,20 +69,20 @@ export class InfluxdbProjectIsolationService implements OnModuleDestroy {
   }
 
   /**
-   * 获取项目的 InfluxDB 桶名称
-   * 命名规范：project-{projectId}
+   * Get a project's InfluxDB bucket name
+   * Naming convention: project-{projectId}
    */
   getBucketName(projectId: string): string {
     return `project-${projectId}`;
   }
 
   /**
-   * 创建项目的 InfluxDB 桶
+   * Create a project's InfluxDB bucket
    *
-   * 通过 InfluxDB v2 API 创建桶，如果桶已存在则跳过
+   * Creates the bucket via the InfluxDB v2 API; skips if the bucket already exists
    *
-   * @param projectId   项目 ID
-   * @param options     可选配置（保留策略等）
+   * @param projectId   project ID
+   * @param options     optional config (retention policy etc.)
    */
   async createProjectBucket(
     projectId: string,
@@ -92,7 +92,7 @@ export class InfluxdbProjectIsolationService implements OnModuleDestroy {
     const org = options?.org || this.influxOrg;
     const retentionHours = options?.retentionHours ?? this.defaultRetentionHours;
 
-    // 检查是否已注册
+    // Check whether already registered
     const existing = this.bucketRegistry.get(projectId);
     if (existing) {
       this.logger.log(`Bucket "${bucketName}" already registered for project ${projectId}`);
@@ -100,7 +100,7 @@ export class InfluxdbProjectIsolationService implements OnModuleDestroy {
     }
 
     try {
-      // 检查桶是否已存在
+      // Check whether the bucket already exists
       const existingBucket = await this.findBucketByName(bucketName, org);
       if (existingBucket) {
         this.logger.log(`Bucket "${bucketName}" already exists in InfluxDB, registering locally`);
@@ -115,7 +115,7 @@ export class InfluxdbProjectIsolationService implements OnModuleDestroy {
         return info;
       }
 
-      // 通过 InfluxDB API 创建桶
+      // Create the bucket via the InfluxDB API
       const bucket = await this.callInfluxApi('/api/v2/buckets', 'POST', {
         orgID: await this.getOrgId(org),
         name: bucketName,
@@ -146,13 +146,13 @@ export class InfluxdbProjectIsolationService implements OnModuleDestroy {
   }
 
   /**
-   * 为数据点路由到正确的项目桶
+   * Route a data point to the correct project bucket
    *
-   * @param projectId   项目 ID
-   * @param measurement 度量名称
-   * @param fields      字段值
-   * @param tags        标签（可选）
-   * @param timestamp   时间戳（可选）
+   * @param projectId   project ID
+   * @param measurement measurement name
+   * @param fields      field values
+   * @param tags        tags (optional)
+   * @param timestamp   timestamp (optional)
    */
   routeDataPoint(
     projectId: string,
@@ -177,10 +177,10 @@ export class InfluxdbProjectIsolationService implements OnModuleDestroy {
   }
 
   /**
-   * 批量路由数据点到项目桶
+   * Batch-route data points to project buckets
    *
-   * @param projectId 项目 ID
-   * @param points    数据点数组
+   * @param projectId project ID
+   * @param points    data-point array
    */
   routeDataPoints(
     projectId: string,
@@ -197,37 +197,37 @@ export class InfluxdbProjectIsolationService implements OnModuleDestroy {
   }
 
   /**
-   * 获取项目的桶信息
+   * Get a project's bucket info
    */
   getBucketInfo(projectId: string): InfluxBucketInfo | undefined {
     return this.bucketRegistry.get(projectId);
   }
 
   /**
-   * 获取所有已注册的桶信息
+   * Get all registered bucket info
    */
   getAllBuckets(): InfluxBucketInfo[] {
     return Array.from(this.bucketRegistry.values());
   }
 
   /**
-   * 获取已注册的桶数量
+   * Get the registered bucket count
    */
   get bucketCount(): number {
     return this.bucketRegistry.size;
   }
 
   /**
-   * 删除项目的 InfluxDB 桶
+   * Delete a project's InfluxDB bucket
    *
-   * @param projectId 项目 ID
+   * @param projectId project ID
    */
   async deleteProjectBucket(projectId: string): Promise<void> {
     const bucketName = this.getBucketName(projectId);
     const info = this.bucketRegistry.get(projectId);
 
     try {
-      // 尝试通过 API 删除桶
+      // Try to delete the bucket via the API
       const existingBucket = await this.findBucketByName(bucketName, this.influxOrg);
       if (existingBucket && existingBucket.id) {
         await this.callInfluxApi(`/api/v2/buckets/${existingBucket.id}`, 'DELETE');
@@ -246,11 +246,11 @@ export class InfluxdbProjectIsolationService implements OnModuleDestroy {
   }
 
   /**
-   * 清空项目桶中的数据（保留桶结构）
+   * Empty a project bucket's data (keeping the bucket structure)
    *
-   * @param projectId  项目 ID
-   * @param startTime  起始时间（ISO 8601，可选）
-   * @param stopTime   结束时间（ISO 8601，可选）
+   * @param projectId  project ID
+   * @param startTime  start time (ISO 8601, optional)
+   * @param stopTime   end time (ISO 8601, optional)
    */
   async purgeProjectData(projectId: string, startTime?: string, stopTime?: string): Promise<void> {
     const bucketName = this.getBucketName(projectId);
@@ -260,7 +260,7 @@ export class InfluxdbProjectIsolationService implements OnModuleDestroy {
       const timePredicate =
         startTime && stopTime ? ` AND _time >= ${startTime} AND _time <= ${stopTime}` : '';
 
-      // 使用 InfluxDB delete API 删除数据
+      // Delete data using the InfluxDB delete API
       await this.callInfluxApi(
         '/api/v2/delete',
         'POST',
@@ -284,7 +284,7 @@ export class InfluxdbProjectIsolationService implements OnModuleDestroy {
   }
 
   /**
-   * 检查项目桶是否存在
+   * Check whether a project bucket exists
    */
   async bucketExists(projectId: string): Promise<boolean> {
     const bucketName = this.getBucketName(projectId);
@@ -293,10 +293,10 @@ export class InfluxdbProjectIsolationService implements OnModuleDestroy {
   }
 
   /**
-   * 构建 InfluxDB 行协议（Line Protocol）写入数据
+   * Build InfluxDB Line Protocol write data
    *
-   * @param route 路由后的数据点
-   * @returns InfluxDB 行协议字符串
+   * @param route the routed data point
+   * @returns the InfluxDB line-protocol string
    */
   buildLineProtocol(route: DataPointRoute): string {
     const { measurement, tags, fields, timestamp } = route;
@@ -324,11 +324,11 @@ export class InfluxdbProjectIsolationService implements OnModuleDestroy {
   }
 
   // ============================================================
-  // 私有辅助方法
+  // Private helper methods
   // ============================================================
 
   /**
-   * 通过桶名称查找桶
+   * Find a bucket by name
    */
   private async findBucketByName(
     bucketName: string,
@@ -353,7 +353,7 @@ export class InfluxdbProjectIsolationService implements OnModuleDestroy {
   }
 
   /**
-   * 获取组织 ID
+   * Get the organization ID
    */
   private async getOrgId(org: string): Promise<string> {
     const orgs = await this.callInfluxApi(`/api/v2/orgs?org=${encodeURIComponent(org)}`, 'GET');
@@ -366,7 +366,7 @@ export class InfluxdbProjectIsolationService implements OnModuleDestroy {
   }
 
   /**
-   * 调用 InfluxDB v2 API
+   * Call the InfluxDB v2 API
    */
   private async callInfluxApi(
     path: string,
@@ -403,14 +403,14 @@ export class InfluxdbProjectIsolationService implements OnModuleDestroy {
   }
 
   /**
-   * 转义标签值中的特殊字符
+   * Escape special characters in tag values
    */
   private escapeTagValue(value: string): string {
     return value.replace(/ /g, '\\ ').replace(/,/g, '\\,').replace(/=/g, '\\=');
   }
 
   /**
-   * 模块销毁时清理
+   * Clean up on module destroy
    */
   onModuleDestroy(): void {
     this.bucketRegistry.clear();

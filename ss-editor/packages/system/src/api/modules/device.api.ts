@@ -20,11 +20,11 @@ export interface CreateDeviceDto {
   deviceName: string;
   nameAlias?: string;
   description?: string;
-  type?: string;                           // 设备类型（从模板推导，不再手动选择）
-  templateId: string;                     // 设备模板ID（必填）
-  templateVersion?: string;               // 模板版本号，默认最新
-  driver: string;                         // 采集驱动插件（必填，ss-collector 插件名）
-  connection: Record<string, any>;        // 通道差异化配置（必填）
+  type?: string;                           // device type (derived from the template, no longer manually selected)
+  templateId: string;                     // device template ID (required)
+  templateVersion?: string;               // template version, defaults to the latest
+  driver: string;                         // collection driver plugin (required, ss-collector plugin name)
+  connection: Record<string, any>;        // channel-specific configuration (required)
   scanRate?: number;
   offlinePeriod?: number;
   heartbeatInterval?: number;
@@ -97,7 +97,7 @@ const buildUrl = (projectId: string, path: string) =>
   `/projects/${projectId}/devices${path}`;
 
 export const deviceApi = {
-  /** 获取设备统计信息（总数、各状态数量、标签总数） */
+  /** Get device statistics (total, counts per status, total tags) */
   getDeviceStats(projectId: string): Promise<ApiResponse<DeviceStats>> {
     return client.get(buildUrl(projectId, '/stats')).then((res) => res.data);
   },
@@ -142,10 +142,10 @@ export const deviceApi = {
   },
 
   /**
-   * 按设备查询标签列表（管理端与移动端共用的唯一权威入口，详见架构设计 07-接口设计规范 §3.3）。
-   * 路由：GET /projects/:projectId/devices/:deviceId/tags
-   * 替代旧实现中误读 deviceApi.getById().tags（后端 findOne 未关联 tags，取到 undefined）。
-   */
+     * Query the tag list of a device (the single authoritative entry shared by the admin and mobile clients, see architecture design 07-API design spec §3.3).
+     * Route: GET /projects/:projectId/devices/:deviceId/tags
+     * Replaces the old implementation that misread deviceApi.getById().tags (the backend findOne did not join tags, yielding undefined).
+     */
   listTagsByDevice(
     projectId: string,
     deviceId: string,
@@ -194,7 +194,7 @@ export const deviceApi = {
     return client.post(buildUrl(projectId, `/${deviceId}/ping`), null, { params: { host, port } }).then((res) => res.data);
   },
 
-  // ===== 扩展方法：数据查询与模板操作 =====
+  // ===== Extended methods: data queries and template operations =====
 
   getLatestValues(projectId: string, deviceId: string): Promise<ApiResponse<Record<string, any>>> {
     return client.get(buildUrl(projectId, `/${deviceId}/data/latest`)).then((res) => res.data);
@@ -208,12 +208,12 @@ export const deviceApi = {
     return client.post(buildUrl(projectId, `/${deviceId}/data/write`), body).then((res) => res.data);
   },
 
-  /** 反控写入设备标签值（通过协议适配器写入真实设备） */
+  /** Write a device tag value (writes to the real device via the protocol adapter) */
   controlWriteTag(projectId: string, deviceId: string, tagId: string, body: { value: any; reason?: string }): Promise<ApiResponse<any>> {
     return client.post(buildUrl(projectId, `/${deviceId}/tags/${tagId}/write`), body).then((res) => res.data);
   },
 
-  /** 查询反控操作日志（分页 + 筛选，单设备） */
+  /** Query write-back operation logs (paged + filtered, single device) */
   queryControlLogs(projectId: string, deviceId: string, params?: {
     page?: number;
     pageSize?: number;
@@ -225,7 +225,7 @@ export const deviceApi = {
     return client.get(buildUrl(projectId, `/${deviceId}/control-logs`), { params }).then((res) => res.data);
   },
 
-  /** 查询项目级反控操作日志（分页 + 筛选，跨设备） */
+  /** Query project-level write-back operation logs (paged + filtered, across devices) */
   queryProjectControlLogs(projectId: string, params?: {
     page?: number;
     pageSize?: number;
@@ -250,7 +250,7 @@ export const deviceApi = {
     return client.get(buildUrl(projectId, '/data/snapshot')).then((res) => res.data);
   },
 
-  /** 直接 Ping 一个主机地址（不依赖设备对象） */
+  /** Ping a host address directly (without depending on a device object) */
   pingDevice(host: string, port?: number): Promise<ApiResponse<PingResult>> {
     return client.post('/devices/ping', { host, port }).then((res) => res.data);
   },

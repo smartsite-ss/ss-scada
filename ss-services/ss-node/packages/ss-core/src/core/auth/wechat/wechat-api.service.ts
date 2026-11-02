@@ -11,18 +11,18 @@ import {
 } from './wechat-auth.types';
 
 /**
- * 微信 API 调用封装 — 真实 + Mock 双模式
+ * WeChat API call wrapper - real + mock dual mode
  *
- * 通过 WECHAT_MOCK 环境变量切换：
- *   - true：返回固定假 openid，便于开发调试（无需真实微信资质）
- *   - false：调用真实微信 API（需配置 WECHAT_APPID/SECRET）
+ * Switched via the WECHAT_MOCK env var:
+ *   - true: returns a fixed fake openid, convenient for dev/debug (no real WeChat credentials needed)
+ *   - false: calls the real WeChat API (requires WECHAT_APPID/SECRET configured)
  *
- * 凭证配置（小程序与开放平台网站应用分属不同体系）：
- *   - 小程序：优先 WECHAT_MP_APPID/WECHAT_MP_SECRET，未配置时回退 WECHAT_APPID/WECHAT_SECRET
- *   - 网站应用（扫码登录）：WECHAT_APPID/WECHAT_SECRET
+ * Credential config (mini-program and open-platform web app belong to different systems):
+ *   - Mini-program: prefer WECHAT_MP_APPID/WECHAT_MP_SECRET, fall back to WECHAT_APPID/WECHAT_SECRET when unset
+ *   - Web app (scan login): WECHAT_APPID/WECHAT_SECRET
  *
- * 复用项目自研 httpRequest 工具（ai/http-client.util.ts），
- * 避免引入 axios 等额外依赖（遵循项目设计哲学）。
+ * Reuses the project's own httpRequest util (ai/http-client.util.ts),
+ * avoiding extra deps like axios (following the project's design philosophy).
  */
 @Injectable()
 export class WechatApiService {
@@ -44,7 +44,7 @@ export class WechatApiService {
     this.validateConfig();
   }
 
-  /** 启动时校验配置，真实模式要求 APPID/SECRET 必填 */
+  /** Validate config at startup; real mode requires APPID/SECRET to be filled */
   private validateConfig(): void {
     if (!this.isMock) {
       if (!this.appId || !this.appSecret) {
@@ -72,35 +72,35 @@ export class WechatApiService {
     }
   }
 
-  /** 是否为 Mock 模式（供 Controller 和 Service 查询） */
+  /** Whether in Mock mode (queried by Controller and Service) */
   isMockMode(): boolean {
     return this.isMock;
   }
 
-  /** 获取 AppId（前端 WxLogin JS 需要） */
+  /** Get AppId (needed by the frontend WxLogin JS) */
   getAppId(): string {
     return this.appId;
   }
 
   /**
-   * 构造微信扫码授权 URL
+   * Build the WeChat scan-authorization URL
    *
-   * 真实模式：https://open.weixin.qq.com/connect/qrconnect?appid=...&redirect_uri=...&response_type=code&scope=snsapi_login&state=...#wechat_redirect
-   * Mock 模式：返回占位 URL（前端不会实际跳转，仅显示 Mock 占位 UI）
+   * Real mode: https://open.weixin.qq.com/connect/qrconnect?appid=...&redirect_uri=...&response_type=code&scope=snsapi_login&state=...#wechat_redirect
+   * Mock mode: returns a placeholder URL (frontend will not actually redirect, only shows the Mock placeholder UI)
    */
   buildQrcodeUrl(state: string, redirectUri: string): string {
     if (this.isMock) {
       return `mock://wechat-login?state=${state}`;
     }
     const encoded = encodeURIComponent(redirectUri);
-    // self_redirect=true：微信在 iframe 内重定向到回调 URL
-    // 回调端点只处理登录（code→token→openid→创建用户→state=confirmed），不发 Token 不跳转
-    // 前端轮询 /status 检测到 confirmed 后下发 Cookie 并跳转系统首页
+    // self_redirect=true: WeChat redirects inside the iframe to the callback URL
+    // The callback endpoint only handles login (code->token->openid->create user->state=confirmed); it does not issue a Token or redirect
+    // The frontend polls /status; once it detects confirmed, it issues the Cookie and redirects to the system home page
     return `https://open.weixin.qq.com/connect/qrconnect?appid=${this.appId}&redirect_uri=${encoded}&response_type=code&scope=snsapi_login&state=${state}&self_redirect=true#wechat_redirect`;
   }
 
   /**
-   * 用 code 换 access_token
+   * Exchange code for access_token
    *
    * GET https://api.weixin.qq.com/sns/oauth2/access_token?appid=APPID&secret=SECRET&code=CODE&grant_type=authorization_code
    */
@@ -136,14 +136,14 @@ export class WechatApiService {
   }
 
   /**
-   * 小程序 wx.login code → code2session 换 openid（session_key 仅后端持有，不下发）
+   * Mini-program wx.login code -> code2session to exchange openid (session_key held only by the backend, not issued)
    *
    * GET https://api.weixin.qq.com/sns/jscode2session?appid=APPID&secret=SECRET&js_code=JSCODE&grant_type=authorization_code
    *
-   * 错误码处理（微信官方）：
-   *   - 40029 code 无效/过期（5 分钟时效）→ WECHAT_CODE_INVALID（前端重取 code 重试一次）
-   *   - 45011 接口限频（100 次/分钟）→ WECHAT_API_RATE_LIMITED
-   *   - 40226 高风险用户 → WECHAT_USER_BLOCKED
+   * Error-code handling (official WeChat):
+   *   - 40029 code invalid/expired (5-min validity) -> WECHAT_CODE_INVALID (frontend re-fetches code and retries once)
+   *   - 45011 API rate-limited (100/min) -> WECHAT_API_RATE_LIMITED
+   *   - 40226 high-risk user -> WECHAT_USER_BLOCKED
    */
   async getCode2Session(loginCode: string): Promise<WechatMpCode2SessionResponse> {
     if (this.isMock) {
@@ -195,7 +195,7 @@ export class WechatApiService {
   }
 
   /**
-   * 用 access_token 拉取用户信息
+   * Pull user info with access_token
    *
    * GET https://api.weixin.qq.com/sns/userinfo?access_token=ACCESS_TOKEN&openid=OPENID
    */

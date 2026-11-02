@@ -8,16 +8,16 @@ import { ConfigService } from '@nestjs/config';
 import { REDIS_CLIENT_OFFLINE, REDIS_CLIENT_PURPOSE, RedisClientToken } from './redis.constants';
 
 /**
- * Redis 客户端工厂
+ * Redis client factory
  *
- * 统一所有 Redis 客户端的连接配置，确保：
- * - 相同的 retryStrategy / maxRetriesPerRequest / enableReadyCheck
- * - 按 token 决定 db 索引（默认 0，离线消息 1）
- * - REDIS_HOST 未配置时返回 null（业务方应使用 @Optional() 接收）
+ * Unifies the connection config of all Redis clients, ensuring:
+ * - the same retryStrategy / maxRetriesPerRequest / enableReadyCheck
+ * - db index decided by token (default 0, offline messages 1)
+ * - returns null when REDIS_HOST is unset (consumers should receive via @Optional())
  *
- * 重试策略：
- * - 最多重试 5 次，间隔 200ms-2000ms 递增
- * - 超过 5 次后断开连接，触发熔断
+ * Retry strategy:
+ * - at most 5 retries, intervals increasing from 200ms to 2000ms
+ * - disconnects after 5 failures, triggering the circuit breaker
  */
 const logger = new Logger('RedisClientFactory');
 
@@ -30,7 +30,7 @@ export function createRedisClient(config: ConfigService, token: RedisClientToken
 
   const port = config.get<number>('REDIS_PORT') || 6379;
   const password = config.get<string>('REDIS_PASSWORD');
-  // 按 token 决定 db 索引：离线消息使用 db=1，其他使用 db=0（可被 REDIS_DB 覆盖）
+  // Decide db index by token: offline messages use db=1, others use db=0 (overridable by REDIS_DB)
   const defaultDb = token === REDIS_CLIENT_OFFLINE ? 1 : 0;
   const db = config.get<number>('REDIS_DB') ?? defaultDb;
 
@@ -62,14 +62,14 @@ export function createRedisClient(config: ConfigService, token: RedisClientToken
 }
 
 /**
- * 在模块销毁时优雅关闭 Redis 连接
+ * Gracefully close Redis connections on module destroy
  */
 export async function closeRedisClient(client: Redis | null): Promise<void> {
   if (!client) return;
   try {
     await client.quit();
   } catch {
-    // 退出失败时强制断开
+    // Force disconnect when exit fails
     client.disconnect();
   }
 }

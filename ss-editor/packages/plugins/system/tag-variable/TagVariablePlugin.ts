@@ -6,23 +6,23 @@ import { BasePlugin, Graphic, DrawContext, InferSchemaProps, buildDefaultsFromSc
 import { tagVariablePropertySchema } from './tagVariablePropertySchema';
 import { i18n, registerLocaleModules } from '@scada-editor/core';
 
-// 动态扫描 locales 目录，新增语言只需添加对应 json 文件，无需改动本文件
+// Dynamically scan the locales directory; adding a new language only requires adding the corresponding json file, no changes to this file needed
 registerLocaleModules(import.meta.glob('./locales/*.json', { eager: true }));
 
 import pkg from './package.json';
 
 export type TagVariableProps = InferSchemaProps<typeof tagVariablePropertySchema> & {
-  /** 设备 UUID 主键（绑定回显/反查用） */
+  /** Device UUID primary key (for binding echo / reverse lookup) */
   deviceId: string;
-  /** 设备编码（用户可读，展示用） */
+  /** Device code (user-readable, for display) */
   deviceCode: string;
-  /** 设备名称（展示用） */
+  /** Device name (for display) */
   deviceName: string;
-  /** 标签 ID（运行态订阅的唯一标识） */
+  /** Tag ID (unique identifier for runtime subscription) */
   tagId: string;
-  /** 标签名称（展示用） */
+  /** Tag name (for display) */
   tagName: string;
-  /** 标签数据类型（用于格式化判断） */
+  /** Tag data type (used for formatting decisions) */
   dataType: string;
 };
 
@@ -63,7 +63,7 @@ export class TagVariablePlugin extends BasePlugin<TagVariableProps> {
   };
 
   protected render(_dc: DrawContext): void {
-    // Vue SFC 模式：主渲染由 Vue DOM 层完成
+    // Vue SFC mode: main rendering is done by the Vue DOM layer
   }
 
   constructor(x = 0, y = 0, w = 120, h = 40) {

@@ -48,7 +48,7 @@ describe('ValueTransformUtil', () => {
 
     it('应按 precision 进行小数精度处理', () => {
       const config: TransformConfig = { scale: 0.1, precision: 2 };
-      // 100 * 0.1 + 0 = 10 (理论上) — 但浮点可能有误差，精度确保结果为 10
+      // 100 * 0.1 + 0 = 10 (in theory) - but floating point may have error; assert the result is 10
       const result = ValueTransformUtil.apply(100, config);
       expect(result).toBe(10);
     });

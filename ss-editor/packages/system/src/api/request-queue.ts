@@ -3,14 +3,14 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 请求重试队列
+ * Request retry queue
  *
- * 后端断连期间，写操作（POST/PUT/PATCH/DELETE）请求入队，
- * 后端恢复后按 FIFO 顺序自动重发。
+ * While the backend is disconnected, write operations (POST/PUT/PATCH/DELETE) are enqueued,
+ * and automatically re-sent in FIFO order once the backend recovers.
  *
- * - 队列上限 50 条，超出直接拒绝
- * - 请求过期时间 5 分钟，重发时跳过过期请求
- * - 最大重试次数 3 次
+ * - Queue limit: 50 entries; excess requests are rejected directly
+ * - Request expiry: 5 minutes; expired requests are skipped on re-send
+ * - Maximum retry count: 3
  */
 
 import type { AxiosInstance, InternalAxiosRequestConfig } from 'axios';
@@ -31,7 +31,7 @@ export interface QueueStats {
 }
 
 const MAX_QUEUE_SIZE = 50;
-const MAX_AGE = 5 * 60 * 1000; // 5 分钟
+const MAX_AGE = 5 * 60 * 1000; // 5 minutes
 const DEFAULT_MAX_RETRY = 3;
 
 let requestCounter = 0;
@@ -41,7 +41,7 @@ export class RequestQueue {
   private isFlushing = false;
   private sizeChangeListeners: Array<(stats: QueueStats) => void> = [];
 
-  /** 入队（由响应拦截器调用） */
+  /** Enqueue (called by the response interceptor) */
   enqueue(
     config: InternalAxiosRequestConfig,
     resolve: (value: any) => void,
@@ -67,7 +67,7 @@ export class RequestQueue {
     return true;
   }
 
-  /** 刷新队列（后端恢复时调用） */
+  /** Flush the queue (called when the backend recovers) */
   async flush(client: AxiosInstance): Promise<void> {
     if (this.isFlushing || this.queue.length === 0) return;
     this.isFlushing = true;
@@ -77,13 +77,13 @@ export class RequestQueue {
     this.notifySizeChange();
 
     for (const request of batch) {
-      // 检查过期
+      // Check expiry
       if (Date.now() - request.enqueuedAt > MAX_AGE) {
         request.reject(new Error('REQUEST_EXPIRED'));
         continue;
       }
 
-      // 检查重试次数
+      // Check retry count
       if (request.retryCount >= request.maxRetry) {
         request.reject(new Error('MAX_RETRY_EXCEEDED'));
         continue;
@@ -95,7 +95,7 @@ export class RequestQueue {
         const response = await client(request.config);
         request.resolve(response);
       } catch (error) {
-        // 重发失败，如果还能重试则重新入队
+        // Re-send failed: re-enqueue if retries remain
         if (request.retryCount < request.maxRetry) {
           this.queue.push(request);
           this.notifySizeChange();
@@ -108,7 +108,7 @@ export class RequestQueue {
     this.isFlushing = false;
   }
 
-  /** 清空队列（所有请求 reject） */
+  /** Clear the queue (all requests reject) */
   clear(): void {
     const rejected = this.queue;
     this.queue = [];
@@ -116,7 +116,7 @@ export class RequestQueue {
     this.notifySizeChange();
   }
 
-  /** 队列统计 */
+  /** Queue statistics */
   getStats(): QueueStats {
     if (this.queue.length === 0) {
       return { size: 0, oldest: null };
@@ -127,7 +127,7 @@ export class RequestQueue {
     };
   }
 
-  /** 注册队列大小变更监听 */
+  /** Register a queue size change listener */
   onSizeChange(cb: (stats: QueueStats) => void): void {
     this.sizeChangeListeners.push(cb);
   }
@@ -138,11 +138,11 @@ export class RequestQueue {
       try {
         cb(stats);
       } catch {
-        // 忽略监听器错误
+        // Ignore listener errors
       }
     });
   }
 }
 
-/** 全局单例 */
+/** Global singleton */
 export const requestQueue = new RequestQueue();

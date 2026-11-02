@@ -9,28 +9,28 @@ import { I18nService } from '@ss-node/ss-i18n';
 export class SystemI18nService {
   constructor(private readonly i18nService: I18nService) {}
 
-  /** 翻译系统消息 */
+  /** Translate a system message */
   translate(key: string, lang?: string): string {
     return this.i18nService.tSync(key, undefined, lang);
   }
 
-  /** 翻译带参数的消息 */
+  /** Translate a message with parameters */
   translateWithArgs(key: string, args: Record<string, any>, lang?: string): string {
     return this.i18nService.tSync(key, args, lang);
   }
 
-  /** 获取支持的语言 */
+  /** Get supported languages */
   getSupportedLanguages(): string[] {
     return this.i18nService.getSupportedLanguages();
   }
 
-  /** 获取当前语言 */
+  /** Get the current language */
   getCurrentLanguage(): string {
     return this.i18nService.getFallbackLanguage();
   }
 }
 
-/** 多语言异常类 */
+/** Multilingual exception class */
 export class I18nAuthError extends Error {
   public readonly i18nKey: string;
   public readonly i18nArgs?: Record<string, any>;

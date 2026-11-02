@@ -19,7 +19,7 @@ export class ProjectAuthorization {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  /** 授权给哪个角色 */
+  /** Which role is authorized */
   @Column({ name: 'role_id' })
   roleId: string;
 
@@ -27,11 +27,11 @@ export class ProjectAuthorization {
   @JoinColumn({ name: 'role_id' })
   role: Role;
 
-  /** 项目名称（对应 projectinfo.json 的项目名） */
+  /** Project name (the project name in projectinfo.json) */
   @Column({ name: 'project_id' })
   projectId: string;
 
-  /** 权限级别：read | write | admin */
+  /** Permission level: read | write | admin */
   @Column({ default: 'read' })
   permission: string;
 

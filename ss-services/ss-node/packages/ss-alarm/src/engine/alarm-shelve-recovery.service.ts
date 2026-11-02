@@ -17,27 +17,27 @@ import { AlarmRecord, AlarmStatus } from '../entities/alarm.entity';
 import { EventBusService, ProjectDatabaseService } from '@ss-node/ss-core';
 
 /**
- * 告警暂缓自动恢复服务
+ * Alarm-shelve auto-recovery service
  *
- * 设计目标：
- * - 替代在 shelveAlarm 中使用 setTimeout 的脆弱方案（进程重启即丢失定时器）
- * - 采用定时扫描（setInterval）周期性检查到期暂缓，重启后仍可恢复
+ * Design goal:
+ * - Replace the fragile setTimeout approach inside shelveAlarm (the timer is lost on process restart)
+ * - Use periodic scanning (setInterval) to check for expired shelves so recovery still works after restart
  *
- * 扫描策略：
- * - 每 60s 扫描一次（暂缓恢复对实时性要求不高，无需像升级 30s 那样频繁）
- * - 查询 status=SHELVED 且 shelvedUntil <= now 的记录
- * - 回退到 preShelveStatus（null 时回退到 ACTIVE），清空 shelvedUntil/preShelveStatus
- * - 保留 shelvedAt/shelvedBy/shelveReason 作为审计痕迹
+ * Scan strategy:
+ * - Scan once every 60s (shelve recovery has low real-time requirements, no need for the 30s cadence used by escalation)
+ * - Query records with status=SHELVED and shelvedUntil <= now
+ * - Roll back to preShelveStatus (roll back to ACTIVE when null), and clear shelvedUntil/preShelveStatus
+ * - Keep shelvedAt/shelvedBy/shelveReason as audit trails
  *
- * 数据库模式适配：
- * - isolated 模式：遍历 ProjectDatabaseService.getLoadedProjectNames() 逐项目扫描
- * - unified 模式：直接使用全局注入的 Repository
+ * Database mode adaptation:
+ * - isolated mode: iterate ProjectDatabaseService.getLoadedProjectNames() and scan project by project
+ * - unified mode: use the globally injected Repository directly
  */
 @Injectable()
 export class AlarmShelveRecoveryService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(AlarmShelveRecoveryService.name);
 
-  /** 定时扫描间隔（ms） */
+  /** Periodic scan interval (ms) */
   private readonly scanIntervalMs: number;
   private periodicTimer: NodeJS.Timeout | null = null;
 
@@ -73,10 +73,10 @@ export class AlarmShelveRecoveryService implements OnModuleInit, OnModuleDestroy
   }
 
   /**
-   * 周期性扫描到期暂缓告警并自动恢复
+   * Periodically scan for expired shelved alarms and auto-recover them
    *
-   * 遍历已加载项目（isolated 模式）或全局库（unified 模式），
-   * 查找 status=SHELVED 且 shelvedUntil <= now 的记录，回退到暂缓前状态。
+   * Iterate loaded projects (isolated mode) or the global database (unified mode),
+   * find records with status=SHELVED and shelvedUntil <= now, and roll back to the pre-shelve status.
    */
   async periodicCheck(): Promise<void> {
     const now = new Date();
@@ -100,12 +100,12 @@ export class AlarmShelveRecoveryService implements OnModuleInit, OnModuleDestroy
   }
 
   /**
-   * 恢复指定 Repository 下到期的暂缓告警
+   * Recover the expired shelved alarms under the given Repository
    *
-   * @param repo    AlarmRecord Repository（项目级或全局）
-   * @param projectId 项目标识（用于事件载荷，null 表示 unified 模式）
-   * @param now     当前时间
-   * @returns 恢复的记录数
+   * @param repo    AlarmRecord Repository (project-level or global)
+   * @param projectId project identifier (for the event payload; null means unified mode)
+   * @param now     current time
+   * @returns number of recovered records
    */
   private async recoverExpiredShelves(
     repo: Repository<AlarmRecord>,
@@ -114,7 +114,7 @@ export class AlarmShelveRecoveryService implements OnModuleInit, OnModuleDestroy
   ): Promise<number> {
     const where: FindOptionsWhere<AlarmRecord> = {
       status: AlarmStatus.SHELVED,
-      // shelvedUntil <= now（SQL 中 NULL <= x 为 NULL/false，自动排除手动暂缓记录）
+      // shelvedUntil <= now (in SQL, NULL <= x is NULL/false, so manual-shelve records are auto-excluded)
       shelvedUntil: LessThanOrEqual(now) as unknown as Date,
     };
     const expired = await repo.find({ where });
@@ -125,7 +125,7 @@ export class AlarmShelveRecoveryService implements OnModuleInit, OnModuleDestroy
       const targetStatus = record.preShelveStatus ?? AlarmStatus.ACTIVE;
       record.status = targetStatus;
       record.dispositionType = 'alarm.shelve.expired';
-      // 清空暂缓恢复专用字段，保留 shelvedAt/shelvedBy/shelveReason 作为审计痕迹
+      // Clear the shelve-recovery-specific fields, keeping shelvedAt/shelvedBy/shelveReason as audit trails
       record.shelvedUntil = null;
       record.preShelveStatus = null;
 

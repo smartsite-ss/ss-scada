@@ -5,8 +5,8 @@
 import { PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, Column } from 'typeorm';
 
 /**
- * 基础实体 — 所有实体共享的字段
- * 包含 id、createdAt、updatedAt
+ * Base entity - fields shared by all entities
+ * Contains id, createdAt, updatedAt
  */
 export abstract class BaseEntity {
   @PrimaryGeneratedColumn('uuid')
@@ -20,8 +20,8 @@ export abstract class BaseEntity {
 }
 
 /**
- * 项目作用域实体 — 继承 BaseEntity，额外包含 projectId 字段
- * 适用于按项目隔离数据的业务实体（Device、DataTag、Alarm 等）
+ * Project-scoped entity - extends BaseEntity, additionally contains the projectId field
+ * For business entities isolated by project (Device, DataTag, Alarm, etc.)
  */
 export abstract class ProjectScopedEntity extends BaseEntity {
   @Column({ type: 'varchar', length: 36 })

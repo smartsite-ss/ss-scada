@@ -6,9 +6,9 @@ import { IsString, IsIn, IsNotEmpty } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 /**
- * Mock 扫码请求 DTO
+ * Mock scan request DTO
  *
- * 仅在 WECHAT_MOCK=true 时可用，模拟用户用手机扫码确认/取消
+ * Only available when WECHAT_MOCK=true, simulating a user confirming/cancelling a phone scan
  */
 export class WechatMockScanDto {
   @ApiProperty({ description: 'state 参数（来自 /qrcode 接口返回）', example: 'abc123def456' })

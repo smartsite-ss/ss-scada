@@ -54,7 +54,7 @@ export class DataTagController {
     return this.tagService.findAll(projectId, query);
   }
 
-  // ──────────── 搜索 & 导出（必须在 :tagId 之前，避免被参数路由匹配） ────────────
+  // ──────────── Search & export (must come before :tagId, to avoid being matched by the param route) ────────────
 
   @Get('search')
   @Roles(UserRole.ADMIN, UserRole.USER, UserRole.VIEWER)
@@ -93,7 +93,7 @@ export class DataTagController {
     return this.exportService.exportByDevice(deviceId, projectId);
   }
 
-  // ──────────── :tagId 参数路由 ────────────
+  // ──────────── :tagId param routes ────────────
 
   @Get(':tagId')
   @Roles(UserRole.ADMIN, UserRole.USER, UserRole.VIEWER)
@@ -122,7 +122,7 @@ export class DataTagController {
     return this.tagService.remove(tagId);
   }
 
-  // ──────────── 批量操作 ────────────
+  // ──────────── Batch operations ────────────
 
   @Post('batch')
   @Roles(UserRole.ADMIN, UserRole.USER)
@@ -146,8 +146,8 @@ export class DataTagController {
   @ApiOperation({ summary: '批量导入标签 (JSON)' })
   @ApiParam({ name: 'projectId', description: '项目ID' })
   importTags(@Param('projectId') projectId: string, @Body() body: TagImportDto) {
-    // deviceId 现为必填（DTO @IsString 校验），禁止回退 'default-device' 占位，
-    // 否则标签 deviceId 与真实设备 UUID 失关联，导致按 deviceId 查询返回空（见 07 §4.1 G5）。
+    // deviceId is now required (DTO @IsString validation); falling back to the 'default-device' placeholder is forbidden,
+    // otherwise the tag's deviceId loses its link to the real device UUID and queries by deviceId return empty (see 07 section 4.1 G5).
     return this.importService.importJson(body.tags, body.deviceId!, projectId, body.options);
   }
 

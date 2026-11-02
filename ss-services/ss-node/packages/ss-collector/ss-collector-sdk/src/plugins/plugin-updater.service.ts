@@ -27,7 +27,7 @@ export interface UpdateCheckResult {
 }
 
 /**
- * 插件更新服务 — 支持热重载、版本检查和回滚
+ * Plugin update service - supports hot reload, version check and rollback
  */
 @Injectable()
 export class PluginUpdaterService {
@@ -41,14 +41,14 @@ export class PluginUpdaterService {
   ) {}
 
   /**
-   * 热重载插件（零停机更新）
+   * Hot-reload a plugin (zero-downtime update)
    *
-   * 流程：
-   *  1. 停用目标插件
-   *  2. 等待活跃连接自然关闭（最多 30s）
-   *  3. 清除模块缓存
-   *  4. 重新发现并加载新版本
-   *  5. 激活插件
+   * Flow:
+   *  1. Deactivate the target plugin
+   *  2. Wait for active connections to close naturally (up to 30s)
+   *  3. Clear the module cache
+   *  4. Rediscover and load the new version
+   *  5. Activate the plugin
    */
   async hotReload(protocol: string): Promise<HotReloadResult> {
     const startTime = Date.now();
@@ -66,26 +66,26 @@ export class PluginUpdaterService {
 
     const oldVersion = oldPlugin.meta.version;
 
-    // 保存到版本历史
+    // Save to version history
     this.saveVersion(protocol, oldVersion, oldPlugin.adapter);
 
     try {
-      // 1. 停用
+      // 1. Deactivate
       await this.registry.deactivate(protocol);
       this.logger.log(`Plugin ${protocol} deactivated for hot reload`);
 
-      // 2. 等待连接排空
+      // 2. Wait for connections to drain
       await this.drainConnections(protocol, 30000);
 
-      // 3. 清除 Node.js 模块缓存
+      // 3. Clear the Node.js module cache
       this.clearModuleCache(protocol);
 
-      // 4. 重新发现
+      // 4. Rediscover
       const newPlugins = await this.discovery.discoverPlugins();
       const newPlugin = newPlugins.find((p) => p.meta.protocol === protocol);
       if (!newPlugin) throw new Error(`Plugin ${protocol} not found after reload`);
 
-      // 5. 重新注册
+      // 5. Re-register
       this.registry.register(newPlugin.meta, newPlugin.adapter || oldPlugin.adapter);
       await this.registry.activate(protocol);
 
@@ -104,7 +104,7 @@ export class PluginUpdaterService {
         success: true,
       };
     } catch (error) {
-      // 回滚
+      // Rollback
       this.registry.register(oldPlugin.meta, oldPlugin.adapter);
       await this.registry.activate(protocol);
       this.logger.error(
@@ -123,7 +123,7 @@ export class PluginUpdaterService {
   }
 
   /**
-   * 回滚到上一版本
+   * Roll back to the previous version
    */
   async rollback(protocol: string): Promise<HotReloadResult> {
     const history = this.versionHistory.get(protocol);
@@ -158,7 +158,7 @@ export class PluginUpdaterService {
   }
 
   /**
-   * 检查插件是否有可用更新
+   * Check whether a plugin has an available update
    */
   async checkUpdate(protocol: string): Promise<UpdateCheckResult | null> {
     const installed = this.registry.getPlugin(protocol);
@@ -215,7 +215,7 @@ export class PluginUpdaterService {
   private saveVersion(protocol: string, version: string, adapter: any): void {
     const history = this.versionHistory.get(protocol) || [];
     history.push({ version, adapter });
-    if (history.length > 5) history.shift(); // 只保留最近 5 个版本
+    if (history.length > 5) history.shift(); // keep only the 5 most recent versions
     this.versionHistory.set(protocol, history);
   }
 
@@ -233,7 +233,7 @@ export class PluginUpdaterService {
       };
       this.eventBus?.emit('plugin.updated', event);
     } catch {
-      // 事件发射失败不应影响插件热更新核心逻辑
+      // Event dispatch failure must not affect the core plugin hot-update logic
     }
   }
 }

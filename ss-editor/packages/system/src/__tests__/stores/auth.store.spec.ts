@@ -7,14 +7,14 @@ import { setActivePinia, createPinia } from 'pinia';
 import { useAuthStore } from '../../stores/auth.store';
 
 /**
- * S-C03: HttpOnly Cookie 认证模式测试
+ * S-C03: HttpOnly Cookie authentication mode tests
  *
- * Token 通过 HttpOnly Cookie 由后端管理，前端仅维护认证状态标记：
- * - store.token === 'httpOnly' 表示已认证（Cookie 模式）
- * - store.token === 'debug-mock-token' 表示调试模式
- * - store.token === null 表示未认证
+ * Tokens are managed by the backend via HttpOnly Cookie; the frontend only maintains an auth state flag:
+ * - store.token === 'httpOnly' means authenticated (Cookie mode)
+ * - store.token === 'debug-mock-token' means debug mode
+ * - store.token === null means unauthenticated
  *
- * sessionRestored 标记防止重复调用 restoreSession。
+ * The sessionRestored flag prevents repeated calls to restoreSession.
  */
 
 vi.mock('../../api/modules/auth.api', () => ({
@@ -41,8 +41,8 @@ vi.mock('../../api/modules/role.api', () => ({
 describe('useAuthStore', () => {
   beforeEach(() => {
     setActivePinia(createPinia());
-    // 清除 mock 调用计数与 once 队列，避免跨测试累积
-    // （loadPermissions 内部也会调用 userApi.getProfile，影响计数断言）
+    // Clear mock call counts and the once queue to avoid cross-test accumulation
+    // (loadPermissions internally also calls userApi.getProfile, affecting count assertions)
     vi.clearAllMocks();
   });
 
@@ -141,7 +141,7 @@ describe('useAuthStore', () => {
       expect(result).toBe(true);
       expect(store.isAuthenticated).toBe(true);
       expect(store.user?.username).toBe('testuser');
-      // S-C03: token 标记为 'httpOnly'（真实 Token 在 Cookie 中，JS 不可读）
+      // S-C03: token flagged as 'httpOnly' (the real token is in the Cookie, unreadable from JS)
       expect(store.token).toBe('httpOnly');
       expect(store.refreshToken).toBe('httpOnly');
     });
@@ -215,7 +215,7 @@ describe('useAuthStore', () => {
 
       const store = useAuthStore();
       await store.restoreSession();
-      // 第二次调用：sessionRestored 已为 true，应直接返回而不发起请求
+      // Second call: sessionRestored is already true, should return directly without issuing a request
       const result = await store.restoreSession();
       expect(result).toBe(true);
       expect(userApi.getProfile).toHaveBeenCalledTimes(1);
@@ -228,11 +228,11 @@ describe('useAuthStore', () => {
       });
 
       const store = useAuthStore();
-      // 并发调用两次 restoreSession
+      // Call restoreSession twice concurrently
       const [r1, r2] = await Promise.all([store.restoreSession(), store.restoreSession()]);
       expect(r1).toBe(true);
       expect(r2).toBe(true);
-      // 只应发起一次后端请求
+      // Only one backend request should be issued
       expect(userApi.getProfile).toHaveBeenCalledTimes(1);
     });
   });
@@ -261,7 +261,7 @@ describe('useAuthStore', () => {
       (authApi.login as any).mockResolvedValueOnce({
         data: { user: { id: '1', username: 'u', role: 'user' } },
       });
-      // loadPermissions 内部会调 getProfile，返回带 roleEntity 的完整 profile
+      // loadPermissions internally calls getProfile, returning the full profile with roleEntity
       (userApi.getProfile as any).mockResolvedValueOnce({
         data: {
           id: '1', username: 'u', role: 'user',

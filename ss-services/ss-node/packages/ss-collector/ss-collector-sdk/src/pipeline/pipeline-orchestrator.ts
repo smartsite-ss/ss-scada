@@ -9,7 +9,7 @@ import { PipelineMetricsService } from './pipeline-metrics.service';
 
 export { PipelineContext, PipelineStep, StepMetrics, PipelineValue };
 
-/** 单步执行耗时记录（用于火焰图） */
+/** Single-step duration record (for flame graph) */
 export interface StepTimingRecord {
   stepName: string;
   durationMs: number;
@@ -19,7 +19,7 @@ export interface StepTimingRecord {
   deviceId: string;
 }
 
-/** Pipeline 整体耗时分解 */
+/** Pipeline overall timing breakdown */
 export interface PipelineTimingBreakdown {
   pipelineTotalMs: number;
   steps: StepTimingRecord[];
@@ -28,7 +28,7 @@ export interface PipelineTimingBreakdown {
   timestamp: number;
 }
 
-/** 步耗时统计 */
+/** Step duration statistics */
 export interface StepTimingStats {
   stepName: string;
   order: number;
@@ -50,11 +50,11 @@ export class PipelineOrchestrator {
   private metrics = new Map<string, StepMetrics>();
   private stepTimeoutMs = 10000;
 
-  /** 最近 N 次步耗时记录（用于火焰图/耗时分析） */
+  /** Recent N step-duration records (for flame graph / timing analysis) */
   private readonly timingHistory: StepTimingRecord[] = [];
   private readonly MAX_TIMING_HISTORY = 1000;
 
-  /** 最近 N 次 Pipeline 整体耗时分解 */
+  /** Recent N Pipeline overall timing breakdowns */
   private readonly breakdownHistory: PipelineTimingBreakdown[] = [];
   private readonly MAX_BREAKDOWN_HISTORY = 100;
 
@@ -89,7 +89,7 @@ export class PipelineOrchestrator {
 
     ctx.startTime = pipelineStart;
 
-    // 若没有任何步骤注册，直接返回（避免无意义的空执行）
+    // If no steps are registered, return early (avoid a meaningless empty execution)
     if (this.steps.length === 0) {
       this.logger.warn('Pipeline execute called but no steps registered — skipping');
       return ctx;
@@ -139,17 +139,17 @@ export class PipelineOrchestrator {
           code: errorCode,
         });
 
-        // 异常时标记 quality，但继续执行后续步骤（让 CacheUpdate/Persist 记录错误状态）
+        // Mark quality on exception but keep running subsequent steps (so CacheUpdate/Persist record the error state)
         if (!ctx.quality || ctx.quality === 'unknown' || ctx.quality === 'good') {
           ctx.quality = 'bad';
         }
-        // 继续执行，不 break
+        // Continue execution, do not break
       }
     }
 
     const totalMs = Date.now() - pipelineStart;
 
-    // 记录时序分解
+    // Record the timing breakdown
     this.recordTimingHistory(stepTimings);
     this.recordBreakdown({
       pipelineTotalMs: totalMs,
@@ -159,13 +159,13 @@ export class PipelineOrchestrator {
       timestamp: pipelineStart,
     });
 
-    // 同步到 Prometheus 指标服务
+    // Sync to the Prometheus metric service
     if (this.metricsService) {
       const success = ctx.errors.length === 0;
       this.metricsService.recordExecution(success, totalMs);
-      // 全局协议读取计数
+      // Global protocol-read counter
       this.metricsService.recordProtocolRead(success);
-      // 按协议维度记录（供插件卡片显示真实 metrics）
+      // Record per protocol (so plugin cards show real metrics)
       this.metricsService.recordProtocolReadDetailed(
         ctx.deviceType,
         success,
@@ -174,9 +174,9 @@ export class PipelineOrchestrator {
       );
     }
 
-    // 完成日志：仅在异常时输出（errors>0 或 quality ∉ {good, unknown}），
-    // 正常采集完全静音 —— 周期汇总由 EnhancedScheduler.emitCollectionSummary() 统一输出，
-    // 避免 DEBUG 级别下每个 tag 每周期都刷屏。
+    // Completion log: emit only on anomaly (errors>0 or quality not in {good, unknown}),
+    // normal collection is fully silent - periodic summaries are emitted centrally by EnhancedScheduler.emitCollectionSummary(),
+    // to avoid flooding the screen with every tag every cycle at DEBUG level.
     const isAbnormal =
       ctx.errors.length > 0 || (ctx.quality !== 'good' && ctx.quality !== 'unknown');
     if (isAbnormal) {
@@ -204,21 +204,21 @@ export class PipelineOrchestrator {
     return [...this.steps].sort((a, b) => a.order - b.order).map((s) => s.name);
   }
 
-  /** 获取最近 N 次 Pipeline 耗时分解（用于火焰图可视化） */
+  /** Get the recent N Pipeline timing breakdowns (for flame-graph visualization) */
   getTimingBreakdowns(limit?: number): PipelineTimingBreakdown[] {
     const count = limit ?? this.breakdownHistory.length;
     return this.breakdownHistory.slice(-count);
   }
 
-  /** 获取最近 N 次步耗时记录 */
+  /** Get the recent N step-duration records */
   getTimingHistory(limit?: number): StepTimingRecord[] {
     const count = limit ?? this.timingHistory.length;
     return this.timingHistory.slice(-count);
   }
 
   /**
-   * 诊断信息：暴露内部状态，用于排查"指标无数据"问题。
-   * 通过 /api/v1/pipeline/metrics/diagnostic 端点访问。
+   * Diagnostic info: expose internal state, for troubleshooting "metrics have no data".
+   * Accessed via the /api/v1/pipeline/metrics/diagnostic endpoint.
    */
   getDiagnosticInfo() {
     return {
@@ -241,9 +241,9 @@ export class PipelineOrchestrator {
     };
   }
 
-  /** 获取各步骤的耗时统计（P50/P95/P99），按 Pipeline 顺序排列 */
+  /** Get per-step duration statistics (P50/P95/P99), ordered by Pipeline sequence */
   getStepTimingStats(): StepTimingStats[] {
-    // 构建 stepName → order 映射
+    // Build the stepName -> order map
     const orderMap = new Map<string, number>();
     for (const step of this.steps) {
       orderMap.set(step.name, step.order);
@@ -291,7 +291,7 @@ export class PipelineOrchestrator {
 
   private recordTimingHistory(records: StepTimingRecord[]): void {
     this.timingHistory.push(...records);
-    // 保持上限
+    // Keep within the cap
     while (this.timingHistory.length > this.MAX_TIMING_HISTORY) {
       this.timingHistory.shift();
     }
@@ -330,7 +330,7 @@ export class PipelineOrchestrator {
     metric.lastCallAt = Date.now();
     metric.lastDurationMs = durationMs;
 
-    // 同步到 Prometheus 指标服务
+    // Sync to the Prometheus metric service
     if (this.metricsService) {
       this.metricsService.recordStepDuration(stepName, durationMs);
       if (isError) {

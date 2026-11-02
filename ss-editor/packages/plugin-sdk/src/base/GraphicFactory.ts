@@ -62,7 +62,7 @@ export class GraphicFactory {
 
       const graphic = new constructor(x, y, finalWidth, finalHeight);
 
-      // 注入插件版本到图元实例
+      // Inject the plugin version into the graphic instance
       graphic.version = info.version;
 
       if (info.category && (graphic as any).componentName) {
@@ -113,7 +113,7 @@ export class GraphicFactory {
     
     const info = this.graphics.get(data.type);
 
-    // 版本迁移：如果存储的版本与当前注册的版本不一致，预留迁移入口
+    // Version migration: if the stored version differs from the currently registered version, a migration entry point is reserved
     if (info && data.version && info.version !== '0.0.0' && data.version !== info.version) {
       const pluginDef = (info.constructor as any).pluginDefinition;
       if (pluginDef?.migrations) {
@@ -152,15 +152,15 @@ export class GraphicFactory {
     return this.graphics.has(type);
   }
 
-  /** 根据 type 查询注册的插件版本 */
+  /** Query the registered plugin version by type */
   static getGraphicVersion(type: string): string | undefined {
     return this.graphics.get(type)?.version;
   }
 }
 
 /**
- * 版本迁移辅助函数
- * 按版本顺序执行迁移链，将旧数据逐步升级到目标版本
+ * Version migration helper function
+ * Executes the migration chain in version order, gradually upgrading old data to the target version
  */
 function applyMigrations(
   data: any,

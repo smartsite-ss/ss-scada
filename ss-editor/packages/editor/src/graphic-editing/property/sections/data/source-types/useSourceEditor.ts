@@ -6,19 +6,19 @@ import { watch, ref, type Ref } from 'vue';
 import { useI18n } from '@scada-editor/core';
 
 /**
- * useSourceEditor — SourceEditor 通用同步逻辑
+ * useSourceEditor — SourceEditor common sync logic
  *
- * 抽取自 StaticSourceEditor / ApiSourceEditor / TagSourceSelector / DbSourceEditor 的共性样板：
- * 1. useI18n 初始化
- * 2. 基于 props.typeData 创建响应式 ref，并自动监听变化
- * 3. emitUpdate 工具函数触发 'update' 事件
+ * Extracted from the common boilerplate of StaticSourceEditor / ApiSourceEditor / TagSourceSelector / DbSourceEditor:
+ * 1. useI18n initialization
+ * 2. Create a reactive ref based on props.typeData with automatic change watching
+ * 3. emitUpdate utility function that fires the 'update' event
  *
- * 与抽取基础组件相比，composable 不侵入模板布局，适配 4 个组件差异较大的 UI 结构。
+ * Compared to extracting a base component, the composable does not intrude into template layout, adapting to the 4 components' quite different UI structures.
  */
 export interface SourceEditorContext {
-  /** 从 typeData 取值的函数 */
+  /** Function that reads a value from typeData */
   getValue: (typeData: Record<string, any>) => any;
-  /** 默认值 */
+  /** Default value */
   fallback: any;
 }
 
@@ -26,11 +26,11 @@ export function useSourceEditor() {
   const { t } = useI18n();
 
   /**
-   * 创建与 props.typeData 同步的 ref，并自动注册深度监听。
-   * 当 typeData 中对应字段变化时，自动更新 ref 值。
+   * Create a ref synchronized with props.typeData and automatically register a deep watch.
+   * When the corresponding field in typeData changes, the ref value is updated automatically.
    *
-   * @param typeDataSource 返回当前 typeData 的 getter 函数
-   * @param ctx 取值上下文
+   * @param typeDataSource Getter function returning the current typeData
+   * @param ctx Value reading context
    */
   function syncedRef(
     typeDataSource: () => Record<string, any> | undefined,
@@ -53,7 +53,7 @@ export function useSourceEditor() {
   }
 
   /**
-   * 触发 'update' 事件的工具函数。
+   * Utility function that fires the 'update' event.
    */
   function emitUpdate(
     emit: (event: 'update', data: Record<string, any>) => void,

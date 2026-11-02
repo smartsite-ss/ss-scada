@@ -9,16 +9,16 @@ import { TemplateLoaderService } from '@ss-node/ss-system';
 import type { TemplateVariable } from '@ss-node/ss-system';
 
 /**
- * 任务注册服务
+ * Task registration service
  *
- * 负责为设备注册采集任务到 EnhancedScheduler，
- * 管理设备与任务的映射关系，以及任务的启用/禁用操作。
+ * Registers collection tasks for devices with EnhancedScheduler, manages the
+ * device-to-task mapping, and handles task enable/disable operations.
  */
 @Injectable()
 export class TaskRegistrationService {
   private readonly logger = new Logger(TaskRegistrationService.name);
 
-  /** 设备 → 注册的调度任务 ID 列表 */
+  /** Device -> list of registered scheduler task IDs */
   private readonly deviceTaskMap = new Map<string, string[]>();
 
   constructor(
@@ -27,11 +27,11 @@ export class TaskRegistrationService {
   ) {}
 
   /**
-   * 为单个设备的所有启用标签注册 EnhancedScheduler 任务
+   * Register EnhancedScheduler tasks for all enabled tags of a single device
    *
-   * 查找顺序：
-   * 1. 优先从 dev_data_tags 表中查找该设备的启用标签
-   * 2. 若 DB 中无标签但设备绑定了模板，则从模板 JSON 文件加载变量作为标签
+   * Lookup order:
+   * 1. Prefer the device's enabled tags from the dev_data_tags table
+   * 2. If the DB has no tags but the device is bound to a template, load variables from the template JSON file as tags
    */
   async registerTasksForDevice(
     device: Device,
@@ -40,12 +40,12 @@ export class TaskRegistrationService {
     projectName: string,
   ): Promise<void> {
     try {
-      // 1. 从数据库查询标签
+      // 1. Query tags from the database
       const tags = await tagRepo.find({
         where: { deviceId: device.id, enabled: true },
       });
 
-      // 2. 若 DB 无标签且有模板绑定，从模板加载变量
+      // 2. If the DB has no tags but a template is bound, load variables from the template
       if (tags.length === 0 && device.templateId && this.templateLoader) {
         const template = this.templateLoader.getTemplate(device.templateId);
         if (template && template.variables.length > 0) {
@@ -67,7 +67,7 @@ export class TaskRegistrationService {
         }
       }
 
-      // 3. 无标签也无模板 → 设备已通过 DeviceLoadingService 追踪，不再跳过
+      // 3. No tags and no template -> device is already tracked by DeviceLoadingService, do not skip
       if (tags.length === 0) {
         this.logger.debug(
           `Device ${device.id} (${device.deviceName}): tracked but no tags to schedule ` +
@@ -76,7 +76,7 @@ export class TaskRegistrationService {
         return;
       }
 
-      // 4. DB 标签路径 — 注册调度任务
+      // 4. DB-tag path - register the scheduler task
       const tasks = tags.map((tag: DataTag) =>
         this.createTagTask(device, protocol, tag, projectName),
       );
@@ -88,17 +88,17 @@ export class TaskRegistrationService {
     }
   }
 
-  /** 检查设备是否已有注册的任务 */
+  /** Check whether a device already has registered tasks */
   hasDeviceTasks(deviceId: string): boolean {
     return this.deviceTaskMap.has(deviceId);
   }
 
-  /** 获取已注册任务的设备 ID 集合 */
+  /** Get the set of device IDs with registered tasks */
   getRegisteredDeviceIds(): Set<string> {
     return new Set(this.deviceTaskMap.keys());
   }
 
-  /** 启用设备采集 */
+  /** Enable device collection */
   enableDeviceTasks(deviceId: string): void {
     const taskIds = this.deviceTaskMap.get(deviceId);
     if (!taskIds || taskIds.length === 0) {
@@ -112,7 +112,7 @@ export class TaskRegistrationService {
     this.logger.log(`Device ${deviceId}: ${taskIds.length} tasks enabled`);
   }
 
-  /** 禁用设备采集 */
+  /** Disable device collection */
   disableDeviceTasks(deviceId: string): void {
     const taskIds = this.deviceTaskMap.get(deviceId);
     if (!taskIds || taskIds.length === 0) {
@@ -127,18 +127,18 @@ export class TaskRegistrationService {
   }
 
   /**
-   * 重新加载设备标签的采集任务（模板同步 / 标签变更场景）
+   * Reload a device's tag collection tasks (template-sync / tag-change scenarios)
    *
-   * 执行流程：
-   * 1. 注销旧任务（scheduler.unregisterTask）
-   * 2. 从数据库重新读取启用标签
-   * 3. 注册新任务（scheduler.registerTask）
+   * Steps:
+   * 1. Unregister old tasks (scheduler.unregisterTask)
+   * 2. Re-read enabled tags from the database
+   * 3. Register new tasks (scheduler.registerTask)
    *
-   * @param deviceId 设备 ID
-   * @param projectId 项目 ID
-   * @param protocol 采集协议
-   * @param device 设备实体
-   * @param tagRepo 项目级 DataTag Repository
+   * @param deviceId the device ID
+   * @param projectId the project ID
+   * @param protocol the collection protocol
+   * @param device the device entity
+   * @param tagRepo the project-level DataTag repository
    */
   async reloadDeviceTasks(
     deviceId: string,
@@ -147,7 +147,7 @@ export class TaskRegistrationService {
     device: Device,
     tagRepo: any,
   ): Promise<void> {
-    // 1. 注销旧任务
+    // 1. Unregister old tasks
     const oldTaskIds = this.deviceTaskMap.get(deviceId);
     if (oldTaskIds && oldTaskIds.length > 0) {
       for (const taskId of oldTaskIds) {
@@ -157,19 +157,20 @@ export class TaskRegistrationService {
       this.logger.log(`Device ${deviceId}: ${oldTaskIds.length} old tasks unregistered`);
     }
 
-    // 2. 重新注册（复用现有 registerTasksForDevice 逻辑）
+    // 2. Re-register (reuse the existing registerTasksForDevice logic)
     await this.registerTasksForDevice(device, protocol, tagRepo, projectId);
 
     this.logger.log(`Device ${deviceId}: tasks reloaded after tag change`);
   }
 
   /**
-   * 停止一组设备的采集任务（项目停用时调用）
+   * Stop the collection tasks of a group of devices (called when a project is disabled)
    *
-   * 注销所有调度任务并清理 deviceTaskMap。
-   * 调用方负责查询项目下的设备 ID 列表（task-registration 不直接访问项目 DB）。
+   * Unregisters all scheduler tasks and cleans deviceTaskMap.
+   * The caller is responsible for querying the project's device-ID list (task-registration
+   * does not access the project DB directly).
    *
-   * @param deviceIds 需要停止采集的设备 ID 列表
+   * @param deviceIds the list of device IDs whose collection should stop
    */
   stopProjectTasks(deviceIds: string[]): void {
     let stoppedCount = 0;
@@ -188,7 +189,7 @@ export class TaskRegistrationService {
     );
   }
 
-  /** 批量启用设备 */
+  /** Batch-enable devices */
   async enableDevices(deviceIds: string[]): Promise<{ success: string[]; failed: string[] }> {
     const result = { success: [] as string[], failed: [] as string[] };
     for (const deviceId of deviceIds) {
@@ -203,7 +204,7 @@ export class TaskRegistrationService {
     return result;
   }
 
-  /** 批量禁用设备 */
+  /** Batch-disable devices */
   async disableDevices(deviceIds: string[]): Promise<{ success: string[]; failed: string[] }> {
     const result = { success: [] as string[], failed: [] as string[] };
     for (const deviceId of deviceIds) {
@@ -218,7 +219,7 @@ export class TaskRegistrationService {
     return result;
   }
 
-  /** 获取设备采集启用状态 */
+  /** Get device collection enable state */
   isDeviceTasksEnabled(deviceId: string): boolean {
     const taskIds = this.deviceTaskMap.get(deviceId);
     if (!taskIds || taskIds.length === 0) return false;
@@ -227,16 +228,16 @@ export class TaskRegistrationService {
     return task?.enabled ?? false;
   }
 
-  /** 获取已注册任务总数 */
+  /** Get the total number of registered tasks */
   getTaskCount(): number {
     return Array.from(this.deviceTaskMap.values()).reduce((s, t) => s + t.length, 0);
   }
 
   // -----------------------------------------------------------------------
-  //  私有方法
+  //  Private methods
   // -----------------------------------------------------------------------
 
-  /** 从模板变量创建采集任务 */
+  /** Create a collection task from a template variable */
   private createTemplateTasks(
     device: Device,
     protocol: string,
@@ -278,7 +279,7 @@ export class TaskRegistrationService {
     });
   }
 
-  /** 创建单个标签的采集任务 */
+  /** Create a collection task for a single tag */
   private createTagTask(
     device: Device,
     protocol: string,
@@ -315,7 +316,7 @@ export class TaskRegistrationService {
     };
   }
 
-  /** 注册任务到调度器并记录映射 */
+  /** Register a task with the scheduler and record the mapping */
   private registerTasks(deviceId: string, deviceName: string, tasks: AcquisitionTask[]): void {
     const taskIds: string[] = [];
     const scanRate = tasks[0]?.interval || 1000;

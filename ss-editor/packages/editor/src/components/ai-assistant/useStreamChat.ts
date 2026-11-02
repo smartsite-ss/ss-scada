@@ -3,18 +3,18 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * useStreamChat — P1-T04 AI 助手流式聊天 Composable
+ * useStreamChat — P1-T04 AI assistant streaming chat Composable
  *
- * 职责：
- *   1. 管理聊天消息列表（user/assistant 交替）
- *   2. 调用 aiClient.streamChat() 进行流式对话
- *   3. 实时更新最后一条 assistant 消息内容
- *   4. 提供加载/错误状态、中止能力
- *   5. 支持任务类型路由（codegen/chat/intent/analysis）
+ * Responsibilities:
+ *   1. Manage the chat message list (user/assistant alternating)
+ *   2. Call aiClient.streamChat() for streaming conversations
+ *   3. Update the last assistant message content in real time
+ *   4. Provide loading/error states and abort capability
+ *   5. Support task type routing (codegen/chat/intent/analysis)
  *
- * 用法：
+ * Usage:
  *   const { messages, sendMessage, isStreaming, abort, error } = useStreamChat();
- *   await sendMessage('帮我创建一个按钮图元', 'codegen');
+ *   await sendMessage('Help me create a button graphic', 'codegen');
  */
 
 import { ref, readonly, computed, type Ref } from 'vue';
@@ -35,11 +35,11 @@ export interface ChatMessageItem {
   id: string;
   role: 'user' | 'assistant';
   content: string;
-  /** 是否正在流式接收 */
+  /** Whether streaming reception is in progress */
   streaming?: boolean;
-  /** 关联的任务类型（用于渲染特定操作按钮） */
+  /** Associated task type (for rendering specific action buttons) */
   taskType?: TaskType;
-  /** 元数据 */
+  /** Metadata */
   provider?: string;
   usage?: {
     promptTokens: number;
@@ -47,7 +47,7 @@ export interface ChatMessageItem {
     totalTokens: number;
   };
   finishReason?: string;
-  /** 创建时间戳 */
+  /** Creation timestamp */
   createdAt: number;
 }
 
@@ -61,36 +61,36 @@ export function useStreamChat() {
   const messages = ref<ChatMessageItem[]>([]) as Ref<ChatMessageItem[]>;
   const isStreaming = ref(false);
   const error = ref<string | null>(null);
-  /** AI 状态三态（D-015）：null=未检测；区分 disabled/unauthorized/unreachable */
+  /** AI status tri-state (D-015): null = not checked; distinguishes disabled/unauthorized/unreachable */
   const aiStatus = ref<AiStatusState | null>(null);
-  /** 兼容布尔视图：null=未检测，true=可用，false=不可用（含故障态） */
+  /** Compatibility boolean view: null = not checked, true = available, false = unavailable (including fault states) */
   const aiEnabled = computed<boolean | null>(() => {
     if (aiStatus.value === null) return null;
     return aiStatus.value === 'enabled';
   });
 
   // ============================================================
-  // 会话管理状态（P2-T08 对话持久化）
+  // Session management state (P2-T08 conversation persistence)
   // ============================================================
-  /** 当前会话 ID（null=未关联会话，下一次发送将创建新会话） */
+  /** Current session ID (null = no associated session; the next send creates a new session) */
   const currentConversationId = ref<string | null>(null);
-  /** 当前项目 ID（用于创建新会话时传入） */
+  /** Current project ID (passed when creating a new session) */
   const currentProjectId = ref<string | null>(null);
-  /** 会话列表（侧边栏展示） */
+  /** Session list (shown in the sidebar) */
   const conversations = ref<ConversationSummary[]>([]) as Ref<ConversationSummary[]>;
-  /** 会话列表加载中 */
+  /** Session list loading */
   const conversationsLoading = ref(false);
 
   let abortController: AbortController | null = null;
 
-  /** 状态对应的 i18n 提示键 */
+  /** i18n hint key for the status */
   const STATUS_HINT_KEYS: Record<Exclude<AiStatusState, 'enabled'>, string> = {
     disabled: 'editor.aiAssistant.disabledHint',
     unauthorized: 'editor.aiAssistant.unauthorizedHint',
     unreachable: 'editor.aiAssistant.unreachableHint',
   };
 
-  /** 检查 AI 功能状态（getAiStatus 不抛异常，错误映射为状态） */
+  /** Check the AI feature status (getAiStatus never throws; errors map to a status) */
   async function checkStatus(): Promise<AiStatusState> {
     const status = await aiClient.getStatus();
     aiStatus.value = status.state;
@@ -98,20 +98,20 @@ export function useStreamChat() {
   }
 
   /**
-   * 发送消息并接收流式回复
+   * Send a message and receive a streaming reply
    *
-   * 持久化策略（P2-T08）：
-   *   - 当 currentConversationId 存在时，仅向服务器发送当前消息 + conversationId，
-   *     由服务器从数据库恢复完整历史（避免前端累积发送大量上下文）
-   *   - 当 currentConversationId 为 null 时，发送本地全部历史并允许服务器创建新会话
-   *   - 服务器在 done=true 的最终 chunk 中回传 conversationId，前端据此更新状态
+   * Persistence strategy (P2-T08):
+   *   - When currentConversationId exists, only the current message + conversationId are sent;
+   *     the server restores the full history from the database (avoiding the frontend accumulating and sending large contexts)
+   *   - When currentConversationId is null, send the full local history and allow the server to create a new session
+   *   - The server returns conversationId in the final done=true chunk; the frontend updates its state accordingly
    *
-   * @param text 用户输入文本
-   * @param taskType 任务类型（决定后端路由）
-   * @param systemPrompt 可选的系统提示词
-   * @param model 可选的模型名称（用户从下拉选择，覆盖路由默认模型）
-   * @param providerId 可选的供应商 ID（用户选定具体模型时一并传入，覆盖任务类型路由，
-   *   确保请求发往该模型所属供应商，而非路由默认供应商）
+   * @param text user input text
+   * @param taskType task type (determines backend routing)
+   * @param systemPrompt optional system prompt
+   * @param model optional model name (user-selected from the dropdown, overriding the routed default model)
+   * @param providerId optional provider ID (passed together when the user picks a specific model, overriding task-type routing,
+   *   ensuring the request goes to that model's provider rather than the routed default provider)
    */
   async function sendMessage(
     text: string,
@@ -125,7 +125,7 @@ export function useStreamChat() {
 
     error.value = null;
 
-    // 检查 AI 状态（区分未启用/认证失败/服务不可达）
+    // Check the AI status (distinguishing not-enabled/auth-failed/service-unreachable)
     if (aiStatus.value === null) {
       await checkStatus();
     }
@@ -135,9 +135,9 @@ export function useStreamChat() {
       return;
     }
 
-    // 构造消息列表：
-    // - 已有会话：仅发送当前用户消息，服务器从 DB 恢复历史
-    // - 无会话：发送本地历史（含 system prompt），让服务器创建新会话
+    // Build the message list:
+    // - Existing session: send only the current user message; the server restores history from the DB
+    // - No session: send the local history (including the system prompt), letting the server create a new session
     const hasExistingConversation = !!currentConversationId.value;
     const history: ChatMessage[] = hasExistingConversation
       ? [{ role: 'user', content: text }]
@@ -152,7 +152,7 @@ export function useStreamChat() {
       history.push({ role: 'user', content: text });
     }
 
-    // 添加用户消息到 UI
+    // Add the user message to the UI
     messages.value.push({
       id: genId(),
       role: 'user',
@@ -161,7 +161,7 @@ export function useStreamChat() {
       createdAt: Date.now(),
     });
 
-    // 添加空的 assistant 消息（占位）
+    // Add an empty assistant message (placeholder)
     const assistantMsg: ChatMessageItem = {
       id: genId(),
       role: 'assistant',
@@ -200,26 +200,26 @@ export function useStreamChat() {
           if (chunk.usage) {
             assistantMsg.usage = chunk.usage;
           }
-          // 服务器在 done chunk 回传 conversationId，更新本地状态
+          // The server returns conversationId in the done chunk; update the local state
           if (chunk.conversationId) {
             currentConversationId.value = chunk.conversationId;
           }
         }
       }
 
-      // 确保结束
+      // Ensure finished
       assistantMsg.streaming = false;
     } catch (err) {
       assistantMsg.streaming = false;
       if (err instanceof Error && err.name === 'AbortError') {
-        // 用户主动中止，不算错误
+        // User-initiated abort, not an error
         if (assistantMsg.content === '') {
-          // 如果中止时没有任何内容，移除占位消息
+          // If nothing was received at abort time, remove the placeholder message
           messages.value = messages.value.filter((m) => m.id !== assistantMsg.id);
         }
       } else {
         error.value = err instanceof Error ? err.message : String(err);
-        // 如果没有任何内容，移除占位消息
+        // If there is no content, remove the placeholder message
         if (assistantMsg.content === '') {
           messages.value = messages.value.filter((m) => m.id !== assistantMsg.id);
         }
@@ -230,36 +230,36 @@ export function useStreamChat() {
     }
   }
 
-  /** 中止当前流式请求 */
+  /** Abort the current streaming request */
   function abort(): void {
     if (abortController) {
       abortController.abort();
     }
   }
 
-  /** 清空消息列表（前端 UI 清空，不影响后端会话记录） */
+  /** Clear the message list (frontend UI only; does not affect backend session records) */
   function clear(): void {
     messages.value = [];
     error.value = null;
-    // 重置会话关联：下一次发送将创建新会话
+    // Reset the session association: the next send creates a new session
     currentConversationId.value = null;
   }
 
   // ============================================================
-  // 会话管理方法（P2-T08 对话持久化）
+  // Session management methods (P2-T08 conversation persistence)
   // ============================================================
 
   /**
-   * 设置当前项目 ID（在切换项目时调用，用于创建新会话时传入）
-   * 注意：切换项目不会自动清除当前会话，需显式调用 clearConversation
+   * Set the current project ID (call when switching projects; used when creating a new session)
+   * Note: switching projects does not automatically clear the current session; call clearConversation explicitly
    */
   function setCurrentProject(projectId: string | null): void {
     currentProjectId.value = projectId;
   }
 
   /**
-   * 刷新会话列表（侧边栏展示用）
-   * 按 projectId 过滤；若未设置 projectId，则查询当前用户所有会话
+   * Refresh the session list (for sidebar display)
+   * Filters by projectId; when projectId is not set, queries all of the current user's sessions
    */
   async function refreshConversations(): Promise<void> {
     conversationsLoading.value = true;
@@ -268,7 +268,7 @@ export function useStreamChat() {
         currentProjectId.value || undefined,
       );
     } catch (err) {
-      // 列表加载失败不应阻塞对话主流程，仅记录到 error
+      // A list load failure should not block the main chat flow; only record it in error
       error.value = err instanceof Error ? err.message : String(err);
       conversations.value = [];
     } finally {
@@ -277,9 +277,9 @@ export function useStreamChat() {
   }
 
   /**
-   * 加载指定会话到当前消息列表
-   * 从数据库恢复完整消息历史，并设置为当前会话
-   * @param conversationId 会话 ID
+   * Load a given session into the current message list
+   * Restores the full message history from the database and sets it as the current session
+   * @param conversationId session ID
    */
   async function loadConversation(conversationId: string): Promise<void> {
     if (isStreaming.value) {
@@ -289,7 +289,7 @@ export function useStreamChat() {
     error.value = null;
     try {
       const history = await aiClient.getConversationMessages(conversationId);
-      // 转换后端消息为前端 ChatMessageItem
+      // Convert backend messages to frontend ChatMessageItem
       messages.value = history
         .filter((m: ConversationMessage) => m.role === 'user' || m.role === 'assistant')
         .map((m: ConversationMessage) => ({
@@ -315,16 +315,16 @@ export function useStreamChat() {
   }
 
   /**
-   * 显式设置当前会话 ID（供 Agent 模式等外部路径同步会话状态使用）。
-   * currentConversationId 对外为 readonly，必须通过本函数更新。
+   * Explicitly set the current session ID (used by external paths such as Agent mode to sync session state).
+   * currentConversationId is externally readonly; it must be updated through this function.
    */
   function setCurrentConversationId(conversationId: string | null): void {
     currentConversationId.value = conversationId;
   }
 
   /**
-   * 开始新会话：清空当前消息列表并重置会话关联
-   * 不删除数据库中的旧会话记录
+   * Start a new session: clear the current message list and reset the session association
+   * Does not delete old session records in the database
    */
   function clearConversation(): void {
     if (isStreaming.value) {
@@ -337,16 +337,16 @@ export function useStreamChat() {
   }
 
   /**
-   * 删除指定会话（从数据库永久删除）
-   * 如果删除的是当前会话，则同时清空 UI
-   * @param conversationId 会话 ID
+   * Delete a given session (permanently removed from the database)
+   * If the deleted session is the current one, the UI is cleared as well
+   * @param conversationId session ID
    */
   async function deleteConversationById(conversationId: string): Promise<void> {
     try {
       await aiClient.deleteConversation(conversationId);
-      // 从本地列表中移除
+      // Remove from the local list
       conversations.value = conversations.value.filter((c) => c.id !== conversationId);
-      // 若删除的是当前会话，清空 UI
+      // If the deleted session is the current one, clear the UI
       if (currentConversationId.value === conversationId) {
         clearConversation();
       }
@@ -357,9 +357,9 @@ export function useStreamChat() {
   }
 
   /**
-   * 归档/取消归档会话
-   * @param conversationId 会话 ID
-   * @param archived 是否归档
+   * Archive/unarchive a session
+   * @param conversationId session ID
+   * @param archived whether to archive
    */
   async function archiveConversationById(
     conversationId: string,
@@ -367,7 +367,7 @@ export function useStreamChat() {
   ): Promise<void> {
     try {
       await aiClient.archiveConversation(conversationId, archived);
-      // 更新本地列表中的归档状态
+      // Update the archived status in the local list
       conversations.value = conversations.value.map((c) =>
         c.id === conversationId ? { ...c, archived: archived ? 1 : 0 } : c,
       );
@@ -378,9 +378,9 @@ export function useStreamChat() {
   }
 
   /**
-   * 重命名会话标题
-   * @param conversationId 会话 ID
-   * @param title 新标题
+   * Rename a session title
+   * @param conversationId session ID
+   * @param title new title
    */
   async function renameConversation(conversationId: string, title: string): Promise<void> {
     try {
@@ -395,7 +395,7 @@ export function useStreamChat() {
   }
 
   /**
-   * 添加一条用户消息到列表（外部调用，如 Agent 模式）
+   * Add a user message to the list (external call, e.g. Agent mode)
    */
   function addUserMessage(content: string, taskType?: TaskType): ChatMessageItem {
     const msg: ChatMessageItem = {
@@ -410,7 +410,7 @@ export function useStreamChat() {
   }
 
   /**
-   * 添加一条 assistant 消息到列表（外部调用，如 Agent 模式）
+   * Add an assistant message to the list (external call, e.g. Agent mode)
    */
   function addAssistantMessage(content: string, taskType?: TaskType): ChatMessageItem {
     const msg: ChatMessageItem = {
@@ -436,7 +436,7 @@ export function useStreamChat() {
     abort,
     clear,
     checkStatus,
-    // P2-T08 会话管理
+    // P2-T08 session management
     currentConversationId: readonly(currentConversationId),
     currentProjectId: readonly(currentProjectId),
     conversations: readonly(conversations) as Readonly<Ref<ConversationSummary[]>>,

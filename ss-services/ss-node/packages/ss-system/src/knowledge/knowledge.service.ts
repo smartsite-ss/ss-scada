@@ -32,14 +32,14 @@ import {
 import { DEFAULT_MANIFEST, DEFAULT_PRODUCT_ID } from './knowledge.manifest';
 
 /**
- * 知识库服务 — 纯文件方案（v2.0 多产品架构）
+ * Knowledge base service — pure-file approach (v2.0 multi-product architecture)
  *
- * 存储模型：
- *   - 文件系统：${KB_ROOT}/{lang}/{product}/{module}/*.md（Markdown 正文 + frontmatter 元数据）
- *   - manifest.json：多产品清单 + 每个产品的模块清单和路由映射（语言无关，全局唯一）
- *   - Git：版本历史（不内置版本表，由 Git 管理）
+ * Storage model:
+ *   - File system: ${KB_ROOT}/{lang}/{product}/{module}/*.md (Markdown body + frontmatter metadata)
+ *   - manifest.json: multi-product list + per-product module list and route mappings (language-independent, globally unique)
+ *   - Git: version history (no built-in version table; managed by Git)
  *
- * 不依赖数据库，人工修改 Markdown 文件后自动生效（manifest 有 1 分钟缓存）。
+ * No database dependency; manual Markdown edits take effect automatically (manifest has a 1-minute cache).
  */
 @Injectable()
 export class KnowledgeService implements OnModuleInit {
@@ -50,7 +50,7 @@ export class KnowledgeService implements OnModuleInit {
   private readonly defaultProduct: string;
   private manifestCache: KbManifest | null = null;
   private manifestLoadedAt = 0;
-  /** manifest.json 缓存 TTL（毫秒） */
+  /** manifest.json cache TTL (milliseconds) */
   private readonly MANIFEST_TTL_MS = 60_000;
 
   constructor(
@@ -78,15 +78,15 @@ export class KnowledgeService implements OnModuleInit {
   }
 
   /**
-   * 将相对路径解析为绝对路径
+   * Resolve a relative path to an absolute path
    *
-   * 相对路径基准：
-   * - dev 模式：__dirname 上溯 4 级 = ss-services/ss-node（本文件位于 packages/ss-system/dist/knowledge/）
-   *   .env.dev 中 DATA_DIR / KB_ROOT 相对于 ss-services/ss-node 解析
-   * - 生产模式：process.cwd() = ss-run/ss/services/ss-node
-   *   .env 中相对路径相对于该目录解析
+   * Relative-path baselines:
+   * - dev mode: go up 4 levels from __dirname = ss-services/ss-node (this file lives in packages/ss-system/dist/knowledge/)
+   *   DATA_DIR / KB_ROOT in .env.dev resolve against ss-services/ss-node
+   * - production mode: process.cwd() = ss-run/ss/services/ss-node
+   *   relative paths in .env resolve against that directory
    *
-   * 与 app.module.ts getDatabaseConfig()、backup.service.ts getProjectRoot() 保持一致。
+   * Kept consistent with app.module.ts getDatabaseConfig() and backup.service.ts getProjectRoot().
    */
   private resolvePath(p: string): string {
     return this.pathResolver.resolve(p);
@@ -100,9 +100,9 @@ export class KnowledgeService implements OnModuleInit {
     );
   }
 
-  // ==================== 公共 API ====================
+  // ==================== Public API ====================
 
-  /** 获取所有产品列表 */
+  /** Get the full product list */
   async getProducts(): Promise<KbProductsResponse> {
     const manifest = await this.loadManifest();
     const products: KbProductListItem[] = manifest.products.map((p) => ({
@@ -120,7 +120,7 @@ export class KnowledgeService implements OnModuleInit {
     };
   }
 
-  /** 获取支持的语言列表 + 统计（按产品） */
+  /** Get the supported language list + statistics (per product) */
   async getLangs(product?: string): Promise<KbLangsResponse> {
     const resolvedProduct = this.resolveProduct(product);
     const stats: KbLangStat[] = [];
@@ -141,7 +141,7 @@ export class KnowledgeService implements OnModuleInit {
     };
   }
 
-  /** 获取目录树（缺失语言自动 Fallback 默认语言，节点标记 fallback:true） */
+  /** Get the directory tree (missing languages automatically fall back to the default language, nodes marked fallback:true) */
   async getTree(product?: string, lang?: string): Promise<KbTreeNode[]> {
     const resolvedProduct = this.resolveProduct(product);
     const resolvedLang = this.resolveLang(lang);
@@ -155,7 +155,7 @@ export class KnowledgeService implements OnModuleInit {
     return tree;
   }
 
-  /** 读取文章（指定语言不存在时 Fallback 到默认语言） */
+  /** Read an article (falls back to the default language when the requested language does not exist) */
   async getArticle(id: string, product?: string, lang?: string): Promise<KbArticle> {
     this.assertSafeId(id);
     const resolvedProduct = this.resolveProduct(product);
@@ -172,7 +172,7 @@ export class KnowledgeService implements OnModuleInit {
     throw new NotFoundException(`Article not found: ${id} (product=${resolvedProduct})`);
   }
 
-  /** 更新文章（必须指定语言，写入时更新 frontmatter） */
+  /** Update an article (language must be specified; frontmatter is updated on write) */
   async updateArticle(
     id: string,
     content: string,
@@ -186,7 +186,7 @@ export class KnowledgeService implements OnModuleInit {
       throw new BadRequestException(`Invalid lang: ${lang}`);
     }
     const filePath = await this.resolveArticlePath(id, resolvedProduct, lang, true);
-    // 解析新内容，合并 frontmatter
+    // Parse the new content and merge frontmatter
     const parsed = matter(content);
     const frontmatter = {
       ...parsed.data,
@@ -204,7 +204,7 @@ export class KnowledgeService implements OnModuleInit {
     return this.readArticleFile(filePath, resolvedProduct, lang, false);
   }
 
-  /** 路由匹配（路由映射语言无关，仅文章内容按语言查找） */
+  /** Route matching (route mappings are language-independent; only article content is looked up per language) */
   async matchRoute(
     routePath: string,
     product?: string,
@@ -258,7 +258,7 @@ export class KnowledgeService implements OnModuleInit {
     };
   }
 
-  /** 全文搜索（仅在指定语言+产品目录内搜索，不跨语言 Fallback） */
+  /** Full-text search (searches only within the specified language+product directory, no cross-language fallback) */
   async search(query: string, product?: string, lang?: string): Promise<KbSearchResult[]> {
     if (!query || !query.trim()) return [];
     const resolvedProduct = this.resolveProduct(product);
@@ -290,7 +290,7 @@ export class KnowledgeService implements OnModuleInit {
     return results;
   }
 
-  /** 上传图片（图片按语言+产品+模块目录隔离存储） */
+  /** Upload an image (images are stored isolated by language+product+module directory) */
   async uploadImage(
     buffer: Buffer,
     filename: string,
@@ -326,22 +326,22 @@ export class KnowledgeService implements OnModuleInit {
   }
 
   /**
-   * 解析图片相对路径为绝对路径（供 controller 的 res.sendFile 使用）
-   * @param relPath uploadImage 返回的相对路径，如 "03-device/images/foo.png"
-   * @param lang 语言
-   * @param product 产品 ID
+   * Resolve an image's relative path to an absolute path (for the controller's res.sendFile)
+   * @param relPath the relative path returned by uploadImage, e.g. "03-device/images/foo.png"
+   * @param lang language
+   * @param product product ID
    */
   async resolveImagePath(relPath: string, lang?: string, product?: string): Promise<string> {
     const resolvedLang = this.resolveLang(lang);
     const resolvedProduct = this.resolveProduct(product);
-    // 防止路径遍历：去除任何 .. 片段
+    // Prevent path traversal: strip any .. segments
     const safe = relPath
       .split('/')
       .filter((seg) => seg && seg !== '..' && seg !== '.')
       .join(path.sep);
     if (!safe) throw new BadRequestException('Invalid image path');
     const abs = path.join(this.kbRoot, resolvedLang, resolvedProduct, safe);
-    // 二次校验：确保解析后仍在 kbRoot/lang/product 下
+    // Double check: ensure the resolved path is still under kbRoot/lang/product
     const productRoot = path.join(this.kbRoot, resolvedLang, resolvedProduct);
     if (!abs.startsWith(productRoot + path.sep) && abs !== productRoot) {
       throw new BadRequestException('Image path escapes product root');
@@ -349,7 +349,7 @@ export class KnowledgeService implements OnModuleInit {
     return abs;
   }
 
-  // ==================== 私有方法 ====================
+  // ==================== Private methods ====================
 
   private resolveLang(lang?: string): string {
     if (lang && this.supportedLangs.includes(lang)) return lang;
@@ -361,7 +361,7 @@ export class KnowledgeService implements OnModuleInit {
     return this.defaultProduct;
   }
 
-  /** 校验文章 ID 不含路径遍历攻击字符 */
+  /** Validate that an article ID contains no path-traversal attack characters */
   private assertSafeId(id: string): void {
     if (!id || /[/\\]\.\.[/\\]/.test(id) || id.startsWith('..') || path.isAbsolute(id)) {
       throw new BadRequestException(`Invalid article id: ${id}`);
@@ -371,13 +371,13 @@ export class KnowledgeService implements OnModuleInit {
   private async ensureKbRoot(): Promise<void> {
     await fs.mkdir(this.kbRoot, { recursive: true });
     const manifest = await this.loadManifest(true);
-    // 为每个语言创建产品目录
+    // Create product directories for each language
     for (const lang of this.supportedLangs) {
       for (const product of manifest.products) {
         await fs.mkdir(path.join(this.kbRoot, lang, product.id), { recursive: true });
       }
     }
-    // 创建默认 manifest.json（如果不存在）
+    // Create the default manifest.json (if missing)
     const manifestPath = path.join(this.kbRoot, 'manifest.json');
     try {
       await fs.access(manifestPath);
@@ -396,7 +396,7 @@ export class KnowledgeService implements OnModuleInit {
     try {
       const raw = await fs.readFile(manifestPath, 'utf-8');
       const parsed = JSON.parse(raw) as KbManifest;
-      // 兼容 v1.0 manifest（无 products 字段，有 modules/routeMap 顶层字段）
+      // Compatibility with v1.0 manifests (no products field; modules/routeMap as top-level fields)
       if (!parsed.products && (parsed as any).modules) {
         this.logger.warn('Detected v1.0 manifest, migrating to v2.0 multi-product structure');
         const migrated: KbManifest = {
@@ -426,7 +426,7 @@ export class KnowledgeService implements OnModuleInit {
     }
   }
 
-  /** 加载指定产品的清单 */
+  /** Load a given product's manifest */
   private async loadProductManifest(productId: string): Promise<KbProduct | null> {
     const manifest = await this.loadManifest();
     return manifest.products.find((p) => p.id === productId) || null;
@@ -442,7 +442,7 @@ export class KnowledgeService implements OnModuleInit {
       const stat = await fs.stat(modDir);
       if (!stat.isDirectory()) return null;
     } catch {
-      // 该语言下模块目录不存在 → Fallback 默认语言构建子树，标记 fallback
+      // Module directory missing under this language → build the subtree from the default language, marked fallback
       if (lang !== this.defaultLang) {
         const fallbackNode = await this.buildModuleNode(mod, product, this.defaultLang);
         if (fallbackNode) {
@@ -543,11 +543,11 @@ export class KnowledgeService implements OnModuleInit {
   }
 
   /**
-   * 解析文章文件路径
-   * @param id 文章 ID，如 "03-device/getting-started" 或 "03-device"
-   * @param product 产品 ID
-   * @param lang 语言代码
-   * @param createIfMissing 为 true 时，文件不存在则创建路径（用于写入）
+   * Resolve an article file path
+   * @param id article ID, e.g. "03-device/getting-started" or "03-device"
+   * @param product product ID
+   * @param lang language code
+   * @param createIfMissing when true, create the path if the file is missing (for writing)
    */
   private async resolveArticlePath(
     id: string,
@@ -613,10 +613,10 @@ export class KnowledgeService implements OnModuleInit {
   }
 
   private findRouteMapping(routeMap: KbRouteMapping[], routePath: string): KbRouteMapping | null {
-    // 1. 精确匹配
+    // 1. Exact match
     const exact = routeMap.find((r) => r.routePattern === routePath);
     if (exact) return exact;
-    // 2. 通配符匹配（如 /system/devices/:deviceId）
+    // 2. Wildcard match (e.g. /system/devices/:deviceId)
     for (const r of routeMap) {
       if (r.routePattern.includes(':')) {
         const regex = new RegExp(
@@ -674,7 +674,7 @@ export class KnowledgeService implements OnModuleInit {
     try {
       entries = await fs.readdir(dir, { withFileTypes: true });
     } catch {
-      // 目录不存在
+      // Directory does not exist
       return;
     }
     for (const entry of entries) {

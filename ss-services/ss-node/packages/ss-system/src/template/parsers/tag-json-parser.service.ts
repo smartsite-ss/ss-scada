@@ -4,7 +4,7 @@
 
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 
-/** 从 JSON 解析出的标签原始数据 */
+/** Raw tag data parsed from JSON */
 export interface ParsedJsonTag {
   name: string;
   address: string;
@@ -20,10 +20,10 @@ export interface ParsedJsonTag {
   [key: string]: any;
 }
 
-/** JSON 解析结果 */
+/** JSON parsing result */
 export interface JsonParseResult {
   tags: ParsedJsonTag[];
-  /** 如果是对象格式，保留元数据 */
+  /** If the format is an object, keep the metadata */
   metadata?: {
     schemaVersion?: string;
     templateType?: string;
@@ -39,10 +39,10 @@ export class TagJsonParserService {
   private readonly logger = new Logger(TagJsonParserService.name);
 
   /**
-   * 解析 JSON 字符串，返回标签数据
-   * 支持两种格式：
-   *   1. 数组格式：[{name, address, dataType, ...}, ...]
-   *   2. 对象格式：{ tags: [...], name, deviceType, ... }
+   * Parse a JSON string, returning tag data
+   * Supports two formats:
+   *   1. Array format: [{name, address, dataType, ...}, ...]
+   *   2. Object format: { tags: [...], name, deviceType, ... }
    */
   parse(jsonString: string): JsonParseResult {
     let parsed: any;
@@ -57,7 +57,7 @@ export class TagJsonParserService {
       throw new BadRequestException('JSON 数据为空');
     }
 
-    // 数组格式
+    // Array format
     if (Array.isArray(parsed)) {
       if (parsed.length === 0) {
         throw new BadRequestException('JSON 标签数组为空');
@@ -67,9 +67,9 @@ export class TagJsonParserService {
       };
     }
 
-    // 对象格式
+    // Object format
     if (typeof parsed === 'object') {
-      // 支持 tags 字段
+      // Supports the tags field
       if (Array.isArray(parsed.tags)) {
         if (parsed.tags.length === 0) {
           throw new BadRequestException('JSON 中 tags 数组为空');
@@ -87,7 +87,7 @@ export class TagJsonParserService {
         };
       }
 
-      // 支持 variables 字段（与模板内部格式一致）
+      // Supports the variables field (same as the template's internal format)
       if (Array.isArray(parsed.variables)) {
         if (parsed.variables.length === 0) {
           throw new BadRequestException('JSON 中 variables 数组为空');
@@ -114,7 +114,7 @@ export class TagJsonParserService {
   }
 
   /**
-   * 规范化单个标签数据
+   * Normalize a single tag's data
    */
   private normalizeTag(item: any, index: number): ParsedJsonTag {
     if (typeof item !== 'object' || item === null) {
@@ -137,7 +137,7 @@ export class TagJsonParserService {
       order: item.order !== undefined ? Number(item.order) : index + 1,
     };
 
-    // 保留其他字段
+    // Keep other fields
     const knownFields = new Set([
       'name',
       'tagName',

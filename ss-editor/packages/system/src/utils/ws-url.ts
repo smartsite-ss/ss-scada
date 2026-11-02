@@ -3,16 +3,16 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * WebSocket 服务地址解析
+ * WebSocket server address resolution
  *
- * Web 版（同源）：直接使用页面 origin，开发态由 Vite proxy（/socket.io ws:true）
- * 转发到后端，生产态由反向代理转发。
+ * Web version (same-origin): uses the page origin directly; in development the Vite proxy (/socket.io ws:true)
+ * forwards to the backend; in production a reverse proxy forwards.
  *
- * 桌面端（Tauri，origin = https://tauri.localhost）：页面源与后端跨源，
- * HTTP 拦截器（proxy-setup）只改写 fetch/XHR，不覆盖 socket.io 自建连接；
- * 因此必须显式使用拦截器注册的后端地址（globalThis.__SS_BACKEND_URL__），
- * 否则 socket.io 会连接 https://tauri.localhost/socket.io（无服务，静默失败，
- * 表现为设备监控实时数据不更新）。
+ * Desktop (Tauri, origin = https://tauri.localhost): the page origin is cross-origin from the backend.
+ * The HTTP interceptor (proxy-setup) only rewrites fetch/XHR and does not cover socket.io's own connection;
+ * therefore the backend address registered by the interceptor (globalThis.__SS_BACKEND_URL__) must be used explicitly,
+ * otherwise socket.io connects to https://tauri.localhost/socket.io (no server, silent failure,
+ * manifested as device-monitor real-time data not updating).
  */
 export function getWsServerUrl(): string {
   if (typeof window === 'undefined') return '';

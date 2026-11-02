@@ -25,11 +25,11 @@ export interface OfflineMessageStats {
 }
 
 export interface OfflineMessageConfig {
-  /** 消息过期时间（毫秒），默认 7 天 */
+  /** Message expiry (ms), default 7 days */
   expireAfterMs: number;
-  /** 自动清理间隔（毫秒），默认 1 小时 */
+  /** Auto-cleanup interval (ms), default 1 hour */
   cleanupIntervalMs: number;
-  /** 最大缓存消息数，默认 10000 */
+  /** Max cached messages, default 10000 */
   maxCacheSize: number;
 }
 
@@ -43,7 +43,7 @@ export const DEFAULT_OFFLINE_MESSAGE_CONFIG: OfflineMessageConfig = {
 export class OfflineMessageService implements OnModuleInit {
   private readonly logger = new Logger(OfflineMessageService.name);
 
-  /** 离线消息存储：userId -> OfflineMessage[] */
+  /** Offline-message store: userId -> OfflineMessage[] */
   private readonly messageStore = new Map<string, OfflineMessage[]>();
 
   private config: OfflineMessageConfig;
@@ -60,7 +60,7 @@ export class OfflineMessageService implements OnModuleInit {
   }
 
   async onModuleInit(): Promise<void> {
-    // 从 Redis 恢复离线消息到内存
+    // Restore offline messages from Redis into memory
     if (this.redisPersistence) {
       const restored = await this.redisPersistence.loadAllMessages();
       if (restored.size > 0) {
@@ -97,19 +97,19 @@ export class OfflineMessageService implements OnModuleInit {
   }
 
   /**
-   * Fire-and-forget 持久化到 Redis（不阻塞主流程）
+   * Fire-and-forget persistence to Redis (does not block the main flow)
    */
   private persistToRedis(userId: string): void {
     if (this.redisPersistence) {
       const messages = this.messageStore.get(userId) || [];
       this.redisPersistence.persistMessages(userId, messages).catch(() => {
-        // 错误已在 persistence 类中记录
+        // Errors are already logged in the persistence class
       });
     }
   }
 
   /**
-   * 缓存离线消息
+   * Cache an offline message
    */
   cacheMessage(
     userId: string,
@@ -134,7 +134,7 @@ export class OfflineMessageService implements OnModuleInit {
     const messages = this.messageStore.get(userId)!;
     messages.push(message);
 
-    // 限制缓存大小
+    // Limit the cache size
     if (messages.length > this.config.maxCacheSize) {
       const removed = messages.splice(0, messages.length - this.config.maxCacheSize);
       this.logger.warn(
@@ -148,7 +148,7 @@ export class OfflineMessageService implements OnModuleInit {
   }
 
   /**
-   * 获取用户未读消息
+   * Get a user's unread messages
    */
   getUnreadMessages(userId: string): OfflineMessage[] {
     const messages = this.messageStore.get(userId);
@@ -157,14 +157,14 @@ export class OfflineMessageService implements OnModuleInit {
   }
 
   /**
-   * 获取用户所有消息
+   * Get a user's all messages
    */
   getAllMessages(userId: string): OfflineMessage[] {
     return this.messageStore.get(userId) || [];
   }
 
   /**
-   * 重连补发：推送未读消息并返回消息列表
+   * Reconnect replay: push unread messages and return the message list
    */
   replayMessages(userId: string): OfflineMessage[] {
     const unreadMessages = this.getUnreadMessages(userId);
@@ -179,7 +179,7 @@ export class OfflineMessageService implements OnModuleInit {
   }
 
   /**
-   * 确认消息已读
+   * Acknowledge a message as read
    */
   confirmMessage(messageId: string): boolean {
     for (const [userId, messages] of this.messageStore) {
@@ -195,7 +195,7 @@ export class OfflineMessageService implements OnModuleInit {
   }
 
   /**
-   * 批量确认消息已读
+   * Batch-acknowledge messages as read
    */
   confirmMessages(messageIds: string[]): number {
     let count = 0;
@@ -208,7 +208,7 @@ export class OfflineMessageService implements OnModuleInit {
   }
 
   /**
-   * 确认用户所有消息已读
+   * Acknowledge all of a user's messages as read
    */
   confirmAllMessages(userId: string): number {
     const messages = this.messageStore.get(userId);
@@ -227,7 +227,7 @@ export class OfflineMessageService implements OnModuleInit {
   }
 
   /**
-   * 清理过期消息
+   * Clean up expired messages
    */
   cleanupExpiredMessages(): number {
     const now = Date.now();
@@ -246,7 +246,7 @@ export class OfflineMessageService implements OnModuleInit {
         affectedUsers.push(userId);
       }
 
-      // 清理空用户条目
+      // Clean up empty user entries
       if (remaining.length === 0) {
         this.messageStore.delete(userId);
       }
@@ -256,7 +256,7 @@ export class OfflineMessageService implements OnModuleInit {
       this.logger.log(`Cleaned ${totalCleaned} expired offline messages`);
     }
 
-    // 持久化清理后的状态到 Redis
+    // Persist the cleaned-up state to Redis
     for (const userId of affectedUsers) {
       this.persistToRedis(userId);
     }
@@ -265,7 +265,7 @@ export class OfflineMessageService implements OnModuleInit {
   }
 
   /**
-   * 删除用户所有消息
+   * Delete all of a user's messages
    */
   deleteUserMessages(userId: string): number {
     const messages = this.messageStore.get(userId);
@@ -274,7 +274,7 @@ export class OfflineMessageService implements OnModuleInit {
     const count = messages.length;
     this.messageStore.delete(userId);
 
-    // 从 Redis 删除
+    // Delete from Redis
     if (this.redisPersistence) {
       this.redisPersistence.deleteMessages(userId).catch(() => {});
     }
@@ -283,7 +283,7 @@ export class OfflineMessageService implements OnModuleInit {
   }
 
   /**
-   * 删除单条消息
+   * Delete a single message
    */
   deleteMessage(messageId: string): boolean {
     for (const [userId, messages] of this.messageStore) {
@@ -301,7 +301,7 @@ export class OfflineMessageService implements OnModuleInit {
   }
 
   /**
-   * 获取消息统计
+   * Get message statistics
    */
   getStats(): OfflineMessageStats {
     let totalMessages = 0;

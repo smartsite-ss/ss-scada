@@ -3,7 +3,7 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 // ============================================================
-// Mock @ss-node/ss-device — entity 文件中 import DataTag 需要
+// Mock @ss-node/ss-device -- its entity file imports DataTag
 // ============================================================
 jest.mock('@ss-node/ss-device', () => ({
   DataTag: class {},
@@ -59,7 +59,7 @@ jest.mock('@ss-node/ss-sdk', () => ({
 }));
 
 // ============================================================
-// Mock @ss-node/ss-core — 仅 mock 需要的部分，LatestValueRedisService 使用 requireActual 的真实实现
+// Mock @ss-node/ss-core -- only mock what is needed; LatestValueRedisService uses the real implementation via requireActual
 // ============================================================
 jest.mock('@ss-node/ss-core', () => {
   const actual: any = jest.requireActual('@ss-node/ss-core');
@@ -108,14 +108,14 @@ interface RedisMock {
 }
 
 /**
- * v3 适配:readTagByDeviceId 内部执行两次 HGET
- *   1. HGET tree 索引(ss:latest:tree:{projectId}, field=deviceId) → {deviceCode, deviceName}
- *   2. HGET 设备 Key(ss:latest:{projectId}:{deviceCode}, field=tagId) → 标签最新值
+ * v3 adaptation: readTagByDeviceId internally performs two HGETs
+ *   1. HGET tree index (ss:latest:tree:{projectId}, field=deviceId) -> {deviceCode, deviceName}
+ *   2. HGET device key (ss:latest:{projectId}:{deviceCode}, field=tagId) -> tag latest value
  *
- * mock 策略:
- *   - tree Key 查询:始终返回固定 tree 条目(deviceId → deviceCode 映射)
- *   - 设备 Key 查询:从 redisValueQueue 中按序取出(支持多记录不同值场景)
- *   - 错误测试:用 mockRejectedValue 覆盖整个实现
+ * Mock strategy:
+ *   - tree-key query: always return the fixed tree entry (deviceId -> deviceCode mapping)
+ *   - device-key query: pop from redisValueQueue in order (supports multiple records with different values)
+ *   - error test: override the whole implementation with mockRejectedValue
  */
 const TREE_DEVICE_CODE = 'pump-station-01';
 let redisValueQueue: (string | null)[] = [];
@@ -185,7 +185,7 @@ function makeRule(overrides: Partial<AlarmRule> = {}): AlarmRule {
   } as AlarmRule;
 }
 
-/** 构造 Redis 最新值 JSON（v 格式：{v,d,q,t}） */
+/** Build the Redis latest-value JSON (v format: {v,d,q,t}) */
 function redisValue(v: number, opts: { q?: string; ageMs?: number } = {}): string {
   const t = new Date(Date.now() - (opts.ageMs ?? 0)).toISOString();
   return JSON.stringify({
@@ -219,7 +219,7 @@ describe('AlarmReconciliationService', () => {
       find: jest.fn(),
     };
     mockRedis = {
-      // v3: readTagByDeviceId 先 HGET tree 索引反查 deviceCode,再 HGET 设备 Key 读值
+      // v3: readTagByDeviceId first HGETs the tree index to resolve deviceCode, then HGETs the device key for the value
       hget: jest.fn().mockImplementation((key: string) => {
         if (key.startsWith('ss:latest:tree:')) {
           return Promise.resolve(treeEntry());
@@ -271,7 +271,7 @@ describe('AlarmReconciliationService', () => {
   describe('onModuleInit / onModuleDestroy', () => {
     it('TC-ALM-RECON-001: should start periodic timer on init', () => {
       service.onModuleInit();
-      // 内部 setInterval 已启动（无直接断言，确保不抛错即可）
+      // The internal setInterval has started (no direct assertion; just ensure no error is thrown)
       service.onModuleDestroy();
       expect(true).toBe(true);
     });
@@ -279,7 +279,7 @@ describe('AlarmReconciliationService', () => {
     it('TC-ALM-RECON-002: should clear timer on destroy', () => {
       service.onModuleInit();
       service.onModuleDestroy();
-      // 再次 destroy 不应抛错
+      // Calling destroy again should not throw
       service.onModuleDestroy();
       expect(true).toBe(true);
     });
@@ -292,7 +292,7 @@ describe('AlarmReconciliationService', () => {
     });
 
     it('TC-ALM-RECON-010: should skip when Redis client is null', async () => {
-      // 重新构造一个无 Redis 的 service
+      // Reconstruct a service without Redis
       const noRedisModule = await Test.createTestingModule({
         providers: [
           AlarmReconciliationService,
@@ -316,7 +316,7 @@ describe('AlarmReconciliationService', () => {
     });
 
     it('TC-ALM-RECON-011: should recover alarm when latest value normalized (condition GT, value below threshold)', async () => {
-      // 规则：温度 > 80 报警；当前 Redis 值 75（已恢复）
+      // Rule: alarm when temperature > 80; current Redis value is 75 (already recovered)
       const record = makeActiveRecord();
       const rule = makeRule({ condition: AlarmCondition.GT, conditionValue: 80 });
       mockRecordRepo.find.mockResolvedValue([record]);
@@ -326,7 +326,7 @@ describe('AlarmReconciliationService', () => {
 
       await service.reconcile();
 
-      // 验证记录被恢复
+      // Verify the record was recovered
       expect(mockRecordRepo.save).toHaveBeenCalledTimes(1);
       const saved = mockRecordRepo.save.mock.calls[0][0];
       expect(saved[0].status).toBe(AlarmStatus.CLEARED);
@@ -336,7 +336,7 @@ describe('AlarmReconciliationService', () => {
       expect(saved[0].recoveredValue).toBe('75');
       expect(saved[0].clearedBy).toBe('auto');
 
-      // 验证事件被发出
+      // Verify the event was emitted
       expect(mockEventBus.emit).toHaveBeenCalledWith(
         'alarm.recovered',
         expect.objectContaining({
@@ -348,7 +348,7 @@ describe('AlarmReconciliationService', () => {
     });
 
     it('TC-ALM-RECON-012: should NOT recover when condition still triggered (value above threshold)', async () => {
-      // 规则：温度 > 80 报警；当前 Redis 值 95（仍超限）
+      // Rule: alarm when temperature > 80; current Redis value is 95 (still over limit)
       const record = makeActiveRecord();
       const rule = makeRule({ condition: AlarmCondition.GT, conditionValue: 80 });
       mockRecordRepo.find.mockResolvedValue([record]);
@@ -362,7 +362,7 @@ describe('AlarmReconciliationService', () => {
     });
 
     it('TC-ALM-RECON-013: should NOT recover when rule autoClear=false', async () => {
-      // 规则 autoClear=false：需人工确认，不自动恢复
+      // Rule autoClear=false: requires manual acknowledgment, no auto-recovery
       const record = makeActiveRecord();
       const rule = makeRule({ autoClear: false });
       mockRecordRepo.find.mockResolvedValue([record]);
@@ -380,7 +380,7 @@ describe('AlarmReconciliationService', () => {
       const rule = makeRule();
       mockRecordRepo.find.mockResolvedValue([record]);
       mockRuleRepo.find.mockResolvedValue([rule]);
-      // 采集值 15 分钟前（超过默认 maxAgeMs=10min）
+      // The collected value is 15 minutes old (exceeds the default maxAgeMs=10min)
       enqueueRedisValue(redisValue(75, { ageMs: 15 * 60 * 1000 }));
 
       await service.reconcile();
@@ -425,13 +425,13 @@ describe('AlarmReconciliationService', () => {
     });
 
     it('TC-ALM-RECON-018: should NOT scan SHELVED alarms (handled by shelve recovery service)', async () => {
-      // 查询时使用 status IN (ACTIVE, ACKNOWLEDGED) — SHELVED 不在范围内
+      // The query uses status IN (ACTIVE, ACKNOWLEDGED) -- SHELVED is excluded
       mockRecordRepo.find.mockResolvedValue([]);
 
       await service.reconcile();
 
       const findCall = mockRecordRepo.find.mock.calls[0][0];
-      // In() 返回 FindOperator，验证其 _type 和 _value
+      // In() returns a FindOperator; verify its _type and _value
       const statusFilter = findCall.where.status;
       expect(statusFilter._type).toBe('in');
       expect(statusFilter._value).toEqual(['active', 'acknowledged']);
@@ -455,7 +455,7 @@ describe('AlarmReconciliationService', () => {
     });
 
     it('TC-ALM-RECON-020: should handle multiple records with mixed recovery outcomes', async () => {
-      // 3 条记录：1 条恢复、1 条仍超限、1 条 autoClear=false
+      // 3 records: 1 recovered, 1 still over limit, 1 with autoClear=false
       const r1 = makeActiveRecord({ id: 'r1', tagId: 'tag-001' });
       const r2 = makeActiveRecord({ id: 'r2', tagId: 'tag-002', ruleId: 'rule-002' });
       const r3 = makeActiveRecord({ id: 'r3', tagId: 'tag-003', ruleId: 'rule-003' });
@@ -466,15 +466,15 @@ describe('AlarmReconciliationService', () => {
 
       mockRecordRepo.find.mockResolvedValue([r1, r2, r3]);
       mockRuleRepo.find.mockResolvedValue([rule1, rule2, rule3]);
-      // r1=75（恢复）、r2=95（仍超限）、r3=75（但 autoClear=false）
-      // v3: readTagByDeviceId 每记录 2 次 HGET(tree 反查 + 值读取),
-      // tree 查询由 mock 实现自动返回,值按序从队列消费
+      // r1=75 (recovered), r2=95 (still over limit), r3=75 (but autoClear=false)
+      // v3: readTagByDeviceId does 2 HGETs per record (tree lookup + value read),
+      // the tree query is auto-returned by the mock, and values are consumed in order from the queue
       enqueueRedisValue(redisValue(75), redisValue(95), redisValue(75));
       mockRecordRepo.save.mockResolvedValue([]);
 
       await service.reconcile();
 
-      // 仅 r1 被恢复
+      // Only r1 is recovered
       expect(mockRecordRepo.save).toHaveBeenCalledTimes(1);
       const saved = mockRecordRepo.save.mock.calls[0][0];
       expect(saved).toHaveLength(1);
@@ -483,7 +483,7 @@ describe('AlarmReconciliationService', () => {
     });
 
     it('TC-ALM-RECON-021: should support LT condition (value above threshold = recovered)', async () => {
-      // 规则：温度 < 10 报警（低温）；当前值 25（已恢复正常）
+      // Rule: alarm when temperature < 10 (low temperature); current value is 25 (recovered to normal)
       const record = makeActiveRecord({ triggerValue: '5' });
       const rule = makeRule({ condition: AlarmCondition.LT, conditionValue: 10 });
       mockRecordRepo.find.mockResolvedValue([record]);
@@ -526,12 +526,12 @@ describe('AlarmReconciliationService', () => {
     it('TC-ALM-RECON-024: should handle rule not found (skip, no autoClear info)', async () => {
       const record = makeActiveRecord({ ruleId: 'missing-rule' });
       mockRecordRepo.find.mockResolvedValue([record]);
-      mockRuleRepo.find.mockResolvedValue([]); // 规则未找到
+      mockRuleRepo.find.mockResolvedValue([]); // rule not found
       enqueueRedisValue(redisValue(75));
 
       await service.reconcile();
 
-      // 规则未找到时，condition/conditionValue 未知，跳过
+      // When the rule is not found, condition/conditionValue are unknown; skip
       expect(mockRecordRepo.save).not.toHaveBeenCalled();
     });
 
@@ -540,7 +540,7 @@ describe('AlarmReconciliationService', () => {
       const rule = makeRule();
       mockRecordRepo.find.mockResolvedValue([record]);
       mockRuleRepo.find.mockResolvedValue([rule]);
-      enqueueRedisValue(redisValue(95)); // 仍超限
+      enqueueRedisValue(redisValue(95)); // still above threshold
 
       await service.reconcile();
 
@@ -548,21 +548,21 @@ describe('AlarmReconciliationService', () => {
     });
   });
 
-  // ==================== ConditionEvaluator 集成 ====================
+  // ==================== ConditionEvaluator integration ====================
   describe('ConditionEvaluator integration', () => {
     beforeEach(() => {
       service.onModuleInit();
     });
 
     it('TC-ALM-RECON-030: should correctly evaluate RANGE_OUT condition', async () => {
-      // 规则：值在 [10, 50] 之外报警；当前值 30（在范围内，已恢复）
+      // Rule: alarm when value is outside [10, 50]; current value is 30 (inside range, recovered)
       const record = makeActiveRecord();
       const rule = makeRule({
         condition: AlarmCondition.RANGE_IN,
         conditionValue: JSON.stringify([10, 50]),
       });
-      // RANGE_IN: 10 < 30 < 50 → true（仍在范围内）
-      // 改用 RANGE_OUT 测试：10,50 之外报警，值 30 在范围内 → 不报警 → 已恢复
+      // RANGE_IN: 10 < 30 < 50 -> true (still inside range)
+      // Switch to RANGE_OUT: alarm outside 10,50; value 30 is inside -> no alarm -> recovered
       rule.condition = AlarmCondition.RANGE_OUT;
       mockRecordRepo.find.mockResolvedValue([record]);
       mockRuleRepo.find.mockResolvedValue([rule]);
@@ -575,7 +575,7 @@ describe('AlarmReconciliationService', () => {
     });
   });
 
-  // ==================== unified 模式 ====================
+  // ==================== unified mode ====================
   describe('unified mode', () => {
     it('TC-ALM-RECON-040: should use global repo when PROJECT_DB_MODE=unified', async () => {
       const unifiedConfig = {
@@ -587,7 +587,7 @@ describe('AlarmReconciliationService', () => {
           return undefined;
         }),
       };
-      // 全局 repo 的 manager.getRepository(AlarmRule)
+      // manager.getRepository(AlarmRule) on the global repo
       const mockManager = {
         getRepository: jest.fn((entity: any) => (entity === AlarmRule ? mockRuleRepo : null)),
       };
@@ -617,7 +617,7 @@ describe('AlarmReconciliationService', () => {
 
       await unifiedService.reconcile();
 
-      // 验证使用全局 repo（recordRepo.find 被调用，不通过 projectDbService）
+      // Verify the global repo is used (recordRepo.find is called, not via projectDbService)
       expect(mockRecordRepo.find).toHaveBeenCalled();
       expect(mockProjectDbService.getLoadedProjectNames).not.toHaveBeenCalled();
       expect(mockRecordRepo.save).toHaveBeenCalledTimes(1);

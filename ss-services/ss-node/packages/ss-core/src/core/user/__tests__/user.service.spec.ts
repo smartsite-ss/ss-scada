@@ -568,7 +568,7 @@ describe('UserService', () => {
   });
 });
 
-/** 创建模拟 Repository */
+/** Create a mock Repository */
 function createMockRepo<T>(): jest.Mocked<Repository<T>> {
   return {
     find: jest.fn().mockResolvedValue([]),

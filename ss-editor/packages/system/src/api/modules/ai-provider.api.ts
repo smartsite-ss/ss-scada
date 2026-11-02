@@ -3,21 +3,21 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * AI Provider 配置 API — 对接后端 /api/v1/ai/providers
+ * AI Provider configuration API — backed by /api/v1/ai/providers
  *
- * 供应商配置已迁移到数据库管理，支持：
- *   - 预置模板查询（GET /providers/presets）
- *   - 快速创建（POST /providers/from-preset，仅需 API Key）
- *   - 完整 CRUD（POST/PUT/DELETE /providers）
+ * Provider configuration has migrated to database management, supporting:
+ *   - Preset template query (GET /providers/presets)
+ *   - Quick creation (POST /providers/from-preset, only needs an API key)
+ *   - Full CRUD (POST/PUT/DELETE /providers)
  */
 
 import client from '../client';
 import type { ApiResponse } from '../types/api';
 
-/** 供应商区域 */
+/** Provider region */
 export type ProviderRegion = 'domestic' | 'international';
 
-/** 预置供应商模板（从后端获取，含厂家默认配置） */
+/** Preset provider template (fetched from the backend, includes vendor default configuration) */
 export interface ProviderPreset {
   providerId: string;
   name: string;
@@ -36,7 +36,7 @@ export interface ProviderPreset {
   description: string;
 }
 
-/** AI 供应商配置视图 */
+/** AI provider configuration view */
 export interface AiProviderConfig {
   id: string;
   providerId: string;
@@ -66,13 +66,13 @@ export interface CreateAiProviderPayload {
 
 export type UpdateAiProviderPayload = Partial<CreateAiProviderPayload>;
 
-/** 快速创建 payload（仅需 providerId 和 apiKey） */
+/** Quick creation payload (only needs providerId and apiKey) */
 export interface CreateFromPresetPayload {
   providerId: string;
   apiKey: string;
 }
 
-/** 供应商连接测试结果 */
+/** Provider connection test result */
 export interface AiProviderTestResult {
   success: boolean;
   latencyMs?: number;
@@ -81,42 +81,42 @@ export interface AiProviderTestResult {
 }
 
 export const aiProviderApi = {
-  /** 获取所有供应商配置 */
+  /** Get all provider configurations */
   async list(): Promise<AiProviderConfig[]> {
     const res = await client.get<ApiResponse<{ providers: AiProviderConfig[] }>>('/ai/providers');
     return res.data.data?.providers ?? [];
   },
 
-  /** 获取所有预置供应商模板（厂家默认配置） */
+  /** Get all preset provider templates (vendor default configuration) */
   async presets(): Promise<ProviderPreset[]> {
     const res = await client.get<ApiResponse<{ presets: ProviderPreset[] }>>('/ai/providers/presets');
     return res.data.data?.presets ?? [];
   },
 
-  /** 按预置模板快速创建供应商（仅需 API Key） */
+  /** Quickly create a provider from a preset template (only needs an API key) */
   async createFromPreset(payload: CreateFromPresetPayload): Promise<AiProviderConfig> {
     const res = await client.post<ApiResponse<AiProviderConfig>>('/ai/providers/from-preset', payload);
     return res.data.data;
   },
 
-  /** 创建供应商配置（完整字段） */
+  /** Create a provider configuration (full fields) */
   async create(payload: CreateAiProviderPayload): Promise<AiProviderConfig> {
     const res = await client.post<ApiResponse<AiProviderConfig>>('/ai/providers', payload);
     return res.data.data;
   },
 
-  /** 更新供应商配置 */
+  /** Update a provider configuration */
   async update(id: string, payload: UpdateAiProviderPayload): Promise<AiProviderConfig> {
     const res = await client.put<ApiResponse<AiProviderConfig>>(`/ai/providers/${id}`, payload);
     return res.data.data;
   },
 
-  /** 删除供应商配置 */
+  /** Delete a provider configuration */
   async remove(id: string): Promise<void> {
     await client.delete(`/ai/providers/${id}`);
   },
 
-  /** 切换启用/禁用 */
+  /** Toggle enable/disable */
   async toggle(id: string, enabled: boolean): Promise<AiProviderConfig> {
     const res = await client.put<ApiResponse<AiProviderConfig>>(
       `/ai/providers/${id}/toggle`,
@@ -125,13 +125,13 @@ export const aiProviderApi = {
     return res.data.data;
   },
 
-  /** 更新 API Key（便捷方法，仅传 apiKey） */
+  /** Update the API key (convenience method, passes only apiKey) */
   async updateApiKey(id: string, apiKey: string): Promise<AiProviderConfig> {
     const res = await client.put<ApiResponse<AiProviderConfig>>(`/ai/providers/${id}`, { apiKey });
     return res.data.data;
   },
 
-  /** 测试供应商连接（使用已保存配置发起最小化请求，返回连接结果与延迟） */
+  /** Test the provider connection (issues a minimal request with the saved configuration, returns the connection result and latency) */
   async test(id: string): Promise<AiProviderTestResult> {
     const res = await client.post<ApiResponse<AiProviderTestResult>>(`/ai/providers/${id}/test`);
     return res.data.data;

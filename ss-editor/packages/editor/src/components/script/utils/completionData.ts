@@ -7,11 +7,11 @@ import { API_REGISTRY, type ApiMethodDef } from '../rules/script-api-registry';
 import type { KnowledgeBaseJson, GraphicFieldDef } from './knowledgeBaseLoader';
 
 /**
- * 各模式下的补全数据定义
- * 核心 API 数据来自远程知识库 JSON，加载失败时回退到本地 script-api-registry.ts
+ * Completion data definitions per mode
+ * Core API data comes from the remote knowledge base JSON, falling back to the local script-api-registry.ts on load failure
  */
 
-// ── Driver 模式专属：当前图元直接操作 API（10 个） ──
+// ── Driver mode exclusive: direct graphic operation APIs (10) ──
 
 const DRIVER_GRAPHIC_COMPLETIONS: ScriptCompletionItem[] = [
   { label: 'api.setText', kind: 'function', detail: '(text: string) => void', documentation: '设置图元文本内容', insertText: 'setText(${1:text})', sortText: 'a0' },
@@ -26,7 +26,7 @@ const DRIVER_GRAPHIC_COMPLETIONS: ScriptCompletionItem[] = [
   { label: 'api.setSize', kind: 'function', detail: '(w: number, h: number) => void', documentation: '设置宽高', insertText: 'setSize(${1:w}, ${2:h})', sortText: 'a0' },
 ];
 
-// ── 上下文变量 ──
+// ── Context variables ──
 
 const COMMON_CONTEXT_COMPLETIONS: ScriptCompletionItem[] = [
   { label: 'data', kind: 'variable', detail: '{ number, unit, color, text, raw }', documentation: '当前数据点', insertText: 'data', sortText: 'y' },
@@ -34,8 +34,8 @@ const COMMON_CONTEXT_COMPLETIONS: ScriptCompletionItem[] = [
 ];
 
 /**
- * 将 ApiMethodDef 转换为 Monaco ScriptCompletionItem
- * 使用规则注册表的丰富字段：description/params/returns/notes/example
+ * Convert an ApiMethodDef into a Monaco ScriptCompletionItem
+ * Uses the rich fields from the rule registry: description/params/returns/notes/example
  */
 function apiDefToCompletion(api: ApiMethodDef): ScriptCompletionItem {
   const docParts: string[] = [];
@@ -85,18 +85,18 @@ function apiDefToCompletion(api: ApiMethodDef): ScriptCompletionItem {
   };
 }
 
-/** 从知识库或本地注册表生成所有 API 补全项 */
+/** Generate all API completion items from the knowledge base or the local registry */
 function getCommonApiCompletions(kbData?: KnowledgeBaseJson | null): ScriptCompletionItem[] {
   const registry = kbData?.apiRegistry ?? API_REGISTRY;
   return registry.map(apiDefToCompletion);
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 图元属性智能感知（新增）
+// Graphic property IntelliSense (new)
 // ═══════════════════════════════════════════════════════════════
 
 /**
- * 将 GraphicFieldDef 转换为补全项
+ * Convert a GraphicFieldDef into a completion item
  */
 function graphicFieldToCompletion(field: GraphicFieldDef): ScriptCompletionItem {
   let typeDetail = field.type;
@@ -122,7 +122,7 @@ function graphicFieldToCompletion(field: GraphicFieldDef): ScriptCompletionItem 
 }
 
 /**
- * 根据图元插件类型获取 customProps 补全项
+ * Get customProps completion items for a given graphic plugin type
  */
 export function getGraphicPropCompletions(
   pluginType: string,
@@ -136,7 +136,7 @@ export function getGraphicPropCompletions(
 }
 
 /**
- * 获取所有图元类型的补全提示（用于 setGraphicProps 的 graphicId 参数）
+ * Get completion hints for all graphic types (for the graphicId parameter of setGraphicProps)
  */
 export function getGraphicTypeCompletions(
   kbData?: KnowledgeBaseJson | null
@@ -153,7 +153,7 @@ export function getGraphicTypeCompletions(
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 模式补全导出
+// Mode completion exports
 // ═══════════════════════════════════════════════════════════════
 
 export function getCompletionsByMode(
@@ -187,7 +187,7 @@ function getDriverCompletions(
     ...COMMON_CONTEXT_COMPLETIONS,
   ];
 
-  // 如果有指定图元类型，附加其 customProps 补全
+  // If a specific graphic type is given, append its customProps completions
   if (graphicPluginType) {
     completions.push(...getGraphicPropCompletions(graphicPluginType, kbData));
   }

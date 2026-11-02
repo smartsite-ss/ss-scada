@@ -5,19 +5,19 @@
 import { DataPoint } from '@ss-node/ss-storage';
 
 /**
- * InfluxDB 2 Flux CSV 响应解析器（结果归一化）。
+ * InfluxDB 2 Flux CSV response parser (result normalization).
  *
- * 从 InfluxdbAdapterService.parseCsvResponse() 抽取，解析逻辑保持不变：
- * - 跳过 # 开头的 annotation 行；
- * - 按 _time/tagId/deviceId/projectId/value/value_text/quality 列取值；
- * - value 列缺失时回退 value_text（§5.1 非数值分流约定）。
+ * Extracted from InfluxdbAdapterService.parseCsvResponse(); parsing logic unchanged:
+ * - skip annotation lines starting with #;
+ * - take values by the _time/tagId/deviceId/projectId/value/value_text/quality columns;
+ * - when the value column is missing, fall back to value_text (§5.1 non-numeric split convention).
  */
 export class FluxCsvParser {
   parse(csvText: string): DataPoint[] {
     const lines = csvText.trim().split('\n');
     if (lines.length < 2) return [];
 
-    // 定位表头行（跳过 # 开头的 annotation 行）
+    // Locate the header row (skipping annotation lines starting with #)
     let headerIndex = 0;
     for (let i = 0; i < lines.length; i++) {
       if (!lines[i].startsWith('#')) {
@@ -42,7 +42,7 @@ export class FluxCsvParser {
       const getColumnValue = (index: number) =>
         index >= 0 && index < columns.length ? columns[index] : '';
 
-      // value 数值优先，缺失时回退 value_text（非数值点）
+      // value takes numeric first; falls back to value_text when missing (non-numeric points)
       const rawValue = getColumnValue(valueIndex);
       const fallbackText = getColumnValue(valueTextIndex);
       const value: number | string =

@@ -11,15 +11,15 @@ import { DataDriverEngine } from './DataDriverEngine';
 import { DataPipelineBridge } from './DataPipelineBridge';
 
 /**
- * ScadaDataManager — 全局数据源统一调度入口
+ * ScadaDataManager — unified scheduling entry for global data sources
  *
- * 职责：
- * - 持有全局 EventBus 单例
- * - 持有全局 DataSourceManager 单例
- * - 持有 DataPipeline / DataDriverEngine / DataPipelineBridge 单例
- * - 提供 init() 注册驱动工厂（应用层注入，如 WebSocketDriver）
- * - 提供 initPage() 在页面加载时初始化数据源并启动 filter/driver 脚本执行
- * - 提供 destroyPage() 在页面卸载时清理
+ * Responsibilities:
+ * - Holds the global EventBus singleton
+ * - Holds the global DataSourceManager singleton
+ * - Holds DataPipeline / DataDriverEngine / DataPipelineBridge singletons
+ * - Provides init() to register driver factories (injected by the app layer, e.g. WebSocketDriver)
+ * - Provides initPage() to initialize data sources at page load and start filter/driver script execution
+ * - Provides destroyPage() to clean up at page unload
  */
 class ScadaDataManagerClass {
   private _eventBus: EventBus;
@@ -52,8 +52,8 @@ class ScadaDataManagerClass {
   }
 
   /**
-   * 初始化：注册驱动工厂。
-   * 应在应用启动时调用一次（main.ts），传入 WebSocketDriver 工厂。
+   * Initialization: register driver factories.
+   * Should be called once at app startup (main.ts), passing the WebSocketDriver factory.
    */
   init(driverFactories: Record<string, () => IDataSourceDriver>): void {
     for (const [type, factory] of Object.entries(driverFactories)) {
@@ -62,15 +62,15 @@ class ScadaDataManagerClass {
   }
 
   /**
-   * 页面加载时初始化数据源。
-   * 自动订阅标签，数据到达后通过 EventBus 发出 tagValueChanged 事件。
-   * 同时启动 DataPipelineBridge，使 filterScript/driverScript 在数据到达时自动执行。
+   * Initialize data sources at page load.
+   * Auto-subscribes tags; when data arrives, tagValueChanged events are emitted via EventBus.
+   * Also starts DataPipelineBridge so filterScript/driverScript run automatically on data arrival.
    */
   async initPage(pageGroup: PageDataSourceInput): Promise<void> {
     await this._dataSourceManager.init(pageGroup);
 
-    // 启动 DataPipelineBridge：监听 DataSourceManager 的 tagValueChanged，
-    // 按 binding 上的 filterScript / driverScript 执行数据管道
+    // Start DataPipelineBridge: listen to DataSourceManager's tagValueChanged,
+    // and run data pipelines per binding's filterScript / driverScript
     this._pipelineBridge = new DataPipelineBridge({
       dataSourceManager: this._dataSourceManager,
       dataPipeline: this._dataPipeline,
@@ -93,7 +93,7 @@ class ScadaDataManagerClass {
   }
 
   /**
-   * 页面卸载时清理数据源。
+   * Clean up data sources at page unload.
    */
   async destroyPage(): Promise<void> {
     if (this._pipelineBridge) {
@@ -104,26 +104,26 @@ class ScadaDataManagerClass {
   }
 
   /**
-   * 获取数据源管理器的状态（用于调试面板）。
+   * Get the data source manager's status (for the debug panel).
    */
   getStatus() {
     return this._dataSourceManager.getStatus();
   }
 
   /**
-   * 手动拉取所有数据源（用于手动刷新按钮）。
+   * Manually fetch all data sources (for the manual refresh button).
    */
   async fetchAll(): Promise<void> {
     await this._dataSourceManager.fetchAll();
   }
 
   /**
-   * 获取单个标签的实时缓存值（用于运行态数据面板读取）。
+   * Get a single tag's cached live value (for the runtime data panel).
    */
   getTagValue(tagId: string): any {
     return this._dataSourceManager.getCachedValue(tagId);
   }
 }
 
-/** 全局单例 */
+/** Global singleton */
 export const ScadaDataManager = new ScadaDataManagerClass();

@@ -3,7 +3,7 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 数据字典项
+ * Data-dictionary item
  */
 export interface DictItem {
   value: string;
@@ -13,7 +13,7 @@ export interface DictItem {
 }
 
 /**
- * 数据字典表
+ * Data-dictionary table
  */
 export interface DictTable {
   dictId: string;
@@ -23,7 +23,7 @@ export interface DictTable {
 }
 
 /**
- * 数据字典分类
+ * Data-dictionary category
  */
 export interface DictCategory {
   category: string;

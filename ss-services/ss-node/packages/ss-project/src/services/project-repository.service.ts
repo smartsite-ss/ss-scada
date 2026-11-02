@@ -7,19 +7,19 @@ import { DataSource, EntityTarget, Repository } from 'typeorm';
 import { ProjectDatabaseService, ProjectDbMode } from '@ss-node/ss-core';
 
 /**
- * 项目级仓储工厂服务
+ * Project-level repository factory service
  *
- * 根据 PROJECT_DB_MODE 自动选择数据源：
- * - unified: 返回全局 TypeORM Repository（通过 NestJS DI 注入）
- * - isolated: 从项目级 system.db DataSource 动态创建 Repository
+ * Selects the data source automatically by PROJECT_DB_MODE:
+ * - unified: returns the global TypeORM Repository (injected via NestJS DI)
+ * - isolated: dynamically creates a Repository from the project-level system.db DataSource
  *
- * 使用方式（isolated 模式）：
+ * Usage (isolated mode):
  * ```
  * const repo = this.repoService.getRepository(Device, projectName);
  * const devices = await repo.find({ where: { projectId } });
  * ```
  *
- * 兼容 unified 模式（无需修改现有代码）：
+ * unified-mode compatibility (no changes to existing code needed):
  * ```
  * const repo = this.repoService.getRepositoryOrFallback(Device, projectName, this.deviceRepo);
  * ```
@@ -28,30 +28,30 @@ import { ProjectDatabaseService, ProjectDbMode } from '@ss-node/ss-core';
 export class ProjectRepositoryService {
   private readonly logger = new Logger(ProjectRepositoryService.name);
 
-  /** 全局 DataSource（unified 模式使用） */
+  /** Global DataSource (used in unified mode) */
   private globalDataSource: DataSource | null = null;
 
   constructor(private readonly projectDbService: ProjectDatabaseService) {}
 
   /**
-   * 设置全局 DataSource 引用（由 AppModule 初始化时注入）
+   * Set the global DataSource reference (injected at AppModule initialization)
    */
   setGlobalDataSource(ds: DataSource): void {
     this.globalDataSource = ds;
   }
 
   /**
-   * 获取当前数据库模式
+   * Get the current database mode
    */
   getMode(): ProjectDbMode {
     return this.projectDbService.getMode();
   }
 
   /**
-   * 获取指定项目的实体 Repository
+   * Get an entity's Repository for a specified project
    *
-   * @param entity       实体类
-   * @param projectName  项目名称
+   * @param entity       entity class
+   * @param projectName  project name
    * @returns TypeORM Repository
    */
   getRepository<Entity extends object>(
@@ -69,7 +69,7 @@ export class ProjectRepositoryService {
       return systemDs.getRepository(entity);
     }
 
-    // unified 模式：使用全局 DataSource
+    // unified mode: use the global DataSource
     if (!this.globalDataSource) {
       throw new Error(
         '[ProjectRepositoryService] Global DataSource not set. ' +
@@ -80,14 +80,14 @@ export class ProjectRepositoryService {
   }
 
   /**
-   * 获取 Repository，支持 unified 模式回退
+   * Get a Repository with unified-mode fallback
    *
-   * 在 unified 模式下，直接返回传入的 fallbackRepo（避免额外查询全局 DataSource）
-   * 在 isolated 模式下，从项目级 DataSource 创建
+   * In unified mode, returns the passed fallbackRepo directly (avoiding an extra global DataSource lookup)
+   * In isolated mode, creates it from the project-level DataSource
    *
-   * @param entity       实体类
-   * @param projectName  项目名称
-   * @param fallbackRepo unified 模式下的 Repository 实例
+   * @param entity       entity class
+   * @param projectName  project name
+   * @param fallbackRepo the Repository instance used in unified mode
    * @returns TypeORM Repository
    */
   getRepositoryOrFallback<Entity extends object>(
@@ -102,10 +102,10 @@ export class ProjectRepositoryService {
   }
 
   /**
-   * 异步加载项目数据库（如果尚未加载）
-   * 通常在项目首次访问时调用
+   * Load the project database asynchronously (if not yet loaded)
+   * Usually called on a project's first access
    *
-   * @param projectName 项目名称
+   * @param projectName project name
    */
   async ensureProjectLoaded(projectName: string): Promise<void> {
     if (this.projectDbService.getMode() !== 'isolated') return;
@@ -117,7 +117,7 @@ export class ProjectRepositoryService {
   }
 
   /**
-   * 获取 system.db 的原始 DataSource（用于直接查询）
+   * Get system.db's raw DataSource (for direct queries)
    */
   getSystemDataSource(projectName: string): DataSource {
     if (this.projectDbService.getMode() === 'isolated') {

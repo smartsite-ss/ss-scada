@@ -25,7 +25,7 @@ export interface StatusChangeEvent {
 export class DeviceStateMachine {
   private readonly logger = new Logger(DeviceStateMachine.name);
 
-  // 重试计数 (deviceId → retryCount)
+  // Retry counters (deviceId -> retryCount)
   private retryCounts = new Map<string, number>();
   private maxRetries = 3;
   private baseRetryIntervalMs = 3000;
@@ -50,7 +50,7 @@ export class DeviceStateMachine {
   ): Promise<Device> {
     const fromStatus = device.status;
 
-    // 无效状态转换检测
+    // Invalid state-transition detection
     if (fromStatus === toStatus) return device;
     if (!this.isValidTransition(fromStatus as DeviceStatus, toStatus)) {
       this.logger.warn(
@@ -80,7 +80,7 @@ export class DeviceStateMachine {
 
     await this.deviceRepo.save(device);
 
-    // 记录状态变更历史到 dev_device_status_log 表
+    // Record the state-change history to the dev_device_status_log table
     if (this.statusLogRepo) {
       try {
         await this.statusLogRepo.save({
@@ -133,7 +133,7 @@ export class DeviceStateMachine {
   async onConnectFailure(device: Device, error: Error): Promise<Device> {
     const updated = await this.transitionTo(device, DeviceStatus.ERROR, error.message);
 
-    // 自动重试
+    // Auto retry
     const retryCount = this.retryCounts.get(device.id) || 0;
     if (retryCount < this.maxRetries) {
       const delay = Math.min(
@@ -192,8 +192,8 @@ export class DeviceStateMachine {
   }
 
   /**
-   * 心跳检查：每30秒检查所有在线/降级设备的心跳状态
-   * 超过2倍心跳间隔未通信 → 判定心跳失败
+   * Heartbeat check: every 30 seconds check all online/degraded devices' heartbeat state
+   * No communication for over 2x the heartbeat interval -> heartbeat failure
    */
   async checkHeartbeats(): Promise<void> {
     const onlineDevices = await this.deviceRepo.find({
@@ -205,7 +205,7 @@ export class DeviceStateMachine {
     const now = Date.now();
     for (const device of onlineDevices) {
       const lastOnlineTime = device.lastOnlineAt?.getTime() || 0;
-      // 使用 heartbeatInterval 或默认 30000ms
+      // Use heartbeatInterval or the 30000ms default
       const heartbeatInterval = (device as any).heartbeatInterval || 30000;
       const timeSinceLastComm = now - lastOnlineTime;
 

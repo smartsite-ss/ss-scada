@@ -7,7 +7,7 @@ import { ScriptTemplate, TemplateCategory } from '../entities/script-template.en
 import { ScriptTriggerType } from '../entities/script.entity';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
 
-// Mock @nestjs/swagger（ScriptApiService 间接导入 ss-datatag 需要 PartialType）
+// Mock @nestjs/swagger (ScriptApiService indirectly imports ss-datatag, which needs PartialType)
 jest.mock('@nestjs/swagger', () => {
   const propDeco = (): any => () => {};
   return {
@@ -27,7 +27,7 @@ jest.mock('@nestjs/swagger', () => {
   };
 });
 
-// Mock 外部服务包，避免加载真实源码的依赖链
+// Mock external service packages, avoiding the dependency chain of loading real source
 jest.mock('@ss-node/ss-datatag', () => ({
   DataTagService: jest.fn().mockImplementation(() => ({ findById: jest.fn() })),
   DatatagModule: class {},

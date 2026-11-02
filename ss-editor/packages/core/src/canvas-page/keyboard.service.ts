@@ -5,7 +5,7 @@
 import { ref, computed } from 'vue';
 import { ShortcutConfig } from './shortcuts.config';
 
-// 按键修饰符类型
+// Key modifier types
 export interface KeyModifiers {
   ctrl?: boolean;
   shift?: boolean;
@@ -13,10 +13,10 @@ export interface KeyModifiers {
   meta?: boolean;
 }
 
-// 按键处理函数类型
+// Key handler function type
 export type KeyHandler = (event: KeyboardEvent) => void;
 
-// 按键绑定类型
+// Key binding type
 export interface KeyBinding {
   id?: string;
   key: string;
@@ -26,14 +26,14 @@ export interface KeyBinding {
   priority: number;
 }
 
-// 按键上下文
+// Keyboard context
 export enum KeyboardContext {
   GLOBAL = 'global',
   PREVIEW = 'preview',
   EDIT = 'edit'
 }
 
-// 按键状态类型
+// Key state type
 export interface KeyState {
   ctrl: boolean;
   shift: boolean;
@@ -42,15 +42,16 @@ export interface KeyState {
 }
 
 /**
- * 键盘事件管理服务
- * 统一管理应用中的按键事件，处理按键冲突，提供按键注册和注销功能
+ * Keyboard event management service
+ * Centralizes keyboard event handling across the application, resolves key
+ * conflicts, and provides key registration/unregistration capabilities
  */
 export class KeyboardService {
   private bindings: KeyBinding[] = [];
   private currentContext = ref<KeyboardContext>(KeyboardContext.GLOBAL);
   private isListening = false;
-  
-  // 按键状态
+
+  // Key state
   private keyState = ref<KeyState>({
     ctrl: false,
     shift: false,
@@ -58,7 +59,7 @@ export class KeyboardService {
     meta: false
   });
 
-  // 绑定的事件处理函数（用于正确移除）
+  // Bound event handlers (for proper removal)
   private boundHandleKeyDown: (event: KeyboardEvent) => void;
   private boundHandleKeyUp: (event: KeyboardEvent) => void;
 
@@ -74,7 +75,7 @@ export class KeyboardService {
     'dialog-overlay', 'overlay', 'popup',
   ];
 
-  // 暴露按键状态的 computed
+  // Computed exposing key state
   private inputLikeTags = new Set(['INPUT', 'TEXTAREA', 'SELECT']);
 
   private isInputLikeElement(el: Element | null): boolean {
@@ -107,20 +108,20 @@ export class KeyboardService {
   get isAltPressed() { return computed(() => this.keyState.value.alt); }
   get isMetaPressed() { return computed(() => this.keyState.value.meta); }
 
-  // 获取当前按键状态
+  // Get the current key state
   getCurrentKeyState(): Readonly<KeyState> {
     return { ...this.keyState.value };
   }
 
   /**
-   * 检查事件是否由指定键触发
+   * Check whether the event was triggered by the specified key
    */
   isKey(event: KeyboardEvent, key: string): boolean {
     return event.key.toLowerCase() === key.toLowerCase();
   }
 
   /**
-   * 检查事件是否由指定组合键触发
+   * Check whether the event was triggered by the specified key combination
    */
   isKeyCombo(event: KeyboardEvent, keys: string[]): boolean {
     return keys.every(key => {
@@ -141,14 +142,14 @@ export class KeyboardService {
   }
 
   /**
-   * 检查修饰键是否匹配
+   * Check whether the modifier keys match
    */
   matchModifiers(event: KeyboardEvent, modifiers: KeyModifiers): boolean {
     return this.isModifiersMatch(event, modifiers);
   }
 
   /**
-   * 开始监听键盘事件
+   * Start listening for keyboard events
    */
   startListening() {
     if (!this.isListening && typeof document !== 'undefined') {
@@ -159,7 +160,7 @@ export class KeyboardService {
   }
 
   /**
-   * 停止监听键盘事件
+   * Stop listening for keyboard events
    */
   stopListening() {
     if (this.isListening && typeof document !== 'undefined') {
@@ -170,28 +171,28 @@ export class KeyboardService {
   }
 
   /**
-   * 设置当前上下文
-   * @param context 键盘上下文
+   * Set the current context
+   * @param context Keyboard context
    */
   setContext(context: KeyboardContext) {
     this.currentContext.value = context;
   }
 
   /**
-   * 获取当前上下文
+   * Get the current context
    */
   getContext() {
     return this.currentContext.value;
   }
 
   /**
-   * 注册按键绑定
-   * @param key 按键
-   * @param handler 处理函数
-   * @param modifiers 修饰符
-   * @param context 上下文
-   * @param priority 优先级（数值越大优先级越高）
-   * @returns 绑定ID
+   * Register a key binding
+   * @param key Key
+   * @param handler Handler function
+   * @param modifiers Modifiers
+   * @param context Context
+   * @param priority Priority (higher value means higher priority)
+   * @returns Binding ID
    */
   registerKey(
     key: string,
@@ -211,19 +212,19 @@ export class KeyboardService {
     };
 
     this.bindings.push(binding);
-    // 按优先级排序，优先级高的在前
+    // Sort by priority, higher priority first
     this.bindings.sort((a, b) => b.priority - a.priority);
 
-    // 开始监听（如果还没开始）
+    // Start listening (if not already)
     this.startListening();
 
     return id;
   }
 
   /**
-   * 从快捷键配置注册按键
-   * @param shortcut 快捷键配置
-   * @param handler 处理函数
+   * Register a key from a shortcut configuration
+   * @param shortcut Shortcut configuration
+   * @param handler Handler function
    */
   registerShortcut(shortcut: ShortcutConfig, handler: KeyHandler): string {
     const binding: KeyBinding = {
@@ -243,9 +244,9 @@ export class KeyboardService {
   }
 
   /**
-   * 批量从快捷键配置注册
-   * @param shortcuts 快捷键配置数组
-   * @param handlerMap 处理函数映射表
+   * Batch-register from shortcut configurations
+   * @param shortcuts Array of shortcut configurations
+   * @param handlerMap Handler mapping table
    */
   registerShortcuts(
     shortcuts: ShortcutConfig[],
@@ -260,8 +261,8 @@ export class KeyboardService {
   }
 
   /**
-   * 更新已注册的快捷键
-   * @param shortcut 更新后的快捷键配置
+   * Update a registered shortcut
+   * @param shortcut Updated shortcut configuration
    */
   updateShortcut(shortcut: ShortcutConfig) {
     const index = this.bindings.findIndex(b => b.id === shortcut.id);
@@ -279,21 +280,21 @@ export class KeyboardService {
   }
 
   /**
-   * 批量更新快捷键
+   * Batch-update shortcuts
    */
   updateShortcuts(shortcuts: ShortcutConfig[]) {
     shortcuts.forEach(shortcut => this.updateShortcut(shortcut));
   }
 
   /**
-   * 注销指定ID的快捷键
+   * Unregister the shortcut with the specified ID
    */
   unregisterShortcut(id: string) {
     this.bindings = this.bindings.filter(b => b.id !== id);
   }
 
   /**
-   * 格式化快捷键显示文本
+   * Format shortcut display text
    */
   static formatShortcut(key: string, modifiers: KeyModifiers): string {
     const parts: string[] = [];
@@ -301,8 +302,8 @@ export class KeyboardService {
     if (modifiers.shift) parts.push('Shift');
     if (modifiers.alt) parts.push('Alt');
     if (modifiers.meta) parts.push('Meta');
-    
-    // 格式化按键显示
+
+    // Format key display
     let keyDisplay = key;
     const keyMap: Record<string, string> = {
       'escape': 'Esc',
@@ -322,15 +323,15 @@ export class KeyboardService {
     } else if (key.length === 1) {
       keyDisplay = key.toUpperCase();
     }
-    
+
     parts.push(keyDisplay);
     return parts.join('+');
   }
 
   /**
-   * 注销按键绑定
-   * @param key 按键
-   * @param context 上下文
+   * Unregister a key binding
+   * @param key Key
+   * @param context Context
    */
   unregisterKey(key: string, context?: KeyboardContext) {
     this.bindings = this.bindings.filter(binding => {
@@ -341,17 +342,17 @@ export class KeyboardService {
   }
 
   /**
-   * 注销指定上下文的所有按键绑定
-   * @param context 上下文
+   * Unregister all key bindings of a given context
+   * @param context Context
    */
   unregisterContext(context: KeyboardContext) {
     this.bindings = this.bindings.filter(binding => binding.context !== context);
   }
 
   /**
-   * 检查按键修饰符是否匹配
-   * @param event 键盘事件
-   * @param modifiers 修饰符
+   * Check whether key modifiers match
+   * @param event Keyboard event
+   * @param modifiers Modifiers
    */
   private isModifiersMatch(event: KeyboardEvent, modifiers: KeyModifiers): boolean {
     return (
@@ -363,8 +364,8 @@ export class KeyboardService {
   }
 
   /**
-   * 处理按键按下事件
-   * @param event 键盘事件
+   * Handle key down events
+   * @param event Keyboard event
    */
   private handleKeyDown(event: KeyboardEvent) {
     if (event.key === 'Shift') this.keyState.value.shift = true;
@@ -397,11 +398,11 @@ export class KeyboardService {
   }
 
   /**
-   * 处理按键释放事件
-   * @param event 键盘事件
+   * Handle key up events
+   * @param event Keyboard event
    */
   private handleKeyUp(event: KeyboardEvent) {
-    // 更新按键状态
+    // Update key state
     if (event.key === 'Shift') this.keyState.value.shift = false;
     if (event.key === 'Control') this.keyState.value.ctrl = false;
     if (event.key === 'Alt') this.keyState.value.alt = false;
@@ -409,19 +410,19 @@ export class KeyboardService {
   }
 
   /**
-   * 清除所有按键绑定
+   * Clear all key bindings
    */
   clear() {
     this.bindings = [];
   }
 
   /**
-   * 获取所有按键绑定
+   * Get all key bindings
    */
   getBindings() {
     return this.bindings;
   }
 }
 
-// 导出单例实例
+// Export singleton instance
 export const keyboardService = new KeyboardService();

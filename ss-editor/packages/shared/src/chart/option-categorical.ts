@@ -6,8 +6,9 @@ import type { ChartDataResult } from './data-source';
 import { formatNumber } from './format';
 
 /**
- * 将 database(latest) 的 series 单值结果归一化为分类图表（bar/pie/radar）可消费的 source 结构。
- * 每个绑定变量 → 一行 `{ name, value }`。
+ * Normalize a database(latest) single-value series result into the source
+ * structure consumed by categorical charts (bar/pie/radar).
+ * Each bound variable → one row `{ name, value }`.
  */
 export function latestSeriesToCategoryResult(result: ChartDataResult): ChartDataResult {
   const series = result.series ?? [];
@@ -22,7 +23,7 @@ export function latestSeriesToCategoryResult(result: ChartDataResult): ChartData
   };
 }
 
-/** 分类图表公共外观配置（标题 / 图例 / 提示框 / 网格与坐标轴颜色） */
+/** Common categorical chart appearance config (title / legend / tooltip / grid & axis colors) */
 export interface CategoryChartOptionInput {
   result: ChartDataResult;
   title: string;
@@ -34,9 +35,9 @@ export interface CategoryChartOptionInput {
   showLegend: boolean;
   legendPosition: string;
   showTooltip: boolean;
-  /** 柱/饼/雷达主色板 */
+  /** Primary palette for bar / pie / radar */
   palette: string[];
-  /** 数值显示小数位数（默认 2） */
+  /** Decimal places for displayed values (default 2) */
   decimalPlaces?: number;
 }
 
@@ -63,24 +64,24 @@ function buildLegend(input: CategoryChartOptionInput, data: string[]) {
   return { ...base, bottom: 0, left: 'center' };
 }
 
-/** 取分类维度字段名（默认 'name'） */
+/** Get the category dimension field name (default 'name') */
 function categoryField(result: ChartDataResult): string {
   return result.dimensions?.[0] ?? 'name';
 }
 
-/** 取数值维度字段名列表（默认 ['value']） */
+/** Get the list of value dimension field names (default ['value']) */
 function valueFields(result: ChartDataResult): string[] {
   const fields = result.dimensions?.slice(1) ?? [];
   return fields.length > 0 ? fields : ['value'];
 }
 
-/** 取分类取值（按字段名，缺省回退 'name'） */
+/** Get the category value (by field name, fall back to 'name') */
 function categoryValue(row: Record<string, unknown>, field: string, index: number): string {
   const value = row[field] ?? row.name ?? `分类${index + 1}`;
   return String(value);
 }
 
-/** 柱状图 ECharts option（支持多数值字段 → 多系列；horizontal 切换横向） */
+/** Bar chart ECharts option (supports multiple value fields → multiple series; horizontal for horizontal bars) */
 export function buildBarChartOption(input: CategoryChartOptionInput & { horizontal?: boolean }): Record<string, unknown> {
   const { result, horizontal } = input;
   const categories = result.source.map((row, i) => categoryValue(row, categoryField(result), i));
@@ -137,7 +138,7 @@ export function buildBarChartOption(input: CategoryChartOptionInput & { horizont
   };
 }
 
-/** 饼图 ECharts option（category 列 → name，value 列 → value） */
+/** Pie chart ECharts option (category column → name, value column → value) */
 export function buildPieChartOption(
   input: CategoryChartOptionInput & { donut?: boolean; labelFontSize?: number; labelColor?: string },
 ): Record<string, unknown> {
@@ -180,7 +181,7 @@ export function buildPieChartOption(
   };
 }
 
-/** 雷达图 ECharts option（每个维度一个指标，取单行数值） */
+/** Radar chart ECharts option (one indicator per dimension, taking the single-row value) */
 export function buildRadarChartOption(
   input: CategoryChartOptionInput & { indicatorMax?: number },
 ): Record<string, unknown> {
@@ -192,7 +193,7 @@ export function buildRadarChartOption(
   const names = result.source.map((r, i) => categoryValue(r, catField, i));
   const values = result.source.map((r) => Number(r[valField] ?? 0));
 
-  // 指标最大值：优先显式配置，否则取数据最大值的 1.2 倍（至少为 1）
+  // Indicator max: prefer explicit config, otherwise 1.2x the data max (at least 1)
   const maxValue = Math.max(1, ...values);
   const indicatorMax = input.indicatorMax && input.indicatorMax > 0 ? input.indicatorMax : Math.ceil(maxValue * 1.2);
 

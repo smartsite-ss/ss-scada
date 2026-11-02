@@ -3,27 +3,27 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 通知通道统一接口
+ * Unified notification channel interface
  */
 export interface INotificationChannel {
-  /** 通道名称 */
+  /** Channel name */
   readonly name: string;
-  /** 发送通知 */
+  /** Send notification */
   send(targets: string[], payload: NotificationPayload): Promise<boolean>;
 }
 
 /**
- * 通知载荷
+ * Notification payload
  */
 export interface NotificationPayload {
-  /** 标题 */
+  /** Title */
   title: string;
-  /** 消息内容 */
+  /** Message content */
   message: string;
-  /** 报警级别 */
+  /** Alarm severity */
   level: string;
-  /** 设备名称 */
+  /** Device name */
   deviceName?: string;
-  /** 时间戳 */
+  /** Timestamp */
   timestamp: Date;
 }

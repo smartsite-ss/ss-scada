@@ -7,7 +7,7 @@ import { BasePage } from '../graphic-editing/graphic/base/BasePage';
 import { IGraphic } from '@scada-editor/plugin-sdk';
 
 /**
- * Editor 是项目的入口类，提供便捷的 API 访问
+ * Editor is the project entry class providing convenient API access
  */
 export class Editor {
     private project: Project;
@@ -16,13 +16,13 @@ export class Editor {
         this.project = new Project(projectConfig);
     }
 
-    // ==================== 项目访问 ====================
+    // ==================== Project access ====================
 
     getProject(): Project {
         return this.project;
     }
 
-    // ==================== 页面管理（快捷方法） ====================
+    // ==================== Page management (shortcut methods) ====================
 
     createPage(config?: { id?: string; name?: string; width?: number; height?: number }): BasePage {
         return this.project.createPage(config);
@@ -48,7 +48,7 @@ export class Editor {
         return this.project.getAllPages();
     }
 
-    // ==================== 跨页面操作（快捷方法） ====================
+    // ==================== Cross-page operations (shortcut methods) ====================
 
     copyToPage(graphicIds: string[], targetPageId: string): IGraphic[] {
         const activePage = this.getActivePage();

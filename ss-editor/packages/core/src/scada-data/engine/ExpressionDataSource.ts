@@ -39,7 +39,7 @@ export class ExpressionDataSourceDriver extends AbstractBaseDriver {
     this._status = 'disconnected';
   }
 
-  /** 覆盖基类订阅：除记录 tagId 外，还为每个依赖注册 EventBus 监听 */
+  /** Override base subscribe: in addition to recording tagId, also register an EventBus listener per dependency */
   subscribe(tagIds: string[]): void {
     super.subscribe(tagIds);
     if (tagIds.length > 0 && this._eventBus) {
@@ -56,7 +56,7 @@ export class ExpressionDataSourceDriver extends AbstractBaseDriver {
     }
   }
 
-  /** 覆盖基类取消订阅：同时清理 EventBus 监听 */
+  /** Override base unsubscribe: also clean up EventBus listeners */
   unsubscribe(tagIds: string[]): void {
     super.unsubscribe(tagIds);
     this._clearListeners();
@@ -73,7 +73,7 @@ export class ExpressionDataSourceDriver extends AbstractBaseDriver {
 
   private _evaluate(): void {
     if (!this._config || !this._tagId) return;
-    // 统一走 ScriptEngine.evaluateExpression，启用沙箱隔离（拦截 BLOCKED_GLOBALS + 步数限制）
+    // Use ScriptEngine.evaluateExpression uniformly, with sandbox isolation (blocks BLOCKED_GLOBALS + step limit)
     const result = ScriptEngine.getInstance().evaluateExpression(this._config.expression, undefined);
     const tagValue: TagValue = {
       tagId: this._tagId, value: result, quality: 'good',

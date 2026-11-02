@@ -10,17 +10,17 @@ export class PluginController {
   constructor(private readonly pluginManager: PluginManagerService) {}
 
   // =======================================================================
-  //  不带动态参数的路由（精确匹配，优先级最高）
+  //  Routes without dynamic params (exact match, highest priority)
   // =======================================================================
 
-  /** 获取所有插件列表 */
+  /** Get all plugins list */
   @Get()
   async listPlugins(@Query('status') status?: string, @Query('category') category?: string) {
     const data = await this.pluginManager.listPluginsWithRuntime({ status, category });
     return { code: 0, data, message: 'ok' };
   }
 
-  /** 触发重新发现插件 */
+  /** Trigger plugin rediscovery */
   @Post('discover')
   async rediscover() {
     const plugins = await this.pluginManager.rediscover();
@@ -31,7 +31,7 @@ export class PluginController {
     };
   }
 
-  /** 健康检查 */
+  /** Health check */
   @Get('health')
   async healthCheck() {
     const report = await this.pluginManager.healthCheck();
@@ -39,10 +39,10 @@ export class PluginController {
   }
 
   // =======================================================================
-  //  :protocol/xxx 二级子路径 → 必须在 @Get(':protocol') 之前注册
+  //  :protocol/xxx nested sub-paths -> must be registered before @Get(':protocol')
   // =======================================================================
 
-  /** 激活插件 */
+  /** Activate a plugin */
   @Post(':protocol/activate')
   async activatePlugin(@Param('protocol') protocol: string) {
     try {
@@ -53,7 +53,7 @@ export class PluginController {
     }
   }
 
-  /** 停用插件 */
+  /** Deactivate a plugin */
   @Post(':protocol/deactivate')
   async deactivatePlugin(@Param('protocol') protocol: string) {
     try {
@@ -64,7 +64,7 @@ export class PluginController {
     }
   }
 
-  /** 获取插件运行状态 */
+  /** Get plugin running status */
   @Get(':protocol/status')
   getPluginStatus(@Param('protocol') protocol: string) {
     try {
@@ -75,7 +75,7 @@ export class PluginController {
     }
   }
 
-  /** 获取插件连接配置 Schema */
+  /** Get plugin connection config Schema */
   @Get(':protocol/schema')
   getConnectionSchema(@Param('protocol') protocol: string) {
     const schema = this.pluginManager.getConnectionSchema(protocol);
@@ -85,14 +85,14 @@ export class PluginController {
     return { code: 0, data: schema, message: 'ok' };
   }
 
-  /** 检查更新 */
+  /** Check for updates */
   @Get(':protocol/check-update')
   async checkUpdate(@Param('protocol') protocol: string) {
     const result = await this.pluginManager.checkUpdate(protocol);
     return { code: 0, data: result, message: 'ok' };
   }
 
-  /** 热更新插件 */
+  /** Hot-update a plugin */
   @Post(':protocol/update')
   async updatePlugin(@Param('protocol') protocol: string) {
     const result = await this.pluginManager.hotReload(protocol);
@@ -105,7 +105,7 @@ export class PluginController {
     };
   }
 
-  /** 回滚版本 */
+  /** Roll back version */
   @Post(':protocol/rollback')
   async rollbackPlugin(@Param('protocol') protocol: string) {
     const result = await this.pluginManager.rollback(protocol);
@@ -118,7 +118,7 @@ export class PluginController {
     };
   }
 
-  /** 获取插件正在采集的活跃设备列表 */
+  /** Get the active device list currently collected by the plugin */
   @Get(':protocol/active-devices')
   getActiveDevices(@Param('protocol') protocol: string) {
     const devices = this.pluginManager.getPluginActiveDevices(protocol);
@@ -133,7 +133,7 @@ export class PluginController {
     };
   }
 
-  /** 校验通道配置 */
+  /** Validate channel config */
   @Post(':protocol/validate')
   async validateChannelConfig(
     @Param('protocol') protocol: string,
@@ -154,14 +154,14 @@ export class PluginController {
     }
   }
 
-  /** 获取插件运行监控数据（内存/CPU + 采集日志） */
+  /** Get plugin runtime monitoring data (memory/CPU + collection logs) */
   @Get(':protocol/monitor')
   async getMonitor(@Param('protocol') protocol: string) {
     const data = await this.pluginManager.getMonitorData(protocol);
     return { code: 0, data, message: 'ok' };
   }
 
-  /** 清空插件采集日志 */
+  /** Clear plugin collection logs */
   @Delete(':protocol/monitor/logs')
   clearMonitorLogs(@Param('protocol') protocol: string) {
     const result = this.pluginManager.clearPluginLogs(protocol);
@@ -173,17 +173,17 @@ export class PluginController {
   }
 
   // -----------------------------------------------------------------------
-  //  运行时配置持久化
+  //  Runtime config persistence
   // -----------------------------------------------------------------------
 
-  /** 获取插件运行时配置 */
+  /** Get plugin runtime config */
   @Get(':protocol/config')
   getPluginConfig(@Param('protocol') protocol: string) {
     const config = this.pluginManager.getPluginConfig(protocol);
     return { code: 0, data: config, message: 'ok' };
   }
 
-  /** 更新插件运行时配置（持久化到 JSON 文件，重启后保持） */
+  /** Update plugin runtime config (persisted to JSON file, retained after restart) */
   @Put(':protocol/config')
   async updatePluginConfig(
     @Param('protocol') protocol: string,
@@ -193,7 +193,7 @@ export class PluginController {
     return { code: 0, data: config, message: 'ok' };
   }
 
-  /** 重启插件（用于隔离模式等配置变更后重载 executor） */
+  /** Restart plugin (reload executor after config changes such as isolation mode) */
   @Post(':protocol/restart')
   async restartPlugin(@Param('protocol') protocol: string) {
     const result = await this.pluginManager.restartPlugin(protocol);
@@ -205,10 +205,10 @@ export class PluginController {
   }
 
   // =======================================================================
-  //  精确路径路由（必须在 @Get(':protocol') 通配之前注册）
+  //  Exact-path routes (must be registered before the @Get(':protocol') wildcard)
   // =======================================================================
 
-  /** 获取所有插件的设备统计（在线/离线数量） */
+  /** Get device statistics for all plugins (online/offline counts) */
   @Get('device-stats')
   getAllDeviceStats() {
     const data = this.pluginManager.getAllDeviceStats();
@@ -216,10 +216,10 @@ export class PluginController {
   }
 
   // =======================================================================
-  //  @Get(':protocol') 通配 → 必须放在最后
+  //  @Get(':protocol') wildcard -> must be placed last
   // =======================================================================
 
-  /** 获取单个插件详情 */
+  /** Get a single plugin's details */
   @Get(':protocol')
   getPlugin(@Param('protocol') protocol: string) {
     const plugin = this.pluginManager.getPlugin(protocol);

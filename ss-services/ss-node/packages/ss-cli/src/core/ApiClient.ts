@@ -3,29 +3,29 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * ApiClient — 基于 Node.js 内置 http/https 模块的 API 客户端
+ * ApiClient - an API client built on Node.js built-in http/https modules
  *
- * 不依赖 axios，使用内置网络模块实现 REST 请求。
- * 支持 JWT Token 和 API Key 两种认证方式。
+ * Does not depend on axios; uses the built-in networking modules for REST requests.
+ * Supports both JWT Token and API Key authentication.
  */
 
 import * as http from 'http';
 import * as https from 'https';
 import { URL } from 'url';
 
-/** ApiClient 配置 */
+/** ApiClient configuration */
 export interface ApiClientConfig {
-  /** 服务器基础地址，如 http://localhost:4000 */
+  /** Server base URL, e.g. http://localhost:4000 */
   baseUrl: string;
-  /** JWT Token（可选） */
+  /** JWT Token (optional) */
   token?: string;
-  /** API Key（可选） */
+  /** API Key (optional) */
   apiKey?: string;
-  /** 请求超时时间（毫秒），默认 30000 */
+  /** Request timeout (ms), default 30000 */
   timeout?: number;
 }
 
-/** API 错误 */
+/** API error */
 export class ApiError extends Error {
   constructor(
     message: string,
@@ -38,7 +38,7 @@ export class ApiError extends Error {
 }
 
 /**
- * REST API 客户端
+ * REST API client
  */
 export class ApiClient {
   private readonly config: ApiClientConfig;
@@ -47,27 +47,27 @@ export class ApiClient {
     this.config = config;
   }
 
-  /** GET 请求 */
+  /** GET request */
   async get<T>(path: string): Promise<T> {
     return this.request<T>('GET', path);
   }
 
-  /** POST 请求 */
+  /** POST request */
   async post<T>(path: string, data?: unknown): Promise<T> {
     return this.request<T>('POST', path, data);
   }
 
-  /** PUT 请求 */
+  /** PUT request */
   async put<T>(path: string, data?: unknown): Promise<T> {
     return this.request<T>('PUT', path, data);
   }
 
-  /** DELETE 请求 */
+  /** DELETE request */
   async delete<T>(path: string): Promise<T> {
     return this.request<T>('DELETE', path);
   }
 
-  /** 底层请求方法 */
+  /** Underlying request method */
   private request<T>(method: string, path: string, data?: unknown): Promise<T> {
     return new Promise<T>((resolve, reject) => {
       const url = new URL(path, this.config.baseUrl);
@@ -122,7 +122,7 @@ export class ApiClient {
               return;
             }
 
-            // 尝试解析 JSON，失败则返回原始字符串
+            // Try to parse JSON; on failure, return the raw string
             try {
               resolve(JSON.parse(responseData) as T);
             } catch {

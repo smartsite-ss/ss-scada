@@ -10,14 +10,14 @@ import { PERMISSIONS_KEY } from '../decorators/permissions.decorator';
 import { Role } from '../../user/entities/role.entity';
 
 /**
- * 权限码守卫
- * 与 @Permissions() 装饰器配合使用
+ * Permission-code guard
+ * Used together with the @Permissions() decorator
  *
- * 权限码读取优先级（v8.0：DB 为唯一数据源，不再 fallback 硬编码）：
- *  1. 从 DB roles 表读取（user.roleId → role.permissions）
- *  2. DB 不可用时返回空数组（拒绝所有请求，避免静默授权）
+ * Permission-code read priority (v8.0: DB is the single source of truth, no hard-coded fallback):
+ *  1. Read from the DB roles table (user.roleId -> role.permissions)
+ *  2. When DB unavailable, return an empty array (reject all requests, avoid silent authorization)
  *
- * 用法:
+ * Usage:
  *   @UseGuards(JwtAuthGuard, PermissionsGuard)
  *   @Permissions('project:create')
  *   async create() { ... }
@@ -46,15 +46,15 @@ export class PermissionsGuard implements CanActivate {
     if (!user) return false;
 
     const userPermissions = await this.getUserPermissions(user);
-    // admin 拥有所有权限
+    // admin has all permissions
     if (userPermissions.includes('*:*')) return true;
 
     return required.some((code) => userPermissions.includes(code));
   }
 
   /**
-   * 获取用户权限码列表（v8.0：DB 为唯一数据源）
-   * DB 不可用时返回空数组，拒绝所有请求，避免硬编码 fallback 导致静默授权。
+   * Get the user's permission-code list (v8.0: DB is the single source of truth)
+   * When DB is unavailable, return an empty array and reject all requests, avoiding silent authorization from a hard-coded fallback.
    */
   private async getUserPermissions(user: any): Promise<string[]> {
     if (user.roleId && this.roleRepository) {
@@ -67,7 +67,7 @@ export class PermissionsGuard implements CanActivate {
         this.logger.warn(`Failed to load permissions for user ${user.username || user.id}: ${error.message}`);
       }
     }
-    // v8.0：不再 fallback 到硬编码，DB 不可用时拒绝所有请求
+    // v8.0: no longer fall back to hard-coded; when DB is unavailable, reject all requests
     if (!user.roleId) {
       this.logger.warn(`User ${user.username || user.id} has no roleId, denying all permissions`);
     }

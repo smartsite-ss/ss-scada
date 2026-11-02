@@ -118,7 +118,7 @@ describe('DictLabel', () => {
     });
 
     it('should set title attribute with value and label when they differ', async () => {
-      // getLabel returns '高' for value 'high'
+      // getLabel returns 'High' for value 'high'
       mockGetLabel.mockReturnValueOnce('高');
 
       const wrapper = await mountComponent({ dictId: 'priority', value: 'high' });

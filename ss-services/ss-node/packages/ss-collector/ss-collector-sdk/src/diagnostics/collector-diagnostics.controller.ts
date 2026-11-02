@@ -9,28 +9,28 @@ import { CollectorDiagnosticsService } from './collector-diagnostics.service';
 export class CollectorDiagnosticsController {
   constructor(private readonly diagnosticsService: CollectorDiagnosticsService) {}
 
-  /** 对指定设备运行诊断 */
+  /** Run diagnostics on a specified device */
   @Get('device/:deviceId')
   async diagnoseDevice(@Param('deviceId') deviceId: string) {
     const report = await this.diagnosticsService.runFullDiagnosis(deviceId);
     return { code: 0, data: report, message: 'ok' };
   }
 
-  /** 对指定标签运行诊断 */
+  /** Run diagnostics on a specified tag */
   @Get('tag/:tagId')
   async diagnoseTag(@Param('tagId') tagId: string) {
     const result = await this.diagnosticsService.checkTagReadability(tagId);
     return { code: 0, data: result, message: 'ok' };
   }
 
-  /** 对指定协议插件运行诊断 */
+  /** Run diagnostics on a specified protocol plugin */
   @Get('plugin/:protocol')
   async diagnosePlugin(@Param('protocol') protocol: string) {
     const result = await this.diagnosticsService.checkPluginHealth(protocol);
     return { code: 0, data: result, message: 'ok' };
   }
 
-  /** 运行全量系统诊断 */
+  /** Run full system diagnostics */
   @Post('full')
   async runFullDiagnosis(@Body('deviceId') deviceId?: string) {
     const report = await this.diagnosticsService.runFullDiagnosis(deviceId);

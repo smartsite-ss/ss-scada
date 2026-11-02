@@ -102,7 +102,7 @@ describe('DictTag', () => {
     });
 
     it('should set title attribute with value and label when they differ', async () => {
-      // label '高' differs from value 'high'
+      // label 'High' differs from value 'high'
       const wrapper = await mountComponent({
         dictId: 'priority',
         value: 'high',

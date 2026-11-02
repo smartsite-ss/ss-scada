@@ -3,28 +3,29 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 声明式图元属性绑定
+ * Declarative graphic property binding
  *
- * 配置在图元 customProps.bindings 中，由 BindingEngine 自动解析和执行。
- * 支持跨图元属性双向同步，无需手写联动代码。
+ * Configured in graphic customProps.bindings, automatically parsed and executed
+ * by the BindingEngine. Supports bidirectional cross-graphic property sync
+ * without hand-written linkage code.
  */
 export interface IGraphicBinding {
-  /** 源图元ID（"self" 表示自身） */
+  /** Source graphic ID ("self" means itself) */
   sourceId: string;
 
-  /** 源属性路径，如 "customProps.value" */
+  /** Source property path, e.g. "customProps.value" */
   sourcePath: string;
 
-  /** 目标图元ID */
+  /** Target graphic ID */
   targetId: string;
 
-  /** 目标属性路径 */
+  /** Target property path */
   targetPath: string;
 
-  /** 可选：变换函数名或自定义函数 */
+  /** Optional: transform function name or custom function */
   transform?: string | ((value: any) => any);
 
-  /** 可选：触发条件 */
+  /** Optional: trigger condition */
   condition?: {
     field: string;
     operator: string;

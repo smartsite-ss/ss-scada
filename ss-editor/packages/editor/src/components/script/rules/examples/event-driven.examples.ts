@@ -3,30 +3,30 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 事件驱动脚本示例
+ * Event-driven script examples
  *
- * === 场景说明 ===
- * 事件驱动脚本在特定系统事件发生时自动执行。
- * 适用于设备断线切换、告警联动、用户交互响应等场景。
+ * === Scenario ===
+ * Event-driven scripts run automatically when specific system events occur.
+ * Suitable for device disconnection failover, alarm linkage, user interaction response, etc.
  *
- * === 触发方式 ===
- * - event: 绑定到系统事件（device:disconnected, alarm:triggered 等）
- * - 事件携带 context.eventData 包含事件相关数据
+ * === Trigger modes ===
+ * - event: bound to a system event (device:disconnected, alarm:triggered, etc.)
+ * - The event carries context.eventData containing event-related data
  *
- * === 常用 API 组合 ===
- * readTag / writeTag              → 状态读写
- * setGraphicProps / showGraphic / hideGraphic → 图元联动
- * triggerAlarm / acknowledgeAlarm / clearAlarm → 告警处理
- * switchPage                      → 页面跳转
- * notify / log                    → 通知记录
- * fetch                           → 外部系统通知
+ * === Common API combinations ===
+ * readTag / writeTag              → state read/write
+ * setGraphicProps / showGraphic / hideGraphic → graphic linkage
+ * triggerAlarm / acknowledgeAlarm / clearAlarm → alarm handling
+ * switchPage                      → page navigation
+ * notify / log                    → notification records
+ * fetch                           → external system notification
  */
 
 import type { ScriptExample } from '../types';
 
 export const eventDrivenExamples: ScriptExample[] = [
   // ═══════════════════════════════════════════════════════════
-  // 示例 1：设备断线自动切换
+  // Example 1: automatic failover on device disconnection
   // ═══════════════════════════════════════════════════════════
   {
     id: 'event-device-failover',
@@ -76,7 +76,7 @@ if (deviceId === 'pump_main') {
   },
 
   // ═══════════════════════════════════════════════════════════
-  // 示例 2：告警联动处理
+  // Example 2: alarm linkage handling
   // ═══════════════════════════════════════════════════════════
   {
     id: 'event-alarm-handler',
@@ -158,7 +158,7 @@ log(level === 'emergency' ? 'error' : 'warn', \`告警处理: [\${level}] \${mes
   },
 
   // ═══════════════════════════════════════════════════════════
-  // 示例 3：用户交互事件响应
+  // Example 3: user interaction event response
   // ═══════════════════════════════════════════════════════════
   {
     id: 'event-user-interaction',

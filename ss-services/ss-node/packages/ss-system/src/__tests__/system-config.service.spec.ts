@@ -68,7 +68,7 @@ describe('SystemConfigService (enhanced)', () => {
 
     service = module.get<SystemConfigService>(SystemConfigService);
     jest.clearAllMocks();
-    // 清理 process.env 中的测试键
+    // Clean the test keys from process.env
     delete process.env.PORT;
     delete process.env.JWT_SECRET;
     delete process.env.MEMORY_WARN_PERCENT;
@@ -89,7 +89,7 @@ describe('SystemConfigService (enhanced)', () => {
     it('TC-CFG-101: should return default value when env and db are empty', async () => {
       mockRepo.findOne.mockResolvedValue(null);
       const result = await service.get('PORT');
-      expect(result).toBe('4000'); // 默认值
+      expect(result).toBe('4000'); // default value
     });
 
     it('TC-CFG-102: should return null for unknown key without default', async () => {
@@ -103,7 +103,7 @@ describe('SystemConfigService (enhanced)', () => {
     it('TC-CFG-110: should return all metadata sorted', () => {
       const result = service.getMetadata();
       expect(result.length).toBeGreaterThan(0);
-      // 第一个应该是 application 分类（order=10）
+      // The first one should be the application category (order=10)
       expect(result[0].category).toBe('application');
     });
   });
@@ -333,7 +333,7 @@ describe('SystemConfigService (enhanced)', () => {
       mockRepo.save.mockResolvedValue({});
 
       await service.removeFromPendingRestart(['PORT']);
-      // 第二次 set 调用时应该保存了只有 JWT_SECRET 的列表
+      // On the second set call, the saved list should contain only JWT_SECRET
       const saveCall = mockRepo.save.mock.calls[0][0];
       expect(JSON.parse(saveCall.value)).toEqual(['JWT_SECRET']);
     });

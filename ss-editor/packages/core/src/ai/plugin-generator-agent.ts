@@ -3,30 +3,30 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * Plugin Generator Agent — P1-T05 智能插件开发助手
+ * Plugin Generator Agent — P1-T05 intelligent plugin development assistant
  *
- * 统一 AI 助手面板的 `plugin-dev` 任务类型后端逻辑：
- *   1. 解析用户的自然语言插件需求
- *   2. 推断插件属性 Schema（字段名/类型/默认值/选项）
- *   3. 调用 PluginCodeGenerator 生成 TS 骨架
- *   4. 构造 LLM System Prompt（含骨架 + 业务逻辑要求）
- *   5. LLM 补齐绘制逻辑（DrawPipeline 工业原语）
- *   6. 返回完整文件树供前端预览/写入
+ * Backend logic for the unified AI assistant panel's `plugin-dev` task type:
+ *   1. Parse the user's natural-language plugin requirements
+ *   2. Infer the plugin property schema (field names/types/defaults/options)
+ *   3. Call PluginCodeGenerator to generate the TS skeleton
+ *   4. Build the LLM System Prompt (skeleton + business logic requirements)
+ *   5. LLM completes the drawing logic (DrawPipeline industrial primitives)
+ *   6. Return the full file tree for frontend preview/writing
  *
- * 关联决策：D-005 混合模式、D-016 Session 委托
+ * Related decisions: D-005 hybrid mode, D-016 Session delegation
  *
- * 用法:
+ * Usage:
  *   const agent = new PluginGeneratorAgent();
- *   const result = await agent.analyze('创建一个带开关和状态灯的阀门插件');
- *   // result.schema → 推断的属性定义
- *   // result.skeleton → 插件骨架代码（PluginCodeGenerator 输出）
- *   // result.systemPrompt → 发给 LLM 的完整 System Prompt
+ *   const result = await agent.analyze('Create a valve plugin with a switch and status lamp');
+ *   // result.schema → inferred property definitions
+ *   // result.skeleton → plugin skeleton code (PluginCodeGenerator output)
+ *   // result.systemPrompt → the full System Prompt sent to the LLM
  */
 
 import { ChatMessage } from './ai-client';
 
 // ============================================================
-// 类型定义
+// Type definitions
 // ============================================================
 
 export type PluginRenderBackend = 'vue' | 'canvas2d' | 'svg-dom' | 'css-dom' | 'three3d';
@@ -48,29 +48,29 @@ export interface PluginSchema {
 }
 
 export interface PluginGenInput {
-  /** 插件类型标识（kebab-case，如 'my-valve'） */
+  /** Plugin type identifier (kebab-case, e.g. 'my-valve') */
   type: string;
-  /** 显示名称 */
+  /** Display name */
   label: string;
-  /** 分类（industrial/chart/form/custom） */
+  /** Category (industrial/chart/form/custom) */
   category: string;
-  /** 渲染后端 */
+  /** Render backend */
   renderBackend: PluginRenderBackend;
-  /** 属性定义 */
+  /** Property definitions */
   schema: PluginSchema;
 }
 
 export interface PluginGenResult {
-  /** 推断的插件配置 */
+  /** Inferred plugin config */
   config: PluginGenInput;
-  /** 完整的 System Prompt（含插件骨架 + 业务逻辑指引） */
+  /** Full System Prompt (plugin skeleton + business logic guidance) */
   systemPrompt: string;
-  /** 用于发送给 LLM 的消息列表 */
+  /** Message list to send to the LLM */
   messages: ChatMessage[];
 }
 
 // ============================================================
-// 常量：插件分类关键词映射
+// Constants: plugin category keyword mapping
 // ============================================================
 
 const CATEGORY_KEYWORDS: Record<string, string> = {
@@ -95,7 +95,7 @@ const CATEGORY_KEYWORDS: Record<string, string> = {
 };
 
 // ============================================================
-// 常量：5 种渲染后端的绘制指引
+// Constants: drawing guidance for the 5 render backends
 // ============================================================
 
 const RENDER_BACKEND_GUIDE: Record<PluginRenderBackend, string> = {
@@ -195,10 +195,11 @@ async loadScene(THREE: any, scene: any, camera: any): Promise<void> {
 
 export class PluginGeneratorAgent {
   /**
-   * 分析用户输入，推断插件 Schema 并生成 LLM Prompt
+   * Analyze user input, infer the plugin schema and generate the LLM prompt
    *
-   * 注意：PluginCodeGenerator 骨架生成在 LLM 推断 Schema 之后调用，
-   * 但完整文件需 LLM 补齐绘制逻辑。这里生成包含骨架注入指引的 System Prompt。
+   * Note: PluginCodeGenerator skeleton generation runs after the LLM infers the schema,
+   * but the full files need the LLM to complete the drawing logic. This generates a System Prompt
+   * that includes skeleton injection guidance.
    */
   analyze(userInput: string): PluginGenResult {
     const config = this._inferPluginConfig(userInput);
@@ -211,13 +212,13 @@ export class PluginGeneratorAgent {
   }
 
   /**
-   * 构建包含完整 API 知识的 System Prompt
+   * Build a System Prompt containing the full API knowledge
    */
   buildSystemPrompt(config: PluginGenInput): string {
     return this._buildSystemPrompt(config);
   }
 
-  // ─── 私有方法 ───
+  // ─── Private methods ───
 
   private _inferPluginConfig(userInput: string): PluginGenInput {
     const nameMatch = userInput.match(/(?:创建|生成|做一个?)\s*(?:一个?\s*)?(.+?)(?:插件|图元|组件|$)/);
@@ -247,20 +248,20 @@ export class PluginGeneratorAgent {
     if (input.includes('Vue') || input.includes('组件')) return 'vue';
     if (input.includes('SVG')) return 'svg-dom';
     if (input.includes('CSS') || input.includes('HTML') || input.includes('DOM')) return 'css-dom';
-    return 'canvas2d'; // 默认：Canvas 2D（工业场景最常用）
+    return 'canvas2d'; // default: Canvas 2D (most common in industrial scenarios)
   }
 
   private _inferSchema(input: string): PluginSchema {
     const fields: PluginPropertyField[] = [];
 
-    // 开关 → boolean
+    // Switch → boolean
     if (/开关|启用|显示.*状态|运行.*状态/.test(input)) {
       fields.push({
         name: 'isOn', type: 'boolean', label: '开关状态', defaultValue: false, group: '状态',
       });
     }
 
-    // 状态灯 / 颜色指示
+    // Status lamp / color indicator
     if (/状态灯|指示灯|颜色/.test(input)) {
       fields.push({
         name: 'statusColor', type: 'color', label: '状态颜色', defaultValue: '#00ff00', group: '外观',
@@ -276,7 +277,7 @@ export class PluginGeneratorAgent {
       });
     }
 
-    // 文本标签
+    // Text label
     if (/标签|名称|文字|标题/.test(input)) {
       fields.push({
         name: 'label', type: 'text', label: '标签文字', defaultValue: 'Label', group: '文本',
@@ -289,7 +290,7 @@ export class PluginGeneratorAgent {
       });
     }
 
-    // 数值显示
+    // Numeric display
     if (/数值|值|量程|范围|温度|压力|流量|液位/.test(input)) {
       fields.push({
         name: 'minValue', type: 'number', label: '最小值', defaultValue: 0, group: '量程',
@@ -302,14 +303,14 @@ export class PluginGeneratorAgent {
       });
     }
 
-    // 管道/阀体/阀门/泵体颜色
+    // Pipe/valve body/valve/pump body colors
     if (/管道|阀体|阀门|泵体|背景/.test(input)) {
       fields.push({
         name: 'bodyColor', type: 'color', label: '主体颜色', defaultValue: '#3388ff', group: '外观',
       });
     }
 
-    // 默认属性（所有插件都应有的通用属性）
+    // Default properties (common properties all plugins should have)
     if (fields.length === 0) {
       fields.push(
         { name: 'label', type: 'text', label: '标签', defaultValue: 'Label', group: '文本' },
@@ -379,5 +380,5 @@ ${renderGuide}
   }
 }
 
-/** 单例 */
+/** Singleton */
 export const pluginGeneratorAgent = new PluginGeneratorAgent();

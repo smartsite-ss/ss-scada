@@ -2,7 +2,7 @@
 // https://smartsite.top/
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
-// ─── 脚本编辑器模式（与 core 包保持一致） ───
+// ─── Script editor mode (kept consistent with the core package) ───
 export type ScriptEditorMode = 'filter' | 'driver' | 'interaction' | 'timer' | 'expression';
 
 export interface ScriptEditorProps {

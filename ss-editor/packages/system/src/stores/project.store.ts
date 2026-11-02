@@ -27,12 +27,12 @@ export const useProjectStore = defineStore('project', () => {
   const hasMore = computed(() => pagination.value.page < pagination.value.totalPages);
 
   /**
-   * 拉取项目列表
+   * Fetch the project list
    *
-   * @param page 当前页码
-   * @param pageSize 每页数量
-   * @param keyword 搜索关键字
-   * @param includeDisabled 是否包含停用项目（项目管理页传 true 查看全部，首页统计/设备树默认 false 仅看启用）
+   * @param page Current page number
+   * @param pageSize Items per page
+   * @param keyword Search keyword
+   * @param includeDisabled Whether to include disabled projects (the project management page passes true to view all; home statistics/device tree default to false, enabled only)
    */
   async function fetchProjects(
     page = 1,
@@ -135,13 +135,13 @@ export const useProjectStore = defineStore('project', () => {
   }
 
   /**
-   * 切换项目启用状态（动态启停采集）
+   * Toggle the project enabled state (dynamically start/stop collection)
    *
-   * - 启用 → 后端 EventBus 发 project:enabled，采集层加载设备并注册任务
-   * - 停用 → 后端 EventBus 发 project:disabled，采集层立即停止该项目所有设备的采集任务
+   * - Enable → the backend EventBus emits project:enabled; the collection layer loads devices and registers tasks
+   * - Disable → the backend EventBus emits project:disabled; the collection layer immediately stops collection tasks of all devices in the project
    *
-   * @param projectId 项目 ID
-   * @param enabled 目标状态：true=启用，false=停用
+   * @param projectId Project ID
+   * @param enabled Target state: true = enable, false = disable
    */
   async function toggleProjectEnabled(projectId: string, enabled: boolean): Promise<void> {
     loading.value = true;

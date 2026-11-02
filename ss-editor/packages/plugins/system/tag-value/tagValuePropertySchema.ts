@@ -5,10 +5,10 @@
 import { type PluginPropertySchema } from '@scada-editor/plugin-sdk';
 
 /**
- * 标签值组件的显示配置 schema。
- * 包含「形态 + 名称/别名 + 装饰图片 + 单位 + 文本/边框/阴影」，显示字段复用 label 的对应字段。
- * 变量绑定字段（deviceId/deviceCode/deviceName/tagId/tagName/dataType）与装饰图片本身
- * （decorationImage）由 TagValueConfig 以自定义 section 管理，不进入本 schema。
+ * Display configuration schema of the tag value component.
+ * Contains shape + name/alias + decoration image + unit + text/border/shadow; display fields reuse the corresponding label fields.
+ * Variable binding fields (deviceId/deviceCode/deviceName/tagId/tagName/dataType) and the decoration image itself
+ * (decorationImage) are managed by TagValueConfig as a custom section and are not part of this schema.
  */
 export const tagValuePropertySchema: PluginPropertySchema = {
   name: '装饰标签变量',
@@ -16,7 +16,7 @@ export const tagValuePropertySchema: PluginPropertySchema = {
   columns: 2,
   propsPath: 'customProps',
   fields: [
-    // ── 形态 ──
+    // ── Shape ──
     {
       name: 'shape',
       label: '形态',
@@ -30,7 +30,7 @@ export const tagValuePropertySchema: PluginPropertySchema = {
       group: 'shape',
     },
 
-    // ── 名称 / 别名 ──
+    // ── Name / alias ──
     { name: 'alias', label: '别名', labelKey: 'tagValue.properties.alias', type: 'text', defaultValue: '', group: 'name' },
     { name: 'showName', label: '显示名称', labelKey: 'tagValue.properties.showName', type: 'boolean', defaultValue: true, group: 'name' },
     { name: 'nameColor', label: '名称颜色', labelKey: 'tagValue.properties.nameColor', type: 'color', defaultValue: '#333333FF', group: 'name' },
@@ -38,7 +38,7 @@ export const tagValuePropertySchema: PluginPropertySchema = {
     { name: 'nameFontWeight', label: '名称粗细', labelKey: 'tagValue.properties.nameFontWeight', type: 'select', options: [{ value: 'normal', label: '正常', labelKey: 'label.options.fontWeight.normal' }, { value: 'bold', label: '粗体', labelKey: 'label.options.fontWeight.bold' }], defaultValue: 'normal', group: 'name' },
     { name: 'nameGap', label: '名称间距', labelKey: 'tagValue.properties.nameGap', type: 'number', min: 0, max: 40, step: 1, defaultValue: 4, group: 'name' },
 
-    // ── 装饰图片 ──
+    // ── Decoration image ──
     {
       name: 'decorationImagePosition',
       label: '装饰图位置',
@@ -56,7 +56,7 @@ export const tagValuePropertySchema: PluginPropertySchema = {
     { name: 'decorationImageSize', label: '装饰图尺寸', labelKey: 'tagValue.properties.decorationImageSize', type: 'number', min: 4, max: 200, step: 1, defaultValue: 24, group: 'decoration' },
     { name: 'decorationImageOpacity', label: '装饰图透明度', labelKey: 'tagValue.properties.decorationImageOpacity', type: 'number', min: 0, max: 1, step: 0.05, defaultValue: 1, group: 'decoration' },
 
-    // ── 显示格式 + 单位（对齐 label） ──
+    // ── Display format + unit (aligned with label) ──
     { name: 'decimalPlaces', label: '小数位数', labelKey: 'label.properties.decimalPlaces', type: 'number', min: 0, max: 6, step: 1, defaultValue: 2, group: 'unit' },
     { name: 'unit', label: '单位', labelKey: 'label.properties.unit', type: 'text', defaultValue: '', group: 'unit', options: [
       { value: '°C', label: '°C' },
@@ -92,7 +92,7 @@ export const tagValuePropertySchema: PluginPropertySchema = {
     { name: 'unitFontColor', label: '单位字体颜色', labelKey: 'label.properties.unitFontColor', type: 'color', defaultValue: '#666666FF', group: 'unit' },
     { name: 'unitGap', label: '单位间距', labelKey: 'label.properties.unitGap', type: 'number', min: 0, max: 20, step: 1, defaultValue: 4, group: 'unit' },
 
-    // ── 文本样式 ──
+    // ── Text style ──
     { name: 'textColor', label: '文本颜色', labelKey: 'label.properties.textColor', type: 'color', defaultValue: '#333333FF', group: 'text' },
     { name: 'fontSize', label: '字体大小', labelKey: 'label.properties.fontSize', type: 'number', min: 8, max: 72, step: 1, defaultValue: 14, group: 'text' },
     { name: 'fontWeight', label: '字体粗细', labelKey: 'label.properties.fontWeight', type: 'select', options: [{ value: 'normal', label: '正常', labelKey: 'label.options.fontWeight.normal' }, { value: 'bold', label: '粗体', labelKey: 'label.options.fontWeight.bold' }], defaultValue: 'normal', group: 'text' },
@@ -100,7 +100,7 @@ export const tagValuePropertySchema: PluginPropertySchema = {
     { name: 'textAlign', label: '文本对齐', labelKey: 'label.properties.textAlign', type: 'select', options: [{ value: 'left', label: '左对齐', labelKey: 'label.options.textAlign.left' }, { value: 'center', label: '居中', labelKey: 'label.options.textAlign.center' }, { value: 'right', label: '右对齐', labelKey: 'label.options.textAlign.right' }], defaultValue: 'left', group: 'text' },
     { name: 'verticalAlignment', label: '垂直对齐', labelKey: 'label.properties.verticalAlignment', type: 'select', options: [{ value: 'top', label: '顶部', labelKey: 'label.options.verticalAlignment.top' }, { value: 'middle', label: '居中', labelKey: 'label.options.verticalAlignment.middle' }, { value: 'bottom', label: '底部', labelKey: 'label.options.verticalAlignment.bottom' }], defaultValue: 'middle', group: 'text' },
 
-    // ── 背景 / 边框 ──
+    // ── Background / border ──
     { name: 'backgroundColor', label: '背景色', labelKey: 'label.properties.backgroundColor', type: 'color', defaultValue: '#00000000', group: 'style' },
     { name: 'backgroundRepeat', label: '背景平铺', labelKey: 'tagValue.properties.backgroundRepeat', type: 'select', options: [
       { value: 'repeat', label: '平铺', labelKey: 'tagValue.options.backgroundRepeat.repeat' },
@@ -124,7 +124,7 @@ export const tagValuePropertySchema: PluginPropertySchema = {
     ], defaultValue: 'solid', group: 'style' },
     { name: 'borderRadius', label: '圆角', labelKey: 'label.properties.borderRadius', type: 'number', min: 0, step: 1, defaultValue: 4, group: 'style' },
 
-    // ── 文字阴影 ──
+    // ── Text shadow ──
     { name: 'textShadowColor', label: '文字阴影色', labelKey: 'label.properties.textShadowColor', type: 'color', defaultValue: '#00000000', group: 'shadow' },
     { name: 'textShadowOffsetX', label: '阴影偏移X', labelKey: 'label.properties.textShadowOffsetX', type: 'number', step: 1, defaultValue: 0, group: 'shadow' },
     { name: 'textShadowOffsetY', label: '阴影偏移Y', labelKey: 'label.properties.textShadowOffsetY', type: 'number', step: 1, defaultValue: 0, group: 'shadow' },

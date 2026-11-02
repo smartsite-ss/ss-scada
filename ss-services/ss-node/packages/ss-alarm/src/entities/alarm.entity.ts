@@ -42,20 +42,20 @@ export class AlarmRule extends ProjectScopedEntity {
   @Column({ default: 0 })
   debounceCount: number;
 
-  /** 告警类型（来源于字典 alarmType）：device/communication/data/safety/power/process/environment/system/security/custom */
+  /** Alarm type (from the alarmType dictionary): device/communication/data/safety/power/process/environment/system/security/custom */
   @Column({ type: 'varchar', length: 30, default: 'data' })
   alarmType: string;
 
-  /** 值恢复后是否自动清除告警（true=自动清除完成闭环，false=需人工确认）。
-   *  对应 DDL alarm_rules.auto_clear 字段，Phase 5 启用 */
+  /** Whether to auto-clear the alarm after the value recovers (true=auto-clear to close the loop, false=requires manual acknowledgment).
+   *  Maps to the alarm_rules.auto_clear DDL column, enabled in Phase 5 */
   @Column({ default: true })
   autoClear: boolean;
 
-  /** 通知渠道（JSON 数组字符串，如 '["sound","popup","sms"]'）。
-   *  对应 DDL alarm_rules.notify_channels 列（TEXT DEFAULT '["sound","popup"]'）。
-   *  Phase 6 通知接线启用：AlarmNotificationSubscriber 解析此字段决定告警触发时使用哪些通知渠道；
-   *  null/空数组时回退到 AlarmNotificationService 全局启用渠道。
-   *  TS 标记可选以匹配 DB 默认值语义（未显式赋值时由 DB 填充默认值） */
+  /** Notification channels (JSON array string, e.g. '[\"sound\",\"popup\",\"sms\"]').
+   *  Maps to the alarm_rules.notify_channels DDL column (TEXT DEFAULT '[\"sound\",\"popup\"]').
+   *  Enabled by the Phase 6 notification wiring: AlarmNotificationSubscriber parses this field to decide which channels to use when firing the alarm;
+   *  falls back to AlarmNotificationService globally-enabled channels when null/empty.
+   *  Marked optional in TS to match the DB default semantics (the DB fills the default when not explicitly set) */
   @Column({ type: 'text', default: '["sound","popup"]', nullable: true })
   notifyChannels?: string;
 }
@@ -126,42 +126,42 @@ export class AlarmRecord extends ProjectScopedEntity {
   @Column({ nullable: true, type: 'text' })
   shelveReason: string;
 
-  /** 暂缓到期时间：设置后由 AlarmShelveRecoveryService 定时扫描自动恢复，null 表示手动暂缓（不会自动恢复） */
+  /** Shelve expiry time: once set, AlarmShelveRecoveryService scans periodically to auto-recover; null means manual shelve (never auto-recovers) */
   @Column({ nullable: true })
   shelvedUntil: Date;
 
-  /** 暂缓前的状态：自动恢复时回退到此状态（通常为 ACTIVE 或 ACKNOWLEDGED），null 时回退到 ACTIVE */
+  /** Status before shelving: rolled back to this status on auto-recovery (usually ACTIVE or ACKNOWLEDGED); rolls back to ACTIVE when null */
   @Column({ nullable: true, type: 'varchar', length: 20 })
   preShelveStatus: AlarmStatus;
 
-  /** 告警类型（来源于字典 alarmType，产生时从匹配规则复制；无规则时默认 custom） */
+  /** Alarm type (copied from the alarmType dictionary at creation via the matching rule; defaults to custom when no rule matches) */
   @Column({ type: 'varchar', length: 30, default: 'data' })
   alarmType: string;
 
-  /** 告警处置类型（来源于字典 alarmActionType，随生命周期更新）：
-   *  alarm.triggered（产生）→ alarm_acknowledged（确认）→ alarm.cleared（清除）
-   *  → alarm.escalated（升级）→ alarm.shelve.expired（暂缓恢复） */
+  /** Alarm disposition type (from the alarmActionType dictionary, updated across the lifecycle):
+   *  alarm.triggered (created) -> alarm_acknowledged (acknowledged) -> alarm.cleared (cleared)
+   *  -> alarm.escalated (escalated) -> alarm.shelve.expired (shelve recovered) */
   @Column({ name: 'dispositionType', type: 'varchar', length: 50, default: 'alarm.triggered' })
   dispositionType: string;
 
-  /** 是否实时告警（未恢复）：true=实时(active/acknowledged/shelved) / false=历史(cleared)。
-   *  显式标识，避免前后端维护 status 映射规则，查询效率高于 status IN (...)。
-   *  Phase 5 新增：状态流转到 CLEARED 时置 false */
+  /** Whether the alarm is real-time (unrecovered): true=real-time (active/acknowledged/shelved) / false=historical (cleared).
+   *  Explicit flag to avoid front/back-end maintaining a status-mapping rule, and more efficient to query than status IN (...).
+   *  Added in Phase 5: set to false when the status transitions to CLEARED */
   @Column({ default: true })
   isActive: boolean;
 
-  /** 清除原因：auto=条件自动恢复 / manual=人工清除 / rule_disabled=规则禁用 / shelve_expired=暂缓到期。
-   *  Phase 5 新增：区分告警闭环的清除路径 */
+  /** Clear reason: auto=condition auto-recovered / manual=manual clear / rule_disabled=rule disabled / shelve_expired=shelve expired.
+   *  Added in Phase 5: distinguishes the clear path that closed the alarm loop */
   @Column({ type: 'varchar', length: 20, default: 'manual' })
   clearReason: string;
 
-  /** 自动恢复时间（条件恢复正常的时间），仅 clearReason='auto' 时有值。
-   *  Phase 5 新增：完成告警闭环的关键字段，记录"何时恢复" */
+  /** Auto-recovery time (time the condition returned to normal); only set when clearReason='auto'.
+   *  Added in Phase 5: a key field for closing the alarm loop, recording "when recovery happened" */
   @Column({ nullable: true })
   recoveredAt: Date;
 
-  /** 自动恢复时的值（条件恢复正常时的采集值）。
-   *  Phase 5 新增：记录恢复瞬间的采集值，便于追溯 */
+  /** Value at auto-recovery time (the collected value when the condition returned to normal).
+   *  Added in Phase 5: records the collected value at the recovery moment for traceability */
   @Column({ nullable: true, type: 'varchar', length: 50 })
   recoveredValue: string;
 }

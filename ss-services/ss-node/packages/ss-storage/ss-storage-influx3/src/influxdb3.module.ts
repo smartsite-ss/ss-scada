@@ -13,13 +13,13 @@ import { Influxdb3AdapterService } from './influxdb3-adapter.service';
 import { Influxdb3DatabaseService } from './influxdb3-database.service';
 
 /**
- * InfluxDB 3 Core 存储模块。
+ * InfluxDB 3 Core storage module.
  *
- * 装配内容：
- * - Influxdb3AdapterService：实现 StorageAdapter（引擎类型 influxdb3）；
- * - Influxdb3DatabaseService：项目 → database 映射与自动建库（project.created）；
- * - 向 StorageEngineRouterService 注册 influxdb3 引擎，供 STORAGE_DEFAULT_ENGINE /
- *   项目级覆盖按项目路由。
+ * Assembly contents:
+ * - Influxdb3AdapterService: implements StorageAdapter (engine type influxdb3);
+ * - Influxdb3DatabaseService: project → database mapping and automatic database creation (project.created);
+ * - Registers the influxdb3 engine with StorageEngineRouterService, for STORAGE_DEFAULT_ENGINE /
+ *   project-level override routing by project.
  */
 @Module({
   imports: [StorageModule, EventBusModule],

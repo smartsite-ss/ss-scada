@@ -3,18 +3,18 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * LLM Proxy Service — 后端 AI 服务网关
+ * LLM Proxy Service - backend AI service gateway
  *
- * 职责：
- *   1. 根据任务类型路由到对应 Provider（D-010 多供应商路由策略）
- *   2. 主 Provider 失败时降级到备选 Provider
- *   3. 周期性健康检查调度（OnModuleInit 启动 30s 周期）
- *   4. 从数据库加载 Provider 配置（不再从环境变量读取）
+ * Responsibilities:
+ *   1. Route to the corresponding provider by task type (D-010 multi-provider routing)
+ *   2. Fall back to an alternate provider when the primary fails
+ *   3. Periodic health-check scheduling (OnModuleInit starts a 30s cycle)
+ *   4. Load provider config from the database (no longer from env vars)
  *
- * 关联决策：
- *   - D-009 SSE 流式输出（streamChat 方法返回 AsyncGenerator）
- *   - D-010 多供应商路由 + 降级
- *   - D-012 Feature Flag（AI_ENABLED 控制，仅此一项保留在环境变量）
+ * Related decisions:
+ *   - D-009 SSE streaming output (streamChat returns AsyncGenerator)
+ *   - D-010 multi-provider routing + fallback
+ *   - D-012 Feature Flag (AI_ENABLED controls; only this one stays in env vars)
  */
 
 import {
@@ -67,14 +67,14 @@ export class LLMProxyService implements OnModuleInit, OnModuleDestroy {
   }
 
   onModuleInit(): void {
-    // AI_ENABLED 保留在环境变量中作为启动级 Feature Flag
+    // AI_ENABLED remains in env vars as a startup-level Feature Flag
     this.enabled = this.configService.get<string>('AI_ENABLED') === 'true';
     if (!this.enabled) {
       this.logger.warn('AI 功能未启用（AI_ENABLED != true），LLMProxyService 处于禁用状态');
       return;
     }
 
-    // 异步初始化：从数据库加载配置
+    // Async init: load config from database
     this.initializeProvidersAsync().catch((err) => {
       this.logger.error(`Provider 异步初始化失败: ${err.message}`);
     });
@@ -83,8 +83,8 @@ export class LLMProxyService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 重新加载 Provider 配置（从前端配置变更后调用）
-   * 从数据库读取最新配置并重新初始化所有 Provider。
+   * Reload provider config (called after a frontend config change)
+   * Reads the latest config from the database and re-initializes all providers.
    */
   async reloadProviders(): Promise<void> {
     if (!this.providerConfigService) {
@@ -96,13 +96,13 @@ export class LLMProxyService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 异步初始化 Provider：从数据库读取配置
+   * Async init providers: read config from the database
    *
-   * 配置流程：
-   *   1. 调用 AiProviderConfigService.ensureDefaultProviders() 确保预置供应商已种入数据库
-   *   2. 读取所有已启用的供应商配置
-   *   3. 对每条配置，找到对应的 Provider 实例并初始化
-   *   4. 自动推断路由策略（第一个支持嵌入的供应商作为 embedding 路由）
+   * Config flow:
+   *   1. Call AiProviderConfigService.ensureDefaultProviders() to seed preset providers into DB
+   *   2. Read all enabled provider configs
+   *   3. For each config, find the matching provider instance and initialize it
+   *   4. Auto-infer routing strategy (first embedding-capable provider as embedding route)
    */
   private async initializeProvidersAsync(): Promise<void> {
     if (!this.providerConfigService) {
@@ -111,7 +111,7 @@ export class LLMProxyService implements OnModuleInit, OnModuleDestroy {
     }
 
     try {
-      // 确保预置供应商已种入数据库（首次启动时自动执行）
+      // Ensure preset providers are seeded into DB (auto-run on first startup)
       await this.providerConfigService.ensureDefaultProviders();
 
       const dbConfigs = await this.providerConfigService.getEnabledProviderConfigs();
@@ -131,7 +131,7 @@ export class LLMProxyService implements OnModuleInit, OnModuleDestroy {
           provider.initialize(cfg);
           this.logger.log(`Provider ${cfg.providerId} 已从数据库配置初始化`);
 
-          // 第一个支持嵌入的供应商作为 embedding 路由
+          // First embedding-capable provider is the embedding route
           if (!embeddingProvider) {
             const preset = findPreset(cfg.providerId);
             if (preset?.supportsEmbedding || cfg.embeddingModel) {
@@ -145,7 +145,7 @@ export class LLMProxyService implements OnModuleInit, OnModuleDestroy {
         }
       }
 
-      // 自动推断路由策略
+      // Auto-infer routing strategy
       this.inferRouting(dbConfigs, embeddingProvider);
     } catch (err) {
       this.logger.error(`从数据库读取 Provider 配置失败: ${(err as Error).message}`);
@@ -153,12 +153,12 @@ export class LLMProxyService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 根据已启用的 Provider 列表自动推断路由策略
+   * Auto-infer routing strategy from the enabled provider list
    *
-   * 策略：
-   *   - codegen: 优先选有 codegenModel 的供应商，否则第一个
-   *   - chat/intent/analysis: 第一个已启用的供应商
-   *   - embedding: 第一个支持嵌入的供应商
+   * Strategy:
+   *   - codegen: prefer a provider with codegenModel, otherwise the first one
+   *   - chat/intent/analysis: the first enabled provider
+   *   - embedding: the first embedding-capable provider
    */
   private inferRouting(configs: ProviderConfig[], embeddingProvider: string | null): void {
     if (configs.length === 0) return;
@@ -185,18 +185,18 @@ export class LLMProxyService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  /** 是否启用 AI 功能 */
+  /** Whether AI is enabled */
   isEnabled(): boolean {
     return this.enabled;
   }
 
   /**
-   * 同步生成（按任务类型路由 + 降级）
+   * Synchronous generation (route by task type + fallback)
    */
   async generate(req: LLMRequest, taskType: TaskType = 'chat'): Promise<LLMResponse> {
     this.assertEnabled();
 
-    // P1-T09：安全过滤 — 用户输入检查
+    // P1-T09: safety filter - user input check
     if (this.safetyGuard) {
       const lastUserMsg = [...req.messages].reverse().find((m) => m.role === 'user')?.content;
       if (lastUserMsg) {
@@ -211,8 +211,8 @@ export class LLMProxyService implements OnModuleInit, OnModuleDestroy {
     const fallback = this.getFallbackProvider(primary, taskType);
 
     const tried = new Set<LLMProviderId>();
-    // 用户显式指定供应商时优先使用（覆盖任务类型路由）；未就绪再回退到路由队列
-    // 校验队列构建时机：降级队列仅包含已就绪的 Provider
+    // User-specified provider takes priority (overrides task-type routing); fall back to routing queue if not ready
+    // Build-time check of fallback queue: include only ready providers
     const queue = this.buildQueue(req.providerId, primary, fallback);
 
     let lastErr: unknown;
@@ -228,7 +228,7 @@ export class LLMProxyService implements OnModuleInit, OnModuleDestroy {
       try {
         const response = await provider.generate(req);
 
-        // P1-T09：安全过滤 — 输出净化
+        // P1-T09: safety filter - output sanitization
         if (this.safetyGuard && response?.content) {
           const safetyResult = this.safetyGuard.sanitizeOutput(response.content);
           if (safetyResult.content !== undefined) {
@@ -248,9 +248,9 @@ export class LLMProxyService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 流式生成（按任务类型路由 + 降级）
+   * Streaming generation (route by task type + fallback)
    *
-   * 注意：流式降级在首个 chunk 之前发生；一旦开始 yield，则不再降级。
+   * Note: streaming fallback happens before the first chunk; once yielding starts, no more fallback.
    */
   async *streamChat(
     req: LLMRequest,
@@ -258,13 +258,13 @@ export class LLMProxyService implements OnModuleInit, OnModuleDestroy {
   ): AsyncGenerator<ChatStreamChunk, void, unknown> {
     this.assertEnabled();
 
-    // P1-T09：安全过滤 — 用户输入检查
+    // P1-T09: safety filter - user input check
     if (this.safetyGuard) {
       const lastUserMsg = [...req.messages].reverse().find((m) => m.role === 'user')?.content;
       if (lastUserMsg) {
         const safetyResult = this.safetyGuard.filterInput(lastUserMsg);
         if (!safetyResult.passed) {
-          // 流式错误通过 SSE error event 返回
+          // Streaming errors are returned via the SSE error event
           yield {
             delta: `[ERROR] 输入被安全过滤拦截：${safetyResult.reason}`,
             done: true,
@@ -278,7 +278,7 @@ export class LLMProxyService implements OnModuleInit, OnModuleDestroy {
     const fallback = this.getFallbackProvider(primary, taskType);
 
     const tried = new Set<LLMProviderId>();
-    // 用户显式指定供应商时优先使用（覆盖任务类型路由）；未就绪再回退到路由队列
+    // User-specified provider takes priority (overrides task-type routing); fall back to routing queue if not ready
     const queue = this.buildQueue(req.providerId, primary, fallback);
 
     let lastErr: unknown;
@@ -292,15 +292,15 @@ export class LLMProxyService implements OnModuleInit, OnModuleDestroy {
         continue;
       }
       try {
-        // 流式降级：仅在建立流之前尝试，一旦 yield 成功则不再降级
+        // Streaming fallback: only attempted before the stream is established; no fallback once a chunk is yielded
         const generator = provider.stream(req);
-        // 探测首个 chunk
+        // Probe the first chunk
         const firstResult = await generator.next();
         if (firstResult.done) {
-          // 空响应，继续降级
+          // Empty response, continue fallback
           continue;
         }
-        // 成功建立流，转发剩余 chunk（含安全过滤）
+        // Stream established, forward remaining chunks (with safety filter)
         const safeChunk = this.applySafetyToChunk(firstResult.value as ChatStreamChunk);
         yield safeChunk;
         for await (const chunk of generator) {
@@ -318,7 +318,7 @@ export class LLMProxyService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 嵌入任务（路由到第一个支持嵌入的 Provider）
+   * Embedding task (routed to the first embedding-capable provider)
    */
   async embed(req: EmbeddingRequest): Promise<EmbeddingResponse> {
     this.assertEnabled();
@@ -330,7 +330,7 @@ export class LLMProxyService implements OnModuleInit, OnModuleDestroy {
     return provider.embed(req);
   }
 
-  /** 获取所有 Provider 的健康状态 */
+  /** Get health status of all providers */
   async getHealth(): Promise<ProviderHealth[]> {
     const results: ProviderHealth[] = [];
     for (const [pid, provider] of this.providers) {
@@ -341,17 +341,17 @@ export class LLMProxyService implements OnModuleInit, OnModuleDestroy {
     return results;
   }
 
-  /** 获取缓存的健康状态（不触发新检查） */
+  /** Get cached health status (no new check triggered) */
   getCachedHealth(): ProviderHealth[] {
     return Array.from(this.healthMap.values());
   }
 
-  /** 当前路由策略 */
+  /** Current routing strategy */
   getRouting(): RoutingConfig {
     return { ...this.routing };
   }
 
-  // -------- 私有方法 --------
+  // -------- Private methods --------
 
   private assertEnabled(): void {
     if (!this.enabled) {
@@ -359,7 +359,7 @@ export class LLMProxyService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  /** 获取主 Provider 之外的备选列表（仅返回已就绪的 Provider） */
+  /** Get the alternate list besides the primary provider (only ready providers) */
   private getFallbackProvider(primary: LLMProviderId, _taskType: TaskType): LLMProviderId[] {
     const all: LLMProviderId[] = [];
     for (const [pid, provider] of this.providers) {
@@ -368,7 +368,7 @@ export class LLMProxyService implements OnModuleInit, OnModuleDestroy {
     return all;
   }
 
-  /** 构建降级队列：用户指定的 → 路由主 → 已就绪备选，去重 */
+  /** Build fallback queue: user-specified -> primary route -> ready alternates, deduplicated */
   private buildQueue(
     requestedProvider: LLMProviderId | undefined,
     primary: LLMProviderId,
@@ -399,14 +399,14 @@ export class LLMProxyService implements OnModuleInit, OnModuleDestroy {
         this.logger.error(`健康检查失败：${err.message}`);
       });
     }, HEALTH_CHECK_INTERVAL_MS);
-    // 启动后立即检查一次
+    // Check once immediately after startup
     this.getHealth().catch(() => {
-      /* 忽略首次失败 */
+      /* Ignore first failure */
     });
   }
 
   /**
-   * P1-T09：对流式 chunk 进行安全净化
+   * P1-T09: sanitize streaming chunks for safety
    */
   private applySafetyToChunk(chunk: ChatStreamChunk): ChatStreamChunk {
     if (!this.safetyGuard || !chunk?.delta) return chunk;

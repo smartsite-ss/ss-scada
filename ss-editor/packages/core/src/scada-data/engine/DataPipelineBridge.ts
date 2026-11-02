@@ -137,14 +137,14 @@ export class DataPipelineBridge {
   }
 
   /**
-   * 构建 DriverScriptAPI 实例，将 driver 脚本的图元操作副作用
-   * 通过 BindingManager.getGraphicStore().applyProperty 直接应用到渲染层。
+   * Build the DriverScriptAPI instance, applying the driver script's graphic-side
+   * effects directly to the render layer via BindingManager.getGraphicStore().applyProperty.
    *
-   * 修复原实现传入 `{} as DriverScriptAPI` 导致 setText/setBackground 等方法调用报错、
-   * driver 脚本副作用完全失效的问题。
+   * Fixes the original bug where passing `{} as DriverScriptAPI` caused setText/setBackground
+   * calls to throw and made driver-script side effects completely ineffective.
    *
-   * 工具函数（clamp/mapRange/colorForValue/formatNumber）由 ScriptEngine.executeDriverScript
-   * 内部合并的 helpers 提供，此处无需重复实现。
+   * Utility functions (clamp/mapRange/colorForValue/formatNumber) are provided by the helpers
+   * merged inside ScriptEngine.executeDriverScript, so they need not be re-implemented here.
    */
   private _createDriverScriptAPI(graphicId: string): DriverScriptAPI {
     const store = BindingManager.getGraphicStore();
@@ -179,7 +179,7 @@ export class DataPipelineBridge {
         alarms.push({ id: `alarm-${Date.now()}-${alarms.length}`, level, message });
       },
       clearAlarm: (_alarmId?: string) => {
-        // 简化实现：清空当前图元关联的告警（按 level 维度可扩展）
+        // Simplified implementation: clear alarms associated with the current graphic (extensible by level)
         if (alarms.length > 0) alarms.length = 0;
       },
       getActiveAlarms: () => [...alarms],
@@ -210,7 +210,7 @@ export class DataPipelineBridge {
         return cached ? { value: cached.value, quality: cached.quality, timestamp: cached.timestamp } : null;
       },
       writeTag: (tagId: string, value: unknown) => {
-        // 通过 EventBus 发出 writeTag 事件，由上层（如 WebSocketDriver）处理实际写入
+        // Emit the writeTag event via EventBus; the actual write is handled by an upper layer (e.g. WebSocketDriver)
         const sources = this._options.dataSourceManager.getAllSources();
         const targetSource = sources.find((s) => {
           const raw = this._options.dataSourceManager.getSourceRawData(s.id);
@@ -226,7 +226,7 @@ export class DataPipelineBridge {
       setInterval: (callback: () => void, ms: number) => window.setInterval(callback, ms),
       clearTimeout: (id: number) => window.clearTimeout(id),
       clearInterval: (id: number) => window.clearInterval(id),
-      // 以下工具函数由 ScriptEngine.executeDriverScript 合并的 helpers 覆盖，此处仅满足接口
+      // These utility functions are provided by the helpers merged inside ScriptEngine.executeDriverScript; defined here only to satisfy the interface
       clamp: (value: number, min: number, max: number) => Math.max(min, Math.min(max, value)),
       mapRange: (value: number, fromMin: number, fromMax: number, toMin: number, toMax: number) =>
         toMin + ((value - fromMin) / (fromMax - fromMin)) * (toMax - toMin),

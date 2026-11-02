@@ -3,7 +3,7 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * AI 评估运行器单元测试 — P1-T10
+ * AI eval runner unit tests — P1-T10
  */
 
 import { describe, it, expect } from 'vitest';
@@ -18,12 +18,12 @@ import {
 import { EVAL_CASES, EVAL_STATS } from '../../ai/evaluation/eval-cases';
 
 // ============================================================
-// Mock AI 客户端
+// Mock the AI client
 // ============================================================
 
 function createMockCall(responses: Record<string, string>) {
   return async (input: string, _taskType: string, _providerId?: string, _model?: string) => {
-    // 找到关键词匹配的用例
+    // Find the case matching the keywords
     for (const [key, content] of Object.entries(responses)) {
       if (input.includes(key)) {
         return { content, usage: { promptTokens: 10, completionTokens: 20, totalTokens: 30 }, latencyMs: 100 };
@@ -34,7 +34,7 @@ function createMockCall(responses: Record<string, string>) {
 }
 
 // ============================================================
-// 测试：eval-cases.ts
+// Tests: eval-cases.ts
 // ============================================================
 
 describe('EVAL_CASES', () => {
@@ -81,7 +81,7 @@ describe('EVAL_CASES', () => {
 });
 
 // ============================================================
-// 测试：eval-runner.ts
+// Tests: eval-runner.ts
 // ============================================================
 
 describe('runEvaluation', () => {
@@ -138,7 +138,7 @@ describe('runEvaluation', () => {
   });
 
   it('空关键词应标记为需人工', async () => {
-    // safety-001 的 blocked 维度关键词为空
+    // safety-001's blocked dimension has empty keywords
     const cases = EVAL_CASES.filter((c) => c.id === 'safety-001');
 
     const report = await runEvaluation({
@@ -225,7 +225,7 @@ describe('runEvaluation', () => {
 });
 
 // ============================================================
-// 测试：报告格式化
+// Tests: report formatting
 // ============================================================
 
 describe('formatReportText', () => {
@@ -265,7 +265,7 @@ describe('formatReportMarkdown', () => {
 });
 
 // ============================================================
-// 测试：模型对比矩阵
+// Tests: model comparison matrix
 // ============================================================
 
 describe('模型对比矩阵', () => {

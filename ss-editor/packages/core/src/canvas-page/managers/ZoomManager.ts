@@ -4,12 +4,13 @@
 
 import { i18n } from '../../locales';
 
-// 经 unknown 断言为 (key: string) => string：避免 vue-i18n 对 messages 字面量 schema 的深度类型实例化（TS2589）
+// Asserted as (key: string) => string via unknown: avoids vue-i18n's deep type
+// instantiation of the messages literal schema (TS2589)
 const t = (key: string): string =>
   (i18n.global as unknown as { t: (key: string) => string }).t('zoomManager.' + key);
 
 /**
- * 缩放模式
+ * Zoom mode
  */
 export enum ZoomMode {
   MOUSE_CENTER = 'mouse-center',
@@ -18,12 +19,12 @@ export enum ZoomMode {
 }
 
 /**
- * 适配模式
+ * Fit mode
  */
 export type FitMode = 'auto' | 'contain' | 'fitWidth' | 'fitHeight' | 'stretch';
 
 /**
- * 适配模式配置
+ * Fit mode configuration
  */
 export interface FitModeConfig {
   mode: FitMode;
@@ -32,7 +33,7 @@ export interface FitModeConfig {
 }
 
 /**
- * 适配模式选项列表
+ * Fit mode options list
  */
 export const fitModeOptions: FitModeConfig[] = [
   { mode: 'auto', label: t('fitModes.auto.label'), description: t('fitModes.auto.description') },
@@ -43,17 +44,17 @@ export const fitModeOptions: FitModeConfig[] = [
 ];
 
 /**
- * 自适应策略配置
+ * Auto-fit strategy configuration
  */
 export interface AutoFitConfig {
-  enabled: boolean;           // 是否启用自动适配
-  debounceDelay: number;      // 防抖延迟（毫秒）
-  minAspectRatio: number;     // Y轴铺满的最小宽高比
-  maxAspectRatio: number;     // X轴铺满的最大宽高比
+  enabled: boolean;           // Whether auto-fit is enabled
+  debounceDelay: number;      // Debounce delay (ms)
+  minAspectRatio: number;     // Minimum aspect ratio for Y-axis fill
+  maxAspectRatio: number;     // Maximum aspect ratio for X-axis fill
 }
 
 /**
- * 缩放范围（百分比），用于调用方覆盖 ZoomManager 内部默认值（10~200）
+ * Scale range (percentage), used to override ZoomManager's internal defaults (10~200)
  */
 export interface ScaleRange {
   minScale: number;
@@ -61,7 +62,7 @@ export interface ScaleRange {
 }
 
 /**
- * 默认自适应配置
+ * Default auto-fit configuration
  */
 export const defaultAutoFitConfig: AutoFitConfig = {
   enabled: true,
@@ -71,7 +72,7 @@ export const defaultAutoFitConfig: AutoFitConfig = {
 };
 
 /**
- * 缩放管理类
+ * Zoom management class
  */
 export class ZoomManager {
   private static defaultMinScale = 10;
@@ -79,15 +80,15 @@ export class ZoomManager {
   private static defaultStep = 10;
 
   /**
-   * 计算缩放后的位置
-   * @param currentScale 当前缩放比例
-   * @param newScale 新的缩放比例
-   * @param zoomMode 缩放模式
-   * @param mouseX 鼠标X坐标
-   * @param mouseY 鼠标Y坐标
-   * @param canvasWidth 画布宽度
-   * @param canvasHeight 画布高度
-   * @returns 新的偏移量
+   * Compute the offset after zooming
+   * @param currentScale Current scale
+   * @param newScale New scale
+   * @param zoomMode Zoom mode
+   * @param mouseX Mouse X coordinate
+   * @param mouseY Mouse Y coordinate
+   * @param canvasWidth Canvas width
+   * @param canvasHeight Canvas height
+   * @returns New offset
    */
   public static calculateZoomOffset(
     currentScale: number,
@@ -105,13 +106,13 @@ export class ZoomManager {
 
     switch (zoomMode) {
       case ZoomMode.MOUSE_CENTER:
-        // 以鼠标位置为中心缩放
+        // Zoom centered on mouse position
         offsetX = mouseX - (mouseX * scaleRatio);
         offsetY = mouseY - (mouseY * scaleRatio);
         break;
 
       case ZoomMode.CANVAS_CENTER:
-        // 以画布中心为中心缩放
+        // Zoom centered on canvas center
         const canvasCenterX = canvasWidth / 2;
         const canvasCenterY = canvasHeight / 2;
         offsetX = canvasCenterX - (canvasCenterX * scaleRatio);
@@ -119,7 +120,7 @@ export class ZoomManager {
         break;
 
       case ZoomMode.TOP_LEFT:
-        // 以左上角为中心缩放
+        // Zoom centered on top-left corner
         offsetX = 0;
         offsetY = 0;
         break;
@@ -129,22 +130,22 @@ export class ZoomManager {
   }
 
   /**
-   * 限制缩放范围
-   * @param scale 当前缩放比例
-   * @param minScale 最小缩放比例
-   * @param maxScale 最大缩放比例
-   * @returns 限制后的缩放比例
+   * Clamp the scale range
+   * @param scale Current scale
+   * @param minScale Minimum scale
+   * @param maxScale Maximum scale
+   * @returns Clamped scale
    */
   public static clampScale(scale: number, minScale = this.defaultMinScale, maxScale = this.defaultMaxScale): number {
     return Math.max(minScale, Math.min(maxScale, scale));
   }
 
   /**
-   * 计算缩放后的画布尺寸
-   * @param originalWidth 原始宽度
-   * @param originalHeight 原始高度
-   * @param scale 缩放比例
-   * @returns 缩放后的尺寸
+   * Compute the canvas size after scaling
+   * @param originalWidth Original width
+   * @param originalHeight Original height
+   * @param scale Scale
+   * @returns Scaled size
    */
   public static calculateScaledSize(originalWidth: number, originalHeight: number, scale: number): { width: number; height: number } {
     return {
@@ -154,11 +155,11 @@ export class ZoomManager {
   }
 
   /**
-   * 计算缩放后的点坐标
-   * @param x 原始X坐标
-   * @param y 原始Y坐标
-   * @param scale 缩放比例
-   * @returns 缩放后的坐标
+   * Compute the scaled point coordinates
+   * @param x Original X coordinate
+   * @param y Original Y coordinate
+   * @param scale Scale
+   * @returns Scaled coordinates
    */
   public static scalePoint(x: number, y: number, scale: number): { x: number; y: number } {
     return {
@@ -168,11 +169,11 @@ export class ZoomManager {
   }
 
   /**
-   * 计算反缩放后的点坐标
-   * @param x 缩放后的X坐标
-   * @param y 缩放后的Y坐标
-   * @param scale 缩放比例
-   * @returns 原始坐标
+   * Compute the unscaled point coordinates
+   * @param x Scaled X coordinate
+   * @param y Scaled Y coordinate
+   * @param scale Scale
+   * @returns Original coordinates
    */
   public static unscalePoint(x: number, y: number, scale: number): { x: number; y: number } {
     return {
@@ -182,8 +183,8 @@ export class ZoomManager {
   }
 
   /**
-   * 获取默认缩放参数
-   * @returns 默认缩放参数
+   * Get the default zoom parameters
+   * @returns Default zoom parameters
    */
   public static getDefaultZoomParams(): { minScale: number; maxScale: number; step: number } {
     return {
@@ -194,10 +195,10 @@ export class ZoomManager {
   }
 
   /**
-   * 设置默认缩放参数
-   * @param minScale 最小缩放比例
-   * @param maxScale 最大缩放比例
-   * @param step 缩放步长
+   * Set the default zoom parameters
+   * @param minScale Minimum scale
+   * @param maxScale Maximum scale
+   * @param step Zoom step
    */
   public static setDefaultZoomParams(minScale: number, maxScale: number, step: number): void {
     this.defaultMinScale = minScale;
@@ -206,29 +207,29 @@ export class ZoomManager {
   }
 
   /**
-   * 根据屏幕宽高比自动选择适配模式
-   * @param aspectRatio 屏幕宽高比
-   * @param config 自适应配置
-   * @returns 适配模式
+   * Automatically select a fit mode based on the screen aspect ratio
+   * @param aspectRatio Screen aspect ratio
+   * @param config Auto-fit configuration
+   * @returns Fit mode
    */
   public static autoSelectFitMode(aspectRatio: number, config: AutoFitConfig = defaultAutoFitConfig): FitMode {
     if (aspectRatio < config.minAspectRatio) {
-      return 'fitHeight';      // 竖屏：Y轴铺满
+      return 'fitHeight';      // Portrait: fill Y axis
     } else if (aspectRatio < config.maxAspectRatio) {
-      return 'contain';        // 接近正方形：自适应比例
+      return 'contain';        // Near square: fit proportionally
     } else {
-      return 'fitWidth';       // 宽屏：X轴铺满
+      return 'fitWidth';       // Landscape: fill X axis
     }
   }
 
   /**
-   * 计算适配模式对应的缩放比例
-   * @param fitMode 适配模式
-   * @param contentWidth 内容宽度
-   * @param contentHeight 内容高度
-   * @param viewportWidth 窗口宽度
-   * @param viewportHeight 窗口高度
-   * @returns 缩放比例（百分比）
+   * Compute the scale for a given fit mode
+   * @param fitMode Fit mode
+   * @param contentWidth Content width
+   * @param contentHeight Content height
+   * @param viewportWidth Window width
+   * @param viewportHeight Window height
+   * @returns Scale (percentage)
    */
   public static calculateFitScale(
     fitMode: FitMode,
@@ -242,24 +243,24 @@ export class ZoomManager {
 
     switch (fitMode) {
       case 'contain':
-        // 等比缩放，取较小值
+        // Scale proportionally, take the smaller value
         scaleX = (viewportWidth / contentWidth) * 100;
         scaleY = (viewportHeight / contentHeight) * 100;
         return Math.min(scaleX, scaleY);
 
       case 'fitWidth':
-        // X轴铺满
+        // Fill X axis
         return (viewportWidth / contentWidth) * 100;
 
       case 'fitHeight':
-        // Y轴铺满
+        // Fill Y axis
         return (viewportHeight / contentHeight) * 100;
 
       case 'stretch':
-        // 拉伸，不保持比例（不推荐使用）
+        // Stretch without preserving ratio (not recommended)
         scaleX = (viewportWidth / contentWidth) * 100;
         scaleY = (viewportHeight / contentHeight) * 100;
-        // 返回平均值作为参考
+        // Return the average value as reference
         return (scaleX + scaleY) / 2;
 
       default:
@@ -268,13 +269,13 @@ export class ZoomManager {
   }
 
   /**
-   * 根据窗口尺寸自动计算最佳缩放比例
-   * @param contentWidth 内容宽度
-   * @param contentHeight 内容高度
-   * @param viewportWidth 窗口宽度
-   * @param viewportHeight 窗口高度
-   * @param config 自适应配置
-   * @returns 包含适配模式和缩放比例的结果
+   * Automatically compute the best scale based on window size
+   * @param contentWidth Content width
+   * @param contentHeight Content height
+   * @param viewportWidth Window width
+   * @param viewportHeight Window height
+   * @param config Auto-fit configuration
+   * @returns Result containing fit mode and scale
    */
   public static calculateAutoFitScale(
     contentWidth: number,
@@ -284,13 +285,13 @@ export class ZoomManager {
     config: AutoFitConfig = defaultAutoFitConfig,
     scaleRange?: ScaleRange,
   ): { fitMode: FitMode; scale: number } {
-    // 计算屏幕宽高比
+    // Compute screen aspect ratio
     const aspectRatio = viewportWidth / viewportHeight;
 
-    // 自动选择适配模式
+    // Auto-select fit mode
     const fitMode = this.autoSelectFitMode(aspectRatio, config);
 
-    // 计算缩放比例
+    // Compute scale
     const scale = this.calculateFitScale(
       fitMode,
       contentWidth,
@@ -299,7 +300,7 @@ export class ZoomManager {
       viewportHeight
     );
 
-    // 限制缩放范围（未传 scaleRange 时使用内部默认值兜底）
+    // Clamp the scale (fall back to internal defaults when scaleRange is not passed)
     const clampedScale = this.clampScale(
       scale,
       scaleRange?.minScale,
@@ -310,14 +311,14 @@ export class ZoomManager {
   }
 
   /**
-   * 根据当前适配模式计算缩放比例（支持 auto 模式）
-   * @param currentFitMode 当前适配模式
-   * @param contentWidth 内容宽度
-   * @param contentHeight 内容高度
-   * @param viewportWidth 窗口宽度
-   * @param viewportHeight 窗口高度
-   * @param config 自适应配置
-   * @returns 包含实际适配模式和缩放比例的结果
+   * Compute the scale based on the current fit mode (supports auto mode)
+   * @param currentFitMode Current fit mode
+   * @param contentWidth Content width
+   * @param contentHeight Content height
+   * @param viewportWidth Window width
+   * @param viewportHeight Window height
+   * @param config Auto-fit configuration
+   * @returns Result containing the actual fit mode and scale
    */
   public static calculateScaleByMode(
     currentFitMode: FitMode,
@@ -329,7 +330,7 @@ export class ZoomManager {
     scaleRange?: ScaleRange,
   ): { fitMode: FitMode; scale: number } {
     if (currentFitMode === 'auto') {
-      // 如果是自动模式，使用自动适配
+      // If auto mode, use auto-fit
       return this.calculateAutoFitScale(
         contentWidth,
         contentHeight,
@@ -339,7 +340,8 @@ export class ZoomManager {
         scaleRange,
       );
     } else {
-      // 如果是手动选择的模式，直接计算缩放（未传 scaleRange 时使用内部默认值兜底）
+      // If manually selected mode, compute scale directly
+      // (fall back to internal defaults when scaleRange is not passed)
       const scale = this.clampScale(
         this.calculateFitScale(
           currentFitMode,
@@ -356,21 +358,21 @@ export class ZoomManager {
   }
 
   /**
-   * 获取当前屏幕的适配模式建议
-   * @param config 自适应配置
-   * @returns 适配模式
+   * Get the fit mode suggestion for the current screen
+   * @param config Auto-fit configuration
+   * @returns Fit mode
    */
   public static getCurrentScreenFitMode(config: AutoFitConfig = defaultAutoFitConfig): FitMode {
     if (typeof window === 'undefined') {
-      return 'contain'; // 默认返回自适应比例
+      return 'contain'; // Default to proportional fit
     }
     const aspectRatio = window.innerWidth / window.innerHeight;
     return this.autoSelectFitMode(aspectRatio, config);
   }
 
   /**
-   * 判断是否为竖屏
-   * @returns 是否为竖屏
+   * Determine whether the screen is portrait
+   * @returns Whether portrait
    */
   public static isPortrait(): boolean {
     if (typeof window === 'undefined') {
@@ -380,9 +382,9 @@ export class ZoomManager {
   }
 
   /**
-   * 判断是否为宽屏
-   * @param threshold 宽屏阈值，默认1.5
-   * @returns 是否为宽屏
+   * Determine whether the screen is wide
+   * @param threshold Wide-screen threshold, default 1.5
+   * @returns Whether wide-screen
    */
   public static isWideScreen(threshold: number = 1.5): boolean {
     if (typeof window === 'undefined') {

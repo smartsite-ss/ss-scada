@@ -5,18 +5,18 @@
 import { IProtocolAdapter } from './types';
 
 /**
- * 插件开发服务器 — 提供独立调试环境
+ * Plugin development server - provides an isolated debugging environment
  *
- * 支持：
- *  - 手动连接/断开设备
- *  - 单次读写标签
- *  - 连续采集压力测试
- *  - 连接状态查询
+ * Supports:
+ *  - Manual connect/disconnect of devices
+ *  - Single read/write of tags
+ *  - Continuous-collection stress testing
+ *  - Connection-status query
  *
- * 使用方式：
+ * Usage:
  *   const devServer = new PluginDevServer(new MyService(), 5101);
  *   devServer.start();
- *   // 访问 http://localhost:5101/debug
+ *   // visit http://localhost:5101/debug
  */
 export class PluginDevServer {
   private app: any;
@@ -29,7 +29,7 @@ export class PluginDevServer {
     this.port = port;
   }
 
-  /** 启动开发服务器 */
+  /** Start the development server */
   async start(): Promise<void> {
     const express = await this.loadExpress();
     this.app = express();
@@ -44,7 +44,7 @@ export class PluginDevServer {
     });
   }
 
-  /** 停止服务器 */
+  /** Stop the server */
   stop(): void {
     this.activeClients.clear();
   }
@@ -52,7 +52,7 @@ export class PluginDevServer {
   private setupRoutes(): void {
     const app = this.app;
 
-    // 连接设备
+    // Connect device
     app.post('/debug/connect', async (req: any, res: any) => {
       try {
         const client = await this.service.connect(req.body);
@@ -64,7 +64,7 @@ export class PluginDevServer {
       }
     });
 
-    // 读取标签
+    // Read tag
     app.post('/debug/read', async (req: any, res: any) => {
       try {
         const { deviceId, tagConfig } = req.body;
@@ -79,7 +79,7 @@ export class PluginDevServer {
       }
     });
 
-    // 写入标签
+    // Write tag
     app.post('/debug/write', async (req: any, res: any) => {
       try {
         const { deviceId, tagConfig, value } = req.body;
@@ -94,7 +94,7 @@ export class PluginDevServer {
       }
     });
 
-    // 压力测试
+    // Stress test
     app.post('/debug/stress-test', async (req: any, res: any) => {
       try {
         const { deviceId, tagConfigs, duration, interval } = req.body;
@@ -147,14 +147,14 @@ export class PluginDevServer {
               ? results.reduce((s: number, r: any) => s + r.elapsed, 0) / results.length
               : 0,
           throughput: results.length / (totalElapsed / 1000),
-          results: results.slice(0, 100), // 只返回前 100 条
+          results: results.slice(0, 100), // return only the first 100 entries
         });
       } catch (error) {
         res.status(500).json({ error: String(error) });
       }
     });
 
-    // 断开连接
+    // Disconnect
     app.post('/debug/disconnect', async (req: any, res: any) => {
       try {
         const { deviceId } = req.body;
@@ -169,7 +169,7 @@ export class PluginDevServer {
       }
     });
 
-    // 状态查询
+    // Status query
     app.get('/debug/status', (_req: any, res: any) => {
       res.json({
         activeConnections: this.activeClients.size,

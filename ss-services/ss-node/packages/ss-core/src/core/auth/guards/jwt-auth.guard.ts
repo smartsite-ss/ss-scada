@@ -9,12 +9,12 @@ import { ExtractJwt } from 'passport-jwt';
 import { UserRole } from '../../user/entities/user.entity';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 
-// ⚠️  debug-mock-token 仅非生产环境下生效：
-//     前端 VITE_DEBUG_SKIP_AUTH（.env.development） → 注入 debug-mock-token
-//     后端 isDevMode() → NODE_ENV !== 'production' 才识别
-//     若生产构建时前端误启用了 VITE_DEBUG_SKIP_AUTH=true，前端会跳过登录
-//     但后端 isDevMode()=false → 走真实 JWT 校验 → 401 Unauthorized → 获取不到任何数据
-//     详见: ss-editor/apps/web/.env.full 及 package.json 构建脚本注释
+// ⚠️  debug-mock-token only works in non-production:
+//     frontend VITE_DEBUG_SKIP_AUTH (.env.development) -> injects debug-mock-token
+//     backend isDevMode() -> recognizes only when NODE_ENV !== 'production'
+//     if the production build accidentally enables VITE_DEBUG_SKIP_AUTH=true, the frontend skips login
+//     but backend isDevMode()=false -> real JWT verification -> 401 Unauthorized -> no data fetched
+//     see: ss-editor/apps/web/.env.full and package.json build-script comments
 const DEBUG_TOKEN = 'debug-mock-token';
 
 const MOCK_DEBUG_USER = {
@@ -37,7 +37,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    // @Public() 装饰器标记的路由跳过 JWT 鉴权
+    // Routes marked with @Public() skip JWT auth
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
@@ -62,8 +62,8 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   }
 
   /**
-   * 重写 handleRequest：将 TokenExpiredError 等 passport 异常转为 401
-   * 确保前端 401 拦截器能正确触发 token 自动刷新
+   * Override handleRequest: convert passport exceptions such as TokenExpiredError into 401
+   * so the frontend 401 interceptor can correctly trigger automatic token refresh
    */
   handleRequest<TUser = any>(
     err: any,
@@ -74,7 +74,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   ): TUser {
     if (err || !user) {
       if (err) {
-        // TokenExpiredError / JsonWebTokenError / NotBeforeError 等
+        // TokenExpiredError / JsonWebTokenError / NotBeforeError, etc.
         throw new UnauthorizedException(err.message || 'Token 验证失败');
       }
       throw new UnauthorizedException('未登录或登录已过期');

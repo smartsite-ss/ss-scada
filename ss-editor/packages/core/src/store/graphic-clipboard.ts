@@ -10,13 +10,13 @@ import { InterpageTransferService } from '../services/InterpageTransferService';
 import { graphicCache } from './graphic-defaults';
 import { getNextGraphicName } from '../utils/graphic/graphicNameUtils';
 
-/** 剪贴板操作需要的 store 状态子集 */
+/** Store state subset required for clipboard operations */
 export interface ClipboardStoreState {
   clipboardManager: ClipboardManager;
   transferService: InterpageTransferService;
 }
 
-/** 复制选中的图形到剪贴板 */
+/** Copy selected graphics to clipboard */
 export function copyHelper(store: ClipboardStoreState) {
   const pageStore = usePageStore();
   const currentPage = pageStore.currentPage;
@@ -46,7 +46,7 @@ export function copyHelper(store: ClipboardStoreState) {
   }
 }
 
-/** 剪切选中的图形到剪贴板 */
+/** Cut selected graphics to clipboard */
 export function cutHelper(store: ClipboardStoreState) {
   const pageStore = usePageStore();
   const currentPage = pageStore.currentPage;
@@ -58,11 +58,11 @@ export function cutHelper(store: ClipboardStoreState) {
   const serializedData = store.transferService.serializeGraphics(selectedGraphics);
   store.clipboardManager.setData(serializedData, 'cut', currentPage.id);
 
-  // 使用事务化批量删除
+  // Use transactional batch deletion
   currentPage.deleteSelectedGraphics();
 }
 
-/** 从剪贴板粘贴图形到当前页面 */
+/** Paste graphics from clipboard to the current page */
 export function pasteHelper(store: ClipboardStoreState, offsetX: number = 20, offsetY: number = 20): IGraphic[] {
   const pageStore = usePageStore();
   const currentPage = pageStore.currentPage;
@@ -74,13 +74,13 @@ export function pasteHelper(store: ClipboardStoreState, offsetX: number = 20, of
   const clipboardMode = store.clipboardManager.getClipboardMode();
   const sourcePageId = store.clipboardManager.getSourcePageId();
 
-  // 反序列化
+  // Deserialize
   let graphics = store.transferService.deserializeGraphics(clipboardData);
 
-  // 重新分配 ID
+  // Reassign IDs
   graphics = store.transferService.reassignIds(graphics, existingIds);
 
-  // ★ 按同类图元最大编码递增名称（在添加之前更新所有粘贴图形的名称）
+  // Name each pasted graphic by incrementing the max code among same-type elements (update before adding)
   for (const graphic of graphics) {
     const type = graphic.type;
     const newName = getNextGraphicName(
@@ -92,23 +92,23 @@ export function pasteHelper(store: ClipboardStoreState, offsetX: number = 20, of
     graphic.config.name = newName;
   }
 
-  // 计算累积偏移位置（每次粘贴都增加 20px）
+  // Compute the cumulative offset (each paste adds 20px)
   const totalOffsetX = offsetX * (pasteCount + 1);
   const totalOffsetY = offsetY * (pasteCount + 1);
 
-  // 偏移位置
+  // Offset position
   graphics.forEach((graphic) => {
     store.transferService.transformCoordinates(graphic, totalOffsetX, totalOffsetY);
-    // 添加到当前页面
+    // Add to the current page
     currentPage.addGraphic(graphic);
   });
 
-  // 先清空原选择，再选择新粘贴的图形
+  // Clear the original selection, then select the newly pasted graphics
   currentPage.clearSelection();
   const newIds = graphics.map((g) => g.id);
   currentPage.selectMultipleGraphics(newIds);
 
-  // ★ 检测源数据是否来自组合，若是则重建组合结构
+  // Detect whether the source came from a group; if so, rebuild the group structure
   const groupMetadata = store.clipboardManager.getGroupMetadata();
   if (groupMetadata?.isGroupCopy && newIds.length > 1) {
     const groupName = groupMetadata.groupName.includes('Copy')
@@ -124,14 +124,14 @@ export function pasteHelper(store: ClipboardStoreState, offsetX: number = 20, of
     }
   }
 
-  // 增加粘贴计数
+  // Increment the paste count
   store.clipboardManager.incrementPasteCount();
 
-  // 如果是剪切模式，粘贴后删除源页面的图元并清空剪贴板
+  // In cut mode, delete the source page's elements after pasting and clear the clipboard
   if (clipboardMode === 'cut' && sourcePageId) {
     const sourcePage = pageStore.pages.find((p) => p.id === sourcePageId);
     if (sourcePage && sourcePage.id !== currentPage.id) {
-      // 删除源页面中被剪切的图元
+      // Remove the cut elements from the source page
       const clipboardGraphicIds = clipboardData.map((d: any) => d.originalId || d.id).filter(Boolean);
       clipboardGraphicIds.forEach((gid: string) => {
         sourcePage.removeGraphic(gid);
@@ -143,7 +143,7 @@ export function pasteHelper(store: ClipboardStoreState, offsetX: number = 20, of
   return graphics;
 }
 
-/** 复制整个组合（createGroupCopy）*/
+/** Duplicate an entire group (createGroupCopy) */
 export function duplicateGroupHelper(groupId: string): { groupId: string; memberIds: string[] } | null {
   const pageStore = usePageStore();
   const currentPage = pageStore.currentPage;
@@ -158,10 +158,10 @@ export function duplicateGroupHelper(groupId: string): { groupId: string; member
     currentPage.clearSelection();
     currentPage.selectMultipleGraphics(result.memberIds);
 
-    // 失效查找缓存
+    // Invalidate the lookup cache
     graphicCache.invalidate();
 
-    // 触发组创建事件 + 页面更新事件，通知 UI 刷新
+    // Emit group-created and page-updated events to notify the UI to refresh
     eventBus.emit(Events.GROUP_CREATED, { groupId: result.groupId, isDuplicate: true });
     eventBus.emit(Events.PAGE_UPDATED, { pageId: currentPage.id, change: 'group_duplicate' });
   } else if (result && !result.groupId) {
@@ -170,7 +170,7 @@ export function duplicateGroupHelper(groupId: string): { groupId: string; member
   return result;
 }
 
-/** 复制图形（支持单个图元和组合）*/
+/** Duplicate a graphic (supports single element and group) */
 export function duplicateGraphicHelper(id: string) {
   const pageStore = usePageStore();
   const currentPage = pageStore.currentPage;
@@ -179,7 +179,7 @@ export function duplicateGraphicHelper(id: string) {
     return null;
   }
 
-  // ★ 智能检测：如果选中的是组合成员 → 调用 duplicateGroup
+  // Smart detection: if a group member is selected → call duplicateGroup
   const groupManager = currentPage.getGroupManager?.();
   if (groupManager && currentPage.selectedGraphicIds.length > 0) {
     const selectedIds = currentPage.selectedGraphicIds;

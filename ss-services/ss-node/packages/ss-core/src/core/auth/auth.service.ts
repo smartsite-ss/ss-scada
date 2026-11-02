@@ -35,7 +35,7 @@ export class AuthService {
   private readonly logger = new Logger(AuthService.name);
   private refreshTokenStore: Map<string, { userId: string; username: string; role: string }> =
     new Map();
-  private revokedTokens: Set<string> = new Set(); // 已显式撤销的 token，防止服务重启后 JWT 降级路径复用
+  private revokedTokens: Set<string> = new Set(); // tokens explicitly revoked; prevents reuse via the JWT fallback path after a service restart
   private loginAttempts: Map<string, LoginAttempt> = new Map();
   private readonly ACCESS_TOKEN_EXPIRES = process.env.JWT_ACCESS_EXPIRES_IN || '15m';
   private readonly REFRESH_TOKEN_EXPIRES = process.env.JWT_REFRESH_EXPIRES_IN || '7d';
@@ -51,7 +51,7 @@ export class AuthService {
   ) {}
 
   /**
-   * 生成 token 的掩码（仅保留前 8 位 + ...），用于日志中安全地标识 token 而不泄露完整值
+   * Generate a token mask (keep only the first 8 chars + ...), used to safely identify a token in logs without leaking the full value
    */
   private maskToken(token: string): string {
     if (!token || token.length < 12) return '***';
@@ -95,7 +95,7 @@ export class AuthService {
       `[登录] 用户查询成功 | userId="${user.id}" username="${user.username}" role="${user.role}" | 耗时=${Date.now() - startTime}ms`,
     );
 
-    // 检查账户是否被锁定
+    // Check whether the account is locked
     this.checkLoginLockout(user.id);
 
     const isValid = await bcrypt.compare(loginDto.password, user.password);
@@ -124,7 +124,7 @@ export class AuthService {
       );
     }
 
-    // 登录成功，重置失败计数
+    // Login succeeded, reset failure count
     this.resetLoginAttempts(user.id);
 
     const { password: _password, ...result } = user;
@@ -172,7 +172,7 @@ export class AuthService {
     const maskedToken = this.maskToken(token);
     this.logger.log(`[刷新Token] 收到刷新请求 | refreshToken=${maskedToken}`);
 
-    // 先检查是否已显式撤销（logout / changePassword）
+    // First check whether it has been explicitly revoked (logout / changePassword)
     if (this.revokedTokens.has(token)) {
       this.logger.warn(
         `[刷新Token] Token 已被撤销（logout/changePassword） | token=${maskedToken} | 耗时=${Date.now() - startTime}ms`,
@@ -193,13 +193,13 @@ export class AuthService {
       );
     }
 
-    // 路径 1：Map 命中（正常流程，服务未重启）
+    // Path 1: Map hit (normal flow, service not restarted)
     const cached = this.refreshTokenStore.get(token);
     if (cached) {
       this.logger.debug(
         `[刷新Token] Map 命中（正常路径） | userId="${cached.userId}" username="${cached.username}" | token=${maskedToken}`,
       );
-      this.refreshTokenStore.delete(token); // 一次性使用
+      this.refreshTokenStore.delete(token); // one-time use
       const tokens = this.generateTokens(cached);
       this.logger.log(
         `[刷新Token] 刷新成功（Map路径） | userId="${cached.userId}" username="${cached.username}" | newAccessToken=${this.maskToken(tokens.accessToken)} newRefreshToken=${this.maskToken(tokens.refreshToken)} | 耗时=${Date.now() - startTime}ms`,
@@ -216,7 +216,7 @@ export class AuthService {
       return { accessToken: tokens.accessToken, refreshToken: tokens.refreshToken };
     }
 
-    // 路径 2：Map 未命中（服务重启导致内存 Map 清空）→ 降级为 JWT 签名验证
+    // Path 2: Map miss (service restart cleared the in-memory Map) -> fall back to JWT signature verification
     this.logger.debug(
       `[刷新Token] Map 未命中，降级为 JWT 签名验证 | token=${maskedToken}`,
     );
@@ -256,7 +256,7 @@ export class AuthService {
       });
       return { accessToken: tokens.accessToken, refreshToken: tokens.refreshToken };
     } catch (err) {
-      // 区分已抛出的 HttpException 和 JWT 验证失败
+      // Distinguish already-thrown HttpException from JWT verification failure
       if (err instanceof UnauthorizedException) throw err;
       this.logger.warn(
         `[刷新Token] JWT 验证失败 | token=${maskedToken} error="${(err as Error).message}" | 耗时=${Date.now() - startTime}ms`,
@@ -285,7 +285,7 @@ export class AuthService {
 
     const cached = this.refreshTokenStore.get(token);
     this.refreshTokenStore.delete(token);
-    this.revokedTokens.add(token); // 标记撤销，防止 JWT 降级路径复用
+    this.revokedTokens.add(token); // mark revoked, preventing reuse via the JWT fallback path
 
     this.logger.log(
       `[登出] Token 已撤销 | userId="${cached?.userId || 'unknown'}" username="${cached?.username || 'unknown'}" | token=${maskedToken} | revokedTotal=${this.revokedTokens.size}`,
@@ -305,7 +305,7 @@ export class AuthService {
     const { oldPassword, newPassword, confirmPassword } = changePasswordDto;
     this.logger.log(`[修改密码] 收到修改密码请求 | userId="${userId}"`);
 
-    // 验证两次密码是否一致
+    // Verify the two passwords match
     if (newPassword !== confirmPassword) {
       this.logger.warn(`[修改密码] 两次密码不一致 | userId="${userId}"`);
       this.auditLogger.logSecurityEvent({
@@ -319,7 +319,7 @@ export class AuthService {
       throw new BadRequestException('两次输入的新密码不一致');
     }
 
-    // 验证密码强度
+    // Verify password strength
     const strengthCheck = validatePasswordStrength(newPassword);
     if (!strengthCheck.valid) {
       this.logger.warn(`[修改密码] 密码强度不足 | userId="${userId}" reason="${strengthCheck.message}"`);
@@ -334,10 +334,10 @@ export class AuthService {
       throw new BadRequestException(strengthCheck.message);
     }
 
-    // 验证旧密码并更新密码
+    // Verify old password and update password
     await this.userService.changePassword(userId, oldPassword, newPassword);
 
-    // 撤销该用户的所有 refresh token
+    // Revoke all refresh tokens of this user
     this.revokeAllUserTokens(userId);
 
     this.logger.log(
@@ -355,7 +355,7 @@ export class AuthService {
   }
 
   /**
-   * S-C03: 为指定用户生成新的 Token 对（用于 changePassword 后重新设置 Cookie）
+   * S-C03: generate a new token pair for the specified user (used to re-set Cookies after changePassword)
    */
   async generateTokensForUser(user: {
     id?: string;
@@ -370,19 +370,19 @@ export class AuthService {
   }
 
   /**
-   * 撤销指定用户的所有 refresh token
+   * Revoke all refresh tokens of the specified user
    */
   private revokeAllUserTokens(userId: string): void {
     for (const [token, payload] of this.refreshTokenStore.entries()) {
       if (payload.userId === userId) {
         this.refreshTokenStore.delete(token);
-        this.revokedTokens.add(token); // 同步标记撤销
+        this.revokedTokens.add(token); // mark revoked as well
       }
     }
   }
 
   /**
-   * 检查登录锁定状态
+   * Check login lock status
    */
   private checkLoginLockout(userId: string): void {
     const attempt = this.loginAttempts.get(userId);
@@ -394,18 +394,18 @@ export class AuthService {
         const remainingMinutes = Math.ceil((this.LOCKOUT_DURATION_MS - elapsed) / 60000);
         throw new UnauthorizedException(`账户已被锁定，请 ${remainingMinutes} 分钟后重试`);
       }
-      // 锁定时间已过，重置
+      // Lock time elapsed, reset
       this.loginAttempts.delete(userId);
     }
   }
 
   /**
-   * 记录失败的登录尝试
+   * Record a failed login attempt
    */
   private recordFailedLoginAttempt(userId: string): void {
     const existing = this.loginAttempts.get(userId);
     if (existing) {
-      // 如果锁定时间已过，重置计数
+      // If lock time elapsed, reset the count
       if (
         existing.count >= this.MAX_LOGIN_ATTEMPTS &&
         Date.now() - existing.lastAttempt >= this.LOCKOUT_DURATION_MS
@@ -421,7 +421,7 @@ export class AuthService {
   }
 
   /**
-   * 重置登录失败计数
+   * Reset login failure count
    */
   private resetLoginAttempts(userId: string): void {
     this.loginAttempts.delete(userId);

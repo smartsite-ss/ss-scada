@@ -22,7 +22,7 @@ export class PluginRegistry {
   ) {}
 
   /**
-   * 注册采集插件
+   * Register a collection plugin
    */
   register(meta: CollectorPluginMeta, adapter: IProtocolAdapter): void {
     const protocol = meta.protocol.toLowerCase();
@@ -56,7 +56,7 @@ export class PluginRegistry {
   }
 
   /**
-   * 激活插件（使其可用于采集）
+   * Activate a plugin (make it available for collection)
    */
   async activate(protocol: string): Promise<void> {
     const plugin = this.getRequired(protocol);
@@ -65,7 +65,7 @@ export class PluginRegistry {
     plugin.activatedAt = new Date();
     this.logger.log(`Plugin activated: ${protocol}`);
 
-    // 持久化激活状态，确保重启后自动恢复
+    // Persist the activation state so it auto-restores after restart
     try {
       this.configService?.setActivated(protocol, true);
     } catch (err) {
@@ -74,7 +74,7 @@ export class PluginRegistry {
       );
     }
 
-    // 调用适配器的 onActivate 生命周期钩子（独立于设备加载）
+    // Call the adapter's onActivate lifecycle hook (independent of device loading)
     try {
       if (typeof plugin.adapter?.onActivate === 'function') {
         this.logger.log(`Calling adapter.onActivate() for plugin "${protocol}"...`);
@@ -87,8 +87,8 @@ export class PluginRegistry {
       this.logger.error(
         `Adapter.onActivate() failed for plugin "${protocol}": ${(err as Error).message}`,
       );
-      // 激活失败不应阻塞插件状态变更——状态已经设为 active,
-      // 但记录错误以便排查
+      // Activation failure must not block the plugin status change - the status is already set to active,
+      // but log the error for troubleshooting
     }
 
     this.emitEvent('plugin.activated', {
@@ -103,7 +103,7 @@ export class PluginRegistry {
   }
 
   /**
-   * 停用插件
+   * Deactivate a plugin
    */
   async deactivate(protocol: string): Promise<void> {
     const plugin = this.getRequired(protocol);
@@ -111,7 +111,7 @@ export class PluginRegistry {
     plugin.status = 'inactive';
     this.logger.log(`Plugin deactivated: ${protocol}`);
 
-    // 持久化停用状态，确保重启后不会自动激活
+    // Persist the deactivation state so it will not auto-activate after restart
     try {
       this.configService?.setActivated(protocol, false);
     } catch (err) {
@@ -120,7 +120,7 @@ export class PluginRegistry {
       );
     }
 
-    // 调用适配器的 onDeactivate 生命周期钩子
+    // Call the adapter's onDeactivate lifecycle hook
     try {
       if (typeof plugin.adapter?.onDeactivate === 'function') {
         await plugin.adapter.onDeactivate();
@@ -143,7 +143,7 @@ export class PluginRegistry {
   }
 
   /**
-   * 注销插件
+   * Unregister a plugin
    */
   unregister(protocol: string): void {
     const plugin = this.plugins.get(protocol.toLowerCase());
@@ -163,7 +163,7 @@ export class PluginRegistry {
   }
 
   /**
-   * 标记插件为错误状态
+   * Mark a plugin as error state
    */
   markError(protocol: string, errorMessage: string): void {
     const plugin = this.plugins.get(protocol.toLowerCase());
@@ -186,7 +186,7 @@ export class PluginRegistry {
   }
 
   /**
-   * 发射插件生命周期事件
+   * Emit a plugin lifecycle event
    */
   private emitEvent(
     eventType:
@@ -200,12 +200,12 @@ export class PluginRegistry {
     try {
       this.eventBus?.emit(eventType, event);
     } catch {
-      // 事件发射失败不应影响插件管理核心逻辑
+      // Event dispatch failure must not affect the core plugin management logic
     }
   }
 
   /**
-   * 获取指定协议的适配器
+   * Get the adapter for the specified protocol
    */
   getAdapter(protocol: string): IProtocolAdapter {
     const plugin = this.getRequired(protocol);
@@ -216,14 +216,14 @@ export class PluginRegistry {
   }
 
   /**
-   * 获取插件详情
+   * Get plugin details
    */
   getPlugin(protocol: string): RegisteredPlugin | undefined {
     return this.plugins.get(protocol.toLowerCase());
   }
 
   /**
-   * 获取所有已注册插件
+   * Get all registered plugins
    */
   listPlugins(filter?: PluginFilter): RegisteredPlugin[] {
     let plugins = Array.from(this.plugins.values());
@@ -237,21 +237,21 @@ export class PluginRegistry {
   }
 
   /**
-   * 获取所有支持的协议类型
+   * Get all supported protocol types
    */
   getSupportedProtocols(): string[] {
     return Array.from(this.plugins.keys());
   }
 
   /**
-   * 检查协议是否支持
+   * Check whether a protocol is supported
    */
   isSupported(protocol: string): boolean {
     return this.plugins.has(protocol.toLowerCase());
   }
 
   /**
-   * 获取插件数量
+   * Get the plugin count
    */
   get count(): number {
     return this.plugins.size;

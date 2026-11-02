@@ -4,30 +4,30 @@
 
 import { randomUUID, randomBytes } from 'crypto';
 
-/** base36 字母表（0-9, a-z） */
+/** base36 alphabet (0-9, a-z) */
 const BASE36_ALPHABET = '0123456789abcdefghijklmnopqrstuvwxyz';
 
-/** URL 安全字母表（A-Z, a-z, 0-9, _, -） */
+/** URL-safe alphabet (A-Z, a-z, 0-9, _, -) */
 const URL_SAFE_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-';
 
 /**
- * ID 生成器
+ * ID generator
  *
- * 提供多种 ID 生成策略，基于 Node.js 内置 crypto 模块，无额外依赖。
+ * Provides multiple ID generation strategies based on Node.js's built-in crypto module, with no extra dependencies.
  */
 export class IdGenerator {
   /**
-   * 生成标准 UUID v4
-   * @returns 36 字符的 UUID 字符串（如 `550e8400-e29b-41d4-a716-446655440000`）
+   * Generate a standard UUID v4
+   * @returns a 36-character UUID string (e.g. `550e8400-e29b-41d4-a716-446655440000`)
    */
   static uuid(): string {
     return randomUUID();
   }
 
   /**
-   * 生成短 ID（base36 编码）
-   * @param length 长度，默认 8
-   * @returns 短 ID 字符串（如 `a3f9k2x7`）
+   * Generate a short ID (base36 encoded)
+   * @param length length, default 8
+   * @returns the short ID string (e.g. `a3f9k2x7`)
    */
   static shortId(length: number = 8): string {
     const safeLength = Math.max(1, length);
@@ -40,19 +40,19 @@ export class IdGenerator {
   }
 
   /**
-   * 生成带前缀的 ID
-   * @param prefix 业务前缀（如 `dev`、`tag`）
-   * @param length 随机部分长度，默认 8
-   * @returns 带前缀的 ID（如 `dev-abc12345`）
+   * Generate a prefixed ID
+   * @param prefix business prefix (e.g. `dev`, `tag`)
+   * @param length length of the random part, default 8
+   * @returns the prefixed ID (e.g. `dev-abc12345`)
    */
   static prefixedId(prefix: string, length: number = 8): string {
     return `${prefix}-${this.shortId(length)}`;
   }
 
   /**
-   * 生成类似 nanoid 的 URL 安全 ID
-   * @param length 长度，默认 21（与 nanoid 默认一致）
-   * @returns URL 安全的随机 ID（如 `V1StGXR8_Z5jdHi6B-myT`）
+   * Generate a nanoid-like URL-safe ID
+   * @param length length, default 21 (same as nanoid's default)
+   * @returns the URL-safe random ID (e.g. `V1StGXR8_Z5jdHi6B-myT`)
    */
   static nanoid(length: number = 21): string {
     const safeLength = Math.max(1, length);
@@ -65,11 +65,11 @@ export class IdGenerator {
   }
 
   /**
-   * 生成顺序 ID
-   * @param prefix 业务前缀（如 `TMP`）
-   * @param seq 序列号
-   * @param padding 填充位数，默认 6
-   * @returns 顺序 ID（如 `TMP-000001`）
+   * Generate a sequential ID
+   * @param prefix business prefix (e.g. `TMP`)
+   * @param seq sequence number
+   * @param padding padding digits, default 6
+   * @returns the sequential ID (e.g. `TMP-000001`)
    */
   static sequentialId(prefix: string, seq: number, padding: number = 6): string {
     const safePadding = Math.max(1, padding);
@@ -77,9 +77,9 @@ export class IdGenerator {
   }
 
   /**
-   * 生成基于时间的 ID（时间戳 + 随机后缀）
-   * @param prefix 可选前缀
-   * @returns 基于时间的 ID（如 `dev-lq2abc123456`）
+   * Generate a time-based ID (timestamp + random suffix)
+   * @param prefix optional prefix
+   * @returns the time-based ID (e.g. `dev-lq2abc123456`)
    */
   static timeBasedId(prefix: string = ''): string {
     const timestamp = Date.now().toString(36);

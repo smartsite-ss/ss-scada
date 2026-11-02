@@ -27,22 +27,22 @@ export interface BackupInfo {
   error?: string;
 }
 
-/** 单类备份配置（全局或项目） */
+/** A single backup configuration (global or project) */
 export interface CategoryBackupConfig {
   enabled: boolean;
   cronExpression: string;
   retentionDays: number;
-  /** 备份存储位置（覆盖默认），为空时使用默认路径 */
+  /** Backup storage location (overrides default); when empty the default path is used */
   backupLocation?: string;
-  /** 备份总大小上限（MB），超过时自动清理最旧备份 */
+  /** Backup total size cap (MB); oldest backups are cleaned up automatically when exceeded */
   maxSizeMb?: number;
 }
 
-/** 备份配置根对象：包含全局与项目两套独立配置 */
+/** Backup configuration root object: contains independent global and project configurations */
 export interface BackupConfig {
-  /** 全局数据库备份配置 */
+  /** Global database backup configuration */
   system: CategoryBackupConfig;
-  /** 项目数据库备份配置 */
+  /** Project database backup configuration */
   project: CategoryBackupConfig;
 }
 
@@ -105,48 +105,48 @@ export class BackupService {
     this.registerDynamicCron();
   }
 
-  // ==================== 备份目录解析 ====================
+  // ==================== Backup directory resolution ====================
 
-  /** 根目录：优先环境变量 BACKUP_DIR，其次默认 */
+  /** Root directory: prefers the BACKUP_DIR env var, then the default */
   private resolveBackupRootDir(): string {
     if (process.env.BACKUP_DIR) {
       return this.resolvePath(process.env.BACKUP_DIR);
     }
-    // fallback：与 dev/prod 项目根对齐，避免写到 process.cwd()/backups
+    // fallback: aligned with the dev/prod project root, avoiding writing to process.cwd()/backups
     return path.join(this.getProjectRoot(), 'backups');
   }
 
-  /** 全局数据库备份子目录 */
+  /** Global database backup subdirectory */
   getSystemBackupDir(): string {
     const loc = this.backupConfig.system.backupLocation;
     if (loc) return this.resolvePath(loc);
     return path.join(this.backupRootDir, 'system');
   }
 
-  /** 项目数据库备份子目录 */
+  /** Project database backup subdirectory */
   getProjectBackupDir(): string {
     const loc = this.backupConfig.project.backupLocation;
     if (loc) return this.resolvePath(loc);
     return path.join(this.backupRootDir, 'project');
   }
 
-  /** 根据 dbType 获取对应备份目录 */
+  /** Get the corresponding backup directory by dbType */
   private getBackupDirFor(dbType: 'system' | 'project'): string {
     return dbType === 'system' ? this.getSystemBackupDir() : this.getProjectBackupDir();
   }
 
   /**
-   * 获取 ss-services/ss-node 项目根目录的绝对路径
+   * Get the absolute path of the ss-services/ss-node project root
    *
-   * 相对路径基准：
-   * - dev 模式：__dirname 上溯 4 级 = ss-services/ss-node（本文件位于 packages/ss-system/dist/backup/）
-   * - 生产模式：process.cwd() = ss-run/ss/services/ss-node（.env 中相对路径基准）
+   * Relative-path baselines:
+   * - dev mode: go up 4 levels from __dirname = ss-services/ss-node (this file lives in packages/ss-system/dist/backup/)
+   * - production mode: process.cwd() = ss-run/ss/services/ss-node (baseline for relative paths in .env)
    *
-   * 修复历史：
-   * - v1.4 之前用 5 个 '..' 上溯到 ss-services/（多了一级），导致 backupLocation 解析错位
-   * - v1.5 之前仅用 __dirname 不区分 prod，prod 模式下 __dirname 位于
-   *   node_modules/@ss-node/ss-system/dist/backup/，4 级上溯到 node_modules/（错误）
-   * - 现在与 app.module.ts getDatabaseConfig()、project-database.service.ts getProjectDbDir() 保持一致
+   * Fix history:
+   * - Before v1.4, 5 '..' levels went up to ss-services/ (one too many), misaligning backupLocation resolution
+   * - Before v1.5, only __dirname was used without distinguishing prod; in prod, __dirname sits in
+   *   node_modules/@ss-node/ss-system/dist/backup/, so 4 levels up lands in node_modules/ (wrong)
+   * - Now kept consistent with app.module.ts getDatabaseConfig() and project-database.service.ts getProjectDbDir()
    */
   private getProjectRoot(): string {
     return this.pathResolver.getProjectRoot();
@@ -162,21 +162,21 @@ export class BackupService {
     }
   }
 
-  // ==================== 备份配置 ====================
+  // ==================== Backup configuration ====================
 
   private loadBackupConfig(): void {
     const configPath = path.join(this.backupRootDir, 'backup-config.json');
     if (fs.existsSync(configPath)) {
       try {
         const raw = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-        // 兼容旧版配置（扁平结构）
+        // Compatibility with legacy configuration (flat structure)
         if (raw.system && raw.project) {
           this.backupConfig = {
             system: { ...DEFAULT_SYSTEM_CONFIG, ...raw.system },
             project: { ...DEFAULT_PROJECT_CONFIG, ...raw.project },
           };
         } else {
-          // 旧版配置迁移到 system 字段
+          // Migrate the legacy configuration into the system field
           this.backupConfig = {
             system: { ...DEFAULT_SYSTEM_CONFIG, ...raw },
             project: { ...DEFAULT_PROJECT_CONFIG },
@@ -203,17 +203,17 @@ export class BackupService {
     fs.writeFileSync(configPath, JSON.stringify(this.backupConfig, null, 2), 'utf-8');
     this.logger.log('Backup config updated');
 
-    // 重新确保目录存在
+    // Re-ensure the directories exist
     this.ensureDir(this.getSystemBackupDir());
     this.ensureDir(this.getProjectBackupDir());
 
-    // 重新注册动态 cron 任务
+    // Re-register the dynamic cron tasks
     this.registerDynamicCron();
 
     return this.getBackupConfig();
   }
 
-  // ==================== 动态 Cron 调度 ====================
+  // ==================== Dynamic cron scheduling ====================
 
   private registerDynamicCron(): void {
     if (!this.schedulerRegistry) {
@@ -230,11 +230,11 @@ export class BackupService {
     config: CategoryBackupConfig,
     dbType: 'system' | 'project',
   ): void {
-    // 先删除已有任务
+    // Delete the existing task first
     try {
       this.schedulerRegistry!.deleteCronJob(jobName);
     } catch {
-      // 不存在
+      // Does not exist
     }
 
     if (!config.enabled) {
@@ -264,7 +264,7 @@ export class BackupService {
     }
   }
 
-  /** 获取当前 cron 任务状态 */
+  /** Get the current cron task status */
   getCronJobStatus(): {
     system: { exists: boolean; cronTime?: string; running?: boolean; enabled: boolean };
     project: { exists: boolean; cronTime?: string; running?: boolean; enabled: boolean };
@@ -289,22 +289,22 @@ export class BackupService {
     };
   }
 
-  // ==================== 定时备份（默认 fallback） ====================
+  // ==================== Scheduled backup (default fallback) ====================
 
-  /** 全局数据库定时备份 - 默认每日凌晨3点（仅当 SchedulerRegistry 不可用时作为 fallback） */
+  /** Global database scheduled backup - default 3 AM daily (fallback only when SchedulerRegistry is unavailable) */
   @Cron(CronExpression.EVERY_DAY_AT_3AM)
   async scheduledSystemBackup(): Promise<void> {
-    if (this.schedulerRegistry) return; // 动态 cron 已注册，跳过 fallback
+    if (this.schedulerRegistry) return; // dynamic cron already registered, skip fallback
     await this.executeScheduledBackup('system', this.backupConfig.system, async () => {
       const result = await this.createSystemBackup('auto');
       return result.filename;
     });
   }
 
-  /** 项目数据库定时备份 - 默认每日凌晨3:30（仅当 SchedulerRegistry 不可用时作为 fallback） */
+  /** Project database scheduled backup - default 3:30 AM daily (fallback only when SchedulerRegistry is unavailable) */
   @Cron('30 3 * * *')
   async scheduledProjectBackup(): Promise<void> {
-    if (this.schedulerRegistry) return; // 动态 cron 已注册，跳过 fallback
+    if (this.schedulerRegistry) return; // dynamic cron already registered, skip fallback
     await this.executeScheduledBackup('project', this.backupConfig.project, async () => {
       const results = await this.backupAllProjects('auto');
       return `${results.length} projects`;
@@ -312,8 +312,8 @@ export class BackupService {
   }
 
   /**
-   * 通用定时备份执行流程：
-   * 检查启用 → 执行备份 → 清理过期 → 清理超限
+   * Common scheduled backup flow:
+   * check enabled → run backup → clean expired → clean over-limit
    */
   private async executeScheduledBackup(
     dbType: 'system' | 'project',
@@ -331,7 +331,7 @@ export class BackupService {
     }
   }
 
-  /** 备份后清理：过期清理 + 大小限制清理 */
+  /** Post-backup cleanup: expired cleanup + size-limit cleanup */
   private async postBackupCleanup(
     dbType: 'system' | 'project',
     config: CategoryBackupConfig,
@@ -342,7 +342,7 @@ export class BackupService {
     }
   }
 
-  // ==================== 系统数据库备份 ====================
+  // ==================== System database backup ====================
 
   async createSystemBackup(
     type: 'auto' | 'manual' = 'manual',
@@ -365,7 +365,7 @@ export class BackupService {
     return this.backupFile(dbPath, 'project', projectName, type, triggeredBy);
   }
 
-  /** 备份选定的项目列表 */
+  /** Back up the selected project list */
   async backupSelectedProjects(
     projectNames: string[],
     type: 'auto' | 'manual' = 'manual',
@@ -378,7 +378,7 @@ export class BackupService {
         results.push(result);
       } catch (error) {
         this.logger.error(`Failed to backup project [${name}]: ${(error as Error).message}`);
-        // 记录失败日志
+        // Log the failure
         await this.recordBackupLog({
           dbType: 'project',
           backupType: type,
@@ -464,7 +464,7 @@ export class BackupService {
 
       this.logger.log(`Backup created: ${filename} (${this.formatBytes(stats.size)})`);
 
-      // 记录到数据库
+      // Record into the database
       await this.recordBackupLog({
         dbType,
         backupType: type,
@@ -490,7 +490,7 @@ export class BackupService {
         status: 'failed',
         error: errMsg,
       };
-      // 记录失败日志
+      // Log the failure
       await this.recordBackupLog({
         dbType,
         backupType: type,
@@ -509,7 +509,7 @@ export class BackupService {
     return info;
   }
 
-  // ==================== 备份日志记录 ====================
+  // ==================== Backup log records ====================
 
   private async recordBackupLog(data: {
     dbType: 'system' | 'project';
@@ -545,7 +545,7 @@ export class BackupService {
     }
   }
 
-  /** 查询备份日志 */
+  /** Query backup logs */
   async getBackupLogs(filter?: {
     dbType?: 'system' | 'project';
     backupType?: 'auto' | 'manual';
@@ -565,7 +565,7 @@ export class BackupService {
     return qb.getMany();
   }
 
-  // ==================== 备份列表（文件系统扫描） ====================
+  // ==================== Backup list (filesystem scan) ====================
 
   async listBackups(dbType?: 'system' | 'project'): Promise<BackupInfo[]> {
     const types: ('system' | 'project')[] = dbType ? [dbType] : ['system', 'project'];
@@ -602,7 +602,7 @@ export class BackupService {
     return all.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   }
 
-  // ==================== 备份统计 ====================
+  // ==================== Backup statistics ====================
 
   async getBackupStats(): Promise<BackupStats> {
     const backups = await this.listBackups();
@@ -631,7 +631,7 @@ export class BackupService {
       const stats = fs.statfsSync(this.backupRootDir);
       freeSpaceBytes = stats.bsize * stats.bavail;
     } catch {
-      // statfsSync 在某些平台不可用
+      // statfsSync is unavailable on some platforms
     }
 
     return {
@@ -649,15 +649,15 @@ export class BackupService {
     };
   }
 
-  // ==================== 下载/删除 ====================
+  // ==================== Download/Delete ====================
 
   getBackupPath(filename: string): string {
-    // 在两个子目录中查找
+    // Search in both subdirectories
     for (const dir of [this.getSystemBackupDir(), this.getProjectBackupDir()]) {
       const filePath = path.join(dir, filename);
       if (fs.existsSync(filePath)) return filePath;
     }
-    // 兼容：在根目录查找
+    // Compatibility: search in the root directory
     const rootPath = path.join(this.backupRootDir, filename);
     if (fs.existsSync(rootPath)) return rootPath;
     throw new Error(`Backup file not found: ${filename}`);
@@ -671,13 +671,13 @@ export class BackupService {
     }
   }
 
-  // ==================== 恢复 ====================
+  // ==================== Restore ====================
 
   async restoreBackup(filename: string): Promise<boolean> {
     const filePath = this.getBackupPath(filename);
     const dbPath = this.getSystemDatabasePath();
 
-    // 恢复前先创建当前数据库的紧急备份
+    // Create an emergency backup of the current database before restoring
     if (fs.existsSync(dbPath)) {
       const emergencyName = `emergency-before-restore-${Date.now()}.db.gz`;
       const emergencyPath = path.join(this.getSystemBackupDir(), emergencyName);
@@ -732,7 +732,7 @@ export class BackupService {
     }
   }
 
-  // ==================== 清理 ====================
+  // ==================== Cleanup ====================
 
   async cleanupExpired(dbType: 'system' | 'project', retentionDays: number = 30): Promise<number> {
     const cutoff = Date.now() - retentionDays * 24 * 60 * 60 * 1000;
@@ -772,7 +772,7 @@ export class BackupService {
     let totalSize = fileInfos.reduce((sum, fi) => sum + fi.size, 0);
     let deleted = 0;
 
-    // 从最旧开始删除
+    // Delete starting from the oldest
     fileInfos.sort((a, b) => a.birthtimeMs - b.birthtimeMs);
     for (const fi of fileInfos) {
       if (totalSize <= maxBytes) break;
@@ -795,7 +795,7 @@ export class BackupService {
     return deleted;
   }
 
-  // ==================== 路径工具 ====================
+  // ==================== Path utilities ====================
 
   private getSystemDatabasePath(): string {
     const dbPath = this.configService.get<string>('DATABASE_PATH') || './data/ss-node.db';
@@ -808,7 +808,7 @@ export class BackupService {
     return this.pathResolver.resolve(configuredDir);
   }
 
-  // ==================== 工具方法 ====================
+  // ==================== Utility methods ====================
 
   private formatBytes(bytes: number): string {
     if (!bytes || bytes <= 0) return '0 B';

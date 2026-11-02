@@ -3,20 +3,20 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 页面模板管理 — 内置模板（降级兜底 + Seed 源）
+ * Page template management — builtin templates (degradation fallback + Seed source)
  *
- * 主路径：data/canvas-templates/pages/builtin-*.json（后端 CanvasTemplateService 管理）
- * 此文件用作：
- *   1. 后端首次启动时 seed 数据源（CanvasTemplateService.onModuleInit）
- *   2. 前端 API 不可用时的降级兜底（template.store.ts）
+ * Main path: data/canvas-templates/pages/builtin-*.json (managed by the backend CanvasTemplateService)
+ * This file serves as:
+ *   1. Seed data source when the backend first starts (CanvasTemplateService.onModuleInit)
+ *   2. Degradation fallback when the frontend API is unavailable (template.store.ts)
  *
- * 新增/修改内置模板请同时更新 data/canvas-templates/pages/ 下的 JSON 文件。
+ * When adding/modifying builtin templates, also update the JSON files under data/canvas-templates/pages/.
  */
 
 import type { PageTemplate } from './types';
 
 export const BUILTIN_TEMPLATES: PageTemplate[] = [
-  // ─── 1. 空白页面 ───
+  // ─── 1. Blank page ───
   {
     id: 'builtin-blank',
     name: '空白页面',
@@ -38,7 +38,7 @@ export const BUILTIN_TEMPLATES: PageTemplate[] = [
     updatedAt: 1750000000000,
   },
 
-  // ─── 2. 登录页 ───
+  // ─── 2. Login page ───
   {
     id: 'builtin-login',
     name: '登录页',
@@ -140,7 +140,7 @@ export const BUILTIN_TEMPLATES: PageTemplate[] = [
     updatedAt: 1750000000000,
   },
 
-  // ─── 3. 仪表盘 ───
+  // ─── 3. Dashboard ───
   {
     id: 'builtin-dashboard',
     name: '仪表盘',
@@ -315,7 +315,7 @@ export const BUILTIN_TEMPLATES: PageTemplate[] = [
     updatedAt: 1750000000000,
   },
 
-  // ─── 4. 工业监控（单设备） ───
+  // ─── 4. Industrial monitoring (single device) ───
   {
     id: 'builtin-industrial-single',
     name: '工业监控（单设备）',
@@ -443,7 +443,7 @@ export const BUILTIN_TEMPLATES: PageTemplate[] = [
     updatedAt: 1750000000000,
   },
 
-  // ─── 5. 工业监控（多设备矩阵） ───
+  // ─── 5. Industrial monitoring (multi-device matrix) ───
   {
     id: 'builtin-industrial-multi',
     name: '工业监控（多设备）',
@@ -484,7 +484,7 @@ export const BUILTIN_TEMPLATES: PageTemplate[] = [
     updatedAt: 1750000000000,
   },
 
-  // ─── 6. 数据大屏 ───
+  // ─── 6. Data dashboard ───
   {
     id: 'builtin-data-screen',
     name: '数据大屏（基础）',
@@ -537,7 +537,7 @@ export const BUILTIN_TEMPLATES: PageTemplate[] = [
     updatedAt: 1750000000000,
   },
 
-  // ─── 7. 移动端 H5 ───
+  // ─── 7. Mobile H5 ───
   {
     id: 'builtin-mobile',
     name: '移动端 H5',
@@ -626,12 +626,12 @@ export const BUILTIN_TEMPLATES: PageTemplate[] = [
   },
 ];
 
-/** 根据 ID 查找内置模板 */
+/** Find a builtin template by ID */
 export function getBuiltinTemplate(id: string): PageTemplate | undefined {
   return BUILTIN_TEMPLATES.find(t => t.id === id);
 }
 
-/** 按分类获取内置模板 */
+/** Get builtin templates by category */
 export function getBuiltinTemplatesByCategory(category: string): PageTemplate[] {
   if (category === 'all') return [...BUILTIN_TEMPLATES];
   return BUILTIN_TEMPLATES.filter(t => t.category === category);

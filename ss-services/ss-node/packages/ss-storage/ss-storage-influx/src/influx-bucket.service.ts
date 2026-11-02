@@ -6,36 +6,36 @@ import { Injectable, Logger, OnModuleInit, OnModuleDestroy, Optional } from '@ne
 import { EventBusService, EventLogService } from '@ss-node/ss-core';
 
 /**
- * InfluxDB Bucket 管理服务
+ * InfluxDB bucket management service
  *
- * 职责：
- * - 按项目自动创建 InfluxDB bucket（bucket 命名：{INFLUXDB_BUCKET}_{projectId}）
- * - Bucket 存在性检查（幂等，重复创建不报错）
- * - 写入路由：projectId → bucket 名映射
- * - 兜底：bucket 创建失败/InfluxDB 不可用时退回默认 bucket
- * - CODE-04: 定时健康检查，使 influxAvailable 在 InfluxDB 恢复后自动转 true
+ * Responsibilities:
+ * - Automatically create an InfluxDB bucket per project (naming: {INFLUXDB_BUCKET}_{projectId})
+ * - Bucket existence check (idempotent; duplicate creation does not error)
+ * - Write routing: projectId → bucket name mapping
+ * - Fallback: fall back to the default bucket when bucket creation fails / InfluxDB is unavailable
+ * - CODE-04: periodic health check so influxAvailable flips back to true after InfluxDB recovers
  */
 @Injectable()
 export class InfluxBucketService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(InfluxBucketService.name);
 
-  /** 已知已存在的 bucket 缓存，避免重复 HTTP 检查 */
+  /** Cache of known-existing buckets, avoiding repeated HTTP checks */
   private readonly knownBuckets = new Set<string>();
 
-  /** 创建中的 bucket（防并发重复创建） */
+  /** Buckets currently being created (prevents concurrent duplicate creation) */
   private readonly pendingCreations = new Map<string, Promise<boolean>>();
 
-  /** InfluxDB 是否可用（首次请求失败后标记为 false，避免持续无效请求） */
+  /** Whether InfluxDB is available (marked false after the first request failure, avoiding ongoing useless requests) */
   private influxAvailable = true;
 
-  /** CODE-04: 健康检查定时器，InfluxDB 恢复后自动 markAvailable */
+  /** CODE-04: health check timer; automatically markAvailable after InfluxDB recovers */
   private healthCheckTimer: NodeJS.Timeout | null = null;
-  /** CODE-04: 健康检查间隔（ms） */
+  /** CODE-04: health check interval (ms) */
   private readonly healthCheckIntervalMs = 60_000;
-  /** CODE-04: 健康检查单次 fetch 超时（ms） */
+  /** CODE-04: health check per-fetch timeout (ms) */
   private readonly healthCheckTimeoutMs = 5000;
 
-  /** CODE-05: 普通 API fetch 超时（ms） */
+  /** CODE-05: regular API fetch timeout (ms) */
   private readonly fetchTimeoutMs = 5000;
 
   constructor(
@@ -44,7 +44,7 @@ export class InfluxBucketService implements OnModuleInit, OnModuleDestroy {
   ) {}
 
   onModuleInit(): void {
-    // wrap helper：通过 EventLogService.wrapSubscriber 自动追踪处理结果和业务效果
+    // wrap helper: EventLogService.wrapSubscriber automatically tracks handling results and business effects
     const wrap = <T extends any[]>(
       eventType: string,
       handler: (...args: T) => Promise<Record<string, any> | void>,
@@ -58,7 +58,7 @@ export class InfluxBucketService implements OnModuleInit, OnModuleDestroy {
       };
     };
 
-    // 监听项目创建事件，自动创建对应 InfluxDB bucket
+    // Listen for project-created events and automatically create the corresponding InfluxDB bucket
     this.eventBus.on('project.created', wrap('project.created', async (payload: { projectId: string; tenantId?: string }) => {
       const projectId = payload.projectId;
       if (projectId) {
@@ -69,8 +69,8 @@ export class InfluxBucketService implements OnModuleInit, OnModuleDestroy {
     }));
     this.logger.log('InfluxBucketService initialized — listening for project.created');
 
-    // CODE-04: 启动定时健康检查，使 influxAvailable 可在 InfluxDB 恢复后自动转 true
-    // （原实现 markAvailable() 从未被自动调用，导致一次失败后永久退回默认 bucket）
+    // CODE-04: start the periodic health check so influxAvailable can flip back to true after InfluxDB recovers
+    // (the original implementation never called markAvailable() automatically, so one failure permanently fell back to the default bucket)
     this.startHealthCheck();
   }
 
@@ -82,12 +82,12 @@ export class InfluxBucketService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * CODE-04: 定时探活 — InfluxDB /health 200 即恢复 influxAvailable，
-   * 使后续 bucket 创建请求不再被跳过。仅在不可用时发起 fetch，避免增加正常状态下的额外负载。
+   * CODE-04: periodic health probe — InfluxDB /health returning 200 restores influxAvailable,
+   * so subsequent bucket creation requests are no longer skipped. Only fetches when unavailable, avoiding extra load in the healthy state.
    */
   private startHealthCheck(): void {
     this.healthCheckTimer = setInterval(async () => {
-      if (this.influxAvailable) return; // 已可用，无需探活
+      if (this.influxAvailable) return; // already available, no probing needed
       try {
         const url = process.env.INFLUXDB_URL || 'http://localhost:8086';
         const response = await fetch(`${url}/health`, {
@@ -100,30 +100,30 @@ export class InfluxBucketService implements OnModuleInit, OnModuleDestroy {
           this.influxAvailable = true;
         }
       } catch {
-        // 仍不可达，保持 influxAvailable=false，等待下一轮探活
+        // Still unreachable, keep influxAvailable=false and wait for the next probe
       }
     }, this.healthCheckIntervalMs);
-    // 健康检查不应阻止进程正常退出
+    // The health check must not prevent the process from exiting normally
     if (this.healthCheckTimer.unref) {
       this.healthCheckTimer.unref();
     }
   }
 
-  // ──────────── 公开接口 ────────────
+  // ──────────── Public API ────────────
 
   /**
-   * 获取项目对应的 InfluxDB bucket 名
-   * 首次调用时自动确保 bucket 存在（懒创建）
+   * Get the InfluxDB bucket name for a project
+   * Ensures the bucket exists on first call (lazy creation)
    */
   async getBucket(projectId: string): Promise<string> {
     const bucket = this.getBucketName(projectId);
 
-    // 兜底：如果 InfluxDB 已知不可用，直接返回默认 bucket
+    // Fallback: if InfluxDB is known to be unavailable, return the default bucket directly
     if (!this.influxAvailable) {
       return this.getDefaultBucket();
     }
 
-    // 懒创建：不在 knownBuckets 中的，尝试创建
+    // Lazy creation: try creating buckets not in knownBuckets
     if (!this.knownBuckets.has(bucket)) {
       const created = await this.ensureBucket(projectId);
       if (!created) {
@@ -134,38 +134,38 @@ export class InfluxBucketService implements OnModuleInit, OnModuleDestroy {
     return bucket;
   }
 
-  /** 获取默认 bucket 名（兜底） */
+  /** Get the default bucket name (fallback) */
   getDefaultBucket(): string {
     return process.env.INFLUXDB_BUCKET || 'ss_node_data';
   }
 
-  /** 重置可用性标记（用于健康检查恢复后重试） */
+  /** Reset the availability flag (for retry after the health check recovers) */
   markAvailable(): void {
     this.influxAvailable = true;
   }
 
-  // ──────────── 内部方法 ────────────
+  // ──────────── Internal methods ────────────
 
   private getBucketName(projectId: string): string {
     const base = process.env.INFLUXDB_BUCKET || 'ss_node_data';
-    // 替换 projectId 中的特殊字符（bucket 名仅允许 [a-zA-Z0-9_-]）
+    // Replace special characters in projectId (bucket names only allow [a-zA-Z0-9_-])
     const safeId = projectId.replace(/[^a-zA-Z0-9_-]/g, '_');
     return `${base}_${safeId}`;
   }
 
   /**
-   * 确保指定项目的 bucket 存在（幂等）
-   * @returns true=bucket 就绪，false=创建失败（调用方应退回默认 bucket）
+   * Ensure the given project's bucket exists (idempotent)
+   * @returns true = bucket ready, false = creation failed (caller should fall back to the default bucket)
    */
   async ensureBucket(projectId: string): Promise<boolean> {
     const bucket = this.getBucketName(projectId);
 
-    // 已有缓存 → 直接返回
+    // Already cached → return directly
     if (this.knownBuckets.has(bucket)) {
       return true;
     }
 
-    // 正在创建中 → 等待结果
+    // Creation in progress → wait for the result
     const pending = this.pendingCreations.get(bucket);
     if (pending) {
       return pending;
@@ -194,7 +194,7 @@ export class InfluxBucketService implements OnModuleInit, OnModuleDestroy {
     }
 
     try {
-      // 步骤 1：检查 bucket 是否已存在
+      // Step 1: check whether the bucket already exists
       const exists = await this.bucketExists(url, token, org, bucket);
       if (exists) {
         this.knownBuckets.add(bucket);
@@ -202,14 +202,14 @@ export class InfluxBucketService implements OnModuleInit, OnModuleDestroy {
         return true;
       }
 
-      // 步骤 2：创建 bucket
+      // Step 2: create the bucket
       const orgId = await this.getOrgId(url, token, org);
       if (!orgId) {
         this.influxAvailable = false;
         return false;
       }
 
-      // CODE-05: fetch 加 5s 超时，避免半挂时无限等待
+      // CODE-05: add a 5s timeout to fetch, avoiding indefinite waits on a hung request
       const response = await fetch(`${url}/api/v2/buckets`, {
         method: 'POST',
         headers: {
@@ -219,7 +219,7 @@ export class InfluxBucketService implements OnModuleInit, OnModuleDestroy {
         body: JSON.stringify({
           orgID: orgId,
           name: bucket,
-          retentionRules: [], // 无限保留，由应用层管理数据生命周期
+          retentionRules: [], // unlimited retention; data lifecycle is managed at the application layer
         }),
         signal: AbortSignal.timeout(this.fetchTimeoutMs),
       });
@@ -230,7 +230,7 @@ export class InfluxBucketService implements OnModuleInit, OnModuleDestroy {
         return true;
       }
 
-      // 409 Conflict：并发创建导致的重复，视为成功
+      // 409 Conflict: duplicate caused by concurrent creation, treated as success
       if (response.status === 409) {
         this.knownBuckets.add(bucket);
         this.logger.log(`Bucket "${bucket}" already exists (409)`);
@@ -258,7 +258,7 @@ export class InfluxBucketService implements OnModuleInit, OnModuleDestroy {
     bucketName: string,
   ): Promise<boolean> {
     try {
-      // CODE-05: fetch 加 5s 超时
+      // CODE-05: add a 5s timeout to fetch
       const response = await fetch(
         `${url}/api/v2/buckets?org=${encodeURIComponent(org)}&name=${encodeURIComponent(bucketName)}`,
         {
@@ -276,7 +276,7 @@ export class InfluxBucketService implements OnModuleInit, OnModuleDestroy {
 
   private async getOrgId(url: string, token: string, org: string): Promise<string | null> {
     try {
-      // CODE-05: fetch 加 5s 超时
+      // CODE-05: add a 5s timeout to fetch
       const response = await fetch(`${url}/api/v2/orgs?org=${encodeURIComponent(org)}`, {
         headers: { Authorization: `Token ${token}` },
         signal: AbortSignal.timeout(this.fetchTimeoutMs),

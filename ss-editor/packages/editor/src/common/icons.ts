@@ -228,7 +228,7 @@ export const iconMap: Record<string, () => VNode> = {
       poly('17 5 21 5 21 9'),
     ),
 
-  // ── 二级菜单图标 ──
+  // ── Secondary menu icons ──
 
   users: () =>
     s(
@@ -336,9 +336,9 @@ export const iconMap: Record<string, () => VNode> = {
       circle('15', '15', '1'),
     ),
 
-  // ── 编辑器顶部菜单图标（SCADA 专业风格）──
+  // ── Editor top menu icons (SCADA professional style) ──
 
-  // 工程：工厂建筑（代表工程项目/工业现场）
+  // Project: factory building (represents engineering projects / industrial sites)
   project: () =>
     s(
       p('M2 20h20'),
@@ -356,7 +356,7 @@ export const iconMap: Record<string, () => VNode> = {
       l('18', '17', '18', '17.01'),
     ),
 
-  // 页面：文档+布局线（代表组态画面）
+  // Page: document + layout lines (represents a configuration screen)
   page: () =>
     s(
       p('M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z'),
@@ -366,7 +366,7 @@ export const iconMap: Record<string, () => VNode> = {
       l('14', '17', '16', '17'),
     ),
 
-  // 通用组件：四方网格（代表图元分类）
+  // Generic components: four-square grid (represents the graphic category)
   general: () =>
     s(
       r('3', '3', '7', '7', '1'),
@@ -375,7 +375,7 @@ export const iconMap: Record<string, () => VNode> = {
       r('14', '14', '7', '7', '1'),
     ),
 
-  // 组件库：包装箱（代表组件库/插件包）
+  // Component library: package box (represents the component library / plugin packages)
   components: () =>
     s(
       p('M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z'),

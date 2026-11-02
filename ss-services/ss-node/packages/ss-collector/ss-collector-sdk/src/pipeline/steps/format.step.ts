@@ -6,19 +6,19 @@ import { Injectable, Logger } from '@nestjs/common';
 import { PipelineContext, PipelineStep } from '../pipeline-orchestrator';
 
 /**
- * 显示格式步骤 — 根据标签的 displayFormat 配置将数值格式化为显示字符串。
+ * Display-format step - formats numeric values into display strings per the tag's displayFormat config.
  *
- * 设计原则：
- * - 存储层（PersistStep）保留原始数值，不做格式化
- * - 显示层（PublishStep → WebSocket）使用格式化后的字符串
- * - 本步骤在 Persist 之后、Publish 之前执行
+ * Design principles:
+ * - The storage layer (PersistStep) keeps the raw numeric value, no formatting
+ * - The display layer (PublishStep -> WebSocket) uses the formatted string
+ * - This step runs after Persist and before Publish
  *
- * 支持的格式字符串：
- * - `%.1f` / `%.2f` / `%.3f` 等 — 保留指定位小数
- * - `%d` / `%i` / `%.0f` — 整数
- * - `%X` / `%04X` / `%08X` — 十六进制大写（宽度补零）
- * - `%x` / `%04x` — 十六进制小写
- * - 空字符串或不支持格式 — 直接 toString()
+ * Supported format strings:
+ * - `%.1f` / `%.2f` / `%.3f` etc. - keep the specified number of decimals
+ * - `%d` / `%i` / `%.0f` - integer
+ * - `%X` / `%04X` / `%08X` - uppercase hex (zero-padded width)
+ * - `%x` / `%04x` - lowercase hex
+ * - empty string or unsupported format - direct toString()
  */
 @Injectable()
 export class FormatStep implements PipelineStep {
@@ -40,8 +40,8 @@ export class FormatStep implements PipelineStep {
         return ctx;
       }
 
-      // 非数值类型（bool/string）直接转字符串，不做精度格式化
-      // 这样前端 displayValue 能正确显示 true/false、OK/WARN/ERR 等
+      // Non-numeric types (bool/string) are converted to string directly, without precision formatting
+      // This way the frontend displayValue correctly shows true/false, OK/WARN/ERR, etc.
       if (typeof value === 'boolean') {
         ctx.formattedValue = value ? 'true' : 'false';
         return ctx;
@@ -58,7 +58,7 @@ export class FormatStep implements PipelineStep {
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'Unknown format error';
       this.logger.error(`Format error for tag ${ctx.tagId}: ${errorMsg}`);
-      // 降级：使用 toString()
+      // Fallback: use toString()
       ctx.formattedValue = ctx.transformedValue?.toString();
       ctx.errors.push({ step: this.name, message: errorMsg, code: 'FORMAT_ERROR' });
     }
@@ -67,23 +67,23 @@ export class FormatStep implements PipelineStep {
   }
 
   /**
-   * 将数值按 printf 格式字符串格式化为字符串。
-   * 与前端 formatTagValue() 保持一致的语义。
+   * Format a numeric value into a string using a printf-style format string.
+   * Keeps semantics consistent with the frontend formatTagValue().
    */
   private applyFormat(value: number, format: string): string {
-    // 整数格式
+    // Integer format
     if (format === '%d' || format === '%i' || format === '%.0f') {
       return Math.round(value).toString();
     }
 
-    // 浮点格式：%.Nf
+    // Float format: %.Nf
     const floatMatch = format.match(/^%\.(\d+)f$/);
     if (floatMatch) {
       const decimals = parseInt(floatMatch[1], 10);
       return value.toFixed(decimals);
     }
 
-    // 十六进制格式：%X / %x / %04X / %08x 等
+    // Hex format: %X / %x / %04X / %08x etc.
     const hexMatch = format.match(/^%(\d*)([Xx])$/);
     if (hexMatch) {
       const width = parseInt(hexMatch[1], 10) || 0;
@@ -95,7 +95,7 @@ export class FormatStep implements PipelineStep {
       return upper ? padded.toUpperCase() : padded;
     }
 
-    // 默认：直接转字符串
+    // Default: direct string conversion
     return value.toString();
   }
 }

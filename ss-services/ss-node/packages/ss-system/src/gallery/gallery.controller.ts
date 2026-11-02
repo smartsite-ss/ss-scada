@@ -20,11 +20,11 @@ import { GalleryService } from './gallery.service';
 import { GalleryFormat, GalleryCategory, GalleryImage } from './gallery.types';
 
 /**
- * 图库控制器
+ * Gallery controller
  *
- * 路由前缀：/api/v1/gallery
- * 读取类 API：所有登录用户可访问
- * 写入类 API（上传/删除）：仅 admin 可访问
+ * Route prefix: /api/v1/gallery
+ * Read APIs: accessible to all logged-in users
+ * Write APIs (upload/delete): admin only
  */
 @ApiTags('图库管理')
 @Controller('gallery')

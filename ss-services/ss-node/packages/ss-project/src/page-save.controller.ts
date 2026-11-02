@@ -251,7 +251,7 @@ export class PageSaveController {
       ],
       {
         limits: {
-          fieldSize: 50 * 1024 * 1024, // 50MB: pagesJson 文本字段可能很大（含 data URL 背景图等）
+          fieldSize: 50 * 1024 * 1024, // 50MB: the pagesJson text field can be large (data-URL background images etc.)
           fileSize: 50 * 1024 * 1024, // 50MB: preview.png / preview_small.png
         },
       },
@@ -264,8 +264,8 @@ export class PageSaveController {
     files?: { preview?: Express.Multer.File[]; previewSmall?: Express.Multer.File[] },
     @Query('group') groupName?: string,
   ): Promise<SaveAllPagesResult> {
-    // 使用 @Req() 直接读 req.body，避免 @Body() 与 multer/ValidationPipe 冲突导致
-    // multipart 解析后 body 字段丢失（表现为 "缺少 pages 数据" 400 错误）
+    // Use @Req() to read req.body directly, avoiding @Body() conflicting with multer/ValidationPipe
+    // which loses body fields after multipart parsing (manifesting as the "missing pages data" 400 error)
     const body = (req.body || {}) as Record<string, any>;
 
     let pages = body?.pages;
@@ -283,7 +283,7 @@ export class PageSaveController {
       throw new BadRequestException('缺少 pages 数据');
     }
 
-    // 仅当前页（previewPageName 指定的那一页）携带预览图
+    // Only the current page (the one specified by previewPageName) carries a preview image
     const previewPageName = body?.previewPageName as string | undefined;
     const previewPageId = body?.previewPageId as string | undefined;
     const previews: Record<string, { preview?: Buffer; previewSmall?: Buffer }> = {};
@@ -447,7 +447,7 @@ export class PageSaveController {
   }
 
   @Get(':projectId/pages/:pageName/:fileName')
-  @Public() // 允许 <img> 标签无鉴权加载预览图
+  @Public() // allows <img> tags to load preview images without auth
   @ApiOperation({ summary: '获取页面资源文件（背景图等）' })
   @ApiQuery({ name: 'group', required: false, description: '分组名称' })
   getResource(

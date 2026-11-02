@@ -21,11 +21,11 @@ import { RoleController } from './role.controller';
 import { PositionController } from './position.controller';
 
 /**
- * @Global() — 用户/授权模块声明为全局模块（3.6 实现）
+ * @Global() - user/authorization module declared as a global module (implemented in 3.6)
  *
- * 使 AuthorizationService 可被任意模块的 Guard/Interceptor 注入，
- * 特别是 ss-device 的 DataAccessGuard 需要注入 'AuthorizationService' 字符串 Token
- * 来执行标签级权限检查（checkTagPermission）。
+ * Lets AuthorizationService be injected by any module's Guard/Interceptor;
+ * in particular ss-device's DataAccessGuard injects the 'AuthorizationService' string Token
+ * to perform tag-level permission checks (checkTagPermission).
  */
 @Global()
 @Module({
@@ -47,7 +47,7 @@ import { PositionController } from './position.controller';
     PositionService,
     AuthorizationService,
     PermissionAuditService,
-    // 字符串 Token alias —— 供 DataAccessGuard @Inject('AuthorizationService') 使用
+    // String Token alias -- for DataAccessGuard's @Inject('AuthorizationService')
     { provide: 'AuthorizationService', useExisting: AuthorizationService },
   ],
   exports: [
@@ -66,16 +66,16 @@ export class UserModule implements OnModuleInit, OnApplicationBootstrap {
   ) {}
 
   async onModuleInit() {
-    // 首次启动时自动初始化系统角色
+    // Auto-initialize system roles on first startup
     await this.roleService.initSystemRoles();
   }
 
   async onApplicationBootstrap() {
-    // 所有模块 onModuleInit 完成后执行迁移，确保 ss-system 的 syncDefaultMenus 已执行、sys_menus 表已 sync
+    // Run migrations after all modules' onModuleInit, ensuring ss-system's syncDefaultMenus has run and sys_menus is synced
     await this.roleService.migrateSystemRoleMenuIds();
-    // 补充系统角色缺失的默认权限（如新增的趋势查看权限）
+    // Add system roles' missing default permissions (e.g. newly added trend-view permission)
     await this.roleService.migrateSystemRolePermissions();
-    // v8.0：设备分组授权 → 设备授权迁移（废弃 sys_device_group_authorizations）
+    // v8.0: device-group authorization -> device authorization migration (sys_device_group_authorizations deprecated)
     await this.authorizationService.migrateDeviceGroupAuthsToDeviceAuths();
   }
 }

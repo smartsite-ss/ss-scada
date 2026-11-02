@@ -8,14 +8,14 @@ import { Logger } from '@nestjs/common';
 import { HealthChecker, HealthCheckResult } from './health.types';
 
 /**
- * 系统资源阈值配置
+ * System-resource threshold config
  */
 export interface SystemResourceThresholds {
-  /** 磁盘使用率阈值（百分比，默认 90） */
+  /** Disk-usage threshold (percent, default 90) */
   diskUsagePercent: number;
-  /** 内存使用率阈值（百分比，默认 90） */
+  /** Memory-usage threshold (percent, default 90) */
   memoryUsagePercent: number;
-  /** CPU 使用率阈值（百分比，默认 90） */
+  /** CPU-usage threshold (percent, default 90) */
   cpuUsagePercent: number;
 }
 
@@ -26,7 +26,7 @@ export const DEFAULT_THRESHOLDS: SystemResourceThresholds = {
 };
 
 /**
- * 获取磁盘使用情况
+ * Get disk usage
  */
 function getDiskUsage(): { total: number; free: number; usedPercent: number } {
   try {
@@ -63,13 +63,13 @@ function getDiskUsage(): { total: number; free: number; usedPercent: number } {
       }
     }
   } catch {
-    // 磁盘检查失败（权限不足、命令不存在等），返回 0 表示跳过
+    // Disk check failed (insufficient permissions, missing command, etc.); return 0 to skip
   }
   return { total: 0, free: 0, usedPercent: 0 };
 }
 
 /**
- * 格式化字节为人类可读
+ * Format bytes as human-readable
  */
 function formatBytes(bytes: number): string {
   if (bytes === 0) return '0 B';
@@ -79,7 +79,7 @@ function formatBytes(bytes: number): string {
 }
 
 /**
- * 磁盘使用率健康检查器
+ * Disk-usage health checker
  */
 export class DiskUsageChecker implements HealthChecker {
   name = 'disk-usage';
@@ -91,7 +91,7 @@ export class DiskUsageChecker implements HealthChecker {
     const timestamp = Date.now();
     const disk = getDiskUsage();
 
-    // 磁盘检查失败（total=0），跳过不报警
+    // Disk check failed (total=0); skip without alarming
     if (disk.total === 0) {
       return {
         name: this.name,
@@ -124,7 +124,7 @@ export class DiskUsageChecker implements HealthChecker {
 }
 
 /**
- * 内存使用率健康检查器
+ * Memory-usage health checker
  */
 export class MemoryUsageChecker implements HealthChecker {
   name = 'memory-usage';
@@ -163,9 +163,9 @@ export class MemoryUsageChecker implements HealthChecker {
 }
 
 /**
- * CPU 使用率健康检查器
+ * CPU-usage health checker
  *
- * 通过两次采样（间隔 1 秒）计算 CPU 使用率差值，确保准确性。
+ * Computes the CPU-usage delta from two samples (1 second apart) for accuracy.
  */
 export class CpuUsageChecker implements HealthChecker {
   name = 'cpu-usage';
@@ -176,7 +176,7 @@ export class CpuUsageChecker implements HealthChecker {
   async check(): Promise<HealthCheckResult> {
     const timestamp = Date.now();
 
-    // 第一次采样
+    // First sample
     const startMeasure = os.cpus().map((cpu) => {
       const times = cpu.times;
       let total = 0;
@@ -186,7 +186,7 @@ export class CpuUsageChecker implements HealthChecker {
 
     const coreCount = startMeasure.length;
 
-    // 等待 1 秒后第二次采样
+    // Wait 1 second then take the second sample
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     const endMeasure = os.cpus().map((cpu) => {
@@ -196,7 +196,7 @@ export class CpuUsageChecker implements HealthChecker {
       return { idle: times.idle, total };
     });
 
-    // 计算差值
+    // Compute the delta
     let totalIdleDiff = 0;
     let totalDiff = 0;
     for (let i = 0; i < startMeasure.length; i++) {

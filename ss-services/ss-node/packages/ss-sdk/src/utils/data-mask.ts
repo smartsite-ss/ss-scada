@@ -3,17 +3,17 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 数据脱敏工具
+ * Data masking utilities
  *
- * 用于日志、API 响应等场景中的敏感信息遮蔽，支持常见字段类型和递归对象脱敏。
+ * Masks sensitive information in logs, API responses, etc.; supports common field types and recursive object masking.
  */
 export class DataMask {
   /**
-   * 通用字符串脱敏（保持原始长度不变，用 `*` 填充中间部分）
-   * @param str 原始字符串
-   * @param startKeep 头部保留字符数
-   * @param endKeep 尾部保留字符数
-   * @returns 脱敏后的字符串
+   * Generic string masking (keeps the original length, fills the middle with `*`)
+   * @param str the original string
+   * @param startKeep number of characters to keep at the start
+   * @param endKeep number of characters to keep at the end
+   * @returns the masked string
    */
   static maskString(str: string, startKeep: number, endKeep: number): string {
     if (!str) return '';
@@ -29,9 +29,9 @@ export class DataMask {
   }
 
   /**
-   * 手机号脱敏（保持长度，如 `138****5678`）
-   * @param phone 手机号
-   * @returns 脱敏后的手机号
+   * Phone number masking (keeps length, e.g. `138****5678`)
+   * @param phone the phone number
+   * @returns the masked phone number
    */
   static maskPhone(phone: string): string {
     if (!phone) return '';
@@ -42,9 +42,9 @@ export class DataMask {
   }
 
   /**
-   * 邮箱脱敏（如 `a***@example.com`）
-   * @param email 邮箱地址
-   * @returns 脱敏后的邮箱
+   * Email masking (e.g. `a***@example.com`)
+   * @param email the email address
+   * @returns the masked email
    */
   static maskEmail(email: string): string {
     if (!email || !email.includes('@')) return email ?? '';
@@ -56,9 +56,9 @@ export class DataMask {
   }
 
   /**
-   * 身份证号脱敏（保持长度，如 `110***********1234`）
-   * @param idCard 身份证号
-   * @returns 脱敏后的身份证号
+   * ID card number masking (keeps length, e.g. `110***********1234`)
+   * @param idCard the ID card number
+   * @returns the masked ID card number
    */
   static maskIdCard(idCard: string): string {
     if (!idCard) return '';
@@ -69,7 +69,7 @@ export class DataMask {
   }
 
   /**
-   * 密码脱敏（固定返回 `******`）
+   * Password masking (always returns `******`)
    * @returns `******`
    */
   static maskPassword(): string {
@@ -77,9 +77,9 @@ export class DataMask {
   }
 
   /**
-   * IP 地址脱敏（掩码第三段，如 `192.168.*.1`）
-   * @param ip IPv4 地址
-   * @returns 脱敏后的 IP
+   * IP address masking (masks the third segment, e.g. `192.168.*.1`)
+   * @param ip the IPv4 address
+   * @returns the masked IP
    */
   static maskIp(ip: string): string {
     if (!ip) return '';
@@ -90,14 +90,14 @@ export class DataMask {
   }
 
   /**
-   * 对象字段脱敏（递归处理嵌套对象和数组）
+   * Object field masking (recursively processes nested objects and arrays)
    *
-   * 匹配字段名在 `fields` 中的字段，将其值替换为 `******`。
-   * 对数组和嵌套对象会递归处理。
+   * Fields whose names match `fields` have their values replaced with `******`.
+   * Arrays and nested objects are processed recursively.
    *
-   * @param obj 原始对象
-   * @param fields 需要脱敏的字段名列表
-   * @returns 脱敏后的对象（浅拷贝，不修改原始对象）
+   * @param obj the original object
+   * @param fields list of field names to mask
+   * @returns the masked object (shallow copy; the original object is not modified)
    */
   static maskObject<T>(obj: T, fields: string[]): T {
     if (obj === null || obj === undefined) return obj;
@@ -127,14 +127,14 @@ export class DataMask {
   }
 
   /**
-   * JSON 字符串脱敏
+   * JSON string masking
    *
-   * 解析 JSON 字符串，对指定字段进行递归脱敏后重新序列化。
-   * 如果 JSON 解析失败，返回原始字符串。
+   * Parses the JSON string, recursively masks the specified fields, then re-serializes.
+   * If JSON parsing fails, the original string is returned.
    *
-   * @param json JSON 字符串
-   * @param fields 需要脱敏的字段名列表
-   * @returns 脱敏后的 JSON 字符串
+   * @param json the JSON string
+   * @param fields list of field names to mask
+   * @returns the masked JSON string
    */
   static maskJson(json: string, fields: string[]): string {
     try {

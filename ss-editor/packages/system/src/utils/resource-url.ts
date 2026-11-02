@@ -3,23 +3,23 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 后端资源 URL 解析
+ * Backend resource URL resolution
  *
- * `<img src>`、CSS background-image 等资源请求不走 fetch/XHR，
- * 桌面端（Tauri）HTTP 拦截器无法覆盖：页面源为 https://tauri.localhost，
- * 相对路径的 API 资源 URL（如 /api/v1/projects/{projectId}/image）
- * 会解析到页面源而 404，导致项目封面/页面预览图等不显示。
+ * Resource requests such as <img src> and CSS background-image do not go through fetch/XHR,
+ * so the desktop (Tauri) HTTP interceptor cannot cover them: the page origin is https://tauri.localhost,
+ * and relative API resource URLs (e.g. /api/v1/projects/{projectId}/image)
+ * resolve against the page origin and 404, so project covers/page preview images fail to display.
  *
- * 因此相对路径需改写为后端绝对地址（拦截器安装时注册到
- * globalThis.__SS_BACKEND_URL__，与 ws-url.ts 同源机制）。
- * Web 同源场景无该全局值，保持相对路径原行为。
+ * Therefore relative paths must be rewritten to the backend absolute address (registered to
+ * globalThis.__SS_BACKEND_URL__ when the interceptor installs, same mechanism as ws-url.ts).
+ * In Web same-origin scenarios this global value is absent and relative paths keep their original behavior.
  *
- * 后端资源接口须为 @Public 免鉴权（<img> 无法携带 Authorization 头）。
+ * Backend resource endpoints must be @Public (auth-free), since <img> cannot carry the Authorization header.
  */
 export function resolveBackendResourceUrl(url: string): string {
   if (!url) return url;
 
-  // 绝对地址（含协议相对 //、data:、blob:）与非根相对路径保持原样
+  // Absolute addresses (including protocol-relative //, data:, blob:) and non-root relative paths are kept as-is
   if (/^(https?:)?\/\//.test(url) || url.startsWith('data:') || url.startsWith('blob:') || !url.startsWith('/')) {
     return url;
   }

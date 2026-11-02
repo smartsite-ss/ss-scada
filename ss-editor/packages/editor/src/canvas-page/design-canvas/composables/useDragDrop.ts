@@ -3,8 +3,8 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * useDragDrop - 拖拽创建图元逻辑
- * 处理从组件面板拖拽组件到画布上创建图元的交互
+ * useDragDrop - drag-to-create graphic logic
+ * Handles the interaction of dragging components from the component palette onto the canvas to create graphics
  */
 import { ref, type Ref } from 'vue';
 import { usePageStore, displayToLogical } from '@scada-editor/core';

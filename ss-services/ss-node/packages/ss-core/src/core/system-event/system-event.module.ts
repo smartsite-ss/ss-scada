@@ -8,10 +8,10 @@ import { SystemEvent } from '../entities/system-event.entity';
 import { SystemEventService } from './system-event.service';
 
 /**
- * 全局系统事件模块
+ * Global system-event module
  *
- * 注册 SystemEvent 实体和 SystemEventService，供全局使用。
- * 实体存储在全局 ss-node.db 中，不依赖 projectId。
+ * Registers the SystemEvent entity and SystemEventService for global use.
+ * Entities are stored in the global ss-node.db and do not depend on projectId.
  */
 @Global()
 @Module({

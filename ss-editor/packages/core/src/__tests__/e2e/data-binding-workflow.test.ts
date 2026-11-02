@@ -188,7 +188,7 @@ import { usePageStore } from '../../store/page.store';
 import { useGraphicStore } from '../../store/graphic.store';
 import { useSimulationStore } from '../../store/simulation.store';
 import { useScriptRuntimeStore } from '../../store/script.store';
-/* ─── Import真实引擎 ─── */
+/* ─── Import the real engine ─── */
 import { ScriptEngine } from '../../scada-data/engine/ScriptEngine';
 import { TaskScheduler } from '../../scada-data/engine/TaskScheduler';
 
@@ -350,7 +350,7 @@ describe('E2E: Data Binding Workflow', () => {
         steps: [
           { tagId: 'tag-1', value: 0, delay: 0 },
           { tagId: 'tag-1', value: 1, delay: 0 },
-          { tagId: 'tag-1', value: 2, delay: 0 }, ], createdAt: Date.now(), updatedAt: Date.now(), }; simulationStore.loadScenario(scenario as any); simulationStore.start(); simulationStore.nextStep(); expect(simulationStore.currentStep).toBe(1); simulationStore.nextStep(); expect(simulationStore.currentStep).toBe(2); /* 最后一步后应停止 */ simulationStore.nextStep(); expect(simulationStore.status).toBe('idle');
+          { tagId: 'tag-1', value: 2, delay: 0 }, ], createdAt: Date.now(), updatedAt: Date.now(), }; simulationStore.loadScenario(scenario as any); simulationStore.start(); simulationStore.nextStep(); expect(simulationStore.currentStep).toBe(1); simulationStore.nextStep(); expect(simulationStore.currentStep).toBe(2); /* should stop after the last step */ simulationStore.nextStep(); expect(simulationStore.status).toBe('idle');
     });
 
     it('数据模拟循环模式应在最后一步后回到第一步', () => {
@@ -398,7 +398,7 @@ describe('E2E: Data Binding Workflow', () => {
       expect(simulationStore.speed).toBe(2.0);
 
       simulationStore.setSpeed(0.05);
-      expect(simulationStore.speed).toBe(0.1); // 最小值 0.1
+      expect(simulationStore.speed).toBe(0.1); // minimum value 0.1
     });
 
     it('应能清除模拟场景', () => {
@@ -489,7 +489,7 @@ describe('E2E: Data Binding Workflow', () => {
       const graphic = graphicStore.addGraphic('label', 100, 100, 200, 40);
 
       graphicStore.addEvent(graphic!.id, 'click');
-      graphicStore.addAction(graphic!.id, 'click', 'alert'); /* 触发事件不应崩溃 */ expect(() => { graphicStore.triggerEvent(graphic!.id,'click', { value: 100 });
+      graphicStore.addAction(graphic!.id, 'click', 'alert'); /* triggering the event should not crash */ expect(() => { graphicStore.triggerEvent(graphic!.id,'click', { value: 100 });
       }).not.toThrow();
     });
   });
@@ -644,7 +644,7 @@ describe('E2E: Data Binding Workflow', () => {
         name: 'Exec Test',
         script: 'return api.readTag("value") * 2;',
         type: 'client',
-        mode: 'interaction', enabled: true, maxRetries: 0, timeout: 5000, createdAt: Date.now(), updatedAt: Date.now(), executeCount: 0, }); /* Set tagValues in the engine */ /* 注：通过 store 执行需要 engine 中有正确的上下文 */ await scriptStore.executeScript('script-exec-test');
+        mode: 'interaction', enabled: true, maxRetries: 0, timeout: 5000, createdAt: Date.now(), updatedAt: Date.now(), executeCount: 0, }); /* Set tagValues in the engine */ /* note: executing through the store requires the correct context in the engine */ await scriptStore.executeScript('script-exec-test');
 
       expect(scriptStore.lastExecutionResult).not.toBeNull();
     });
@@ -653,7 +653,7 @@ describe('E2E: Data Binding Workflow', () => {
   // ========================================================================
   // TC-E2E-013: Task scheduler → schedule task → execute → verify result
   // ========================================================================
-  describe('TC-E2E-013: Task scheduler → Schedule task → Execute → Verify result', () => { let scheduler: TaskScheduler; beforeEach(() => { /* 注册测试脚本 */ ENGINE.registerScript({ id:'cron-script-001',
+  describe('TC-E2E-013: Task scheduler → Schedule task → Execute → Verify result', () => { let scheduler: TaskScheduler; beforeEach(() => { /* register the test script */ ENGINE.registerScript({ id:'cron-script-001',
         name: 'Cron Job Script',
         script: 'return api.log("info", "cron executed");',
         type: 'client',

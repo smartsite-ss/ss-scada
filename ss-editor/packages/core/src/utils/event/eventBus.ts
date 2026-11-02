@@ -4,7 +4,7 @@
 
 import { IGraphic } from '@scada-editor/plugin-sdk';
 
-export type EventType = 
+export type EventType =
   | 'graphic-added'
   | 'graphic-removed'
   | 'graphic-selected'
@@ -45,12 +45,12 @@ export type EventType =
   | 'auto-save';
 
 /**
- * 默认高频事件节流配置（单位：毫秒）
- * 高频事件（拖拽/缩放/移动）启用节流以降低 CPU 开销
- * 低频事件（点击/选择/撤销）不节流以保证即时响应
+ * Default throttle configuration for high-frequency events (unit: milliseconds)
+ * High-frequency events (drag/zoom/move) are throttled to reduce CPU overhead
+ * Low-frequency events (click/select/undo) are not throttled to ensure immediate response
  */
 export const DEFAULT_THROTTLE_CONFIG: Partial<Record<EventType, number>> = {
-  // 拖拽/移动类高频事件 ~30fps
+  // Drag/move high-frequency events ~30fps
   'graphic-moved': 32,
   'graphic-resized': 32,
   'canvas-panned': 32,
@@ -58,9 +58,9 @@ export const DEFAULT_THROTTLE_CONFIG: Partial<Record<EventType, number>> = {
   'group-moved': 32,
   'group-scaled': 32,
   'group-rotated': 32,
-  // 属性更新类 ~30fps
+  // Property update category ~30fps
   'graphic-updated': 32,
-  // 选择变更（中等频率，允许稍作合并）
+  // Selection change (medium frequency, allow slight merging)
   'selection-changed': 16,
 };
 
@@ -106,20 +106,20 @@ export interface EventPayload {
 }
 
 /**
- * 带类型安全和节流功能的事件总线
- * 
- * 性能优化：
- * - 支持按事件类型配置节流间隔
- * - 使用 performance.now() 高精度时间戳
- * - 仅跳过回调调用，不影响事件数据本身
+ * Type-safe event bus with throttling support
+ *
+ * Performance optimizations:
+ * - Throttle interval can be configured per event type
+ * - Uses performance.now() high-precision timestamps
+ * - Only skips callback invocation, does not affect the event data itself
  */
 export class TypedEventBus {
   private listeners = new Map<EventType, Set<(...args: any[]) => any>>();
   private onceListeners = new Map<EventType, Set<(...args: any[]) => any>>();
 
-  /** 节流配置：事件类型 → 最小触发间隔(ms) */
+  /** Throttle config: event type → minimum trigger interval (ms) */
   private throttleConfig: Map<EventType, number> = new Map();
-  /** 上次触发时间记录 */
+  /** Last trigger time records */
   private lastEmitTime: Map<EventType, number> = new Map();
 
   constructor(throttleConfig?: Partial<Record<EventType, number>>) {
@@ -128,7 +128,7 @@ export class TypedEventBus {
         this.throttleConfig.set(event as EventType, interval);
       }
     }
-    // 合并默认节流配置（用户配置可覆盖默认值）
+    // Merge default throttle config (user config can override defaults)
     for (const [event, interval] of Object.entries(DEFAULT_THROTTLE_CONFIG)) {
       if (!this.throttleConfig.has(event as EventType)) {
         this.throttleConfig.set(event as EventType, interval);
@@ -137,9 +137,9 @@ export class TypedEventBus {
   }
 
   /**
-   * 配置指定事件的节流间隔
-   * @param event 事件类型
-   * @param intervalMs 节流间隔（毫秒），0 表示禁用节流
+   * Configure the throttle interval for a given event
+   * @param event Event type
+   * @param intervalMs Throttle interval (milliseconds), 0 disables throttling
    */
   configureThrottle<T extends EventType>(event: T, intervalMs: number): void {
     if (intervalMs <= 0) {
@@ -150,14 +150,14 @@ export class TypedEventBus {
   }
 
   /**
-   * 获取事件的当前节流配置
+   * Get the current throttle configuration for an event
    */
   getThrottleInterval(event: EventType): number | undefined {
     return this.throttleConfig.get(event);
   }
 
   /**
-   * 清除所有节流配置
+   * Clear all throttle configurations
    */
   clearThrottle(): void {
     this.throttleConfig.clear();
@@ -176,18 +176,18 @@ export class TypedEventBus {
   }
 
   emit<T extends EventType>(type: T, payload: EventPayload[T]): void {
-    // ====== 节流检查 ======
+    // ====== Throttle Check ======
     const throttleInterval = this.throttleConfig.get(type);
     if (throttleInterval !== undefined && throttleInterval > 0) {
       const now = performance.now();
       const lastEmit = this.lastEmitTime.get(type) ?? 0;
       if (now - lastEmit < throttleInterval) {
-        return; // 节流跳过本次触发
+        return; // Throttle: skip this emission
       }
       this.lastEmitTime.set(type, now);
     }
 
-    // 正常分发到持久监听器
+    // Dispatch to persistent listeners
     this.listeners.get(type)?.forEach(handler => {
       try {
         handler(payload);
@@ -196,7 +196,7 @@ export class TypedEventBus {
       }
     });
 
-    // 分发到一次性监听器
+    // Dispatch to once listeners
     this.onceListeners.get(type)?.forEach(handler => {
       try {
         handler(payload);
@@ -228,14 +228,14 @@ export class TypedEventBus {
   }
 
   getActiveEvents(): EventType[] {
-    return Array.from(this.listeners.keys()).filter(type => 
-      (this.listeners.get(type)?.size || 0) > 0 || 
+    return Array.from(this.listeners.keys()).filter(type =>
+      (this.listeners.get(type)?.size || 0) > 0 ||
       (this.onceListeners.get(type)?.size || 0) > 0
     );
   }
 }
 
-/** 默认实例（带默认节流配置） */
+/** Default instance (with default throttle config) */
 export const typedEventBus = new TypedEventBus(DEFAULT_THROTTLE_CONFIG);
 
 class EventBus {

@@ -142,10 +142,10 @@ describe('ConnectionMonitorService', () => {
   describe('detectAbnormalConnections', () => {
     it('should detect high message rate as abnormal', () => {
       service.registerConnection('socket-1', 'user-1', 'u1', '192.168.1.1');
-      // 降低异常速率阈值，使少量消息即触发
+      // lower the anomaly-rate threshold so a small number of messages triggers it
       service.setAbnormalThresholds(0, undefined);
 
-      // 在窗口内发送多条消息使速率超过阈值
+      // send several messages within the window to exceed the threshold
       for (let i = 0; i < 5; i++) {
         service.recordMessage('socket-1');
       }

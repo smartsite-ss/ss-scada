@@ -6,7 +6,7 @@ import { computed, onMounted, onUnmounted, ref, watch, type ComputedRef } from '
 import { ScadaDataManager } from '@scada-editor/core';
 import { useWsStore } from '../stores/ws.store';
 
-/** useTagValue 所需的最小图元属性（调用方可传超集） */
+/** Minimal graphic properties required by useTagValue (callers may pass a superset) */
 export interface TagValueProps {
   tagId: string;
   tagName?: string;
@@ -16,14 +16,15 @@ export interface TagValueProps {
 }
 
 /**
- * 单标签实时值组合式函数：统一管理
- * 「订阅 + 实时刷新 + 断线补偿 + 重绑定 + EventBus 兜底 + 小数位格式化」。
- * 供 tag-variable / tag-value 及工业组件等所有单变量图元复用，替代各自重复的订阅样板。
+ * Single-tag real-time value composable: unified management of
+ * subscription + real-time refresh + disconnect compensation + rebinding + EventBus fallback + decimal formatting.
+ * Reused by all single-variable graphics such as tag-variable / tag-value and industrial components,
+ * replacing their duplicated subscription boilerplate.
  */
 export function useTagValue(
   props: TagValueProps,
   options?: {
-    /** 非 WS 通道（运行态）兜底取数，默认 ScadaDataManager.getTagValue */
+    /** Non-WS channel (runtime) fallback value source, defaults to ScadaDataManager.getTagValue */
     fallbackGetter?: (tagId: string) => unknown;
   },
 ): {
@@ -35,7 +36,7 @@ export function useTagValue(
   const fallbackGetter =
     options?.fallbackGetter ?? ((tagId: string) => ScadaDataManager.getTagValue(tagId) ?? null);
 
-  /** 兜底刷新版本号：运行态 EventBus / HTTP 轮询等通道通过 tagValueChanged 触发 */
+  /** Fallback refresh version: runtime EventBus / HTTP polling channels trigger via tagValueChanged */
   const localVersion = ref(0);
 
   const currentValue = computed<unknown>(() => {
@@ -56,10 +57,10 @@ export function useTagValue(
   );
 
   let unsubscribeEventBus: (() => void) | null = null;
-  /** 已登记（attempted）到 wsStore 的标签，用于绑定变更时退订 / 新增 */
+  /** Tags registered (attempted) to wsStore, used to unsubscribe/add when bindings change */
   let registeredTagId: string | null = null;
 
-  /** 同步 wsStore 订阅：退订旧标签、登记新标签（断连时 subscribeTags 会被丢弃，由 isConnected 补偿） */
+  /** Sync wsStore subscriptions: unsubscribe old tags and register new ones (subscribeTags is dropped while disconnected; compensated by isConnected) */
   function syncSubscription() {
     const next = props.tagId || null;
     if (registeredTagId && registeredTagId !== next) {
@@ -73,7 +74,7 @@ export function useTagValue(
 
   onMounted(() => {
     syncSubscription();
-    // 运行态 / 非 WS 通道兜底：监听全局 EventBus 的 tagValueChanged
+    // Runtime / non-WS channel fallback: listen to the global EventBus tagValueChanged
     unsubscribeEventBus = ScadaDataManager.eventBus.on('tagValueChanged', (event) => {
       const payload = event.payload as { tagId?: string } | undefined;
       if (payload?.tagId === props.tagId) {
@@ -82,7 +83,7 @@ export function useTagValue(
     });
   });
 
-  // 首次连接建立后补偿订阅：编辑态图元可能在 wsStore 连接完成前就已挂载
+  // Compensating subscription after the first connection is established: edit-mode graphics may mount before wsStore finishes connecting
   watch(
     () => wsStore.isConnected,
     (connected) => {
@@ -91,7 +92,7 @@ export function useTagValue(
     },
   );
 
-  // 绑定变更（重新绑定变量）：同步订阅
+  // Binding change (rebind variable): sync subscriptions
   watch(
     () => props.tagId,
     () => syncSubscription(),
@@ -108,7 +109,7 @@ export function useTagValue(
   return { currentValue, displayValue, bindTitle };
 }
 
-/** 按小数位格式化实时值；布尔与非数值（字符串）原样返回，空值返回占位符 */
+/** Format the real-time value by decimal places; booleans and non-numeric values (strings) are returned as-is, empty values return a placeholder */
 function formatValue(raw: unknown, decimalPlaces: number | undefined): string {
   if (raw === null || raw === undefined || raw === '') return '--';
   if (typeof raw === 'boolean') return String(raw);

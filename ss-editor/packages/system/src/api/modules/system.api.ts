@@ -65,19 +65,19 @@ export const systemApi = {
     return client.get('/system/operation-logs', { params }).then((res) => res.data);
   },
 
-  /** 清理过期操作日志（清理超过指定天数的日志） */
+  /** Clean up expired operation logs (removes logs older than the specified number of days) */
   cleanExpiredOperationLogs(days: number): Promise<ApiResponse<{ deleted: number }>> {
     return client.delete(`/system/operation-logs/expired?days=${days}`).then((res) => res.data);
   },
 
-  /** 清空全部操作日志 */
+  /** Clear all operation logs */
   cleanAllOperationLogs(): Promise<ApiResponse<{ deleted: number }>> {
     return client.delete('/system/operation-logs/all').then((res) => res.data);
   },
 
-  // ==================== 错误日志 ====================
+  // ==================== Error logs ====================
 
-  /** 查询错误日志（分页） */
+  /** Query error logs (paged) */
   getErrorLogs(params?: {
     level?: string;
     module?: string;
@@ -89,7 +89,7 @@ export const systemApi = {
     return client.get('/system/error-logs', { params }).then((res) => res.data);
   },
 
-  /** 错误日志统计 */
+  /** Error log statistics */
   getErrorStats(): Promise<
     ApiResponse<{
       total: number;
@@ -101,19 +101,19 @@ export const systemApi = {
     return client.get('/system/error-logs/stats').then((res) => res.data);
   },
 
-  /** 删除单条错误日志 */
+  /** Delete a single error log */
   deleteErrorLog(id: string): Promise<ApiResponse<{ ok: boolean }>> {
     return client.delete(`/system/error-logs/${id}`).then((res) => res.data);
   },
 
-  /** 清理过期错误日志 */
+  /** Clean up expired error logs */
   cleanupErrorLogs(days: number): Promise<ApiResponse<{ ok: boolean; deleted: number }>> {
     return client.delete(`/system/error-logs/cleanup/${days}`).then((res) => res.data);
   },
 
-  // ==================== 应用运行日志 ====================
+  // ==================== Application runtime logs ====================
 
-  /** 查询历史日志 */
+  /** Query historical logs */
   getAppLogs(params?: {
     level?: string;
     module?: string;
@@ -123,19 +123,19 @@ export const systemApi = {
     return client.get('/system/logs', { params }).then((res) => res.data);
   },
 
-  /** 获取日志文件列表 */
+  /** Get the log file list */
   getLogFiles(): Promise<ApiResponse<string[]>> {
     return client.get('/system/logs/files').then((res) => res.data);
   },
 
-  /** 下载日志文件（返回下载 URL，filename 通过 query 传递以支持子目录路径） */
+  /** Download a log file (returns a download URL; filename is passed via query to support subdirectory paths) */
   getLogDownloadUrl(filename: string): string {
     return `/system/logs/download?filename=${encodeURIComponent(filename)}`;
   },
 
-  // ==================== Phase 5: 系统配置管理 ====================
+  // ==================== Phase 5: system configuration management ====================
 
-  /** 获取所有配置项元数据（含分类信息和配置项列表） */
+  /** Get all configuration item metadata (with category info and configuration item lists) */
   getConfigMetadata(): Promise<
     ApiResponse<{
       categories: Record<string, ConfigMetadata[]>;
@@ -145,12 +145,12 @@ export const systemApi = {
     return client.get('/system/configs/metadata').then((res) => res.data);
   },
 
-  /** 获取所有配置项（含元数据 + 当前值 + 来源） */
+  /** Get all configuration items (with metadata + current value + source) */
   getAllWithMeta(): Promise<ApiResponse<ConfigItemView[]>> {
     return client.get('/system/configs/full').then((res) => res.data);
   },
 
-  /** 更新配置项（支持热更新标识、env 文件写入、描述） */
+  /** Update a configuration item (supports hot-reload flag, env file writing, description) */
   updateConfigWithMeta(
     key: string,
     value: string,
@@ -165,36 +165,36 @@ export const systemApi = {
       .then((res) => res.data);
   },
 
-  /** 获取待重启配置项列表 */
+  /** Get the list of configuration items pending restart */
   getRestartRequired(): Promise<ApiResponse<{ keys: string[]; count: number }>> {
     return client.get('/system/configs/restart-required/list').then((res) => res.data);
   },
 
-  /** 清空待重启列表 */
+  /** Clear the pending-restart list */
   clearRestartRequired(): Promise<ApiResponse<void>> {
     return client.post('/system/configs/restart-required/clear').then((res) => res.data);
   },
 
-  // ==================== Phase 5: 系统重启 ====================
+  // ==================== Phase 5: system restart ====================
 
-  /** 触发系统重启 */
+  /** Trigger a system restart */
   triggerRestart(): Promise<ApiResponse<RestartState>> {
     return client.post('/system/restart').then((res) => res.data);
   },
 
-  /** 获取重启状态 */
+  /** Get the restart status */
   getRestartStatus(): Promise<ApiResponse<RestartState>> {
     return client.get('/system/restart/status').then((res) => res.data);
   },
 
-  /** 清除重启标记文件 */
+  /** Clear the restart marker file */
   clearRestartMarker(): Promise<ApiResponse<void>> {
     return client.post('/system/restart/clear-marker').then((res) => res.data);
   },
 
-  // ==================== 安全审计日志（S-M02） ====================
+  // ==================== Security audit logs (S-M02) ====================
 
-  /** 查询安全审计日志（分页，支持多维筛选） */
+  /** Query security audit logs (paged, multi-dimensional filtering supported) */
   getSecurityAuditLogs(params?: {
     date?: string;
     type?: string;
@@ -215,7 +215,7 @@ export const systemApi = {
     return client.get('/system/audit-logs', { params }).then((res) => res.data);
   },
 
-  /** 验证审计日志哈希链完整性（防篡改检测） */
+  /** Verify the audit log hash-chain integrity (tamper detection) */
   verifyAuditChain(date?: string): Promise<
     ApiResponse<{
       valid: boolean;
@@ -230,7 +230,7 @@ export const systemApi = {
       .then((res) => res.data);
   },
 
-  /** 获取审计日志统计概览（含哈希链完整性状态） */
+  /** Get the audit log statistics overview (including hash-chain integrity status) */
   getAuditStats(date?: string): Promise<
     ApiResponse<{
       total: number;

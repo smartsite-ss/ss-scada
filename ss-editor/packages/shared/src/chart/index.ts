@@ -9,10 +9,10 @@ export { registerChartModules } from './echarts';
 export { buildContainerStyle } from './container';
 export { buildTrendChartOption, type TrendChartOptionInput } from './option';
 
-// 数据源抽象（static / api / database）
+// Data source abstraction (static / api / database)
 export * from './data-source';
 
-// 分类图表 option 组装器（bar / pie / radar / gauge）
+// Categorical chart option builders (bar / pie / radar / gauge)
 export {
   buildBarChartOption,
   buildPieChartOption,
@@ -22,5 +22,5 @@ export {
 } from './option-categorical';
 export { buildGaugeChartOption, type GaugeChartOptionInput } from './option-gauge';
 
-// 数据源生命周期组合式函数（供 Vue SFC Graphic 复用）
+// Data source lifecycle composable (reused by Vue SFC Graphics)
 export { useChartSource, type ChartSourceDeps } from './useChartSource';

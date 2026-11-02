@@ -25,10 +25,10 @@ export class ProtocolReadStep implements PipelineStep {
 
   private readonly logger = new Logger(ProtocolReadStep.name);
 
-  /** 隔离模式下设备 → ShardRef 缓存（避免每次 connect） */
+  /** Isolation-mode device -> ShardRef cache (avoid connect on every call) */
   private shardCache = new Map<string, ShardRef>();
 
-  /** 进程内模式下设备 → client 缓存（避免每次 connect） */
+  /** In-process-mode device -> client cache (avoid connect on every call) */
   private clientCache = new Map<string, any>();
 
   constructor(
@@ -40,7 +40,7 @@ export class ProtocolReadStep implements PipelineStep {
     try {
       const deviceType = ctx.deviceType;
 
-      // 1. 检查设备协议是否已注册插件
+      // 1. Check whether the device protocol has a registered plugin
       if (!deviceType || !this.pluginRegistry.isSupported(deviceType)) {
         const supported = this.pluginRegistry.getSupportedProtocols().join(', ');
         const msg = `No plugin registered for device type "${deviceType}". Supported: [${supported}]`;
@@ -51,7 +51,7 @@ export class ProtocolReadStep implements PipelineStep {
       const plugin = this.pluginRegistry.getPlugin(deviceType)!;
       const mode = plugin.meta?.isolationMode ?? IsolationMode.IN_PROCESS;
 
-      // 2. 进程内模式：直接调用 adapter
+      // 2. In-process mode: call the adapter directly
       if (mode === IsolationMode.IN_PROCESS) {
         const adapter = this.pluginRegistry.getAdapter(deviceType);
         const result = await this.readViaAdapter(adapter, ctx);
@@ -59,7 +59,7 @@ export class ProtocolReadStep implements PipelineStep {
         return this.markCommError(ctx, `Adapter read returned null for ${deviceType}`);
       }
 
-      // 3. 隔离模式：通过 executor 执行
+      // 3. Isolation mode: execute via the executor
       try {
         const executor = this.isolationFactory.getExecutor(deviceType);
         const deviceKey = ctx.deviceId;
@@ -88,7 +88,7 @@ export class ProtocolReadStep implements PipelineStep {
         ctx.quality = (result as any).quality || 'good';
         return ctx;
       } catch (isoError) {
-        // 隔离模式失败（worker 崩溃/超时），降级到进程内 adapter
+        // Isolation-mode failure (worker crash/timeout), fall back to the in-process adapter
         this.shardCache.delete(ctx.deviceId);
         this.logger.warn(
           `Isolation mode failed for [${deviceType}], falling back to in-process: ${(isoError as Error).message}`,

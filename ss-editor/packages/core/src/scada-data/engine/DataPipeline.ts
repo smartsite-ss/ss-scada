@@ -67,7 +67,7 @@ export class DataPipeline {
         dataSourceName: tagMeta.dataSourceName,
         dataSourceType: tagMeta.dataSourceType,
       };
-      // 统一通过 ScriptEngine.executeFilterScript 执行用户脚本，启用沙箱隔离
+      // Execute the user script uniformly via ScriptEngine.executeFilterScript, with sandbox isolation enabled
       const result = ScriptEngine.getInstance().executeFilterScript(script, fullDataSet ?? rawValue, res);
 
       if (result && typeof result === 'object') {
@@ -272,7 +272,7 @@ export class DataPipeline {
 
   private _customScript(input: unknown, tagId: string, script?: string): unknown {
     if (!script) return input;
-    // 统一通过 ScriptEngine 执行 customScript，启用沙箱隔离
+    // Execute customScript uniformly via ScriptEngine, with sandbox isolation enabled
     const result = ScriptEngine.getInstance().executeFilterScript(
       script,
       input,

@@ -9,19 +9,19 @@ import { Device } from '@ss-node/ss-device';
 import { TimerConfigService } from '@ss-node/ss-system';
 
 /**
- * 设备持久化服务
+ * Device persistence service
  *
- * 负责将内存中发生变更的设备状态批量写入各项目的 system.db。
- * 通过脏标记机制收集变更，周期性批量持久化。
+ * Batch-writes changed in-memory device states to each project's system.db.
+ * Collects changes via a dirty-flag mechanism and persists them periodically.
  */
 @Injectable()
 export class DevicePersistenceService implements OnModuleDestroy {
   private readonly logger = new Logger(DevicePersistenceService.name);
 
-  /** 脏设备 ID 集合 */
+  /** Set of dirty device IDs */
   private readonly dirtyDeviceIds = new Set<string>();
 
-  /** 定时器 */
+  /** Timer */
   private persistTimer: NodeJS.Timeout | null = null;
   private readonly PERSIST_INTERVAL_MS = 30_000; // 30 秒持久化一次
 
@@ -32,7 +32,7 @@ export class DevicePersistenceService implements OnModuleDestroy {
     private readonly timerConfigService: TimerConfigService,
   ) {}
 
-  /** 启动周期性持久化 */
+  /** Start periodic persistence */
   startPeriodicPersistence(): void {
     if (this.persistTimer) return;
 
@@ -43,7 +43,7 @@ export class DevicePersistenceService implements OnModuleDestroy {
       await this.persistDirtyStatuses();
     }, interval);
 
-    // 注册热更新回调
+    // Register the hot-reload callback
     this.timerConfigService.register('DEVICE_PERSIST_INTERVAL_MS', (newInterval: number) =>
       this.restartTimer(newInterval),
     );
@@ -51,7 +51,7 @@ export class DevicePersistenceService implements OnModuleDestroy {
     this.logger.log(`Periodic persistence started (interval: ${interval}ms)`);
   }
 
-  /** 停止周期性持久化 */
+  /** Stop periodic persistence */
   stopPeriodicPersistence(): void {
     if (this.persistTimer) {
       clearInterval(this.persistTimer);
@@ -60,7 +60,7 @@ export class DevicePersistenceService implements OnModuleDestroy {
     }
   }
 
-  /** 运行时热更新持久化间隔 */
+  /** Hot-update the persistence interval at runtime */
   private restartTimer(newInterval: number): void {
     if (this.persistTimer) {
       clearInterval(this.persistTimer);
@@ -71,7 +71,7 @@ export class DevicePersistenceService implements OnModuleDestroy {
     this.logger.log(`Persistence interval hot-reloaded to ${newInterval}ms`);
   }
 
-  /** 标记设备为脏状态（状态已变更，待持久化） */
+  /** Mark a device as dirty (state changed, pending persistence) */
   markDeviceDirty(deviceId: string): void {
     this.dirtyDeviceIds.add(deviceId);
   }
@@ -81,7 +81,7 @@ export class DevicePersistenceService implements OnModuleDestroy {
   }
 
   /**
-   * 将内存中发生变更的设备状态批量写入各项目的 system.db
+   * Batch-write changed in-memory device states to each project's system.db
    */
   async persistDirtyStatuses(): Promise<void> {
     if (this.dirtyDeviceIds.size === 0) return;
@@ -89,7 +89,7 @@ export class DevicePersistenceService implements OnModuleDestroy {
     const dirtyIds = Array.from(this.dirtyDeviceIds);
     this.dirtyDeviceIds.clear();
 
-    // 按项目分组
+    // Group by project
     const byProject = new Map<string, string[]>();
     for (const deviceId of dirtyIds) {
       const state = this.deviceStateManager.getState(deviceId);
@@ -105,7 +105,7 @@ export class DevicePersistenceService implements OnModuleDestroy {
         const ds = await this.projectDbService.getSystemDb(projectId);
         const deviceRepo = ds.getRepository(Device);
 
-        // 批量更新设备表
+        // Batch-update the device table
         for (const deviceId of deviceIds) {
           const state = this.deviceStateManager.getState(deviceId);
           if (!state) continue;

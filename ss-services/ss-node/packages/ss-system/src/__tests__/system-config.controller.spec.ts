@@ -182,7 +182,7 @@ describe('SystemConfigController - HTTP Integration (supertest)', () => {
     jest.clearAllMocks();
   });
 
-  // ==================== 配置元数据 ====================
+  // ==================== Configuration metadata ====================
 
   describe('GET /api/v1/system/configs/metadata', () => {
     it('TC-CFG-CTL-001: should return metadata categories and items', () => {
@@ -229,7 +229,7 @@ describe('SystemConfigController - HTTP Integration (supertest)', () => {
     });
   });
 
-  // ==================== 配置 CRUD ====================
+  // ==================== Configuration CRUD ====================
 
   describe('GET /api/v1/system/configs', () => {
     it('TC-CFG-CTL-020: should return DB-only configs', () => {
@@ -286,7 +286,7 @@ describe('SystemConfigController - HTTP Integration (supertest)', () => {
     });
   });
 
-  // ==================== 待重启清单 ====================
+  // ==================== Pending-restart list ====================
 
   describe('GET /api/v1/system/configs/restart-required/list', () => {
     it('TC-CFG-CTL-060: should return pending restart keys', () => {
@@ -312,7 +312,7 @@ describe('SystemConfigController - HTTP Integration (supertest)', () => {
     });
   });
 
-  // ==================== 系统重启 ====================
+  // ==================== System restart ====================
 
   describe('POST /api/v1/system/restart', () => {
     it('TC-CFG-CTL-070: should trigger restart', () => {

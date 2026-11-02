@@ -20,7 +20,7 @@ export function useAutoFit(
   const pageStore = usePageStore();
   const viewportStore = useViewportStore();
   const containerRef = ref<HTMLElement | null>(null);
-  // 生命周期内持续观察容器尺寸（优化方案 P2-3）
+  // Continuously observe the container size during the lifecycle (optimization plan P2-3)
   let resizeObserver: ResizeObserver | null = null;
 
   const calculateAutoFitScale = () => {
@@ -77,7 +77,7 @@ export function useAutoFit(
     },
   );
 
-  // ===== 可靠的初始化机制（ResizeObserver）=====
+  // ===== Reliable initialization mechanism (ResizeObserver) =====
   onMounted(() => {
     window.addEventListener('resize', handleWindowResize);
 
@@ -96,8 +96,8 @@ export function useAutoFit(
 
       nextTick(() => tryApply());
 
-      // 持续观察容器尺寸变化：折叠/展开面板、拖动分隔条等不触发 window resize，
-      // 回调复用 100ms 防抖（优化方案 P2-3，替代原先 2 秒后 disconnect 的做法）
+      // Continuously observe container size changes: collapsing/expanding panels, dragging splitters etc. do not trigger window resize,
+      // the callback reuses a 100ms debounce (optimization plan P2-3, replacing the old disconnect-after-2s approach)
       resizeObserver = new ResizeObserver((entries) => {
         for (const entry of entries) {
           if (entry.contentRect.width > 0 && entry.contentRect.height > 0) {
@@ -111,7 +111,7 @@ export function useAutoFit(
       });
       if (containerRef.value) resizeObserver.observe(containerRef.value);
 
-      // 2s 仅作为"首次未适配则强制尝试一次"的兜底计时，此后观察器继续工作（优化方案 P2-3）
+      // The 2s only serves as a "force one attempt if the first fit failed" fallback timer; the observer keeps working afterwards (optimization plan P2-3)
       setTimeout(() => {
         if (!applied) tryApply();
       }, 2000);

@@ -7,7 +7,7 @@ import { SetMetadata } from '@nestjs/common';
 export const PERMISSIONS_KEY = 'permissions';
 
 /**
- * 权限码装饰器
- * 用法: @Permissions('project:create', 'project:delete')
+ * Permission-code decorator
+ * Usage: @Permissions('project:create', 'project:delete')
  */
 export const Permissions = (...codes: string[]) => SetMetadata(PERMISSIONS_KEY, codes);

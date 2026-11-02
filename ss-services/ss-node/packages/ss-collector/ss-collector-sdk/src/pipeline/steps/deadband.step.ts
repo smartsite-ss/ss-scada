@@ -23,7 +23,7 @@ export class DeadbandStep implements PipelineStep {
     ctx.shouldPersist = true;
 
     try {
-      // 如果 transformedValue 为 null（通信错误/转换失败），不过滤，直接传递
+      // If transformedValue is null (comm error / conversion failure), do not filter; pass through directly
       if (ctx.transformedValue === null || ctx.transformedValue === undefined) {
         return ctx;
       }
@@ -31,7 +31,7 @@ export class DeadbandStep implements PipelineStep {
       const tagConfig = ctx.tagConfig || {};
       const deadband = tagConfig.deadband;
 
-      // 无死区配置，不过滤
+      // No deadband config, do not filter
       if (!deadband) {
         return ctx;
       }
@@ -49,7 +49,7 @@ export class DeadbandStep implements PipelineStep {
         }
       }
 
-      // 更新记录
+      // Update record
       this.lastValues.set(ctx.tagId, {
         value: currentValue,
         timestamp: new Date(),
@@ -58,7 +58,7 @@ export class DeadbandStep implements PipelineStep {
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'Unknown deadband error';
       this.logger.error(`Deadband error for tag ${ctx.tagId}: ${errorMsg}`);
-      // 死区过滤异常不阻塞数据流，允许通过
+      // Deadband-filter exceptions do not block the data flow; allow through
       ctx.shouldPersist = true;
       ctx.errors.push({ step: this.name, message: errorMsg, code: 'DEADBAND_ERROR' });
     }
@@ -81,14 +81,14 @@ export class DeadbandStep implements PipelineStep {
       }
 
       case 'percent': {
-        if (lastRecord.value === 0) return false; // 避免除零
+        if (lastRecord.value === 0) return false; // avoid division by zero
         const deltaPercent =
           (Math.abs(currentValue - lastRecord.value) / Math.abs(lastRecord.value)) * 100;
         return deltaPercent < threshold;
       }
 
       case 'time': {
-        // 时间死区：距上次采集时间小于阈值则过滤
+        // Time deadband: filter if elapsed since last collection is below the threshold
         const elapsedMs = Date.now() - lastRecord.timestamp.getTime();
         return elapsedMs < threshold * 1000;
       }

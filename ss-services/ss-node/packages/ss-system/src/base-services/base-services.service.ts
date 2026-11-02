@@ -24,7 +24,7 @@ import { BaseServiceEntity } from './base-service.entity';
 import { CreateBaseServiceDto, UpdateBaseServiceDto } from './base-service.dto';
 
 /**
- * 服务运行状态
+ * Service run status
  */
 export interface ServiceStatus {
   id: string;
@@ -47,7 +47,7 @@ export interface ServiceStatus {
 }
 
 /**
- * 启停操作结果
+ * Start/stop operation result
  */
 export interface ServiceActionResult {
   success: boolean;
@@ -58,17 +58,17 @@ export interface ServiceActionResult {
   durationMs: number;
 }
 
-/** InfluxDB setup 状态 */
+/** InfluxDB setup status */
 export interface InfluxSetupStatus {
-  /** InfluxDB 是否可达 */
+  /** Whether InfluxDB is reachable */
   reachable: boolean;
-  /** 是否已完成初始化（false=需要执行 setup） */
+  /** Whether initialization has been completed (false = setup needs to run) */
   initialized: boolean;
-  /** 当前配置的 TOKEN 是否为空 */
+  /** Whether the currently configured TOKEN is empty */
   tokenConfigured: boolean;
 }
 
-/** InfluxDB 初始化结果 */
+/** InfluxDB initialization result */
 export interface InfluxSetupResult {
   success: boolean;
   message: string;
@@ -78,17 +78,17 @@ export interface InfluxSetupResult {
   details?: Record<string, any>;
 }
 
-/** InfluxDB 健康状态 */
+/** InfluxDB health status */
 export interface InfluxHealthStatus {
-  /** 总健康状态：healthy / degraded / unhealthy */
+  /** Overall health status: healthy / degraded / unhealthy */
   status: 'healthy' | 'degraded' | 'unhealthy';
-  /** InfluxDB 版本号 */
+  /** InfluxDB version number */
   version?: string;
-  /** 提交 hash */
+  /** Commit hash */
   commit?: string;
-  /** 检查耗时 (ms) */
+  /** Check duration (ms) */
   responseTimeMs?: number;
-  /** 错误信息 */
+  /** Error message */
   error?: string;
 }
 
@@ -102,15 +102,15 @@ export interface InfluxBucket {
   storageBytes?: number;
   createdAt?: string;
   updatedAt?: string;
-  /** measurement 数量 */
+  /** Measurement count */
   measurementCount?: number;
-  /** 最后写入时间（ISO 字符串） */
+  /** Last write time (ISO string) */
   lastWriteAt?: string;
-  /** 数据点总数（近似） */
+  /** Total data points (approximate) */
   dataPointCount?: number;
 }
 
-/** InfluxDB 环境配置 */
+/** InfluxDB environment configuration */
 export interface InfluxConfig {
   url: string;
   org: string;
@@ -119,17 +119,17 @@ export interface InfluxConfig {
   tokenMasked: string;
 }
 
-/** NanoMQ MQTT 健康状态 */
+/** NanoMQ MQTT health status */
 export interface NanomqHealthStatus {
-  /** MQTT 端口是否可达 */
+  /** Whether the MQTT port is reachable */
   reachable: boolean;
-  /** 检查耗时 (ms) */
+  /** Check duration (ms) */
   responseTimeMs?: number;
-  /** 错误信息 */
+  /** Error message */
   error?: string;
 }
 
-/** 日志条目 */
+/** Log entry */
 export interface LogEntry {
   filename: string;
   size: number;
@@ -138,32 +138,32 @@ export interface LogEntry {
   totalLines: number;
 }
 
-/** 服务运行时记录 */
+/** Service runtime record */
 interface RuntimeRecord {
   pid?: number;
   startedAt?: Date;
   childProcess?: ChildProcess;
 }
 
-/** 启动等待端口就绪的超时时间（毫秒） */
+/** Timeout for waiting for the port to be ready at startup (ms) */
 const START_TIMEOUT_MS = 15000;
-/** 停止时等待进程退出的超时时间（毫秒） */
+/** Timeout for waiting for the process to exit on stop (ms) */
 const STOP_TIMEOUT_MS = 5000;
-/** 单次读取日志的最大行数 */
+/** Max lines read per log fetch */
 const LOG_MAX_LINES = 500;
-/** 配置文件最大大小（1MB） */
+/** Config file max size (1MB) */
 const CONFIG_MAX_SIZE = 1024 * 1024;
-/** 日志保留份数 */
+/** Number of log rotations to keep */
 const LOG_BACKUP_KEEP = 5;
 
 @Injectable()
 export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(BaseServicesService.name);
-  /** 运行时状态（内存中的 PID 记录） */
+  /** Runtime state (in-memory PID records) */
   private readonly runtimes = new Map<string, RuntimeRecord>();
-  /** 进程守护定时器 */
+  /** Process-guard timer */
   private processGuardTimer: ReturnType<typeof setInterval> | null = null;
-  /** 进程守护检测间隔（毫秒），默认 30 秒 */
+  /** Process-guard check interval (ms), default 30 seconds */
   private readonly PROCESS_GUARD_INTERVAL_MS = 30000;
 
   constructor(
@@ -174,11 +174,11 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
   ) {}
 
   async onModuleInit(): Promise<void> {
-    // 同步默认服务配置（空表全量写入，非空表按环境变量 upsert）
+    // Sync the default service configuration (empty table: full write; non-empty table: upsert from env vars)
     await this.syncDefaultServices();
-    // 自动启动标记了 autoStart 的服务
+    // Auto-start services marked autoStart
     await this.autoStartServices();
-    // 启动进程守护（定时检测 processGuard 服务）
+    // Start the process guard (periodically checks processGuard services)
     this.startProcessGuardian();
   }
 
@@ -186,50 +186,50 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
     this.stopProcessGuardian();
   }
 
-  // ==================== 默认服务同步 ====================
+  // ==================== Default service sync ====================
 
   /**
-   * 获取 ss-services/ss-node 项目根目录的绝对路径
+   * Get the absolute path of the ss-services/ss-node project root
    *
-   * 相对路径基准：
-   * - dev 模式：__dirname 上溯 4 级 = ss-services/ss-node
-   *   （本文件位于 packages/ss-system/dist/base-services/）
-   *   .env 中配置的相对路径（如 ../../ss-run/ss/base_services）相对于 ss-services/ss-node 解析
-   * - 生产模式：process.cwd() = ss-run/ss/services/ss-node
-   *   .env 中相对路径相对于该目录解析
+   * Relative-path baselines:
+   * - dev mode: go up 4 levels from __dirname = ss-services/ss-node
+   *   (this file lives in packages/ss-system/dist/base-services/)
+   *   relative paths configured in .env (e.g. ../../ss-run/ss/base_services) resolve against ss-services/ss-node
+   * - production mode: process.cwd() = ss-run/ss/services/ss-node
+   *   relative paths in .env resolve against that directory
    *
-   * 修复历史：
-   * - v1.5 之前仅用 __dirname 不区分 prod，prod 模式下 __dirname 位于
-   *   node_modules/@ss-node/ss-system/dist/base-services/，4 级上溯到 node_modules/（错误）
-   * - 现在与 app.module.ts getDatabaseConfig()、backup.service.ts getProjectRoot() 保持一致
+   * Fix history:
+   * - Before v1.5, only __dirname was used without distinguishing prod; in prod, __dirname sits in
+   *   node_modules/@ss-node/ss-system/dist/base-services/, so 4 levels up lands in node_modules/ (wrong)
+   * - Now kept consistent with app.module.ts getDatabaseConfig() and backup.service.ts getProjectRoot()
    */
   private getProjectRoot(): string {
     return this.pathResolver.getProjectRoot();
   }
 
   /**
-   * 将路径解析为绝对路径。
-   * - 绝对路径：原样返回
-   * - 相对路径：基于项目根目录（ss-services/ss-node）解析为绝对路径
+   * Resolve a path to an absolute path.
+   * - Absolute paths: returned as-is
+   * - Relative paths: resolved to an absolute path against the project root (ss-services/ss-node)
    *
-   * 这样 DB 中存储的始终是绝对路径，fs.existsSync() 与 spawn() 调用
-   * 不再依赖 process.cwd()，确保跨启动场景一致。
+   * This way the DB always stores absolute paths; fs.existsSync() and spawn() calls
+   * no longer depend on process.cwd(), ensuring consistency across restarts.
    */
   private resolveAbsolutePath(p: string | undefined): string | undefined {
     if (!p) return undefined;
     return this.pathResolver.resolve(p);
   }
 
-  /** 默认服务配置定义（环境变量优先，BASE_SERVICES_DIR 兜底） */
+  /** Default service configuration definitions (env vars take precedence, BASE_SERVICES_DIR as fallback) */
   private getDefaultServiceDefs(): Array<{
     envPrefix: string;
     defaults: Partial<BaseServiceEntity>;
     startArgs: string;
   }> {
-    // 如果环境变量未配置 BASE_SERVICES_DIR，按模式计算默认路径：
+    // If BASE_SERVICES_DIR is not configured in env vars, compute the default path by mode:
     // - prod：SS_NODE_ROOT = ss-run/ss/services/ss-node/ → ../../base_services
     // - dev： SS_NODE_ROOT = ss-services/ss-node/       → ../../ss-run/ss/base_services
-    // 两者最终都解析到 ss-run/ss/base_services/
+    // Both ultimately resolve to ss-run/ss/base_services/
     const isProduction = process.env.NODE_ENV === 'production';
     const defaultBaseDir = isProduction
       ? path.join('..', '..', 'base_services')
@@ -238,10 +238,10 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
     const rawBaseDir =
       this.configService.get<string>('BASE_SERVICES_DIR') ||
       defaultBaseDir;
-    // BASE_SERVICES_DIR 可能是相对路径（.env 中 ../../ss-run/ss/base_services），
-    // 必须解析为绝对路径后拼接子路径，否则存入 DB 的路径会随 process.cwd() 变化
+    // BASE_SERVICES_DIR may be a relative path (.env's ../../ss-run/ss/base_services),
+    // it must be resolved to an absolute path before joining sub-paths, otherwise the DB-stored path changes with process.cwd()
     const baseDir = this.resolveAbsolutePath(rawBaseDir)!;
-    // Nginx 在 ss-run/ss/web/nginx/，与 base_services 同级
+    // Nginx lives in ss-run/ss/web/nginx/, a sibling of base_services
     const nginxDir = path.join(baseDir, '..', 'web', 'nginx');
 
     return [
@@ -303,7 +303,7 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
           autoStart: false,
           sortOrder: 5,
         },
-        // cwd 为二进制所在目录，--data-dir data 相对该目录（与 dataDir 一致）
+        // cwd is the binary's directory; --data-dir data is relative to it (consistent with dataDir)
         startArgs: 'serve --node-id ss-node --object-store file --data-dir data',
       },
       {
@@ -350,17 +350,17 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 从环境变量读取服务路径，环境变量优先于默认值。
+   * Read service paths from env vars; env vars take precedence over defaults.
    *
-   * 环境变量映射：
+   * Env var mapping:
    *   {PREFIX}_BINARY_PATH  → binaryPath
    *   {PREFIX}_CONFIG_PATH  → configPath
    *   {PREFIX}_DATA_DIR     → dataDir
    *   {PREFIX}_LOG_DIR      → logDir
    *
-   * 所有路径都会经过 resolveAbsolutePath 处理，确保 DB 中存储的是绝对路径。
-   * 这样可以避免 process.cwd() 不同（如 pnpm --filter 启动时 cwd 为 apps/ss-node-server）
-   * 导致 fs.existsSync() 解析失败。
+   * All paths go through resolveAbsolutePath, ensuring the DB stores absolute paths.
+   * This avoids fs.existsSync() resolution failures caused by different process.cwd()
+   * (e.g. when started via pnpm --filter, cwd is apps/ss-node-server).
    */
   private resolveServicePaths(
     envPrefix: string,
@@ -373,7 +373,7 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
     const envDataDir = this.configService.get<string>(`${envPrefix}_DATA_DIR`);
     const envLogDir = this.configService.get<string>(`${envPrefix}_LOG_DIR`);
 
-    // 环境变量优先；无论绝对还是相对路径，统一解析为绝对路径存入 DB
+    // Env vars take precedence; absolute or relative, all paths are uniformly resolved to absolute paths before storing in the DB
     if (envBinaryPath) result.binaryPath = this.resolveAbsolutePath(envBinaryPath);
     if (envConfigPath) result.configPath = this.resolveAbsolutePath(envConfigPath);
     if (envDataDir) result.dataDir = this.resolveAbsolutePath(envDataDir);
@@ -383,16 +383,16 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 同步默认服务到 DB（v1.1 — 环境变量关联 + upsert）
-   * - 空表：全量写入默认服务
-   * - 非空表：对每个默认服务执行 upsert（不存在则插入，存在则更新字段）
+   * Sync default services into the DB (v1.1 — env-var association + upsert)
+   * - Empty table: write all default services
+   * - Non-empty table: upsert each default service (insert if missing, update fields if present)
    */
   async syncDefaultServices(): Promise<void> {
     const count = await this.serviceRepo.count();
     const defs = this.getDefaultServiceDefs();
 
     if (count === 0) {
-      // 空表：全量写入
+      // Empty table: full write
       for (const { defaults, envPrefix, startArgs } of defs) {
         const resolved = this.resolveServicePaths(envPrefix, defaults);
         const entity = this.serviceRepo.create({
@@ -405,7 +405,7 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
       return;
     }
 
-    // 非空表：upsert
+    // Non-empty table: upsert
     let synced = 0;
     for (const { defaults, envPrefix, startArgs } of defs) {
       const name = defaults.name;
@@ -415,7 +415,7 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
       const existing = await this.serviceRepo.findOne({ where: { name } });
 
       if (!existing) {
-        // 不存在：插入
+        // Missing: insert
         const entity = this.serviceRepo.create({
           ...resolved,
           startArgs: startArgs || undefined,
@@ -424,7 +424,7 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
         synced++;
         this.logger.log(`Inserted missing default service: ${name}`);
       } else {
-        // 存在：更新路径字段（保持用户配置的 enabled/autoStart 等不变）
+        // Present: update path fields (keep user-configured enabled/autoStart etc. unchanged)
         const fieldsToSync: (keyof BaseServiceEntity)[] = [
           'binaryPath',
           'configPath',
@@ -443,7 +443,7 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
             updated = true;
           }
         }
-        // 同步 startArgs（仅当默认值非空或用户未设置时）
+        // Sync startArgs (only when the default is non-empty or the user has not set it)
         if (startArgs && existing.startArgs !== startArgs) {
           existing.startArgs = startArgs;
           updated = true;
@@ -461,7 +461,7 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  /** 自动启动标记了 autoStart 的服务 */
+  /** Auto-start services marked autoStart */
   private async autoStartServices(): Promise<void> {
     const autoStartServices = await this.serviceRepo.find({
       where: { autoStart: true, enabled: true },
@@ -480,9 +480,9 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  // ==================== 进程守护 ====================
+  // ==================== Process guard ====================
 
-  /** 启动进程守护定时器 */
+  /** Start the process-guard timer */
   private startProcessGuardian(): void {
     if (this.processGuardTimer) return;
     this.logger.log(`Process guardian started, interval=${this.PROCESS_GUARD_INTERVAL_MS}ms`);
@@ -491,7 +491,7 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
     }, this.PROCESS_GUARD_INTERVAL_MS);
   }
 
-  /** 停止进程守护定时器 */
+  /** Stop the process-guard timer */
   private stopProcessGuardian(): void {
     if (this.processGuardTimer) {
       clearInterval(this.processGuardTimer);
@@ -501,7 +501,7 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 进程守护检测：检查 processGuard=true 的服务，若进程不在则自动拉起
+   * Process-guard check: inspects processGuard=true services and auto-starts them when the process is missing
    */
   private async checkAndGuardProcesses(): Promise<void> {
     const guardedServices = await this.serviceRepo.find({
@@ -510,27 +510,27 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
 
     for (const svc of guardedServices) {
       try {
-        // 检查 runtime 记录：是否还有已启动的进程
+        // Check the runtime record: whether a started process still exists
         const rt = this.runtimes.get(svc.name);
         if (rt?.pid) {
-          // 运行时记录存在，优先用 PID 检测（P1优化：避免 tasklist exec 阻塞）
+          // Runtime record exists; prefer PID detection (P1 optimization: avoids blocking tasklist exec)
           const alive = this.isPidAlive(rt.pid);
-          if (alive) continue; // 进程正常，跳过
-          // 进程已死，清理旧记录
+          if (alive) continue; // process alive, skip
+          // Process is dead; clean up the old record
           this.runtimes.delete(svc.name);
         }
 
-        // 二次确认：有 processName 但无 PID 时，才用 tasklist（P1优化：仅 fallback）
+        // Double check: only use tasklist when there is a processName but no PID (P1 optimization: fallback only)
         if (!rt?.pid && svc.processName) {
           const running = await this.isProcessRunning(svc.processName);
           if (running) {
-            // 可恢复：runtime 丢失但进程存在，记录 debug
+            // Recoverable: runtime record lost but the process exists; log at debug
             this.logger.debug(`Process guard: ${svc.name} running without runtime record`);
             continue;
           }
         }
 
-        // 自动拉起
+        // Auto-start
         this.logger.warn(`Process guard: restarting ${svc.name} (${svc.displayName})`);
         const result = await this.start(svc.name);
         if (result.success) {
@@ -539,7 +539,7 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
           this.logger.error(`Process guard: ${svc.name} restart failed: ${result.message}`);
         }
       } catch (err: any) {
-        // 如果是 ConflictException（进程已在运行），说明守护检测正常
+        // If it is a ConflictException (process already running), the guard detection is working correctly
         if (err instanceof ConflictException) {
           this.logger.debug(`Process guard: ${svc.name} already running (conflict)`);
         } else {
@@ -549,21 +549,21 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  // ==================== CRUD 操作 ====================
+  // ==================== CRUD operations ====================
 
-  /** 获取所有服务配置 */
+  /** Get all service configurations */
   async findAll(): Promise<BaseServiceEntity[]> {
     return this.serviceRepo.find({ order: { sortOrder: 'ASC', name: 'ASC' } });
   }
 
-  /** 根据 name 获取服务配置 */
+  /** Get a service configuration by name */
   async findByName(name: string): Promise<BaseServiceEntity> {
     const svc = await this.serviceRepo.findOne({ where: { name } });
     if (!svc) throw new NotFoundException(`基础服务不存在: ${name}`);
     return svc;
   }
 
-  /** 创建新服务 */
+  /** Create a new service */
   async create(dto: CreateBaseServiceDto): Promise<BaseServiceEntity> {
     const existing = await this.serviceRepo.findOne({ where: { name: dto.name } });
     if (existing) {
@@ -594,7 +594,7 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
     return saved;
   }
 
-  /** 更新服务配置 */
+  /** Update a service configuration */
   async update(name: string, dto: UpdateBaseServiceDto): Promise<BaseServiceEntity> {
     const svc = await this.findByName(name);
     Object.assign(svc, dto);
@@ -603,25 +603,25 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
     return saved;
   }
 
-  /** 删除服务 */
+  /** Delete a service */
   async remove(name: string): Promise<void> {
     const svc = await this.findByName(name);
-    // 如果服务正在运行，先停止
+    // If the service is running, stop it first
     const runtime = this.runtimes.get(name);
     if (runtime?.pid) {
       try {
         await this.stop(name);
       } catch {
-        // 忽略停止错误
+        // Ignore stop errors
       }
     }
     await this.serviceRepo.remove(svc);
     this.logger.log(`Deleted base service: ${name}`);
   }
 
-  // ==================== 状态查询 ====================
+  // ==================== Status query ====================
 
-  /** 获取所有服务状态 */
+  /** Get the status of all services */
   async getAllStatus(): Promise<ServiceStatus[]> {
     const services = await this.findAll();
     const results: ServiceStatus[] = [];
@@ -648,7 +648,7 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
     return results;
   }
 
-  /** 获取单个服务状态 */
+  /** Get a single service's status */
   async getStatus(name: string): Promise<ServiceStatus> {
     const svc = await this.findByName(name);
     const runtime = this.runtimes.get(name) || {};
@@ -658,19 +658,19 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
     const dataDirExists = !!svc.dataDir && fs.existsSync(svc.dataDir);
     const logDirExists = !!svc.logDir && fs.existsSync(svc.logDir);
 
-    // 通过进程名检测是否运行
+    // Detect running state by process name
     let processRunning = false;
     if (svc.processName) {
       processRunning = await this.isProcessRunning(svc.processName);
     }
 
-    // 通过端口检测
+    // Detect by port
     let portReachable = false;
     if (svc.port && svc.port > 0) {
       portReachable = await this.checkPort(svc.port);
     }
 
-    // PID 存活检测
+    // PID liveness detection
     let pid = runtime.pid;
     let pidAlive = pid ? this.isPidAlive(pid) : false;
     if (!pidAlive && (processRunning || portReachable)) {
@@ -708,14 +708,14 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
     };
   }
 
-  // ==================== 启停操作 ====================
+  // ==================== Start/stop operations ====================
 
-  /** 启动服务 */
+  /** Start a service */
   async start(name: string): Promise<ServiceActionResult> {
     const svc = await this.findByName(name);
     const startTime = Date.now();
 
-    // 检查是否已在运行
+    // Check whether it is already running
     if (svc.processName && (await this.isProcessRunning(svc.processName))) {
       throw new ConflictException(`${svc.displayName} 进程已在运行 (${svc.processName})`);
     }
@@ -728,7 +728,7 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
       }
     }
 
-    // 确保目录存在
+    // Ensure the directories exist
     if (svc.dataDir) this.ensureDir(svc.dataDir);
     if (svc.logDir) this.ensureDir(svc.logDir);
 
@@ -736,13 +736,13 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
       let pid: number | undefined;
 
       if (svc.startScript) {
-        // 使用启动脚本
+        // Use the start script
         pid = await this.executeScript(
           svc.startScript,
           svc.logDir ? path.join(svc.logDir, `${name}-stdout.log`) : undefined,
         );
       } else if (svc.binaryPath) {
-        // 使用 binaryPath + startArgs 启动
+        // Start with binaryPath + startArgs
         if (!fs.existsSync(svc.binaryPath)) {
           throw new BadRequestException(`可执行文件不存在: ${svc.binaryPath}`);
         }
@@ -788,7 +788,7 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
 
       this.logger.log(`${svc.displayName} started: PID=${pid}`);
 
-      // 等待端口就绪（如果配置了端口）
+      // Wait for the port to be ready (if a port is configured)
       if (svc.port && svc.port > 0) {
         const ready = await this.waitForPort(svc.port, START_TIMEOUT_MS);
         if (!ready) {
@@ -802,7 +802,7 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
           };
         }
       } else {
-        // 没有配置端口，等待 500ms 让进程启动
+        // No port configured; wait 500ms for the process to start
         await new Promise((r) => setTimeout(r, 500));
       }
 
@@ -821,12 +821,12 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  /** 停止服务 */
+  /** Stop a service */
   async stop(name: string): Promise<ServiceActionResult> {
     const svc = await this.findByName(name);
     const startTime = Date.now();
 
-    // 优先使用自定义停止脚本
+    // Prefer the custom stop script
     if (svc.stopScript) {
       await this.executeScript(svc.stopScript);
       this.runtimes.delete(name);
@@ -840,7 +840,7 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
       };
     }
 
-    // 使用进程名 kill（默认行为：taskkill /F /IM <processName>）
+    // Kill by process name (default behavior: taskkill /F /IM <processName>)
     if (svc.processName) {
       const killed = await this.killProcessByName(svc.processName);
       if (killed) {
@@ -856,7 +856,7 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
       }
     }
 
-    // 尝试用 PID 停止
+    // Try stopping by PID
     const runtime = this.runtimes.get(name);
     if (runtime?.pid && this.isPidAlive(runtime.pid)) {
       try {
@@ -886,7 +886,7 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
       }
     }
 
-    // 服务未在运行
+    // Service not running
     this.runtimes.delete(name);
     return {
       success: true,
@@ -897,23 +897,23 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
     };
   }
 
-  /** 重启服务 */
+  /** Restart a service */
   async restart(name: string): Promise<ServiceActionResult> {
     const svc = await this.findByName(name);
     const startTime = Date.now();
 
-    // 尝试停止（不报错如果未运行）
+    // Try stopping (no error if not running)
     try {
       await this.stop(name);
-      // 等待端口释放
+      // Wait for the port to be released
       if (svc.port && svc.port > 0) {
         await this.waitForPortRelease(svc.port, STOP_TIMEOUT_MS);
       }
     } catch {
-      // 忽略停止错误
+      // Ignore stop errors
     }
 
-    // 启动
+    // Start
     const startResult = await this.start(name);
     return {
       ...startResult,
@@ -923,9 +923,9 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
     };
   }
 
-  // ==================== 配置文件管理 ====================
+  // ==================== Configuration file management ====================
 
-  /** 读取配置文件内容 */
+  /** Read config file content */
   async getConfig(name: string): Promise<{ content: string; path: string; size: number }> {
     const svc = await this.findByName(name);
     if (!svc.configPath) {
@@ -942,7 +942,7 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
     return { content, path: svc.configPath, size: stat.size };
   }
 
-  /** 保存配置文件内容（原子写入 + 备份） */
+  /** Save config file content (atomic write + backup) */
   async saveConfig(
     name: string,
     content: string,
@@ -973,9 +973,9 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
     return { success: true, path: svc.configPath, backupPath };
   }
 
-  // ==================== 日志管理 ====================
+  // ==================== Log management ====================
 
-  /** 获取日志列表与内容 */
+  /** Get the log list and content */
   async getLogs(name: string, limit = 200): Promise<LogEntry[]> {
     const svc = await this.findByName(name);
     if (!svc.logDir || !fs.existsSync(svc.logDir)) {
@@ -1010,7 +1010,7 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
     return entries;
   }
 
-  /** 清理日志 */
+  /** Clean up logs */
   async clearLogs(name: string): Promise<{ cleared: string[] }> {
     const svc = await this.findByName(name);
     if (!svc.logDir || !fs.existsSync(svc.logDir)) {
@@ -1033,16 +1033,16 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
     return { cleared };
   }
 
-  // ==================== 私有工具方法 ====================
+  // ==================== Private utility methods ====================
 
-  /** 确保目录存在 */
+  /** Ensure a directory exists */
   private ensureDir(dir: string): void {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
   }
 
-  /** 检查 PID 是否存活 */
+  /** Check whether a PID is alive */
   private isPidAlive(pid: number): boolean {
     try {
       process.kill(pid, 0);
@@ -1052,7 +1052,7 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  /** 检查端口是否可连通 */
+  /** Check whether a port is connectable */
   private checkPort(port: number): Promise<boolean> {
     return new Promise((resolve) => {
       const socket = new net.Socket();
@@ -1074,7 +1074,7 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
     });
   }
 
-  /** 等待端口就绪 */
+  /** Wait for the port to be ready */
   private async waitForPort(port: number, timeoutMs: number): Promise<boolean> {
     const start = Date.now();
     while (Date.now() - start < timeoutMs) {
@@ -1084,7 +1084,7 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
     return false;
   }
 
-  /** 等待端口释放 */
+  /** Wait for the port to be released */
   private async waitForPortRelease(port: number, timeoutMs: number): Promise<boolean> {
     const start = Date.now();
     while (Date.now() - start < timeoutMs) {
@@ -1094,7 +1094,7 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
     return false;
   }
 
-  /** 等待进程退出 */
+  /** Wait for the process to exit */
   private waitForExit(pid: number, timeoutMs: number): Promise<boolean> {
     return new Promise((resolve) => {
       const start = Date.now();
@@ -1110,7 +1110,7 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
     });
   }
 
-  /** 通过进程名检测进程是否在运行（Windows: tasklist） */
+  /** Detect whether a process is running by name (Windows: tasklist) */
   private isProcessRunning(processName: string): Promise<boolean> {
     return new Promise((resolve) => {
       const cmd = `tasklist /FI "IMAGENAME eq ${processName}" /NH /FO CSV`;
@@ -1119,13 +1119,13 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
           resolve(false);
           return;
         }
-        // tasklist CSV 输出中如果包含进程名则表示在运行
+        // In tasklist's CSV output, containing the process name means it is running
         resolve(stdout.toLowerCase().includes(processName.toLowerCase()));
       });
     });
   }
 
-  /** 通过进程名杀死进程（Windows: taskkill /F /IM） */
+  /** Kill a process by name (Windows: taskkill /F /IM) */
   private killProcessByName(processName: string): Promise<boolean> {
     return new Promise((resolve) => {
       const cmd = `taskkill /F /IM ${processName}`;
@@ -1135,7 +1135,7 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
     });
   }
 
-  /** 执行脚本（返回子进程 PID） */
+  /** Execute a script (returns the child process PID) */
   private executeScript(script: string, logFile?: string): Promise<number | undefined> {
     return new Promise((resolve, reject) => {
       const isWindows = process.platform === 'win32';
@@ -1165,7 +1165,7 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
     });
   }
 
-  /** 清理旧备份文件 */
+  /** Clean up old backup files */
   private cleanupOldBackups(configPath: string): void {
     try {
       const dir = path.dirname(configPath);
@@ -1184,14 +1184,14 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
         fs.unlinkSync(file.fullPath);
       }
     } catch {
-      // 忽略清理错误
+      // Ignore cleanup errors
     }
   }
 
-  // ==================== InfluxDB 初始化 ====================
+  // ==================== InfluxDB initialization ====================
 
   /**
-   * 获取 InfluxDB 环境配置（来自 process.env）
+   * Get the InfluxDB environment configuration (from process.env)
    */
   getInfluxConfig(): InfluxConfig {
     const token = process.env.INFLUXDB_TOKEN || '';
@@ -1205,10 +1205,10 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 检测 InfluxDB 是否已完成首次初始化
+   * Detect whether InfluxDB has completed its first-time initialization
    *
-   * InfluxDB 2.x 在首次启动时处于 setup 模式，
-   * GET /api/v2/setup 返回 { allowed: true } 表示可以初始化。
+   * InfluxDB 2.x starts in setup mode on first launch;
+   * GET /api/v2/setup returning { allowed: true } means initialization is available.
    */
   async checkInfluxSetupStatus(): Promise<InfluxSetupStatus> {
     const url = process.env.INFLUXDB_URL || 'http://localhost:8086';
@@ -1221,8 +1221,8 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
 
       if (response.ok) {
         const body = await response.json();
-        // allowed: true → 尚未初始化，需要 setup
-        // allowed: false → 已经初始化完成
+        // allowed: true → not yet initialized, setup is needed
+        // allowed: false → initialization already completed
         return {
           reachable: true,
           initialized: !body.allowed,
@@ -1237,15 +1237,15 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 自动初始化 InfluxDB（等价于 influx setup 命令）
+   * Auto-initialize InfluxDB (equivalent to the influx setup command)
    *
-   * POST /api/v2/setup 创建：
-   *   - 初始用户（username/password）
-   *   - 初始 Organization
-   *   - 初始 Bucket
-   *   - API Token（返回后应写入 .env）
+   * POST /api/v2/setup creates:
+   *   - the initial user (username/password)
+   *   - the initial Organization
+   *   - the initial Bucket
+   *   - an API Token (should be written to .env after the response)
    *
-   * 参数优先级：环境变量 > 传入参数 > 默认值
+   * Parameter precedence: env vars > passed arguments > defaults
    */
   async setupInfluxDB(options?: {
     username?: string;
@@ -1255,7 +1255,7 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
   }): Promise<InfluxSetupResult> {
     const url = process.env.INFLUXDB_URL || 'http://localhost:8086';
 
-    // 先检查是否已初始化
+    // Check whether it is already initialized first
     const status = await this.checkInfluxSetupStatus();
     if (!status.reachable) {
       return {
@@ -1286,7 +1286,7 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
           password,
           org,
           bucket,
-          retentionPeriodHrs: 0, // 无限保留
+          retentionPeriodHrs: 0, // unlimited retention
         }),
         signal: AbortSignal.timeout(10000),
       });
@@ -1303,7 +1303,7 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
 
       const body = await response.json();
 
-      // InfluxDB 2.x setup 返回 { auth: { token }, bucket, org, user }
+      // InfluxDB 2.x setup returns { auth: { token }, bucket, org, user }
       const generatedToken = (body as any).auth?.token || '';
       const resultOrg = (body as any).org?.name || org;
       const resultBucket = (body as any).bucket?.name || bucket;
@@ -1313,7 +1313,7 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
           `InfluxDB setup completed: org="${resultOrg}", bucket="${resultBucket}", token=${generatedToken.slice(0, 8)}...`,
         );
 
-        // 尝试将 token 写入 .env 文件（如果可写）
+        // Try writing the token into the .env file (if writable)
         const envWritten = this.writeInfluxTokenToEnv(generatedToken);
         if (envWritten) {
           this.logger.log('InfluxDB token written to .env file');
@@ -1347,12 +1347,12 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  // ==================== InfluxDB 健康检查 ====================
+  // ==================== InfluxDB health check ====================
 
   /**
-   * 检查 InfluxDB 健康状态
+   * Check InfluxDB health
    *
-   * 调用 InfluxDB 2.x 的 /health 端点，返回服务健康状态和版本信息。
+   * Calls InfluxDB 2.x's /health endpoint, returning the service health status and version info.
    */
   async checkInfluxHealth(): Promise<InfluxHealthStatus> {
     const url = process.env.INFLUXDB_URL || 'http://localhost:8086';
@@ -1389,10 +1389,10 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 检测 NanoMQ MQTT Broker 健康状态
+   * Check NanoMQ MQTT broker health
    *
-   * 通过 TCP 连接检测 NanoMQ MQTT 端口是否可达。
-   * NanoMQ 默认端口可通过 NANOMQ_PORT 环境变量配置（默认 1883）。
+   * Detects whether the NanoMQ MQTT port is reachable via a TCP connection.
+   * The NanoMQ default port can be configured via the NANOMQ_PORT env var (default 1883).
    */
   async checkNanomqHealth(): Promise<NanomqHealthStatus> {
     const port = Number(process.env.NANOMQ_PORT) || 1883;
@@ -1434,9 +1434,9 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 获取 InfluxDB Bucket 列表
+   * Get the InfluxDB bucket list
    *
-   * 调用 InfluxDB 2.x 的 /api/v2/buckets 端点，需提供有效的 API Token。
+   * Calls InfluxDB 2.x's /api/v2/buckets endpoint; requires a valid API token.
    */
   async listInfluxBuckets(): Promise<InfluxBucket[]> {
     const url = process.env.INFLUXDB_URL || 'http://localhost:8086';
@@ -1496,13 +1496,13 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 查询 InfluxDB 各 Bucket 存储占用
+   * Query per-bucket storage usage of InfluxDB
    *
-   * InfluxDB 2.x OSS 版本的 _monitoring 桶不包含 storage_shard_disk_size 指标（该指标为
-   * Cloud 专属），因此改用文件系统扫描方式：读取 InfluxDB config.yaml 中的 engine-path，
-   * 统计每个 bucket 在 engine/data/{bucketID}/ 与 engine/wal/{bucketID}/ 下的磁盘占用。
+   * InfluxDB 2.x OSS's _monitoring bucket does not include the storage_shard_disk_size metric (Cloud-only),
+   * so a file-system scan is used instead: read engine-path from InfluxDB's config.yaml and
+   * measure each bucket's disk usage under engine/data/{bucketID}/ and engine/wal/{bucketID}/.
    *
-   * @param buckets InfluxDB API 返回的 bucket 列表（需含 id 与 name）
+   * @param buckets the bucket list returned by the InfluxDB API (must include id and name)
    */
   private async queryInfluxStorageSizes(buckets: any[]): Promise<Map<string, number>> {
     const map = new Map<string, number>();
@@ -1541,12 +1541,12 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 解析 InfluxDB engine 数据目录的绝对路径
+   * Resolve the absolute path of InfluxDB's engine data directory
    *
-   * 从 base_services 表读取 influxdb 服务的 configPath 与 binaryPath，解析 config.yaml
-   * （JSON 格式）中的 engine-path（相对路径，相对于 influxd.exe 所在目录），得到绝对路径。
+   * Reads the influxdb service's configPath and binaryPath from the base_services table, parses engine-path
+   * (a relative path, relative to the influxd.exe directory) from config.yaml (JSON format), and derives the absolute path.
    *
-   * @returns engine 目录绝对路径，解析失败返回 null
+   * @returns the absolute engine directory path, or null on failure
    */
   private async getInfluxEngineDir(): Promise<string | null> {
     try {
@@ -1561,7 +1561,7 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
         const config = JSON.parse(configContent);
         enginePath = config['engine-path'] || config.enginePath;
       } catch {
-        // config.yaml 非标准 JSON 时，尝试按行提取 engine-path
+        // When config.yaml is not standard JSON, try extracting engine-path line by line
         const match = configContent.match(/["']?engine-path["']?\s*[:=]\s*["']([^"']+)["']/);
         enginePath = match?.[1];
       }
@@ -1578,7 +1578,7 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 递归计算目录总大小（字节）
+   * Recursively compute a directory's total size (bytes)
    */
   private async getDirSize(dirPath: string): Promise<number> {
     let total = 0;
@@ -1594,18 +1594,18 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
         }
       }
     } catch {
-      // 静默失败，部分目录可能无访问权限
+      // Fail silently; some directories may not be accessible
     }
     return total;
   }
 
   /**
-   * 查询各 Bucket 的监控详情（measurement 数量、最后写入时间、数据点数）
+   * Query monitoring details per bucket (measurement count, last write time, data point count)
    *
-   * 使用 Flux 查询每个 bucket 的 measurement 列表和最后写入时间。
-   * 采用并行查询 + 超时保护，避免逐 bucket 查询太慢。
+   * Uses Flux queries to get each bucket's measurement list and last write time.
+   * Uses parallel queries + timeout protection, avoiding slow per-bucket sequential queries.
    *
-   * @param bucketNames 要查询的 bucket 名称列表
+   * @param bucketNames the list of bucket names to query
    * @returns Map<bucketName, { measurementCount, lastWriteAt, dataPointCount }>
    */
   private async queryBucketDetails(
@@ -1619,7 +1619,7 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
     const org = process.env.INFLUXDB_ORG || 'ss-org';
     if (!token) return map;
 
-    // 并行查询每个 bucket
+    // Query each bucket in parallel
     const results = await Promise.all(
       bucketNames.map(async (bucketName) => {
         try {
@@ -1644,7 +1644,7 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 查询指定 bucket 的 measurement 数量
+   * Query the measurement count of a given bucket
    */
   private async queryMeasurementCount(
     url: string,
@@ -1652,7 +1652,7 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
     org: string,
     bucketName: string,
   ): Promise<number | undefined> {
-    // 使用 schema.measurement() 列出所有 measurement，然后计数
+    // Use schema.measurement() to list all measurements, then count them
     const query = `import "influxdata/influxdb/schema"
 schema.measurements(bucket: "${bucketName}")
   |> count(column: "_value")`;
@@ -1674,12 +1674,12 @@ schema.measurements(bucket: "${bucketName}")
       const lines = csv.trim().split(/\r?\n/).filter((l) => l.trim() && !l.startsWith('#'));
       if (lines.length < 2) return 0;
 
-      // CSV header 格式：,result,table,_start,_stop,_value
+      // CSV header format: ,result,table,_start,_stop,_value
       const header = lines[0].split(',');
       const valueIdx = header.findIndex((h) => h === '_value');
       if (valueIdx < 0) return 0;
 
-      // count() 返回单行汇总结果；若存在多个 table 则累加
+      // count() returns a single summary row; if multiple tables exist, accumulate
       let total = 0;
       let hasValue = false;
       for (let i = 1; i < lines.length; i++) {
@@ -1700,7 +1700,7 @@ schema.measurements(bucket: "${bucketName}")
   }
 
   /**
-   * 查询指定 bucket 的最后写入时间
+   * Query a given bucket's last write time
    */
   private async queryLastWriteTime(
     url: string,
@@ -1730,13 +1730,13 @@ schema.measurements(bucket: "${bucketName}")
       const lines = csv.trim().split(/\r?\n/).filter((l) => l.trim() && !l.startsWith('#'));
       if (lines.length < 2) return undefined;
 
-      // 找到 _time 列索引
+      // Find the _time column index
       const header = lines[0].split(',');
       const timeIndex = header.findIndex((h) => h === '_time');
       if (timeIndex < 0) return undefined;
 
-      // last() 对每个 series 返回一行，需遍历所有行取最大时间
-      // （ISO 8601 字符串可按字典序直接比较）
+      // last() returns one row per series; walk all rows to take the maximum time
+      // (ISO 8601 strings can be compared directly lexicographically)
       let latestTime: string | undefined;
       for (let i = 1; i < lines.length; i++) {
         const row = lines[i].split(',');
@@ -1755,12 +1755,12 @@ schema.measurements(bucket: "${bucketName}")
   }
 
   /**
-   * 导出 InfluxDB Bucket 数据为 CSV
+   * Export an InfluxDB bucket's data as CSV
    *
-   * @param bucketName bucket 名称
-   * @param start 开始时间（Flux 格式，如 -1d），默认 -1d
-   * @param stop 结束时间（Flux 格式，如 now()），默认 now()
-   * @returns CSV 字符串（含 BOM 头）
+   * @param bucketName the bucket name
+   * @param start start time (Flux format, e.g. -1d), default -1d
+   * @param stop end time (Flux format, e.g. now()), default now()
+   * @returns a CSV string (with BOM header)
    */
   async exportBucketData(
     bucketName: string,
@@ -1799,14 +1799,14 @@ schema.measurements(bucket: "${bucketName}")
     }
 
     const csv = await response.text();
-    // 添加 UTF-8 BOM 头，确保 Excel 正确识别编码
+    // Add a UTF-8 BOM header so Excel recognizes the encoding correctly
     return '\uFEFF' + csv;
   }
 
   /**
-   * 将生成的 InfluxDB Token 写入 .env 文件
-   * 查找顺序：.env.dev → .env.base → .env
-   * 写入规则：替换已有 INFLUXDB_TOKEN=... 行，或追加到文件末尾
+   * Write the generated InfluxDB token into the .env file
+   * Search order: .env.dev → .env.base → .env
+   * Write rule: replace the existing INFLUXDB_TOKEN=... line, or append to the end of the file
    */
   private writeInfluxTokenToEnv(token: string): boolean {
     const projectRoot = this.getProjectRoot();
@@ -1823,10 +1823,10 @@ schema.measurements(bucket: "${bucketName}")
         let content = fs.readFileSync(envFile, 'utf-8');
 
         if (content.includes('INFLUXDB_TOKEN=')) {
-          // 替换已有的 token
+          // Replace the existing token
           content = content.replace(/^INFLUXDB_TOKEN=.*$/m, `INFLUXDB_TOKEN=${token}`);
         } else {
-          // 追加到文件末尾
+          // Append to the end of the file
           content = content.trimEnd() + `\nINFLUXDB_TOKEN=${token}\n`;
         }
 

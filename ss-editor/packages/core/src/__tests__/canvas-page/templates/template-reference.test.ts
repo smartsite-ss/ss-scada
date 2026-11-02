@@ -8,7 +8,7 @@ import { BasePage } from '../../../graphic-editing/graphic/base/BasePage';
 import { usePageStore } from '../../../store/page.store';
 import type { PageTemplate } from '../../../canvas-page/templates/types';
 
-/** 模拟模板数据 */
+/** Mock template data */
 const mockTemplate: PageTemplate = {
   id: 'builtin-dashboard',
   name: '仪表盘',
@@ -152,43 +152,43 @@ describe('模板引用 — 模拟 handleTemplateCreate 完整代码流', () => {
     const pageStore = usePageStore();
     pageStore.pages = [];
 
-    // ── 完全模拟 PageTabs.handleTemplateCreate 的代码 ──
+    // ── Fully simulate the code of PageTabs.handleTemplateCreate ──
 
-    // Step 1: 创建页面
+    // Step 1: create the page
     const pageName = mockTemplate.name || '新页面';
     const newPage = pageStore.addPage(pageName);
-    const page = newPage; // BasePage 实例
+    const page = newPage; // BasePage instance
 
-    // Step 2: 设置页面尺寸和背景色
+    // Step 2: set page size and background color
     if (mockTemplate.pageConfig) {
       page.width = mockTemplate.pageConfig.width;
       page.height = mockTemplate.pageConfig.height;
       page.backgroundColor = mockTemplate.pageConfig.backgroundColor;
     }
 
-    // Step 3: 引用模式 → 记录模板 ID
-    // 等价于: if (templateStore.configMode === 'reference') { ... }
+    // Step 3: reference mode → record the template ID
+    // Equivalent to: if (templateStore.configMode === 'reference') { ... }
     page.templateId = mockTemplate.id;
     page.templateMode = 'reference';
 
-    // Step 4: 复制图元（通过 addGraphic，这里省略 GraphicFactory）
+    // Step 4: copy graphics (via addGraphic; GraphicFactory omitted here)
 
-    // ── 验证 ──
+    // ── Verification ──
 
     expect(page.width).toBe(1920);
     expect(page.height).toBe(1080);
     expect(page.backgroundColor).toBe('#0a1a2e');
 
-    // ★ 核心断言：templateId/templateMode 已设置
+    // ★ Core assertion: templateId/templateMode are set
     expect(page.templateId).toBe('builtin-dashboard');
     expect(page.templateMode).toBe('reference');
 
-    // ★ 通过 store.pages 获得的 Proxy 也应正确
+    // ★ The Proxy obtained via store.pages should also be correct
     const proxyPage = pageStore.pages[0];
     expect(proxyPage.templateId).toBe('builtin-dashboard');
     expect(proxyPage.templateMode).toBe('reference');
 
-    // ★ toJSON 输出应包含两字段
+    // ★ toJSON output should contain both fields
     const json = proxyPage.toJSON();
     expect(json).toMatchObject({
       name: '仪表盘',
@@ -206,7 +206,7 @@ describe('模板引用 — 模拟 handleTemplateCreate 完整代码流', () => {
 
     const page = pageStore.addPage('Page1');
 
-    // 复制模式：不设置 templateId/templateMode
+    // Copy mode: do not set templateId/templateMode
     const json = page.toJSON();
     expect(json.templateId).toBeUndefined();
     expect(json.templateMode).toBeUndefined();
@@ -237,7 +237,7 @@ describe('模板引用 — 模拟 handleTemplateCreate 完整代码流', () => {
     p1.templateMode = 'reference';
 
     const p2 = pageStore.addPage('页面2');
-    // page2 不设 templateId
+    // page2 has no templateId
 
     expect(pageStore.pages[0].toJSON().templateId).toBe('tpl-a');
     expect(pageStore.pages[0].toJSON().templateMode).toBe('reference');
@@ -253,16 +253,16 @@ describe('模板引用 — 模拟 handleTemplateCreate 完整代码流', () => {
     page.templateId = 'builtin-dashboard';
     page.templateMode = 'reference';
 
-    // 保存
+    // Save
     const saveJson = page.toJSON();
     expect(saveJson.templateId).toBe('builtin-dashboard');
 
-    // 加载
+    // Load
     page.fromJSON(saveJson);
     expect(page.templateId).toBe('builtin-dashboard');
     expect(page.templateMode).toBe('reference');
 
-    // 再次保存
+    // Save again
     const resaveJson = page.toJSON();
     expect(resaveJson.templateId).toBe('builtin-dashboard');
     expect(resaveJson.templateMode).toBe('reference');
@@ -280,7 +280,7 @@ describe('模板引用 — 模拟 handleTemplateCreate 完整代码流', () => {
     p2.templateId = 'builtin-login';
     p2.templateMode = 'reference';
 
-    // 模拟 collectProjectData: pageStore.pages.map(p => p.toJSON())
+    // Simulate collectProjectData: pageStore.pages.map(p => p.toJSON())
     const pagesJson = pageStore.pages.map(p => p.toJSON());
 
     expect(pagesJson[0].templateId).toBe('builtin-dashboard');

@@ -3,8 +3,8 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 const DEBUG_SKIP_AUTH_KEY = 'scada_debug_skip_auth'
-// ⚠️  debug-mock-token 仅在后端 NODE_ENV !== 'production' 时被识别（参见 jwt-auth.guard.ts isDevMode()）
-//     生产构建绝不可使用此 token，否则前端跳过登录但后端 401 → 获取不到任何数据
+// Warning: debug-mock-token is only recognized when the backend NODE_ENV !== 'production' (see jwt-auth.guard.ts isDevMode())
+//     Production builds must never use this token, otherwise the frontend skips login but the backend returns 401 → no data can be fetched
 const DEBUG_TOKEN = 'debug-mock-token'
 
 export interface DebugUser {

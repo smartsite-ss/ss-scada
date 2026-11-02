@@ -33,12 +33,12 @@ export interface UpdateScriptDto {
   status?: string;
 }
 
-// ==================== 脚本模板类型 ====================
+// ==================== Script template types ====================
 
-/** 模板分类 */
+/** Template category */
 export type TemplateCategory = 'data_transform' | 'alarm_condition' | 'device_control' | 'report' | 'custom';
 
-/** 脚本模板 */
+/** Script template */
 export interface ScriptTemplate {
   id: string;
   name: string;
@@ -117,7 +117,7 @@ export const scriptApi = {
     return client.get('/api/functions').then((res) => res.data);
   },
 
-  // ==================== 脚本模板 ====================
+  // ==================== Script templates ====================
 
   getScriptTemplates(projectId: string, filter?: ScriptTemplateFilter): Promise<ScriptTemplate[]> {
     return client

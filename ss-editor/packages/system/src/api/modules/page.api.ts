@@ -31,7 +31,7 @@ export interface GroupListResult {
   groups: GroupInfo[];
 }
 
-// ── 请求级 Promise 缓存：相同参数的请求在 5 秒内共享同一个 Promise ──
+// ── Request-level Promise cache: identical requests within 5 seconds share the same Promise ──
 const CACHE_TTL_MS = 5000;
 
 interface CacheEntry<T> {
@@ -58,7 +58,7 @@ function getCached<T>(cache: Map<string, CacheEntry<T>>, key: string): Promise<T
 
 function setCache<T>(cache: Map<string, CacheEntry<T>>, key: string, promise: Promise<T>): void {
   cache.set(key, { promise, timestamp: Date.now() });
-  // 清理过期条目
+  // Clean up expired entries
   const now = Date.now();
   for (const [k, v] of cache.entries()) {
     if (now - v.timestamp > CACHE_TTL_MS) cache.delete(k);
@@ -77,7 +77,7 @@ export const pageApi = {
   },
 
   createGroup(projectId: string, groupName: string): Promise<ApiResponse<any>> {
-    // 写操作：清除相关缓存
+    // Write operation: clear related caches
     listGroupsCache.delete(getCacheKey(projectId));
     return client.post(`/projects/${projectId}/pages/groups`, { groupName }).then((res) => res.data);
   },
@@ -115,12 +115,12 @@ export const pageApi = {
     const hasPreview = !!(options?.preview || options?.previewSmall);
     const params = options?.groupName ? { group: options.groupName } : {};
 
-    // 写操作：清除列表缓存
+    // Write operation: clear list caches
     listPagesCache.delete(getCacheKey(projectId, options?.groupName ?? '__root__'));
     listPagesCache.delete(getCacheKey(projectId));
 
     if (!hasPreview) {
-      // 纯 JSON 路径：保持向后兼容
+      // Pure JSON path: kept for backward compatibility
       return client.post(
         `/projects/${projectId}/pages/save`,
         { pages },
@@ -131,9 +131,9 @@ export const pageApi = {
           throw err;
         });
     }
-    // multipart 路径：pages 转 JSON 字符串 + 文件 + 关联的 pageName
-    // 注意：必须由浏览器/axios 自动生成 Content-Type: multipart/form-data; boundary=xxx
-    // 手动设置 Content-Type 而不带 boundary 会让 multer 无法解析
+    // multipart path: pages as a JSON string + file + the associated pageName
+    // Note: Content-Type: multipart/form-data; boundary=xxx must be generated automatically by the browser/axios
+    // Manually setting Content-Type without a boundary prevents multer from parsing
     const pagesJson = JSON.stringify(pages);
     const formData = new FormData();
     formData.append('pagesJson', pagesJson);
@@ -161,7 +161,7 @@ export const pageApi = {
   },
 
   savePage(projectId: string, pageName: string, page: Record<string, any>, groupName?: string, preview?: File | Blob, previewSmall?: File | Blob): Promise<ApiResponse<any>> {
-    // 写操作：清除相关缓存
+    // Write operation: clear related caches
     listPagesCache.delete(getCacheKey(projectId, groupName ?? '__root__'));
     listPagesCache.delete(getCacheKey(projectId));
     readPageCache.delete(getCacheKey(projectId, `${pageName}::${groupName ?? ''}`));
@@ -183,7 +183,7 @@ export const pageApi = {
   },
 
   deletePage(projectId: string, pageName: string, groupName?: string): Promise<void> {
-    // 写操作：清除相关缓存
+    // Write operation: clear related caches
     listPagesCache.delete(getCacheKey(projectId, groupName ?? '__root__'));
     listPagesCache.delete(getCacheKey(projectId));
     readPageCache.delete(getCacheKey(projectId, `${pageName}::${groupName ?? ''}`));
@@ -193,7 +193,7 @@ export const pageApi = {
   },
 
   renamePage(projectId: string, oldPageName: string, newPageName: string, groupName?: string): Promise<ApiResponse<any>> {
-    // 写操作：清除相关缓存
+    // Write operation: clear related caches
     listPagesCache.delete(getCacheKey(projectId, groupName ?? '__root__'));
     listPagesCache.delete(getCacheKey(projectId));
     readPageCache.delete(getCacheKey(projectId, `${oldPageName}::${groupName ?? ''}`));
@@ -208,7 +208,7 @@ export const pageApi = {
   },
 
   movePage(projectId: string, pageName: string, fromGroupName?: string, toGroupName?: string): Promise<ApiResponse<any>> {
-    // 写操作：清除相关缓存
+    // Write operation: clear related caches
     listPagesCache.delete(getCacheKey(projectId, fromGroupName ?? '__root__'));
     listPagesCache.delete(getCacheKey(projectId, toGroupName ?? '__root__'));
     listPagesCache.delete(getCacheKey(projectId));
@@ -228,7 +228,7 @@ export const pageApi = {
     return client.get(`/projects/${projectId}/pages/projects-dir`).then((res) => res.data);
   },
 
-  /** 获取项目页面大纲（轻量级，不含 page.json 数据），用于编辑器按需加载 */
+  /** Get the project page outline (lightweight, without page.json data), used by the editor for on-demand loading */
   getProjectOutline(projectId: string): Promise<ApiResponse<{
     success: boolean;
     projectName: string;
@@ -260,12 +260,12 @@ export const pageApi = {
     return client.get(`/projects/${projectId}/pages/outline`).then((res) => res.data);
   },
 
-  /** P3: 获取项目所有页面完整数据（含分组，已去重），一次调用替代 (listGroups + N*listPages + M*readPage） */
+  /** P3: get the full data of all pages in a project (including groups, deduplicated), one call replaces (listGroups + N*listPages + M*readPage) */
   readAllPages(projectId: string): Promise<ApiResponse<{ success: boolean; projectName: string; pages: Array<{ name: string; data: Record<string, any> | null; groupName?: string }> }>> {
     return client.get(`/projects/${projectId}/pages/all/data`).then((res) => res.data);
   },
 
-  /** P2: 批量读取指定页面数据（同一分组下），替代 N 次串行 readPage */
+  /** P2: batch-read the specified pages (within the same group), replacing N serial readPage calls */
   batchReadPages(projectId: string, names: string[], groupName?: string): Promise<ApiResponse<{ success: boolean; projectName: string; pages: Array<{ name: string; data: Record<string, any> | null; groupName?: string }> }>> {
     return client.post(`/projects/${projectId}/pages/batch-read`, { names, groupName }).then((res) => res.data);
   },

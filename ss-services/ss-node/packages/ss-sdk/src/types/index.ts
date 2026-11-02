@@ -85,9 +85,9 @@ export enum AlarmCondition {
   LTE = 'lte',
   RANGE_IN = 'range_in',
   RANGE_OUT = 'range_out',
-  /** 变化检测：值发生变化时触发 */
+  /** Change detection: triggered when the value changes */
   CHANGED = 'changed',
-  /** 变化率检测：变化率超过阈值时触发 */
+  /** Rate-of-change detection: triggered when the change rate exceeds the threshold */
   RATE = 'rate',
   /** @deprecated Use RANGE_IN or RANGE_OUT */
   RANGE = 'range',

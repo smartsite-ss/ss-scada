@@ -5,7 +5,7 @@
 import { IsString, IsOptional, IsObject, Matches, IsIn, IsNumber, Min } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-/** 支持的采集驱动插件 */
+/** Supported collection-driver plugins */
 export const COLLECTOR_DRIVERS = [
   'modbus_tcp',
   'modbus_rtu',

@@ -56,28 +56,28 @@ export class ConfigWatcherService implements OnModuleInit, OnModuleDestroy {
 
   private config: ConfigWatcherConfig = DEFAULT_CONFIG;
 
-  // 当前配置存储
+  // Current config storage
   private currentConfig: ConfigSchema = {};
 
-  // 配置变更历史
+  // Config change history
   private changeHistory: ConfigChange[] = [];
 
-  // 文件监视器
+  // File watcher
   private fileWatchers: fs.FSWatcher[] = [];
 
-  // 定时检查器
+  // Periodic checker
   private checkInterval: NodeJS.Timeout | null = null;
 
-  // 防抖定时器
+  // Debounce timer
   private debounceTimers = new Map<string, NodeJS.Timeout>();
 
-  // 订阅者列表
+  // Subscriber list
   private subscriptions: ConfigSubscription[] = [];
 
-  // 配置校验器
+  // Config validator
   private validators = new Map<string, (value: any) => boolean>();
 
-  // 上一次的文件内容哈希（用于检测变化）
+  // Previous file-content hash (used to detect changes)
   private fileHashes = new Map<string, string>();
 
   constructor(private eventEmitter: EventEmitter2) {}
@@ -102,18 +102,18 @@ export class ConfigWatcherService implements OnModuleInit, OnModuleDestroy {
   onModuleDestroy(): void {
     this.logger.log('ConfigWatcherService destroyed');
 
-    // 清理文件监视器
+    // Clean up file watcher
     for (const watcher of this.fileWatchers) {
       watcher.close();
     }
     this.fileWatchers = [];
 
-    // 清理定时器
+    // Clean up timer
     if (this.checkInterval) {
       clearInterval(this.checkInterval);
     }
 
-    // 清理防抖定时器
+    // Clean up debounce timer
     for (const timer of this.debounceTimers.values()) {
       clearTimeout(timer);
     }
@@ -136,7 +136,7 @@ export class ConfigWatcherService implements OnModuleInit, OnModuleDestroy {
       const content = await fs.promises.readFile(absolutePath, 'utf-8');
       const parsedConfig = JSON.parse(content);
 
-      // 验证配置
+      // Validate config
       if (this.config.validationEnabled && !(await this.validateConfig(parsedConfig))) {
         throw new Error('Configuration validation failed');
       }
@@ -172,16 +172,16 @@ export class ConfigWatcherService implements OnModuleInit, OnModuleDestroy {
     const source = options?.source || 'api';
     const oldValue = this.get(key);
 
-    // 验证值
+    // Validate value
     if (this.config.validationEnabled && !(await this.validateValue(key, value))) {
       this.logger.warn(`Validation failed for key ${key}`);
       return false;
     }
 
-    // 设置值
+    // Set value
     this.setNestedValue(this.currentConfig, key, value);
 
-    // 创建变更记录
+    // Create change record
     const change: ConfigChange = {
       key,
       oldValue,
@@ -191,15 +191,15 @@ export class ConfigWatcherService implements OnModuleInit, OnModuleDestroy {
       userId: options?.userId,
     };
 
-    // 记录历史
+    // Record history
     if (this.config.enableHistory) {
       this.recordChange(change);
     }
 
-    // 通知订阅者（带防抖）
+    // Notify subscribers (with debounce)
     this.notifySubscribersDebounced(change);
 
-    // 发送事件
+    // Send event
     this.eventEmitter.emit('config.changed', change);
 
     this.logger.debug(`Config updated: ${key} = ${JSON.stringify(value)} (source: ${source})`);
@@ -267,7 +267,7 @@ export class ConfigWatcherService implements OnModuleInit, OnModuleDestroy {
       history = history.slice(-options.limit);
     }
 
-    return history.reverse(); // 最新的在前
+    return history.reverse(); // newest first
   }
 
   async rollback(changeId: string): Promise<boolean> {
@@ -300,7 +300,7 @@ export class ConfigWatcherService implements OnModuleInit, OnModuleDestroy {
       if (options?.merge !== false) {
         return this.update(importedConfig, { source: options?.source || 'api' }).then(() => true);
       } else {
-        // 替换整个配置
+        // Replace the entire config
         this.currentConfig = importedConfig;
         return Promise.resolve(true);
       }
@@ -325,7 +325,7 @@ export class ConfigWatcherService implements OnModuleInit, OnModuleDestroy {
           this.fileWatchers.push(watcher);
           this.logger.log(`Watching file: ${absolutePath}`);
 
-          // 初始化文件哈希
+          // Initialize file hash
           this.updateFileHash(absolutePath, fs.readFileSync(absolutePath, 'utf-8'));
         } else {
           this.logger.warn(`Watch path does not exist: ${absolutePath}`);
@@ -348,19 +348,19 @@ export class ConfigWatcherService implements OnModuleInit, OnModuleDestroy {
     try {
       const content = await fs.promises.readFile(filePath, 'utf-8');
 
-      // 检查是否真的有变化（防止重复触发）
+      // Check whether there is a real change (prevent duplicate triggers)
       const currentHash = this.hashContent(content);
       const previousHash = this.fileHashes.get(filePath);
 
       if (currentHash === previousHash) {
-        return; // 没有实际变化
+        return; // no actual change
       }
 
       this.logger.log(`Detected file change: ${filePath}`);
 
       const newConfig = JSON.parse(content);
 
-      // 验证配置
+      // Validate config
       if (this.config.validationEnabled && !(await this.validateConfig(newConfig))) {
         this.logger.error(`Invalid config in file: ${filePath}, ignoring update`);
 
@@ -370,16 +370,16 @@ export class ConfigWatcherService implements OnModuleInit, OnModuleDestroy {
         return;
       }
 
-      // 检测具体变更
+      // Detect specific changes
       const changes = this.detectChanges(this.currentConfig, newConfig);
 
-      // 应用变更
+      // Apply changes
       for (const change of changes) {
         change.source = 'file';
         await this.applyChange(change);
       }
 
-      // 更新文件哈希
+      // Update file hash
       this.updateFileHash(filePath, content);
     } catch (error) {
       this.logger.error(`Error handling file change for ${filePath}: ${error.message}`);
@@ -453,13 +453,13 @@ export class ConfigWatcherService implements OnModuleInit, OnModuleDestroy {
   }
 
   private notifySubscribersDebounced(change: ConfigChange): void {
-    // 清除之前的防抖定时器
+    // Clear the previous debounce timer
     const existingTimer = this.debounceTimers.get(change.key);
     if (existingTimer) {
       clearTimeout(existingTimer);
     }
 
-    // 设置新的防抖定时器
+    // Set a new debounce timer
     const timer = setTimeout(() => {
       this.notifySubscribers(change);
       this.debounceTimers.delete(change.key);
@@ -471,7 +471,7 @@ export class ConfigWatcherService implements OnModuleInit, OnModuleDestroy {
   private recordChange(change: ConfigChange): void {
     this.changeHistory.push(change);
 
-    // 限制历史大小
+    // Limit history size
     if (this.changeHistory.length > this.config.maxHistorySize) {
       this.changeHistory.shift();
     }
@@ -496,7 +496,7 @@ export class ConfigWatcherService implements OnModuleInit, OnModuleDestroy {
         return false;
       }
     }
-    return true; // 没有校验器则通过
+    return true; // pass when no validator is configured
   }
 
   private getNestedValue(obj: any, key: string): any {
@@ -521,7 +521,7 @@ export class ConfigWatcherService implements OnModuleInit, OnModuleDestroy {
   }
 
   private hashContent(content: string): string {
-    // 简单的哈希实现（生产环境应使用crypto模块）
+    // Simple hash implementation (production should use the crypto module)
     let hash = 0;
     for (let i = 0; i < content.length; i++) {
       const char = content.charCodeAt(i);

@@ -3,17 +3,17 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * WidgetTemplateService 单元测试
+ * WidgetTemplateService unit tests
  *
- * 验证点（与 CanvasTemplateService 对齐）：
- * 1. 路径解析返回系统级 / 项目级正确目录
- * 2. onModuleInit 种子内置组件模板落地磁盘
- * 3. createTemplate 写入文件（数据 + 元数据）到正确目录
- * 4. listTemplates 正确读取元数据，按分类/来源筛选
- * 5. readTemplate 返回完整数据（含 graphics + variables）
- * 6. updateTemplate / deleteTemplate 正常工作，内置模板不可修改/删除
- * 7. importTemplate / exportTemplate 往返一致
- * 8. promoteToSystem 生成新的系统级组件模板
+ * Verification points (aligned with CanvasTemplateService):
+ * 1. Path resolution returns the correct system-level / project-level directories
+ * 2. onModuleInit seeds built-in widget templates to disk
+ * 3. createTemplate writes files (data + metadata) to the correct directory
+ * 4. listTemplates reads metadata correctly, filtering by category/source
+ * 5. readTemplate returns the complete data (including graphics + variables)
+ * 6. updateTemplate / deleteTemplate work normally; built-in templates cannot be modified/deleted
+ * 7. importTemplate / exportTemplate round-trip consistently
+ * 8. promoteToSystem generates a new system-level widget template
  */
 
 import * as fs from 'fs';
@@ -138,7 +138,7 @@ describe('WidgetTemplateService', () => {
       const tpl = createMockWidgetTemplate({ category: 'industry' });
       service.createTemplate(tpl);
       const res = service.listTemplates('industry');
-      // 所有返回项应为 industry，且包含新建项（内置同分类模板也计入）
+      // All returned items should be industry, and include the new item (built-in templates of the same category count too)
       expect(res.data.every((t) => t.category === 'industry')).toBe(true);
       expect(res.data.some((t) => t.id === tpl.id)).toBe(true);
     });
@@ -217,7 +217,7 @@ describe('WidgetTemplateService', () => {
       expect(res.success).toBe(true);
       expect(res.data.source).toBe('builtin');
       expect(res.data.id).not.toBe(tpl.id);
-      // 系统级目录中应有新文件
+      // The system-level directory should contain the new file
       const files = fs
         .readdirSync(path.join(systemDir, 'widget-templates'))
         .filter((f) => f.endsWith('_meta.json'));
@@ -238,7 +238,7 @@ describe('WidgetTemplateService', () => {
         `${tpl.id}.json`,
       );
       expect(fs.existsSync(projPath)).toBe(true);
-      // 系统级不应有该模板
+      // The system level should not have this template
       const sysPath = path.join(systemDir, 'widget-templates', `${tpl.id}.json`);
       expect(fs.existsSync(sysPath)).toBe(false);
     });

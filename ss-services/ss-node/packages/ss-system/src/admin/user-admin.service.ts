@@ -36,7 +36,7 @@ export class UserAdminService {
     private readonly eventBusService: EventBusService,
   ) {}
 
-  /** 全量用户列表 */
+  /** Full user list */
   async listUsers(query: UserQuery): Promise<AdminUserListResponse> {
     const { page = 1, pageSize = 20, search, role, isActive } = query;
     const where: any = {};
@@ -71,7 +71,7 @@ export class UserAdminService {
     return { data, total, page, pageSize };
   }
 
-  /** 用户详情 */
+  /** User details */
   async getUserDetail(id: string): Promise<User> {
     const user = await this.userRepo.findOne({
       where: { id },
@@ -94,7 +94,7 @@ export class UserAdminService {
     return user;
   }
 
-  /** 启用/禁用用户 */
+  /** Enable/disable a user */
   async toggleUserStatus(id: string, isActive: boolean): Promise<User> {
     const user = await this.userRepo.findOne({ where: { id } });
     if (!user) {
@@ -104,7 +104,7 @@ export class UserAdminService {
     user.isActive = isActive;
     const saved = await this.userRepo.save(user);
 
-    // 如果禁用用户，强制下线
+    // When disabling a user, force them offline
     if (!isActive) {
       this.forceLogout(id);
     }
@@ -112,7 +112,7 @@ export class UserAdminService {
     return saved;
   }
 
-  /** 角色修改 */
+  /** Role change */
   async updateUserRole(id: string, role: UserRole): Promise<User> {
     const user = await this.userRepo.findOne({ where: { id } });
     if (!user) {
@@ -127,7 +127,7 @@ export class UserAdminService {
     return this.userRepo.save(user);
   }
 
-  /** 重置密码 */
+  /** Reset password */
   async resetPassword(id: string): Promise<{ newPassword: string }> {
     const user = await this.userRepo.findOne({ where: { id } });
     if (!user) {
@@ -142,14 +142,14 @@ export class UserAdminService {
     return { newPassword };
   }
 
-  /** 删除用户 */
+  /** Delete user */
   async deleteUser(id: string): Promise<void> {
     const user = await this.userRepo.findOne({ where: { id } });
     if (!user) {
       throw new NotFoundException('用户不存在');
     }
 
-    // 防止删除最后一个管理员
+    // Prevent deleting the last admin
     if (user.role === UserRole.ADMIN) {
       const adminCount = await this.userRepo.count({ where: { role: UserRole.ADMIN } });
       if (adminCount <= 1) {
@@ -157,14 +157,14 @@ export class UserAdminService {
       }
     }
 
-    // 强制下线
+    // Force offline
     this.forceLogout(id);
 
     await this.userRepo.delete(id);
     this.logger.log(`User deleted: ${user.username}`);
   }
 
-  /** 强制下线 */
+  /** Force offline */
   private forceLogout(userId: string): void {
     try {
       this.wsGateway.sendToUser(userId, 'force:logout', {

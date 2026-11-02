@@ -5,7 +5,7 @@
 import client from '../client';
 import type { ApiResponse } from '../types/api';
 
-/** WebSocket 监控概览数据 */
+/** WebSocket monitoring overview data */
 export interface WsMonitorOverview {
   metrics: {
     broadcastCounts: Record<string, number>;
@@ -44,17 +44,17 @@ export interface WsMonitorOverview {
   };
 }
 
-/** 连接快照 */
+/** Connection snapshot */
 export interface WsConnectionSnapshot {
   socketId: string;
   userId?: string;
   username?: string;
   ip: string;
-  /** 业务来源：建立连接时所在页面路径 */
+  /** Business source: page path where the connection was established */
   source?: string;
-  /** 客户端完整 URL */
+  /** Client full URL */
   url?: string;
-  /** 客户端 User-Agent */
+  /** Client User-Agent */
   userAgent?: string;
   connectedAt: number;
   projectRooms: string[];
@@ -62,7 +62,7 @@ export interface WsConnectionSnapshot {
   lastActivityAt: number;
 }
 
-/** 连接限制配置 */
+/** Connection limit configuration */
 export interface WsConnectionConfig {
   maxConnectionsPerUser: number;
   maxGlobalConnections: number;
@@ -70,7 +70,7 @@ export interface WsConnectionConfig {
   idleTimeoutMinutes: number;
 }
 
-/** 诊断信息 */
+/** Diagnostic information */
 export interface WsDiagnosticInfo {
   conclusions?: string[];
   suggestions?: string[];
@@ -78,37 +78,37 @@ export interface WsDiagnosticInfo {
 }
 
 export const websocketApi = {
-  /** 获取综合概览 */
+  /** Get the combined overview */
   getOverview(): Promise<ApiResponse<WsMonitorOverview>> {
     return client.get('/ws/admin/overview').then((res) => res.data);
   },
 
-  /** 获取所有连接详情 */
+  /** Get all connection details */
   getConnections(): Promise<ApiResponse<{ total: number; connections: WsConnectionSnapshot[] }>> {
     return client.get('/ws/admin/connections').then((res) => res.data);
   },
 
-  /** 强制断开指定连接 */
+  /** Forcefully disconnect a specified connection */
   forceDisconnect(socketId: string): Promise<ApiResponse<void>> {
     return client.delete(`/ws/admin/connections/${socketId}`).then((res) => res.data);
   },
 
-  /** 清理空闲连接 */
+  /** Clean up idle connections */
   cleanupIdle(): Promise<ApiResponse<{ cleaned: number; total: number }>> {
     return client.post('/ws/admin/connections/cleanup-idle').then((res) => res.data);
   },
 
-  /** 获取连接限制配置 */
+  /** Get the connection limit configuration */
   getConfig(): Promise<ApiResponse<WsConnectionConfig>> {
     return client.get('/ws/admin/config').then((res) => res.data);
   },
 
-  /** 更新连接限制配置 */
+  /** Update the connection limit configuration */
   updateConfig(config: Partial<WsConnectionConfig>): Promise<ApiResponse<WsConnectionConfig>> {
     return client.put('/ws/admin/config', config).then((res) => res.data);
   },
 
-  /** 获取诊断信息 */
+  /** Get diagnostic information */
   getDiagnostic(): Promise<ApiResponse<WsDiagnosticInfo>> {
     return client.get('/ws/metrics/diagnostic').then((res) => res.data);
   },

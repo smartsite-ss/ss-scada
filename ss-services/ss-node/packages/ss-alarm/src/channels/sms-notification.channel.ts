@@ -8,35 +8,35 @@ import { StructuredLogger } from '@ss-node/ss-core';
 import { INotificationChannel, NotificationPayload } from './notification-channel.interface';
 
 /**
- * 系统配置服务的结构化类型（避免直接导入 ss-system 造成循环依赖与测试加载问题）
+ * Structured types for the system-config service (avoid a direct ss-system import that would cause circular deps and test-load issues)
  */
 export interface SystemConfigServiceLike {
   get(key: string): Promise<string | null>;
 }
 
 /**
- * 短信服务提供商类型
+ * SMS service provider type
  */
 export type SmsProvider = 'aliyun' | 'tencent';
 
 /**
- * 短信通知通道
+ * SMS notification channel
  *
- * 支持阿里云短信和腾讯云短信，通过系统配置 SMS_PROVIDER 切换。
- * 所需系统配置：
+ * Supports Aliyun SMS and Tencent Cloud SMS, switched via the SMS_PROVIDER system config.
+ * Required system config:
  * - SMS_PROVIDER: 'aliyun' | 'tencent'
  * - SMS_API_KEY: AccessKeyId / SecretId
  * - SMS_API_SECRET: AccessKeySecret / SecretKey
- * - SMS_SIGN_NAME: 短信签名
- * - SMS_TEMPLATE_CODE: 短信模板Code
+ * - SMS_SIGN_NAME: SMS signature
+ * - SMS_TEMPLATE_CODE: SMS template code
  *
- * 不可用时优雅降级（仅记录日志），不影响报警主流程。
+ * Degrades gracefully when unavailable (logs only), without affecting the main alarm flow.
  */
 @Injectable()
 export class SmsNotificationChannel implements INotificationChannel {
   readonly name = 'sms';
 
-  /** 缺省 SDK AppID（腾讯云） */
+  /** Default SDK AppID (Tencent Cloud) */
   private static readonly TENCENT_SMS_DEFAULT_SDK_APPID = '1400000000';
 
   private readonly logger = new StructuredLogger();
@@ -50,7 +50,7 @@ export class SmsNotificationChannel implements INotificationChannel {
   }
 
   /**
-   * 发送短信通知（接口实现）
+   * Send an SMS notification (interface implementation)
    */
   async send(targets: string[], payload: NotificationPayload): Promise<boolean> {
     const content = this.buildSmsContent(payload);
@@ -58,16 +58,16 @@ export class SmsNotificationChannel implements INotificationChannel {
   }
 
   /**
-   * 直接发送短信内容
-   * @param to 手机号列表
-   * @param content 短信内容（作为模板参数透传）
+   * Send SMS content directly
+   * @param to phone number list
+   * @param content SMS content (passed through as template parameters)
    */
   async sendSms(to: string[], content: string): Promise<boolean> {
     return this.sendMessage(to, content, undefined);
   }
 
   /**
-   * 构建短信内容
+   * Build the SMS content
    */
   private buildSmsContent(payload: NotificationPayload): string {
     const levelLabel = this.getLevelLabel(payload.level);
@@ -77,7 +77,7 @@ export class SmsNotificationChannel implements INotificationChannel {
   }
 
   /**
-   * 获取报警级别中文标签
+   * Get the alarm severity label
    */
   private getLevelLabel(level: string): string {
     const labels: Record<string, string> = {
@@ -90,7 +90,7 @@ export class SmsNotificationChannel implements INotificationChannel {
   }
 
   /**
-   * 实际发送逻辑
+   * Actual send logic
    */
   private async sendMessage(
     phones: string[],
@@ -154,10 +154,10 @@ export class SmsNotificationChannel implements INotificationChannel {
     }
   }
 
-  // ==================== 阿里云短信 ====================
+  // ==================== Aliyun SMS ====================
 
   /**
-   * 阿里云短信发送（RPC 风格，HMAC-SHA1 签名）
+   * Aliyun SMS send (RPC style, HMAC-SHA1 signature)
    */
   private async sendViaAliyun(params: {
     apiKey: string;
@@ -213,7 +213,7 @@ export class SmsNotificationChannel implements INotificationChannel {
   }
 
   /**
-   * 阿里云 RPC 签名算法（HMAC-SHA1 + Base64）
+   * Aliyun RPC signature algorithm (HMAC-SHA1 + Base64)
    */
   private signAliyunRpc(params: Record<string, string>, secret: string): string {
     const sortedKeys = Object.keys(params).sort();
@@ -228,7 +228,7 @@ export class SmsNotificationChannel implements INotificationChannel {
   }
 
   /**
-   * 阿里云 RFC 3986 百分号编码
+   * Aliyun RFC 3986 percent-encoding
    */
   private percentEncode(value: string): string {
     return encodeURIComponent(value)
@@ -237,10 +237,10 @@ export class SmsNotificationChannel implements INotificationChannel {
       .replace(/%7E/g, '~');
   }
 
-  // ==================== 腾讯云短信 ====================
+  // ==================== Tencent Cloud SMS ====================
 
   /**
-   * 腾讯云短信发送（TC3-HMAC-SHA256 签名）
+   * Tencent Cloud SMS send (TC3-HMAC-SHA256 signature)
    */
   private async sendViaTencent(params: {
     apiKey: string;
@@ -292,7 +292,7 @@ export class SmsNotificationChannel implements INotificationChannel {
   }
 
   /**
-   * 腾讯云 API 调用（TC3-HMAC-SHA256 签名）
+   * Tencent Cloud API call (TC3-HMAC-SHA256 signature)
    */
   private async callTencentCloudApi(params: {
     endpoint: string;
@@ -306,7 +306,7 @@ export class SmsNotificationChannel implements INotificationChannel {
     const date = new Date(timestamp * 1000).toISOString().slice(0, 10);
     const service = 'sms';
 
-    // 1. 拼接规范请求串
+    // 1. Assemble the canonical request string
     const hashedPayload = crypto.createHash('sha256').update(params.payload).digest('hex');
     const canonicalRequest = [
       'POST',
@@ -320,7 +320,7 @@ export class SmsNotificationChannel implements INotificationChannel {
       hashedPayload,
     ].join('\n');
 
-    // 2. 拼接签名串
+    // 2. Assemble the signing string
     const credentialScope = `${date}/${service}/tc3_request`;
     const hashedCanonicalRequest = crypto
       .createHash('sha256')
@@ -333,16 +333,16 @@ export class SmsNotificationChannel implements INotificationChannel {
       hashedCanonicalRequest,
     ].join('\n');
 
-    // 3. 计算签名
+    // 3. Compute the signature
     const secretDate = crypto.createHmac('sha256', `TC3${params.secretKey}`).update(date).digest();
     const secretService = crypto.createHmac('sha256', secretDate).update(service).digest();
     const secretSigning = crypto.createHmac('sha256', secretService).update('tc3_request').digest();
     const signature = crypto.createHmac('sha256', secretSigning).update(stringToSign).digest('hex');
 
-    // 4. 构建 Authorization 头
+    // 4. Build the Authorization header
     const authorization = `TC3-HMAC-SHA256 Credential=${params.secretId}/${credentialScope}, SignedHeaders=content-type;host;x-tc-action, Signature=${signature}`;
 
-    // 5. 发送请求
+    // 5. Send the request
     const url = `https://${params.endpoint}`;
     const response = await fetch(url, {
       method: 'POST',
@@ -377,7 +377,7 @@ export class SmsNotificationChannel implements INotificationChannel {
   }
 
   /**
-   * 构建查询字符串（用于阿里云 GET 请求）
+   * Build the query string (for Aliyun GET requests)
    */
   private buildQueryString(params: Record<string, string>): string {
     return Object.entries(params)

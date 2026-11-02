@@ -57,25 +57,25 @@ import { UpgradeController } from './upgrade/upgrade.controller';
 import { TerminalService } from './terminal/terminal.service';
 import { TerminalGateway } from './terminal/terminal.gateway';
 
-// Phase 4 - 基础服务管理
+// Phase 4 - Base services management
 import { BaseServicesService } from './base-services/base-services.service';
 import { BaseServicesController } from './base-services/base-services.controller';
 import { BaseServiceEntity } from './base-services/base-service.entity';
 
-// Phase 5 - 系统配置管理与重启
+// Phase 5 - System config management and restart
 import { SystemRestartService } from './restart/system-restart.service';
 
-// Phase 6 - 知识库（纯文件方案）
+// Phase 6 - Knowledge base (pure-file approach)
 import { KnowledgeModule } from './knowledge/knowledge.module';
 
-// Phase 9 - 图库管理（纯文件方案）
+// Phase 9 - Gallery management (pure-file approach)
 import { GalleryModule } from './gallery/gallery.module';
 
-// Phase 7 - 定时任务配置管理
+// Phase 7 - Scheduled task config management
 import { TimerConfigService } from './timer-config/timer-config.service';
 import { TimerConfigController } from './timer-config/timer-config.controller';
 
-// Phase 8 - 趋势查询方案保存
+// Phase 8 - Trend query scheme saving
 import { TrendQuerySchemeService } from './trend-query-scheme/trend-query-scheme.service';
 import { TrendQuerySchemeController } from './trend-query-scheme/trend-query-scheme.controller';
 
@@ -100,9 +100,9 @@ import { I18nService } from '@ss-node/ss-i18n';
     ]),
     EventBusModule,
     WebSocketModule,
-    // Phase 6 - 知识库
+    // Phase 6 - Knowledge base
     KnowledgeModule,
-    // Phase 9 - 图库管理
+    // Phase 9 - Gallery management
     GalleryModule,
   ],
   controllers: [
@@ -127,9 +127,9 @@ import { I18nService } from '@ss-node/ss-i18n';
     UpgradeController,
     // Phase 4
     BaseServicesController,
-    // Phase 7 - 定时任务配置管理
+    // Phase 7 - Scheduled task config management
     TimerConfigController,
-    // Phase 8 - 趋势查询方案保存
+    // Phase 8 - Trend query scheme saving
     TrendQuerySchemeController,
   ],
   providers: [
@@ -162,11 +162,11 @@ import { I18nService } from '@ss-node/ss-i18n';
     TerminalGateway,
     // Phase 4
     BaseServicesService,
-    // Phase 5 - 系统配置管理与重启
+    // Phase 5 - System config management and restart
     SystemRestartService,
-    // Phase 7 - 定时任务配置管理
+    // Phase 7 - Scheduled task config management
     TimerConfigService,
-    // Phase 8 - 趋势查询方案保存
+    // Phase 8 - Trend query scheme saving
     TrendQuerySchemeService,
     // Core services
     I18nService,
@@ -199,16 +199,16 @@ import { I18nService } from '@ss-node/ss-i18n';
     TerminalGateway,
     // Phase 4
     BaseServicesService,
-    // 菜单配置管理（供 AI Agent MCP 工具注入）
+    // Menu config management (for AI Agent MCP tool injection)
     SystemMenuConfigService,
-    // Phase 5 - 系统配置管理与重启
+    // Phase 5 - System config management and restart
     SystemRestartService,
-    // Phase 7 - 定时任务配置管理
+    // Phase 7 - Scheduled task config management
     TimerConfigService,
     TypeOrmModule,
-    // Phase 6 - 知识库模块导出（供 app.module 注入 KnowledgeService）
+    // Phase 6 - Knowledge base module export (for app.module to inject KnowledgeService)
     KnowledgeModule,
-    // Phase 9 - 图库管理模块导出
+    // Phase 9 - Gallery management module export
     GalleryModule,
   ],
 })

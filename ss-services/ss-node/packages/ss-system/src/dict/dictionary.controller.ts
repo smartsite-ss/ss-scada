@@ -37,7 +37,7 @@ export class DictionaryController {
     };
   }
 
-  // ==================== 分类管理 ====================
+  // ==================== Category management ====================
 
   @Post('categories')
   @ApiOperation({ summary: '创建分类（目录）' })
@@ -71,7 +71,7 @@ export class DictionaryController {
     return { code: 200, data: null, message: '分类已删除', timestamp: new Date().toISOString() };
   }
 
-  // ==================== 字典表管理 ====================
+  // ==================== Dictionary table management ====================
 
   @Post('tables')
   @ApiOperation({ summary: '创建字典表（JSON 文件）' })
@@ -148,10 +148,10 @@ export class DictionaryController {
   @ApiOperation({ summary: '根据 dictId 获取字典表详情，缓存未命中时自动从磁盘加载' })
   @ApiQuery({ name: 'locale', required: false, description: '语言，默认 zh-CN' })
   getDict(@Param('dictId') dictId: string, @Query('locale') locale?: string) {
-    // 1. 先查缓存
+    // 1. Check the cache first
     let dict = this.dictLoader.getDict(dictId, locale);
 
-    // 2. 缓存未命中，尝试从磁盘加载（支持运行期新增字典）
+    // 2. Cache miss; try loading from disk (supports dictionaries added at runtime)
     if (!dict) {
       dict = this.dictLoader.loadSingleDict(dictId, locale);
     }

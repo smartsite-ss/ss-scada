@@ -3,14 +3,14 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * S-M02: 审计上下文 — 从 Controller 传递给 Service 的请求级安全信息
+ * S-M02: audit context - request-level security info passed from Controller to Service
  *
- * 用于在安全事件触发时记录客户端 IP 和 User-Agent，
- * 便于合规审查和攻击溯源。
+ * Used to record the client IP and User-Agent when a security event fires,
+ * facilitating compliance review and attack tracing.
  */
 export interface AuditContext {
-  /** 客户端 IP（支持代理转发场景，由 Controller 的 getClientIp 提取） */
+  /** Client IP (supports proxy-forwarding scenarios, extracted by the Controller's getClientIp) */
   ip?: string;
-  /** User-Agent（浏览器/客户端标识） */
+  /** User-Agent (browser/client identifier) */
   userAgent?: string;
 }

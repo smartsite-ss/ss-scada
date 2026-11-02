@@ -4,7 +4,7 @@
 
 import { IGraphic } from '@scada-editor/plugin-sdk';
 
-// ==================== 类型定义 ====================
+// ==================== Type Definitions ====================
 
 export interface GridSnapConfig {
   enabled: boolean;
@@ -28,7 +28,7 @@ export interface SnapResult {
   targets: SnapTarget[];
 }
 
-// 默认配置
+// Default configuration
 export const DEFAULT_GRID_SNAP_CONFIG: GridSnapConfig = {
   enabled: true,
   gridSize: 20,
@@ -39,31 +39,31 @@ export const DEFAULT_GRID_SNAP_CONFIG: GridSnapConfig = {
 };
 
 /**
- * 网格吸附管理器
- * 处理网格对齐、图形边缘对齐、智能吸附功能
+ * Grid snap manager
+ * Handles grid alignment, graphic edge alignment, and smart snapping
  */
 export class GridSnapManager {
   private config: GridSnapConfig = { ...DEFAULT_GRID_SNAP_CONFIG };
 
   /**
-   * 更新配置
+   * Update configuration
    */
   setConfig(config: Partial<GridSnapConfig>): void {
     this.config = { ...this.config, ...config };
   }
 
   /**
-   * 获取当前配置
+   * Get the current configuration
    */
   getConfig(): GridSnapConfig {
     return { ...this.config };
   }
 
   /**
-   * 吸附位置计算
-   * @param x - 当前 X 坐标
-   * @param y - 当前 Y 坐标
-   * @param referenceGraphics - 参考图形（用于吸附到其他图形）
+   * Snap position calculation
+   * @param x - Current X coordinate
+   * @param y - Current Y coordinate
+   * @param referenceGraphics - Reference graphics (used to snap to other graphics)
    */
   snapPosition(
     x: number,
@@ -74,9 +74,9 @@ export class GridSnapManager {
     let snappedY = y;
     const targets: SnapTarget[] = [];
 
-    // 启用时才进行吸附
+    // Only snap when enabled
     if (this.config.enabled) {
-      // 1. 吸附到网格
+      // 1. Snap to grid
       if (this.config.snapToGrid) {
         const gridResult = this.snapToGrid(x, y);
         if (gridResult.targets.length > 0) {
@@ -86,7 +86,7 @@ export class GridSnapManager {
         }
       }
 
-      // 2. 吸附到其他图形
+      // 2. Snap to other graphics
       if (this.config.snapToGraphics && referenceGraphics.length > 0) {
         const graphicsResult = this.snapToGraphics(snappedX, snappedY, referenceGraphics);
         if (graphicsResult.targets.length > 0) {
@@ -105,8 +105,8 @@ export class GridSnapManager {
   }
 
   /**
-   * 获取网格线位置
-   * @param bounds - 视口边界
+   * Get grid line positions
+   * @param bounds - Viewport bounds
    */
   getGridLines(bounds: {
     x: number;
@@ -135,7 +135,7 @@ export class GridSnapManager {
   }
 
   /**
-   * 检测吸附目标
+   * Detect snap targets
    */
   detectSnapTargets(
     x: number,
@@ -144,13 +144,13 @@ export class GridSnapManager {
   ): SnapTarget[] {
     const targets: SnapTarget[] = [];
 
-    // 1. 网格吸附目标
+    // 1. Grid snap targets
     if (this.config.snapToGrid) {
       const gridTargets = this.getGridSnapTargets(x, y);
       targets.push(...gridTargets);
     }
 
-    // 2. 图形吸附目标
+    // 2. Graphic snap targets
     if (this.config.snapToGraphics) {
       const graphicTargets = this.getGraphicSnapTargets(x, y, referenceGraphics);
       targets.push(...graphicTargets);
@@ -159,10 +159,10 @@ export class GridSnapManager {
     return targets;
   }
 
-  // ==================== 内部辅助方法 ====================
+  // ==================== Internal Helper Methods ====================
 
   /**
-   * 吸附到网格
+   * Snap to grid
    */
   private snapToGrid(x: number, y: number): SnapResult {
     const { gridSize, snapDistance } = this.config;
@@ -195,7 +195,7 @@ export class GridSnapManager {
   }
 
   /**
-   * 获取网格吸附目标
+   * Get grid snap targets
    */
   private getGridSnapTargets(x: number, y: number): SnapTarget[] {
     const { gridSize, snapDistance } = this.config;
@@ -224,7 +224,7 @@ export class GridSnapManager {
   }
 
   /**
-   * 吸附到其他图形
+   * Snap to other graphics
    */
   private snapToGraphics(
     x: number,
@@ -263,7 +263,7 @@ export class GridSnapManager {
   }
 
   /**
-   * 获取图形吸附目标
+   * Get graphic snap targets
    */
   private getGraphicSnapTargets(
     x: number,
@@ -299,7 +299,7 @@ export class GridSnapManager {
   }
 
   /**
-   * 获取图形的关键位置（用于吸附）
+   * Get the key positions of a graphic (used for snapping)
    */
   private getGraphicTargetPositions(geometry: any): Omit<SnapTarget, 'graphicId'>[] {
     const { x, y, width, height } = geometry;
@@ -307,19 +307,19 @@ export class GridSnapManager {
     const centerY = y + height / 2;
 
     return [
-      // 边缘
+      // Edges
       { type: 'edge', position: 'left', value: x },
       { type: 'edge', position: 'right', value: x + width },
       { type: 'edge', position: 'top', value: y },
       { type: 'edge', position: 'bottom', value: y + height },
-      // 中心点
+      // Center points
       { type: 'center', position: 'centerX', value: centerX },
       { type: 'center', position: 'centerY', value: centerY }
     ];
   }
 
   /**
-   * 安全获取图形几何信息
+   * Safely get graphic geometry
    */
   private getSafeGeometry(graphic: IGraphic): any {
     if (!graphic || !graphic.config) {

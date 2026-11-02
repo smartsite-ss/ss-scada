@@ -72,7 +72,7 @@ export class SystemMenuController {
     return { ok: true };
   }
 
-  // ──────── 按钮权限 ────────
+  // ──────── Button permissions ────────
 
   @Get('buttons')
   @ApiOperation({ summary: '获取所有菜单按钮（无需认证）' })
@@ -116,7 +116,7 @@ export class SystemMenuController {
     return { ok: true };
   }
 
-  // ──────── 菜单国际化（data/menu/ 目录下的菜单显示名称） ────────
+  // ──────── Menu i18n (menu display names under data/menu/) ────────
 
   @Get('i18n')
   @ApiOperation({ summary: '获取菜单国际化数据（无需认证）' })
@@ -173,7 +173,7 @@ export class SystemMenuController {
     return this.menuI18nService.getSupportedLocales();
   }
 
-  // ──────── 权限码注册表（v8.0） ────────
+  // ──────── Permission code registry (v8.0) ────────
 
   @Get('permissions/registry')
   @ApiOperation({ summary: '获取权限码注册表（无需认证）' })

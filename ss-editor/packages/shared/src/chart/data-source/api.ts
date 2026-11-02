@@ -8,7 +8,7 @@ import type {
   ChartDataResult,
 } from './types';
 
-/** 按点号路径取嵌套值（如 'data.list' → obj.data.list） */
+/** Get a nested value by dot-path (e.g. 'data.list' → obj.data.list) */
 function pickByPath(target: unknown, dataPath?: string): unknown {
   if (!dataPath) return target;
   const segments = dataPath.split('.').filter(Boolean);
@@ -21,8 +21,9 @@ function pickByPath(target: unknown, dataPath?: string): unknown {
 }
 
 /**
- * API 数据源：通过 HTTP 请求获取外部 / 聚合数据，并按 mapping 归一化为
- * dimensions + source。支持轮询（pollingInterval > 0 时定时重载并通知监听器）。
+ * API data source: fetch external / aggregated data via HTTP and normalize it
+ * into dimensions + source per the mapping. Supports polling (when pollingInterval > 0,
+ * reloads on a timer and notifies listeners).
  */
 export function createApiDataSource(config: ApiSourceConfig): ChartDataSource {
   const listeners = new Set<(result: ChartDataResult) => void>();

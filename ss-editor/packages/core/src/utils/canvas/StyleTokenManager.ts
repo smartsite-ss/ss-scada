@@ -3,10 +3,10 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 样式Token管理类
+ * Style token management class
  */
 export class StyleTokenManager {
-  // 间距Token
+  // Spacing tokens
   private static spacingTokens = {
     xs: '4px',
     sm: '8px',
@@ -16,7 +16,7 @@ export class StyleTokenManager {
     xxl: '48px'
   };
 
-  // 字体Token
+  // Typography tokens
   private static typographyTokens = {
     fontFamily: {
       primary: 'Arial, sans-serif',
@@ -44,7 +44,7 @@ export class StyleTokenManager {
     }
   };
 
-  // 边框Token
+  // Border tokens
   private static borderTokens = {
     width: {
       thin: '1px',
@@ -60,7 +60,7 @@ export class StyleTokenManager {
     }
   };
 
-  // 阴影Token
+  // Shadow tokens
   private static shadowTokens = {
     sm: '0 1px 2px rgba(0, 0, 0, 0.05)',
     md: '0 4px 6px rgba(0, 0, 0, 0.1)',
@@ -69,113 +69,113 @@ export class StyleTokenManager {
   };
 
   /**
-   * 获取间距Token
-   * @param size 间距大小
-   * @returns 间距值
+   * Get a spacing token
+   * @param size Spacing size
+   * @returns Spacing value
    */
   public static getSpacing(size: keyof typeof StyleTokenManager.spacingTokens): string {
     return this.spacingTokens[size];
   }
 
   /**
-   * 获取字体族
-   * @param type 字体类型
-   * @returns 字体族
+   * Get the font family
+   * @param type Font type
+   * @returns Font family
    */
   public static getFontFamily(type: keyof typeof StyleTokenManager.typographyTokens.fontFamily): string {
     return this.typographyTokens.fontFamily[type];
   }
 
   /**
-   * 获取字体大小
-   * @param size 字体大小
-   * @returns 字体大小值
+   * Get the font size
+   * @param size Font size
+   * @returns Font size value
    */
   public static getFontSize(size: keyof typeof StyleTokenManager.typographyTokens.fontSize): string {
     return this.typographyTokens.fontSize[size];
   }
 
   /**
-   * 获取字体权重
-   * @param weight 字体权重
-   * @returns 字体权重值
+   * Get the font weight
+   * @param weight Font weight
+   * @returns Font weight value
    */
   public static getFontWeight(weight: keyof typeof StyleTokenManager.typographyTokens.fontWeight): string {
     return this.typographyTokens.fontWeight[weight];
   }
 
   /**
-   * 获取行高
-   * @param type 行高类型
-   * @returns 行高值
+   * Get the line height
+   * @param type Line height type
+   * @returns Line height value
    */
   public static getLineHeight(type: keyof typeof StyleTokenManager.typographyTokens.lineHeight): string {
     return this.typographyTokens.lineHeight[type];
   }
 
   /**
-   * 获取边框宽度
-   * @param width 边框宽度
-   * @returns 边框宽度值
+   * Get the border width
+   * @param width Border width
+   * @returns Border width value
    */
   public static getBorderWidth(width: keyof typeof StyleTokenManager.borderTokens.width): string {
     return this.borderTokens.width[width];
   }
 
   /**
-   * 获取边框半径
-   * @param size 边框半径大小
-   * @returns 边框半径值
+   * Get the border radius
+   * @param size Border radius size
+   * @returns Border radius value
    */
   public static getBorderRadius(size: keyof typeof StyleTokenManager.borderTokens.radius): string {
     return this.borderTokens.radius[size];
   }
 
   /**
-   * 获取阴影
-   * @param size 阴影大小
-   * @returns 阴影值
+   * Get the shadow
+   * @param size Shadow size
+   * @returns Shadow value
    */
   public static getShadow(size: keyof typeof StyleTokenManager.shadowTokens): string {
     return this.shadowTokens[size];
   }
 
   /**
-   * 获取所有间距Token
-   * @returns 所有间距Token
+   * Get all spacing tokens
+   * @returns All spacing tokens
    */
   public static getAllSpacingTokens(): typeof StyleTokenManager.spacingTokens {
     return { ...this.spacingTokens };
   }
 
   /**
-   * 获取所有字体Token
-   * @returns 所有字体Token
+   * Get all typography tokens
+   * @returns All typography tokens
    */
   public static getAllTypographyTokens(): typeof StyleTokenManager.typographyTokens {
     return { ...this.typographyTokens };
   }
 
   /**
-   * 获取所有边框Token
-   * @returns 所有边框Token
+   * Get all border tokens
+   * @returns All border tokens
    */
   public static getAllBorderTokens(): typeof StyleTokenManager.borderTokens {
     return { ...this.borderTokens };
   }
 
   /**
-   * 获取所有阴影Token
-   * @returns 所有阴影Token
+   * Get all shadow tokens
+   * @returns All shadow tokens
    */
   public static getAllShadowTokens(): typeof StyleTokenManager.shadowTokens {
     return { ...this.shadowTokens };
   }
 
   /**
-   * 注册自定义Token
-   * @param type Token类型
-   * @param tokens Token对象
+   * Register custom tokens
+   * @param type Token type
+   * @param tokens Token object
    */
   public static registerTokens(type: 'spacing' | 'typography' | 'border' | 'shadow', tokens: any): void {
     switch (type) {

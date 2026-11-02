@@ -45,25 +45,25 @@ export class AuthorizationService {
     private roleRepo: Repository<Role>,
   ) {}
 
-  // ──────── 项目授权 ────────
+  // ──────── Project authorization ────────
 
-  /** 获取角色的所有项目授权 */
+  /** Get all project authorizations of a role */
   async getProjectAuths(roleId: string): Promise<ProjectAuthorization[]> {
     return this.projectAuthRepo.find({ where: { roleId } });
   }
 
-  /** 获取角色可访问的项目 ID 列表 */
+  /** Get the list of project IDs a role can access */
   async getAccessibleProjectIds(roleId: string): Promise<string[]> {
     const role = await this.roleRepo.findOne({ where: { id: roleId } });
-    // admin 角色（*:*）可访问所有项目
+    // admin role (*:*) can access all projects
     if (role?.permissions?.includes('*:*')) {
-      return ['*']; // 特殊标记：所有项目
+      return ['*']; // special marker: all projects
     }
     const auths = await this.projectAuthRepo.find({ where: { roleId } });
     return auths.map((a) => a.projectId);
   }
 
-  /** 检查角色是否有项目的指定权限 */
+  /** Check whether a role has the given permission on a project */
   async checkProjectPermission(
     roleId: string,
     projectId: string,
@@ -81,11 +81,11 @@ export class AuthorizationService {
     return levels[auth.permission] >= levels[requiredPermission];
   }
 
-  /** 批量设置角色项目授权 */
+  /** Batch-set a role's project authorizations */
   async setProjectAuths(roleId: string, auths: ProjectAuthDto[]): Promise<void> {
-    // 先删除旧授权
+    // Delete old authorizations first
     await this.projectAuthRepo.delete({ roleId });
-    // 再批量插入新授权
+    // Then batch-insert the new authorizations
     if (auths.length > 0) {
       const entities = auths.map((a) =>
         this.projectAuthRepo.create({
@@ -98,7 +98,7 @@ export class AuthorizationService {
     }
   }
 
-  /** 添加单个项目授权 */
+  /** Add a single project authorization */
   async addProjectAuth(dto: ProjectAuthDto): Promise<ProjectAuthorization> {
     const existing = await this.projectAuthRepo.findOne({
       where: { roleId: dto.roleId, projectId: dto.projectId },
@@ -115,25 +115,25 @@ export class AuthorizationService {
     return this.projectAuthRepo.save(auth);
   }
 
-  /** 移除项目授权 */
+  /** Remove a project authorization */
   async removeProjectAuth(roleId: string, projectId: string): Promise<void> {
     await this.projectAuthRepo.delete({ roleId, projectId });
   }
 
-  // ──────── 设备授权 ────────
+  // ──────── Device authorization ────────
 
-  /** 获取角色在项目下的设备授权 */
+  /** Get a role's device authorizations within a project */
   async getDeviceAuths(roleId: string, projectId: string): Promise<DeviceAuthorization[]> {
     return this.deviceAuthRepo.find({ where: { roleId, projectId } });
   }
 
-  /** 获取角色在项目下可访问的设备 ID 列表 */
+  /** Get the list of device IDs a role can access within a project */
   async getAccessibleDeviceIds(roleId: string, projectId: string): Promise<string[]> {
     const role = await this.roleRepo.findOne({ where: { id: roleId } });
     if (role?.permissions?.includes('*:*')) {
-      return ['*']; // 所有设备
+      return ['*']; // all devices
     }
-    // 有 project:admin 权限则该项目下所有设备可访问
+    // With project:admin permission, all devices in the project are accessible
     const projectAuth = await this.projectAuthRepo.findOne({
       where: { roleId, projectId },
     });
@@ -144,7 +144,7 @@ export class AuthorizationService {
     return auths.map((a) => a.deviceId);
   }
 
-  /** 检查角色是否有设备的指定权限（v8.0：补充项目关联校验，防止跨项目授权泄露） */
+  /** Check whether a role has the given permission on a device (v8.0: adds project-association validation to prevent cross-project authorization leakage) */
   async checkDevicePermission(
     roleId: string,
     projectId: string,
@@ -154,13 +154,13 @@ export class AuthorizationService {
     const role = await this.roleRepo.findOne({ where: { id: roleId } });
     if (role?.permissions?.includes('*:*')) return true;
 
-    // 有 project:admin 权限则该项目下所有设备有 write 权限
+    // With project:admin permission, all devices in the project have write permission
     const projectAuth = await this.projectAuthRepo.findOne({
       where: { roleId, projectId },
     });
     if (projectAuth?.permission === 'admin') return true;
 
-    // v8.0：校验设备是否属于传入的 projectId（防止跨项目授权泄露）
+    // v8.0: validate that the device belongs to the passed projectId (prevents cross-project authorization leakage)
     try {
       const devices: { project_id: string }[] = await this.deviceAuthRepo.manager.query(
         `SELECT project_id FROM sys_devices WHERE id = ?`,
@@ -174,7 +174,7 @@ export class AuthorizationService {
         return false;
       }
     } catch {
-      // sys_devices 表不存在或查询失败时放行（兼容测试环境），由业务层兜底
+      // Allow through when the sys_devices table does not exist or the query fails (test-env compatible); the business layer provides the fallback
     }
 
     const auth = await this.deviceAuthRepo.findOne({
@@ -186,7 +186,7 @@ export class AuthorizationService {
     return levels[auth.permission] >= levels[requiredPermission];
   }
 
-  /** 批量设置角色在项目下的设备授权 */
+  /** Batch-set a role's device authorizations within a project */
   async setDeviceAuths(roleId: string, projectId: string, auths: DeviceAuthDto[]): Promise<void> {
     await this.deviceAuthRepo.delete({ roleId, projectId });
     if (auths.length > 0) {
@@ -202,7 +202,7 @@ export class AuthorizationService {
     }
   }
 
-  /** 添加单个设备授权 */
+  /** Add a single device authorization */
   async addDeviceAuth(dto: DeviceAuthDto): Promise<DeviceAuthorization> {
     const existing = await this.deviceAuthRepo.findOne({
       where: { roleId: dto.roleId, projectId: dto.projectId, deviceId: dto.deviceId },
@@ -220,29 +220,29 @@ export class AuthorizationService {
     return this.deviceAuthRepo.save(auth);
   }
 
-  /** 移除设备授权 */
+  /** Remove a device authorization */
   async removeDeviceAuth(roleId: string, projectId: string, deviceId: string): Promise<void> {
     await this.deviceAuthRepo.delete({ roleId, projectId, deviceId });
   }
 
-  // ──────── 设备分组 ID 推导（v8.0：从设备授权推导，废弃独立分组授权表） ────────
+  // ──────── Device-group ID derivation (v8.0: derived from device authorizations; standalone group-authorization table deprecated) ────────
 
   /**
-   * 获取角色在某项目下可见的设备分组 ID 列表（从设备授权推导）
+   * Get the device-group ID list visible to a role within a project (derived from device authorizations)
    *
-   * 不再查询 sys_device_group_authorizations，而是：
-   * 1. 获取角色在项目下可访问的设备 ID 列表
-   * 2. 反查 sys_devices 表获取每个设备的 groupId
-   * 3. 去重返回
+   * No longer queries sys_device_group_authorizations; instead:
+   * 1. Get the list of device IDs the role can access in the project
+   * 2. Reverse-query the sys_devices table for each device's groupId
+   * 3. Dedupe and return
    *
-   * 规则：授权了设备即为授权了其所属分组。
+   * Rule: authorizing a device implies authorizing its group.
    */
   async getAccessibleDeviceGroupIds(roleId: string, projectId: string): Promise<string[]> {
     const role = await this.roleRepo.findOne({ where: { id: roleId } });
     if (role?.permissions?.includes('*:*')) {
       return ['*'];
     }
-    // 有 project:admin 权限则该项目下所有分组可访问
+    // With project:admin permission, all groups in the project are accessible
     const projectAuth = await this.projectAuthRepo.findOne({
       where: { roleId, projectId },
     });
@@ -250,13 +250,13 @@ export class AuthorizationService {
       return ['*'];
     }
 
-    // 从设备授权获取 deviceIds
+    // Get deviceIds from device authorizations
     const deviceAuths = await this.deviceAuthRepo.find({ where: { roleId, projectId } });
     if (deviceAuths.length === 0) return [];
 
     const deviceIds = deviceAuths.map((a) => a.deviceId);
     try {
-      // 原始 SQL 查询 sys_devices 避免循环依赖
+      // Raw SQL query on sys_devices to avoid circular dependency
       const rows: { group_id: string | null }[] = await this.deviceAuthRepo.manager.query(
         `SELECT DISTINCT group_id FROM sys_devices WHERE id IN (${deviceIds.map(() => '?').join(',')})`,
         deviceIds,
@@ -267,18 +267,18 @@ export class AuthorizationService {
     }
   }
 
-  // ──────── 标签授权（3.6 实现） ────────
+  // ──────── Tag authorization (implemented in 3.6) ────────
 
   /**
-   * 检查角色是否有标签的指定权限
+   * Check whether a role has the given permission on a tag
    *
-   * 检查顺序（优先级递减）：
-   * 1. 角色拥有 *:* 权限 → 直接通过
-   * 2. 项目级 admin 权限 → 通过
-   * 3. 显式标签授权（sys_tag_authorizations 表）
-   * 4. 无显式标签授权 → 返回 false（调用方应回退到设备级权限检查）
+   * Check order (priority descending):
+   * 1. Role has *:* permission -> pass directly
+   * 2. Project-level admin permission -> pass
+   * 3. Explicit tag authorization (sys_tag_authorizations table)
+   * 4. No explicit tag authorization -> return false (caller should fall back to device-level permission check)
    *
-   * @returns true=有权限；false=无显式授权（应回退到设备级检查）
+   * @returns true=permitted; false=no explicit authorization (should fall back to device-level check)
    */
   async checkTagPermission(
     roleId: string,
@@ -289,7 +289,7 @@ export class AuthorizationService {
     const role = await this.roleRepo.findOne({ where: { id: roleId } });
     if (role?.permissions?.includes('*:*')) return true;
 
-    // 有 project:admin 权限则该项目下所有标签有 write 权限
+    // With project:admin permission, all tags in the project have write permission
     const projectAuth = await this.projectAuthRepo.findOne({
       where: { roleId, projectId },
     });
@@ -304,12 +304,12 @@ export class AuthorizationService {
     return levels[auth.permission as 'read' | 'write'] >= levels[requiredPermission];
   }
 
-  /** 获取角色在项目下的标签授权 */
+  /** Get a role's tag authorizations within a project */
   async getTagAuths(roleId: string, projectId: string): Promise<TagAuthorization[]> {
     return this.tagAuthRepo.find({ where: { roleId, projectId } });
   }
 
-  /** 获取角色在项目下可访问的标签 ID 列表 */
+  /** Get the list of tag IDs a role can access within a project */
   async getAccessibleTagIds(roleId: string, projectId: string): Promise<string[]> {
     const role = await this.roleRepo.findOne({ where: { id: roleId } });
     if (role?.permissions?.includes('*:*')) {
@@ -325,7 +325,7 @@ export class AuthorizationService {
     return auths.map((a) => a.tagId);
   }
 
-  /** 批量设置角色在项目下的标签授权 */
+  /** Batch-set a role's tag authorizations within a project */
   async setTagAuths(roleId: string, projectId: string, auths: TagAuthDto[]): Promise<void> {
     await this.tagAuthRepo.delete({ roleId, projectId });
     if (auths.length > 0) {
@@ -341,7 +341,7 @@ export class AuthorizationService {
     }
   }
 
-  /** 添加单个标签授权 */
+  /** Add a single tag authorization */
   async addTagAuth(dto: TagAuthDto): Promise<TagAuthorization> {
     const existing = await this.tagAuthRepo.findOne({
       where: { roleId: dto.roleId, projectId: dto.projectId, tagId: dto.tagId },
@@ -359,23 +359,23 @@ export class AuthorizationService {
     return this.tagAuthRepo.save(auth);
   }
 
-  /** 移除标签授权 */
+  /** Remove a tag authorization */
   async removeTagAuth(roleId: string, projectId: string, tagId: string): Promise<void> {
     await this.tagAuthRepo.delete({ roleId, projectId, tagId });
   }
 
-  // ──────── v8.0 数据迁移：分组授权 → 设备授权 ────────
+  // ──────── v8.0 data migration: group authorizations -> device authorizations ────────
 
   /**
-   * 一次性迁移：将 sys_device_group_authorizations 中的分组授权
-   * 展开为对应设备授权记录（去重、幂等）。
+   * One-time migration: expand group authorizations in sys_device_group_authorizations
+   * into corresponding device authorization records (deduped, idempotent).
    *
-   * 使用原始 SQL 查询 sys_devices 表以避免 ss-core → ss-device 循环依赖。
-   * 在 onApplicationBootstrap 中调用。
+   * Uses raw SQL to query the sys_devices table, avoiding a ss-core -> ss-device circular dependency.
+   * Called in onApplicationBootstrap.
    */
   async migrateDeviceGroupAuthsToDeviceAuths(): Promise<void> {
     try {
-      // 查询所有分组授权记录（使用原始 SQL 避免 DeviceGroupAuthorization 实体在被移除后仍引用）
+      // Query all group-authorization records (raw SQL avoids referencing the DeviceGroupAuthorization entity after its removal)
       const groupAuths: {
         id: string; role_id: string; project_id: string; group_id: string;
         permission: string;
@@ -389,14 +389,14 @@ export class AuthorizationService {
 
       let migrated = 0;
       for (const ga of groupAuths) {
-        // 查询该分组的项目下的所有设备
+        // Query all devices under the group's project
         const devices: { id: string }[] = await this.deviceAuthRepo.manager.query(
           `SELECT id FROM sys_devices WHERE project_id = ? AND group_id = ?`,
           [ga.project_id, ga.group_id],
         );
 
         for (const device of devices) {
-          // 检查是否已有同角色+同项目的设备授权（去重）
+          // Check whether a device authorization with the same role + same project already exists (dedupe)
           const existing: { id: string }[] = await this.deviceAuthRepo.manager.query(
             `SELECT id FROM sys_device_authorizations WHERE role_id = ? AND project_id = ? AND device_id = ?`,
             [ga.role_id, ga.project_id, device.id],
@@ -422,7 +422,7 @@ export class AuthorizationService {
         );
       }
     } catch (error: any) {
-      // 表不存在时静默跳过（首次启动尚未创建表）
+      // Silently skip when the table does not exist (not yet created on first startup)
       if (error.message?.includes('no such table')) {
         this.logger.log('分组授权迁移：sys_device_group_authorizations 表不存在，跳过');
         return;
@@ -431,7 +431,7 @@ export class AuthorizationService {
     }
   }
 
-  /** 生成 UUID（不依赖 crypto 模块） */
+  /** Generate a UUID (without depending on the crypto module) */
   private generateUuid(): string {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
       const r = (Math.random() * 16) | 0;

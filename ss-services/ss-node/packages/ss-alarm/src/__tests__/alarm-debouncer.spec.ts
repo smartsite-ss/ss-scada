@@ -3,7 +3,7 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 // ============================================================
-// Mock @ss-node/ss-device — entity 文件中 import DataTag 需要
+// Mock @ss-node/ss-device -- its entity file imports DataTag
 // ============================================================
 jest.mock('@ss-node/ss-device', () => ({
   DataTag: class {},
@@ -17,7 +17,7 @@ jest.mock('@ss-node/ss-device', () => ({
 }));
 
 // ============================================================
-// Mock @ss-node/ss-sdk — entity 文件中 import enums 需要
+// Mock @ss-node/ss-sdk -- its entity file imports enums
 // ============================================================
 jest.mock('@ss-node/ss-sdk', () => ({
   AlarmLevel: { INFO: 'info', WARNING: 'warning', ERROR: 'error', CRITICAL: 'critical' },
@@ -129,12 +129,12 @@ describe('AlarmDebouncer', () => {
     it('TC-ALM-DEB-013: should trigger exactly at the boundary of debounce duration', () => {
       debouncer.check('rule-001', 'tag-001', 95, 5000);
       jest.advanceTimersByTime(4999);
-      // 差 1ms，仍未满足
+      // Off by 1ms, still not satisfied
       let result = debouncer.check('rule-001', 'tag-001', 96, 5000);
       expect(result).toBe('debouncing');
 
       jest.advanceTimersByTime(1);
-      // 刚好满 5000ms
+      // Exactly reaches 5000ms
       result = debouncer.check('rule-001', 'tag-001', 97, 5000);
       expect(result).toBe('trigger');
     });
@@ -168,9 +168,9 @@ describe('AlarmDebouncer', () => {
   describe('combined debounce (time + count)', () => {
     it('TC-ALM-DEB-030: should trigger only when both time and count are satisfied', () => {
       debouncer.check('rule-001', 'tag-001', 95, 5000, 3);
-      jest.advanceTimersByTime(6000); // 时间满足
+      jest.advanceTimersByTime(6000); // time condition met
       debouncer.check('rule-001', 'tag-001', 96, 5000, 3); // count=2
-      expect(debouncer.getDebouncingCount()).toBe(1); // 次数未满
+      expect(debouncer.getDebouncingCount()).toBe(1); // count below threshold
 
       const result = debouncer.check('rule-001', 'tag-001', 97, 5000, 3); // count=3
       expect(result).toBe('trigger');
@@ -179,13 +179,13 @@ describe('AlarmDebouncer', () => {
     it('TC-ALM-DEB-031: should not trigger when count satisfied but time not', () => {
       debouncer.check('rule-001', 'tag-001', 95, 5000, 2);
       debouncer.check('rule-001', 'tag-001', 96, 5000, 2); // count=2 satisfied
-      // 但时间未满 5000ms
+      // But time has not reached 5000ms
       expect(debouncer.getDebouncingCount()).toBe(1);
     });
 
     it('TC-ALM-DEB-032: should not trigger when time satisfied but count not', () => {
       debouncer.check('rule-001', 'tag-001', 95, 5000, 5);
-      jest.advanceTimersByTime(6000); // 时间满足
+      jest.advanceTimersByTime(6000); // time condition met
       debouncer.check('rule-001', 'tag-001', 96, 5000, 5); // count=2
       expect(debouncer.getDebouncingCount()).toBe(1);
     });
@@ -260,36 +260,36 @@ describe('AlarmDebouncer', () => {
       const result1 = debouncer.check('rule-001', 'tag-001', 96, 5000);
       expect(result1).toBe('trigger');
 
-      // rule-002 仍处于消抖中
+      // rule-002 is still debouncing
       debouncer.check('rule-002', 'tag-001', 95, 5000);
       expect(debouncer.getDebouncingCount()).toBe(1);
     });
   });
 
-  // ==================== Oscillation scenario (震荡场景) ====================
+  // ==================== Oscillation scenario ====================
   describe('oscillation scenario', () => {
     it('TC-ALM-DEB-070: should handle value oscillation around threshold', () => {
-      // 模拟值在阈值附近快速上下波动
+      // Simulate the value fluctuating rapidly around the threshold
       debouncer.check('rule-001', 'tag-001', 95, 3000, 3);
       jest.advanceTimersByTime(1000);
-      debouncer.check('rule-001', 'tag-001', 94, 3000, 3); // 下降
+      debouncer.check('rule-001', 'tag-001', 94, 3000, 3); // falling
       jest.advanceTimersByTime(1000);
-      debouncer.check('rule-001', 'tag-001', 96, 3000, 3); // 上升
+      debouncer.check('rule-001', 'tag-001', 96, 3000, 3); // rising
       jest.advanceTimersByTime(1000);
-      // 时间满 3000ms，次数满 3 次
+      // Time reaches 3000ms and count reaches 3
       const result = debouncer.check('rule-001', 'tag-001', 97, 3000, 3);
       expect(result).toBe('trigger');
     });
 
     it('TC-ALM-DEB-071: should handle value recovery during debounce window', () => {
-      // 值恢复正常后，消抖被取消，重新触发时从头开始
+      // After the value recovers, debounce is cancelled; a fresh trigger restarts from zero
       debouncer.check('rule-001', 'tag-001', 95, 5000);
       jest.advanceTimersByTime(2000);
-      debouncer.clear('rule-001', 'tag-001'); // 值恢复正常
+      debouncer.clear('rule-001', 'tag-001'); // value back to normal
 
-      // 重新触发
+      // Re-trigger
       const result = debouncer.check('rule-001', 'tag-001', 95, 5000);
-      expect(result).toBe('debouncing'); // 从头开始消抖
+      expect(result).toBe('debouncing'); // debouncing restarted from scratch
       expect(debouncer.getDebouncingCount()).toBe(1);
     });
 
@@ -299,15 +299,15 @@ describe('AlarmDebouncer', () => {
         jest.advanceTimersByTime(500);
         debouncer.check('rule-001', 'tag-001', 95 + i, 5000, 5);
       }
-      // 时间满 5000ms，次数满 5 次
-      expect(debouncer.getDebouncingCount()).toBe(0); // 应该已触发
+      // Time reaches 5000ms and count reaches 5
+      expect(debouncer.getDebouncingCount()).toBe(0); // should have triggered
     });
   });
 
   // ==================== Concurrent debounce for same tag ====================
   describe('concurrent debounce for same tag', () => {
     it('TC-ALM-DEB-080: should handle multiple rules on same tag independently', () => {
-      // 同一标签有多个报警规则，各自独立消抖
+      // A single tag can have multiple alarm rules, each debounced independently
       const r1 = debouncer.check('rule-high', 'tag-001', 95, 5000, 2);
       const r2 = debouncer.check('rule-critical', 'tag-001', 95, 3000, 3);
 
@@ -315,12 +315,12 @@ describe('AlarmDebouncer', () => {
       expect(r2).toBe('debouncing');
       expect(debouncer.getDebouncingCount()).toBe(2);
 
-      // rule-high: 时间满 5000ms，次数满 2
+      // rule-high: time reaches 5000ms, count reaches 2
       jest.advanceTimersByTime(5000);
       const r1Result = debouncer.check('rule-high', 'tag-001', 96, 5000, 2);
       expect(r1Result).toBe('trigger');
 
-      // rule-critical: 时间满 3000ms，但次数仅 2/3
+      // rule-critical: time reaches 3000ms, but count is only 2/3
       const r2Result = debouncer.check('rule-critical', 'tag-001', 96, 3000, 3);
       expect(r2Result).toBe('debouncing');
     });
@@ -359,9 +359,9 @@ describe('AlarmDebouncer', () => {
       smallDebouncer.check('rule-003', 'tag-001', 95, 5000);
       expect(smallDebouncer.getDebouncingCount()).toBe(3);
 
-      // 第4个条目触发 LRU 淘汰
+      // The 4th entry triggers LRU eviction
       smallDebouncer.check('rule-004', 'tag-001', 95, 5000);
-      expect(smallDebouncer.getDebouncingCount()).toBe(3); // 仍为3，最旧的被淘汰
+      expect(smallDebouncer.getDebouncingCount()).toBe(3); // still 3, oldest evicted
 
       const stats = smallDebouncer.getStats();
       expect(stats.evictedCount).toBe(1);
@@ -377,11 +377,11 @@ describe('AlarmDebouncer', () => {
       jest.advanceTimersByTime(100);
       smallDebouncer.check('rule-003', 'tag-001', 95, 5000);
 
-      // 更新 rule-001（不再是 oldest）
+      // Update rule-001 (no longer the oldest)
       jest.advanceTimersByTime(100);
       smallDebouncer.check('rule-001', 'tag-001', 96, 5000);
 
-      // 第4个条目触发淘汰，rule-002 应该被淘汰（现在是 oldest）
+      // The 4th entry triggers eviction; rule-002 should be evicted (now the oldest)
       smallDebouncer.check('rule-004', 'tag-001', 95, 5000);
 
       const entries = smallDebouncer.getDebouncingEntries();

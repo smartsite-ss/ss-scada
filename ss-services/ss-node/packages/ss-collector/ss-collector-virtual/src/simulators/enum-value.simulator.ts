@@ -5,7 +5,7 @@
 import { VariableSimulator } from './variable-simulator.interface';
 import { VariableSimulationConfig, EnumValueParams } from '../simulation-config.types';
 
-/** 枚举值仿真器 */
+/** Enum-value simulator */
 export class EnumValueSimulator implements VariableSimulator {
   private values: number[];
   private switchMode: 'sequential' | 'random';
@@ -25,7 +25,7 @@ export class EnumValueSimulator implements VariableSimulator {
     if (this.switchMode === 'random') {
       return this.values[Math.floor(Math.random() * this.values.length)];
     }
-    // sequential: 每次前进
+    // sequential: advance each time
     this.currentIndex = (this.currentIndex + this.stepSize) % this.values.length;
     return this.values[this.currentIndex];
   }

@@ -3,11 +3,11 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 仪表盘聚合模块（02 模块）
+ * Dashboard aggregation module (module 02)
  *
- * 跨包聚合先例参照 ./export（DataExportModule）：
- * 依赖 DeviceModule（设备统计）与 AlarmModule（报警记录仓储）已导出的服务，
- * AlarmRecord 仓储经 TypeOrmModule.forFeature 注入（隔离库模式下由服务内部切换）。
+ * Cross-package aggregation follows the precedent of ./export (DataExportModule):
+ * depends on services exported by DeviceModule (device stats) and AlarmModule (alarm-record repository),
+ * with the AlarmRecord repository injected via TypeOrmModule.forFeature (switched internally in isolated-database mode).
  */
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';

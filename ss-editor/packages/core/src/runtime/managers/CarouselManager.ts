@@ -10,8 +10,8 @@ import {
 } from '../types/CarouselConfig';
 
 /**
- * 轮播管理器
- * 负责管理预览运行态下项目页面的自动轮播切换
+ * Carousel manager
+ * Manages automatic carousel page switching for a project in the preview/runtime mode
  */
 export class CarouselManager {
   private config: CarouselConfig;
@@ -37,7 +37,7 @@ export class CarouselManager {
     };
   }
 
-  /** 从页面列表构建轮播页面集合 */
+  /** Build carousel pages from a page list */
   buildCarouselPages(pages: CarouselPageInfo[]): void {
     const pageIds = this.config.pageIds.length > 0
       ? this.config.pageIds
@@ -46,7 +46,7 @@ export class CarouselManager {
     this.state.carouselPages = pages.filter(p => pageIds.includes(p.id));
   }
 
-  /** 启动轮播 */
+  /** Start the carousel */
   start(): void {
     console.log('[CarouselManager] start() 调用:', {
       carouselPagesCount: this.state.carouselPages.length,
@@ -72,7 +72,7 @@ export class CarouselManager {
     console.log('[CarouselManager] 轮播已启动:', { interval: this.config.interval, nextSwitch: `${this.config.interval / 1000}s 后` });
   }
 
-  /** 停止轮播 */
+  /** Stop the carousel */
   stop(): void {
     this.state.isRunning = false;
     this.state.isPaused = false;
@@ -81,19 +81,19 @@ export class CarouselManager {
     this.clearProgressTracker();
   }
 
-  /** 暂停切换（保留定时器但不触发切换） */
+  /** Pause switching (keep the timer but do not trigger switches) */
   pause(): void {
     if (!this.state.isRunning) return;
     this.state.isPaused = true;
   }
 
-  /** 恢复切换 */
+  /** Resume switching */
   resume(): void {
     if (!this.state.isRunning) return;
     this.state.isPaused = false;
   }
 
-  /** 播放（启动或恢复） */
+  /** Play (start or resume) */
   play(): void {
     if (!this.state.isRunning) {
       this.start();
@@ -102,7 +102,7 @@ export class CarouselManager {
     }
   }
 
-  /** 切换到上一页 */
+  /** Switch to the previous page */
   previous(): void {
     if (this.state.carouselPages.length === 0) return;
 
@@ -116,7 +116,7 @@ export class CarouselManager {
     this.performSwitch();
   }
 
-  /** 切换到下一页 */
+  /** Switch to the next page */
   next(): void {
     if (this.state.carouselPages.length === 0) return;
 
@@ -137,14 +137,14 @@ export class CarouselManager {
     this.performSwitch();
   }
 
-  /** 跳到指定索引页 */
+  /** Jump to a page by index */
   goTo(index: number): void {
     if (index < 0 || index >= this.state.carouselPages.length) return;
     this.state.currentIndex = index;
     this.performSwitch();
   }
 
-  /** 更新配置 */
+  /** Update configuration */
   updateConfig(partial: Partial<CarouselConfig>): void {
     const wasRunning = this.state.isRunning;
     const wasEnabled = this.config.enabled;
@@ -152,13 +152,13 @@ export class CarouselManager {
 
     this.config = { ...this.config, ...partial };
 
-    // 禁用了轮播 → 停止
+    // Carousel disabled → stop
     if (wasRunning && wasEnabled && !this.config.enabled) {
       this.stop();
       return;
     }
 
-    // 启用轮播 → 启动
+    // Carousel enabled → start
     if (!wasRunning && this.config.enabled) {
       if (this.state.carouselPages.length > 1 || this.config.showSinglePage) {
         this.start();
@@ -166,7 +166,7 @@ export class CarouselManager {
       return;
     }
 
-    // 间隔变化 → 重启定时器
+    // Interval changed → restart the timer
     if (wasRunning && this.config.interval !== wasInterval) {
       this.state.elapsedTime = 0;
       this.lastSwitchTime = Date.now();
@@ -175,22 +175,22 @@ export class CarouselManager {
     }
   }
 
-  /** 获取当前状态快照 */
+  /** Get the current state snapshot */
   getState(): Readonly<CarouselState> {
     return this.state;
   }
 
-  /** 获取当前配置快照 */
+  /** Get the current config snapshot */
   getConfig(): Readonly<CarouselConfig> {
     return this.config;
   }
 
-  /** 销毁 */
+  /** Destroy */
   destroy(): void {
     this.stop();
   }
 
-  /** 执行页面切换 */
+  /** Perform a page switch */
   private performSwitch(): void {
     const page = this.state.carouselPages[this.state.currentIndex];
     if (page) {
@@ -200,7 +200,7 @@ export class CarouselManager {
     }
   }
 
-  /** 启动定时切换 */
+  /** Start timed switching */
   private scheduleNext(): void {
     this.clearTimer();
     this.intervalId = setInterval(() => {
@@ -210,7 +210,7 @@ export class CarouselManager {
     }, this.config.interval);
   }
 
-  /** 启动进度追踪 */
+  /** Start progress tracking */
   private startProgressTracker(): void {
     this.clearProgressTracker();
     const tick = () => {
@@ -224,7 +224,7 @@ export class CarouselManager {
     this.animationFrameId = requestAnimationFrame(tick);
   }
 
-  /** 清理定时器 */
+  /** Clear the timer */
   private clearTimer(): void {
     if (this.intervalId !== null) {
       clearInterval(this.intervalId);
@@ -232,7 +232,7 @@ export class CarouselManager {
     }
   }
 
-  /** 清理进度追踪 */
+  /** Clear progress tracking */
   private clearProgressTracker(): void {
     if (this.animationFrameId !== null) {
       cancelAnimationFrame(this.animationFrameId);

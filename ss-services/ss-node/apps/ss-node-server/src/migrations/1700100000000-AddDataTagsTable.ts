@@ -8,7 +8,7 @@ export class AddDataTagsTable1700100000000 implements MigrationInterface {
   name = 'AddDataTagsTable1700100000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    // 存在性防御：InitialSchema 已建全量权威 schema，表已存在则跳过（幂等）
+    // Existence guard: InitialSchema already created the full authoritative schema; skip if the table exists (idempotent)
     const existing = await queryRunner.getTable('dev_data_tags');
     if (existing) return;
 

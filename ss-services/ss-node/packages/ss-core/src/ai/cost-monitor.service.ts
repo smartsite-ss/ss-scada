@@ -3,13 +3,13 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * AI 成本监控与预算熔断 Service — P2-T08
+ * AI cost monitoring and budget circuit-breaker service - P2-T08
  *
- * 提供：
- *   1. 用量日志记录（每次 LLM 调用后记录 Token + 费用）
- *   2. 用量统计（按供应商/任务/用户/时间聚合）
- *   3. 预算熔断（月度预算 80% 告警 / 100% 阻断）
- *   4. 模型定价表（供费用估算）
+ * Responsibilities:
+ *   1. Usage logging (record tokens + cost after each LLM call)
+ *   2. Usage statistics (aggregated by provider/task/user/time)
+ *   3. Budget circuit-breaker (monthly budget 80% warn / 100% block)
+ *   4. Model pricing table (for cost estimation)
  */
 
 import { Injectable, Logger } from '@nestjs/common';
@@ -18,7 +18,7 @@ import { Repository, Between } from 'typeorm';
 import { AiUsageLog } from './entities/ai-usage-log.entity';
 import { ConfigService } from '@nestjs/config';
 
-/** 用量日志输入 */
+/** Usage log input */
 export interface UsageLogInput {
   providerId: string;
   model: string;
@@ -33,7 +33,7 @@ export interface UsageLogInput {
   latencyMs?: number;
 }
 
-/** 用量统计查询参数 */
+/** Usage statistics query params */
 export interface UsageStatsQuery {
   startDate: Date;
   endDate: Date;
@@ -43,7 +43,7 @@ export interface UsageStatsQuery {
   projectId?: string;
 }
 
-/** 用量统计结果 */
+/** Usage statistics result */
 export interface UsageStats {
   totalTokens: number;
   totalCost: number;
@@ -53,28 +53,28 @@ export interface UsageStats {
   byTaskType: Record<string, { tokens: number; cost: number; calls: number }>;
 }
 
-/** 预算状态 */
+/** Budget status */
 export interface BudgetStatus {
-  /** 月度预算上限（美元） */
+  /** Monthly budget cap (USD) */
   budgetLimit: number;
-  /** 当月已花费（美元） */
+  /** Amount spent this month (USD) */
   currentSpent: number;
-  /** 剩余预算（美元） */
+  /** Remaining budget (USD) */
   remaining: number;
-  /** 使用率（0-1） */
+  /** Usage ratio (0-1) */
   usageRate: number;
-  /** 是否已熔断（100% 阻断） */
+  /** Whether circuit-breaker triggered (100% block) */
   isBlocked: boolean;
-  /** 是否需要告警（80%） */
+  /** Whether warning is needed (80%) */
   shouldWarn: boolean;
 }
 
-/** 模型定价表（美元/1M tokens） */
+/** Model pricing table (USD per 1M tokens) */
 const MODEL_PRICES: Record<string, { prompt: number; completion: number }> = {
   // DeepSeek
   'deepseek-chat': { prompt: 0.27, completion: 1.1 },
   'deepseek-coder': { prompt: 0.27, completion: 1.1 },
-  // 智谱
+  // Zhipu
   'glm-4': { prompt: 0.55, completion: 0.55 },
   'glm-4-flash': { prompt: 0.0027, completion: 0.0027 },
   // OpenAI
@@ -100,12 +100,12 @@ const MODEL_PRICES: Record<string, { prompt: number; completion: number }> = {
   default: { prompt: 1.0, completion: 2.0 },
 };
 
-/** 计算 Token 费用 */
+/** Calculate token cost */
 function estimateCost(model: string, promptTokens: number, completionTokens: number): number {
   const price = MODEL_PRICES[model] || MODEL_PRICES['default'];
   const promptCost = (promptTokens / 1_000_000) * price.prompt;
   const completionCost = (completionTokens / 1_000_000) * price.completion;
-  return Math.round((promptCost + completionCost) * 1e8) / 1e8; // 8 位小数
+  return Math.round((promptCost + completionCost) * 1e8) / 1e8; // 8 decimal places
 }
 
 @Injectable()
@@ -119,10 +119,10 @@ export class CostMonitorService {
   ) {}
 
   // ============================================================
-  //  用量日志
+  //  Usage log
   // ============================================================
 
-  /** 记录一次 LLM 调用日志 */
+  /** Record one LLM call log */
   async logUsage(input: UsageLogInput): Promise<AiUsageLog> {
     const totalTokens = input.promptTokens + input.completionTokens;
     const estimatedCost = estimateCost(input.model, input.promptTokens, input.completionTokens);
@@ -147,10 +147,10 @@ export class CostMonitorService {
   }
 
   // ============================================================
-  //  用量统计
+  //  Usage statistics
   // ============================================================
 
-  /** 获取用量统计 */
+  /** Get usage statistics */
   async getStats(query: UsageStatsQuery): Promise<UsageStats> {
     const where: any = {
       createdAt: Between(query.startDate, query.endDate),
@@ -174,7 +174,7 @@ export class CostMonitorService {
       totalTokens += log.totalTokens;
       totalCost += Number(log.estimatedCost);
 
-      // 按供应商
+      // By provider
       if (!byProvider[log.providerId]) {
         byProvider[log.providerId] = { tokens: 0, cost: 0, calls: 0 };
       }
@@ -182,7 +182,7 @@ export class CostMonitorService {
       byProvider[log.providerId].cost += Number(log.estimatedCost);
       byProvider[log.providerId].calls++;
 
-      // 按任务类型
+      // By task type
       if (!byTaskType[log.taskType]) {
         byTaskType[log.taskType] = { tokens: 0, cost: 0, calls: 0 };
       }
@@ -201,7 +201,7 @@ export class CostMonitorService {
     };
   }
 
-  /** 获取当月统计 */
+  /** Get current-month statistics */
   async getCurrentMonthStats(userId?: string): Promise<UsageStats> {
     const now = new Date();
     const start = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -210,15 +210,15 @@ export class CostMonitorService {
   }
 
   // ============================================================
-  //  预算熔断
+  //  Budget circuit-breaker
   // ============================================================
 
-  /** 获取月度预算上限（美元，从配置读取，默认 100） */
+  /** Get monthly budget cap (USD, read from config, default 100) */
   private getMonthlyBudget(): number {
     return Number(this.configService.get('AI_MONTHLY_BUDGET') || 100);
   }
 
-  /** 检查预算状态 */
+  /** Check budget status */
   async checkBudget(userId?: string): Promise<BudgetStatus> {
     const budgetLimit = this.getMonthlyBudget();
     const stats = await this.getCurrentMonthStats(userId);
@@ -236,9 +236,9 @@ export class CostMonitorService {
   }
 
   /**
-   * 检查是否可继续调用（预算熔断）
+   * Check whether calls can continue (budget circuit-breaker)
    *
-   * @returns true = 可继续，false = 已熔断
+   * @returns true = can continue, false = circuit broken
    */
   async canProceed(userId?: string): Promise<{ allowed: boolean; reason?: string }> {
     const budget = await this.checkBudget(userId);
@@ -260,15 +260,15 @@ export class CostMonitorService {
   }
 
   // ============================================================
-  //  辅助
+  //  Helper
   // ============================================================
 
-  /** 获取模型定价信息 */
+  /** Get model pricing info */
   getModelPrice(model: string): { prompt: number; completion: number } {
     return MODEL_PRICES[model] || MODEL_PRICES['default'];
   }
 
-  /** 获取所有支持的模型定价 */
+  /** Get pricing for all supported models */
   getAllModelPrices(): Record<string, { prompt: number; completion: number }> {
     return { ...MODEL_PRICES };
   }

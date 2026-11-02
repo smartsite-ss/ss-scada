@@ -18,16 +18,16 @@ interface RateLimitEntry {
 }
 
 /**
- * 限流配置
- * 优先级: 环境变量 > 硬编码默认值
+ * Rate-limit config
+ * Priority: env var > hard-coded default
  *
- * 读取以下环境变量：
- *   - RATE_LIMIT_MAX        窗口内最大请求数
- *   - RATE_LIMIT_WINDOW_MS  限流窗口时长(毫秒)
+ * Reads the following env vars:
+ *   - RATE_LIMIT_MAX         max requests per window
+ *   - RATE_LIMIT_WINDOW_MS  rate-limit window duration (ms)
  *
- * 典型配置（与 .env.dev / .env.pro 保持一致）：
- *   生产 (pro): RATE_LIMIT_MAX=300    RATE_LIMIT_WINDOW_MS=60000
- *   开发 (dev): RATE_LIMIT_MAX=6000   RATE_LIMIT_WINDOW_MS=60000
+ * Typical config (consistent with .env.dev / .env.pro):
+ *   production (pro): RATE_LIMIT_MAX=300    RATE_LIMIT_WINDOW_MS=60000
+ *   development (dev): RATE_LIMIT_MAX=6000   RATE_LIMIT_WINDOW_MS=60000
  */
 export interface RateLimitConfig {
   max: number;

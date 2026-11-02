@@ -68,8 +68,8 @@ export class DeviceController {
     return this.deviceService.findAll(projectId, query, req?.user?.roleId);
   }
 
-  // ──────────── 设备分组管理 ────────────
-  // 注意：精确匹配路由必须放在 :deviceId 通配路由之前，否则会被 :deviceId 拦截
+  // ──────────── Device-group management ────────────
+  // Note: exact-match routes must come before the :deviceId wildcard route, otherwise they are intercepted by :deviceId
 
   @Post('groups')
   @Roles(UserRole.ADMIN, UserRole.USER)
@@ -124,7 +124,7 @@ export class DeviceController {
     return this.deviceService.removeGroup(groupId, projectId);
   }
 
-  // ──────────── 导入导出 ────────────
+  // ──────────── Import/export ────────────
 
   @Get('export/csv')
   @Roles(UserRole.ADMIN, UserRole.USER, UserRole.VIEWER)
@@ -163,7 +163,7 @@ export class DeviceController {
     return { code: 0, data: result, message: result.success ? 'ok' : 'partial' };
   }
 
-  // ──────────── 设备统计（系统概览） ────────────
+  // ──────────── Device statistics (system overview) ────────────
 
   @Get('stats')
   @Roles(UserRole.ADMIN, UserRole.USER, UserRole.VIEWER)
@@ -172,8 +172,8 @@ export class DeviceController {
     return this.deviceService.getDeviceStats(projectId, req?.user?.roleId);
   }
 
-  // ──────────── 设备反控与操作日志 ────────────
-  // 注意：精确匹配路由必须放在 :deviceId 通配路由之前
+  // ──────────── Device reverse-control and operation logs ────────────
+  // Note: exact-match routes must come before the :deviceId wildcard route
 
   @Post(':deviceId/tags/:tagId/write')
   @Roles(UserRole.ADMIN, UserRole.USER)
@@ -220,7 +220,7 @@ export class DeviceController {
     return this.controlService.queryLogs(projectId, deviceId, dto);
   }
 
-  // ──────────── 设备 CRUD（注意：:deviceId 通配路由必须在精确路由之后） ────────────
+  // ──────────── Device CRUD (note: the :deviceId wildcard route must come after exact routes) ────────────
 
   @Get(':deviceId')
   @Roles(UserRole.ADMIN, UserRole.USER, UserRole.VIEWER)
@@ -325,7 +325,7 @@ export class DeviceController {
     return this.deviceService.removeTag(tagId, deviceId, projectId);
   }
 
-  // ──────────── 设备诊断 ────────────
+  // ──────────── Device diagnostics ────────────
 
   @Post(':deviceId/diagnostic')
   @Roles(UserRole.ADMIN, UserRole.USER)
@@ -347,7 +347,7 @@ export class DeviceController {
     return this.diagnosticService.ping(host, port ? parseInt(port, 10) : undefined);
   }
 
-  // ──────────── 数据访问 ────────────
+  // ──────────── Data access ────────────
 
   @Get(':deviceId/data/latest')
   @Roles(UserRole.ADMIN, UserRole.USER, UserRole.VIEWER)
@@ -386,7 +386,7 @@ export class DeviceController {
     return { success: true };
   }
 
-  // ──────────── 模板实例化 ────────────
+  // ──────────── Template instantiation ────────────
 
   @Post(':deviceId/templates/:templateId/apply')
   @Roles(UserRole.ADMIN, UserRole.USER)
@@ -421,7 +421,7 @@ export class DeviceController {
     return this.deviceService.unbindTemplate(deviceId, projectId, deleteTags === 'true');
   }
 
-  // ──────────── 设备仿真 ────────────
+  // ──────────── Device simulation ────────────
 
   @Post(':deviceId/simulation/start')
   @Roles(UserRole.ADMIN, UserRole.USER)
@@ -455,7 +455,7 @@ export class DeviceController {
     return { simulating: this.simulationService.isSimulating(deviceId) };
   }
 
-  // ──────────── 项目级数据 ────────────
+  // ──────────── Project-level data ────────────
 
   @Get('/data/snapshot')
   @Roles(UserRole.ADMIN, UserRole.USER, UserRole.VIEWER)
@@ -464,7 +464,7 @@ export class DeviceController {
     return this.deviceDataService.exportProjectSnapshot(projectId);
   }
 
-  // ──────────── 设备诊断增强 ────────────
+  // ──────────── Enhanced device diagnostics ────────────
 
   @Post(':deviceId/diagnostic/read-tag')
   @Roles(UserRole.ADMIN, UserRole.USER)

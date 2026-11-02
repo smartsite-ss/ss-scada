@@ -3,16 +3,17 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 组件模板拖拽放置事件总线
+ * Component template drag-drop event bus
  *
- * 解耦画布（useDragDrop）与组件模板面板（WidgetTemplatePanel）：
- * 画布 drop 检测到 `application/x-widget-template` 后通过 emitWidgetTemplateDrop
- * 广播模板 id 与画布逻辑坐标，由面板订阅并完成读取/变量赋值/实例化。
+ * Decouples the canvas (useDragDrop) from the component template panel (WidgetTemplatePanel):
+ * when the canvas drop detects `application/x-widget-template`, it broadcasts the template id
+ * and canvas logical coordinates via emitWidgetTemplateDrop; the panel subscribes and completes
+ * reading/variable assignment/instantiation.
  */
 
 export interface WidgetTemplateDropPayload {
   templateId: string;
-  /** 画布逻辑坐标（已换算，未做网格吸附） */
+  /** Canvas logical coordinates (already converted, without grid snapping) */
   logicalPos: { x: number; y: number };
 }
 
@@ -32,7 +33,7 @@ export function emitWidgetTemplateDrop(payload: WidgetTemplateDropPayload): void
   });
 }
 
-/** 订阅 drop 事件，返回取消订阅函数 */
+/** Subscribe to drop events; returns an unsubscribe function */
 export function onWidgetTemplateDrop(handler: DropHandler): () => void {
   handlers.add(handler);
   return () => handlers.delete(handler);

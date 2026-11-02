@@ -3,36 +3,36 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 批量读取优化器
+ * Batch read optimizer
  *
- * 按地址连续性将标签分组，以便合并为更少的读取请求。
- * 适用于 Modbus 寄存器合并读取、S7 DB 块合并读取等场景。
+ * Groups tags by address contiguity so they can be merged into fewer read requests.
+ * Suitable for Modbus register merged reads, S7 DB-block merged reads, etc.
  */
 
-/** 分组结果 */
+/** Group result */
 export interface BatchGroup<T> {
-  /** 该批次包含的标签 */
+  /** Tags included in this batch */
   items: T[];
-  /** 起始地址 */
+  /** Start address */
   startAddress: number;
-  /** 该批次总长度 */
+  /** Total length of this batch */
   length: number;
 }
 
 export class BatchReadOptimizer {
   /**
-   * 按地址连续性将标签分组
+   * Group tags by address contiguity
    *
-   * 算法：
-   *  1. 按地址升序排序
-   *  2. 依次扫描，若与前一个标签的间隔 ≤ gapThreshold 且累计大小未超 maxBatchSize，则合并到当前批次
-   *  3. 否则结束当前批次，开启新批次
+   * Algorithm:
+   *  1. Sort by address ascending
+   *  2. Scan sequentially; if the gap from the previous tag <= gapThreshold and the accumulated size is within maxBatchSize, merge into the current batch
+   *  3. Otherwise close the current batch and start a new one
    *
-   * @param tags 标签列表
-   * @param getAddress 从标签中提取地址的函数
-   * @param getSize 从标签中获取读取大小的函数（默认为 1）
-   * @param gapThreshold 相邻标签允许的最大间隔（默认 0，即仅合并完全连续的地址）
-   * @param maxBatchSize 单批最大大小（默认 64）
+   * @param tags tag list
+   * @param getAddress function to extract the address from a tag
+   * @param getSize function to get the read size from a tag (default 1)
+   * @param gapThreshold max allowed gap between adjacent tags (default 0, i.e. only merge fully contiguous addresses)
+   * @param maxBatchSize max size per batch (default 64)
    */
   static groupByContiguousAddress<T>(
     tags: T[],
@@ -45,7 +45,7 @@ export class BatchReadOptimizer {
 
     const sizeFn = getSize ?? (() => 1);
 
-    // 按地址排序
+    // Sort by address
     const sorted = [...tags]
       .map((tag) => ({ tag, address: getAddress(tag) }))
       .filter((item) => !Number.isNaN(item.address))

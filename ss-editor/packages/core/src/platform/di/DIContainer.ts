@@ -3,7 +3,7 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 依赖注入容器
+ * Dependency injection container
  */
 
 type Class<T = any> = new (...args: any[]) => T;
@@ -22,7 +22,7 @@ export class DIContainer {
   private instances = new Map<string, any>();
 
   /**
-   * 注册单例
+   * Register a singleton
    */
   registerSingleton<T>(token: string, instance: T): void;
   registerSingleton<T>(token: string, factory: Factory<T>, dependencies?: string[]): void;
@@ -55,7 +55,7 @@ export class DIContainer {
   }
 
   /**
-   * 注册瞬态（每次创建新实例）
+   * Register a transient (a new instance is created each time)
    */
   registerTransient<T>(token: string, factory: Factory<T>, dependencies?: string[]): void;
   registerTransient<T>(token: string, classDef: Class<T>, dependencies?: string[]): void;
@@ -82,7 +82,7 @@ export class DIContainer {
   }
 
   /**
-   * 获取实例
+   * Get an instance
    */
   get<T>(token: string): T {
     const registration = this.registrations.get(token);
@@ -90,15 +90,15 @@ export class DIContainer {
       throw new Error(`No registration found for token: ${token}`);
     }
 
-    // 如果已有实例，直接返回
+    // If an instance already exists, return it directly
     if (registration.singleton && registration.instance) {
       return registration.instance as T;
     }
 
-    // 解析依赖
+    // Resolve dependencies
     const deps = registration.dependencies?.map(dep => this.get(dep)) || [];
 
-    // 创建实例
+    // Create the instance
     let instance: T;
     if (registration.factory) {
       instance = registration.factory(...deps);
@@ -108,7 +108,7 @@ export class DIContainer {
       instance = registration.instance as T;
     }
 
-    // 如果是单例，缓存实例
+    // If it is a singleton, cache the instance
     if (registration.singleton) {
       registration.instance = instance;
     }
@@ -117,14 +117,14 @@ export class DIContainer {
   }
 
   /**
-   * 检查是否已注册
+   * Check whether a token is registered
    */
   has(token: string): boolean {
     return this.registrations.has(token);
   }
 
   /**
-   * 清除所有注册
+   * Clear all registrations
    */
   clear(): void {
     this.registrations.clear();
@@ -132,12 +132,12 @@ export class DIContainer {
   }
 
   /**
-   * 获取所有注册的令牌
+   * Get all registered tokens
    */
   getTokens(): string[] {
     return Array.from(this.registrations.keys());
   }
 }
 
-// 导出单例实例
+// Export singleton instance
 export const diContainer = new DIContainer();

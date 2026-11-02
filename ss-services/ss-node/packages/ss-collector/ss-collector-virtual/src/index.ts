@@ -7,7 +7,7 @@ export { VirtualProtocolAdapter } from './virtual-adapter';
 export { VirtualReadStep } from './virtual-read.step';
 export { SimulatorFactory } from './simulator-factory';
 
-// 仿真器
+// Simulators
 export { VariableSimulator, CachedSimulator } from './simulators/variable-simulator.interface';
 export { FixedValueSimulator } from './simulators/fixed-value.simulator';
 export { RangeValueSimulator } from './simulators/range-value.simulator';
@@ -15,7 +15,7 @@ export { EnumValueSimulator } from './simulators/enum-value.simulator';
 export { BoolSimulator } from './simulators/bool.simulator';
 export { StringSimulator } from './simulators/string.simulator';
 
-// 类型定义
+// Type definitions
 export {
   SimulationMode,
   VariableSimulationConfig,

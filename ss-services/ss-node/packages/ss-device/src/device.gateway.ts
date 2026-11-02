@@ -44,7 +44,7 @@ export class DeviceGateway implements OnGatewayInit, OnGatewayConnection, OnGate
     client.leave(`device:${deviceId}`);
   }
 
-  /** 推送设备状态变更 */
+  /** Push a device-status change */
   pushDeviceStatus(
     deviceId: string,
     event: { fromStatus: string; toStatus: string; timestamp: string; errorMessage?: string },
@@ -55,7 +55,7 @@ export class DeviceGateway implements OnGatewayInit, OnGatewayConnection, OnGate
     });
   }
 
-  /** 推送 Tag 值变更 */
+  /** Push a tag-value change */
   pushTagValue(deviceId: string, tagId: string, value: any, quality: string, timestamp: Date) {
     this.server.to(`device:${deviceId}`).emit('device:tagUpdate', {
       tagId,

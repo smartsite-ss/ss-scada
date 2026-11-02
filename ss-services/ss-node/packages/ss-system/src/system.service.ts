@@ -54,7 +54,7 @@ export class SystemService implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
-    // 启动时自动清理过期操作日志（OPERATION_LOG_RETENTION_DAYS=0 表示不自动清理）
+    // Automatically clean up expired operation logs at startup (OPERATION_LOG_RETENTION_DAYS=0 means no auto cleanup)
     const retentionDays = parseInt(process.env.OPERATION_LOG_RETENTION_DAYS || '0', 10);
     if (retentionDays > 0) {
       try {
@@ -71,9 +71,9 @@ export class SystemService implements OnModuleInit {
   }
 
   /**
-   * 清理超过指定天数的操作日志
-   * @param days 保留天数，清理此天数之前的日志
-   * @returns 删除的记录数
+   * Clean up operation logs older than the given number of days
+   * @param days retention days; logs older than this are cleaned up
+   * @returns the number of deleted records
    */
   async cleanExpiredOperationLogs(days: number): Promise<number> {
     if (days <= 0) return 0;
@@ -82,7 +82,7 @@ export class SystemService implements OnModuleInit {
     return result.affected || 0;
   }
 
-  /** 清空全部操作日志 */
+  /** Clear all operation logs */
   async cleanAllOperationLogs(): Promise<number> {
     const count = await this.operationLogRepo.count();
     if (count > 0) {

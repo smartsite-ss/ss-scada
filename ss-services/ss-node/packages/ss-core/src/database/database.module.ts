@@ -7,12 +7,12 @@ import { EventBusModule } from '../event-bus/event-bus.module';
 import { ProjectDatabaseService } from './project-database.service';
 
 /**
- * 项目数据库管理全局模块
+ * Project-database management global module
  *
- * 提供 ProjectDatabaseService 作为全局单例，
- * 所有需要访问项目级 system.db 的模块都通过 DI 注入此服务。
+ * Provides ProjectDatabaseService as a global singleton;
+ * all modules that need to access project-level system.db inject this service via DI.
  *
- * 注意：此模块依赖 EventBusModule 用于监听 project.beforeDelete 事件。
+ * Note: this module depends on EventBusModule to listen for the project.beforeDelete event.
  */
 @Global()
 @Module({

@@ -2,36 +2,36 @@
 // https://smartsite.top/
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
-// 设计令牌入口
+// Design tokens entry
 
-// 颜色
+// Colors
 import * as colorsModule from './colors';
 export * from './colors';
 
-// 空间
+// Spacing
 import * as spacingModule from './spacing';
 export * from './spacing';
 
-// 排版
+// Typography
 import * as typographyModule from './typography';
 export * from './typography';
 
-// 边框和圆角
+// Borders and radius
 import * as bordersModule from './borders';
 export * from './borders';
 
-// 阴影
+// Shadows
 import * as shadowsModule from './shadows';
 export * from './shadows';
 
-// 过渡和动画
+// Transitions and animations
 import * as transitionsModule from './transitions';
 export * from './transitions';
 
-// 设计令牌版本
+// Design tokens version
 export const tokensVersion = '1.0.0';
 
-// 设计令牌配置
+// Design tokens configuration
 export const designTokens = {
   version: tokensVersion,
   colors: colorsModule.colors,
@@ -50,7 +50,7 @@ export const designTokens = {
   transitionProperties: transitionsModule.transitionProperties,
 };
 
-// 工具函数
+// Utility functions
 export const tokenUtils = {
   color: colorsModule.colorUtils,
   spacing: spacingModule.spacingUtils,

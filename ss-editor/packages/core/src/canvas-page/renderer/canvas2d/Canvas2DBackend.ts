@@ -312,7 +312,7 @@ export class Canvas2DBackend implements IRenderer, IRendererV2 {
       this.renderAllFull()
     }
 
-    // ★ 将渲染性能数据注入全局 PerformanceMonitor
+    // ★ Inject render performance data into the global PerformanceMonitor
     const renderTime = performance.now() - startTime
     performanceMonitor.recordRenderTime(renderTime)
     performanceMonitor.recordFullRender()
@@ -419,7 +419,7 @@ export class Canvas2DBackend implements IRenderer, IRendererV2 {
     if (typeof graphic.draw === 'function') {
       graphic.draw(ctx)
     } else if (typeof (graphic as any).render === 'function') {
-      // 兼容仅实现 render(dc) 的图元（如 BasePlugin 子类）
+      // Compatible with graphics that only implement render(dc) (e.g. BasePlugin subclasses)
       const pos = graphic.getPosition()
       const size = graphic.getSize()
       const dc = new DrawContext(ctx, { x: pos.x, y: pos.y, width: size.width, height: size.height }, false)
@@ -465,7 +465,7 @@ export class Canvas2DBackend implements IRenderer, IRendererV2 {
       this.stats.gpuMemoryEstimate = this.canvas.width * this.canvas.height * 4 + this.graphics.size * 1024
       this.stats.backend = 'canvas'
 
-      // ★ 同步注入全局 PerformanceMonitor（FPS 每秒只需记录一次）
+      // ★ Also inject into the global PerformanceMonitor (FPS only needs to be recorded once per second)
       performanceMonitor.recordFps(this.stats.fps)
 
       this.frameCount = 0

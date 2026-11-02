@@ -4,9 +4,9 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 采集插件脚手架 CLI
+ * Collector plugin scaffolding CLI
  *
- * 用法：
+ * Usage:
  *   pnpm create @ss-node/collector-plugin my-bacnet
  *   node bin/create-plugin.ts --name bacnet --display "BACnet/IP" --category building --transport tcp --author "SS-Team"
  *   npx ts-node bin/create-plugin.ts --name bacnet
@@ -31,7 +31,7 @@ function parseArgs(): {
     author: 'SS-Team',
   };
 
-  // 位置参数：第一个非 -- 参数作为 name
+  // Positional argument: the first non -- argument is treated as name
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
 

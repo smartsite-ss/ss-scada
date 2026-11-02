@@ -27,7 +27,7 @@ export class Role {
   @Column({ type: 'simple-json', default: '[]' })
   permissions: string[];
 
-  /** 该角色可见的菜单 ID 列表，用于菜单可见性分配 */
+  /** List of menu IDs visible to this role, used for menu visibility assignment */
   @Column({ name: 'menu_ids', type: 'simple-json', default: '[]' })
   menuIds: string[];
 

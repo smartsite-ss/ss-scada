@@ -6,12 +6,12 @@ import { Injectable, Logger, OnModuleDestroy, OnModuleInit, Optional } from '@ne
 import { EventBusService, EventLogService } from '@ss-node/ss-core';
 import { DataPoint, STORAGE_ENGINE_TYPES, StorageEngineConfigService } from '@ss-node/ss-storage';
 
-/** 单次 fetch 超时（ms） */
+/** Per-fetch timeout (ms) */
 const FETCH_TIMEOUT_MS = 5000;
-/** 超级表名（与 Line Protocol measurement 一致） */
+/** Super-table name (same as the Line Protocol measurement) */
 const SUPER_TABLE_NAME = 'tag_values';
 
-/** TDengine REST SQL 响应 */
+/** TDengine REST SQL response */
 interface TdengineRestResponse {
   status: string;
   code: number;
@@ -20,27 +20,27 @@ interface TdengineRestResponse {
 }
 
 /**
- * TDengine 项目 database + 超级表/子表管理服务。
+ * TDengine project database + super-table/child-table management service.
  *
- * 职责（方案 §7.4.2 强模式建模）：
- * - 项目 → database 映射：`{TDENGINE_DATABASE}_{projectId}`（保持下划线命名）；
- * - 监听 project.created 自动建库建超级表（幂等），仅当项目引擎为 tdengine 时执行；
- * - 超级表建模（强模式）：value DOUBLE（数值主列）、value_text BINARY(4096)（非数值回退列）、
- *   quality INT；TAGS：projectId / tagId / deviceId；
- * - 子表懒创建：按 tagId 维度（t_{tagId}），写入前幂等 CREATE TABLE ... USING ... TAGS；
- * - 保留期 KEEP 建库时设定（与 v3 类似建库后语义固定），经 TDENGINE_KEEP_DAYS 配置。
+ * Responsibilities (plan §7.4.2 strict-mode modeling):
+ * - Project → database mapping: `{TDENGINE_DATABASE}_{projectId}` (keeps underscore naming);
+ * - Listens for project.created to create the database and super table automatically (idempotent), only when the project's engine is tdengine;
+ * - Super-table modeling (strict mode): value DOUBLE (numeric main column), value_text BINARY(4096) (non-numeric fallback column),
+ *   quality INT; TAGS: projectId / tagId / deviceId;
+ * - Child-table lazy creation: per tagId (t_{tagId}), idempotent CREATE TABLE ... USING ... TAGS before writing;
+ * - Retention KEEP is set at database creation (like v3, fixed afterwards), configured via TDENGINE_KEEP_DAYS.
  */
 @Injectable()
 export class TdengineDatabaseService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(TdengineDatabaseService.name);
 
-  /** 已知就绪的 database（库+超级表已建）缓存 */
+  /** Cache of known-ready databases (database + super table created) */
   private readonly knownDatabases = new Set<string>();
 
-  /** 已知已建的子表缓存（key: `{databaseName}:{tagId}`） */
+  /** Cache of known-created child tables (key: `{databaseName}:{tagId}`) */
   private readonly knownSubtables = new Set<string>();
 
-  /** 创建中的 database（防并发重复创建） */
+  /** Databases currently being created (prevents concurrent duplicate creation) */
   private readonly pendingCreations = new Map<string, Promise<boolean>>();
 
   constructor(
@@ -68,7 +68,7 @@ export class TdengineDatabaseService implements OnModuleInit, OnModuleDestroy {
       };
     };
 
-    // 监听项目创建事件，仅当项目引擎为 tdengine 时自动建库建超级表
+    // Listen for project-created events; create the database and super table automatically only when the project's engine is tdengine
     this.eventBus.on(
       'project.created',
       wrap('project.created', async (payload: { projectId: string; tenantId?: string }) => {
@@ -94,20 +94,20 @@ export class TdengineDatabaseService implements OnModuleInit, OnModuleDestroy {
   }
 
   onModuleDestroy(): void {
-    // 无定时器需要清理（探活由适配器 health() 承担）
+    // No timer to clean up (health probing is handled by the adapter's health())
   }
 
-  // ──────────── 公开接口 ────────────
+  // ──────────── Public API ────────────
 
-  /** 项目 → database 名（纯命名映射，不发请求）：`{base}_{safeProjectId}` */
+  /** Project → database name (pure name mapping, no requests): `{base}_{safeProjectId}` */
   getDatabaseName(projectId: string): string {
     const base = process.env.TDENGINE_DATABASE || 'ss_node_data';
     return `${this.normalizeIdentifier(base)}_${this.normalizeIdentifier(projectId)}`;
   }
 
   /**
-   * 确保指定项目的 database + 超级表存在（幂等）
-   * @returns true=就绪，false=创建失败（调用方应退回默认 database）
+   * Ensure the given project's database + super table exist (idempotent)
+   * @returns true = ready, false = creation failed (caller should fall back to the default database)
    */
   async ensureDatabase(projectId: string): Promise<boolean> {
     const databaseName = this.getDatabaseName(projectId);
@@ -132,8 +132,8 @@ export class TdengineDatabaseService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 确保一批写入点对应的子表存在（懒创建 + 幂等，写入前调用）。
-   * 子表按 tagId 维度：`t_{safeTagId}` USING 超级表 TAGS(projectId, tagId, deviceId)。
+   * Ensure the child tables corresponding to a batch of write points exist (lazy creation + idempotent, called before writing).
+   * Child tables are per tagId: `t_{safeTagId}` USING super table TAGS(projectId, tagId, deviceId).
    */
   async ensureSubtables(points: DataPoint[]): Promise<void> {
     for (const point of points) {
@@ -154,14 +154,14 @@ export class TdengineDatabaseService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  /** 子表名：t_{tagId}（tagId 中非 [a-zA-Z0-9_] 字符剔除，如 UUID 连字符） */
+  /** Child table name: t_{tagId} (characters not in [a-zA-Z0-9_] removed from tagId, e.g. UUID hyphens) */
   getSubtableName(tagId: string): string {
     return `t_${this.normalizeIdentifier(tagId)}`;
   }
 
   /**
-   * 执行 SQL（POST /rest/sql/{database}，Basic Auth）
-   * @returns 响应 rows（受影响行数，DELETE 场景用于计数，查询场景为结果行数）
+   * Execute SQL (POST /rest/sql/{database}, Basic Auth)
+   * @returns the response's rows (affected row count; used for counting on DELETE, result row count on queries)
    */
   async executeSql(databaseName: string, sqlStatement: string): Promise<number> {
     const serverUrl = process.env.TDENGINE_URL || 'http://localhost:6041';
@@ -193,23 +193,23 @@ export class TdengineDatabaseService implements OnModuleInit, OnModuleDestroy {
     return parsed.rows ?? 0;
   }
 
-  // ──────────── 内部方法 ────────────
+  // ──────────── Internal methods ────────────
 
   private async createDatabaseIfNotExists(databaseName: string): Promise<boolean> {
     try {
-      // 保留期 KEEP 建库时设定（单位：天），留空则用服务端默认
+      // Retention KEEP is set at database creation (unit: days); empty means the server default
       const keepDays = process.env.TDENGINE_KEEP_DAYS || '';
       const createDatabaseStatement = keepDays
         ? `CREATE DATABASE IF NOT EXISTS \`${databaseName}\` KEEP ${keepDays}`
         : `CREATE DATABASE IF NOT EXISTS \`${databaseName}\``;
 
-      // 强模式超级表：value DOUBLE / value_text BINARY / quality INT；TAGS 为维度列
+      // Strict-mode super table: value DOUBLE / value_text BINARY / quality INT; TAGS are dimension columns
       const createSuperTableStatement =
         `CREATE STABLE IF NOT EXISTS \`${databaseName}\`.${SUPER_TABLE_NAME} (` +
         `ts TIMESTAMP, value DOUBLE, value_text BINARY(4096), quality INT) ` +
         `TAGS (projectId BINARY(64), tagId BINARY(64), deviceId BINARY(64))`;
 
-      // CREATE DATABASE 属管理语句，REST 上下文库名不限制（用目标库名作为默认上下文）
+      // CREATE DATABASE is an admin statement; the REST context database name is unrestricted (the target database name is used as the default context)
       await this.executeSql(databaseName, createDatabaseStatement);
       await this.executeSql(databaseName, createSuperTableStatement);
 
@@ -226,12 +226,12 @@ export class TdengineDatabaseService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  /** 标识符白名单归一化：仅保留 [a-zA-Z0-9_]（database/子表名安全） */
+  /** Identifier whitelist normalization: keeps only [a-zA-Z0-9_] (safe for database/child-table names) */
   private normalizeIdentifier(identifier: string): string {
     return identifier.replace(/[^a-zA-Z0-9_]/g, '');
   }
 
-  /** SQL 字符串字面量转义：单引号翻倍，阻断注入 */
+  /** SQL string literal escaping: single quotes doubled, blocking injection */
   private escapeSqlLiteral(value: string): string {
     return `'${value.replace(/'/g, "''")}'`;
   }

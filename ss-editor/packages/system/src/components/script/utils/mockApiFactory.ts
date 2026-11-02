@@ -3,7 +3,7 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * Mock API 工厂：创建带日志收集的 Mock ScriptAPI 实例
+ * Mock API factory: creates a Mock ScriptAPI instance with log collection
  */
 export function createMockApi(apiCalls: Array<{ method: string; args: any[] }>) {
   return {

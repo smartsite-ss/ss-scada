@@ -3,46 +3,46 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 脚本引擎 API 静态定义
+ * Script engine API static definitions
  *
- * 所有 API 方法元数据（名称、签名、说明、分类、代码模板）的统一静态文件。
- * completionData.ts 和 useScriptTemplates.ts 均从此文件读取，
- * 后续接口修改只需更新此文件即可。
+ * Unified static file for all API method metadata (name, signature, description, category, code template).
+ * completionData.ts and useScriptTemplates.ts both read from this file,
+ * so later interface changes only need updating here.
  *
- * 更新指南：
- * 1. 新增 API：在 API_DEFINITIONS 数组中添加一项
- * 2. 修改签名：更新对应项的 detail/insertText/signature 字段
- * 3. 移除 API：从数组中删除对应项
- * 4. 调整分类：修改 category 字段
+ * Update guide:
+ * 1. Add an API: add an entry to the API_DEFINITIONS array
+ * 2. Modify a signature: update the corresponding entry detail/insertText/signature fields
+ * 3. Remove an API: delete the entry from the array
+ * 4. Adjust a category: modify the category field
  */
 
 export interface ApiMethodDefinition {
-  /** 方法名（带前缀） */
+  /** Method name (with prefix) */
   label: string;
-  /** 补全种类 */
+  /** Completion kind */
   kind: 'function',
-  /** 签名显示 */
+  /** Signature display */
   detail: string;
-  /** 中文说明 */
+  /** Chinese description */
   documentation: string;
-  /** 补全插入文本（支持 Monaco snippet 语法，如 ${1:param}） */
+  /** Completion insert text (supports Monaco snippet syntax, e.g. ${1:param}) */
   insertText: string;
-  /** 排序权重 */
+  /** Sort weight */
   sortText: string;
-  /** API 分类 */
+  /** API category */
   category: ApiCategory;
-  /** 完整签名（用于模板下拉显示） */
+  /** Full signature (for the template dropdown display) */
   signature: string;
 }
 
 export type ApiCategory =
-  | 'data'       // 数据读写
-  | 'graphic'    // 图元操作
-  | 'alarm'      // 告警操作
-  | 'page'       // 页面操作
-  | 'network'    // 网络请求
-  | 'timer'      // 定时器
-  | 'utility';   // 工具函数
+  | 'data'       // data read/write
+  | 'graphic'    // graphic operations
+  | 'alarm'      // alarm operations
+  | 'page'       // page operations
+  | 'network'    // network requests
+  | 'timer'      // timers
+  | 'utility';   // utility functions
 
 export const API_CATEGORY_LABELS: Record<ApiCategory, string> = {
   data: '数据读写',
@@ -54,9 +54,9 @@ export const API_CATEGORY_LABELS: Record<ApiCategory, string> = {
   utility: '工具函数',
 };
 
-/** 所有 API 方法定义（26 个） */
+/** All API method definitions (26 entries) */
 export const API_DEFINITIONS: ApiMethodDefinition[] = [
-  // ─── 数据读写 ───
+  // ─── Data read/write ───
   {
     label: 'api.readTag',
     kind: 'function',
@@ -88,7 +88,7 @@ export const API_DEFINITIONS: ApiMethodDefinition[] = [
     signature: 'getTagQuality(tagId)',
   },
 
-  // ─── 图元操作 ───
+  // ─── Graphic operations ───
   {
     label: 'api.setGraphicProps',
     kind: 'function',
@@ -140,7 +140,7 @@ export const API_DEFINITIONS: ApiMethodDefinition[] = [
     signature: 'rotateGraphic(graphicId, angle)',
   },
 
-  // ─── 告警操作 ───
+  // ─── Alarm operations ───
   {
     label: 'api.triggerAlarm',
     kind: 'function',
@@ -182,7 +182,7 @@ export const API_DEFINITIONS: ApiMethodDefinition[] = [
     signature: 'getActiveAlarms()',
   },
 
-  // ─── 页面操作 ───
+  // ─── Page operations ───
   {
     label: 'api.switchPage',
     kind: 'function',
@@ -204,7 +204,7 @@ export const API_DEFINITIONS: ApiMethodDefinition[] = [
     signature: 'getCurrentPageId()',
   },
 
-  // ─── 网络请求 ───
+  // ─── Network requests ───
   {
     label: 'api.fetch',
     kind: 'function',
@@ -216,7 +216,7 @@ export const API_DEFINITIONS: ApiMethodDefinition[] = [
     signature: 'fetch(url, options?)',
   },
 
-  // ─── 定时器 ───
+  // ─── Timers ───
   {
     label: 'api.setTimeout',
     kind: 'function',
@@ -258,7 +258,7 @@ export const API_DEFINITIONS: ApiMethodDefinition[] = [
     signature: 'clearInterval(id)',
   },
 
-  // ─── 工具函数 ───
+  // ─── Utility functions ───
   {
     label: 'api.sleep',
     kind: 'function',
@@ -341,7 +341,7 @@ export const API_DEFINITIONS: ApiMethodDefinition[] = [
   },
 ];
 
-/** 按分类分组获取 API 定义 */
+/** Get API definitions grouped by category */
 export function getApiDefinitionsByCategory(): Record<string, ApiMethodDefinition[]> {
   const groups: Record<string, ApiMethodDefinition[]> = {};
   for (const def of API_DEFINITIONS) {

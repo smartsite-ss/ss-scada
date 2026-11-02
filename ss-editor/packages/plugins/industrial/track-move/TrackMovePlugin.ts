@@ -16,7 +16,7 @@ import {
 
 const DEFAULT_POINTS: TrackPoint[] = [
   { x: 20, y: 30 },   // start
-  { x: 140, y: 10 },  // bend (折弯点)
+  { x: 140, y: 10 },  // bend point
   { x: 260, y: 30 },  // end
 ];
 

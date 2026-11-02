@@ -8,28 +8,28 @@ import type { ApiResponse, PaginatedApiResponse, PaginationParams, Project } fro
 
 export interface CreateProjectDto {
   projectName: string;
-  /** tenantId 多租户预留字段（当前 = projectId），不传则自动等于 projectId */
+  /** tenantId multi-tenant reserved field (currently = projectId); auto-equals projectId when omitted */
   tenantId?: string;
-  /** 项目代码（projectId，变量命名格式，不含中文），不传则按名称拼音首字母自动生成 */
+  /** Project code (projectId, variable-naming format, no Chinese); auto-generated from the name's pinyin initials when omitted */
   projectId?: string;
   description?: string;
-  /** 项目版本号，不传后端默认 1.0.0 */
+  /** Project version number; the backend defaults to 1.0.0 when omitted */
   version?: string;
   config?: Record<string, any>;
-  /** 项目地址 */
+  /** Project address */
   address?: string;
-  /** 经度（十进制字符串） */
+  /** Longitude (decimal string) */
   longitude?: string;
-  /** 纬度（十进制字符串） */
+  /** Latitude (decimal string) */
   latitude?: string;
-  /** 负责人 */
+  /** Person in charge */
   owner?: string;
-  /** 项目封面图片相对路径 */
+  /** Project cover image relative path */
   image?: string;
   /**
-   * 项目启用状态（true=启用，false=停用）。不传默认 false（停用）。
-   * 启用后才开始数据采集；停用会立即停止采集并从设备树/设备监控中隐藏。
-   */
+     * Project enabled state (true = enabled, false = disabled). Defaults to false (disabled) when omitted.
+     * Data collection only starts after enabling; disabling immediately stops collection and hides the project from the device tree/device monitoring.
+     */
   enabled?: boolean;
 }
 
@@ -41,12 +41,12 @@ export interface UpdateProjectDto {
   longitude?: string;
   latitude?: string;
   owner?: string;
-  /** 项目封面图片相对路径 */
+  /** Project cover image relative path */
   image?: string;
   /**
-   * 项目启用状态（true=启用，false=停用）。
-   * 切换会动态启停采集：启用 → 加载设备并注册任务；停用 → 立即停止采集并清理状态。
-   */
+     * Project enabled state (true = enabled, false = disabled).
+     * Toggling dynamically starts/stops collection: enable → load devices and register tasks; disable → immediately stop collection and clean up state.
+     */
   enabled?: boolean;
 }
 
@@ -66,7 +66,7 @@ export interface ExportData {
   };
 }
 
-/** 聚合设备统计 */
+/** Aggregated device statistics */
 export interface DeviceStats {
   total: number;
   online: number;
@@ -77,7 +77,7 @@ export interface DeviceStats {
   totalTags: number;
 }
 
-/** 聚合报警统计 */
+/** Aggregated alarm statistics */
 export interface AggregatedAlarmStats {
   total: number;
   active: number;
@@ -86,7 +86,7 @@ export interface AggregatedAlarmStats {
   shelved: number;
 }
 
-/** 系统概览统计 */
+/** System overview statistics */
 export interface SystemOverview {
   projectCount: number;
   totalDbSize: number;
@@ -96,7 +96,7 @@ export interface SystemOverview {
 }
 
 export const projectApi = {
-  /** 获取系统概览统计 */
+  /** Get the system overview statistics */
   getOverview(): Promise<SystemOverview> {
     return client.get('/projects/overview').then((res) => {
       const d = res.data;
@@ -106,7 +106,7 @@ export const projectApi = {
 
   list(
     params: PaginationParams,
-    /** 是否包含停用项目（管理页查看全部时传 true，首页统计/设备树等场景默认 false） */
+    /** Whether to include disabled projects (pass true when the admin page views all; defaults to false for home statistics/device tree, etc.) */
     includeDisabled?: boolean,
   ): Promise<PaginatedApiResponse<Project>> {
     const query = includeDisabled ? { ...params, includeDisabled: 'true' } : params;
@@ -143,7 +143,7 @@ export const projectApi = {
     const url = query ? `/projects/${projectId}/export?${query}` : `/projects/${projectId}/export`;
     return client.post(url, null, {
       responseType: 'blob',
-      timeout: 0, // 导出可能耗时较长（VACUUM + 压缩 + 大文件传输），禁用超时
+      timeout: 0, // export can take a long time (VACUUM + compression + large file transfer), timeout disabled
     }).then((res) => res.data);
   },
 
@@ -152,7 +152,7 @@ export const projectApi = {
     formData.append('file', file);
     return client.post(`/projects/import?overwrite=${overwrite}`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
-      timeout: 0, // 导入可能耗时较长（解压 + 复制大文件 + 数据库初始化），禁用超时
+      timeout: 0, // import can take a long time (extraction + copying large files + database initialization), timeout disabled
     }).then((res) => res.data);
   },
 
@@ -168,15 +168,15 @@ export const projectApi = {
     return client.get(`/projects/${projectId}/pages/projects-dir`).then((res) => res.data);
   },
 
-  /** 导出项目所有页面为 ZIP */
+  /** Export all project pages as a ZIP */
   exportPagesZip(projectId: string): Promise<Blob> {
     return client.post(`/projects/${projectId}/pages/export`, null, {
       responseType: 'blob',
-      timeout: 0, // 页面导出可能包含大量文件，禁用超时
+      timeout: 0, // page export may contain many files, timeout disabled
     }).then((res) => res.data);
   },
 
-  /** 导入页面到项目（ZIP 文件） */
+  /** Import pages into a project (ZIP file) */
   importPagesZip(projectId: string, file: File, overwrite: boolean = false): Promise<ApiResponse<{ importedCount: number; warnings: string[] }>> {
     const formData = new FormData();
     formData.append('file', file);
@@ -185,17 +185,17 @@ export const projectApi = {
     }).then((res) => res.data);
   },
 
-  /** 诊断项目资源完整性 */
+  /** Diagnose project resource integrity */
   diagnose(projectId: string): Promise<DiagnoseResult> {
     return client.post<ApiResponse<DiagnoseResult>>(`/projects/${projectId}/diagnose`).then((res) => res.data.data);
   },
 
-  /** 获取项目管理信息 */
+  /** Get project management info */
   getManageInfo(projectId: string): Promise<ManageInfo> {
     return client.get<ApiResponse<ManageInfo>>(`/projects/${projectId}/manage-info`).then((res) => res.data.data);
   },
 
-  /** 初始化项目缺失资源 */
+  /** Initialize missing project resources */
   initResources(projectId: string, resources?: string[]): Promise<{
     initialized: string[];
     skipped: string[];
@@ -214,22 +214,22 @@ export const projectApi = {
     }>>(`/projects/${projectId}/init-resources`, body).then((res) => res.data.data);
   },
 
-  /** 获取默认项目配置 */
+  /** Get the default project configuration */
   getDefaultProject(): Promise<ApiResponse<{ projectId: string | null }>> {
     return client.get<ApiResponse<{ projectId: string | null }>>('/projects/default-config').then((res) => res.data);
   },
 
-  /** 设置默认项目 */
+  /** Set the default project */
   setDefaultProject(projectId: string): Promise<ApiResponse<{ success: boolean; projectId: string }>> {
     return client.put<ApiResponse<{ success: boolean; projectId: string }>>('/projects/default-config', { projectId }).then((res) => res.data);
   },
 
-  /** 清除默认项目 */
+  /** Clear the default project */
   clearDefaultProject(): Promise<ApiResponse<{ success: boolean }>> {
     return client.delete<ApiResponse<{ success: boolean }>>('/projects/default-config').then((res) => res.data);
   },
 
-  /** 上传项目封面图片（multipart/form-data） */
+  /** Upload the project cover image (multipart/form-data) */
   uploadImage(projectId: string, file: File): Promise<ApiResponse<{ success: boolean; image: string }>> {
     const formData = new FormData();
     formData.append('file', file);
@@ -238,19 +238,19 @@ export const projectApi = {
     }).then((res) => res.data);
   },
 
-  /** 获取项目封面图片 URL（可直接用于 <img :src>，后端 @Public 无需鉴权） */
+  /** Get the project cover image URL (usable directly in <img :src>; the backend @Public requires no auth) */
   getImageUrl(projectId: string): string {
-    // <img> 不走 fetch/XHR 拦截器，桌面端需改写为后端绝对地址（详见 resource-url.ts）
+    // <img> does not go through the fetch/XHR interceptor; the desktop app needs it rewritten to the backend absolute address (see resource-url.ts)
     return resolveBackendResourceUrl(`/api/v1/projects/${projectId}/image`);
   },
 };
 
 import type { DiagnoseResult } from '../../types/api';
 
-/** 项目管理信息 */
+/** Project management info */
 export interface ManageInfo {
   projectName: string;
-  /** 多租户预留（当前 = projectId） */
+  /** Multi-tenant reserved (currently = projectId) */
   tenantId: string;
   projectId: string;
   version: string;

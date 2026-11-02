@@ -11,7 +11,7 @@ export const trackMovePropertySchema: PluginPropertySchema = {
   columns: 2,
   propsPath: 'customProps',
   fields: [
-    // === 动画点 ===
+    // === Animation points ===
     {
       name: 'dotStyle', label: '点样式', labelKey: 'track-move.properties.dotStyle', type: 'select', group: 'dot', groupKey: 'track-move.groups.dot',
       options: [
@@ -26,7 +26,7 @@ export const trackMovePropertySchema: PluginPropertySchema = {
     { name: 'imageWidth', label: '图片宽度', labelKey: 'track-move.properties.imageWidth', type: 'number', min: 8, max: 120, step: 2, defaultValue: 24, group: 'dot', groupKey: 'track-move.groups.dot' },
     { name: 'imageHeight', label: '图片高度', labelKey: 'track-move.properties.imageHeight', type: 'number', min: 8, max: 120, step: 2, defaultValue: 24, group: 'dot', groupKey: 'track-move.groups.dot' },
 
-    // === 轨道 ===
+    // === Track ===
     { name: 'trackColor', label: '轨道颜色', labelKey: 'track-move.properties.trackColor', type: 'color', defaultValue: '#4A90A4FF', group: 'track', groupKey: 'track-move.groups.track' },
     { name: 'trackWidth', label: '轨道宽度', labelKey: 'track-move.properties.trackWidth', type: 'number', min: 1, max: 10, step: 1, defaultValue: 2, group: 'track', groupKey: 'track-move.groups.track' },
     {
@@ -38,7 +38,7 @@ export const trackMovePropertySchema: PluginPropertySchema = {
       defaultValue: 'dashed',
     },
 
-    // === 运动 ===
+    // === Motion ===
     { name: 'status', label: '动画状态', labelKey: 'track-move.properties.status', type: 'boolean', defaultValue: true, group: 'motion', groupKey: 'track-move.groups.motion' },
     {
       name: 'direction', label: '移动方向', labelKey: 'track-move.properties.direction', type: 'select', group: 'motion', groupKey: 'track-move.groups.motion',

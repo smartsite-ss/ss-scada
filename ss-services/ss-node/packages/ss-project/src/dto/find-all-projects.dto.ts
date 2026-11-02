@@ -8,13 +8,13 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { PaginationDto } from '@ss-node/ss-sdk';
 
 /**
- * 项目列表查询 DTO
+ * Project-list query DTO
  *
- * 继承分页参数（page/pageSize/keyword/sortBy/sortOrder），
- * 新增 `includeDisabled` 字段以通过全局 ValidationPipe 的 forbidNonWhitelisted 校验。
+ * Extends the pagination params (page/pageSize/keyword/sortBy/sortOrder),
+ * adding the `includeDisabled` field to pass the global ValidationPipe's forbidNonWhitelisted validation.
  *
- * - 项目管理页传 `includeDisabled=true` 查看全部项目（含停用），便于切换启用状态
- * - 设备管理 / 首页统计 / 编辑器等运营场景不传（默认 false），仅看启用项目
+ * - The project-management page passes includeDisabled=true to view all projects (including disabled), for toggling the enabled state
+ * - Operational scenarios like device management / home statistics / editor omit it (default false), seeing only enabled projects
  */
 export class FindAllProjectsQueryDto extends PaginationDto {
   @ApiPropertyOptional({

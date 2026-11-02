@@ -29,7 +29,7 @@ const buildUrl = (projectId: string, path: string) =>
   `/projects/${projectId}/alarms${path}`;
 
 export const alarmApi = {
-  // ────────── 项目级报警 API ──────────
+  // ────────── Project-level alarm API ──────────
 
   getRules(projectId: string): Promise<ApiResponse<AlarmRule[]>> {
     return client.get(buildUrl(projectId, '/rules')).then((res) => res.data);
@@ -108,23 +108,23 @@ export const alarmApi = {
       .catch(() => false);
   },
 
-  // ────────── 全局级报警统计 API ──────────
+  // ────────── Global alarm statistics API ──────────
 
-  /** 按级别统计报警 */
+  /** Statistics of alarms by severity level */
   getByLevel(projectId?: string, startDate?: string, endDate?: string): Promise<LevelStatistics[]> {
     return client
       .get('/alarms/statistics/by-level', { params: { projectId, startDate, endDate } })
       .then((res) => res.data?.data ?? res.data);
   },
 
-  /** 按设备统计报警 */
+  /** Statistics of alarms by device */
   getByDevice(deviceId: string, projectId?: string, startDate?: string, endDate?: string): Promise<DeviceStatistics> {
     return client
       .get(`/alarms/statistics/by-device/${deviceId}`, { params: { projectId, startDate, endDate } })
       .then((res) => res.data?.data ?? res.data);
   },
 
-  /** 按时间统计报警时间序列 */
+  /** Alarm time-series statistics by time */
   getByTime(
     projectId?: string,
     startDate?: string,
@@ -136,28 +136,28 @@ export const alarmApi = {
       .then((res) => res.data?.data ?? res.data);
   },
 
-  /** 获取报警趋势分析 */
+  /** Get alarm trend analysis */
   getTrend(startDate: string, endDate: string, projectId?: string): Promise<TrendAnalysis> {
     return client
       .get('/alarms/statistics/trend', { params: { projectId, startDate, endDate } })
       .then((res) => res.data?.data ?? res.data);
   },
 
-  /** 获取最频繁报警列表 */
+  /** Get the most frequent alarms list */
   getTopAlarms(limit?: number, projectId?: string, startDate?: string, endDate?: string): Promise<TopAlarm[]> {
     return client
       .get('/alarms/statistics/top', { params: { projectId, limit, startDate, endDate } })
       .then((res) => res.data?.data ?? res.data);
   },
 
-  /** 获取响应时间统计 */
+  /** Get response time statistics */
   getResponseTime(projectId?: string, startDate?: string, endDate?: string): Promise<ResponseTimeStats> {
     return client
       .get('/alarms/statistics/response-time', { params: { projectId, startDate, endDate } })
       .then((res) => res.data?.data ?? res.data);
   },
 
-  /** 获取报警综合汇总 */
+  /** Get the combined alarm summary */
   getSummary(projectId: string, startDate?: string, endDate?: string): Promise<AlarmSummary> {
     return client
       .get(`/alarms/statistics/summary/${projectId}`, { params: { startDate, endDate } })

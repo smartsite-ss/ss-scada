@@ -18,13 +18,13 @@ export enum AggregationType {
   COUNT = 'count',
 }
 
-/** 插值类型 */
+/** Interpolation type */
 export enum InterpolationType {
-  /** 原始值 — 不做插值处理，直接返回采集到的数据点 */
+  /** Raw — no interpolation; collected data points are returned directly */
   RAW = 'raw',
-  /** 线性插值 — 在相邻数据点之间按时间间隔线性填充 */
+  /** Linear interpolation — fills between adjacent points linearly by time interval */
   LINEAR = 'linear',
-  /** 阶梯插值（前值填充）— 缺失时间段沿用上一个已知值 */
+  /** Step interpolation (previous-value hold) — missing periods reuse the last known value */
   STEP = 'step',
 }
 
@@ -37,7 +37,7 @@ export interface AggregationResult {
 }
 
 export interface TagDataPoint {
-  /** 历史数据点值 — 保留原始类型语义（number/boolean/string） */
+  /** Historical data point value — preserves original type semantics (number/boolean/string) */
   value: number | boolean | string | null;
   timestamp: string;
 }
@@ -47,12 +47,12 @@ export interface TagDataPage {
   data: TagDataPoint[];
 }
 
-/** 趋势查询结果 */
+/** Trend query result */
 export interface TrendDataResult {
-  /** 各标签的查询数据 */
+  /** Query data for each tag */
   data: TagDataPage[];
-  /** 元数据 — 使用 pagination 模式以便 TransformInterceptor 扁平化响应：
-   *  返回 { data: [...], pagination: { total } } → 客户端收到
+  /** Metadata — uses pagination mode so TransformInterceptor flattens the response:
+   *  returns { data: [...], pagination: { total } } → the client receives
    *  { code, data: [...], pagination: { total }, message } */
   pagination: { total: number };
 }
@@ -61,22 +61,22 @@ export interface TrendQueryOptions {
   tagIds: string[];
   startTime: Date;
   endTime: Date;
-  /** 最大数据点数（触发 LTTB 降采样），默认 1000 */
+  /** Max data points (triggers LTTB downsampling), default 1000 */
   maxPoints?: number;
   projectId?: string;
-  /** 插值方式，默认 raw */
+  /** Interpolation type, default raw */
   interpolation?: InterpolationType;
-  /** 插值间隔（毫秒），linear/step 模式生效，默认 1000ms */
+  /** Interpolation interval (ms), effective for linear/step, default 1000ms */
   interval?: number;
-  /** 窗口聚合参数（可选）：携带时逐标签按窗口聚合，跳过插值与 LTTB 降采样 */
+  /** Window aggregation parameters (optional): when present, aggregates per tag by window, skipping interpolation and LTTB downsampling */
   aggregation?: TrendAggregationOptions;
 }
 
-/** 趋势查询窗口聚合参数（三期增强：08 #6 聚合查询） */
+/** Trend query window aggregation parameters (Phase 3 enhancement: 08 #6 aggregation query) */
 export interface TrendAggregationOptions {
-  /** 聚合函数：avg/max/min/sum/count */
+  /** Aggregation function: avg/max/min/sum/count */
   type: AggregationType;
-  /** 聚合窗口大小（毫秒），必须为正整数 */
+  /** Aggregation window size (ms), must be a positive integer */
   windowMs: number;
 }
 
@@ -103,7 +103,7 @@ const INFLUX_FN_MAP: Record<AggregationType, 'mean' | 'max' | 'min' | 'sum' | 'c
 @Injectable()
 export class DataQueryService {
   private readonly logger = new Logger(DataQueryService.name);
-  /** 历史数据查询后端：influxdb | sqlite | mysql */
+  /** Historical data query backend: influxdb | sqlite | mysql */
   private readonly backend: string;
 
   constructor(
@@ -119,15 +119,15 @@ export class DataQueryService {
     this.backend = this.configService?.get('HISTORICAL_DATA_BACKEND', 'influxdb') ?? 'influxdb';
   }
 
-  /** 是否使用 SQLite 查询后端 */
+  /** Whether the SQLite query backend is used */
   private get useSqlite(): boolean {
     return this.backend !== 'influxdb';
   }
 
   /**
-   * 获取项目级 HistoricalData Repository
-   * - 提供 projectId 时：查询项目数据库（ss-project/{project}/db/system.db）
-   * - 不提供 projectId 时：回退到全局数据库（兼容旧行为）
+   * Get the project-level HistoricalData repository
+   * - With projectId: queries the project database (ss-project/{project}/db/system.db)
+   * - Without projectId: falls back to the global database (legacy behavior)
    */
   private async getRepo(projectId?: string): Promise<Repository<HistoricalData>> {
     if (projectId) {
@@ -138,10 +138,10 @@ export class DataQueryService {
   }
 
   /**
-   * 从 HistoricalData 记录中提取 value — 按列优先级返回非空值
+   * Extract value from a HistoricalData record — returns the first non-null value by column priority
    *
-   * 写入时按类型分写到 numericValue/booleanValue/stringValue 三列，
-   * 读取时按非空列返回，保证类型语义不丢失。
+   * At write time values are split by type into numericValue/booleanValue/stringValue columns;
+   * at read time the non-null column is returned, preserving type semantics.
    */
   private pickValueFromRecord(record: HistoricalData): number | boolean | string | null {
     if (record.booleanValue !== null && record.booleanValue !== undefined) {
@@ -157,7 +157,7 @@ export class DataQueryService {
   }
 
   /**
-   * 从 InfluxQueryRow[] 提取为 TagDataPage 的 data 数组格式
+   * Extract InfluxQueryRow[] into the data array format of TagDataPage
    */
   private rowsToDataPoints(rows: InfluxQueryRow[]): TagDataPoint[] {
     return rows.map((r) => ({
@@ -167,7 +167,7 @@ export class DataQueryService {
   }
 
   /**
-   * 将 InfluxQueryRow[] 按 tagId 分组为 TagDataPage[]
+   * Group InfluxQueryRow[] by tagId into TagDataPage[]
    */
   private groupRowsByTag(rows: InfluxQueryRow[]): TagDataPage[] {
     const groups = new Map<string, InfluxQueryRow[]>();
@@ -181,7 +181,7 @@ export class DataQueryService {
     }));
   }
 
-  // ──────────── 时间范围查询 (带分页) ────────────
+  // ──────────── Time-range query (with pagination) ────────────
 
   async queryTimeRange(query: TimeRangeQuery): Promise<{ data: HistoricalData[]; total: number }> {
     if (this.useSqlite) return this.queryTimeRangeSqlite(query);
@@ -225,7 +225,7 @@ export class DataQueryService {
       offset,
     );
 
-    // 再查询总数（不带 limit/offset）
+    // Then query the total count (without limit/offset)
     const allRows = await this.influxQueryService!.queryRange(
       projectId,
       query.tagId,
@@ -246,7 +246,7 @@ export class DataQueryService {
     return { data, total: allRows.length };
   }
 
-  // ──────────── 聚合查询 ────────────
+  // ──────────── Aggregation query ────────────
 
   async aggregate(
     tagId: string,
@@ -335,7 +335,7 @@ export class DataQueryService {
     };
   }
 
-  // ──────────── 窗口聚合 (按时间间隔分组) ────────────
+  // ──────────── Window aggregation (grouped by time interval) ────────────
 
   async aggregateWindow(
     tagId: string,
@@ -430,7 +430,7 @@ export class DataQueryService {
     );
   }
 
-  // ──────────── 批量查询 ────────────
+  // ──────────── Batch query ────────────
 
   async batchQueryLatest(
     tagIds: string[],
@@ -451,7 +451,7 @@ export class DataQueryService {
       const record = await repo.findOne({
         where: { tagId },
         order: { timestamp: 'DESC' },
-        // 读取三列，按非空列返回
+        // Read the three columns and return the non-null one
         select: ['tagId', 'numericValue', 'stringValue', 'booleanValue', 'timestamp'],
       });
 
@@ -533,15 +533,15 @@ export class DataQueryService {
     return this.groupRowsByTag(rows);
   }
 
-  // ──────────── 趋势图专用批量查询（带 LTTB 降采样 + 插值） ────────────
+  // ──────────── Trend-chart batch query (with LTTB downsampling + interpolation) ────────────
 
   /**
-   * 趋势图批量查询
+   * Trend-chart batch query
    *
-   * 流程：获取原始数据 → 插值填充 → LTTB 降采样 → 返回结果（含记录数）
+   * Flow: fetch raw data → interpolation fill → LTTB downsampling → return result (with record counts)
    *
-   * @param opts.interpolation 插值方式：raw（不插值）| linear（线性插值）| step（前值填充）
-   * @param opts.interval 插值间隔（毫秒），仅 linear/step 模式生效，默认 1000
+   * @param opts.interpolation interpolation: raw (none) | linear (linear interpolation) | step (hold previous value)
+   * @param opts.interval interpolation interval (ms), only for linear/step, default 1000
    */
   async queryTrendData(opts: TrendQueryOptions): Promise<TrendDataResult> {
     if (opts.aggregation) return this.queryTrendDataAggregated(opts);
@@ -550,11 +550,11 @@ export class DataQueryService {
   }
 
   /**
-   * 窗口聚合趋势查询（三期增强：08 #6）
+   * Window-aggregated trend query (Phase 3 enhancement: 08 #6)
    *
-   * 逐标签调用窗口聚合（自动适配 sqlite/InfluxDB 存储后端），
-   * 聚合结果的窗口起始时间作为数据点时间戳；跳过插值与 LTTB 降采样
-   * （聚合窗口本身已控制点数）。返回结构与原始趋势查询一致。
+   * Calls window aggregation per tag (automatically adapting to the sqlite/InfluxDB storage backend);
+   * the aggregation window's start time serves as the data point timestamp; interpolation and LTTB downsampling are skipped
+   * (the aggregation window itself already bounds the point count). The return structure matches the original trend query.
    */
   private async queryTrendDataAggregated(opts: TrendQueryOptions): Promise<TrendDataResult> {
     const { type: aggregationType, windowMs } = opts.aggregation!;
@@ -649,16 +649,16 @@ export class DataQueryService {
     return { data: resultPages, pagination: { total } };
   }
 
-  // ──────────── 插值算法 ────────────
+  // ──────────── Interpolation algorithms ────────────
 
   /**
-   * 对原始数据点应用插值
+   * Apply interpolation to raw data points
    *
-   * @param rawData 按时间升序排列的原始数据点
-   * @param startTime 查询起止时间（插值范围）
-   * @param endTime 查询结束时间
-   * @param type 插值类型
-   * @param intervalMs 插值间隔（毫秒）
+   * @param rawData raw data points sorted by time ascending
+   * @param startTime query start time (interpolation range)
+   * @param endTime query end time
+   * @param type interpolation type
+   * @param intervalMs interpolation interval (ms)
    */
   private applyInterpolation(
     rawData: TagDataPoint[],
@@ -671,8 +671,8 @@ export class DataQueryService {
       return rawData;
     }
 
-    // 过滤有效数值（仅数值型可参与线性/阶梯插值）
-    // bool/string 类型保留原样，不参与插值计算
+    // Filter valid numeric values (only numeric types participate in linear/step interpolation)
+    // bool/string types are kept as-is and do not participate in interpolation
     const validData = rawData
       .filter((d) => typeof d.value === 'number' && d.value !== null)
       .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
@@ -693,7 +693,7 @@ export class DataQueryService {
     return rawData;
   }
 
-  /** 线性插值 */
+  /** Linear interpolation */
   private linearInterpolate(
     sortedData: TagDataPoint[],
     startMs: number,
@@ -703,14 +703,14 @@ export class DataQueryService {
     const result: TagDataPoint[] = [];
     const first = sortedData[0];
 
-    // 起始时间之前的点：沿用第一个值
+    // Points before the start time: reuse the first value
     let t = startMs;
     while (t < new Date(first.timestamp).getTime() && t <= endMs) {
       result.push({ value: first.value, timestamp: new Date(t).toISOString() });
       t += intervalMs;
     }
 
-    // 相邻点之间线性插值
+    // Linear interpolation between adjacent points
     for (let i = 0; i < sortedData.length - 1; i++) {
       const cur = sortedData[i];
       const next = sortedData[i + 1];
@@ -729,7 +729,7 @@ export class DataQueryService {
       }
     }
 
-    // 最后一个点之后：沿用最后一个值
+    // After the last point: reuse the last value
     const last = sortedData[sortedData.length - 1];
     const lastTs = new Date(last.timestamp).getTime();
     t = Math.max(t, lastTs);
@@ -741,7 +741,7 @@ export class DataQueryService {
     return result;
   }
 
-  /** 阶梯插值（前值填充） */
+  /** Step interpolation (previous-value hold) */
   private stepInterpolate(
     sortedData: TagDataPoint[],
     startMs: number,
@@ -753,7 +753,7 @@ export class DataQueryService {
     let lastValue = sortedData[0].value;
 
     for (let t = startMs; t <= endMs; t += intervalMs) {
-      // 推进到当前时间之后的最新数据点
+      // Advance to the latest data point after the current time
       while (
         dataIdx < sortedData.length &&
         new Date(sortedData[dataIdx].timestamp).getTime() <= t
@@ -768,7 +768,7 @@ export class DataQueryService {
   }
 
   /**
-   * LTTB (Largest Triangle Three Buckets) 降采样算法
+   * LTTB (Largest Triangle Three Buckets) downsampling algorithm
    */
   private lttbDownsample(data: TagDataPoint[], threshold: number): TagDataPoint[] {
     if (data.length <= threshold || threshold < 3) {
@@ -829,7 +829,7 @@ export class DataQueryService {
     return result;
   }
 
-  // ──────────── 数据导出 ────────────
+  // ──────────── Data export ────────────
 
   async exportCsv(
     tagId: string,
@@ -1010,7 +1010,7 @@ export class DataQueryService {
     return { json: JSON.stringify(result, null, 2), filename };
   }
 
-  // ──────────── 统计概览 ────────────
+  // ──────────── Statistics overview ────────────
 
   async getTagStats(
     tagId: string,

@@ -43,7 +43,7 @@
                 />
               </td>
             </tr>
-            <!-- 顶部虚拟占位 -->
+            <!-- Top virtual spacer -->
             <tr
               v-if="virtualEnabled && topSpacerHeight > 0"
               aria-hidden="true"
@@ -77,7 +77,7 @@
                   :colspan="getColspan(renderIdx, colIdx)"
                   :rowspan="getRowspan(renderIdx, colIdx)"
                 >
-                  <!-- 树形展开/折叠图标（仅首列） -->
+                  <!-- Tree expand/collapse icon (first column only) -->
                   <span
                     v-if="tree && colIdx === 0"
                     class="tree-toggle"
@@ -98,7 +98,7 @@
                       <polyline points="9 6 15 12 9 18" />
                     </svg>
                   </span>
-                  <!-- 编辑模式 -->
+                  <!-- Edit mode -->
                   <template v-if="isEditingRow(item.row) && col.editable">
                     <input
                       v-if="resolveEditor(col) === 'text'"
@@ -140,7 +140,7 @@
                       </option>
                     </select>
                   </template>
-                  <!-- 普通渲染 -->
+                  <!-- Default render -->
                   <template v-else>
                     <slot
                       :name="`cell-${col.key}`"
@@ -163,7 +163,7 @@
                   </template>
                 </td>
               </template>
-              <!-- 行编辑操作列 -->
+              <!-- Row edit actions column -->
               <td
                 v-if="editable"
                 class="row-actions-cell"
@@ -194,7 +194,7 @@
                 </button>
               </td>
             </tr>
-            <!-- 底部虚拟占位 -->
+            <!-- Bottom virtual spacer -->
             <tr
               v-if="virtualEnabled && bottomSpacerHeight > 0"
               aria-hidden="true"
@@ -225,18 +225,18 @@ const props = defineProps<{
   loading?: boolean;
   emptyText?: string;
   error?: string | null;
-  // 虚拟滚动
+  // Virtual scroll
   virtualScroll?: boolean;
   rowHeight?: number;
   visibleRows?: number;
-  // 行编辑
+  // Row editing
   editable?: boolean;
   editingRowId?: string | number | null;
-  // 树形
+  // Tree
   tree?: boolean;
   childrenField?: string;
   expandedRowKeys?: Array<string | number>;
-  // 合并单元格
+  // Merged cells
   spanMethod?: (row: T, column: SmartTableColumn<T>, rowIndex: number, columnIndex: number) => CellSpan;
 }>();
 
@@ -259,7 +259,7 @@ const rowKeyField = computed(() => props.rowKey || 'id');
 const childrenField = computed(() => props.childrenField || 'children');
 
 // ============================================================
-// 树形扁平化
+// Tree flattening
 // ============================================================
 
 interface FlatRow<T> {
@@ -324,7 +324,7 @@ function toggleExpand(item: FlatRow<T>) {
 }
 
 // ============================================================
-// 虚拟滚动
+// Virtual scroll
 // ============================================================
 
 const BUFFER = 5;
@@ -377,7 +377,7 @@ function onScroll(e: Event) {
 }
 
 // ============================================================
-// 合并单元格
+// Merged cells
 // ============================================================
 
 const hasSpanConfig = computed(() => {
@@ -385,7 +385,7 @@ const hasSpanConfig = computed(() => {
   return props.columns.some((c) => typeof c.colspan === 'function' || typeof c.rowspan === 'function');
 });
 
-/** 预计算每个渲染行的单元格 span 信息 */
+/** Precompute the span info for each cell of every render row */
 const spanMap = computed<Array<Array<{ skip: boolean; colspan: number; rowspan: number }>>>(() => {
   if (!hasSpanConfig.value) {
     return renderRows.value.map(() =>
@@ -394,7 +394,7 @@ const spanMap = computed<Array<Array<{ skip: boolean; colspan: number; rowspan: 
   }
   const rows = renderRows.value;
   const cols = visibleColumns.value;
-  // 记录被上方 rowspan 覆盖的列
+  // Track columns covered by an upper rowspan
   const skipSets: Set<number>[] = rows.map(() => new Set<number>());
   const map = rows.map((item, rowIdx) => {
     return cols.map((col, colIdx) => {
@@ -411,7 +411,7 @@ const spanMap = computed<Array<Array<{ skip: boolean; colspan: number; rowspan: 
         if (typeof col.colspan === 'function') colspan = Math.max(1, col.colspan(item.row, item.rawIndex));
         if (typeof col.rowspan === 'function') rowspan = Math.max(1, col.rowspan(item.row, item.rawIndex));
       }
-      // 标记被覆盖的后续单元格
+      // Mark the subsequent covered cells
       for (let r = 0; r < rowspan; r++) {
         for (let c = 0; c < colspan; c++) {
           if (r === 0 && c === 0) continue;
@@ -446,7 +446,7 @@ function getRowspan(rowIdx: number, colIdx: number): number | undefined {
 }
 
 // ============================================================
-// 行编辑
+// Row editing
 // ============================================================
 
 const editingBuffer = ref<Record<string, any>>({});
@@ -521,7 +521,7 @@ function saveEdit(row: T) {
 }
 
 // ============================================================
-// 渲染辅助
+// Render helpers
 // ============================================================
 
 const headerColumns = computed(() => {
@@ -566,7 +566,7 @@ function rowStyle(_item: FlatRow<T>): Record<string, string> {
 
 function cellStyle(col: SmartTableColumn<T>, level: number): Record<string, string> {
   const style = colStyle(col);
-  // 树形首列缩进
+  // Tree first-column indentation
   if (props.tree && (col === visibleColumns.value[0])) {
     style.paddingLeft = `${level * 20 + 12}px`;
   }
@@ -639,7 +639,7 @@ function onSortClick(col: SmartTableColumn<T>) {
 .status-unregistered { background: #1e293b; color: #64748b; }
 .status-registered { background: rgba(59, 130, 246, 0.12); color: #93c5fd; }
 
-/* 树形表格 */
+/* Tree table */
 .tree-toggle {
   display: inline-flex;
   align-items: center;
@@ -656,7 +656,7 @@ function onSortClick(col: SmartTableColumn<T>) {
 }
 .tree-toggle-icon.expanded { transform: rotate(90deg); }
 
-/* 行编辑器 */
+/* Cell editor */
 .cell-editor {
   width: 100%;
   max-width: 180px;
@@ -674,7 +674,7 @@ function onSortClick(col: SmartTableColumn<T>) {
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
 }
 
-/* 行操作按钮 */
+/* Row action buttons */
 .row-actions-cell {
   white-space: nowrap;
   text-align: right;

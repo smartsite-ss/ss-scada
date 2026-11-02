@@ -62,8 +62,8 @@ import { AlarmNotificationSubscriber } from './engine/alarm-notification.subscri
     DeviceCommunicationAlarmSubscriber,
     SystemHealthAlarmSubscriber,
     AlarmNotificationSubscriber,
-    // 字符串令牌别名：通道通过 @Inject('SystemConfigService') 注入，
-    // 避免在通道文件中直接导入 ss-system 造成循环依赖与单元测试加载问题
+    // String token alias: channels are injected via @Inject('SystemConfigService'),
+    // avoiding a direct ss-system import in channel files that would cause circular deps and unit-test load issues
     {
       provide: 'SystemConfigService',
       useExisting: SystemConfigService,

@@ -8,7 +8,7 @@ import { BaseGraphic } from '@scada-editor/plugin-sdk';
 
 class TestShape extends BaseGraphic {
   constructor(x: number, y: number, width: number, height: number) {
-    super('test-shape', x, y, width, height); } draw(_ctx: CanvasRenderingContext2D): void { /* 测试用的空实现 */ } } /* 性能基准测试 - 根据实际环境调整阈值 */ describe('性能基准测试', () => {
+    super('test-shape', x, y, width, height); } draw(_ctx: CanvasRenderingContext2D): void { /* empty implementation for tests */ } } /* performance benchmarks - adjust thresholds to the actual environment */ describe('性能基准测试', () => {
   describe('图形操作性能', () => {
     it('should add 100 graphics fast', () => {
       const page = new BasePage();
@@ -24,7 +24,7 @@ class TestShape extends BaseGraphic {
       
       console.log('添加 100 个图形耗时: ${duration.toFixed(2)}ms');
       
-      expect(duration).toBeLessThan(500); // 调整为更合理的阈值
+      expect(duration).toBeLessThan(500); // adjusted to a more reasonable threshold
       expect(page.graphics.length).toBe(100);
     });
 
@@ -46,7 +46,7 @@ class TestShape extends BaseGraphic {
       
       console.log('删除 100 个图形耗时: ${duration.toFixed(2)}ms');
       
-      expect(duration).toBeLessThan(300); // 调整为更合理的阈值
+      expect(duration).toBeLessThan(300); // adjusted to a more reasonable threshold
     });
 
     it('should update graphic properties fast', () => {
@@ -67,7 +67,7 @@ class TestShape extends BaseGraphic {
       
       console.log('更新 100 次属性耗时: ${duration.toFixed(2)}ms');
       
-      expect(duration).toBeLessThan(300); // 调整为更合理的阈值
+      expect(duration).toBeLessThan(300); // adjusted to a more reasonable threshold
     });
   });
 
@@ -90,7 +90,7 @@ class TestShape extends BaseGraphic {
       
       console.log('添加 100 个和删除 100 个（增量历史）: ${duration.toFixed(2)}ms');
       
-      expect(duration).toBeLessThan(1000); // 调整为更合理的阈值
+      expect(duration).toBeLessThan(1000); // adjusted to a more reasonable threshold
     });
 
     it('should handle undo/redo efficiently', () => {
@@ -114,7 +114,7 @@ class TestShape extends BaseGraphic {
       
       console.log('执行 50 次 undo 和 50 次 redo: ${duration.toFixed(2)}ms');
       
-      expect(duration).toBeLessThan(500); // 调整为更合理的阈值
+      expect(duration).toBeLessThan(500); // adjusted to a more reasonable threshold
     });
   });
 
@@ -133,7 +133,7 @@ class TestShape extends BaseGraphic {
       
       console.log('BasePage 添加 100 个图形: ${duration.toFixed(2)}ms');
       
-      expect(duration).toBeLessThan(500); // 调整为更合理的阈值
+      expect(duration).toBeLessThan(500); // adjusted to a more reasonable threshold
     });
   });
 });

@@ -24,18 +24,18 @@ import {
 } from './wechat-auth.types';
 
 /**
- * 微信扫码登录业务服务
+ * WeChat scan-login business service
  *
- * 职责：
- *   1. 生成二维码（state + wechatUrl）
- *   2. 处理微信回调（真实模式）/ Mock 扫码（Mock 模式）
- *   3. 查找或创建用户，标记 state=confirmed
- *   4. confirmed 时下发 Token（一次性消费 state）
+ * Responsibilities:
+ *   1. Generate QR code (state + wechatUrl)
+ *   2. Handle WeChat callback (real mode) / Mock scan (Mock mode)
+ *   3. Find or create user, mark state=confirmed
+ *   4. Issue Token when confirmed (one-time consume state)
  *
- * Token 下发时机说明：
- *   不在 /callback 接口下发 Token，因为微信回调是服务器重定向，
- *   前端无法直接获取响应。改为在 /status 轮询接口检测到 confirmed 时下发 Cookie，
- *   前端拿到 user 后跳转，此时 setCookie 自然完成。
+ * Token issuance timing note:
+ *   Token is not issued at the /callback endpoint, because the WeChat callback is a server redirect
+ *   and the frontend cannot directly get the response. Instead, when the /status poll detects confirmed,
+ *   the Cookie is issued; the frontend jumps after getting user, and setCookie completes naturally.
  */
 @Injectable()
 export class WechatAuthService {
@@ -54,10 +54,10 @@ export class WechatAuthService {
     this.redirectUri =
       process.env.WECHAT_REDIRECT_URI ||
       'http://localhost:5173/api/v1/auth/wechat/callback';
-    this.stateTtlMs = 5 * 60 * 1000; // 5 分钟
+    this.stateTtlMs = 5 * 60 * 1000; // 5 minutes
   }
 
-  /** 生成二维码（state + wechatUrl） */
+  /** Generate QR code (state + wechatUrl) */
   async generateQrcode(clientMeta: {
     ip?: string;
     userAgent?: string;
@@ -89,7 +89,7 @@ export class WechatAuthService {
     };
   }
 
-  /** 查询扫码状态（前端轮询） */
+  /** Query scan status (frontend polls) */
   async getScanStatus(state: string): Promise<ScanStatusResponse> {
     const scanState = await this.stateService.get(state);
     if (!scanState) {
@@ -99,7 +99,7 @@ export class WechatAuthService {
     const now = Date.now();
     const remainingSeconds = Math.max(0, Math.floor((scanState.expiresAt - now) / 1000));
 
-    // confirmed 状态：查询用户信息返回给前端
+    // confirmed status: query user info and return to the frontend
     let user: ScanStatusResponse['user'];
     if (scanState.status === 'confirmed' && scanState.userId) {
       const userEntity = await this.userService.findById(scanState.userId);
@@ -118,15 +118,15 @@ export class WechatAuthService {
   }
 
   /**
-   * 微信回调处理（真实模式）
+   * WeChat callback handling (real mode)
    *
    * GET /auth/wechat/callback?code=CODE&state=STATE
-   * 流程：
-   *   1. 校验 state 存在且 status=pending
-   *   2. 标记为 scanned
-   *   3. 用 code 换 access_token + openid
-   *   4. 拉取用户信息
-   *   5. loginOrCreateUser → 标记 confirmed
+   * Flow:
+   *   1. Validate state exists and status=pending
+   *   2. Mark as scanned
+   *   3. Exchange code for access_token + openid
+   *   4. Pull user info
+   *   5. loginOrCreateUser -> mark confirmed
    */
   async handleCallback(code: string, state: string): Promise<void> {
     const scanState = await this.stateService.get(state);
@@ -139,7 +139,7 @@ export class WechatAuthService {
       );
     }
 
-    // 标记为已扫码（用户已确认前的中间态）
+    // Mark as scanned (intermediate state before user confirmation)
     await this.stateService.update(state, { status: 'scanned' });
 
     const tokenResp = await this.wechatApi.getAccessToken(code);
@@ -154,7 +154,7 @@ export class WechatAuthService {
   }
 
   /**
-   * Mock 模式模拟用户扫码确认
+   * Mock mode simulates a user confirming a scan
    *
    * POST /auth/wechat/mock-scan { state, action: 'confirm' | 'cancel' }
    */
@@ -179,10 +179,10 @@ export class WechatAuthService {
       return;
     }
 
-    // action=confirm：先标记 scanned，再走 loginOrCreateUser
+    // action=confirm: first mark scanned, then go through loginOrCreateUser
     await this.stateService.update(state, { status: 'scanned' });
 
-    // Mock 模式使用环境变量配置的默认 openid
+    // Mock mode uses the default openid configured via env var
     const mockOpenId =
       process.env.WECHAT_MOCK_DEFAULT_OPENID || 'mock_wechat_user_001';
     await this.loginOrCreateUser(state, {
@@ -194,16 +194,16 @@ export class WechatAuthService {
   }
 
   /**
-   * 查找或创建用户，并标记 state=confirmed
+   * Find or create user, and mark state=confirmed
    *
-   * 查找策略：
-   *   1. 按 wechatOpenId 查找
-   *   2. 未找到且 unionid 存在时，按 unionid 兜底查找（跨应用识别同一用户）
-   *   3. 仍未找到则创建新用户（默认 viewer 角色）
+   * Lookup strategy:
+   *   1. Look up by wechatOpenId
+   *   2. If not found and unionid exists, fall back to unionid lookup (identify same user across apps)
+   *   3. If still not found, create a new user (default viewer role)
    *
-   * Token 不在此处直接下发（service 层无法操作 Response），
-   * 而是存到 state 中（confirmed + userId），由 controller 在 /status 接口
-   * 检测到 confirmed 时调用 issueTokenForConfirmedScan 下发
+   * Token is not issued directly here (the service layer cannot touch the Response);
+   * instead it is stored in the state (confirmed + userId), and the controller calls
+   * issueTokenForConfirmedScan when /status detects confirmed to issue it
    */
   private async loginOrCreateUser(
     state: string,
@@ -215,11 +215,11 @@ export class WechatAuthService {
     let user = await this.userService.findByWechatOpenId(profile.wechatOpenId);
     let isNewUser = false;
 
-    // 按 openid 未找到时，尝试 unionid 兜底查找
+    // When not found by openid, try unionid fallback lookup
     if (!user && profile.wechatUnionId) {
       user = await this.userService.findByWechatUnionId(profile.wechatUnionId);
       if (user) {
-        // 已有 unionid 用户，补充 openid 并刷新资料
+        // Existing unionid user: fill in openid and refresh profile
         await this.userService.updateWechatProfile(user.id, {
           nickname: profile.nickname,
           avatarUrl: profile.avatarUrl,
@@ -228,7 +228,7 @@ export class WechatAuthService {
     }
 
     if (!user) {
-      // 创建新用户（默认 viewer）
+      // Create new user (default viewer)
       user = await this.userService.createWechatUser(profile);
       isNewUser = true;
       this.auditLogger.logSecurityEvent({
@@ -249,7 +249,7 @@ export class WechatAuthService {
         `[创建新用户] userId=${user.id} username=${user.username} wechatOpenId=${profile.wechatOpenId}`,
       );
     } else {
-      // 已有用户，刷新昵称/头像/unionId
+      // Existing user: refresh nickname/avatar/unionId
       await this.userService.updateWechatProfile(user.id, {
         nickname: profile.nickname,
         avatarUrl: profile.avatarUrl,
@@ -270,7 +270,7 @@ export class WechatAuthService {
       details: { isNewUser, wechatOpenId: profile.wechatOpenId },
     });
 
-    // 标记为 confirmed，存 userId。Token 由 /status 接口确认时下发
+    // Mark confirmed, store userId. Token issued by /status on confirmation
     await this.stateService.update(state, {
       status: 'confirmed',
       userId: user.id,
@@ -282,10 +282,10 @@ export class WechatAuthService {
   }
 
   /**
-   * 当 /status 接口检测到 status=confirmed 时，生成 Token 并返回 user
+   * When /status detects status=confirmed, generate Token and return user
    *
-   * 调用方（controller）负责 setAuthCookies
-   * 一次性消费：发完 token 后立即删除 state，防止重复领 token
+   * The caller (controller) is responsible for setAuthCookies
+   * One-time consume: after issuing the token, delete the state immediately to prevent duplicate token claims
    */
   async issueTokenForConfirmedScan(state: string): Promise<{
     accessToken: string;
@@ -311,7 +311,7 @@ export class WechatAuthService {
       role: user.role,
     });
 
-    // 一次性：发完 token 后删除 state，防止重复领 token
+    // One-time: delete state after issuing token, preventing duplicate token claims
     await this.stateService.delete(state);
 
     this.logger.log(

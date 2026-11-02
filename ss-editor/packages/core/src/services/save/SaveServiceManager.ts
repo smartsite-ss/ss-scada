@@ -5,8 +5,8 @@
 import { ISaveService, SaveServiceConfig, ProjectData, SaveStatus } from './types';
 
 /**
- * 保存服务管理器
- * 管理不同类型的保存服务实现
+ * Save service manager
+ * Manages different save-service implementations
  */
 export class SaveServiceManager {
   private service: ISaveService | null = null;
@@ -15,28 +15,28 @@ export class SaveServiceManager {
   private statusListeners: Set<(status: SaveStatus) => void> = new Set();
 
   /**
-   * 检查保存服务是否已初始化
+   * Check whether the save service is initialized
    */
   isInitialized(): boolean {
     return this.service !== null;
   }
 
   /**
-   * 获取当前保存状态
+   * Get the current save status
    */
   getStatus(): SaveStatus {
     return this.status;
   }
 
   /**
-   * 获取最后保存时间
+   * Get the last saved time
    */
   getLastSavedTime(): number | null {
     return this.lastSavedTime;
   }
 
   /**
-   * 注册保存状态监听器
+   * Register a save-status listener
    */
   onStatusChange(listener: (status: SaveStatus) => void): () => void {
     this.statusListeners.add(listener);
@@ -46,7 +46,7 @@ export class SaveServiceManager {
   }
 
   /**
-   * 初始化保存服务
+   * Initialize the save service
    */
   init(config: SaveServiceConfig, customService?: ISaveService): void {
     if (customService) {
@@ -73,7 +73,7 @@ export class SaveServiceManager {
   }
 
   /**
-   * 保存项目
+   * Save the project
    */
   async save(data: ProjectData): Promise<void> {
     if (!this.service) {
@@ -95,7 +95,7 @@ export class SaveServiceManager {
   }
 
   /**
-   * 加载项目
+   * Load the project
    */
   async load(): Promise<ProjectData | null> {
     if (!this.service) {
@@ -110,7 +110,7 @@ export class SaveServiceManager {
   }
 
   /**
-   * 删除保存数据
+   * Delete saved data
    */
   async delete(): Promise<void> {
     if (!this.service) {
@@ -121,7 +121,7 @@ export class SaveServiceManager {
   }
 
   /**
-   * 检查是否有已保存的数据
+   * Check whether saved data exists
    */
   async hasSavedData(): Promise<boolean> {
     if (!this.service) {
@@ -130,10 +130,10 @@ export class SaveServiceManager {
     return this.service.hasSavedData();
   }
 
-  // ==================== 内置服务实现 ====================
+  // ==================== Built-in service implementations ====================
 
   /**
-   * 创建 localStorage 服务
+   * Create the localStorage service
    */
   private createLocalService(): ISaveService {
     const STORAGE_KEY = 'scada-editor-project';
@@ -163,7 +163,7 @@ export class SaveServiceManager {
   }
 
   /**
-   * 创建 Mock 服务（仅用于演示）
+   * Create the mock service (demo only)
    */
   private createMockService(): ISaveService {
     let mockData: ProjectData | null = null;
@@ -171,7 +171,7 @@ export class SaveServiceManager {
     return {
       async save(data: ProjectData): Promise<void> {
         mockData = { ...data, savedAt: Date.now() };
-        // 模拟网络延迟
+        // Simulate network latency
         await new Promise(resolve => setTimeout(resolve, 500));
       },
 
@@ -191,7 +191,7 @@ export class SaveServiceManager {
   }
 
   /**
-   * 创建 Server 服务（预留接口）
+   * Create the server service (reserved interface)
    */
   private createServerService(apiBaseUrl: string): ISaveService {
     const createApiUrl = (path: string) => `${apiBaseUrl}${path}`;
@@ -240,7 +240,7 @@ export class SaveServiceManager {
   }
 
   /**
-   * 更新状态
+   * Update status
    */
   private updateStatus(status: SaveStatus): void {
     this.status = status;
@@ -249,6 +249,6 @@ export class SaveServiceManager {
 }
 
 /**
- * 全局单例
+ * Global singleton
  */
 export const saveServiceManager = new SaveServiceManager();

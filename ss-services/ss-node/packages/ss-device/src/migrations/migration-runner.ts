@@ -7,17 +7,17 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 /**
- * 数据库迁移运行器
- * 用于在生产环境中执行 SQL 迁移脚本
+ * Database migration runner
+ * Executes SQL migration scripts in production environments
  */
 @Injectable()
 export class MigrationRunner {
   private readonly logger = new Logger(MigrationRunner.name);
 
   /**
-   * 执行指定目录下的所有 SQL 迁移脚本
-   * @param migrationsDir 迁移脚本目录路径
-   * @param db 数据库实例（需支持 exec 方法）
+   * Execute all SQL migration scripts in the given directory
+   * @param migrationsDir migration-script directory path
+   * @param db database instance (must support the exec method)
    */
   async runMigrations(migrationsDir: string, db: any): Promise<void> {
     if (!fs.existsSync(migrationsDir)) {
@@ -35,7 +35,7 @@ export class MigrationRunner {
       return;
     }
 
-    // 创建迁移记录表
+    // Create the migration-record table
     await this.ensureMigrationTable(db);
 
     for (const file of files) {
@@ -44,10 +44,10 @@ export class MigrationRunner {
   }
 
   /**
-   * 执行单个迁移脚本
+   * Execute a single migration script
    */
   private async runMigration(migrationsDir: string, file: string, db: any): Promise<void> {
-    // 检查是否已执行
+    // Check whether it has already run
     const alreadyRun = await this.isMigrationRun(db, file);
     if (alreadyRun) {
       this.logger.debug(`Migration already executed: ${file}`);
@@ -70,7 +70,7 @@ export class MigrationRunner {
   }
 
   /**
-   * 确保迁移记录表存在
+   * Ensure the migration-record table exists
    */
   private async ensureMigrationTable(db: any): Promise<void> {
     const sql = `
@@ -83,7 +83,7 @@ export class MigrationRunner {
   }
 
   /**
-   * 检查迁移是否已执行
+   * Check whether a migration has already run
    */
   private async isMigrationRun(db: any, name: string): Promise<boolean> {
     try {
@@ -99,14 +99,14 @@ export class MigrationRunner {
   }
 
   /**
-   * 记录迁移已执行
+   * Record a migration as executed
    */
   private async recordMigration(db: any, name: string): Promise<void> {
     await this.execSql(db, `INSERT INTO "_migrations" ("name") VALUES (?)`, [name]);
   }
 
   /**
-   * 执行 SQL（多条语句分号分隔）
+   * Execute SQL (multiple statements separated by semicolons)
    */
   private async execSql(db: any, sql: string, params?: any[]): Promise<void> {
     return new Promise<void>((resolve, reject) => {
@@ -125,7 +125,7 @@ export class MigrationRunner {
   }
 
   /**
-   * 查询 SQL
+   * Query SQL
    */
   private async querySql(db: any, sql: string, params?: any[]): Promise<any[]> {
     return new Promise<any[]>((resolve, reject) => {

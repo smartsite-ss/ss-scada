@@ -88,7 +88,7 @@ export class DeviceImportExportService {
           rowData[h] = (values[idx] || '').trim();
         });
 
-        // 兼容旧导出文件：优先 deviceCode，回退 tid
+        // Legacy export-file compatibility: prefer deviceCode, fall back to tid
         const deviceCode = rowData['deviceCode'] || rowData['tid'];
         if (!deviceCode) {
           errors.push({ row, message: 'Missing deviceCode field' });
@@ -149,7 +149,7 @@ export class DeviceImportExportService {
       const row = i + 1;
       const item = jsonData[i];
       try {
-        // 兼容旧导出文件：优先 deviceCode，回退 tid
+        // Legacy export-file compatibility: prefer deviceCode, fall back to tid
         const deviceCode = (item as any).deviceCode || (item as any).tid;
         if (!deviceCode) {
           errors.push({ row, message: 'Missing deviceCode field' });

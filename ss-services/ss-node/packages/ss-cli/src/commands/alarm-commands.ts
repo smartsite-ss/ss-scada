@@ -3,17 +3,17 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * alarm-commands.ts — 报警管理命令
+ * alarm-commands.ts - alarm management commands
  *
- *   alarm list — 列出报警，支持按严重级别和确认状态过滤
- *   alarm get  — 查看报警详情
- *   alarm ack  — 确认报警
+ *   alarm list - list alarms, with filtering by severity and acknowledgment status
+ *   alarm get  - view alarm details
+ *   alarm ack  - acknowledge an alarm
  */
 
 import { ApiError } from '../core/ApiClient';
 import type { CommandParser } from '../core/CommandParser';
 
-/** 创建报警管理子命令组 */
+/** Create the alarm-management subcommand group */
 export function registerCommands(parser: CommandParser): void {
   const program = parser.getProgram();
 
@@ -87,7 +87,7 @@ export function registerCommands(parser: CommandParser): void {
     });
 }
 
-/** 从 API 响应中提取列表 */
+/** Extract the list from the API response */
 function extractList<T>(response: unknown): T[] {
   if (Array.isArray(response)) {
     return response as T[];
@@ -105,7 +105,7 @@ function extractList<T>(response: unknown): T[] {
   return [];
 }
 
-/** 格式化输出报警列表 */
+/** Format and print the alarm list */
 function printAlarmList(data: unknown): void {
   const list = extractList<Record<string, unknown>>(data);
   if (list.length === 0) {
@@ -124,7 +124,7 @@ function printAlarmList(data: unknown): void {
   console.table(rows);
 }
 
-/** 统一错误处理 */
+/** Unified error handling */
 function handleError(context: string, err: unknown): void {
   if (err instanceof ApiError) {
     console.error(`${context}: ${err.message}`);

@@ -38,7 +38,7 @@ export class OperationLogService {
     private readonly eventBusService: EventBusService,
   ) {}
 
-  /** 记录操作日志 */
+  /** Record an operation log */
   async record(entry: Partial<OperationLog>): Promise<OperationLog> {
     try {
       const operationLog = this.operationLogRepo.create({
@@ -60,7 +60,7 @@ export class OperationLogService {
     }
   }
 
-  /** 查询操作日志 */
+  /** Query operation logs */
   async query(
     params: OperationLogQuery,
   ): Promise<{ items: OperationLog[]; total: number; page: number; pageSize: number }> {
@@ -88,7 +88,7 @@ export class OperationLogService {
     return { items, total, page, pageSize };
   }
 
-  /** 操作统计 */
+  /** Operation statistics */
   async getStats(): Promise<OperationLogStats> {
     const allLogs = await this.operationLogRepo.find({ order: { createdAt: 'DESC' }, take: 10000 });
 
@@ -130,7 +130,7 @@ export class OperationLogService {
     };
   }
 
-  /** 清理过期日志（默认按环境变量 OPERATION_LOG_RETENTION_DAYS，可传参覆盖） */
+  /** Clean up expired logs (defaults to OPERATION_LOG_RETENTION_DAYS; overridable via parameter) */
   async cleanupExpired(retentionDays?: number): Promise<number> {
     const days = retentionDays ?? parseInt(process.env.OPERATION_LOG_RETENTION_DAYS || '365', 10);
     const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
@@ -141,14 +141,14 @@ export class OperationLogService {
     return result.affected || 0;
   }
 
-  /** 清空全部操作日志 */
+  /** Clear all operation logs */
   async cleanAll(): Promise<number> {
     const result = await this.operationLogRepo.delete({} as any);
     this.logger.log(`Cleaned all operation logs: ${result.affected || 0} entries removed`);
     return result.affected || 0;
   }
 
-  /** 获取单条操作日志 */
+  /** Get a single operation log */
   async findById(id: string): Promise<OperationLog | null> {
     return this.operationLogRepo.findOne({ where: { id } as any });
   }

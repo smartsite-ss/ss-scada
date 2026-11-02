@@ -26,18 +26,18 @@ export class LayoutManager {
 
     gridLayout(graphics: IGraphic[], config: GridLayoutConfig): void {
         const { columns, gap, startX, startY } = config;
-        
+
         graphics.forEach((graphic, index) => {
             const col = index % columns;
             const row = Math.floor(index / columns);
-            
+
             const width = graphic.config?.geometry?.width || 100;
             const height = graphic.config?.geometry?.height || 100;
-            
+
             const x = startX + col * (width + gap);
             const y = startY + row * (height + gap);
-            
-            // 使用 setPosition 或直接更新 config
+
+            // Use setPosition or update config directly
             if (graphic.setPosition) {
                 graphic.setPosition(x, y);
             } else if (graphic.config?.geometry) {

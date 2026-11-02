@@ -9,17 +9,17 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import { GalleryFormat, GalleryCategory, GalleryImage } from './gallery.types';
 
-/** 图库支持的图片扩展名 */
+/** Image extensions supported by the gallery */
 const IMAGE_EXTENSIONS = new Set(['.png', '.svg', '.gif', '.jpg', '.jpeg', '.webp']);
 
 /**
- * 图库服务 — 纯文件方案
+ * Gallery service — pure-file approach
  *
- * 存储模型：
- *   - 文件系统：${IMAGES_DIR}/{格式}/{分类}/{文件}（图元 PNG/SVG/GIF 图片资源）
+ * Storage model:
+ *   - File system: ${IMAGES_DIR}/{format}/{category}/{file} (widget PNG/SVG/GIF image resources)
  *
- * 不依赖数据库，人工增删文件后自动生效。
- * 图片访问统一走 GET /gallery/image 端点（res.sendFile），与知识库图片访问方式一致。
+ * No database dependency; manually added/removed files take effect automatically.
+ * Image access goes through the unified GET /gallery/image endpoint (res.sendFile), consistent with knowledge-base image access.
  */
 @Injectable()
 export class GalleryService implements OnModuleInit {
@@ -53,7 +53,7 @@ export class GalleryService implements OnModuleInit {
     return this.imagesRoot;
   }
 
-  /** 列出所有格式目录（第一层） */
+  /** List all format directories (first level) */
   async listFormats(): Promise<GalleryFormat[]> {
     const entries = await this.readDirSafe(this.imagesRoot);
     const formats: GalleryFormat[] = [];
@@ -69,7 +69,7 @@ export class GalleryService implements OnModuleInit {
     return formats;
   }
 
-  /** 列出指定格式下的分类目录（第二层） */
+  /** List category directories under a given format (second level) */
   async listCategories(format: string): Promise<GalleryCategory[]> {
     this.assertSafeName(format);
     const formatDir = path.join(this.imagesRoot, format);
@@ -87,7 +87,7 @@ export class GalleryService implements OnModuleInit {
     return categories;
   }
 
-  /** 列出指定分类下的图片文件（第三层） */
+  /** List image files under a given category (third level) */
   async listImages(format: string, category: string): Promise<GalleryImage[]> {
     this.assertSafeName(format);
     this.assertSafeName(category);
@@ -108,7 +108,7 @@ export class GalleryService implements OnModuleInit {
     return images;
   }
 
-  /** 上传图片到指定格式/分类，返回文件名 */
+  /** Upload an image to the given format/category, returning the file name */
   async uploadImage(
     buffer: Buffer,
     fileName: string,
@@ -127,7 +127,7 @@ export class GalleryService implements OnModuleInit {
     return safeName;
   }
 
-  /** 删除指定图片 */
+  /** Delete a given image */
   async deleteImage(format: string, category: string, fileName: string): Promise<void> {
     this.assertSafeName(format);
     this.assertSafeName(category);
@@ -138,14 +138,14 @@ export class GalleryService implements OnModuleInit {
     this.logger.log(`Image deleted: ${format}/${category}/${safeName}`);
   }
 
-  /** 解析图片绝对路径（供 controller res.sendFile 使用），含路径遍历防护 */
+  /** Resolve an image's absolute path (for the controller's res.sendFile), with path-traversal protection */
   resolveImagePath(format: string, category: string, fileName: string): string {
     this.assertSafeName(format);
     this.assertSafeName(category);
     const safeName = path.basename(fileName);
     if (!safeName || safeName !== fileName) throw new BadRequestException('Invalid file name');
     const abs = path.join(this.imagesRoot, format, category, safeName);
-    // 二次校验：确保解析后仍在图库根目录下
+    // Double check: ensure the resolved path is still under the gallery root
     const rootWithSep = this.imagesRoot.endsWith(path.sep)
       ? this.imagesRoot
       : this.imagesRoot + path.sep;
@@ -155,7 +155,7 @@ export class GalleryService implements OnModuleInit {
     return abs;
   }
 
-  // ==================== 私有方法 ====================
+  // ==================== Private methods ====================
 
   private buildImageUrl(format: string, category: string, fileName: string): string {
     const params = new URLSearchParams({ format, category, fileName });
@@ -177,7 +177,7 @@ export class GalleryService implements OnModuleInit {
     ).length;
   }
 
-  /** 校验格式/分类名不含路径分隔符与路径遍历字符 */
+  /** Validate that format/category names contain no path separators or traversal characters */
   private assertSafeName(name: string): void {
     if (
       !name ||
@@ -190,7 +190,7 @@ export class GalleryService implements OnModuleInit {
     }
   }
 
-  /** 上传文件名清理：仅保留中英文、数字、点、下划线、连字符 */
+  /** Uploaded file name sanitization: keeps only CJK/alphanumeric characters, dots, underscores and hyphens */
   private sanitizeFileName(fileName: string): string {
     const base = path.basename(fileName);
     return base.replace(/[^\u4e00-\u9fa5a-zA-Z0-9._-]/g, '_');

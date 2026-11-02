@@ -3,21 +3,21 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 脚本引擎 API 定义（兼容层）
+ * Script engine API definitions (compatibility layer)
  *
- * 本文件是向后兼容的包装层，所有数据源来自 rules/script-api-registry.ts。
- * 原有的 API_DEFINITIONS、ApiCategory 等导出保持不变，确保现有代码无需修改。
+ * This file is a backward-compatible wrapper; all data comes from rules/script-api-registry.ts.
+ * The original exports such as API_DEFINITIONS and ApiCategory remain unchanged, so existing code requires no modification.
  *
- * === 数据源 ===
- * 修改接口定义请直接更新 rules/script-api-registry.ts 中的 API_REGISTRY 数组，
- * 本文件会自动同步，无需手动修改。
+ * === Data source ===
+ * To modify interface definitions, update the API_REGISTRY array in rules/script-api-registry.ts directly;
+ * this file syncs automatically and needs no manual changes.
  *
- * === 更新指南 ===
- * 1. 新增 API → rules/script-api-registry.ts 的 API_REGISTRY 数组
- * 2. 修改签名/注释 → 更新 rules/script-api-registry.ts 中对应项
- * 3. 移除 API → 从 API_REGISTRY 数组中删除
- * 4. 新增示例 → rules/examples/ 目录下对应分类文件
- * 5. 无需修改 Vue 组件代码
+ * === Update guide ===
+ * 1. Add an API → the API_REGISTRY array in rules/script-api-registry.ts
+ * 2. Modify a signature/comment → update the corresponding entry in rules/script-api-registry.ts
+ * 3. Remove an API → delete it from the API_REGISTRY array
+ * 4. Add an example → the corresponding category file under rules/examples/
+ * 5. No Vue component code needs to be modified
  */
 
 import {
@@ -28,11 +28,11 @@ import {
 
 import { API_CATEGORY_LABELS } from '../rules/script-api-registry';
 
-// 重新导出类型和常量（保持向后兼容）
+// Re-export types and constants (kept for backward compatibility)
 export type { ApiCategory } from '../rules/script-api-registry';
 export { API_CATEGORY_LABELS } from '../rules/script-api-registry';
 
-/** API 方法定义（兼容旧格式） */
+/** API method definition (legacy format) */
 export interface ApiMethodDefinition {
   label: string;
   kind: 'function';
@@ -44,7 +44,7 @@ export interface ApiMethodDefinition {
   signature: string;
 }
 
-/** 从规则注册表生成兼容格式的 API 定义列表 */
+/** Generate API definition list in the legacy format from the rule registry */
 function buildApiDefinitions(): ApiMethodDefinition[] {
   return API_REGISTRY.map((api: ApiMethodDef) => ({
     label: `api.${api.name}`,
@@ -58,10 +58,10 @@ function buildApiDefinitions(): ApiMethodDefinition[] {
   }));
 }
 
-/** 所有 API 方法定义（兼容旧格式，26 个） */
+/** All API method definitions (legacy format, 26 entries) */
 export const API_DEFINITIONS: ApiMethodDefinition[] = buildApiDefinitions();
 
-/** 按分类分组获取 API 定义 */
+/** Get API definitions grouped by category */
 export function getApiDefinitionsByCategory(): Record<string, ApiMethodDefinition[]> {
   const groups: Record<string, ApiMethodDefinition[]> = {};
   for (const def of API_DEFINITIONS) {

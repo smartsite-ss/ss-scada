@@ -74,7 +74,7 @@ describe('DeviceService - 事件发布', () => {
   beforeEach(async () => {
     deviceRepo = createMockRepo<Device>();
     dataTagRepo = createMockRepo<DataTag>();
-    // findOne() 在 templateId 存在时会访问 tags.length，find 必须返回数组
+    // findOne() accesses tags.length when templateId exists; find must return an array
     dataTagRepo.find!.mockResolvedValue([]);
     deviceGroupRepo = createMockRepo<DeviceGroup>();
 
@@ -242,7 +242,7 @@ describe('DeviceService - 事件发布', () => {
     });
 
     it('无字段变更时不应发布事件', async () => {
-      // 使用无 templateId 的设备，避免空 DTO 触发 templateId 隐式置空
+      // Use a device without templateId, avoiding an empty DTO implicitly clearing templateId
       const deviceWithoutTemplate = { ...mockDevice, templateId: null };
       deviceRepo.findOne!.mockResolvedValue(deviceWithoutTemplate);
       deviceRepo.save!.mockResolvedValue(deviceWithoutTemplate);

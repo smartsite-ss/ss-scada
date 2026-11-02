@@ -170,7 +170,7 @@ describe('ZoomManager', () => {
 
   describe('scaleRange override', () => {
     it('calculateScaleByMode should clamp to custom maxScale', () => {
-      // fitWidth 原始 scale = 1600/800*100 = 200，超过自定义上限 150
+      // fitWidth raw scale = 1600/800*100 = 200, above the custom cap 150
       const result = ZoomManager.calculateScaleByMode(
         'fitWidth', 800, 600, 1600, 1200, defaultAutoFitConfig,
         { minScale: 20, maxScale: 150 },
@@ -179,7 +179,7 @@ describe('ZoomManager', () => {
     });
 
     it('calculateScaleByMode should clamp to custom minScale', () => {
-      // contain 原始 scale = 400/800*100 = 50，低于自定义下限 80
+      // contain raw scale = 400/800*100 = 50, below the custom floor 80
       const result = ZoomManager.calculateScaleByMode(
         'contain', 800, 600, 400, 300, defaultAutoFitConfig,
         { minScale: 80, maxScale: 300 },
@@ -188,7 +188,7 @@ describe('ZoomManager', () => {
     });
 
     it('calculateAutoFitScale should clamp to custom scaleRange in auto mode', () => {
-      // 宽屏 auto → fitWidth，原始 scale = 200，超过自定义上限 120
+      // Widescreen auto → fitWidth, raw scale = 200, above the custom cap 120
       const result = ZoomManager.calculateAutoFitScale(
         800, 600, 1600, 900, defaultAutoFitConfig,
         { minScale: 20, maxScale: 120 },
@@ -198,10 +198,10 @@ describe('ZoomManager', () => {
     });
 
     it('should fall back to internal defaults (10~200) when scaleRange omitted', () => {
-      // fitWidth 原始 200 恰好等于内部默认上限，不 clamp
+      // fitWidth raw 200 exactly equals the internal default cap, no clamping
       const result = ZoomManager.calculateScaleByMode('fitWidth', 800, 600, 1600, 1200, defaultAutoFitConfig);
       expect(result.scale).toBe(200);
-      // 超大屏：fitWidth 原始 400 → clamp 到内部默认上限 200
+      // Ultra-wide screen: fitWidth raw 400 → clamped to the internal default cap 200
       const oversized = ZoomManager.calculateScaleByMode('fitWidth', 800, 600, 3200, 1200, defaultAutoFitConfig);
       expect(oversized.scale).toBe(200);
     });

@@ -3,18 +3,18 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * RAG QA Service — P1-T08 RAG 问答服务
+ * RAG QA Service - P1-T08 RAG Q&A service
  *
- * 整合检索 + LLM 生成，提供端到端的知识库问答能力。
+ * Integrates retrieval + LLM generation to provide end-to-end knowledge-base Q&A.
  *
- * 流程：
- *   1. 用户提问
- *   2. RetrievalService 检索相关文档块
- *   3. 拼接上下文 + Prompt 模板
- *   4. LLM 生成回答（SSE 流式输出）
+ * Flow:
+ *   1. User asks a question
+ *   2. RetrievalService retrieves relevant document chunks
+ *   3. Concatenate context + Prompt template
+ *   4. LLM generates the answer (SSE streaming output)
  *
- * 用法:
- *   const answer = await ragQaService.ask('如何配置 Modbus TCP 设备？');
+ * Usage:
+ *   const answer = await ragQaService.ask('How to configure a Modbus TCP device?');
  */
 
 import { Injectable, Logger } from '@nestjs/common';
@@ -27,35 +27,35 @@ import { LLMSafetyGuardService } from './llm-safety-guard.service';
 import { ChatMessage, ChatStreamChunk } from './llm.types';
 import { FeatureFlagService, AI_FEATURE_FLAGS } from './feature-flag.service';
 
-/** RAG QA 请求 */
+/** RAG QA request */
 export interface RAGQuestionRequest {
-  /** 用户问题 */
+  /** User question */
   question: string;
-  /** 对话历史（可选） */
+  /** Conversation history (optional) */
   history?: ChatMessage[];
-  /** 检索参数覆盖 */
+  /** Retrieval param overrides */
   retrievalConfig?: Partial<RetrievalConfig>;
 }
 
-/** RAG QA 回答 */
+/** RAG QA answer */
 export interface RAGAnswer {
-  /** 回答文本 */
+  /** Answer text */
   answer: string;
-  /** 引用来源 */
+  /** Citation sources */
   sources: Array<{
     text: string;
     sourcePath: string;
     heading?: string;
   }>;
-  /** 执行时间（毫秒） */
+  /** Execution time (ms) */
   latencyMs: number;
 }
 
-/** RAG 知识库项 */
+/** RAG knowledge-base item */
 export interface KnowledgeItem {
-  /** 文档路径 */
+  /** Document path */
   path: string;
-  /** 文档内容 */
+  /** Document content */
   content: string;
 }
 
@@ -75,8 +75,8 @@ export class RAGQAService {
   ) {}
 
   /**
-   * 索引文档
-   * @param items — 知识库项列表
+   * Index documents
+   * @param items - knowledge-base item list
    */
   async indexDocuments(items: KnowledgeItem[]): Promise<{ chunks: number; errors: number }> {
     if (!this.featureFlag.isEnabled(AI_FEATURE_FLAGS.KB)) {
@@ -105,9 +105,9 @@ export class RAGQAService {
   }
 
   /**
-   * 问答（同步）
-   * @param req — 问答请求
-   * @returns 回答 + 引用来源
+   * Q&A (synchronous)
+   * @param req - Q&A request
+   * @returns answer + citation sources
    */
   async ask(req: RAGQuestionRequest): Promise<RAGAnswer> {
     const startTime = Date.now();
@@ -117,16 +117,16 @@ export class RAGQAService {
       throw new Error('知识库功能未启用（Feature Flag: ai.kb.enabled）');
     }
 
-    // 安全过滤
+    // Safety filter
     const safetyResult = this.safetyGuard.filterInput(req.question);
     if (!safetyResult.passed) {
       throw new Error(`输入被安全过滤拦截：${safetyResult.reason}`);
     }
 
-    // 检索
+    // Retrieve
     const results = await this.retrieval.retrieve(req.question, req.retrievalConfig);
 
-    // 净化上下文
+    // Sanitize context
     const chunkTexts = results.map((r) => r.chunk.content);
     const sanitized = this.safetyGuard.sanitizeContext(chunkTexts);
     if (!sanitized.passed || !sanitized.content) {
@@ -137,10 +137,10 @@ export class RAGQAService {
       };
     }
 
-    // 构建 Prompt
+    // Build prompt
     const messages = this.buildRAGPrompt(req.question, sanitized.content, results, req.history);
 
-    // LLM 生成
+    // LLM generation
     const response = await this.proxy.generate({ messages, stream: false }, 'chat');
 
     const latencyMs = Date.now() - startTime;
@@ -157,8 +157,8 @@ export class RAGQAService {
   }
 
   /**
-   * 问答（流式）
-   * @returns AsyncGenerator，每个 chunk 为 SSE 文本
+   * Q&A (streaming)
+   * @returns AsyncGenerator, each chunk is SSE text
    */
   async *askStream(req: RAGQuestionRequest): AsyncGenerator<ChatStreamChunk, void, unknown> {
     if (!this.featureFlag.isEnabled(AI_FEATURE_FLAGS.KB)) {
@@ -166,14 +166,14 @@ export class RAGQAService {
       return;
     }
 
-    // 安全过滤
+    // Safety filter
     const safetyResult = this.safetyGuard.filterInput(req.question);
     if (!safetyResult.passed) {
       yield { delta: `[ERROR] 输入被安全过滤拦截：${safetyResult.reason}`, done: true };
       return;
     }
 
-    // 检索
+    // Retrieve
     const results = await this.retrieval.retrieve(req.question, req.retrievalConfig);
     const chunkTexts = results.map((r) => r.chunk.content);
     const sanitized = this.safetyGuard.sanitizeContext(chunkTexts);
@@ -185,19 +185,19 @@ export class RAGQAService {
 
     const messages = this.buildRAGPrompt(req.question, sanitized.content, results, req.history);
 
-    // 流式生成
+    // Streaming generation
     yield* this.proxy.streamChat({ messages, stream: true }, 'chat');
   }
 
   /**
-   * 是否已索引
+   * Whether indexing has been done
    */
   isIndexed(): boolean {
     return this.indexed;
   }
 
   /**
-   * 重置索引
+   * Reset index
    */
   reset(): void {
     this.vectorStore.clear();
@@ -206,7 +206,7 @@ export class RAGQAService {
   }
 
   // ============================================================
-  //  Prompt 模板
+  //  Prompt template
   // ============================================================
 
   private buildRAGPrompt(

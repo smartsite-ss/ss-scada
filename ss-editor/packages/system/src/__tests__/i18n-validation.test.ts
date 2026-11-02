@@ -117,17 +117,17 @@ describe('i18n Validation', () => {
       const allowedEnglish = [
         'Smart Scada', 'Node', 'CPU', '0, 0\n50, 25\n100, 100',
         'Modbus TCP', 'Modbus RTU', 'OPC UA', 'MQTT', 'Siemens S7', 'TID', 'unitId',
-        // 版本号/文件名/数据库名等技术标识符
+        // Technical identifiers such as version numbers / file names / database names
         '1.0.0', 'projectinfo.json', 'system.db', 'event.db',
-        // OPC UA 安全策略名称
+        // OPC UA security policy names
         'Basic128Rsa15', 'Basic256', 'Basic256Sha256',
-        // 协议/技术名称
+        // Protocol / technology names
         'WebSocket', 'JSONPath', 'InfluxDB', 'PDF', 'Excel',
-        // 语言名称（语言切换器中显示）
+        // Language names (shown in the language switcher)
         'English',
-        // 通用缩写/单位
+        // Common abbreviations / units
         'IP', 'ID', 'MB', 'ENV', 'URL', 'User-Agent',
-        // WS 监控/系统配置中的技术术语
+        // Technical terms in WS monitoring / system configuration
         'Socket ID', 'i18n Key', 'Token', 'Bucket', 'API Key',
       ];
       const unallowed = pureEnglishValues.filter(v => !allowedEnglish.includes(v));

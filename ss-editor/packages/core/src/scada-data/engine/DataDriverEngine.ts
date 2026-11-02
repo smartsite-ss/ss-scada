@@ -106,7 +106,7 @@ export class DataDriverEngine {
     this._throttleTimestamps.set(graphicId, now);
 
     try {
-      // 统一通过 ScriptEngine.executeDriverScript 执行用户脚本，启用沙箱隔离
+      // Execute the user script uniformly via ScriptEngine.executeDriverScript, with sandbox isolation enabled
       ScriptEngine.getInstance().executeDriverScript(driver.script, _data, _allData, _graphic, api as unknown as Record<string, unknown>);
 
       const output: ScriptAPIOutput = {
@@ -188,8 +188,8 @@ export class DataDriverEngine {
       return {};
     }
 
-    // 值返回型 driver 脚本：通过 executeFilterScript 执行，沙箱内 value/data 同名注入，
-    // 脚本返回 { value, properties, styles, animation, quality, alarm, triggerAction } 等
+    // Value-returning driver script: executed via executeFilterScript, sandbox injects value/data
+    // under the same name; the script returns { value, properties, styles, animation, quality, alarm, triggerAction }, etc.
     const result = ScriptEngine.getInstance().executeFilterScript(script, value, context);
     return (result ?? {}) as ScriptOutput;
   }

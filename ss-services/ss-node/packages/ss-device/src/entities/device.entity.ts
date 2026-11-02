@@ -9,12 +9,12 @@ import { ProjectScopedEntity } from '@ss-node/ss-core';
 @Entity('dev_devices')
 @Unique(['projectId', 'deviceCode'])
 export class Device extends ProjectScopedEntity {
-  // DB 列名 'device_code'（策略 B，与 TS 属性 deviceCode 语义对齐）
+  // DB column name 'device_code' (Strategy B, semantically aligned with the TS property deviceCode)
   @Column({ name: 'device_code', type: 'varchar', length: 64, nullable: true })
   @Index()
   deviceCode: string;
 
-  // DB 列名 'device_name'（策略 B，与 TS 属性 deviceName 语义对齐）
+  // DB column name 'device_name' (Strategy B, semantically aligned with the TS property deviceName)
   @Column({ name: 'device_name' })
   deviceName: string;
 

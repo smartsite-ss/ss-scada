@@ -8,28 +8,28 @@ import { StructuredLogger } from '@ss-node/ss-core';
 import { INotificationChannel, NotificationPayload } from './notification-channel.interface';
 
 /**
- * 系统配置服务的结构化类型（避免直接导入 ss-system 造成循环依赖与测试加载问题）
+ * Structured types for the system-config service (avoid a direct ss-system import that would cause circular deps and test-load issues)
  */
 export interface SystemConfigServiceLike {
   get(key: string): Promise<string | null>;
 }
 
 /**
- * 语音播报（TTS）服务提供商类型
+ * Voice-broadcast (TTS) service provider type
  */
 export type TtsProvider = 'aliyun';
 
 /**
- * TTS 语音播报通知通道
+ * TTS voice-broadcast notification channel
  *
- * 支持阿里云语音通知（SingleCallByTts）。
- * 所需系统配置：
+ * Supports Aliyun voice notification (SingleCallByTts).
+ * Required system config:
  * - TTS_PROVIDER: 'aliyun'
  * - TTS_API_KEY: AccessKeyId
  * - TTS_API_SECRET: AccessKeySecret
- * - TTS_CALLED_NUMBER: 主叫号码（可选，默认使用目标号码）
+ * - TTS_CALLED_NUMBER: caller number (optional, defaults to the target number)
  *
- * 不可用时优雅降级（仅记录日志），不影响报警主流程。
+ * Degrades gracefully when unavailable (logs only), without affecting the main alarm flow.
  */
 @Injectable()
 export class TtsNotificationChannel implements INotificationChannel {
@@ -46,7 +46,7 @@ export class TtsNotificationChannel implements INotificationChannel {
   }
 
   /**
-   * 发送语音通知（接口实现）
+   * Send a voice notification (interface implementation)
    */
   async send(targets: string[], payload: NotificationPayload): Promise<boolean> {
     const message = this.buildTtsMessage(payload);
@@ -54,16 +54,16 @@ export class TtsNotificationChannel implements INotificationChannel {
   }
 
   /**
-   * 拨打语音电话并播报消息
-   * @param to 被叫号码列表
-   * @param message 播报内容
+   * Place a voice call and broadcast the message
+   * @param to called-number list
+   * @param message broadcast content
    */
   async call(to: string[], message: string): Promise<boolean> {
     return this.callInternal(to, message, undefined);
   }
 
   /**
-   * 构建 TTS 播报消息
+   * Build the TTS broadcast message
    */
   private buildTtsMessage(payload: NotificationPayload): string {
     const levelLabel = this.getLevelLabel(payload.level);
@@ -72,7 +72,7 @@ export class TtsNotificationChannel implements INotificationChannel {
   }
 
   /**
-   * 获取报警级别中文标签
+   * Get the alarm severity label
    */
   private getLevelLabel(level: string): string {
     const labels: Record<string, string> = {
@@ -85,7 +85,7 @@ export class TtsNotificationChannel implements INotificationChannel {
   }
 
   /**
-   * 实际拨打逻辑
+   * Actual call logic
    */
   private async callInternal(
     phones: string[],
@@ -135,8 +135,8 @@ export class TtsNotificationChannel implements INotificationChannel {
   }
 
   /**
-   * 阿里云语音 TTS 拨打（RPC 风格，HMAC-SHA1 签名）
-   * 使用 SingleCallByTts 接口逐个拨打
+   * Aliyun voice TTS call (RPC style, HMAC-SHA1 signature)
+   * Uses the SingleCallByTts API to call each number
    */
   private async callViaAliyun(params: {
     apiKey: string;
@@ -206,7 +206,7 @@ export class TtsNotificationChannel implements INotificationChannel {
   }
 
   /**
-   * 阿里云 RPC 签名算法（HMAC-SHA1 + Base64）
+   * Aliyun RPC signature algorithm (HMAC-SHA1 + Base64)
    */
   private signAliyunRpc(params: Record<string, string>, secret: string): string {
     const sortedKeys = Object.keys(params).sort();
@@ -221,7 +221,7 @@ export class TtsNotificationChannel implements INotificationChannel {
   }
 
   /**
-   * 阿里云 RFC 3986 百分号编码
+   * Aliyun RFC 3986 percent-encoding
    */
   private percentEncode(value: string): string {
     return encodeURIComponent(value)
@@ -231,7 +231,7 @@ export class TtsNotificationChannel implements INotificationChannel {
   }
 
   /**
-   * 构建查询字符串（用于阿里云 GET 请求）
+   * Build the query string (for Aliyun GET requests)
    */
   private buildQueryString(params: Record<string, string>): string {
     return Object.entries(params)

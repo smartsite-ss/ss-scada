@@ -316,12 +316,12 @@ describe('ss-cli — ApiClient (core/ApiClient.ts)', () => {
 
     it('TC-API-004-03: should compute Content-Length correctly for multi-byte UTF-8', async () => {
       const client = new ApiClient({ baseUrl: 'http://localhost:4000' });
-      // '中' is 3 bytes in UTF-8; JSON string "中" has 5 bytes: "中"
+      // A CJK char is 3 bytes in UTF-8; a JSON string literal for it is 5 bytes (2 quotes + 3 bytes)
       const promise = client.post('/items', { name: '中' });
       await Promise.resolve();
       const entry = capturedHttp[0];
       const headers = entry.options.headers as Record<string, string>;
-      // '{"name":"中"}' = 9 chars but 11 bytes (中 = 3 bytes)
+      // A JSON '{\"name\":\"<CJK>\"}' is 9 chars but 11 bytes (<CJK> = 3 bytes)
       const expectedBytes = Buffer.byteLength(JSON.stringify({ name: '中' }));
       expect(headers['Content-Length']).toBe(String(expectedBytes));
       flushResponse(entry, 201, '{}');

@@ -2,7 +2,7 @@
 // https://smartsite.top/
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
-/** 设备变量选择器选中的标签变量（供各系统插件的变量绑定配置复用） */
+/** Tag variables selected by the device variable selector (reused by variable binding configs of system plugins) */
 export interface SelectableVariable {
   deviceId: string;
   deviceCode: string;
@@ -10,8 +10,8 @@ export interface SelectableVariable {
   tagId: string;
   tagName: string;
   dataType: string;
-  /** 标签变量单位（DataTag.unit 带出） */
+  /** Tag variable unit (carried from DataTag.unit) */
   unit?: string;
-  /** 标签变量小数位（DataTag.decimalPlaces 带出） */
+  /** Tag variable decimal places (carried from DataTag.decimalPlaces) */
   decimalPlaces?: number;
 }

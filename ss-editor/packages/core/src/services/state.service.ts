@@ -2,12 +2,12 @@
 // https://smartsite.top/
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
-// 状态管理服务，用于优化状态更新和管理
+// State management service for optimized state updates and management
 import * as StorageService from './storage.service';
 import { ProjectMigration } from '@scada-editor/plugin-sdk';
 import type { SchemaMigration } from '@scada-editor/plugin-sdk';
 
-// 状态管理服务
+// State management service
 export class StateService {
   private static instance: StateService;
   private graphicStore: any = null;
@@ -16,7 +16,7 @@ export class StateService {
   private schemaMigrations: Record<string, SchemaMigration[]> = {};
   private inEditMode: boolean = false;
 
-  // 单例模式
+  // Singleton pattern
   public static getInstance(): StateService {
     if (!StateService.instance) {
       StateService.instance = new StateService();
@@ -24,9 +24,9 @@ export class StateService {
     return StateService.instance;
   }
 
-  // 初始化状态服务
+  // Initialize the state service
   public async init() {
-    // 延迟获取 store 实例，确保 Pinia 已经初始化
+    // Lazily get store instances to ensure Pinia is initialized
     const { useGraphicStore } = await import('../store/graphic.store');
     const { usePageStore } = await import('../store/page.store');
     this.graphicStore = useGraphicStore();
@@ -35,17 +35,17 @@ export class StateService {
     this.setupAutoSave();
   }
 
-  // 设置编辑态标志
+  // Set the edit-mode flag
   public setEditMode(isEdit: boolean) {
     this.inEditMode = isEdit;
   }
 
-  // 获取编辑态标志
+  // Get the edit-mode flag
   public getEditMode(): boolean {
     return this.inEditMode;
   }
 
-  // 设置自动保存
+  // Set up auto-save
   private setupAutoSave() {
     const settings = StorageService.loadSettings();
     if (settings.autoSave) {
@@ -53,7 +53,7 @@ export class StateService {
     }
   }
 
-  // 开始自动保存
+  // Start auto-save
   public startAutoSave(interval: number) {
     if (this.autoSaveInterval) {
       clearInterval(this.autoSaveInterval);
@@ -64,7 +64,7 @@ export class StateService {
     }, interval);
   }
 
-  // 停止自动保存
+  // Stop auto-save
   public stopAutoSave() {
     if (this.autoSaveInterval) {
       clearInterval(this.autoSaveInterval);
@@ -72,14 +72,14 @@ export class StateService {
     }
   }
 
-  // 检查 store 是否初始化
+  // Check whether stores are initialized
   private checkStoresInitialized() {
     if (!this.graphicStore || !this.pageStore) {
       throw new Error('StateService not initialized. Call init() first.');
     }
   }
 
-  // 自动保存
+  // Auto save
   private autoSave() {
     this.checkStoresInitialized();
     if (!this.inEditMode) return;
@@ -92,7 +92,7 @@ export class StateService {
     }
   }
 
-  // 保存项目
+  // Save project
   public saveProject(name: string) {
     this.checkStoresInitialized();
     const project = {
@@ -106,13 +106,13 @@ export class StateService {
     projects.push(project);
     StorageService.saveProjects(projects);
 
-    // 清除自动保存
+    // Clear auto-save
     StorageService.clearAutoSave();
 
     return project;
   }
 
-  // 加载项目
+  // Load project
   public loadProject(projectIndex: number) {
     this.checkStoresInitialized();
     const projects = StorageService.loadProjects();
@@ -128,7 +128,7 @@ export class StateService {
     return true;
   }
 
-  // 删除项目
+  // Delete project
   public deleteProject(projectIndex: number) {
     this.checkStoresInitialized();
     const projects = StorageService.loadProjects();
@@ -140,7 +140,7 @@ export class StateService {
     return true;
   }
 
-  // 保存模板
+  // Save template
   public saveTemplate(name: string) {
     this.checkStoresInitialized();
     if (
@@ -162,7 +162,7 @@ export class StateService {
     return template;
   }
 
-  // 应用模板
+  // Apply template
   public async applyTemplate(templateIndex: number) {
     this.checkStoresInitialized();
     const templates = StorageService.loadTemplates();
@@ -176,14 +176,14 @@ export class StateService {
 
     template.graphics.forEach((graphicData: any) => {
       const graphic = GraphicFactory.createGraphicFromJSON(graphicData);
-      // 调整位置，避免重叠
+      // Offset position to avoid overlap
       const { x, y } = graphic.getPosition();
       graphic.setPosition(x + 20, y + 20);
       this.pageStore.currentPage!.graphics.push(graphic);
     });
   }
 
-  // 批量操作优化
+  // Batch operation optimization
   public batchOperation(operations: Array<{ type: string; payload: any }>) {
     this.checkStoresInitialized();
     this.graphicStore.startBatchOperation();
@@ -224,7 +224,7 @@ export class StateService {
     }
   }
 
-  // 导出项目
+  // Export project
   public exportProject(): string {
     this.checkStoresInitialized();
     const project = {
@@ -235,7 +235,7 @@ export class StateService {
     return JSON.stringify(project, null, 2);
   }
 
-  // 导入项目
+  // Import project
   public importProject(jsonData: string): boolean {
     this.checkStoresInitialized();
     try {
@@ -258,11 +258,11 @@ export class StateService {
     return { ...this.schemaMigrations };
   }
 
-  // 清理状态
+  // Cleanup state
   public cleanup() {
     this.stopAutoSave();
   }
 }
 
-// 导出单例实例
+// Export singleton instance
 export const stateService = StateService.getInstance();

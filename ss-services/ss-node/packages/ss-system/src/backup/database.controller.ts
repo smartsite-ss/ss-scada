@@ -15,7 +15,7 @@ import { JwtAuthGuard, RolesGuard, Roles, UserRole } from '@ss-node/ss-core';
 export class DatabaseController {
   constructor(private readonly databaseService: DatabaseService) {}
 
-  // ==================== 数据库状态 ====================
+  // ==================== Database status ====================
 
   @Get('status')
   @ApiOperation({ summary: '获取所有数据库运行状态' })
@@ -35,7 +35,7 @@ export class DatabaseController {
     return this.databaseService.getProjectDatabasesStatus();
   }
 
-  // ==================== 完整性检查 ====================
+  // ==================== Integrity check ====================
 
   @Post('integrity-check')
   @ApiOperation({ summary: '系统数据库完整性检查' })
@@ -49,7 +49,7 @@ export class DatabaseController {
     return this.databaseService.checkProjectIntegrity(projectName);
   }
 
-  // ==================== 空间回收 ====================
+  // ==================== Space reclaim ====================
 
   @Post('vacuum')
   @ApiOperation({ summary: '系统数据库 VACUUM 空间回收' })
@@ -63,7 +63,7 @@ export class DatabaseController {
     return this.databaseService.vacuumProject(projectName);
   }
 
-  // ==================== 清空表数据 ====================
+  // ==================== Truncate table data ====================
 
   @Post('clear-events/:projectName')
   @ApiOperation({ summary: '清空项目告警事件表（alm_alarm_records）' })

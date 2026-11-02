@@ -3,139 +3,139 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 采集插件通用类型定义
+ * Common type definitions for collection plugins
  */
 
-/** 数据质量等级 */
+/** Data quality level */
 export type Quality = 'good' | 'uncertain' | 'bad';
 
-/** 值变换配置 */
+/** Value transform config */
 export interface TransformConfig {
-  /** 缩放系数，默认 1 */
+  /** Scale factor, default 1 */
   scale?: number;
-  /** 偏移量，默认 0 */
+  /** Offset, default 0 */
   offset?: number;
-  /** 小数精度，默认 2 */
+  /** Decimal precision, default 2 */
   precision?: number;
 }
 
-/** 采集读取结果（统一接口） */
+/** Collection read result (unified interface) */
 export interface CollectorReadResult {
   tagId: string;
   value: any;
-  /** 原始未变换值（可选，用于调试和审计） */
+  /** Raw untransformed value (optional, for debugging and auditing) */
   rawValue?: any;
   timestamp: Date;
   quality: Quality;
   error?: string;
 }
 
-/** 通道校验错误项 */
+/** Channel validation error item */
 export interface FieldError {
   field: string;
   message: string;
 }
 
-/** 采集器基础连接配置（推荐各协议 Config 继承） */
+/** Collector base connection config (recommended base for each protocol's Config) */
 export interface BaseConnectionConfig {
-  /** 请求超时（ms） */
+  /** Request timeout (ms) */
   timeout?: number;
-  /** 重连间隔（ms） */
+  /** Reconnect interval (ms) */
   reconnectInterval?: number;
 }
 
-/** 采集器基础设备配置（推荐各协议 DeviceConfig 继承） */
+/** Collector base device config (recommended base for each protocol's DeviceConfig) */
 export interface BaseDeviceConfig extends BaseConnectionConfig {
-  /** 设备 ID */
+  /** Device ID */
   id: string;
-  /** 连接参数 */
+  /** Connection parameters */
   connection: Record<string, any>;
 }
 
 // ============================================================================
-// 协议适配器接口（2026-07-17 从 ss-core 迁移至 ss-collector-sdk）
+// Protocol adapter interface (migrated from ss-core to ss-collector-sdk on 2026-07-17)
 // ============================================================================
 
-/** 通道校验错误项（已存在于本文件，保持原定义） */
-// FieldError 已在上方定义，此处不重复
+/** Channel validation error item (already defined in this file, keep the original definition) */
+// FieldError is already defined above; not repeated here
 
-/** 通道配置校验结果 */
+/** Channel config validation result */
 export interface ChannelValidationResult {
   valid: boolean;
   errors: FieldError[];
 }
 
 /**
- * 设备上下文 — connect() 时传入，携带设备完整信息。
+ * Device context - passed in at connect(), carries the complete device information.
  *
- * 从 Device 实体映射而来，是纯数据对象（无 ORM 元数据），
- * 可安全地跨 worker_thread / child_process 序列化传递。
+ * Mapped from the Device entity; it is a plain data object (no ORM metadata),
+ * safe to serialize and pass across worker_thread / child_process.
  */
 export interface IDeviceContext {
-  /** 设备 ID (UUID) */
+  /** Device ID (UUID) */
   id: string;
-  /** 设备编码 (项目内唯一) */
+  /** Device code (unique within the project) */
   deviceCode?: string;
-  /** 设备名称 */
+  /** Device name */
   name: string;
-  /** 协议标识 (如 'modbus_tcp', 'virtual') */
+  /** Protocol identifier (e.g. 'modbus_tcp', 'virtual') */
   protocol: string;
-  /** 驱动名称 */
+  /** Driver name */
   driver?: string;
-  /** 连接配置 (协议特有：host/port/unitId 等) */
+  /** Connection config (protocol-specific: host/port/unitId, etc.) */
   connection: Record<string, any>;
-  /** 采集周期 (ms) */
+  /** Collection interval (ms) */
   scanRate?: number;
-  /** 离线周期 (ms) */
+  /** Offline interval (ms) */
   offlinePeriod?: number;
-  /** 设备模板 ID */
+  /** Device template ID */
   templateId?: string;
-  /** 项目 ID */
+  /** Project ID */
   projectId?: string;
 }
 
 /**
- * 标签上下文 — readTag()/writeTag() 时传入，携带变量完整信息。
+ * Tag context - passed in at readTag()/writeTag(), carries the complete variable information.
  *
- * 从 DataTag 实体映射而来，是纯数据对象。
+ * Mapped from the DataTag entity; it is a plain data object.
  */
 export interface ITagContext {
-  /** 标签 ID */
+  /** Tag ID */
   id: string;
-  /** 标签名称 */
+  /** Tag name */
   name: string;
-  /** 协议地址 (如 Modbus 寄存器地址) */
+  /** Protocol address (e.g. Modbus register address) */
   address: string;
-  /** 数据类型 */
+  /** Data type */
   dataType: string;
-  /** 缩放系数 */
+  /** Scale factor */
   scale?: number;
-  /** 偏移量 */
+  /** Offset */
   offset?: number;
-  /** 采集周期 (ms) */
+  /** Collection interval (ms) */
   scanRate?: number;
-  /** 单位 */
+  /** Unit */
   unit?: string;
-  /** 描述 */
+  /** Description */
   description?: string;
-  /** 设备 ID */
+  /** Device ID */
   deviceId?: string;
-  /** 设备名称 (用于日志) */
+  /** Device name (for logging) */
   deviceName?: string;
-  /** 项目 ID */
+  /** Project ID */
   projectId?: string;
-  /** 最大重试次数 */
+  /** Maximum retry count */
   maxRetries?: number;
-  /** 读写方向 */
+  /** Read/write direction */
   direction?: 'read' | 'write' | 'read-write';
-  /** 额外协议特有配置 (如 S7 的 dbNumber/byteOffset/bitOffset) */
+  /** Extra protocol-specific config (e.g. S7's dbNumber/byteOffset/bitOffset) */
   [key: string]: any;
 }
 
 /**
- * 协议适配器接口 — 所有采集插件必须实现此接口。
+ * Protocol adapter interface - all collection plugins must implement this interface.
  *
- * 定义了连接管理、标签读写、通道校验、生命周期钩子等标准方法。
+ * Defines standard methods for connection management, tag read/write, channel validation, lifecycle hooks, etc.
  */
 export interface IProtocolAdapter {
   connect(device: IDeviceContext): Promise<any>;
@@ -143,19 +143,19 @@ export interface IProtocolAdapter {
   readTag(client: any, tag: ITagContext): Promise<{ tagId: string; value: any; timestamp: Date }>;
   writeTag(client: any, tag: ITagContext, value: any): Promise<void>;
 
-  /** 校验通道配置 — 协议特有语义校验（IP格式、端口范围、连通性等） */
+  /** Validate channel config - protocol-specific semantic validation (IP format, port range, connectivity, etc.) */
   validateChannelConfig(config: Record<string, any>): Promise<ChannelValidationResult>;
 
   /**
-   * 插件激活时调用（可选）
-   * 用于插件自身的初始化：启动连接池、加载驱动、注册内部状态等。
-   * 与设备是否加载无关 — 即使没有设备也会调用。
+   * Called when the plugin is activated (optional)
+   * Used for the plugin's own initialization: start connection pool, load driver, register internal state, etc.
+   * Independent of whether devices are loaded - called even when there are no devices.
    */
   onActivate?(): Promise<void> | void;
 
   /**
-   * 插件停用时调用（可选）
-   * 用于清理资源：关闭连接池、释放驱动、注销状态等。
+   * Called when the plugin is deactivated (optional)
+   * Used to release resources: close connection pool, free driver, unregister state, etc.
    */
   onDeactivate?(): Promise<void> | void;
 }

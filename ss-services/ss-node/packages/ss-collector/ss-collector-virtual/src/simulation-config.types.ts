@@ -2,18 +2,18 @@
 // https://smartsite.top/
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
-/** 仿真模式 */
+/** Simulation mode */
 export type SimulationMode = 'fixed' | 'range' | 'enum' | 'bool' | 'string' | 'fault_injection';
 
-/** 变量级仿真配置 */
+/** Variable-level simulation config */
 export interface VariableSimulationConfig {
-  /** 是否启用仿真，默认 false */
+  /** Whether simulation is enabled, default false */
   enabled: boolean;
-  /** 仿真模式 */
+  /** Simulation mode */
   mode: SimulationMode;
-  /** 更新间隔（秒），默认 1.0 */
+  /** Update interval (seconds), default 1.0 */
   updateIntervalSec: number;
-  /** 模式参数 */
+  /** Mode parameters */
   params:
     | FixedValueParams
     | RangeValueParams
@@ -23,78 +23,78 @@ export interface VariableSimulationConfig {
     | FaultInjectionParams;
 }
 
-// ============== 模式参数定义 ==============
+// ============== Mode parameter definitions ==============
 
-/** 固定值参数 */
+/** Fixed-value parameters */
 export interface FixedValueParams {
-  /** 固定输出的值 */
+  /** The fixed output value */
   value: number;
 }
 
-/** 范围可变值参数 */
+/** Range variable-value parameters */
 export interface RangeValueParams {
-  /** 最小值 */
+  /** Minimum value */
   min: number;
-  /** 最大值 */
+  /** Maximum value */
   max: number;
-  /** 变化模式 */
+  /** Change mode */
   pattern: 'random_walk' | 'sine' | 'sawtooth' | 'ramp' | 'random';
-  /** 变化步长（random_walk/ramp 有效） */
+  /** Change step (effective for random_walk/ramp) */
   step?: number;
-  /** 正弦周期（秒），仅 sine 有效，默认 60 */
+  /** Sine period (seconds), only effective for sine, default 60 */
   period?: number;
-  /** 随机噪声比例（0-1），仅 sine/ramp 有效，默认 0 */
+  /** Random noise ratio (0-1), only effective for sine/ramp, default 0 */
   noiseLevel?: number;
 }
 
-/** 枚举值参数 */
+/** Enum-value parameters */
 export interface EnumValueParams {
-  /** 枚举值列表 */
+  /** Enum value list */
   values: number[];
-  /** 切换模式 */
+  /** Switch mode */
   switchMode: 'sequential' | 'random';
-  /** 顺序切换时每次切换的步数（默认 1） */
+  /** Step count per switch in sequential mode (default 1) */
   stepSize?: number;
 }
 
-/** 布尔值参数 */
+/** Boolean-value parameters */
 export interface BoolParams {
-  /** 切换模式 */
+  /** Switch mode */
   switchMode: 'toggle' | 'random' | 'fixed';
-  /** 固定值（仅 fixed 模式），默认 false */
+  /** Fixed value (fixed mode only), default false */
   fixedValue?: boolean;
-  /** 翻转间隔（秒），仅 toggle 模式，默认 5 */
+  /** Toggle interval (seconds), toggle mode only, default 5 */
   toggleIntervalSec?: number;
-  /** 为 true 的概率（0-1），仅 random 模式，默认 0.5 */
+  /** Probability of being true (0-1), random mode only, default 0.5 */
   trueProbability?: number;
 }
 
-/** 字符串参数 */
+/** String parameters */
 export interface StringParams {
-  /** 字符串列表 */
+  /** String list */
   values: string[];
-  /** 切换模式 */
+  /** Switch mode */
   switchMode: 'sequential' | 'random' | 'fixed';
-  /** 切换间隔（秒），仅 sequential/random 模式，默认 10 */
+  /** Switch interval (seconds), sequential/random mode only, default 10 */
   switchIntervalSec?: number;
 }
 
-/** 故障注入参数 */
+/** Fault-injection parameters */
 export interface FaultInjectionParams {
-  /** 故障场景 */
+  /** Fault scenario */
   scenario: 'error' | 'timeout' | 'slow_rise' | 'spike';
-  /** 错误概率（0-1），仅 error 场景 */
+  /** Error probability (0-1), error scenario only */
   errorRate?: number;
-  /** 超时概率（0-1），仅 timeout 场景 */
+  /** Timeout probability (0-1), timeout scenario only */
   timeoutRate?: number;
-  /** 上升速率（每秒），仅 slow_rise 场景 */
+  /** Rise rate (per second), slow_rise scenario only */
   riseRatePerSec?: number;
-  /** 噪声水平（0-1），仅 slow_rise 场景 */
+  /** Noise level (0-1), slow_rise scenario only */
   noiseLevel?: number;
-  /** 尖峰概率（0-1），仅 spike 场景 */
+  /** Spike probability (0-1), spike scenario only */
   spikeRate?: number;
-  /** 尖峰幅度，仅 spike 场景 */
+  /** Spike amplitude, spike scenario only */
   spikeMagnitude?: number;
-  /** 初始值 */
+  /** Initial value */
   initialValue?: number;
 }

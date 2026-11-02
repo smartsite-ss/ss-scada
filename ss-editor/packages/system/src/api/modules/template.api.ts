@@ -6,7 +6,7 @@ import client from '../client';
 import type { ApiResponse, PaginationInfo } from '../types/api';
 
 export interface DeviceTemplateVariable {
-  /** 不可变唯一标识（UUID v4） */
+  /** Immutable unique identifier (UUID v4) */
   guid: string;
   order: number;
   name: string;
@@ -94,14 +94,14 @@ export interface UpdateDeviceTemplateDto {
 }
 
 export interface ApplyTemplateDto {
-  /** 项目ID（必填，用于定位项目数据库） */
+  /** Project ID (required, used to locate the project database) */
   projectId: string;
   deviceId: string;
   replaceExisting?: boolean;
 }
 
 export interface SyncTemplateDto {
-  /** 项目ID（指定 deviceIds 时必填） */
+  /** Project ID (required when deviceIds is specified) */
   projectId?: string;
   deviceIds?: string[];
   forceOverwrite?: boolean;
@@ -131,7 +131,7 @@ export interface DeviceTemplateQuery {
   industry?: string;
   category?: string;
   protocol?: string;
-  locale?: string;  // ✨ 新增：语言代码
+  locale?: string;  // new: language code
 }
 
 export interface TemplateIndex {
@@ -185,7 +185,7 @@ export const templateApi = {
     return client.get(templatesBase, { params }).then((res) => res.data);
   },
 
-  /** ✨ 获取模板详情（支持 locale 参数） */
+  /** ✨ Get template details (supports the locale parameter) */
   getById(templateId: string, locale?: string): Promise<ApiResponse<DeviceTemplate>> {
     return client.get(`${templatesBase}/${templateId}`, {
       params: locale ? { locale } : undefined,
@@ -234,33 +234,33 @@ export const templateApi = {
     return client.get(`${templatesBase}/tags/all`).then((res) => res.data);
   },
 
-  /** ✨ 获取索引（支持 locale 参数） */
+  /** ✨ Get the index (supports the locale parameter) */
   getIndex(locale?: string): Promise<ApiResponse<TemplateIndex>> {
     return client.get(`${templatesBase}/index`, {
       params: locale ? { locale } : undefined,
     }).then((res) => res.data);
   },
 
-  /** ✨ 获取已加载模板（支持 locale 参数） */
+  /** ✨ Get loaded templates (supports the locale parameter) */
   getLoaded(locale?: string): Promise<ApiResponse<any[]>> {
     return client.get(`${templatesBase}/loaded`, {
       params: locale ? { locale } : undefined,
     }).then((res) => res.data);
   },
 
-  /** ✨ 导入模板（支持 locale 参数） */
+  /** ✨ Import templates (supports the locale parameter) */
   importTemplate(data: Record<string, any>, locale?: string): Promise<ApiResponse<DeviceTemplate>> {
     return client.post(`${templatesBase}/import`, data, {
       params: locale ? { locale } : undefined,
     }).then((res) => res.data);
   },
 
-  /** ✨ 重新加载模板缓存（返回各语言加载信息） */
+  /** ✨ Reload the template cache (returns per-language loading info) */
   reload(): Promise<ApiResponse<{ locales: string[]; loaded: number }>> {
     return client.post(`${templatesBase}/reload`).then((res) => res.data);
   },
 
-  // ===== 索引文件管理（目录结构操作）=====
+  // ===== Index file management (directory structure operations) =====
   getIndexStructure(): Promise<ApiResponse<any[]>> {
     return client.get(`${templatesBase}/index/structure`).then((res) => res.data);
   },

@@ -6,19 +6,19 @@ import { Entity, Column, PrimaryColumn, CreateDateColumn, UpdateDateColumn, Inde
 import { AlarmLevel, AlarmStatus } from '@ss-node/ss-sdk';
 
 /**
- * 系统事件清除原因
+ * System-event clear reason
  */
 export enum SystemEventClearReason {
-  /** 自动恢复（系统自行恢复，如数据库重连成功） */
+  /** Auto-recovery (system recovered on its own, e.g. DB reconnected) */
   AUTO = 'auto',
-  /** 人工清除 */
+  /** Manual clear */
   MANUAL = 'manual',
-  /** 系统重启恢复 */
+  /** System-restart recovery */
   SYSTEM_RESTART = 'system_restart',
 }
 
 /**
- * 系统事件处置类型（生命周期动作）
+ * System-event disposition type (lifecycle action)
  */
 export enum SystemEventDispositionType {
   TRIGGERED = 'event.triggered',
@@ -27,26 +27,25 @@ export enum SystemEventDispositionType {
 }
 
 /**
- * 全局系统事件实体
+ * Global system-event entity
  *
- * 存储在全局 ss-node.db 的 sys_events 表中，记录系统级事件。
- * 生命周期与项目级 AlarmRecord 完全一致：
- *   ACTIVE → ACKNOWLEDGED → CLEARED
- *   ACTIVE → CLEARED（自动恢复）
+ * Stored in the global ss-node.db sys_events table, recording system-level events.
+ * Its lifecycle is identical to the project-level AlarmRecord:
+ *   ACTIVE -> ACKNOWLEDGED -> CLEARED
+ *   ACTIVE -> CLEARED (auto-recovery)
  *
- * 与项目级 AlarmRecord（system.db）的对比：
+ * Comparison with the project-level AlarmRecord (system.db):
  * ┌──────────────┬─────────────────────────────┬─────────────────────────────┐
- * │ 字段         │ AlarmRecord (项目级)         │ SystemEvent (全局)           │
+ * │ Field        │ AlarmRecord (project-level)  │ SystemEvent (global)        │
  * ├──────────────┼─────────────────────────────┼─────────────────────────────┤
- * │ 数据库       │ system.db（每项目）           │ ss-node.db（全局）           │
- * │ 主体         │ 有规则/设备/标签关联          │ 无业务关联，独立事件          │
- * │ 事件类型     │ alarmType（device/system等）  │ eventType + subType          │
- * │ 级别         │ AlarmLevel                   │ AlarmLevel（共用）           │
- * │ 状态         │ AlarmStatus                  │ AlarmStatus（共用）           │
- * │ 生命周期     │ ACTIVE → ACK → CLEARED       │ ACTIVE → ACK → CLEARED      │
- * │ 清除原因     │ clearReason                  │ clearReason（共用）           │
- * │ 处置类型     │ dispositionType              │ dispositionType（共用）       │
- * │ 活跃标记     │ isActive                     │ isActive（共用）              │
+ * │ Database     │ system.db (per project)      │ ss-node.db (global)         │
+ * │ Subject      │ has rule/device/tag assoc.   │ no business assoc., standalone event │
+ * │ Event type   │ alarmType (device/system...) │ eventType + subType         │
+ * │ Level        │ AlarmLevel                   │ AlarmLevel (shared)         │
+ * │ Status       │ AlarmStatus                  │ AlarmStatus (shared)        │
+ * │ Clear reason │ clearReason                  │ clearReason (shared)        │
+ * │ Disposition  │ dispositionType             │ dispositionType (shared)    │
+ * │ Active flag  │ isActive                     │ isActive (shared)           │
  * └──────────────┴─────────────────────────────┴─────────────────────────────┘
  */
 @Entity('sys_events')
@@ -56,91 +55,95 @@ export enum SystemEventDispositionType {
 @Index(['isActive'])
 @Index(['createdAt'])
 export class SystemEvent {
-  /** 确定性 ID（如 sys-health-influxdb），用于去重和恢复时查找 */
+  /** Deterministic ID (e.g. sys-health-influxdb), for dedupe and lookup on recovery */
   @PrimaryColumn({ type: 'varchar', length: 64 })
   id: string;
 
-  // ========== 事件分类（系统独有） ==========
+  // ========== Event classification (system-specific) ==========
 
-  /** 事件类型：health | startup | config_change | plugin */
+  /** Event type: health | startup | config_change | plugin */
   @Column({ name: 'event_type', type: 'varchar', length: 32 })
   eventType: string;
 
-  /** 子类型：disk | memory | cpu | database | influxdb | redis 等 */
+  /** Subtype: disk | memory | cpu | database | influxdb | redis, etc. */
   @Column({ name: 'sub_type', type: 'varchar', length: 32, nullable: true })
   subType: string;
 
-  /** 事件来源：health-checker | system-resource-checker | plugin-manager 等 */
+  /** Event source: health-checker | system-resource-checker | plugin-manager, etc. */
   @Column({ type: 'varchar', length: 64, nullable: true })
   source: string;
 
-  /** 扩展元数据（JSON 字符串）：阈值、快照、详情等 */
+  /** Extended metadata (JSON string): threshold, snapshot, details, etc. */
   @Column({ type: 'text', nullable: true })
   metadata: string;
 
-  // ========== 生命周期字段（与 AlarmRecord 对齐） ==========
+  // ========== Lifecycle fields (aligned with AlarmRecord) ==========
 
-  /** 事件级别 */
+  /** Event level */
   @Column({ type: 'varchar', length: 16, default: AlarmLevel.WARNING })
   level: AlarmLevel;
 
-  /** 事件描述 */
+  /** Event description */
   @Column({ type: 'text' })
   message: string;
 
-  /** 触发时的值（如磁盘使用率 95%） */
+  /** Value at trigger (e.g. disk usage 95%) */
   @Column({ name: 'trigger_value', type: 'varchar', length: 50, nullable: true })
   triggerValue: string;
 
-  /** 事件状态 */
+  /** Event status */
   @Column({ type: 'varchar', length: 20, default: AlarmStatus.ACTIVE })
   status: AlarmStatus;
 
-  /** 是否活跃（未清除）：true=active/acknowledged, false=cleared */
+  /** Whether active (not cleared): true=active/acknowledged, false=cleared */
   @Column({ name: 'is_active', default: true })
   isActive: boolean;
 
-  // -- 确认 --
+  // -- Acknowledgement --
 
-  /** 是否已确认 */
+
+  /** Whether acknowledged */
   @Column({ default: false })
   acknowledged: boolean;
 
-  /** 确认时间 */
+  /** Acknowledgement time */
   @Column({ name: 'acknowledged_at', nullable: true })
   acknowledgedAt: Date;
 
-  /** 确认人 */
+  /** Acknowledged by */
   @Column({ name: 'acknowledged_by', type: 'varchar', length: 36, nullable: true })
   acknowledgedBy: string;
 
-  // -- 清除 --
+  // -- Clear --
 
-  /** 清除原因：auto=自动恢复 / manual=人工清除 / system_restart=系统重启恢复 */
+
+  /** Clear reason: auto=auto-recovery / manual=manual clear / system_restart=system-restart recovery */
   @Column({ name: 'clear_reason', type: 'varchar', length: 20, nullable: true })
   clearReason: string;
 
-  /** 清除时间 */
+  /** Clear time */
   @Column({ name: 'cleared_at', nullable: true })
   clearedAt: Date;
 
-  /** 清除人（自动恢复时为 'system'） */
+  /** Cleared by (set to 'system' on auto-recovery) */
   @Column({ name: 'cleared_by', type: 'varchar', length: 36, nullable: true })
   clearedBy: string;
 
-  // -- 恢复 --
+  // -- Recovery --
 
-  /** 自动恢复时间（条件恢复正常的时间） */
+
+  /** Auto-recovery time (when condition returned to normal) */
   @Column({ name: 'recovered_at', nullable: true })
   recoveredAt: Date;
 
-  /** 自动恢复时的值（如磁盘使用率降至 80%） */
+  /** Value at auto-recovery (e.g. disk usage dropped to 80%) */
   @Column({ name: 'recovered_value', type: 'varchar', length: 50, nullable: true })
   recoveredValue: string;
 
-  // -- 处置 --
+  // -- Disposition --
 
-  /** 处置类型（生命周期动作）：event.triggered → event.acknowledged → event.cleared */
+
+  /** Disposition type (lifecycle action): event.triggered -> event.acknowledged -> event.cleared */
   @Column({
     name: 'disposition_type',
     type: 'varchar',
@@ -149,7 +152,7 @@ export class SystemEvent {
   })
   dispositionType: string;
 
-  // ========== 时间戳 ==========
+  // ========== Timestamps ==========
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

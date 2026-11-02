@@ -15,7 +15,7 @@ import { JwtAuthGuard, RolesGuard, Roles, UserRole, ReadRoles, WriteRoles } from
 export class BaseServicesController {
   constructor(private readonly baseServicesService: BaseServicesService) {}
 
-  // ==================== CRUD 端点 ====================
+  // ==================== CRUD endpoints ====================
 
   @Get()
   @ReadRoles()
@@ -60,7 +60,7 @@ export class BaseServicesController {
     return { success: true };
   }
 
-  // ==================== 运行状态 ====================
+  // ==================== Run status ====================
 
   @Get(':name/status')
   @ReadRoles()
@@ -90,7 +90,7 @@ export class BaseServicesController {
     return this.baseServicesService.restart(name);
   }
 
-  // ==================== 配置文件 ====================
+  // ==================== Configuration files ====================
 
   @Get(':name/config')
   @Roles(UserRole.ADMIN)
@@ -106,7 +106,7 @@ export class BaseServicesController {
     return this.baseServicesService.saveConfig(name, body.content);
   }
 
-  // ==================== 日志 ====================
+  // ==================== Logs ====================
 
   @Get(':name/logs')
   @ReadRoles()
@@ -122,7 +122,7 @@ export class BaseServicesController {
     return this.baseServicesService.clearLogs(name);
   }
 
-  // ==================== InfluxDB 初始化 ====================
+  // ==================== InfluxDB initialization ====================
 
   @Get('influxdb/setup/status')
   @ReadRoles()
@@ -179,7 +179,7 @@ export class BaseServicesController {
     return this.baseServicesService.setupInfluxDB(body);
   }
 
-  // ==================== NanoMQ 健康检测 ====================
+  // ==================== NanoMQ health check ====================
 
   @Get('nanomq/health')
   @ReadRoles()

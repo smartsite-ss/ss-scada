@@ -3,8 +3,8 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 密码强度验证工具
- * 要求：至少8位字符，包含字母和数字
+ * Password-strength validation util
+ * Requirements: at least 8 characters, containing both letters and digits
  */
 export function validatePasswordStrength(password: string): { valid: boolean; message?: string } {
   if (!password || password.length < 8) {

@@ -10,11 +10,11 @@ interface DebounceEntry {
   firstTriggerAt: number;
   triggerCount: number;
   lastValue: number | null;
-  /** 最近一次更新的时间戳，用于 LRU 淘汰 */
+  /** Most recent update timestamp, used for LRU eviction */
   lastUpdatedAt: number;
 }
 
-/** 消抖统计 */
+/** Debounce statistics */
 export interface DebounceStats {
   totalChecks: number;
   immediateTriggers: number;
@@ -26,7 +26,7 @@ export interface DebounceStats {
   maxEntriesReached: boolean;
 }
 
-/** 默认最大条目数 */
+/** Default maximum entry count */
 const DEFAULT_MAX_ENTRIES = 10000;
 
 @Injectable()
@@ -35,7 +35,7 @@ export class AlarmDebouncer {
   private entries = new Map<string, DebounceEntry>();
   private readonly maxEntries: number;
 
-  /** 统计计数器 */
+  /** Statistics counter */
   private stats = {
     totalChecks: 0,
     immediateTriggers: 0,
@@ -54,16 +54,16 @@ export class AlarmDebouncer {
   }
 
   /**
-   * 消抖检查
-   * @param debounceMs 时间消抖（毫秒），0 表示不启用时间消抖
-   * @param debounceCount 次数消抖，0 表示不启用次数消抖
-   * @returns 'trigger' = 消抖通过，应触发报警；'debouncing' = 消抖中；'no_change' = 值未变化
+   * Debounce check
+   * @param debounceMs time debounce (ms); 0 means time debounce disabled
+   * @param debounceCount count debounce; 0 means count debounce disabled
+   * @returns 'trigger' = debounce passed, alarm should fire; 'debouncing' = debouncing; 'no_change' = value unchanged
    *
-   * 组合规则：
-   * - debounceMs > 0 && debounceCount > 0：时间和次数均满足才触发
-   * - debounceMs > 0 && debounceCount == 0：仅时间消抖
-   * - debounceMs == 0 && debounceCount > 0：仅次数消抖
-   * - 均为 0：立即触发
+   * Combination rules:
+   * - debounceMs > 0 && debounceCount > 0: trigger only when both time and count are satisfied
+   * - debounceMs > 0 && debounceCount == 0: time debounce only
+   * - debounceMs == 0 && debounceCount > 0: count debounce only
+   * - both 0: trigger immediately
    */
   check(
     ruleId: string,
@@ -76,7 +76,7 @@ export class AlarmDebouncer {
     const key = this.getKey(ruleId, tagId);
     const now = Date.now();
 
-    // 无消抖要求，直接触发
+    // No debounce requirement, trigger directly
     if (debounceMs <= 0 && debounceCount <= 0) {
       this.stats.immediateTriggers++;
       return 'trigger';
@@ -85,10 +85,10 @@ export class AlarmDebouncer {
     const existing = this.entries.get(key);
 
     if (!existing) {
-      // LRU 淘汰：达到上限时淘汰最旧的条目
+      // LRU eviction: evict the oldest entry when the cap is reached
       this.evictIfNeeded();
 
-      // 首次触发，记录并进入消抖等待
+      // First trigger: record and enter debounce wait
       this.entries.set(key, {
         ruleId,
         tagId,
@@ -101,7 +101,7 @@ export class AlarmDebouncer {
         `Debounce started for rule ${ruleId}: ms=${debounceMs}, count=${debounceCount}`,
       );
 
-      // 如果仅需 1 次即可满足次数消抖，且无时间要求
+      // If only 1 occurrence satisfies count debounce and there is no time requirement
       if (debounceMs <= 0 && debounceCount > 0 && debounceCount <= 1) {
         this.clear(ruleId, tagId);
         this.stats.debouncedTriggers++;
@@ -111,10 +111,10 @@ export class AlarmDebouncer {
       return 'debouncing';
     }
 
-    // 更新最近访问时间（LRU）
+    // Update most-recently-used timestamp (LRU)
     existing.lastUpdatedAt = now;
 
-    // 相同值不重复计数（允许微小浮点误差）
+    // Same value is not counted again (tiny float error allowed)
     if (existing.lastValue !== null && Math.abs(value - existing.lastValue) < 0.001) {
       this.stats.noChangeCount++;
       return 'no_change';
@@ -128,7 +128,7 @@ export class AlarmDebouncer {
     const countSatisfied = debounceCount <= 0 || existing.triggerCount >= debounceCount;
 
     if (timeSatisfied && countSatisfied) {
-      // 消抖通过
+      // Debounce passed
       this.clear(ruleId, tagId);
       this.stats.debouncedTriggers++;
       this.logger.debug(
@@ -140,7 +140,7 @@ export class AlarmDebouncer {
     return 'debouncing';
   }
 
-  /** 取消消抖（值恢复正常） */
+  /** Cancel debounce (value recovered to normal) */
   clear(ruleId: string, tagId: string): void {
     const existed = this.entries.delete(this.getKey(ruleId, tagId));
     if (existed) {
@@ -148,7 +148,7 @@ export class AlarmDebouncer {
     }
   }
 
-  /** LRU 淘汰：当条目数超过上限时，淘汰最久未更新的条目 */
+  /** LRU eviction: when the entry count exceeds the cap, evict the least-recently-updated entry */
   private evictIfNeeded(): void {
     if (this.entries.size < this.maxEntries) return;
 
@@ -171,17 +171,17 @@ export class AlarmDebouncer {
     }
   }
 
-  /** 获取当前消抖中的规则数 */
+  /** Get the number of rules currently debouncing */
   getDebouncingCount(): number {
     return this.entries.size;
   }
 
-  /** 获取消抖详情用于调试 */
+  /** Get debounce details for debugging */
   getDebouncingEntries(): DebounceEntry[] {
     return Array.from(this.entries.values());
   }
 
-  /** 获取统计信息 */
+  /** Get statistics */
   getStats(): DebounceStats {
     return {
       ...this.stats,
@@ -190,7 +190,7 @@ export class AlarmDebouncer {
     };
   }
 
-  /** 重置统计计数器 */
+  /** Reset the statistics counter */
   resetStats(): void {
     this.stats = {
       totalChecks: 0,
@@ -202,7 +202,7 @@ export class AlarmDebouncer {
     };
   }
 
-  /** 清理超时的消抖条目（24小时未更新的） */
+  /** Clean up expired debounce entries (no update for 24h) */
   cleanup(): number {
     const cutoff = Date.now() - 24 * 3600000;
     let cleaned = 0;

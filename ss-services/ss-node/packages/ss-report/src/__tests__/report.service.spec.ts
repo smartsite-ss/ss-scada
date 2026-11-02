@@ -76,7 +76,7 @@ describe('ReportService', () => {
       const result = await service.generateDailyReport('project-001', '2026-06-04');
       const { summary } = result.data as any;
 
-      // 无数据源注入时返回默认零值；字段结构必须存在
+      // Returns default zero values when no data source is injected; the field structure must exist
       expect(summary).toBeDefined();
       expect(summary.totalDevices).toBe(0);
       expect(summary.onlineDevices).toBe(0);
@@ -101,7 +101,7 @@ describe('ReportService', () => {
       const result = await service.generateDailyReport('project-001', '2026-06-04');
       const { charts } = result.data as any;
 
-      // 无 dataQueryService 时返回空数组；字段类型必须正确
+      // Returns an empty array without dataQueryService; the field types must be correct
       expect(charts).toBeInstanceOf(Array);
       expect(charts).toEqual([]);
     });
@@ -135,7 +135,7 @@ describe('ReportService', () => {
       const result = await service.generateMonthlyReport('project-001', '2026-06');
       const { items } = result.data as any;
 
-      // 无数据源时返回 fallback 项（"报表生成状态"），items 非空
+      // Returns a fallback item without a data source ("report generation status"); items is non-empty
       expect(items.length).toBeGreaterThan(0);
       expect(items.every((i: any) => i.label && i.trend)).toBe(true);
     });
@@ -144,7 +144,7 @@ describe('ReportService', () => {
       const result = await service.generateMonthlyReport('project-001', '2026-06');
       const { charts } = result.data as any;
 
-      // 无 alarmService 时月报图表为空数组
+      // Monthly-report charts are empty arrays without alarmService
       expect(charts).toBeInstanceOf(Array);
       expect(charts).toEqual([]);
     });
@@ -198,7 +198,7 @@ describe('ReportService', () => {
         tagIds: ['tag-001'],
       });
 
-      // 无 dataQueryService 时 items 为空数组，但 config 应保留传入的 tagIds
+      // items is an empty array without dataQueryService, but config should keep the passed tagIds
       const { data, config } = result as any;
       expect(data.items).toBeInstanceOf(Array);
       expect(data.items).toEqual([]);
@@ -234,7 +234,7 @@ describe('ReportService', () => {
       });
 
       const { config } = result as any;
-      // 默认 metrics 为 ['avg','max','min']；tagIds/deviceIds 解析后为空数组
+      // Default metrics are ['avg','max','min']; tagIds/deviceIds resolve to empty arrays
       expect(config.metrics).toEqual(['avg', 'max', 'min']);
       expect(config.tagIds).toEqual([]);
       expect(config.deviceIds).toEqual([]);
@@ -251,7 +251,7 @@ describe('ReportService', () => {
 
       const result = await service.exportReport(reportId, 'pdf');
       expect(result.format).toBe('pdf');
-      // 当前 PDF 导出实现为 HTML 文件（生产环境建议升级为 puppeteer/pdfkit）
+      // The current PDF export implementation produces an HTML file (production should upgrade to puppeteer/pdfkit)
       expect(result.fileName).toContain('.html');
       expect(result.fileUrl).toBeDefined();
       expect(result.status).toBe(ReportStatus.COMPLETED);
@@ -363,7 +363,7 @@ describe('ReportService', () => {
       expect(result.type).toBe(ReportType.ALARM);
       expect(result.data).toBeDefined();
       const { summary } = result.data as any;
-      // 无 alarmService 时 totalAlarms=0，byLevel 为空对象，ackRate=0
+      // totalAlarms=0 without alarmService, byLevel an empty object, ackRate=0
       expect(summary.totalAlarms).toBe(0);
       expect(summary.byLevel).toBeDefined();
       expect(summary.ackRate).toBe(0);
@@ -377,7 +377,7 @@ describe('ReportService', () => {
       });
 
       const { items } = result.data as any;
-      // 无数据源时 items 为 fallback [{label:'告警总数', value:0}]
+      // items is the fallback [{label:'Total Alarms', value:0}] without a data source
       expect(items).toBeInstanceOf(Array);
       expect(items.length).toBeGreaterThan(0);
     });
@@ -389,7 +389,7 @@ describe('ReportService', () => {
       });
 
       const { charts } = result.data as any;
-      // 无告警数据时无饼图
+      // No pie chart when there is no alarm data
       expect(charts.some((c: any) => c.type === 'pie')).toBe(false);
     });
   });
@@ -406,7 +406,7 @@ describe('ReportService', () => {
       expect(result.type).toBe(ReportType.TREND);
       expect(result.data).toBeDefined();
       const { summary } = result.data as any;
-      // 无 dataQueryService 时 anomalyCount=0，trendDirection='stable'
+      // anomalyCount=0 and trendDirection='stable' without dataQueryService
       expect(summary.anomalyCount).toBe(0);
       expect(summary.trendDirection).toBe('stable');
     });
@@ -419,7 +419,7 @@ describe('ReportService', () => {
       });
 
       const { charts } = result.data as any;
-      // 无 dataQueryService 时 charts 为空数组
+      // charts is an empty array without dataQueryService
       expect(charts).toBeInstanceOf(Array);
       expect(charts).toEqual([]);
     });
@@ -431,7 +431,7 @@ describe('ReportService', () => {
         tagIds: ['tag-001', 'tag-002', 'tag-003'],
       });
 
-      // 多 tagId 不抛异常即可；config 保留传入的 tagIds
+      // Multiple tagIds just must not throw; config keeps the passed tagIds
       expect(result.type).toBe(ReportType.TREND);
       const { config } = result as any;
       expect(config.tagIds).toHaveLength(3);
@@ -751,7 +751,7 @@ describe('ReportService', () => {
       const templateId = (created as any).id;
       const originalUpdatedAt = (created as any).updatedAt;
 
-      // 推进 fake timer 以确保 updatedAt 时间戳不同
+      // Advance the fake timer to ensure the updatedAt timestamps differ
       jest.advanceTimersByTime(1000);
 
       const result = await service.updateTemplate('project-001', templateId, { name: 'New' });
@@ -949,7 +949,7 @@ describe('ReportService', () => {
     });
   });
 
-  // ==================== tickSchedules (cron 执行) ====================
+  // ==================== tickSchedules (cron execution) ====================
   describe('tickSchedules', () => {
     it('TC-RPT-140: should execute matching schedule and update lastRunAt', async () => {
       const created = await service.scheduleReportExport('project-tick', {
@@ -983,14 +983,14 @@ describe('ReportService', () => {
     });
 
     it('TC-RPT-142: should not execute non-matching schedule', async () => {
-      // 使用一个明确不匹配当前时间的 cron（ minute=59 ）
+      // Use a cron that definitely does not match the current time ( minute=59 )
       const created = await service.scheduleReportExport('project-tick', {
         cronExpression: '59 0 * * *',
         exportFormat: ExportFormat.PDF,
       });
       const scheduleId = (created as any).id;
 
-      // 使用 minute=30 的时间触发
+      // Use a minute=30 time to trigger
       const now = new Date();
       now.setMinutes(30);
       now.setHours(0);
@@ -1019,7 +1019,7 @@ describe('ReportService', () => {
     });
   });
 
-  // ==================== 定时导出历史 ====================
+  // ==================== Scheduled-export history ====================
   describe('getExportHistory', () => {
     it('TC-RPT-150: should return empty history for new project', () => {
       const history = service.getExportHistory('project-no-history');
@@ -1040,7 +1040,7 @@ describe('ReportService', () => {
     });
   });
 
-  // ==================== 调度器生命周期 ====================
+  // ==================== Scheduler lifecycle ====================
   describe('scheduler lifecycle', () => {
     it('TC-RPT-160: startScheduler and stopScheduler should not throw', () => {
       expect(() => service.startScheduler()).not.toThrow();

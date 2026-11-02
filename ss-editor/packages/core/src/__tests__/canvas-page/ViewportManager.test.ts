@@ -311,22 +311,22 @@ class TestShape extends BaseGraphic {
   describe('智能自适应策略', () => {
     describe('ZoomManager.autoSelectFitMode', () => {
       it('应该为竖屏选择 fitHeight 模式', () => {
-        const result = ZoomManager.autoSelectFitMode(0.45, defaultAutoFitConfig); /* 手机竖屏 1080x2400 */
+        const result = ZoomManager.autoSelectFitMode(0.45, defaultAutoFitConfig); /* portrait phone 1080x2400 */
         expect(result).toBe('fitHeight');
       });
 
       it('应该为接近正方形选择 contain 模式', () => {
-        const result = ZoomManager.autoSelectFitMode(1.0, defaultAutoFitConfig); /* 正方形屏幕 */
+        const result = ZoomManager.autoSelectFitMode(1.0, defaultAutoFitConfig); /* square screen */
         expect(result).toBe('contain');
       });
 
       it('应该为宽屏选择 fitWidth 模式', () => {
-        const result = ZoomManager.autoSelectFitMode(1.78, defaultAutoFitConfig); /* 普通显示器 1920x1080 */
+        const result = ZoomManager.autoSelectFitMode(1.78, defaultAutoFitConfig); /* standard monitor 1920x1080 */
         expect(result).toBe('fitWidth');
       });
 
       it('应该为超宽屏选择 fitWidth 模式', () => {
-        const result = ZoomManager.autoSelectFitMode(2.39, defaultAutoFitConfig); /* 带鱼屏 3440x1440 */
+        const result = ZoomManager.autoSelectFitMode(2.39, defaultAutoFitConfig); /* ultrawide 3440x1440 */
         expect(result).toBe('fitWidth');
       });
     });
@@ -351,9 +351,9 @@ class TestShape extends BaseGraphic {
     describe('ZoomManager.calculateAutoFitScale', () => {
       it('应该为竖屏自动选择 fitHeight 并计算缩放', () => {
         const result = ZoomManager.calculateAutoFitScale(1920, 1080, 1080, 2400);
-        expect(result.fitMode).toBe('fitHeight'); expect(result.scale).toBeGreaterThan(100); /* 竖屏需要放大 */ }); it('应该为宽屏自动选择 fitWidth 并计算缩放', () => {
+        expect(result.fitMode).toBe('fitHeight'); expect(result.scale).toBeGreaterThan(100); /* portrait needs upscaling */ }); it('应该为宽屏自动选择 fitWidth 并计算缩放', () => {
         const result = ZoomManager.calculateAutoFitScale(1920, 1080, 3440, 1440);
-        expect(result.fitMode).toBe('fitWidth'); expect(result.scale).toBeGreaterThan(100); /* 宽屏需要放大 */ }); it('应该限制缩放范围在 10%-200%', () => { const result = ZoomManager.calculateAutoFitScale(1920, 1080, 100, 100); expect(result.scale).toBe(10); /* 最小缩放 */ const result2 = ZoomManager.calculateAutoFitScale(100, 100, 10000, 10000); expect(result2.scale).toBe(200); /* 最大缩放 */ }); }); describe('页面适配方法', () => {
+        expect(result.fitMode).toBe('fitWidth'); expect(result.scale).toBeGreaterThan(100); /* landscape needs upscaling */ }); it('应该限制缩放范围在 10%-200%', () => { const result = ZoomManager.calculateAutoFitScale(1920, 1080, 100, 100); expect(result.scale).toBe(10); /* minimum scale */ const result2 = ZoomManager.calculateAutoFitScale(100, 100, 10000, 10000); expect(result2.scale).toBe(200); /* maximum scale */ }); }); describe('页面适配方法', () => {
       it('应该默认使用 auto 模式', () => {
         expect(page.getFitMode()).toBe('auto');
       });
@@ -384,13 +384,13 @@ class TestShape extends BaseGraphic {
       });
 
       it('auto 模式下应该自动选择最佳适配模式', () => {
-        // 默认是 auto 模式
-        expect(page.getFitMode()).toBe('auto'); /* 在宽屏上执行适配 */ page.autoFit(1920, 1080); /* 应该自动选择 fitWidth 模式 */ expect(page.fitMode).toBe('fitWidth');
+        // Defaults to auto mode
+        expect(page.getFitMode()).toBe('auto'); /* perform fit on a wide screen */ page.autoFit(1920, 1080); /* should auto-select fitWidth mode */ expect(page.fitMode).toBe('fitWidth');
       });
 
       it('手动选择模式后应该保持用户选择', () => {
-        // 设置为手动模式
-        page.setFitMode('contain'); /* 执行适配 */ page.autoFit(1920, 1080); /* 应该保持用户选择的模式 */ expect(page.fitMode).toBe('contain');
+        // Set to manual mode
+        page.setFitMode('contain'); /* perform fit */ page.autoFit(1920, 1080); /* should keep the user-selected mode */ expect(page.fitMode).toBe('contain');
       });
 
       it('应该能够重置适配模式', () => {
@@ -430,9 +430,9 @@ class TestShape extends BaseGraphic {
       });
 
       it('视口尺寸变化时auto模式应动态切换子模式', () => {
-        // 方屏 → contain
+        // Square screen → contain
         const r1 = ZoomManager.calculateAutoFitScale(1920, 1080, 1200, 1000);
-        expect(r1.fitMode).toBe('contain'); /* 宽屏 → fitWidth */ const r2 = ZoomManager.calculateAutoFitScale(1920, 1080, 2400, 1200); expect(r2.fitMode).toBe('fitWidth'); /* 竖屏 → fitHeight */ const r3 = ZoomManager.calculateAutoFitScale(1920, 1080, 600, 1200); expect(r3.fitMode).toBe('fitHeight');
+        expect(r1.fitMode).toBe('contain'); /* landscape → fitWidth */ const r2 = ZoomManager.calculateAutoFitScale(1920, 1080, 2400, 1200); expect(r2.fitMode).toBe('fitWidth'); /* portrait → fitHeight */ const r3 = ZoomManager.calculateAutoFitScale(1920, 1080, 600, 1200); expect(r3.fitMode).toBe('fitHeight');
       });
     });
 
@@ -440,7 +440,7 @@ class TestShape extends BaseGraphic {
       it('在非浏览器环境下应该返回 false', () => {
         const result = ZoomManager.isPortrait();
         const result2 = ZoomManager.isWideScreen();
-        // 在 Node.js 环境中没有 window 对象，应该返回 false
+        // There is no window object in Node.js, so it should return false
         expect(typeof result).toBe('boolean');
         expect(typeof result2).toBe('boolean');
       });

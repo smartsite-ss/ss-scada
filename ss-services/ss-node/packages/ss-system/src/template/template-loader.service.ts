@@ -32,11 +32,11 @@ export interface LoadedTemplate {
 export class TemplateLoaderService implements OnModuleInit {
   private readonly logger = new Logger(TemplateLoaderService.name);
 
-  // ✨ 从单层缓存改为 locale → (id → LoadedTemplate) 两级缓存
+  // ✨ Changed from a single-level cache to a locale → (id → LoadedTemplate) two-level cache
   private readonly localeCaches = new Map<string, Map<string, LoadedTemplate>>();
-  // ✨ 从单个 index 改为 locale → index
+  // ✨ Changed from a single index to locale → index
   private readonly localeIndexes = new Map<string, TemplateTreeIndex>();
-  // ✨ 已识别的语言列表
+  // ✨ List of recognized languages
   private supportedLocales: string[] = [];
 
   private templatesBasePath: string;
@@ -49,15 +49,15 @@ export class TemplateLoaderService implements OnModuleInit {
     await this.loadAllLocales();
   }
 
-  // ============ ✨ 多语言入口 ============
+  // ============ ✨ Multi-language entry points ============
 
-  /** 扫描 templates/ 下的一级目录，识别 BCP 47 语言代码并全部加载 */
+  /** Scan the first-level directories under templates/, recognize BCP 47 language codes and load them all */
   async loadAllLocales(): Promise<void> {
     this.supportedLocales = [];
     this.localeCaches.clear();
     this.localeIndexes.clear();
 
-    // 扫描根目录，识别 BCP 47 格式的语言目录（如 zh-CN, en-US, ja-JP）
+    // Scan the root directory to recognize BCP 47 language directories (e.g. zh-CN, en-US, ja-JP)
     if (fs.existsSync(this.templatesBasePath)) {
       const entries = fs.readdirSync(this.templatesBasePath, { withFileTypes: true });
       for (const entry of entries) {
@@ -67,7 +67,7 @@ export class TemplateLoaderService implements OnModuleInit {
       }
     }
 
-    // 按语言逐个加载
+    // Load language by language
     for (const locale of this.supportedLocales) {
       await this.loadLocale(locale);
     }
@@ -77,7 +77,7 @@ export class TemplateLoaderService implements OnModuleInit {
     );
   }
 
-  /** 加载指定语言的模板（所有语言均使用 templates/{locale}/ 子目录） */
+  /** Load templates for a given language (all languages use the templates/{locale}/ subdirectory) */
   async loadLocale(locale: string): Promise<void> {
     const localePath = path.join(this.templatesBasePath, locale);
 
@@ -86,7 +86,7 @@ export class TemplateLoaderService implements OnModuleInit {
       return;
     }
 
-    // 加载该语言的 index.json
+    // Load that language's index.json
     const index = this.loadLocaleIndex(localePath, locale);
     this.localeIndexes.set(locale, index);
 
@@ -118,12 +118,12 @@ export class TemplateLoaderService implements OnModuleInit {
     this.localeCaches.set(locale, cache);
   }
 
-  /** 读取指定路径下的 index.json */
+  /** Read the index.json under the given path */
   private loadLocaleIndex(localePath: string, locale: string): TemplateTreeIndex {
     const indexPath = path.join(localePath, 'index.json');
     if (!fs.existsSync(indexPath)) {
       this.logger.warn(`[${locale}] index.json 不存在: ${indexPath}`);
-      // 降级：使用 zh-CN 的索引
+      // Fallback: use zh-CN's index
       if (locale !== 'zh-CN') {
         const zhIndex = this.localeIndexes.get('zh-CN');
         if (zhIndex) {
@@ -131,12 +131,12 @@ export class TemplateLoaderService implements OnModuleInit {
           return zhIndex;
         }
       }
-      // 尝试从目录结构重建
+      // Try rebuilding from the directory structure
       return this.createEmptyIndex(locale);
     }
     const content = fs.readFileSync(indexPath, 'utf-8');
     const index = JSON.parse(content) as TemplateTreeIndex;
-    // 注入 locale 标识
+    // Inject the locale marker
     (index as any)._locale = locale;
     return index;
   }
@@ -154,51 +154,51 @@ export class TemplateLoaderService implements OnModuleInit {
     } as TemplateTreeIndex;
   }
 
-  // ============ ✨ 语言感知查询方法 ============
+  // ============ ✨ Language-aware query methods ============
 
-  /** 获取默认语言 */
+  /** Get the default language */
   getDefaultLocale(): string {
     return 'zh-CN';
   }
 
-  /** 获取支持的语言列表 */
+  /** Get the supported language list */
   getSupportedLocales(): string[] {
     return [...this.supportedLocales];
   }
 
-  /** 解析 locale：校验并降级 */
+  /** Resolve a locale: validate and fall back */
   resolveLocale(locale?: string): string {
     if (locale && this.supportedLocales.includes(locale)) return locale;
     return this.getDefaultLocale();
   }
 
-  /** 获取指定语言的模板（带降级） */
+  /** Get a template for a given language (with fallback) */
   getTemplate(id: string, locale?: string): LoadedTemplate | undefined {
     const lang = this.resolveLocale(locale);
     const cache = this.localeCaches.get(lang);
     let tpl = cache?.get(id);
 
-    // ✨ 降级：当前语言无此模板时，fallback 到 zh-CN
+    // ✨ Fallback: when the current language lacks the template, fall back to zh-CN
     if (!tpl && lang !== 'zh-CN') {
       tpl = this.localeCaches.get('zh-CN')?.get(id);
     }
     return tpl;
   }
 
-  /** 获取指定语言的所有模板 */
+  /** Get all templates for a given language */
   getAllTemplates(locale?: string): LoadedTemplate[] {
     const lang = this.resolveLocale(locale);
     const cache = this.localeCaches.get(lang);
     return cache ? Array.from(cache.values()) : [];
   }
 
-  /** 获取指定语言的索引 */
+  /** Get the index for a given language */
   getIndex(locale?: string): TemplateTreeIndex | null {
     const lang = this.resolveLocale(locale);
     return this.localeIndexes.get(lang) ?? null;
   }
 
-  /** 热重载：重新扫描所有语言目录 */
+  /** Hot reload: rescan all language directories */
   async reload(): Promise<{ locales: string[]; count: number }> {
     await this.loadAllLocales();
     let total = 0;
@@ -206,14 +206,14 @@ export class TemplateLoaderService implements OnModuleInit {
     return { locales: [...this.supportedLocales], count: total };
   }
 
-  /** 强制重新加载指定语言的索引和模板（从现有 index.json） */
+  /** Force-reload a given language's index and templates (from the existing index.json) */
   async rebuildAndReload(locale?: string): Promise<TemplateTreeIndex> {
     const lang = this.resolveLocale(locale);
     await this.loadLocale(lang);
     return this.localeIndexes.get(lang)!;
   }
 
-  // ============ 原有查询方法（保持向后兼容，默认使用 zh-CN）============
+  // ============ Legacy query methods (backward compatible, default zh-CN) ============
 
   getTemplatesByIndustry(industry: string, locale?: string): LoadedTemplate[] {
     return this.getAllTemplates(locale).filter((t) => t.industry === industry);
@@ -246,7 +246,7 @@ export class TemplateLoaderService implements OnModuleInit {
     };
   }
 
-  // ============ 内部文件加载（保持不变）============
+  // ============ Internal file loading (unchanged) ============
 
   private loadTemplateFile(
     filePath: string,
@@ -262,7 +262,7 @@ export class TemplateLoaderService implements OnModuleInit {
     const content = fs.readFileSync(filePath, 'utf-8');
     const json = JSON.parse(content);
 
-    // ★ 向前兼容：为缺失 guid 的变量自动生成并写回 JSON 文件
+    // ★ Forward compatibility: auto-generate GUIDs for variables missing them and write back to the JSON file
     let hasGeneratedGuid = false;
     const variables: TemplateVariable[] = (json.variables || []).map((v: any, index: number) => {
       let varGuid = v.guid;
@@ -319,9 +319,9 @@ export class TemplateLoaderService implements OnModuleInit {
       };
     });
 
-    // ★ 写回更新后的 JSON（补全了 guid）
+    // ★ Write the updated JSON back (GUIDs filled in)
     if (hasGeneratedGuid) {
-      // 原子写入：先写临时文件，再 rename
+      // Atomic write: temp file first, then rename
       const tmpPath = filePath + '.tmp-' + crypto.randomBytes(4).toString('hex');
       fs.writeFileSync(tmpPath, JSON.stringify(json, null, 2), 'utf-8');
       fs.renameSync(tmpPath, filePath);

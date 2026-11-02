@@ -127,7 +127,7 @@ describe('HealthService', () => {
     });
 
     it('TC-HLTH-010c: should return degraded status when memory is high', async () => {
-      // 模拟高内存使用（90%）
+      // Simulate high memory usage (90%)
       const os = require('os');
       os.totalmem.mockReturnValueOnce(16 * 1024 * 1024 * 1024);
       os.freemem.mockReturnValueOnce(1.6 * 1024 * 1024 * 1024);
@@ -195,7 +195,7 @@ describe('HealthService', () => {
 
       const result = await service.getDiskPartitions();
 
-      // 所有三个目录都应返回 fallback 值
+      // All three directories should return the fallback value
       for (const disk of [result.appDir, result.dataDir, result.backupDir]) {
         expect(disk.totalBytes).toBe(0);
         expect(disk.freeBytes).toBe(0);
@@ -207,7 +207,7 @@ describe('HealthService', () => {
     });
   });
 
-  // ==================== 阈值环境变量 ====================
+  // ==================== Threshold env vars ====================
 
   describe('memory thresholds from env', () => {
     it('TC-HLTH-050: should use custom memory thresholds from env', async () => {
@@ -243,7 +243,7 @@ describe('HealthService', () => {
     });
   });
 
-  // ==================== Readiness 补充 ====================
+  // ==================== Readiness extras ====================
 
   describe('getReadiness extended', () => {
     it('TC-HLTH-032: should return ok with all checks when everything is healthy', async () => {
@@ -271,7 +271,7 @@ describe('HealthService', () => {
     });
   });
 
-  // ==================== Detailed 补充 ====================
+  // ==================== Detailed extras ====================
 
   describe('getDetailed extended', () => {
     it('TC-HLTH-010d: should return degraded status when memory is in warn range', async () => {
@@ -296,7 +296,7 @@ describe('HealthService', () => {
 
       const result = await service.getDetailed();
 
-      // disk probe 应该返回 warn 状态
+      // The disk probe should return warn status
       expect(result.checks.disk).toBeDefined();
       expect(['warn', 'pass']).toContain(result.checks.disk.status);
     });

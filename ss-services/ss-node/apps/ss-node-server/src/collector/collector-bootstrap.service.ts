@@ -30,24 +30,24 @@ import { DevicePersistenceService } from './device-persistence.service';
 import { PluginEventAdapter } from './plugin-event-adapter';
 
 /**
- * 采集启动引导器（协调层）
+ * Collector bootstrap (coordination layer)
  *
- * 在 NestJS 应用完成所有模块初始化后（OnApplicationBootstrap）执行：
- * 1. 等待插件注册完毕
- * 2. 扫描所有项目目录 → 加载设备 → 注册采集任务
- * 3. 启动周期性状态持久化
- * 4. 订阅插件生命周期事件
+ * Runs after the NestJS app finishes initializing all modules (OnApplicationBootstrap):
+ * 1. Wait for plugin registration to complete
+ * 2. Scan all project directories -> load devices -> register collection tasks
+ * 3. Start periodic state persistence
+ * 4. Subscribe to plugin lifecycle events
  *
- * 职责已拆分到以下子服务：
- * - DeviceLoadingService       → 设备加载与状态注册
- * - TaskRegistrationService    → 采集任务注册与管理
- * - DevicePersistenceService   → 设备状态持久化
- * - PluginEventAdapter         → 插件事件处理
+ * Responsibilities are split into the following sub-services:
+ * - DeviceLoadingService       -> device loading and state registration
+ * - TaskRegistrationService    -> collection-task registration and management
+ * - DevicePersistenceService   -> device-state persistence
+ * - PluginEventAdapter         -> plugin event handling
  *
- * 业务效果追踪（#6 事件持久化）：
- * - project:enabled / project:disabled / device.tagsChanged 事件通过 wrapSubscriber 包装
- * - handler 返回业务效果对象（devicesLoaded / tasksRegistered / protocolsActive 等）
- * - 失败时由 wrapSubscriber 记录为 failed，外层 catch 避免 unhandled rejection
+ * Business-effect tracking (#6 event persistence):
+ * - project:enabled / project:disabled / device.tagsChanged events are wrapped via wrapSubscriber
+ * - the handler returns a business-effect object (devicesLoaded / tasksRegistered / protocolsActive, etc.)
+ * - on failure wrapSubscriber records it as failed; the outer catch avoids unhandled rejection
  */
 @Injectable()
 export class DeviceCollectorBootstrap
@@ -55,7 +55,7 @@ export class DeviceCollectorBootstrap
 {
   private readonly logger = new Logger(DeviceCollectorBootstrap.name);
 
-  /** 已发现的项目列表（供重载使用） */
+  /** Discovered project list (for reload) */
   private availableProjects: string[] = [];
 
   constructor(
@@ -67,16 +67,16 @@ export class DeviceCollectorBootstrap
     private readonly configService: ConfigService,
     private readonly projectDbService: ProjectDatabaseService,
     private readonly eventBus: EventBusService,
-    /** 事件日志服务 — 用于追踪 handler 的处理结果和业务效果（#6 事件持久化） */
+    /** Event-log service - tracks handler results and business effects (#6 event persistence) */
     @Optional() private readonly eventLogService?: EventLogService,
   ) {}
 
   /**
-   * 包装事件 handler：通过 EventLogService.wrapSubscriber 自动追踪处理结果和业务效果
+   * Wrap an event handler: automatically track results and business effects via EventLogService.wrapSubscriber
    *
-   * - 若 EventLogService 可用，记录处理状态（processing/processed/failed）和业务效果
-   * - 外层 try/catch 捕获 wrapSubscriber 重新抛出的错误，避免 unhandled rejection
-   * - 失败时仍记录业务效果（如部分加载的设备数）
+   * - If EventLogService is available, record processing state (processing/processed/failed) and business effects
+   * - The outer try/catch captures errors re-thrown by wrapSubscriber, avoiding unhandled rejection
+   * - On failure it still records business effects (e.g. partially loaded device count)
    */
   private wrapHandler<T extends any[]>(
     eventType: string,
@@ -101,14 +101,14 @@ export class DeviceCollectorBootstrap
   }
 
   // -----------------------------------------------------------------------
-  //  生命周期
+  //  Lifecycle
   // -----------------------------------------------------------------------
 
   async onApplicationBootstrap(): Promise<void> {
     this.logger.log('CollectorBootstrap starting - waiting for plugin registration...');
 
-    // 订阅设备标签变更事件（模板同步 / 标签修改 → 采集层重载任务）
-    // 通过 wrapHandler 包装，自动记录处理状态和业务效果（#6 事件持久化）
+    // Subscribe to device-tag-changed events (template sync / tag edits -> collector reloads tasks)
+    // Wrapped via wrapHandler to auto-record processing state and business effects (#6 event persistence)
     this.eventBus.on(
       'device.tagsChanged',
       this.wrapHandler(
@@ -147,7 +147,7 @@ export class DeviceCollectorBootstrap
             tagRepo,
           );
 
-          // 驱动切换时同步更新 DeviceStateManager 中的 protocol，避免按协议查询时结果错误
+          // On driver switch, also update the protocol in DeviceStateManager to avoid wrong results when querying by protocol
           let protocolUpdated = false;
           if (event.changeType === 'driver_switch') {
             this.deviceStateManager.registerDevice({
@@ -174,7 +174,7 @@ export class DeviceCollectorBootstrap
       ),
     );
 
-    // ★ 订阅模板同步批量事件 — 分批并行重载所有受影响设备的点表
+    // Subscribe to template-sync batch events - reload all affected devices' point tables in parallel batches
     this.eventBus.on('template.devices-synced', async (event: TemplateDevicesSyncedEvent) => {
       const { deviceIds, projectId, protocol, summary } = event;
       this.logger.log(
@@ -186,7 +186,7 @@ export class DeviceCollectorBootstrap
       const tagRepo = ds.getRepository(DataTag);
       const deviceRepo = ds.getRepository(Device);
 
-      // 分批并行，控制 SQLite 并发上限
+      // Parallel in batches, capping SQLite concurrency
       const BATCH = 15;
       for (let i = 0; i < deviceIds.length; i += BATCH) {
         await Promise.all(
@@ -211,18 +211,18 @@ export class DeviceCollectorBootstrap
       this.logger.log(`模板同步点表重载完成: ${deviceIds.length} 设备`);
     });
 
-    // 订阅项目启用状态变更事件（动态启停采集）
-    // - project:enabled  → 加载该项目设备并注册采集任务
-    // - project:disabled → 停止该项目所有设备任务并注销状态记录
+    // Subscribe to project enable-state change events (dynamic start/stop of collection)
+    // - project:enabled  -> load the project's devices and register collection tasks
+    // - project:disabled -> stop all the project's device tasks and unregister state records
     this.subscribeToProjectStatusChanges();
 
-    // 订阅插件生命周期事件（激活/停用）
+    // Subscribe to plugin lifecycle events (activate/deactivate)
     this.pluginEventAdapter.subscribeToPluginEvents();
 
-    // 启动周期性持久化
+    // Start periodic persistence
     this.devicePersistenceService.startPeriodicPersistence();
 
-    // 监听插件注册完成，就绪后开始加载设备
+    // Listen for plugin registration completion; start loading devices once ready
     this.pluginEventAdapter.listenForPluginsReady(() => {
       this.startDeviceLoading();
     });
@@ -236,7 +236,7 @@ export class DeviceCollectorBootstrap
   }
 
   // -----------------------------------------------------------------------
-  //  IActiveDeviceTracker 实现
+  //  IActiveDeviceTracker implementation
   // -----------------------------------------------------------------------
 
   getActiveDeviceIds(protocol: string): string[] {
@@ -270,21 +270,21 @@ export class DeviceCollectorBootstrap
   }
 
   // -----------------------------------------------------------------------
-  //  项目启用状态变更（动态启停采集）
+  //  Project enable-state change (dynamic start/stop of collection)
   // -----------------------------------------------------------------------
 
   /**
-   * 订阅项目启用状态变更事件
+   * Subscribe to project enable-state change events
    *
-   * - `project:enabled`  → 加载项目设备并注册采集任务，同时纳入 availableProjects
-   * - `project:disabled` → 停止该项目所有设备任务，注销 DeviceStateManager 记录
+   * - `project:enabled`  -> load the project's devices and register collection tasks, also add to availableProjects
+   * - `project:disabled` -> stop all the project's device tasks and unregister DeviceStateManager records
    *
-   * 触发方：ProjectService.update() 检测到 enabled 字段变化时通过 EventBus 发射。
+   * Emitter: ProjectService.update() detects an enabled-field change and emits via EventBus.
    *
-   * 业务效果追踪（#6 事件持久化）：
-   * - 通过 wrapHandler 包装，自动记录处理状态和业务效果
-   * - project:enabled 返回 { devicesLoaded, tasksRegistered, protocolsActive, dataSourceOpened }
-   * - project:disabled 返回 { devicesUnregistered, tasksStopped }
+   * Business-effect tracking (#6 event persistence):
+   * - wrapped via wrapHandler to auto-record processing state and business effects
+   * - project:enabled  returns { devicesLoaded, tasksRegistered, protocolsActive, dataSourceOpened }
+   * - project:disabled returns { devicesUnregistered, tasksStopped }
    */
   private subscribeToProjectStatusChanges(): void {
     this.eventBus.on(
@@ -296,17 +296,17 @@ export class DeviceCollectorBootstrap
           const { projectId } = payload;
           this.logger.log(`Event "project:enabled" received: ${projectId}`);
 
-          // 纳入可用项目列表（去重）
+          // Add to the available-projects list (deduplicated)
           if (!this.availableProjects.includes(projectId)) {
             this.availableProjects.push(projectId);
             this.pluginEventAdapter.setAvailableProjects(this.availableProjects);
           }
 
-          // 加载设备并注册状态（DeviceLoadingService 内部已注册到 DeviceStateManager）
+          // Load devices and register state (DeviceLoadingService already registers them with DeviceStateManager internally)
           const loadedByProtocol =
             await this.deviceLoadingService.loadProjectDevices(projectId);
 
-          // 为加载的设备注册采集任务
+          // Register collection tasks for the loaded devices
           await this.registerTasksForLoadedDevices(loadedByProtocol);
 
           const totalLoaded = Object.values(loadedByProtocol).reduce(
@@ -337,20 +337,20 @@ export class DeviceCollectorBootstrap
           const { projectId } = payload;
           this.logger.log(`Event "project:disabled" received: ${projectId}`);
 
-          // 先注销 DeviceStateManager 中该项目的设备，并拿到设备 ID 列表
+          // First unregister the project's devices from DeviceStateManager and collect their IDs
           const deviceIds = this.deviceStateManager.unregisterProjectDevices(projectId);
 
-          // 停止这些设备的采集任务（注销调度任务并清理 deviceTaskMap）
+          // Stop these devices' collection tasks (unregister scheduled tasks and clean deviceTaskMap)
           this.taskRegistrationService.stopProjectTasks(deviceIds);
 
-          // 从可用项目列表中移除
+          // Remove from the available-projects list
           const idx = this.availableProjects.indexOf(projectId);
           if (idx >= 0) {
             this.availableProjects.splice(idx, 1);
             this.pluginEventAdapter.setAvailableProjects(this.availableProjects);
           }
 
-          // 清理 DeviceLoadingService 中的设备名映射（避免内存泄漏）
+          // Clean the device-name map in DeviceLoadingService (avoid memory leaks)
           for (const deviceId of deviceIds) {
             this.deviceLoadingService.deleteDeviceName(deviceId);
           }
@@ -370,12 +370,12 @@ export class DeviceCollectorBootstrap
   }
 
   // -----------------------------------------------------------------------
-  //  设备加载流程
+  //  Device loading flow
   // -----------------------------------------------------------------------
 
   /**
-   * 启动设备加载流程：
-   * 扫描项目目录 → 加载设备 → 注册采集任务 → 补偿已激活插件
+   * Start the device-loading flow:
+   * scan project directories -> load devices -> register collection tasks -> compensate already-active plugins
    */
   private async startDeviceLoading(): Promise<void> {
     this.logger.log('Starting device loading from project databases...');
@@ -384,16 +384,16 @@ export class DeviceCollectorBootstrap
       const projectsDir = this.resolveProjectsDir();
       const result = await this.deviceLoadingService.loadAllDevices(projectsDir);
 
-      // 更新可用项目列表
+      // Update the available-projects list
       this.availableProjects = this.scanProjectNames(projectsDir);
       this.pluginEventAdapter.setAvailableProjects(this.availableProjects);
 
-      // 为加载的设备注册采集任务
+      // Register collection tasks for the loaded devices
       await this.registerTasksForLoadedDevices(result.loadedByProtocol);
 
       const totalDevices = this.deviceStateManager.getAllStates().size;
       const totalTasks = this.taskRegistrationService.getTaskCount();
-      // 按协议分组的设备统计（诊断用）
+      // Per-protocol device counts (for diagnostics)
       const allStats = this.deviceStateManager.getAllStats();
       const byProtocol: Record<string, number> = {};
       for (const [protocol, stats] of Object.entries(allStats)) {
@@ -403,7 +403,7 @@ export class DeviceCollectorBootstrap
         `Device loading complete: ${totalDevices} devices by protocol: ${JSON.stringify(byProtocol)}, ${totalTasks} tasks registered`,
       );
 
-      // 补偿已激活的插件：若插件在 CollectorBootstrap 订阅前就已激活
+      // Compensate already-active plugins: if a plugin activated before CollectorBootstrap subscribed
       await this.compensateActivePlugins();
     } catch (error) {
       this.logger.error(`Device loading failed: ${(error as Error).message}`);
@@ -411,7 +411,7 @@ export class DeviceCollectorBootstrap
   }
 
   /**
-   * 为已加载的设备注册采集任务
+   * Register collection tasks for already-loaded devices
    */
   private async registerTasksForLoadedDevices(
     loadedByProtocol: Record<string, Device[]>,
@@ -431,7 +431,7 @@ export class DeviceCollectorBootstrap
   }
 
   /**
-   * 补偿已激活的插件：检查哪些活跃插件没有设备记录，重新扫描加载
+   * Compensate already-active plugins: find active plugins with no device records and re-scan/load them
    */
   private async compensateActivePlugins(): Promise<void> {
     const skipDeviceIds = this.taskRegistrationService.getRegisteredDeviceIds();
@@ -455,7 +455,7 @@ export class DeviceCollectorBootstrap
   }
 
   // -----------------------------------------------------------------------
-  //  公开查询 API（供调试/监控）
+  //  Public query API (for debugging/monitoring)
   // -----------------------------------------------------------------------
 
   getDeviceStateEntries(): ReadonlyMap<string, DeviceStateRecord> {
@@ -467,56 +467,56 @@ export class DeviceCollectorBootstrap
   }
 
   // -----------------------------------------------------------------------
-  //  批量设备操作
+  //  Batch device operations
   // -----------------------------------------------------------------------
 
-  /** 启用设备采集 */
+  /** Enable device collection */
   async enableDevice(deviceId: string): Promise<void> {
     this.taskRegistrationService.enableDeviceTasks(deviceId);
   }
 
-  /** 禁用设备采集 */
+  /** Disable device collection */
   async disableDevice(deviceId: string): Promise<void> {
     this.taskRegistrationService.disableDeviceTasks(deviceId);
   }
 
-  /** 批量启用设备 */
+  /** Batch-enable devices */
   async enableDevices(deviceIds: string[]): Promise<{ success: string[]; failed: string[] }> {
     return this.taskRegistrationService.enableDevices(deviceIds);
   }
 
-  /** 批量禁用设备 */
+  /** Batch-disable devices */
   async disableDevices(deviceIds: string[]): Promise<{ success: string[]; failed: string[] }> {
     return this.taskRegistrationService.disableDevices(deviceIds);
   }
 
-  /** 获取设备采集启用状态 */
+  /** Get device collection enable state */
   isDeviceEnabled(deviceId: string): boolean {
     return this.taskRegistrationService.isDeviceTasksEnabled(deviceId);
   }
 
   // -----------------------------------------------------------------------
-  //  工具方法
+  //  Utility methods
   // -----------------------------------------------------------------------
 
   /**
-   * 解析 PROJECTS_DIR 配置为绝对路径
+   * Resolve PROJECTS_DIR to an absolute path
    *
-   * 相对路径基准：
-   * - dev 模式：__dirname 上溯 4 级 = ss-services/ss-node（本文件位于 apps/ss-node-server/src/collector/ 或 dist/collector/）
-   *   .env.ss 中 PROJECTS_DIR=${DATA_DIR}/projects，DATA_DIR=../../ss-run/ss/data 相对于 ss-services/ss-node 解析
-   * - 生产模式：process.cwd() = ss-run/ss/services/ss-node
-   *   .env 中 PROJECTS_DIR=../../data/projects 相对于该目录解析
+   * Relative-path base:
+   * - dev mode:  __dirname up 4 levels = ss-services/ss-node (this file is in apps/ss-node-server/src/collector/ or dist/collector/)
+   *   In .env.ss, PROJECTS_DIR=${DATA_DIR}/projects and DATA_DIR=../../ss-run/ss/data resolves relative to ss-services/ss-node
+   * - prod mode: process.cwd() = ss-run/ss/services/ss-node
+   *   In .env, PROJECTS_DIR=../../data/projects resolves relative to that directory
    *
-   * 修复历史：v1.4 之前用 process.cwd()，dev 模式下 cwd = apps/ss-node-server，
-   * 导致 ../../ss-run/ss/data/projects 被解析为 ss-services/ss-node/ss-run/...（不存在），
-   * DeviceLoadingService 扫描不到项目目录，启动时 "Found 0 project directories"。
-   * 与 project.service.ts getProjectsDir()、app.module.ts getDatabaseConfig() 保持一致。
+   * Fix history: before v1.4 we used process.cwd(), which in dev mode is apps/ss-node-server, so
+   * ../../ss-run/ss/data/projects resolved to ss-services/ss-node/ss-run/... (non-existent) and
+   * DeviceLoadingService found no project directories, printing "Found 0 project directories" at startup.
+   * Kept consistent with project.service.ts getProjectsDir() and app.module.ts getDatabaseConfig().
    */
   private resolveProjectsDir(): string {
     const rawDir = this.configService.get<string>('PROJECTS_DIR') || '';
     if (!rawDir) {
-      // 未配置时，回退到默认项目目录
+      // When unconfigured, fall back to the default project directory
       const fallbackRoot =
         process.env.NODE_ENV === 'production'
           ? process.cwd()
@@ -534,11 +534,11 @@ export class DeviceCollectorBootstrap
   }
 
   /**
-   * 扫描项目目录名列表（仅启用项目）
+   * Scan the list of project directory names (enabled projects only)
    *
-   * 与 DeviceLoadingService.scanProjectDirectories 保持一致：
-   * 读取每个项目的 projectinfo.json，仅返回 enabled === true 的项目。
-   * 停用项目不纳入 availableProjects，避免 compensateActivePlugins 误加载其设备。
+   * Consistent with DeviceLoadingService.scanProjectDirectories: read each project's
+   * projectinfo.json and return only projects where enabled === true. Disabled projects
+   * are excluded from availableProjects so compensateActivePlugins will not wrongly load their devices.
    */
   private scanProjectNames(projectsDir: string): string[] {
     if (!fs.existsSync(projectsDir)) return [];

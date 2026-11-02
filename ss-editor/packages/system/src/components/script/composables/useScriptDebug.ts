@@ -21,16 +21,16 @@ export function useScriptDebug(mode: ScriptEditorMode) {
     isRunning.value = true;
     error.value = null;
 
-    // 使用 setTimeout(0) 让 Vue 响应式更新先渲染到 DOM，
-    // 确保按钮状态切换为"运行中..."后再执行脚本
+    // Use setTimeout(0) so the Vue reactive update renders to the DOM first,
+    // ensuring the button switches to "Running..." before the script executes
     await new Promise<void>((r) => setTimeout(r, 0));
 
     const wrappedCode = wrapScript(code, mode);
     const startTime = performance.now();
 
     try {
-      // 使用 Web Worker 在后台线程执行脚本，真正实现非阻塞执行
-      // 超时后 Worker 会被 terminate，主线程不会卡死
+      // Execute the script in a Web Worker background thread for true non-blocking execution
+      // The Worker is terminated on timeout, so the main thread never hangs
       const workerResult = await executeInWorker(
         {
           script: wrappedCode,
@@ -39,7 +39,7 @@ export function useScriptDebug(mode: ScriptEditorMode) {
           event: mockContext?.event ?? undefined,
         },
         5000,
-        // 实时 API 回调：将 Worker 中的图元操作同步到页面
+        // Real-time API callback: sync graphic operations from the Worker to the page
         (method, args) => {
           const page = pageStore.currentPage;
           if (!page) return;

@@ -3,27 +3,27 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * Editor MCP Tools — P1-T04 编辑器工具注册
+ * Editor MCP Tools — P1-T04 editor tool registration
  *
- * 将编辑器核心操作注册为 MCP 工具，供 AI Agent 调用。
- * 涵盖 6 大操作：
- *   - scene.createPage    创建新页面
- *   - scene.addGraphic    添加图元
- *   - scene_setBinding    设置数据绑定
- *   - scene_setProperty   修改图元属性
- *   - scene_autoLayout    自动布局
- *   - scene.deleteGraphic 删除图元
+ * Registers core editor operations as MCP tools for the AI Agent.
+ * Covers 6 operations:
+ *   - scene.createPage    create a new page
+ *   - scene.addGraphic    add a graphic
+ *   - scene_setBinding    set data binding
+ *   - scene_setProperty   modify graphic properties
+ *   - scene_autoLayout    auto layout
+ *   - scene.deleteGraphic delete a graphic
  *
- * 安全分级：
- *   - LOW：只读操作（查询已注册图元）
- *   - MEDIUM：写入操作（创建/修改/布局）
- *   - HIGH：删除操作（需用户确认）
+ * Safety levels:
+ *   - LOW: read-only operations (query registered graphics)
+ *   - MEDIUM: write operations (create/modify/layout)
+ *   - HIGH: delete operations (user confirmation required)
  *
- * 关联决策：D-004（MCP 协议）、D-008（权限继承）
+ * Related decisions: D-004 (MCP protocol), D-008 (permission inheritance)
  *
- * 用法:
+ * Usage:
  *   import { registerEditorTools } from './editor-tools';
- *   registerEditorTools();  // 在编辑器初始化时调用
+ *   registerEditorTools();  // call during editor initialization
  */
 
 import { GraphicFactory } from '@scada-editor/plugin-sdk';
@@ -32,17 +32,17 @@ import { getCurrentPage, addGraphic, removeGraphic, getGraphicById } from '../st
 import type { IGraphic } from '../types';
 import { toolExecutor, type ToolDefinition, type ToolResult } from './tool-executor';
 
-/** 安全级别 */
+/** Safety level */
 type SafetyLevel = 'LOW' | 'MEDIUM' | 'HIGH';
 
-/** 扩展的编辑器工具定义（含安全级别） */
+/** Extended editor tool definition (with safety level) */
 interface EditorToolDef extends ToolDefinition {
   safetyLevel: SafetyLevel;
   version: string;
 }
 
 // ============================================================
-//  工具定义
+//  Tool definitions
 // ============================================================
 
 const editorTools: EditorToolDef[] = [
@@ -158,7 +158,7 @@ const editorTools: EditorToolDef[] = [
       }
 
       try {
-        // 构建绑定配置
+        // Build the binding config
         const bindingConfig = {
           sourceId: tagId,
           sourcePath: 'value',
@@ -167,7 +167,7 @@ const editorTools: EditorToolDef[] = [
           transform: undefined,
         };
 
-        // 追加到图元的 bindings 属性
+        // Append to the graphic's bindings property
         const currentBindings = graphic.getProps<Array<{ sourceId: string; sourcePath: string; targetPath: string }>>('bindings', []);
         const newBindings = [...currentBindings, bindingConfig];
         graphic.setProps('bindings', newBindings);
@@ -385,14 +385,14 @@ const editorTools: EditorToolDef[] = [
 ];
 
 // ============================================================
-//  注册入口
+//  Registration entry
 // ============================================================
 
 /**
- * 向 ToolExecutor 注册所有编辑器工具。
- * 在编辑器初始化时调用（EditorView onMounted 或插件初始化钩子）。
+ * Register all editor tools with the ToolExecutor.
+ * Call during editor initialization (EditorView onMounted or the plugin init hook).
  *
- * 示例:
+ * Example:
  *   registerEditorTools();
  */
 export function registerEditorTools(): void {
@@ -400,17 +400,17 @@ export function registerEditorTools(): void {
   console.log(`[EditorTools] 已注册 ${editorTools.length} 个编辑器 MCP 工具`);
 }
 
-/** 获取编辑器工具列表（供 system prompt 生成） */
+/** Get the editor tool list (for system prompt generation) */
 export function getEditorToolList(): EditorToolDef[] {
   return [...editorTools];
 }
 
-/** 检查工具是否为高危操作 */
+/** Check whether a tool is a high-risk operation */
 export function isHighRiskTool(toolName: string): boolean {
   return editorTools.find((t) => t.name === toolName)?.safetyLevel === 'HIGH';
 }
 
-/** 按安全级别查询工具 */
+/** Query tools by safety level */
 export function getToolsBySafetyLevel(level: SafetyLevel): EditorToolDef[] {
   return editorTools.filter((t) => t.safetyLevel === level);
 }

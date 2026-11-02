@@ -93,7 +93,7 @@ export class ExecuteScriptDto {
   userId?: string;
 }
 
-/** 异步执行响应 */
+/** Async execution response */
 export class AsyncExecutionResponse {
   executionId: string;
   status: string;

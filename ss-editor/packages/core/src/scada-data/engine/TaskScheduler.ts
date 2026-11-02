@@ -6,27 +6,27 @@ import type { ScheduledTask } from '../types/script.types';
 import { ScriptEngine } from './ScriptEngine';
 
 /**
- * Cron 字段解析器
- * 支持标准 5 字段 Cron 格式：分 时 日 月 星期
- * 支持语法：* (通配)、step (步长)、list (列表)、range (范围)
+ * Cron field parser
+ * Supports the standard 5-field Cron format: minute hour day month weekday
+ * Supported syntax: * (wildcard), step, list, range
  */
 class CronParser {
 
   /**
-   * 计算 Cron 表达式的下一次执行时间
+   * Compute the next execution time of a Cron expression
    */
   static getNextRunTime(cron: string, fromDate: Date = new Date()): number {
     const parts = cron.trim().split(/\s+/);
     if (parts.length < 5) {
-      return fromDate.getTime() + 60000; // 默认每分钟
+      return fromDate.getTime() + 60000; // default every minute
     }
 
     const [minute, hour, dayOfMonth, month, dayOfWeek] = parts;
-    const next = new Date(fromDate.getTime() + 60000); // 至少 1 分钟后
+    const next = new Date(fromDate.getTime() + 60000); // at least 1 minute later
     next.setSeconds(0);
     next.setMilliseconds(0);
 
-    // 最多搜索 366 天，避免死循环
+    // Search at most 366 days to avoid an infinite loop
     const maxIterations = 366 * 24 * 60;
     let iterations = 0;
 
@@ -52,17 +52,17 @@ class CronParser {
       next.setMinutes(next.getMinutes() + 1);
     }
 
-    // 回退：1 分钟后
+    // Fallback: 1 minute later
     return fromDate.getTime() + 60000;
   }
 
   /**
-   * 判断某个字段值是否匹配 Cron 表达式片段
+   * Check whether a field value matches a Cron expression fragment
    */
   private static matchesField(fieldExpr: string, value: number): boolean {
     if (fieldExpr === '*') return true;
 
-    // 逗号分隔的多个值/表达式
+    // Multiple values/expressions separated by commas
     const parts = fieldExpr.split(',');
     for (const part of parts) {
       if (this.matchesPart(part.trim(), value)) return true;
@@ -71,10 +71,10 @@ class CronParser {
   }
 
   /**
-   * 判断单个表达式片段是否匹配
+   * Check whether a single expression fragment matches
    */
   private static matchesPart(part: string, value: number): boolean {
-    // 步长：*/5 或 1-30/5
+    // Step: */5 or 1-30/5
     if (part.includes('/')) {
       const [range, stepStr] = part.split('/');
       const step = parseInt(stepStr, 10);
@@ -93,19 +93,19 @@ class CronParser {
       return value >= start && (value - start) % step === 0;
     }
 
-    // 范围：1-5
+    // Range: 1-5
     if (part.includes('-')) {
       const [rangeStart, rangeEnd] = part.split('-').map(Number);
       return value >= rangeStart && value <= rangeEnd;
     }
 
-    // 精确值
+    // Exact value
     const exact = parseInt(part, 10);
     return value === exact;
   }
 
   /**
-   * 验证 Cron 表达式是否合法
+   * Validate whether a Cron expression is legal
    */
   static validate(cron: string): { valid: boolean; error?: string } {
     const parts = cron.trim().split(/\s+/);
@@ -128,7 +128,7 @@ class CronParser {
   }
 
   /**
-   * 获取 Cron 表达式的可读描述
+   * Get a readable description of a Cron expression
    */
   static describe(cron: string): string {
     const parts = cron.trim().split(/\s+/);
@@ -168,8 +168,8 @@ class CronParser {
 }
 
 /**
- * Cron 定时调度器
- * 负责解析 Cron 表达式并调度脚本执行
+ * Cron scheduler
+ * Parses Cron expressions and schedules script execution
  */
 export class TaskScheduler {
   private static instance: TaskScheduler;
@@ -189,10 +189,10 @@ export class TaskScheduler {
   }
 
   /**
-   * 调度一个脚本按 Cron 表达式执行
+   * Schedule a script to run on a Cron expression
    */
   schedule(scriptId: string, cron: string, params?: Record<string, any>): ScheduledTask {
-    // 验证 Cron 表达式
+    // Validate the Cron expression
     const validation = CronParser.validate(cron);
     if (!validation.valid) {
       throw new Error(`Invalid cron expression: ${validation.error}`);
@@ -216,13 +216,13 @@ export class TaskScheduler {
     return task;
   }
 
-  /** 取消调度任务 */
+  /** Cancel a scheduled task */
   cancel(taskId: string): void {
     this.stopCronTimer(taskId);
     this.tasks.delete(taskId);
   }
 
-  /** 暂停任务 */
+  /** Pause a task */
   pause(taskId: string): void {
     const task = this.tasks.get(taskId);
     if (task) {
@@ -231,7 +231,7 @@ export class TaskScheduler {
     }
   }
 
-  /** 恢复任务 */
+  /** Resume a task */
   resume(taskId: string): void {
     const task = this.tasks.get(taskId);
     if (task) {
@@ -241,38 +241,38 @@ export class TaskScheduler {
     }
   }
 
-  /** 获取所有任务 */
+  /** Get all tasks */
   getAll(): ScheduledTask[] {
     return Array.from(this.tasks.values());
   }
 
-  /** 获取指定脚本的调度任务 */
+  /** Get scheduled tasks of a given script */
   getByScriptId(scriptId: string): ScheduledTask[] {
     return Array.from(this.tasks.values()).filter((t) => t.scriptId === scriptId);
   }
 
   /**
-   * 验证 Cron 表达式
+   * Validate a Cron expression
    */
   static validateCron(cron: string): { valid: boolean; error?: string } {
     return CronParser.validate(cron);
   }
 
   /**
-   * 获取 Cron 表达式可读描述
+   * Get a readable description of a Cron expression
    */
   static describeCron(cron: string): string {
     return CronParser.describe(cron);
   }
 
   /**
-   * 计算 Cron 表达式的下一次执行时间（公开方法）
+   * Compute the next execution time of a Cron expression (public method)
    */
   static getNextRunTime(cron: string, fromDate: Date = new Date()): number {
     return CronParser.getNextRunTime(cron, fromDate);
   }
 
-  /** 启动 Cron 定时器 */
+  /** Start the Cron timer */
   private startCronTimer(taskId: string): void {
     const task = this.tasks.get(taskId);
     if (!task || !task.enabled) return;
@@ -289,19 +289,19 @@ export class TaskScheduler {
         task.lastRunTime = now;
         task.nextRunTime = CronParser.getNextRunTime(task.cron, new Date());
 
-        // 执行脚本
+        // Execute the script
         this.engine.executeAsync(task.scriptId, 'cron').catch((err) => {
           console.error(`TaskScheduler: script ${task.scriptId} execution failed:`, err);
         });
       }
     };
 
-    // 每秒检查一次
+    // Check once per second
     const timerId = setInterval(checkAndRun, 1000);
     this.runningTimers.set(taskId, timerId);
   }
 
-  /** 停止 Cron 定时器 */
+  /** Stop the Cron timer */
   private stopCronTimer(taskId: string): void {
     const timerId = this.runningTimers.get(taskId);
     if (timerId !== undefined) {
@@ -310,7 +310,7 @@ export class TaskScheduler {
     }
   }
 
-  /** 清理所有定时器 */
+  /** Clean up all timers */
   destroy(): void {
     for (const timerId of this.runningTimers.values()) {
       clearInterval(timerId);

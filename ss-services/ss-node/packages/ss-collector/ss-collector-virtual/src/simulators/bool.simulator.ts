@@ -5,7 +5,7 @@
 import { VariableSimulator } from './variable-simulator.interface';
 import { VariableSimulationConfig, BoolParams } from '../simulation-config.types';
 
-/** 布尔值仿真器 */
+/** Boolean simulator */
 export class BoolSimulator implements VariableSimulator {
   private config: BoolParams;
   private simConfig: VariableSimulationConfig;

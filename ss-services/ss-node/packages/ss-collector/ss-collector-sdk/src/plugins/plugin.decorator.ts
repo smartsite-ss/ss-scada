@@ -8,16 +8,16 @@ import { CollectorPluginMeta } from './plugin.types';
 export const COLLECTOR_PLUGIN_META = 'COLLECTOR_PLUGIN_META';
 
 /**
- * 采集插件装饰器
+ * Collection plugin decorator
  *
- * 在协议适配器类上使用，自动注册到 PluginRegistry。
+ * Applied to a protocol adapter class; auto-registers it with the PluginRegistry.
  *
  * @example
  * @CollectorPlugin({
  *   protocol: 'modbus_tcp',
  *   displayName: 'Modbus TCP',
  *   version: '1.0.0',
- *   description: 'Modbus TCP/IP 协议采集插件',
+ *   description: 'Modbus TCP/IP protocol collection plugin',
  *   category: PluginCategory.INDUSTRIAL_BUS,
  *   transport: 'tcp',
  *   connectionSchema: { ... },

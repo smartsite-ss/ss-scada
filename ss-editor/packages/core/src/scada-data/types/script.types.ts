@@ -13,37 +13,37 @@ export interface ScriptResult {
   output?: any;
   error?: string;
   executionTime: number;
-  /** 脚本执行期间收集的 API 调用记录（供调用方处理） */
+  /** API call records collected during script execution (for the caller to process) */
   apiCalls?: Array<{ method: string; args: any[] }>;
 }
 
 export interface ScriptAPI {
-  // ─── 数据读写 ───
+  // ─── Data read/write ───
   readTag(tagId: string): any | null;
   writeTag(tagId: string, value: any): void;
   getTagQuality(tagId: string): string;
-  // ─── 图元操作 ───
+  // ─── Graphic operations ───
   setGraphicProps(graphicId: string, props: Record<string, any>): void;
   showGraphic(graphicId: string): void;
   hideGraphic(graphicId: string): void;
   moveGraphic(graphicId: string, x: number, y: number): void;
   rotateGraphic(graphicId: string, angle: number): void;
-  // ─── 告警操作 ───
+  // ─── Alarm operations ───
   triggerAlarm(config: { tagId: string; level: string; message: string }): void;
   acknowledgeAlarm(alarmId: string): void;
   clearAlarm(alarmId: string): void;
   getActiveAlarms(): any[];
-  // ─── 页面操作 ───
+  // ─── Page operations ───
   switchPage(pageId: string): void;
   getCurrentPageId(): string;
-  // ─── 网络请求 ───
+  // ─── Network requests ───
   fetch(url: string, options?: { method?: string; headers?: Record<string, string>; body?: string }): Promise<any>;
-  // ─── 定时器 ───
+  // ─── Timers ───
   setTimeout(callback: (...args: any[]) => void, delay: number): number;
   setInterval(callback: (...args: any[]) => void, interval: number): number;
   clearTimeout(id: number): void;
   clearInterval(id: number): void;
-  // ─── 工具函数 ───
+  // ─── Utility functions ───
   sleep(ms: number): Promise<void>;
   notify(message: string, level?: 'info' | 'warn' | 'error'): void;
   log(level: 'info' | 'warn' | 'error', message: string): void;
@@ -74,10 +74,10 @@ export const BLOCKED_GLOBALS = new Set([
   'Function', 'constructor', '__proto__',
 ]);
 
-// ─── 脚本类型枚举 ───
+// ─── Script type enum ───
 export type ScriptType = 'client' | 'server' | 'sandbox';
 
-// ─── 脚本定义 ───
+// ─── Script definition ───
 export interface ScriptDefinition {
   id: string;
   name: string;
@@ -95,13 +95,13 @@ export interface ScriptDefinition {
   executeCount: number;
 }
 
-// ─── 脚本编辑器模式 ───
+// ─── Script editor mode ───
 export type ScriptEditorMode = 'filter' | 'driver' | 'interaction' | 'timer' | 'expression';
 
-// ─── 触发器类型 ───
+// ─── Trigger type ───
 export type ScriptTrigger = 'cron' | 'datachange' | 'event' | 'expression' | 'manual';
 
-// ─── 触发器配置 ───
+// ─── Trigger config ───
 export interface ScriptTriggerConfig {
   cron?: string;
   tagIds?: string[];
@@ -110,7 +110,7 @@ export interface ScriptTriggerConfig {
   debounceMs?: number;
 }
 
-// ─── 事件绑定 ───
+// ─── Event binding ───
 export interface EventBinding {
   scriptId: string;
   eventFullName: string;
@@ -118,7 +118,7 @@ export interface EventBinding {
   unsubscribe: () => void;
 }
 
-// ─── 执行上下文 ───
+// ─── Execution context ───
 export interface ExecutionContext {
   scriptId: string;
   scriptName: string;
@@ -131,7 +131,7 @@ export interface ExecutionContext {
   retryCount: number;
 }
 
-// ─── 脚本执行日志 ───
+// ─── Script execution log ───
 export interface ScriptLog {
   id: string;
   scriptId: string;
@@ -145,7 +145,7 @@ export interface ScriptLog {
   apiCalls: Array<{ method: string; args: any[] }>;
 }
 
-// ─── 定时任务 ───
+// ─── Scheduled task ───
 export interface ScheduledTask {
   taskId: string;
   scriptId: string;
@@ -157,7 +157,7 @@ export interface ScheduledTask {
   runCount: number;
 }
 
-// ─── 表达式触发器 ───
+// ─── Expression trigger ───
 export interface ExpressionTrigger {
   id: string;
   scriptId: string;

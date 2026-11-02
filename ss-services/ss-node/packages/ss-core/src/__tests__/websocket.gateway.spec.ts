@@ -166,7 +166,7 @@ describe('ScadaWebSocketGateway', () => {
     jest.restoreAllMocks();
   });
 
-  // ==================== 1.1 WebSocket 连接与认证 ====================
+  // ==================== 1.1 WebSocket connection & authentication ====================
   describe('handleConnection', () => {
     it('should authenticate client with valid JWT token from auth', () => {
       const payload = { sub: 'user-001', username: 'testuser', role: 'admin' };
@@ -263,7 +263,7 @@ describe('ScadaWebSocketGateway', () => {
     });
   });
 
-  // ==================== 心跳 ====================
+  // ==================== Heartbeat ====================
   describe('handlePing', () => {
     it('should respond with pong and connection count', () => {
       mockSocket.handshake!.auth = {};
@@ -282,7 +282,7 @@ describe('ScadaWebSocketGateway', () => {
     });
   });
 
-  // ==================== 房间管理 ====================
+  // ==================== Room management ====================
   describe('subscribe:project', () => {
     it('should join project room and confirm', () => {
       gateway.handleSubscribeProject({ projectId: 'project-001' }, mockSocket as Socket);
@@ -327,7 +327,7 @@ describe('ScadaWebSocketGateway', () => {
     });
   });
 
-  // ==================== 1.2 数据推送 ====================
+  // ==================== 1.2 Data push ====================
   describe('broadcastTagUpdate', () => {
     it('should broadcast tag update to project room', () => {
       const tagData = {
@@ -381,7 +381,7 @@ describe('ScadaWebSocketGateway', () => {
         },
       ];
 
-      // 缓冲模式下，broadcastBatchUpdate 不立即推送，需触发 flush
+      // in buffered mode broadcastBatchUpdate does not push immediately; flush must be triggered
       gateway.broadcastBatchUpdate('project-001', tags);
       (gateway as any).flushBatchUpdates();
 
@@ -394,7 +394,7 @@ describe('ScadaWebSocketGateway', () => {
     });
   });
 
-  // ==================== 1.3 事件通知 — 报警 ====================
+  // ==================== 1.3 Event notification - alarm ====================
   describe('broadcastAlarmTrigger', () => {
     it('should broadcast alarm trigger to project room', () => {
       const alarmData = {
@@ -488,7 +488,7 @@ describe('ScadaWebSocketGateway', () => {
     });
   });
 
-  // ==================== 事件通知 — 设备状态 ====================
+  // ==================== Event notification - device status ====================
   describe('broadcastDeviceStatus', () => {
     it('should broadcast device status to project and device rooms', () => {
       const status = {
@@ -510,7 +510,7 @@ describe('ScadaWebSocketGateway', () => {
     });
   });
 
-  // ==================== 事件通知 — 系统广播 ====================
+  // ==================== Event notification - system broadcast ====================
   describe('broadcastSystem', () => {
     it('should broadcast system message to all clients', () => {
       gateway.broadcastSystem('System maintenance in 5 minutes', { type: 'warning' });
@@ -535,7 +535,7 @@ describe('ScadaWebSocketGateway', () => {
     });
   });
 
-  // ==================== 统计 ====================
+  // ==================== Statistics ====================
   describe('getConnectionCount', () => {
     it('should return 0 when no connections', () => {
       expect(gateway.getConnectionCount()).toBe(0);

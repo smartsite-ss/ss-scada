@@ -2,11 +2,11 @@
 // https://smartsite.top/
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
-// 配置元数据注册表
-// 定义所有系统配置项的元数据：分类、描述、默认值、敏感标识、重启要求等
-// 用于前端 Web 配置页面展示与后端配置校验
+// Configuration metadata registry
+// Defines metadata for all system configuration items: category, description, default value, sensitive flag, restart requirement, etc.
+// Used by the frontend web config page for display and by the backend for config validation
 
-/** 配置分类枚举 */
+/** Configuration category enum */
 export type ConfigCategory =
   | 'application'
   | 'database'
@@ -18,34 +18,34 @@ export type ConfigCategory =
   | 'i18n'
   | 'monitoring';
 
-/** 配置值类型 */
+/** Configuration value type */
 export type ConfigValueType = 'string' | 'number' | 'boolean' | 'enum' | 'password';
 
-/** 配置元数据接口 */
+/** Configuration metadata interface */
 export interface ConfigMetadata {
-  /** 配置键名（与 env 变量名一致，如 PORT、DATABASE_PATH） */
+  /** Configuration key name (same as the env variable name, e.g. PORT, DATABASE_PATH) */
   key: string;
-  /** 所属分类 */
+  /** Owning category */
   category: ConfigCategory;
-  /** 描述（中文） */
+  /** Description (Chinese) */
   description: string;
-  /** 默认值（字符串形式，便于 env 写入） */
+  /** Default value (string form, convenient for env writing) */
   defaultValue?: string;
-  /** 值类型 */
+  /** Value type */
   type: ConfigValueType;
-  /** enum 类型的可选值 */
+  /** Optional values for enum types */
   enumValues?: string[];
-  /** 是否敏感（脱敏显示，加密存储） */
+  /** Whether sensitive (masked display, encrypted storage) */
   sensitive: boolean;
-  /** 是否允许 Web 端修改 */
+  /** Whether modification via the web UI is allowed */
   editable: boolean;
-  /** 是否支持热更新（修改后立即生效） */
+  /** Whether hot-reloadable (takes effect immediately after modification) */
   hotReloadable: boolean;
-  /** 修改后是否需要重启服务 */
+  /** Whether a service restart is required after modification */
   restartRequired: boolean;
-  /** 是否写入 .env 文件（开发环境写入 .env.dev） */
+  /** Whether written to the .env file (dev environment writes .env.dev) */
   envFile: boolean;
-  /** 输入校验规则 */
+  /** Input validation rule */
   validation?: {
     min?: number;
     max?: number;
@@ -53,7 +53,7 @@ export interface ConfigMetadata {
   };
 }
 
-/** 分类显示信息 */
+/** Category display info */
 export const CONFIG_CATEGORY_INFO: Record<
   ConfigCategory,
   { label: string; icon: string; order: number }
@@ -69,7 +69,7 @@ export const CONFIG_CATEGORY_INFO: Record<
   monitoring: { label: '监控阈值', icon: 'health', order: 90 },
 };
 
-/** 配置元数据注册表 — 静态定义所有系统配置项 */
+/** Configuration metadata registry — statically defines all system configuration items */
 export const CONFIG_METADATA_REGISTRY: ConfigMetadata[] = [
   // ==================== application ====================
   {
@@ -614,14 +614,14 @@ export const CONFIG_METADATA_REGISTRY: ConfigMetadata[] = [
   },
 ];
 
-/** 待重启清单的持久化键名 */
+/** Persistence key name for the pending-restart list */
 export const PENDING_RESTART_KEY = '__pending_restart__';
 
-/** 元数据查询工具函数 */
+/** Metadata query utility functions */
 export class ConfigMetadataHelper {
   private static keyMap: Map<string, ConfigMetadata> | null = null;
 
-  /** 根据 key 获取元数据 */
+  /** Get metadata by key */
   static getByKey(key: string): ConfigMetadata | undefined {
     if (!this.keyMap) {
       this.keyMap = new Map();
@@ -632,7 +632,7 @@ export class ConfigMetadataHelper {
     return this.keyMap.get(key);
   }
 
-  /** 获取所有元数据，按分类与顺序排序 */
+  /** Get all metadata, sorted by category and order */
   static getAll(): ConfigMetadata[] {
     return [...CONFIG_METADATA_REGISTRY].sort((a, b) => {
       const orderA = CONFIG_CATEGORY_INFO[a.category].order;
@@ -642,7 +642,7 @@ export class ConfigMetadataHelper {
     });
   }
 
-  /** 按分类分组 */
+  /** Group by category */
   static groupByCategory(): Record<ConfigCategory, ConfigMetadata[]> {
     const result = {} as Record<ConfigCategory, ConfigMetadata[]>;
     for (const meta of CONFIG_METADATA_REGISTRY) {
@@ -652,25 +652,25 @@ export class ConfigMetadataHelper {
     return result;
   }
 
-  /** 获取需重启的配置 key 列表 */
+  /** Get the list of config keys requiring a restart */
   static getRestartRequiredKeys(): string[] {
     return CONFIG_METADATA_REGISTRY.filter((m) => m.restartRequired).map((m) => m.key);
   }
 
-  /** 校验输入值 */
+  /** Validate an input value */
   static validateValue(meta: ConfigMetadata, value: string): { valid: boolean; error?: string } {
     if (!meta.editable) {
       return { valid: false, error: '该配置项不允许 Web 端修改' };
     }
 
-    // enum 校验
+    // enum validation
     if (meta.type === 'enum' && meta.enumValues) {
       if (!meta.enumValues.includes(value)) {
         return { valid: false, error: `值必须是 ${meta.enumValues.join(' / ')} 之一` };
       }
     }
 
-    // number 校验
+    // number validation
     if (meta.type === 'number') {
       const num = Number(value);
       if (Number.isNaN(num)) {
@@ -684,14 +684,14 @@ export class ConfigMetadataHelper {
       }
     }
 
-    // boolean 校验
+    // boolean validation
     if (meta.type === 'boolean') {
       if (!['true', 'false'].includes(value.toLowerCase())) {
         return { valid: false, error: '值必须是 true 或 false' };
       }
     }
 
-    // pattern 校验
+    // pattern validation
     if (meta.validation?.pattern) {
       const regex = new RegExp(meta.validation.pattern);
       if (!regex.test(value)) {

@@ -2,19 +2,19 @@
 // https://smartsite.top/
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
-// 逻辑坐标接口
+// Logical coordinate interface
 export interface LogicalPoint {
   x: number;
   y: number;
 }
 
-// 显示坐标接口
+// Display coordinate interface
 export interface DisplayPoint {
   x: number;
   y: number;
 }
 
-// 矩形接口
+// Rectangle interface
 export interface Rect {
   x: number;
   y: number;
@@ -22,7 +22,7 @@ export interface Rect {
   height: number;
 }
 
-// 视图状态接口
+// View state interface
 export interface ViewState {
   scale: number;
   offset: {
@@ -32,14 +32,14 @@ export interface ViewState {
 }
 
 /**
- * 坐标转换工具类
+ * Coordinate transformation utility class
  */
 export class CoordinateUtils {
   /**
-   * 将逻辑坐标转换为显示坐标
-   * @param logical 逻辑坐标
-   * @param viewState 视图状态（包含缩放比例和偏移）
-   * @returns 显示坐标
+   * Convert logical coordinates to display coordinates
+   * @param logical Logical coordinates
+   * @param viewState View state (contains scale and offset)
+   * @returns Display coordinates
    */
   public static logicalToDisplay(logical: LogicalPoint, viewState: ViewState): DisplayPoint {
     return {
@@ -49,10 +49,10 @@ export class CoordinateUtils {
   }
 
   /**
-   * 将显示坐标转换为逻辑坐标
-   * @param display 显示坐标
-   * @param viewState 视图状态（包含缩放比例和偏移）
-   * @returns 逻辑坐标
+   * Convert display coordinates to logical coordinates
+   * @param display Display coordinates
+   * @param viewState View state (contains scale and offset)
+   * @returns Logical coordinates
    */
   public static displayToLogical(display: DisplayPoint, viewState: ViewState): LogicalPoint {
     return {
@@ -62,10 +62,10 @@ export class CoordinateUtils {
   }
 
   /**
-   * 计算矩形的显示坐标
-   * @param logicalRect 逻辑矩形 {x, y, width, height}
-   * @param viewState 视图状态（包含缩放比例和偏移）
-   * @returns 显示矩形 {x, y, width, height}
+   * Compute the display rectangle from a logical rectangle
+   * @param logicalRect Logical rectangle {x, y, width, height}
+   * @param viewState View state (contains scale and offset)
+   * @returns Display rectangle {x, y, width, height}
    */
   public static logicalRectToDisplay(logicalRect: Rect, viewState: ViewState): Rect {
     return {
@@ -77,10 +77,10 @@ export class CoordinateUtils {
   }
 
   /**
-   * 计算矩形的逻辑坐标
-   * @param displayRect 显示矩形 {x, y, width, height}
-   * @param viewState 视图状态（包含缩放比例和偏移）
-   * @returns 逻辑矩形 {x, y, width, height}
+   * Compute the logical rectangle from a display rectangle
+   * @param displayRect Display rectangle {x, y, width, height}
+   * @param viewState View state (contains scale and offset)
+   * @returns Logical rectangle {x, y, width, height}
    */
   public static displayRectToLogical(displayRect: Rect, viewState: ViewState): Rect {
     return {
@@ -92,10 +92,10 @@ export class CoordinateUtils {
   }
 
   /**
-   * 计算两点之间的距离
-   * @param point1 第一个点
-   * @param point2 第二个点
-   * @returns 两点之间的距离
+   * Compute the distance between two points
+   * @param point1 First point
+   * @param point2 Second point
+   * @returns Distance between the two points
    */
   public static distance(point1: LogicalPoint | DisplayPoint, point2: LogicalPoint | DisplayPoint): number {
     const dx = point2.x - point1.x;
@@ -104,10 +104,10 @@ export class CoordinateUtils {
   }
 
   /**
-   * 检查点是否在矩形内
-   * @param point 点
-   * @param rect 矩形
-   * @returns 点是否在矩形内
+   * Check whether a point lies inside a rectangle
+   * @param point Point
+   * @param rect Rectangle
+   * @returns Whether the point is inside the rectangle
    */
   public static pointInRect(point: LogicalPoint | DisplayPoint, rect: Rect): boolean {
     return point.x >= rect.x && point.x <= rect.x + rect.width &&
@@ -115,10 +115,10 @@ export class CoordinateUtils {
   }
 
   /**
-   * 计算两个矩形的交集
-   * @param rect1 第一个矩形
-   * @param rect2 第二个矩形
-   * @returns 交集矩形，如果没有交集则返回null
+   * Compute the intersection of two rectangles
+   * @param rect1 First rectangle
+   * @param rect2 Second rectangle
+   * @returns The intersection rectangle, or null if there is no overlap
    */
   public static intersectRects(rect1: Rect, rect2: Rect): Rect | null {
     const x = Math.max(rect1.x, rect2.x);
@@ -134,7 +134,7 @@ export class CoordinateUtils {
   }
 }
 
-// 保持向后兼容，导出旧的函数式接口
+// Keep backward compatibility, export the legacy functional interface
 export function logicalToDisplay(logical: LogicalPoint, viewState: ViewState): DisplayPoint {
   return CoordinateUtils.logicalToDisplay(logical, viewState);
 }

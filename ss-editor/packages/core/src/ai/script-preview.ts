@@ -3,35 +3,35 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * Script Preview — P1-T06 脚本预览工具
+ * Script Preview — P1-T06 script preview utility
  *
- * 从 LLM 响应中提取脚本代码，附带触发事件信息，供 AiAssistantPanel 渲染预览。
+ * Extracts script code from the LLM response with trigger event info, for AiAssistantPanel preview rendering.
  *
- * 用法:
+ * Usage:
  *   const preview = buildScriptPreview(llmResponse, triggerMatch);
- *   // preview.code → 提取的脚本代码
- *   // preview.trigger → 匹配的触发事件
- *   // preview.lang → 代码语言
+ *   // preview.code → extracted script code
+ *   // preview.trigger → matched trigger event
+ *   // preview.lang → code language
  */
 
 import { extractCodeBlocks } from './code-parser';
 import type { TriggerMatchResult } from './trigger-matcher';
 
 export interface ScriptPreview {
-  /** 提取的脚本代码（第一个 JavaScript/TypeScript 代码块） */
+  /** Extracted script code (the first JavaScript/TypeScript code block) */
   code: string;
-  /** 代码语言 */
+  /** Code language */
   lang: string;
-  /** 匹配的触发事件信息 */
+  /** Matched trigger event info */
   trigger: TriggerMatchResult;
-  /** LLM 响应的文本部分（非代码） */
+  /** Text portion of the LLM response (non-code) */
   text: string;
 }
 
 /**
- * 从 LLM 响应构建脚本预览
- * @param llmResponse LLM 返回的完整响应
- * @param trigger 已匹配的触发事件（来自 triggerMatcher）
+ * Build a script preview from an LLM response
+ * @param llmResponse the LLM's full response
+ * @param trigger the matched trigger event (from triggerMatcher)
  */
 export function buildScriptPreview(
   llmResponse: string,
@@ -39,7 +39,7 @@ export function buildScriptPreview(
 ): ScriptPreview {
   const blocks = extractCodeBlocks(llmResponse);
 
-  // 优先选取 JavaScript/TypeScript 代码块
+  // Prefer JavaScript/TypeScript code blocks
   const jsBlock = blocks.find((b) =>
     ['javascript', 'js', 'typescript', 'ts'].includes(b.lang),
   );
@@ -49,12 +49,12 @@ export function buildScriptPreview(
     code: code.trim(),
     lang: jsBlock?.lang || 'javascript',
     trigger,
-    text: '', // 调用方自行设置
+    text: '', // set by the caller
   };
 }
 
 /**
- * 从 ScriptPreview 生成可插入的脚本代码（含触发事件注释头）
+ * Generate insertable script code from a ScriptPreview (with trigger event comment header)
  */
 export function generateInsertableCode(preview: ScriptPreview): string {
   const header = buildTriggerComment(preview.trigger);
@@ -62,7 +62,7 @@ export function generateInsertableCode(preview: ScriptPreview): string {
 }
 
 /**
- * 根据触发事件生成注释头
+ * Generate the comment header from the trigger event
  */
 function buildTriggerComment(trigger: TriggerMatchResult): string {
   const ts = new Date().toISOString().split('T')[0];

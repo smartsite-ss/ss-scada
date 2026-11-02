@@ -284,8 +284,8 @@ export class DeviceDiagnosticService {
     );
 
     try {
-      // 诊断写入通过 HTTP 直接构造连接进行协议写入
-      // 正式反控请使用 DeviceControlService.writeTagValue()
+      // Diagnostic writes construct a connection directly over HTTP for the protocol write
+      // For formal reverse control use DeviceControlService.writeTagValue()
       const net = require('net');
 
       if (options.host) {

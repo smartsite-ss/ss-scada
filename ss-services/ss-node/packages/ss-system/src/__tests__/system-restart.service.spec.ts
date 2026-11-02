@@ -9,7 +9,7 @@ import * as path from 'path';
 import * as os from 'os';
 import { SystemRestartService, RestartState } from '../restart/system-restart.service';
 
-// Mock child_process.spawn 以避免真正派生子进程
+// Mock child_process.spawn to avoid actually spawning child processes
 jest.mock('child_process', () => ({
   spawn: jest.fn(() => ({
     pid: 99999,
@@ -18,7 +18,7 @@ jest.mock('child_process', () => ({
   })),
 }));
 
-// 保留 fs 真实实现，仅 existsSync 可被 mock（fs.existsSync 在 Node.js 中是不可配置属性）
+// Keep the real fs implementation; only existsSync can be mocked (fs.existsSync is a non-configurable property in Node.js)
 jest.mock('fs', () => {
   const actual = jest.requireActual('fs');
   return {
@@ -37,7 +37,7 @@ describe('SystemRestartService', () => {
   beforeAll(() => {
     tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'restart-test-'));
     process.env.DATA_DIR = tempDir;
-    // 确保不处于 PM2 / Docker 环境
+    // Ensure we are not in a PM2 / Docker environment
     delete process.env.PM2_HOME;
     delete process.env.pm_id;
   });
@@ -50,10 +50,10 @@ describe('SystemRestartService', () => {
   });
 
   beforeEach(async () => {
-    // 使用 fake timers 以控制 setTimeout（避免 process.exit 的 1s 延迟真正执行）
+    // Use fake timers to control setTimeout (avoiding process.exit's 1s delay actually running)
     jest.useFakeTimers();
 
-    // 重置 spawn mock
+    // Reset the spawn mock
     spawnMock = require('child_process').spawn as jest.Mock;
     spawnMock.mockClear();
     spawnMock.mockImplementation(() => ({
@@ -62,14 +62,14 @@ describe('SystemRestartService', () => {
       on: jest.fn(),
     }));
 
-    // 重置 fs.existsSync mock 为真实实现
+    // Reset the fs.existsSync mock to the real implementation
     (fs.existsSync as jest.Mock).mockImplementation(jest.requireActual('fs').existsSync);
 
-    // Mock process.exit 防止测试进程退出
+    // Mock process.exit to prevent the test process from exiting
     originalProcessExit = process.exit;
     (process as any).exit = jest.fn((code?: number) => undefined as never);
 
-    // 清理 marker 文件
+    // Clean up marker files
     markerPath = path.join(tempDir, '.restart-marker.json');
     if (fs.existsSync(markerPath)) {
       fs.unlinkSync(markerPath);
@@ -86,16 +86,16 @@ describe('SystemRestartService', () => {
   });
 
   afterEach(() => {
-    // 恢复 process.exit
+    // Restore process.exit
     (process as any).exit = originalProcessExit;
 
-    // 恢复 real timers
+    // Restore real timers
     jest.useRealTimers();
 
-    // 清理所有 mock
+    // Clean up all mocks
     jest.clearAllMocks();
 
-    // 清理 marker 文件
+    // Clean up marker files
     if (fs.existsSync(markerPath)) {
       fs.unlinkSync(markerPath);
     }
@@ -182,13 +182,13 @@ describe('SystemRestartService', () => {
       expect(result.oldPid).toBe(process.pid);
       expect(result.markerPath).toBe(markerPath);
 
-      // 验证 marker 文件已写入
+      // Verify the marker file was written
       expect(fs.existsSync(markerPath)).toBe(true);
       const marker = JSON.parse(fs.readFileSync(markerPath, 'utf-8'));
       expect(marker.status).toBe('restarting');
       expect(marker.triggeredBy).toBe(username);
 
-      // 验证 spawn 被调用
+      // Verify spawn was called
       expect(spawnMock).toHaveBeenCalledTimes(1);
       const [cmd, args, options] = spawnMock.mock.calls[0];
       expect(cmd).toBe('node');
@@ -197,33 +197,33 @@ describe('SystemRestartService', () => {
       expect(options.detached).toBe(true);
       expect(options.stdio).toBe('ignore');
 
-      // 验证 isRestarting 状态
+      // Verify the isRestarting state
       expect(service.isCurrentlyRestarting()).toBe(true);
 
-      // 推进 timers 触发 process.exit
+      // Advance timers to trigger process.exit
       jest.advanceTimersByTime(1100);
       expect(process.exit as jest.Mock).toHaveBeenCalledWith(0);
     });
 
     it('TC-RESTART-011: 并发触发应抛出 BadRequestException', async () => {
-      // 先触发一次
+      // Trigger once first
       await service.triggerRestart('admin');
 
-      // 第二次应抛出异常
+      // The second time should throw
       await expect(service.triggerRestart('admin')).rejects.toThrow(/重启已在进行中/);
 
-      // 推进 timers 让 setTimeout 执行
+      // Advance timers so setTimeout runs
       jest.advanceTimersByTime(1100);
     });
 
     it('TC-RESTART-012: 冷却期内再次触发应抛出异常', async () => {
-      // 直接操作私有字段模拟刚触发过重启的场景
-      // 因为 process.exit 被 mock，进程不退出，isRestarting 仍为 true
-      // 先重置 isRestarting，再设置 lastRestartAt 为当前时间
+      // Manipulate private fields directly to simulate a just-triggered restart
+      // Because process.exit is mocked, the process does not exit and isRestarting stays true
+      // Reset isRestarting first, then set lastRestartAt to the current time
       (service as any).isRestarting = false;
       (service as any).lastRestartAt = Date.now();
 
-      // 冷却期内（30 秒）应抛出异常
+      // Within the cooldown period (30 seconds) it should throw
       await expect(service.triggerRestart('admin')).rejects.toThrow(/重启冷却期内/);
     });
 
@@ -236,7 +236,7 @@ describe('SystemRestartService', () => {
     });
 
     it('TC-RESTART-014: Docker 环境应抛出友好提示', async () => {
-      // Mock fs.existsSync：检测到 /.dockerenv 文件存在
+      // Mock fs.existsSync: the /.dockerenv file is detected as existing
       const realExistsSync = jest.requireActual('fs').existsSync;
       (fs.existsSync as jest.Mock).mockImplementation((p: fs.PathLike) => {
         if (p.toString() === '/.dockerenv') return true;
@@ -247,7 +247,7 @@ describe('SystemRestartService', () => {
     });
 
     it('TC-RESTART-015: restarter.js 不存在时应标记为 failed', async () => {
-      // Mock fs.existsSync：restarter.js 候选路径返回 false，其他正常
+      // Mock fs.existsSync: restarter.js candidate paths return false, others normal
       const realExistsSync = jest.requireActual('fs').existsSync;
       (fs.existsSync as jest.Mock).mockImplementation((p: fs.PathLike) => {
         const pStr = p.toString();
@@ -257,7 +257,7 @@ describe('SystemRestartService', () => {
 
       await expect(service.triggerRestart('admin')).rejects.toThrow(/Restarter script not found/);
 
-      // 验证 marker 状态为 failed
+      // Verify the marker status is failed
       const marker = JSON.parse(fs.readFileSync(markerPath, 'utf-8'));
       expect(marker.status).toBe('failed');
       expect(marker.errorMessage).toMatch(/Restarter script not found/);
@@ -288,7 +288,7 @@ describe('SystemRestartService', () => {
       expect(status.status).toBe('restarting');
       expect(status.markerPath).toBe(markerPath);
 
-      // 推进 timers
+      // Advance timers
       jest.advanceTimersByTime(1100);
     });
 
@@ -392,16 +392,16 @@ describe('SystemRestartService', () => {
       await service.triggerRestart('admin');
       expect(service.isCurrentlyRestarting()).toBe(true);
 
-      // 推进 timers
+      // Advance timers
       jest.advanceTimersByTime(1100);
     });
   });
 
-  // ==================== 边界与集成场景 ====================
+  // ==================== Boundary and integration scenarios ====================
 
   describe('集成场景', () => {
     it('TC-RESTART-060: 完整重启流程 - onModuleInit 检测到重启完成状态', async () => {
-      // 1. 模拟上一个进程写入 restarting 状态
+      // 1. Simulate the previous process writing the restarting status
       const oldState: RestartState = {
         status: 'restarting',
         triggeredBy: 'admin',
@@ -411,21 +411,21 @@ describe('SystemRestartService', () => {
       };
       fs.writeFileSync(markerPath, JSON.stringify(oldState, null, 2), 'utf-8');
 
-      // 2. 新服务启动时调用 onModuleInit
+      // 2. The new service calls onModuleInit at startup
       await service.onModuleInit();
 
-      // 3. 验证状态已更新为 ready
+      // 3. Verify the status has been updated to ready
       const status = service.getRestartStatus();
       expect(status.status).toBe('ready');
       expect(status.triggeredBy).toBe('admin');
       expect(status.oldPid).toBe(12345);
       expect(status.newPid).toBe(process.pid);
 
-      // 4. 清理 marker
+      // 4. Clean up the marker
       service.clearMarker();
       expect(fs.existsSync(markerPath)).toBe(false);
 
-      // 5. 状态回到 idle
+      // 5. Status returns to idle
       const finalStatus = service.getRestartStatus();
       expect(finalStatus.status).toBe('idle');
     });

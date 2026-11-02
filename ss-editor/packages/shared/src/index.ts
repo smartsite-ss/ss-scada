@@ -7,20 +7,20 @@ export { default as ColorField } from './ColorField.vue';
 export { default as PluginConfigPanel } from './PluginConfigPanel.vue';
 export { default as SsLoading } from './SsLoading.vue';
 
-// Cron 表达式编辑控件
+// Cron expression editor control
 export { default as CronExpressionInput } from './components/CronExpressionInput.vue';
 
-// 字典 UI 控件
+// Dictionary UI controls
 export { default as DictSelector } from './components/DictSelector.vue';
 export { default as DictLabel } from './components/DictLabel.vue';
 
-// 时间范围选择器
+// Time range picker
 export { default as TimeRangePicker } from './components/TimeRangePicker.vue';
 export type { TimeRange } from './components/TimeRangePicker.types';
 export { useDict } from './composables/useDict';
 export type { DictItem, DictTable, DictOption } from './composables/useDict';
 
-// SmartTable 通用列表组件
+// SmartTable generic data-table components
 export { default as SmartTable } from './smart-table/SmartTable.vue';
 export { default as SmartTableCore } from './smart-table/SmartTableCore.vue';
 export { default as SmartTablePagination } from './smart-table/SmartTablePagination.vue';
@@ -56,7 +56,7 @@ export { exportToCsv } from './smart-table/utils/export-csv';
 export { exportToImage } from './smart-table/utils/export-image';
 export { applyFormatter, getNestedValue } from './smart-table/utils/formatters';
 
-// 图表基座（跨 chart / system 分类复用）
+// Chart base (shared across chart / system categories)
 export {
   registerChartModules,
   buildContainerStyle,
@@ -73,10 +73,10 @@ export type {
   TrendChartOptionInput,
 } from './chart';
 
-// 图表数据源抽象（static / api / database）
+// Chart data source abstraction (static / api / database)
 export * from './chart/data-source';
 
-// 分类图表 option 组装器（bar / pie / radar / gauge）
+// Categorical chart option builders (bar / pie / radar / gauge)
 export {
   buildBarChartOption,
   buildPieChartOption,

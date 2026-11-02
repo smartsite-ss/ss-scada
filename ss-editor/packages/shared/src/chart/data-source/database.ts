@@ -8,7 +8,7 @@ import type {
   DatabaseSourceConfig,
 } from './types';
 
-/** database 数据源所依赖的「取数 + 订阅」基础设施（由插件层注入，避免 shared 反向依赖 system） */
+/** Infrastructure (fetch + subscribe) that the database data source depends on (injected by the plugin layer to avoid shared reverse-depending on system) */
 export interface DatabaseDataSourceDeps {
   dataQueryApi: {
     queryTrend: (params: {
@@ -38,14 +38,14 @@ export interface DatabaseDataSourceDeps {
     subscribeTags: (tagIds: string[]) => void;
     unsubscribeTags: (tagIds: string[]) => void;
     getTagValue: (tagId: string) => unknown;
-    /** 连接状态：编辑态可能在绑定后才建立连接，未连接时暂不订阅，连接后补订阅 */
+    /** Connection status: in edit mode the connection may be established only after binding, so don't subscribe while disconnected and resubscribe once connected */
     isConnected?: boolean;
   };
 }
 
-/** database 数据源（在 ChartDataSource 基础上扩展实时最新值读取能力） */
+/** Database data source (extends ChartDataSource with realtime latest-value reading) */
 export interface DatabaseDataSource extends ChartDataSource {
-  /** 读取 wsStore 中绑定变量的实时最新值并通知监听器（供 gauge/水球/进度/柱/饼/雷达实时刷新） */
+  /** Read the realtime latest values of bound variables from wsStore and notify listeners (for gauge/liquid/progress/bar/pie/radar realtime refresh) */
   readLatest(): ChartDataResult;
 }
 
@@ -64,8 +64,8 @@ function tagName(config: DatabaseSourceConfig, tagId: string): string {
 }
 
 /**
- * 数据库（变量相关）数据源：绑定 tag 变量，时序走 queryTrend、最新值走 getLatest、
- * 聚合统计走 getAggregated；实时订阅走 wsStore。
+ * Database (variable-related) data source: bind tag variables; time-series via queryTrend,
+ * latest via getLatest, aggregation via getAggregated; realtime subscription via wsStore.
  */
 export function createDatabaseDataSource(
   config: DatabaseSourceConfig,
@@ -124,8 +124,8 @@ export function createDatabaseDataSource(
   }
 
   async function loadLatest(): Promise<ChartDataResult> {
-    // latest 模式实时值统一由 WebSocket 提供（tagFlushVersion 驱动 readLatest 刷新），
-    // 不再通过 HTTP /data/latest 拉取基线，避免命中不存在的端点报错。
+    // latest-mode realtime values are uniformly provided by WebSocket (readLatest refresh driven by tagFlushVersion);
+    // no longer fetched via HTTP /data/latest to avoid hitting a non-existent endpoint and erroring.
     return readLatest();
   }
 
@@ -191,8 +191,8 @@ export function createDatabaseDataSource(
     if (subscribed) return;
     const ids = tagIds();
     if (ids.length === 0) return;
-    // 编辑态 wsStore 可能在图元绑定后才建立连接；未连接时暂不订阅，
-    // 待 useChartSource 监听到 isConnected 后调用 subscribe() 补订阅。
+    // In edit mode the wsStore connection may be established only after the graphic is bound;
+    // don't subscribe while disconnected, resubscribe once useChartSource detects isConnected.
     if (deps.wsStore.isConnected === false) return;
     deps.wsStore.subscribeTags(ids);
     subscribed = true;

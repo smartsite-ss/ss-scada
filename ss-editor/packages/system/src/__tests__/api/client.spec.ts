@@ -12,14 +12,14 @@ import {
 } from '../../api/client';
 
 /**
- * S-C03: Token 存储改为内存（不再使用 localStorage）
+ * S-C03: Token storage changed to in-memory (no longer using localStorage)
  *
- * Token 通过 HttpOnly Cookie 由后端管理，前端仅在内存中维护标记。
- * 这些测试验证内存读写的正确性。
+ * Tokens are managed by the backend via HttpOnly Cookie; the frontend only maintains a flag in memory.
+ * These tests verify the correctness of the in-memory read/write.
  */
 describe('token management', () => {
   beforeEach(() => {
-    // 测试间通过 clearTokens 重置内存状态
+    // Reset the in-memory state via clearTokens between tests
     clearTokens();
   });
 

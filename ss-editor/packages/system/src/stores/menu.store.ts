@@ -8,26 +8,26 @@ import type { SystemMenuItem, SystemRole } from '../config/system-menu.config';
 import client from '../api/client';
 
 export const useMenuStore = defineStore('system-menu', () => {
-  // DB 唯一数据源：初始为空数组，由 loadMenu() 从后端加载
+  // DB-as-single-source-of-truth: initially an empty array, loaded from the backend by loadMenu()
   const items = ref<SystemMenuItem[]>([]);
   const loading = ref(false);
   const error = ref<string | null>(null);
-  /** 标记是否已加载过远程菜单 */
+  /** Flag whether remote menus have been loaded */
   const loaded = ref(false);
-  /** 当前子系统标识，从 window.__SUBSYSTEM__ 读取 */
+  /** Current subsystem identifier, read from window.__SUBSYSTEM__ */
   const currentSubsystem = ref<string | null>(
     (typeof window !== 'undefined' && (window as any).__SUBSYSTEM__) || null
   );
 
-  /** 设置当前子系统 */
+  /** Set the current subsystem */
   function setSubsystem(subsystem: string | null) {
     currentSubsystem.value = subsystem;
   }
 
   /**
-   * 加载远程菜单（异步，成功则填充 items）
-   * 兼容 TransformInterceptor 包装格式：{ code, data, message, timestamp }
-   * DB 唯一数据源方案：加载失败时保持空数组，不再 fallback 到本地默认值
+   * Load remote menus (async; fills items on success)
+   * Compatible with the TransformInterceptor-wrapped format: { code, data, message, timestamp }
+   * DB-as-single-source-of-truth: on load failure the empty array is kept, no local defaults fallback
    */
   async function loadMenu() {
     loading.value = true;
@@ -38,8 +38,8 @@ export const useMenuStore = defineStore('system-menu', () => {
         params.subsystem = currentSubsystem.value;
       }
       const response = await client.get('/system/menu', { params });
-      // TransformInterceptor 包装：response.data = { code, data: [...], message, timestamp }
-      // 非包装格式（raw array）：response.data = [...]
+      // TransformInterceptor-wrapped: response.data = { code, data: [...], message, timestamp }
+      // Unwrapped format (raw array): response.data = [...]
       const menuData: unknown = response.data?.data ?? response.data;
       if (Array.isArray(menuData)) {
         items.value = menuData as SystemMenuItem[];
@@ -47,22 +47,22 @@ export const useMenuStore = defineStore('system-menu', () => {
       loaded.value = true;
     } catch (e: any) {
       error.value = e.message || '菜单加载失败';
-      // 保持空数组，不 fallback
+      // Keep the empty array, no fallback
     } finally {
       loading.value = false;
     }
   }
 
   /**
-   * 根据角色过滤可见菜单
-   * @param menu 菜单列表
-   * @param role 当前用户角色，null/undefined 表示未登录用户
-   * @returns 过滤后的菜单列表，递归处理子菜单
-   * @deprecated v7.1 起改用 filterByMenuIds。仅保留供测试与回滚参考，业务代码不应再调用。
+   * Filter visible menus by role
+   * @param menu Menu list
+   * @param role Current user role; null/undefined means a not-logged-in user
+   * @returns The filtered menu list, with sub-menus processed recursively
+   * @deprecated Replaced by filterByMenuIds since v7.1. Kept only for testing and rollback reference; business code should not call it.
    */
   function filterByRole(menu: SystemMenuItem[], role?: SystemRole | null): SystemMenuItem[] {
     if (!role) {
-      // 未登录用户只看无角色限制的菜单
+      // Not-logged-in users only see menus without role restrictions
       return menu.filter(item => !item.roles || item.roles.length === 0);
     }
 
@@ -75,18 +75,18 @@ export const useMenuStore = defineStore('system-menu', () => {
   }
 
   /**
-   * 按角色 menuIds 过滤可见菜单（v7.1 新机制，替代 filterByRole）
+   * Filter visible menus by role menuIds (new mechanism in v7.1, replacing filterByRole)
    *
-   * 规则：
-   * - admin（isAdmin=true）：返回全部菜单
-   * - 非 admin：只保留 menuIds 中存在的项
-   * - 父菜单自身未勾选但有子菜单被勾选：作为容器保留，仅展示被勾选的子项
-   * - 父菜单自身勾选：保留，其子菜单也按 menuIds 过滤（过滤后为空则 children 为 undefined）
-   * - menuIds 为空/undefined：返回空数组
+   * Rules:
+   * - admin (isAdmin=true): return all menus
+   * - Non-admin: keep only items present in menuIds
+   * - A parent menu unchecked but with checked children: kept as a container, showing only the checked children
+   * - A parent menu checked: kept, its children are also filtered by menuIds (children become undefined if empty after filtering)
+   * - menuIds empty/undefined: return an empty array
    *
-   * @param menu 完整菜单树
-   * @param ids 当前角色 menuIds 列表
-   * @param isAdmin 是否为 admin（bypass 过滤）
+   * @param menu The full menu tree
+   * @param ids The current role menuIds list
+   * @param isAdmin Whether the user is admin (bypasses filtering)
    */
   function filterByMenuIds(
     menu: SystemMenuItem[],
@@ -100,22 +100,22 @@ export const useMenuStore = defineStore('system-menu', () => {
 
     for (const item of menu) {
       const selfSelected = idSet.has(item.id);
-      // 递归过滤子菜单（子层固定非 admin，避免误判）
+      // Recursively filter sub-menus (child levels are always non-admin to avoid misjudgment)
       const filteredChildren = item.children?.length
         ? filterByMenuIds(item.children, ids, false)
         : undefined;
 
       if (selfSelected) {
-        // 自身被勾选：保留，附带过滤后的子菜单（为空则置 undefined，作为叶子节点）
+        // Self checked: keep, with the filtered children (set undefined when empty, as a leaf node)
         result.push({
           ...item,
           children: filteredChildren && filteredChildren.length > 0 ? filteredChildren : undefined,
         });
       } else if (filteredChildren && filteredChildren.length > 0) {
-        // 自身未勾选但有子菜单被勾选：作为容器保留
+        // Self unchecked but with checked children: keep as a container
         result.push({ ...item, children: filteredChildren });
       }
-      // 否则丢弃
+      // Otherwise discard
     }
     return result;
   }

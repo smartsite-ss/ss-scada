@@ -3,24 +3,24 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * OpenAI 兼容 Provider — 统一处理所有 OpenAI 兼容 API 格式的 LLM 供应商
+ * OpenAI-compatible Provider - uniformly handles all LLM providers with OpenAI-compatible API formats
  *
- * 支持的供应商（通过 providerId 区分）：
- *   国内：DeepSeek、智谱 GLM、通义千问 Qwen、Kimi（月之暗面）、文心一言 ERNIE
- *   国际：OpenAI、Anthropic Claude、Google Gemini、Mistral AI
- *   自定义：任意 OpenAI 兼容端点
+ * Supported providers (distinguished by providerId):
+ *   Domestic: DeepSeek, Zhipu GLM, Tongyi Qianwen Qwen, Kimi (Moonshot), Wenxin Yiyan ERNIE
+ *   International: OpenAI, Anthropic Claude, Google Gemini, Mistral AI
+ *   Custom: any OpenAI-compatible endpoint
  *
- * 所有上述供应商均支持 OpenAI 兼容 API 格式：
- *   - Chat 端点：POST {apiBase}/chat/completions
- *   - Embeddings 端点：POST {apiBase}/embeddings
- *   - 鉴权：Bearer Token
- *   - 流式输出：SSE（Server-Sent Events）
+ * All the above providers support the OpenAI-compatible API format:
+ *   - Chat endpoint: POST {apiBase}/chat/completions
+ *   - Embeddings endpoint: POST {apiBase}/embeddings
+ *   - Auth: Bearer Token
+ *   - Streaming output: SSE (Server-Sent Events)
  *
- * 关联决策：
- *   - D-001 云端 API 优先（多供应商统一接入）
- *   - D-002 LLM 模型选型（国内外常用模型）
- *   - D-009 SSE 流式输出
- *   - D-010 多供应商路由 + 降级
+ * Related decisions:
+ *   - D-001 cloud API first (unified multi-provider access)
+ *   - D-002 LLM model selection (common domestic/international models)
+ *   - D-009 SSE streaming output
+ *   - D-010 multi-provider routing + fallback
  */
 
 import { Injectable, Logger } from '@nestjs/common';
@@ -43,7 +43,7 @@ import {
   parseSSEStream,
 } from './http-client.util';
 
-/** OpenAI 兼容的 Chat 响应格式 */
+/** OpenAI-compatible Chat response format */
 interface OpenAIChatResponse {
   id: string;
   object: string;
@@ -69,7 +69,7 @@ interface OpenAIChatResponse {
   };
 }
 
-/** OpenAI 兼容的流式响应片段 */
+/** OpenAI-compatible streaming chunk */
 interface OpenAIStreamChunk {
   id: string;
   object: string;
@@ -96,7 +96,7 @@ interface OpenAIStreamChunk {
   };
 }
 
-/** OpenAI 兼容的 Embedding 响应格式 */
+/** OpenAI-compatible Embedding response format */
 interface OpenAIEmbeddingResponse {
   model: string;
   data: Array<{ index: number; embedding: number[]; object: string }>;
@@ -107,10 +107,10 @@ interface OpenAIEmbeddingResponse {
 }
 
 /**
- * 统一的 OpenAI 兼容 Provider 实现
+ * Unified OpenAI-compatible Provider implementation
  *
- * 通过 providerId 区分不同供应商，一个实例对应一个供应商。
- * 在 AI Module 中通过工厂为每个预置供应商创建独立实例。
+ * Distinguished by providerId; one instance per provider.
+ * Created as separate instances for each preset provider via a factory in the AI Module.
  */
 @Injectable()
 export class OpenAICompatibleProvider implements ILLMProvider {
@@ -317,7 +317,7 @@ export class OpenAICompatibleProvider implements ILLMProvider {
     const activeConfig = this.config!;
     const startTs = Date.now();
     try {
-      // 通过一次极简 chat 请求探测可用性（使用 lite 模型降低成本）
+      // Probe availability with one minimal chat request (use lite model to reduce cost)
       await httpRequest({
         method: 'POST',
         url: `${activeConfig.apiBase}/chat/completions`,
@@ -344,7 +344,7 @@ export class OpenAICompatibleProvider implements ILLMProvider {
     return this.health;
   }
 
-  // -------- 私有方法 --------
+  // -------- Private methods --------
 
   private buildRequestBody(req: LLMRequest, model: string, stream: boolean): Record<string, any> {
     const body: Record<string, any> = {
@@ -381,7 +381,7 @@ export class OpenAICompatibleProvider implements ILLMProvider {
         if (err instanceof HttpTimeoutError) {
           this.logger.warn(`请求超时（第 ${attempt}/${max} 次重试）`);
         } else if (err instanceof HttpError) {
-          // 4xx 客户端错误不重试
+          // 4xx client errors are not retried
           if (err.statusCode >= 400 && err.statusCode < 500) {
             throw err;
           }

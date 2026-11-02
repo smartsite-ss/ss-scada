@@ -9,21 +9,21 @@ import type { ShardRef } from '../plugins/isolation/isolation.types';
 import { EnhancedScheduler } from './scheduler/enhanced-scheduler';
 
 /**
- * 设备配置变更监听器
+ * Device config-change watcher
  *
- * 监听 device.created / updated / deleted 事件，同步更新采集层的连接和调度任务。
- * 所有 EventBus 操作都在主进程内完成，隔离体通过 executor IPC 接收 connect/disconnect 指令。
+ * Listens for device.created / updated / deleted events and synchronously updates the collector layer's connections and scheduled tasks.
+ * All EventBus operations run in the main process; the isolation body receives connect/disconnect commands via executor IPC.
  *
- * 业务效果追踪（#6 事件持久化）：
- * - 每个 handler 通过 EventLogService.wrapSubscriber 包装，自动记录处理状态和业务效果
- * - handler 返回 { connectionId, tagsLoaded, tasksRegistered, deviceOnline } 等业务效果对象
- * - 失败时抛出异常，由 wrapSubscriber 捕获并记录为 failed
+ * Business-effect tracking (#6 event persistence):
+ * - Each handler is wrapped via EventLogService.wrapSubscriber, which automatically records processing status and business effects
+ * - The handler returns business-effect objects such as { connectionId, tagsLoaded, tasksRegistered, deviceOnline }
+ * - On failure it throws an exception, which wrapSubscriber captures and records as failed
  */
 @Injectable()
 export class DeviceConfigWatcher implements OnModuleInit {
   private readonly logger = new Logger(DeviceConfigWatcher.name);
 
-  /** 当前活跃的设备 → ShardRef / TaskRef 映射 */
+  /** Current active device -> ShardRef / TaskRef map */
   private activeDevices = new Map<string, { shard: ShardRef }>();
 
   constructor(
@@ -31,15 +31,15 @@ export class DeviceConfigWatcher implements OnModuleInit {
     @Optional() private readonly pluginRegistry?: PluginRegistry,
     @Optional() private readonly isolationFactory?: IsolationFactory,
     @Optional() private readonly scheduler?: EnhancedScheduler,
-    /** 事件日志服务 — 用于追踪 handler 的处理结果和业务效果（#6 事件持久化） */
+    /** Event-log service - used to track each handler's processing result and business effect (#6 event persistence) */
     @Optional() private readonly eventLogService?: EventLogService,
   ) {}
 
   onModuleInit(): void {
-    // 包装 helper：
-    // - 若 EventLogService 可用，通过 wrapSubscriber 自动记录处理状态和业务效果
-    // - 外层 try/catch 捕获 wrapSubscriber 重新抛出的错误，避免 EventBus.emit（同步）
-    //   未 await async handler 导致的 unhandled rejection
+    // Wrap helper:
+    // - If EventLogService is available, wrapSubscriber automatically records processing status and business effects
+    // - The outer try/catch captures errors rethrown by wrapSubscriber, avoiding unhandled rejection from the synchronous EventBus.emit
+    //   unhandled rejection caused by not awaiting an async handler
     const wrap = <T extends any[]>(
       eventType: string,
       handler: (...args: T) => Promise<Record<string, any> | void>,
@@ -54,7 +54,7 @@ export class DeviceConfigWatcher implements OnModuleInit {
             await handler(...args);
           };
 
-      // 外层捕获：wrapSubscriber 失败时会重新抛出，这里捕获以防止 unhandled rejection
+      // Outer capture: wrapSubscriber rethrows on failure; catch here to prevent unhandled rejection
       return async (...args: T) => {
         try {
           await traced(...args);
@@ -75,10 +75,10 @@ export class DeviceConfigWatcher implements OnModuleInit {
   }
 
   /**
-   * 设备新增 → 建立连接 + 注册调度任务
+   * Device created -> establish connection + register scheduled task
    *
-   * 业务效果：返回 connectionId、设备是否上线、连接是否新建
-   * 失败时抛出异常（由 wrapSubscriber 记录为 failed）
+   * Business effect: returns connectionId, whether the device is online, and whether the connection was newly created
+   * On failure it throws (recorded as failed by wrapSubscriber)
    */
   private async onDeviceCreated(event: {
     deviceId: string;
@@ -89,7 +89,7 @@ export class DeviceConfigWatcher implements OnModuleInit {
   }): Promise<Record<string, any>> {
     this.logger.log(`Device created: ${event.deviceId} (${event.protocol})`);
 
-    // ensureConnection 失败会抛出，由 wrapSubscriber 捕获
+    // ensureConnection throws on failure and is captured by wrapSubscriber
     const connectionId = await this.ensureConnection(
       event.deviceId,
       event.protocol,
@@ -100,16 +100,16 @@ export class DeviceConfigWatcher implements OnModuleInit {
       connectionId,
       deviceOnline: true,
       connectionRebuilt: false,
-      tagsLoaded: 0, // 标签加载由 EnhancedScheduler / CollectorBootstrap 处理
-      tasksRegistered: 0, // 任务注册由 EnhancedScheduler 处理
+      tagsLoaded: 0, // tag loading is handled by EnhancedScheduler / CollectorBootstrap
+      tasksRegistered: 0, // task registration is handled by EnhancedScheduler
       protocol: event.protocol,
     };
   }
 
   /**
-   * 设备更新 → 按 changedFields 执行增量操作
+   * Device updated -> apply incremental operations based on changedFields
    *
-   * 业务效果：返回各字段处理结果（连接是否重建、scanRate 是否更新、是否触发 tagsChanged）
+   * Business effect: returns per-field results (whether the connection was rebuilt, scanRate updated, tagsChanged triggered)
    */
   private async onDeviceUpdated(event: {
     deviceId: string;
@@ -143,7 +143,7 @@ export class DeviceConfigWatcher implements OnModuleInit {
       deviceOnline: false,
     };
 
-    // 通道配置变更：断开旧连接 → 建立新连接
+    // Channel config changed: disconnect old connection -> establish new connection
     if (changedFields.includes('connection') && event.connection) {
       await this.disconnectDevice(deviceId);
       const newConnectionId = await this.ensureConnection(
@@ -158,7 +158,7 @@ export class DeviceConfigWatcher implements OnModuleInit {
       this.logger.log(`Device ${deviceId} connection rebuilt`);
     }
 
-    // 采集驱动变更：断开旧连接 → 用新驱动重建连接 → 重载任务
+    // Collection driver changed: disconnect old connection -> rebuild with new driver -> reload tasks
     if (changedFields.includes('driver') && event.driver) {
       await this.disconnectDevice(deviceId);
       const newConnectionId = await this.ensureConnection(
@@ -166,7 +166,7 @@ export class DeviceConfigWatcher implements OnModuleInit {
         event.driver,
         event.connection || {},
       );
-      // 驱动变更后需要 reload，emit tagsChanged 让上层重载任务
+      // After a driver change a reload is needed; emit tagsChanged so the upper layer reloads tasks
       this.eventBus.emit('device.tagsChanged', {
         deviceId,
         projectId: event.projectId,
@@ -184,7 +184,7 @@ export class DeviceConfigWatcher implements OnModuleInit {
       );
     }
 
-    // 采集频率变更：更新调度器
+    // Collection frequency changed: update the scheduler
     if (changedFields.includes('scanRate') && event.scanRate) {
       if (this.scheduler) {
         const updated = this.scheduler.updateTaskInterval(deviceId, event.scanRate);
@@ -201,7 +201,7 @@ export class DeviceConfigWatcher implements OnModuleInit {
       }
     }
 
-    // 标签变更：转发 device.tagsChanged 事件，由上层 CollectorBootstrap 执行任务重载
+    // Tag change: forward the device.tagsChanged event; the upper-layer CollectorBootstrap reloads tasks
     if (changedFields.includes('tags')) {
       this.eventBus.emit('device.tagsChanged', {
         deviceId,
@@ -215,7 +215,7 @@ export class DeviceConfigWatcher implements OnModuleInit {
       this.logger.log(`Device ${deviceId} tags changed, emitted tagsChanged event`);
     }
 
-    // 如果未处理任何字段但仍调用，标记设备在线（如果已有连接）
+    // If no field was handled but it was still called, mark the device online (if a connection already exists)
     if (result.fieldsProcessed.length === 0) {
       result.deviceOnline = this.activeDevices.has(deviceId);
       result.connectionId =
@@ -226,9 +226,9 @@ export class DeviceConfigWatcher implements OnModuleInit {
   }
 
   /**
-   * 设备删除 → 断开连接 + 移除调度任务
+   * Device deleted -> disconnect + remove scheduled task
    *
-   * 业务效果：返回连接是否已关闭、设备是否从采集层移除
+   * Business effect: returns whether the connection was closed and whether the device was removed from the collector layer
    */
   private async onDeviceDeleted(event: {
     deviceId: string;
@@ -247,7 +247,7 @@ export class DeviceConfigWatcher implements OnModuleInit {
   }
 
   /**
-   * 设备启用 → 复用 onDeviceCreated 流程
+   * Device enabled -> reuse the onDeviceCreated flow
    */
   private async onDeviceEnabled(event: {
     deviceId: string;
@@ -261,7 +261,7 @@ export class DeviceConfigWatcher implements OnModuleInit {
   }
 
   /**
-   * 设备禁用 → 复用 onDeviceDeleted 流程
+   * Device disabled -> reuse the onDeviceDeleted flow
    */
   private async onDeviceDisabled(event: {
     deviceId: string;
@@ -271,12 +271,12 @@ export class DeviceConfigWatcher implements OnModuleInit {
   }
 
   /**
-   * 确保设备连接已建立，支持三种隔离模式
-   * - in_process: 直接调用 adapter.connect()
-   * - worker_thread/child_process: 通过 executor.connect()
+   * Ensure the device connection is established, supporting three isolation modes
+   * - in_process: call adapter.connect() directly
+   * - worker_thread/child_process: call executor.connect()
    *
-   * @returns connectionId（用于业务效果追踪）
-   * @throws 连接失败时抛出异常
+   * @returns connectionId (used for business-effect tracking)
+   * @throws throws when the connection fails
    */
   async ensureConnection(
     deviceId: string,
@@ -300,9 +300,9 @@ export class DeviceConfigWatcher implements OnModuleInit {
   }
 
   /**
-   * 断开设备连接，支持三种隔离模式
+   * Disconnect the device, supporting three isolation modes
    *
-   * @returns 是否实际断开了已有连接（false 表示设备本就不在线）
+   * @returns whether an existing connection was actually disconnected (false means the device was not online)
    */
   async disconnectDevice(deviceId: string): Promise<boolean> {
     const record = this.activeDevices.get(deviceId);
@@ -314,7 +314,7 @@ export class DeviceConfigWatcher implements OnModuleInit {
         await executor.disconnect(record.shard);
       }
     } catch (err) {
-      // 断开失败不抛出，避免影响后续 ensureConnection
+      // Disconnect failure is not thrown, to avoid affecting subsequent ensureConnection
       this.logger.warn(
         `disconnectDevice ${deviceId} failed (will still remove from active map): ${(err as Error).message}`,
       );

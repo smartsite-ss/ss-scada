@@ -50,7 +50,7 @@ export function useCanvasExport(options: CanvasExportOptions) {
   };
 
   const previewGraphic = () => {
-    // 预览功能 - 可后续扩展
+    // Preview feature - can be extended later
   };
 
   return {

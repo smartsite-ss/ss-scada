@@ -5,16 +5,16 @@
 import { QueryBuilder, QueryOptions } from '@ss-node/ss-storage';
 
 /**
- * Flux 查询方言构建器（InfluxDB 2）。
+ * Flux query dialect builder (InfluxDB 2).
  *
- * 从 InfluxdbAdapterService.buildFluxQuery() 抽取，语句结构保持不变：
+ * Extracted from InfluxdbAdapterService.buildFluxQuery(); statement structure unchanged:
  * from(bucket) |> range |> filter(measurement) |> filter(tagIds) |> filter(field)
- *   [|> aggregateWindow / 聚合] [|> interpolate.linear / fill] |> sort |> limit |> pivot
+ *   [|> aggregateWindow / aggregation] [|> interpolate.linear / fill] |> sort |> limit |> pivot
  *
- * 插值映射（§6.2）：
- * - raw：aggregateWindow(createEmpty: false)，空窗跳过（现状）；
- * - linear：aggregateWindow(createEmpty: true) |> interpolate.linear(every)；
- * - step：aggregateWindow(createEmpty: true) |> fill(usePrevious: true)。
+ * Interpolation mapping (§6.2):
+ * - raw: aggregateWindow(createEmpty: false), empty windows skipped (status quo);
+ * - linear: aggregateWindow(createEmpty: true) |> interpolate.linear(every);
+ * - step: aggregateWindow(createEmpty: true) |> fill(usePrevious: true).
  */
 export class FluxQueryBuilder implements QueryBuilder {
   buildQuery(options: QueryOptions, isolation: { name: string }): string {
@@ -23,30 +23,30 @@ export class FluxQueryBuilder implements QueryBuilder {
 
     let query = `from(bucket: "${isolation.name}")`;
 
-    // 时间范围
+    // Time range
     const start = startTime ? startTime.toISOString() : '-30d';
     const stop = endTime ? endTime.toISOString() : 'now()';
     query += `\n  |> range(start: ${start}, stop: ${stop})`;
 
-    // measurement 过滤
+    // measurement filter
     query += `\n  |> filter(fn: (r) => r["_measurement"] == "tag_values")`;
 
-    // tagId 过滤
+    // tagId filter
     if (tagIds && tagIds.length > 0) {
       const tagFilters = tagIds.map((id) => `r["tagId"] == "${id}"`).join(' or ');
       query += `\n  |> filter(fn: (r) => ${tagFilters})`;
     }
 
-    // deviceId 过滤
+    // deviceId filter
     if (deviceIds && deviceIds.length > 0) {
       const deviceFilters = deviceIds.map((id) => `r["deviceId"] == "${id}"`).join(' or ');
       query += `\n  |> filter(fn: (r) => ${deviceFilters})`;
     }
 
-    // field 过滤
+    // field filter
     query += `\n  |> filter(fn: (r) => r["_field"] == "value" or r["_field"] == "value_text" or r["_field"] == "quality")`;
 
-    // 聚合 + 插值
+    // Aggregation + interpolation
     if (aggregation) {
       const windowDuration = aggregation.interval ? this.parseInterval(aggregation.interval) : '';
       if (windowDuration) {
@@ -69,17 +69,17 @@ export class FluxQueryBuilder implements QueryBuilder {
       }
     }
 
-    // 排序
+    // Sorting
     if (order) {
       query += `\n  |> sort(columns: ["_time"], desc: ${order === 'desc'})`;
     }
 
-    // 分页
+    // Pagination
     if (limit) {
       query += `\n  |> limit(n: ${limit}, offset: ${offset || 0})`;
     }
 
-    // 行列转换
+    // Row/column pivot
     query += `\n  |> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")`;
 
     return query;

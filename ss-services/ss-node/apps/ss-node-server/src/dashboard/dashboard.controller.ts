@@ -3,10 +3,10 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 首页仪表盘聚合接口（02 模块）
+ * Homepage dashboard aggregation endpoint (module 02)
  *
  * GET /projects/:projectId/dashboard/summary
- * 返回设备五态统计 + 当日报警分级计数 + 活跃未确认报警数（服务端 30s 缓存）
+ * Returns device five-state stats + today's alarm severity counts + active unacknowledged alarm count (server-side 30s cache)
  */
 import { Controller, Get, Param, Query, Req, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiQuery } from '@nestjs/swagger';

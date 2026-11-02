@@ -3,16 +3,16 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 组件级请求取消 composable
+ * Component-level request cancellation composable
  *
- * 在组件 onUnmounted 时自动取消所有未完成的请求，防止内存泄漏和状态更新错误。
+ * Automatically cancels all unfinished requests on component unmount, preventing memory leaks and invalid state updates.
  *
- * 使用方式：
+ * Usage:
  *   const { signal, cancelAll } = useRequestCancel();
  *   onMounted(() => {
  *     fetchProjects(signal).then(data => projects.value = data);
  *   });
- *   // 组件卸载时自动调用 cancelAll()
+ *   // cancelAll() is called automatically when the component unmounts
  */
 
 import { onUnmounted } from 'vue';

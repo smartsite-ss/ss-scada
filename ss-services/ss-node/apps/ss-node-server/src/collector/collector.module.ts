@@ -15,26 +15,26 @@ import { PluginEventAdapter } from './plugin-event-adapter';
 import { ACTIVE_DEVICE_TRACKER } from '@ss-node/ss-collector-sdk';
 
 /**
- * 采集启动模块
+ * Collector bootstrap module
  *
- * 标记为 @Global() 以使 ACTIVE_DEVICE_TRACKER 令牌对 PluginModule（ss-core）中的
- * PluginManagerService 可见。否则 @Optional() 注入会静默返回 undefined，
- * 导致 getAllDeviceStats() 返回空对象，前端设备统计始终为 0。
+ * Marked @Global() so the ACTIVE_DEVICE_TRACKER token is visible to PluginManagerService
+ * inside PluginModule (ss-core). Otherwise the @Optional() injection silently returns undefined,
+ * making getAllDeviceStats() return an empty object and the frontend device stats stay at 0.
  *
- * PluginRegistry 通过 @Global PluginModule（AppModule 中 forRoot）全局注入。
+ * PluginRegistry is injected globally via @Global PluginModule (forRoot in AppModule).
  *
- * 显式导入的模块：
- * - SystemModule    → TemplateLoaderService（设备模板标签加载）
- * - SchedulerModule → EnhancedScheduler
- * - EventBusModule  → EventBusService
- * - DeviceModule    → Device/DataTag/DeviceGroup 实体（向全局 ProjectDatabaseService 注册）
+ * Explicitly imported modules:
+ * - SystemModule    -> TemplateLoaderService (device-template tag loading)
+ * - SchedulerModule -> EnhancedScheduler
+ * - EventBusModule  -> EventBusService
+ * - DeviceModule    -> Device/DataTag/DeviceGroup entities (registered with the global ProjectDatabaseService)
  *
- * 内部服务拆分：
- * - DeviceLoadingService       → 设备加载与状态注册
- * - TaskRegistrationService    → 采集任务注册与管理
- * - DevicePersistenceService   → 设备状态持久化
- * - PluginEventAdapter         → 插件事件处理
- * - DeviceCollectorBootstrap   → 协调层（IActiveDeviceTracker 实现）
+ * Internal service split:
+ * - DeviceLoadingService       -> device loading and state registration
+ * - TaskRegistrationService    -> collection-task registration and management
+ * - DevicePersistenceService   -> device-state persistence
+ * - PluginEventAdapter         -> plugin event handling
+ * - DeviceCollectorBootstrap   -> coordination layer (IActiveDeviceTracker implementation)
  */
 @Global()
 @Module({

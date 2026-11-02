@@ -6,20 +6,20 @@ import { ref, onUnmounted, type Ref } from 'vue';
 import { useWsStore } from '@scada-editor/system';
 
 /**
- * useWsTagSubscription — WebSocket 标签订阅统一管理
+ * useWsTagSubscription — Unified WebSocket tag subscription management
  *
- * 抽取自 PreviewCanvas / TagSourceSelector / DataSourceConfigDialog
- * 中重复的 wsStore 调用模式：
- * 1. 按需 connect(projectId)
- * 2. subscribeTags(tagIds) + 跟踪本组件订阅的 tagIds
- * 3. onUnmounted 时自动 unsubscribeTags 释放引用计数
+ * Extracted from the duplicated wsStore call patterns in
+ * PreviewCanvas / TagSourceSelector / DataSourceConfigDialog:
+ * 1. Connect on demand via connect(projectId)
+ * 2. subscribeTags(tagIds) + tracking of the tagIds subscribed by this component
+ * 3. Automatically unsubscribeTags on unmount to release reference counts
  *
- * 注意：wsStore 管理连接与订阅状态，BindingManager 管 graphicId↔tagId 属性映射，
- * 二者职责不同，本 composable 仅统一 wsStore 调用入口，不影响 BindingManager。
+ * Note: wsStore manages connection and subscription state, BindingManager manages graphicId↔tagId property mapping;
+ * their responsibilities differ. This composable only unifies the wsStore call entry point and does not affect BindingManager.
  */
 export function useWsTagSubscription(projectId: Ref<string> | string) {
   const wsStore = useWsStore();
-  /** 本组件订阅的标签 ID 列表（onUnmounted 时取消订阅） */
+  /** List of tag IDs subscribed by this component (unsubscribed on unmount) */
   const subscribedTagIds = ref<string[]>([]);
 
   function resolveProjectId(): string {
@@ -27,7 +27,7 @@ export function useWsTagSubscription(projectId: Ref<string> | string) {
   }
 
   /**
-   * 确保 WebSocket 已连接到指定项目；如未连接则自动建立连接。
+   * Ensure the WebSocket is connected to the specified project; connect automatically if not.
    */
   async function ensureConnected(): Promise<void> {
     const pid = resolveProjectId();
@@ -38,8 +38,8 @@ export function useWsTagSubscription(projectId: Ref<string> | string) {
   }
 
   /**
-   * 订阅指定标签并跟踪订阅列表（用于后续取消订阅）。
-   * 重复订阅同一标签是安全的（wsStore 内部会去重）。
+   * Subscribe to the specified tags and track the subscription list (for later unsubscription).
+   * Subscribing to the same tag repeatedly is safe (wsStore deduplicates internally).
    */
   async function subscribe(tagIds: string[]): Promise<void> {
     if (tagIds.length === 0) return;
@@ -50,7 +50,7 @@ export function useWsTagSubscription(projectId: Ref<string> | string) {
   }
 
   /**
-   * 取消订阅指定标签（从本组件跟踪列表中移除）。
+   * Unsubscribe from the specified tag (removes it from this component's tracking list).
    */
   function unsubscribe(tagIds: string[]): void {
     if (tagIds.length === 0) return;
@@ -60,7 +60,7 @@ export function useWsTagSubscription(projectId: Ref<string> | string) {
   }
 
   /**
-   * 取消订阅本组件所有已订阅标签。
+   * Unsubscribe from all tags subscribed by this component.
    */
   function unsubscribeAll(): void {
     if (subscribedTagIds.value.length > 0) {
@@ -70,7 +70,7 @@ export function useWsTagSubscription(projectId: Ref<string> | string) {
   }
 
   /**
-   * 获取标签实时值（从 wsStore.tagValues 读取）。
+   * Get a tag's real-time value (read from wsStore.tagValues).
    */
   function getTagValue(tagId: string): { value: unknown; quality: string; timestamp: number } | null {
     const entry = wsStore.tagValues.get(tagId);
@@ -82,7 +82,7 @@ export function useWsTagSubscription(projectId: Ref<string> | string) {
     };
   }
 
-  // 组件卸载时自动释放订阅
+  // Automatically release subscriptions when the component unmounts
   onUnmounted(() => {
     unsubscribeAll();
   });

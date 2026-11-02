@@ -162,7 +162,7 @@ describe('AuthorizationService', () => {
 
     it('should default permission to read when not provided in setProjectAuths', async () => {
       const auths: ProjectAuthDto[] = [
-        { roleId: 'role-1', projectId: 'proj-1' }, // 未指定 permission
+        { roleId: 'role-1', projectId: 'proj-1' }, // no permission specified
       ];
 
       await service.setProjectAuths('role-1', auths);
@@ -502,7 +502,7 @@ describe('AuthorizationService', () => {
     });
   });
 
-  // ──────── Device Group ID Derivation (v8.0: 从设备授权推导，废弃独立分组授权表) ────────
+  // ──────── Device Group ID Derivation (v8.0: derived from device authorization; standalone group-auth table deprecated) ────────
 
   describe('Device Group ID Derivation (v8.0)', () => {
     it('TC-DEV-GROUP-001: should return ["*"] for admin role', async () => {
@@ -615,7 +615,7 @@ describe('AuthorizationService', () => {
     });
   });
 
-  // ──────── Device Permission Project Validation (v8.0 新增) ────────
+  // ──────── Device Permission Project Validation (new in v8.0) ────────
 
   describe('Device Permission Project Validation (v8.0)', () => {
     it('TC-DEV-AUTH-017: should deny when device projectId mismatches input projectId', async () => {
@@ -694,7 +694,7 @@ describe('AuthorizationService', () => {
     });
   });
 
-  // ──────── Tag Authorization（原 tag-authorization.spec.ts 合并，TC-TAG-AUTH-xxx 编号保留） ────────
+  // ──────── Tag Authorization (merged from tag-authorization.spec.ts; TC-TAG-AUTH-xxx IDs retained) ────────
 
   describe('Tag Authorization', () => {
     it('TC-TAG-AUTH-003: should get tag auths for a role and project', async () => {
@@ -953,7 +953,7 @@ describe('AuthorizationService', () => {
   });
 });
 
-/** 创建模拟 Repository */
+/** Create a mock Repository */
 function createMockRepo<T>(): jest.Mocked<Repository<T>> {
   return {
     find: jest.fn().mockResolvedValue([]),

@@ -15,15 +15,16 @@ import {
 import { FluxQueryBuilder } from './query/flux-query.builder';
 import { FluxCsvParser } from './parse/flux-csv.parser';
 
-// CODE-05: 单次 InfluxDB fetch 超时（ms），避免半挂时无限等待阻塞 event loop
+// CODE-05: per-InfluxDB-fetch timeout (ms), preventing an indefinitely hung request from blocking the event loop
 const FETCH_TIMEOUT_MS = 5000;
 
 /**
- * InfluxDB 2.x 适配器（引擎类型 influxdb2）。
+ * InfluxDB 2.x adapter (engine type influxdb2).
  *
- * P1 抽象收敛后：缓冲批写 / 失败重试 / 关闭 flush / 读取传输骨架 继承 InfluxBaseAdapter，
- * Line Protocol 序列化复用 serializeLineProtocol，查询方言走 FluxQueryBuilder，
- * 结果归一化走 FluxCsvParser —— 写入/读取行为与收敛前保持一致。
+ * After the P1 abstraction consolidation: buffered batch writes / failure retry / close flush / the read transport
+ * skeleton are inherited from InfluxBaseAdapter, Line Protocol serialization reuses serializeLineProtocol,
+ * query dialects go through FluxQueryBuilder, and result normalization through FluxCsvParser —
+ * write/read behavior is identical to before the consolidation.
  */
 @Injectable()
 export class InfluxdbAdapterService
@@ -34,7 +35,7 @@ export class InfluxdbAdapterService
   readonly engineType = STORAGE_ENGINE_TYPES.INFLUXDB2;
   readonly capabilities: AdapterCapabilities = {
     delete: true,
-    interpolation: true, // Flux interpolate.linear / fill(usePrevious) 原生支持
+    interpolation: true, // Flux interpolate.linear / fill(usePrevious) natively supported
     aggregation: true,
   };
   protected readonly logger = new Logger(InfluxdbAdapterService.name);
@@ -66,7 +67,7 @@ export class InfluxdbAdapterService
     void this.close();
   }
 
-  // ──────────── 写入钩子：POST /api/v2/write ────────────
+  // ──────────── Write hook: POST /api/v2/write ────────────
 
   protected async sendBatch(points: DataPoint[]): Promise<void> {
     const lines = serializeLineProtocol(points);
@@ -80,7 +81,7 @@ export class InfluxdbAdapterService
           'Content-Type': 'text/plain; charset=utf-8',
         },
         body: lines,
-        // CODE-05: fetch 加 5s 超时
+        // CODE-05: add a 5s timeout to fetch
         signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
       },
     );
@@ -91,7 +92,7 @@ export class InfluxdbAdapterService
     }
   }
 
-  // ──────────── 读取钩子：POST /api/v2/query（Flux） ────────────
+  // ──────────── Read hook: POST /api/v2/query (Flux) ────────────
 
   protected async buildReadRequest(options: QueryOptions): Promise<EngineReadRequest> {
     const fluxQuery = this.queryBuilder.buildQuery(options, { name: this.influxBucket });
@@ -143,7 +144,7 @@ export class InfluxdbAdapterService
           start: '1970-01-01T00:00:00Z',
           stop: (before || new Date()).toISOString(),
         }),
-        // CODE-05: fetch 加 5s 超时
+        // CODE-05: add a 5s timeout to fetch
         signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
       });
 
@@ -167,7 +168,7 @@ export class InfluxdbAdapterService
       const response = await fetch(`${this.influxUrl}/health`, {
         method: 'GET',
         headers: { Authorization: `Token ${this.influxToken}` },
-        // CODE-05: fetch 加 5s 超时
+        // CODE-05: add a 5s timeout to fetch
         signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
       });
 

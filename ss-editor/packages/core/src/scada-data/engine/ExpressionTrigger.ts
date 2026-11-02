@@ -6,8 +6,8 @@ import type { ExpressionTrigger } from '../types/script.types';
 import { ScriptEngine } from './ScriptEngine';
 
 /**
- * 表达式触发器
- * 基于表达式解析条件，当标签值变化满足条件时触发脚本
+ * Expression trigger
+ * Parses conditions from expressions; triggers scripts when tag value changes satisfy the condition
  */
 export class ExpressionTriggerManager {
   private static instance: ExpressionTriggerManager;
@@ -29,7 +29,7 @@ export class ExpressionTriggerManager {
   }
 
   /**
-   * 设置事件总线，用于自动订阅 data:changed 事件
+   * Set the event bus, used to auto-subscribe to data:changed events
    */
   setEventBus(bus: any): void {
     this.eventBus = bus;
@@ -37,7 +37,7 @@ export class ExpressionTriggerManager {
   }
 
   /**
-   * 注册表达式触发器
+   * Register an expression trigger
    */
   register(config: Omit<ExpressionTrigger, 'lastEvaluatedAt' | 'lastTriggeredAt'>): ExpressionTrigger {
     const trigger: ExpressionTrigger = {
@@ -49,7 +49,7 @@ export class ExpressionTriggerManager {
     return trigger;
   }
 
-  /** 注销触发器 */
+  /** Unregister a trigger */
   unregister(triggerId: string): void {
     this.triggers.delete(triggerId);
     const timer = this.debounceTimers.get(triggerId);
@@ -60,7 +60,7 @@ export class ExpressionTriggerManager {
   }
 
   /**
-   * 当标签值变化时，评估所有匹配的触发器
+   * When a tag value changes, evaluate all matching triggers
    */
   evaluate(tagId: string, tagValue: any): void {
     for (const trigger of this.triggers.values()) {
@@ -69,7 +69,7 @@ export class ExpressionTriggerManager {
 
       trigger.lastEvaluatedAt = Date.now();
 
-      // 防抖处理
+      // Debounce handling
       const existingTimer = this.debounceTimers.get(trigger.id);
       if (existingTimer !== undefined) {
         clearTimeout(existingTimer);
@@ -90,27 +90,27 @@ export class ExpressionTriggerManager {
   }
 
   /**
-   * 自动订阅 data:changed 事件，对有 tagIds 配置的触发器自动监听
-   * 当触发器的 trigger.type === 'datachange' 时，自动注册数据变化监听
+   * Auto-subscribe to data:changed events; triggers with tagIds config are automatically listened
+   * When trigger.type === 'datachange', a data change listener is auto-registered
    */
   private subscribeToDataChange(): void {
     if (!this.eventBus) return;
 
-    // 取消之前的订阅
+    // Cancel the previous subscription
     this.dataChangeUnsubscribe?.();
 
     this.dataChangeUnsubscribe = this.eventBus.on?.('data:changed', (payload: any) => {
       const { tagId, value } = payload ?? {};
       if (tagId === undefined) return;
 
-      // 找到所有匹配此 tagId 的触发器
+      // Find all triggers matching this tagId
       for (const trigger of this.triggers.values()) {
         if (!trigger.enabled) continue;
         if (!trigger.tagIds.includes(tagId)) continue;
 
         trigger.lastEvaluatedAt = Date.now();
 
-        // 防抖处理
+        // Debounce handling
         const existingTimer = this.debounceTimers.get(trigger.id);
         if (existingTimer !== undefined) {
           clearTimeout(existingTimer);
@@ -132,8 +132,8 @@ export class ExpressionTriggerManager {
   }
 
   /**
-   * 评估表达式是否满足条件
-   * 例如：expression = "value > 80" → 传入 { value: 85 } → true
+   * Evaluate whether an expression satisfies the condition
+   * Example: expression = "value > 80" → pass { value: 85 } → true
    */
   private evaluateExpression(expression: string, tagValue: any): boolean {
     try {
@@ -144,12 +144,12 @@ export class ExpressionTriggerManager {
     }
   }
 
-  /** 获取所有触发器 */
+  /** Get all triggers */
   getAll(): ExpressionTrigger[] {
     return Array.from(this.triggers.values());
   }
 
-  /** 清理 */
+  /** Cleanup */
   destroy(): void {
     this.dataChangeUnsubscribe?.();
     this.dataChangeUnsubscribe = null;

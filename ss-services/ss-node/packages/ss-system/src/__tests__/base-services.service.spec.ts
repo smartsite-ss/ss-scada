@@ -14,7 +14,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 
-// 仅 mock 文件系统与子进程相关的外部依赖，保留业务逻辑真实可测
+// Mock only the filesystem and child-process external dependencies, keeping the business logic genuinely testable
 jest.mock('fs');
 jest.mock('child_process');
 
@@ -32,11 +32,11 @@ describe('BaseServicesService', () => {
   });
 
   beforeEach(async () => {
-    // 全局 setup.ts 启用了 fake timers，但本测试涉及真实 setTimeout（启动等待等）
-    // 需切换回真实定时器
+    // The global setup.ts enables fake timers, but this test involves real setTimeout (startup waits etc.)
+    // so we must switch back to real timers
     jest.useRealTimers();
 
-    // 文件系统 mock：默认所有路径都不存在，单测内按需覆盖
+    // Filesystem mock: by default no path exists; individual tests override as needed
     mockedFs.existsSync.mockReturnValue(false);
     mockedFs.mkdirSync.mockReturnValue(undefined);
     mockedFs.readFileSync.mockReturnValue('');
@@ -56,7 +56,7 @@ describe('BaseServicesService', () => {
     // child_process mock
     mockedChildProcess.exec.mockImplementation(
       (cmd: string, opts: any, cb: (err: any, stdout: string) => void) => {
-        // 默认 tasklist 找不到进程
+        // By default tasklist finds no process
         if (cmd.includes('tasklist')) {
           cb(null, 'INFO: No tasks are running which match the specified criteria.');
         } else if (cmd.includes('taskkill')) {
@@ -74,7 +74,7 @@ describe('BaseServicesService', () => {
       unref: jest.fn(),
     }));
 
-    // 仓库 mock
+    // Repository mock
     const store = new Map<string, BaseServiceEntity>();
 
     mockRepo = {
@@ -179,7 +179,7 @@ describe('BaseServicesService', () => {
         name: 'redis',
         displayName: 'Redis',
       };
-      // 预先存入同名记录
+      // Pre-insert a record with the same name
       await service.create({ name: 'redis', displayName: 'Redis' });
       await expect(service.create(dto)).rejects.toBeInstanceOf(ConflictException);
     });
@@ -202,7 +202,7 @@ describe('BaseServicesService', () => {
       const list = await service.findAll();
       expect(list.length).toBeGreaterThanOrEqual(2);
       const names = list.map((s) => s.name);
-      // sortOrder=1 的 a 应排在 b 之前
+      // a with sortOrder=1 should come before b
       expect(names.indexOf('a')).toBeLessThan(names.indexOf('b'));
     });
   });
@@ -243,7 +243,7 @@ describe('BaseServicesService', () => {
 
   describe('processGuard', () => {
     beforeEach(async () => {
-      // 清理 store
+      // Clean up the store
       mockRepo.__store.clear();
       await service.create({
         name: 'redis',
@@ -261,7 +261,7 @@ describe('BaseServicesService', () => {
         enabled: true,
         processGuard: false,
       });
-      // 确保 fs mock 返回文件存在
+      // Ensure the fs mock reports the file as existing
       mockedFs.existsSync.mockImplementation((p: any) => {
         if (typeof p === 'string' && p.includes('redis-server.exe')) return true;
         if (typeof p === 'string' && p.includes('influxd.exe')) return true;
@@ -292,7 +292,7 @@ describe('BaseServicesService', () => {
     });
 
     it('checkAndGuardProcesses 仅检查 processGuard=true 的服务', async () => {
-      // Mock spawn 进程启动成功
+      // Mock a successfully started spawn process
       mockedChildProcess.spawn.mockReturnValue({
         pid: 9999,
         unref: jest.fn(),
@@ -300,9 +300,9 @@ describe('BaseServicesService', () => {
         stdout: { on: jest.fn(), pipe: jest.fn() },
         stderr: { on: jest.fn(), pipe: jest.fn() },
       });
-      // 调用 checkAndGuardProcesses（通过反射）
+      // Call checkAndGuardProcesses (via reflection)
       await (service as any).checkAndGuardProcesses();
-      // 不应影响 processGuard=false 的服务
+      // Should not affect services with processGuard=false
       const influxdb = await service.findByName('influxdb');
       expect(influxdb).toBeDefined();
     });
@@ -320,7 +320,7 @@ describe('BaseServicesService', () => {
     });
   });
 
-  // ==================== 状态查询 ====================
+  // ==================== Status query ====================
 
   describe('getAllStatus', () => {
     it('返回每个服务状态对象', async () => {
@@ -336,7 +336,7 @@ describe('BaseServicesService', () => {
       const s1 = statuses.find((s) => s.name === 's1');
       expect(s1).toBeDefined();
       expect(s1!.status).toBe('stopped');
-      expect(s1!.binaryExists).toBe(false); // mockedFs.existsSync 默认 false
+      expect(s1!.binaryExists).toBe(false); // mockedFs.existsSync defaults to false
     });
 
     it('禁用的服务返回 unknown 状态', async () => {
@@ -358,7 +358,7 @@ describe('BaseServicesService', () => {
         logDir: 'C:/redis/logs',
         dataDir: 'C:/redis/data',
       });
-      // 对这些路径放行
+      // Allow these paths through
       mockedFs.existsSync.mockImplementation((p: any) => {
         return [
           'C:/redis/redis-server.exe',
@@ -379,7 +379,7 @@ describe('BaseServicesService', () => {
     });
   });
 
-  // ==================== 配置文件 ====================
+  // ==================== Configuration files ====================
 
   describe('getConfig', () => {
     it('未配置 configPath 抛出 BadRequestException', async () => {
@@ -435,7 +435,7 @@ describe('BaseServicesService', () => {
     });
   });
 
-  // ==================== 日志 ====================
+  // ==================== Logs ====================
 
   describe('getLogs', () => {
     it('未配置 logDir 返回空数组', async () => {
@@ -465,7 +465,7 @@ describe('BaseServicesService', () => {
       });
       const logs = await service.getLogs('redis', 10);
       expect(logs.length).toBe(2);
-      // b.log 更晚，应排在前面
+      // b.log is newer and should be sorted first
       expect(logs[0].filename).toBe('b.log');
       expect(logs[0].lines.length).toBeGreaterThan(0);
     });
@@ -477,7 +477,7 @@ describe('BaseServicesService', () => {
       mockedFs.existsSync.mockReturnValue(true);
       mockedFs.readdirSync.mockReturnValue(['a.log', 'b.log', 'c.txt'] as any);
       const result = await service.clearLogs('redis');
-      // 仅清理 .log 文件
+      // Only clean up .log files
       expect(result.cleared).toContain('a.log');
       expect(result.cleared).toContain('b.log');
       expect(result.cleared).not.toContain('c.txt');
@@ -491,7 +491,7 @@ describe('BaseServicesService', () => {
     });
   });
 
-  // ==================== 启停操作 ====================
+  // ==================== Start/stop operations ====================
 
   describe('start', () => {
     it('服务不存在抛出 NotFoundException', async () => {
@@ -500,7 +500,7 @@ describe('BaseServicesService', () => {
 
     it('未配置启动脚本和 binaryPath 抛出 BadRequestException', async () => {
       await service.create({ name: 'empty', displayName: 'Empty' });
-      // 让进程和端口检测都返回 false，避免误判
+      // Make both the process and port checks return false, avoiding false positives
       mockedChildProcess.exec.mockImplementation(
         (_cmd: string, _opts: any, cb: (err: any, stdout: string) => void) => {
           cb(null, 'INFO: No tasks');
@@ -516,7 +516,7 @@ describe('BaseServicesService', () => {
         binaryPath: 'C:/redis/redis-server.exe',
       });
       mockedFs.existsSync.mockReturnValue(false);
-      // 让 tasklist 返回未运行
+      // Make tasklist report not running
       mockedChildProcess.exec.mockImplementation(
         (_cmd: string, _opts: any, cb: (err: any, stdout: string) => void) => {
           cb(null, 'INFO: No tasks');
@@ -532,7 +532,7 @@ describe('BaseServicesService', () => {
         processName: 'redis-server.exe',
         binaryPath: 'C:/redis/redis-server.exe',
       });
-      // 让 tasklist 找到进程
+      // Make tasklist find the process
       mockedChildProcess.exec.mockImplementation(
         (_cmd: string, _opts: any, cb: (err: any, stdout: string) => void) => {
           cb(null, '"redis-server.exe","1234","Console","1","10,000 K"');
@@ -542,10 +542,10 @@ describe('BaseServicesService', () => {
     });
 
     it('端口被占用抛出 ConflictException', async () => {
-      // 此用例需要 mock net 模块来模拟端口已占用场景，
-      // 但 net 在 service 模块加载时已绑定，无法在运行时替换。
-      // 该路径在 "进程已在运行" 测试中已覆盖相同的 ConflictException 分支。
-      // 这里仅验证未配置 port 时不进入端口检查分支。
+      // This case would need the net module mocked to simulate an occupied port,
+      // but net is bound when the service module loads and cannot be swapped at runtime.
+      // The same ConflictException branch is already covered by the "process already running" test.
+      // Here we only verify that no port check happens when port is not configured.
       await service.create({
         name: 'noport',
         displayName: 'NoPort',
@@ -584,7 +584,7 @@ describe('BaseServicesService', () => {
         stdout: { pipe: jest.fn(), on: jest.fn() },
         stderr: { pipe: jest.fn(), on: jest.fn() },
         on: jest.fn((event: string, cb: () => void) => {
-          // 同步触发 spawn 事件回调，让 executeScript 的 Promise 能够 resolve
+          // Fire the spawn event callback synchronously so executeScript's promise resolves
           if (event === 'spawn') cb();
         }),
         unref: jest.fn(),
@@ -596,7 +596,7 @@ describe('BaseServicesService', () => {
 
     it('未运行服务返回 success 并提示未在运行', async () => {
       await service.create({ name: 'idle', displayName: 'Idle' });
-      // taskkill 失败，tasklist 未找到，PID 未记录
+      // taskkill failed, tasklist found nothing, PID not recorded
       mockedChildProcess.exec.mockImplementation(
         (_cmd: string, _opts: any, cb: (err: any, stdout: string) => void) => {
           if (_cmd.includes('taskkill')) cb(new Error('not found'), '');
@@ -625,7 +625,7 @@ describe('BaseServicesService', () => {
       mockedFs.existsSync.mockReturnValue(true);
       mockedChildProcess.exec.mockImplementation(
         (_cmd: string, _opts: any, cb: (err: any, stdout: string) => void) => {
-          // tasklist 未找到进程
+          // tasklist found no process
           cb(null, 'INFO: No tasks');
         },
       );
@@ -657,7 +657,7 @@ describe('BaseServicesService', () => {
     });
 
     it('非空表时同步已有服务字段（路径更新）', async () => {
-      // 先写入一个路径不完整的旧记录
+      // First write an old record with an incomplete path
       await service.create({
         name: 'redis',
         displayName: 'Redis Old',
@@ -668,20 +668,20 @@ describe('BaseServicesService', () => {
         processName: 'redis-server.exe',
         port: 6379,
       });
-      // syncDefaultServices 应更新路径字段
+      // syncDefaultServices should update the path fields
       await service.syncDefaultServices();
       const updated = await service.findByName('redis');
-      // 路径应更新为环境变量中的值（tempDir）或默认路径
+      // The path should be updated to the env-var value (tempDir) or the default path
       expect(updated.binaryPath).not.toBe('C:/old/redis-server.exe');
       expect(updated.configPath).not.toBe('C:/old/redis.conf');
       expect(updated.dataDir).not.toBe('C:/old/data');
       expect(updated.logDir).not.toBe('C:/old/logs');
-      // 保持 name 不变
+      // name should stay unchanged
       expect(updated.name).toBe('redis');
     });
 
     it('非空表时插入缺失的默认服务', async () => {
-      // 只创建 redis，influxdb 缺失
+      // Only redis is created; influxdb is missing
       await service.create({
         name: 'redis',
         displayName: 'Redis',
@@ -711,7 +711,7 @@ describe('BaseServicesService', () => {
       });
       await service.syncDefaultServices();
       const updated = await service.findByName('redis');
-      // sync 不应覆盖用户配置的 enabled/autoStart
+      // sync should not overwrite user-configured enabled/autoStart
       expect(updated.enabled).toBe(false);
       expect(updated.autoStart).toBe(true);
     });
@@ -730,7 +730,7 @@ describe('BaseServicesService', () => {
         };
         return map[key];
       });
-      // 重新创建 service 以使用新的 configService mock
+      // Recreate the service to use the new configService mock
       const module: TestingModule = await Test.createTestingModule({
         providers: [
           BaseServicesService,
@@ -742,7 +742,7 @@ describe('BaseServicesService', () => {
       const svc = module.get<BaseServicesService>(BaseServicesService);
       await svc.syncDefaultServices();
       const redis = await svc.findByName('redis');
-      // 绝对路径会被 path.normalize 规范化（统一分隔符），但不会改变绝对位置
+      // Absolute paths are normalized by path.normalize (unified separators) but their absolute location is unchanged
       expect(path.normalize(redis.binaryPath)).toBe(
         path.normalize('C:/custom/redis/redis-server.exe'),
       );
@@ -770,14 +770,14 @@ describe('BaseServicesService', () => {
       const svc = module.get<BaseServicesService>(BaseServicesService);
       await svc.syncDefaultServices();
       const redis = await svc.findByName('redis');
-      // 使用 path.normalize 处理跨平台路径分隔符差异
+      // Use path.normalize to handle cross-platform path separator differences
       const expectedRedisDir = path.normalize('C:/base/redis');
       expect(path.normalize(redis.binaryPath)).toContain(expectedRedisDir);
       expect(path.normalize(redis.configPath)).toContain(expectedRedisDir);
       expect(path.normalize(redis.dataDir)).toContain(expectedRedisDir);
       expect(path.normalize(redis.logDir)).toContain(expectedRedisDir);
 
-      // 验证 InfluxDB 默认路径（目录名 influxdb2-2.7.8，配置文件 config.yaml）
+      // Verify the InfluxDB default path (directory name influxdb2-2.7.8, config file config.yaml)
       const influxdb = await svc.findByName('influxdb');
       const expectedInfluxDir = path.normalize('C:/base/influxdb2-2.7.8');
       expect(path.normalize(influxdb.binaryPath)).toContain(expectedInfluxDir);
@@ -810,7 +810,7 @@ describe('BaseServicesService', () => {
       const svc = module.get<BaseServicesService>(BaseServicesService);
       await svc.syncDefaultServices();
       const influxdb = await svc.findByName('influxdb');
-      // 绝对路径会被 path.normalize 规范化（统一分隔符），但不会改变绝对位置
+      // Absolute paths are normalized by path.normalize (unified separators) but their absolute location is unchanged
       expect(path.normalize(influxdb.binaryPath)).toBe(
         path.normalize('C:/custom/influxdb/influxd.exe'),
       );
@@ -822,8 +822,8 @@ describe('BaseServicesService', () => {
     });
 
     it('TC-BS-ENV-004: BASE_SERVICES_DIR 为相对路径时解析为绝对路径存入 DB', async () => {
-      // 模拟 .env.ss 中的真实配置：BASE_SERVICES_DIR=${RUN_DIR}/base_services，RUN_DIR=../../ss-run/ss
-      // 这是用户报告的 bug 触发场景：相对路径存入 DB 后，fs.existsSync 基于 process.cwd() 解析失败
+      // Simulate the real .env.ss config: BASE_SERVICES_DIR=${RUN_DIR}/base_services, RUN_DIR=../../ss-run/ss
+      // This is the user-reported bug scenario: after a relative path is stored in the DB, fs.existsSync resolves it against process.cwd() and fails
       mockConfigService.get.mockImplementation((key: string) => {
         const map: Record<string, string | undefined> = {
           BASE_SERVICES_DIR: '../../ss-run/ss/base_services',
@@ -844,7 +844,7 @@ describe('BaseServicesService', () => {
       const redis = await svc.findByName('redis');
       const influxdb = await svc.findByName('influxdb');
 
-      // 期望：DB 中存储的是绝对路径，不再依赖 process.cwd()
+      // Expected: the DB stores an absolute path, no longer depending on process.cwd()
       expect(path.isAbsolute(redis.binaryPath)).toBe(true);
       expect(path.isAbsolute(redis.configPath)).toBe(true);
       expect(path.isAbsolute(redis.dataDir)).toBe(true);
@@ -855,19 +855,19 @@ describe('BaseServicesService', () => {
       expect(path.isAbsolute(influxdb.dataDir)).toBe(true);
       expect(path.isAbsolute(influxdb.logDir)).toBe(true);
 
-      // 期望：解析后的绝对路径以 ss-run/ss/base_services 结尾
+      // Expected: the resolved absolute path ends with ss-run/ss/base_services
       const expectedBaseSuffix = path.normalize('ss-run/ss/base_services');
       expect(redis.binaryPath).toContain(expectedBaseSuffix);
       expect(influxdb.binaryPath).toContain(expectedBaseSuffix);
 
-      // 期望：redis 二进制路径以 base_services/redis/redis-server.exe 结尾
+      // Expected: the redis binary path ends with base_services/redis/redis-server.exe
       expect(redis.binaryPath).toContain(path.normalize('redis/redis-server.exe'));
-      // 期望：influxdb 二进制路径以 base_services/influxdb2-2.7.8/influxd.exe 结尾
+      // Expected: the influxdb binary path ends with base_services/influxdb2-2.7.8/influxd.exe
       expect(influxdb.binaryPath).toContain(path.normalize('influxdb2-2.7.8/influxd.exe'));
     });
 
     it('TC-BS-ENV-005: 环境变量为相对路径时也解析为绝对路径', async () => {
-      // 模拟用户在 .env 中配置相对路径的环境变量（少见但应支持）
+      // Simulate env vars where the user configured a relative path in .env (rare but should be supported)
       mockConfigService.get.mockImplementation((key: string) => {
         const map: Record<string, string | undefined> = {
           BASE_SERVICES_DIR: tempDir,
@@ -891,20 +891,20 @@ describe('BaseServicesService', () => {
       await svc.syncDefaultServices();
       const redis = await svc.findByName('redis');
 
-      // 期望：相对路径被解析为绝对路径，不依赖 process.cwd()
+      // Expected: the relative path is resolved to an absolute path, not depending on process.cwd()
       expect(path.isAbsolute(redis.binaryPath)).toBe(true);
       expect(path.isAbsolute(redis.configPath)).toBe(true);
       expect(path.isAbsolute(redis.dataDir)).toBe(true);
       expect(path.isAbsolute(redis.logDir)).toBe(true);
 
-      // 期望：解析后的路径包含 custom-redis/redis-server.exe
+      // Expected: the resolved path contains custom-redis/redis-server.exe
       expect(redis.binaryPath).toContain(path.normalize('custom-redis/redis-server.exe'));
     });
   });
 
   describe('onModuleInit', () => {
     it('onModuleInit 调用 syncDefaultServices + autoStartServices', async () => {
-      // 仓库为空
+      // The repository is empty
       const result = await service.findAll();
       expect(result.length).toBe(0);
       await service.onModuleInit();

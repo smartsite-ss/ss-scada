@@ -35,8 +35,8 @@ const LOOP_TRANSFORMS: Record<LoopAnimationType, LoopTransformFn> = {
 
 export interface LoopAnimationConfig {
   type: LoopAnimationType;
-  duration: number; // 单个周期时长（ms），默认 1000
-  speed?: number;   // 播放速度倍率，默认 1
+  duration: number; // Duration of a single cycle (ms), default 1000
+  speed?: number;   // Playback speed multiplier, default 1
 }
 
 export class LoopAnimationEngine {

@@ -3,71 +3,71 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 降采样功能注入 Token，用于可选注入 InfluxDB 适配器实例。
- * 当 InfluxDB 适配器在 DI 容器中注册时，DownsamplingService 可通过此 Token 获取它。
+ * Downsampling feature injection token, used to optionally inject the InfluxDB adapter instance.
+ * When the InfluxDB adapter is registered in the DI container, DownsamplingService can obtain it via this token.
  */
 export const INFLUXDB_ADAPTER = 'INFLUXDB_ADAPTER';
 
 /**
- * 降采样聚合函数类型。
- * - mean: 平均值
- * - max: 最大值
- * - min: 最小值
- * - last: 最后一个值
+ * Downsampling aggregation function type.
+ * - mean: average value
+ * - max: maximum value
+ * - min: minimum value
+ * - last: last value
  */
 export type DownsamplingAggregation = 'mean' | 'max' | 'min' | 'last';
 
 /**
- * 降采样粒度类型。
- * - 1h: 按小时聚合
- * - 1d: 按天聚合
+ * Downsampling granularity type.
+ * - 1h: aggregated by hour
+ * - 1d: aggregated by day
  */
 export type DownsamplingGranularity = '1h' | '1d';
 
 /**
- * 单个降采样任务配置。
+ * A single downsampling task configuration.
  */
 export interface DownsamplingTask {
-  /** 源 measurement 名称，例如 "tag_values" */
+  /** Source measurement name, e.g. "tag_values" */
   measurement: string;
-  /** 聚合窗口粒度，例如 '1h', '1d', '7d' */
+  /** Aggregation window granularity, e.g. '1h', '1d', '7d' */
   granularity: string;
-  /** 聚合函数 */
+  /** Aggregation function */
   aggregation: DownsamplingAggregation;
-  /** 目标 measurement 保留天数（0 表示永久保留） */
+  /** Target measurement retention days (0 means retain forever) */
   retentionDays: number;
-  /** 降采样结果写入的目标 measurement 名称，例如 "tag_values_1h" */
+  /** Target measurement name the downsampling results are written to, e.g. "tag_values_1h" */
   targetMeasurement: string;
 }
 
 /**
- * 降采样整体配置。
+ * Overall downsampling configuration.
  */
 export interface DownsamplingConfig {
-  /** 是否启用降采样 */
+  /** Whether downsampling is enabled */
   enabled: boolean;
-  /** 降采样任务列表 */
+  /** Downsampling task list */
   tasks: DownsamplingTask[];
 }
 
 /**
- * 降采样执行结果。
+ * Downsampling execution result.
  */
 export interface DownsamplingResult {
-  /** 源 measurement */
+  /** Source measurement */
   measurement: string;
-  /** 目标 measurement */
+  /** Target measurement */
   targetMeasurement: string;
-  /** 聚合粒度 */
+  /** Aggregation granularity */
   granularity: string;
-  /** 处理的数据点数量 */
+  /** Number of data points processed */
   processedCount: number;
-  /** 写入的数据点数量 */
+  /** Number of data points written */
   writtenCount: number;
-  /** 执行耗时（毫秒） */
+  /** Execution duration (milliseconds) */
   duration: number;
-  /** 是否成功 */
+  /** Whether it succeeded */
   success: boolean;
-  /** 错误信息（失败时） */
+  /** Error message (on failure) */
   error?: string;
 }

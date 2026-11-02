@@ -53,7 +53,7 @@ export class UserController {
     return this.userService.changePassword(req.user.id, dto.oldPassword, dto.newPassword);
   }
 
-  // ──────── 管理员端点（v6.0 新增） ────────
+  // ──────── Admin endpoints (added in v6.0) ────────
 
   @Get()
   @UseGuards(RolesGuard)

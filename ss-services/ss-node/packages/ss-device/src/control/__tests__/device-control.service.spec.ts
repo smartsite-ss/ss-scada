@@ -223,7 +223,7 @@ describe('DeviceControlService', () => {
   //  writeTagValue — Error Paths
   // ================================================================
   describe('writeTagValue — error paths', () => {
-    // TC-DC-001: 设备不存在
+    // TC-DC-001: device does not exist
     it('TC-DC-001: should return success=false when device not found', async () => {
       jest.spyOn(deviceService, 'findOne').mockResolvedValue(null);
 
@@ -232,7 +232,7 @@ describe('DeviceControlService', () => {
       expect(result.error).toContain('设备不存在');
     });
 
-    // TC-DC-002: 返回结果包含必要字段
+    // TC-DC-002: result contains the required fields
     it('TC-DC-002: should return WriteTagResult with required fields on error', async () => {
       jest.spyOn(deviceService, 'findOne').mockResolvedValue(null);
 
@@ -244,7 +244,7 @@ describe('DeviceControlService', () => {
       expect(typeof result.latencyMs).toBe('number');
     });
 
-    // TC-DC-005: 标签不存在
+    // TC-DC-005: tag does not exist
     it('TC-DC-005: should return success=false when tag not found', async () => {
       mockSystemDbRepo.findOne.mockResolvedValue(null);
 
@@ -253,7 +253,7 @@ describe('DeviceControlService', () => {
       expect(result.error).toContain('标签不存在');
     });
 
-    // TC-DC-006: 标签为只读
+    // TC-DC-006: tag is read-only
     it('TC-DC-006: should return success=false when tag is read-only', async () => {
       mockSystemDbRepo.findOne.mockResolvedValue(mockReadOnlyTag);
 
@@ -262,7 +262,7 @@ describe('DeviceControlService', () => {
       expect(result.error).toContain('只读');
     });
 
-    // TC-DC-007: 设备类型未配置
+    // TC-DC-007: device type not configured
     it('TC-DC-007: should return success=false when device type/driver not configured', async () => {
       jest.spyOn(deviceService, 'findOne').mockResolvedValue(mockDeviceNoType as any);
       mockSystemDbRepo.findOne.mockResolvedValue(mockWriteTag);
@@ -275,7 +275,7 @@ describe('DeviceControlService', () => {
       expect(result.error).toContain('设备类型未配置');
     });
 
-    // TC-DC-008: 协议适配器未找到
+    // TC-DC-008: protocol adapter not found
     it('TC-DC-008: should return success=false when adapter not found', async () => {
       jest.spyOn(pluginRegistry, 'getAdapter').mockReturnValue(null);
 
@@ -284,20 +284,20 @@ describe('DeviceControlService', () => {
       expect(result.error).toContain('协议适配器未找到');
     });
 
-    // TC-DC-009: 设备连接失败
+    // TC-DC-009: device connection failed
     it('TC-DC-009: should return success=false when connection fails', async () => {
       mockAdapter.connect.mockRejectedValue(new Error('Connection refused'));
-      // 连接失败也应该记录审计日志
+      // Connection failure should also record an audit log
       mockProjectDbRepo.save.mockClear();
 
       const result = await service.writeTagValue(mockWriteParams);
       expect(result.success).toBe(false);
       expect(result.error).toContain('设备连接失败');
-      // 连接失败时 audit log 被记录
+      // The audit log is recorded on connection failure
       expect(mockProjectDbRepo.save).not.toHaveBeenCalled(); // projectDbRepo is for reading, not logging
     });
 
-    // TC-DC-010: 写入失败（writeTag 抛出异常）
+    // TC-DC-010: write failure (writeTag throws)
     it('TC-DC-010: should return success=false and log audit when writeTag throws', async () => {
       mockAdapter.writeTag.mockRejectedValue(new Error('Modbus write timeout'));
 
@@ -313,7 +313,7 @@ describe('DeviceControlService', () => {
   //  writeTagValue — Value Validation
   // ================================================================
   describe('writeTagValue — value validation', () => {
-    // TC-DC-011: null 值被拒绝
+    // TC-DC-011: null value rejected
     it('TC-DC-011: should reject null value', async () => {
       const result = await service.writeTagValue({
         ...mockWriteParams,
@@ -323,7 +323,7 @@ describe('DeviceControlService', () => {
       expect(result.error).toContain('写入值不能为空');
     });
 
-    // TC-DC-012: undefined 值被拒绝
+    // TC-DC-012: undefined value rejected
     it('TC-DC-012: should reject undefined value', async () => {
       const result = await service.writeTagValue({
         ...mockWriteParams,
@@ -333,7 +333,7 @@ describe('DeviceControlService', () => {
       expect(result.error).toContain('写入值不能为空');
     });
 
-    // TC-DC-013: 值小于最小值
+    // TC-DC-013: value below minimum
     it('TC-DC-013: should reject value below minValue', async () => {
       mockSystemDbRepo.findOne.mockResolvedValue(mockRangeTag);
 
@@ -346,7 +346,7 @@ describe('DeviceControlService', () => {
       expect(result.error).toContain('小于最小值');
     });
 
-    // TC-DC-014: 值大于最大值
+    // TC-DC-014: value above maximum
     it('TC-DC-014: should reject value above maxValue', async () => {
       mockSystemDbRepo.findOne.mockResolvedValue(mockRangeTag);
 
@@ -364,7 +364,7 @@ describe('DeviceControlService', () => {
   //  writeTagValue — Successful Write (Happy Path)
   // ================================================================
   describe('writeTagValue — successful write', () => {
-    // TC-DC-015: 完整成功路径
+    // TC-DC-015: full success path
     it('TC-DC-015: should complete full happy path — connect/write/disconnect/audit', async () => {
       const result = await service.writeTagValue(mockWriteParams);
 
@@ -377,7 +377,7 @@ describe('DeviceControlService', () => {
       expect(mockAdapter.disconnect).toHaveBeenCalled();
     });
 
-    // TC-DC-016: read-write 方向允许写入
+    // TC-DC-016: read-write direction allows writing
     it('TC-DC-016: should allow write for read-write direction', async () => {
       mockSystemDbRepo.findOne.mockResolvedValue(mockReadWriteTag);
 
@@ -389,7 +389,7 @@ describe('DeviceControlService', () => {
       expect(result.success).toBe(true);
     });
 
-    // TC-DC-017: 写入前捕获前值
+    // TC-DC-017: previous value captured before write
     it('TC-DC-017: should capture previous value before write', async () => {
       jest.spyOn(deviceDataService, 'getDeviceLatestValues').mockResolvedValue({
         'tag-001': { value: 23.0, quality: 'good', timestamp: new Date() },
@@ -403,7 +403,7 @@ describe('DeviceControlService', () => {
       );
     });
 
-    // TC-DC-018: 写入后更新最新值缓存
+    // TC-DC-018: latest-value cache updated after write
     it('TC-DC-018: should call updateLatestValue after successful write', async () => {
       const result = await service.writeTagValue(mockWriteParams);
 
@@ -417,7 +417,7 @@ describe('DeviceControlService', () => {
       );
     });
 
-    // TC-DC-019: 写入后发送事件
+    // TC-DC-019: event emitted after write
     it('TC-DC-019: should emit device.tag_written event after successful write', async () => {
       const result = await service.writeTagValue(mockWriteParams);
 
@@ -434,7 +434,7 @@ describe('DeviceControlService', () => {
       );
     });
 
-    // TC-DC-020: 写入后可写入字符串
+    // TC-DC-020: string value writable after write
     it('TC-DC-020: should accept string value for write', async () => {
       const result = await service.writeTagValue({
         ...mockWriteParams,
@@ -455,7 +455,7 @@ describe('DeviceControlService', () => {
   //  writeTagValue — Edge Cases
   // ================================================================
   describe('writeTagValue — edge cases', () => {
-    // TC-DC-021: 用 driver 而非 type
+    // TC-DC-021: use driver instead of type
     it('TC-DC-021: should use driver when type is null', async () => {
       jest.spyOn(deviceService, 'findOne').mockResolvedValue(mockDeviceDriverOnly as any);
       mockSystemDbRepo.findOne.mockResolvedValue(mockWriteTag);
@@ -469,7 +469,7 @@ describe('DeviceControlService', () => {
       expect(pluginRegistry.getAdapter).toHaveBeenCalledWith('opcua');
     });
 
-    // TC-DC-022: 前值查询失败不阻塞写入
+    // TC-DC-022: previous-value query failure does not block the write
     it('TC-DC-022: should not block write when previous value query fails', async () => {
       jest
         .spyOn(deviceDataService, 'getDeviceLatestValues')
@@ -479,7 +479,7 @@ describe('DeviceControlService', () => {
       expect(result.success).toBe(true);
     });
 
-    // TC-DC-023: updateLatestValue 失败不阻塞返回
+    // TC-DC-023: updateLatestValue failure does not block the return
     it('TC-DC-023: should not block return when updateLatestValue fails', async () => {
       jest
         .spyOn(deviceDataService, 'updateLatestValue')
@@ -489,7 +489,7 @@ describe('DeviceControlService', () => {
       expect(result.success).toBe(true);
     });
 
-    // TC-DC-024: disconnect 失败不阻塞返回
+    // TC-DC-024: disconnect failure does not block the return
     it('TC-DC-024: should not block return when disconnect fails', async () => {
       mockAdapter.disconnect.mockRejectedValue(new Error('Disconnect error'));
 
@@ -497,7 +497,7 @@ describe('DeviceControlService', () => {
       expect(result.success).toBe(true);
     });
 
-    // TC-DC-025: eventBus 不存在时正常返回
+    // TC-DC-025: returns normally when eventBus is absent
     it('TC-DC-025: should not throw when eventBus is undefined', async () => {
       // Override the service's eventBus to be undefined (simulating Optional() not provided)
       (service as any)['eventBus'] = undefined;
@@ -506,7 +506,7 @@ describe('DeviceControlService', () => {
       expect(result.success).toBe(true);
     });
 
-    // TC-DC-026: tag 无 direction 字段时默认为只读
+    // TC-DC-026: tag without a direction field defaults to read-only
     it('TC-DC-026: should treat tag without direction as read-only', async () => {
       mockSystemDbRepo.findOne.mockResolvedValue(mockTagNoDirection);
 
@@ -525,7 +525,7 @@ describe('DeviceControlService', () => {
   //  ControlOperationLog Entity
   // ================================================================
   describe('ControlOperationLog entity', () => {
-    // TC-DC-003: 审计日志实体字段验证
+    // TC-DC-003: audit-log entity field validation
     it('TC-DC-003: should have correct entity fields for audit logging', () => {
       const logEntity = new ControlOperationLog();
       logEntity.projectId = 'proj-001';
@@ -557,7 +557,7 @@ describe('DeviceControlService', () => {
       expect(logEntity.latencyMs).toBe(100);
     });
 
-    // TC-DC-004: 错误日志实体字段
+    // TC-DC-004: error-log entity fields
     it('TC-DC-004: should capture error fields for failed writes', () => {
       const logEntity = new ControlOperationLog();
       logEntity.success = false;
@@ -569,7 +569,7 @@ describe('DeviceControlService', () => {
   });
 
   // ================================================================
-  //  QueryLogs — 操作日志查询
+  //  QueryLogs - operation-log query
   // ================================================================
   describe('queryLogs', () => {
     const mockLogs = [
@@ -611,7 +611,7 @@ describe('DeviceControlService', () => {
       },
     ];
 
-    // TC-QL-001: 基本分页查询
+    // TC-QL-001: basic paginated query
     it('TC-QL-001: should return paginated logs', async () => {
       mockQueryBuilder.getManyAndCount.mockResolvedValue([[mockLogs[0]], 1]);
 
@@ -634,7 +634,7 @@ describe('DeviceControlService', () => {
       });
     });
 
-    // TC-QL-002: 按 keyword 搜索
+    // TC-QL-002: search by keyword
     it('TC-QL-002: should filter by keyword (tagName/operatorName)', async () => {
       mockQueryBuilder.getManyAndCount.mockResolvedValue([[mockLogs[0]], 1]);
 
@@ -650,7 +650,7 @@ describe('DeviceControlService', () => {
       );
     });
 
-    // TC-QL-003: 按 success 筛选
+    // TC-QL-003: filter by success
     it('TC-QL-003: should filter by success flag', async () => {
       mockQueryBuilder.getManyAndCount.mockResolvedValue([[mockLogs[0]], 1]);
 
@@ -665,7 +665,7 @@ describe('DeviceControlService', () => {
       });
     });
 
-    // TC-QL-004: 按失败筛选
+    // TC-QL-004: filter by failure
     it('TC-QL-004: should filter by failed logs', async () => {
       mockQueryBuilder.getManyAndCount.mockResolvedValue([[mockLogs[1]], 1]);
 
@@ -680,7 +680,7 @@ describe('DeviceControlService', () => {
       });
     });
 
-    // TC-QL-005: 按时间范围筛选
+    // TC-QL-005: filter by time range
     it('TC-QL-005: should filter by startDate and endDate', async () => {
       mockQueryBuilder.getManyAndCount.mockResolvedValue([mockLogs, 2]);
 
@@ -699,7 +699,7 @@ describe('DeviceControlService', () => {
       });
     });
 
-    // TC-QL-006: 空结果
+    // TC-QL-006: empty result
     it('TC-QL-006: should return empty items when no logs', async () => {
       mockQueryBuilder.getManyAndCount.mockResolvedValue([[], 0]);
 
@@ -713,7 +713,7 @@ describe('DeviceControlService', () => {
       expect(result.pagination.totalPages).toBe(0);
     });
 
-    // TC-QL-007: 分页计算正确
+    // TC-QL-007: pagination computed correctly
     it('TC-QL-007: should calculate totalPages correctly for multi-page results', async () => {
       mockQueryBuilder.getManyAndCount.mockResolvedValue([[mockLogs[0]], 2]);
 
@@ -725,7 +725,7 @@ describe('DeviceControlService', () => {
       expect(result.pagination.totalPages).toBe(2);
     });
 
-    // TC-QL-008: 默认分页参数
+    // TC-QL-008: default pagination params
     it('TC-QL-008: should use default page/pageSize when not provided', async () => {
       mockQueryBuilder.getManyAndCount.mockResolvedValue([mockLogs, 2]);
 
@@ -736,7 +736,7 @@ describe('DeviceControlService', () => {
       expect(mockQueryBuilder.take).toHaveBeenCalledWith(20);
     });
 
-    // TC-QL-009: 项目级查询（不传 deviceId）
+    // TC-QL-009: project-level query (no deviceId)
     it('TC-QL-009: should query all devices when deviceId is undefined', async () => {
       mockQueryBuilder.getManyAndCount.mockResolvedValue([mockLogs, 2]);
 
@@ -755,7 +755,7 @@ describe('DeviceControlService', () => {
       );
     });
 
-    // TC-QL-010: 按 deviceName 筛选
+    // TC-QL-010: filter by deviceName
     it('TC-QL-010: should filter by deviceName when provided', async () => {
       mockQueryBuilder.getManyAndCount.mockResolvedValue([[mockLogs[0]], 1]);
 

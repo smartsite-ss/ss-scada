@@ -4,41 +4,41 @@
 
 import { DataQuality } from '../types';
 
-// ==================== 错误码映射 ====================
+// ==================== Error code mapping ====================
 
-/** 错误码到 HTTP 状态码的映射 */
+/** Mapping from error codes to HTTP status codes */
 export const ERROR_CODE_HTTP_STATUS: Record<string, number> = {
-  // 数据采集错误
+  // Data collection errors
   DATA_001: 500,
   DATA_002: 504,
   DATA_003: 500,
   DATA_004: 422,
 
-  // 设备错误
+  // Device errors
   DEV_001: 500,
   DEV_002: 503,
   DEV_003: 502,
 
-  // 告警错误
+  // Alarm errors
   ALM_001: 500,
   ALM_002: 500,
 
-  // 系统错误
+  // System errors
   SYS_001: 500,
   SYS_002: 500,
   SYS_003: 500,
 
-  // 认证错误
+  // Authentication errors
   AUTH_001: 401,
   AUTH_002: 403,
   AUTH_003: 401,
 
-  // 通用错误
+  // Common errors
   VALIDATION_001: 400,
   NOT_FOUND_001: 404,
 };
 
-/** 错误码到多语言消息 key 的映射 */
+/** Mapping from error codes to i18n message keys */
 export const ERROR_CODE_I18N_KEY: Record<string, string> = {
   DATA_001: 'error.data.acquisition_failed',
   DATA_002: 'error.data.protocol_timeout',
@@ -59,7 +59,7 @@ export const ERROR_CODE_I18N_KEY: Record<string, string> = {
   NOT_FOUND_001: 'error.not_found',
 };
 
-// ==================== 基础错误类 ====================
+// ==================== Base error class ====================
 
 export abstract class ScadaError extends Error {
   abstract readonly code: string;
@@ -73,17 +73,17 @@ export abstract class ScadaError extends Error {
     this.name = this.constructor.name;
   }
 
-  /** 获取对应的 HTTP 状态码 */
+  /** Get the corresponding HTTP status code */
   getHttpStatus(): number {
     return ERROR_CODE_HTTP_STATUS[this.code] ?? 500;
   }
 
-  /** 获取对应的 i18n key */
+  /** Get the corresponding i18n key */
   getI18nKey(): string {
     return ERROR_CODE_I18N_KEY[this.code] ?? 'error.unknown';
   }
 
-  /** 序列化为 JSON */
+  /** Serialize to JSON */
   toJSON(): Record<string, unknown> {
     return {
       code: this.code,
@@ -97,7 +97,7 @@ export abstract class ScadaError extends Error {
   }
 }
 
-// ==================== 业务异常基类 ====================
+// ==================== Business exception base class ====================
 
 export class BusinessException extends ScadaError {
   readonly code: string;
@@ -132,30 +132,30 @@ export class BusinessException extends ScadaError {
   }
 }
 
-// ==================== 预定义业务异常 ====================
+// ==================== Predefined business exceptions ====================
 
-/** 认证异常 */
+/** Authentication exception */
 export class AuthenticationException extends BusinessException {
   constructor(message: string = 'Authentication failed') {
     super('AUTH_001', message, { category: 'auth', severity: 'error' });
   }
 }
 
-/** 权限异常 */
+/** Permission exception */
 export class ForbiddenException extends BusinessException {
   constructor(message: string = 'Access denied') {
     super('AUTH_002', message, { category: 'auth', severity: 'warn' });
   }
 }
 
-/** Token 过期异常 */
+/** Token expiration exception */
 export class TokenExpiredException extends BusinessException {
   constructor(message: string = 'Token expired') {
     super('AUTH_003', message, { category: 'auth', severity: 'warn' });
   }
 }
 
-/** 校验异常 */
+/** Validation exception */
 export class ValidationException extends BusinessException {
   constructor(message: string = 'Validation failed', details?: Record<string, unknown>) {
     super('VALIDATION_001', message, {
@@ -166,7 +166,7 @@ export class ValidationException extends BusinessException {
   }
 }
 
-/** 资源未找到异常 */
+/** Resource not found exception */
 export class NotFoundException extends BusinessException {
   constructor(resource: string, id?: string) {
     const message = id ? `${resource} with id '${id}' not found` : `${resource} not found`;

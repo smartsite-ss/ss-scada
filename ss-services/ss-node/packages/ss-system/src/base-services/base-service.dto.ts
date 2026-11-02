@@ -5,7 +5,7 @@
 import { IsString, IsOptional, IsBoolean, IsInt, Min, MaxLength, Matches } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-/** 创建基础服务 DTO */
+/** Create base-service DTO */
 export class CreateBaseServiceDto {
   @ApiProperty({ description: '软件唯一标识名称（英文，用于 API 路径）', example: 'redis' })
   @IsString()
@@ -96,7 +96,7 @@ export class CreateBaseServiceDto {
   sortOrder?: number;
 }
 
-/** 更新基础服务 DTO */
+/** Update base-service DTO */
 export class UpdateBaseServiceDto {
   @ApiPropertyOptional({ description: '显示名称' })
   @IsString()

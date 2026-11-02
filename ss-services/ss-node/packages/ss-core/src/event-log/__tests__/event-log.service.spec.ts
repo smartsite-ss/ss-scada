@@ -10,15 +10,15 @@ import { EventLog, EventLogStatus } from '../entities/event-log.entity';
 import { EventBusService } from '../../event-bus/event-bus.service';
 
 /**
- * EventLogService 单元测试
+ * EventLogService unit tests
  *
- * 覆盖核心能力：
- * 1. 事件发射记录（recordEmission）
- * 2. 订阅者追踪（recordSubscriberStart/Success/Failure）
- * 3. 状态重新计算（recalculateStatus）
- * 4. 查询接口（findByFilter / findFailed）
- * 5. 白名单过滤（shouldPersist）
- * 6. emit 钩子机制（handleEmit）
+ * Covers core capabilities:
+ * 1. Emission recording (recordEmission)
+ * 2. Subscriber tracing (recordSubscriberStart/Success/Failure)
+ * 3. Status recalculation (recalculateStatus)
+ * 4. Query APIs (findByFilter / findFailed)
+ * 5. Whitelist filtering (shouldPersist)
+ * 6. emit-hook mechanism (handleEmit)
  */
 describe('EventLogService', () => {
   let service: EventLogService;
@@ -26,7 +26,7 @@ describe('EventLogService', () => {
   let repo: jest.Mocked<Repository<EventLog>>;
 
   beforeEach(async () => {
-    // 创建 mock repository
+    // Create mock repositories
     const mockRepo = {
       create: jest.fn(),
       save: jest.fn(),
@@ -34,7 +34,7 @@ describe('EventLogService', () => {
       createQueryBuilder: jest.fn(),
     };
 
-    // 创建 mock EventBusService
+    // Create a mock EventBusService
     const mockEventBus = {
       registerEmitHook: jest.fn(),
     };
@@ -168,7 +168,7 @@ describe('EventLogService', () => {
       repo.create.mockReturnValue(fakeLog);
       repo.save.mockResolvedValue(fakeLog as any);
 
-      // 构造超过 64KB 的 payload
+      // Build a payload over 64KB
       const largeTags = Array.from({ length: 10000 }, (_, i) => ({
         tagId: `tag-${i}`,
         name: `tag-name-${i}-padding-padding-padding-padding`,
@@ -190,7 +190,7 @@ describe('EventLogService', () => {
     const subscriberName = 'DeviceConfigWatcher';
 
     beforeEach(() => {
-      // 模拟已存在的事件日志
+      // Simulate an existing event log
       const existingLog: Partial<EventLog> = {
         id: logId,
         eventType: 'device.created',
@@ -216,7 +216,7 @@ describe('EventLogService', () => {
     });
 
     it('recordSubscriberSuccess 应更新为 processed 状态并触发状态重算', async () => {
-      // 模拟已有 processing 记录
+      // Simulate an existing processing record
       const logWithSubscriber: Partial<EventLog> = {
         id: logId,
         eventType: 'device.created',
@@ -230,7 +230,7 @@ describe('EventLogService', () => {
         tagsLoaded: 12,
       });
 
-      // 第二次 save 是 updateSubscriberRecord，第三次 save 是 recalculateStatus
+      // The second save is updateSubscriberRecord, the third save is recalculateStatus
       const savedLog = repo.save.mock.calls[0][0] as EventLog;
       expect(savedLog.subscribers[0]).toEqual(
         expect.objectContaining({
@@ -272,11 +272,11 @@ describe('EventLogService', () => {
     const logId = 'log-123';
 
     /**
-     * Helper：创建带状态的 mock，让 findOne 返回最近一次 save 的对象
-     *
-     * 这样 updateSubscriberRecord → save → recalculateStatus → findOne 的链条
-     * 能拿到包含新订阅者 'C' 的最新状态，使状态重算逻辑得到验证。
-     */
+      * Helper: create a stateful mock so findOne returns the object from the most recent save
+      *
+      * This way the chain updateSubscriberRecord -> save -> recalculateStatus -> findOne
+      * gets the latest state including the new subscriber 'C', so the recalculation logic is verified.
+      */
     const setupStatefulMock = (initial: Partial<EventLog>): void => {
       let current: EventLog = initial as EventLog;
       repo.findOne.mockImplementation(async () => current);
@@ -295,8 +295,8 @@ describe('EventLogService', () => {
         ],
       });
 
-      // 通过 recordSubscriberSuccess('C', ...) 触发 recalculateStatus
-      // 'C' 不在 subscribers 中，会被添加为 processed
+      // Trigger recalculateStatus via recordSubscriberSuccess('C', ...)
+      // 'C' is not in subscribers, so it gets added as processed
       await service.recordSubscriberSuccess(logId, 'C', 10);
 
       const lastSavedLog = repo.save.mock.calls[repo.save.mock.calls.length - 1][0] as EventLog;
@@ -313,8 +313,8 @@ describe('EventLogService', () => {
         ],
       });
 
-      // 添加新的成功订阅者 C，触发 recalculateStatus
-      // 此时 A=processed, B=failed, C=processed → partial (2/3)
+      // Add a new successful subscriber C, triggering recalculateStatus
+      // At this point A=processed, B=failed, C=processed -> partial (2/3)
       await service.recordSubscriberSuccess(logId, 'C', 10);
 
       const lastSavedLog = repo.save.mock.calls[repo.save.mock.calls.length - 1][0] as EventLog;
@@ -332,7 +332,7 @@ describe('EventLogService', () => {
         ],
       });
 
-      // 添加新的失败订阅者 C
+      // Add a new failed subscriber C
       await service.recordSubscriberFailure(logId, 'C', 'err3');
 
       const lastSavedLog = repo.save.mock.calls[repo.save.mock.calls.length - 1][0] as EventLog;
@@ -347,15 +347,15 @@ describe('EventLogService', () => {
     const logId = 'log-concurrent-1';
 
     /**
-     * Helper：创建有状态的 mock，模拟 DB 的 read-modify-write 行为
-     * - findOne 返回当前内存中的 log 对象（引用）
-     * - save 更新当前内存中的 log 对象
-     *
-     * 这能真实地暴露并发竞态条件：
-     * 如果两个 updateSubscriberRecord 并发执行且没有锁，
-     * 两者都会读到 subscribers=[]，各自添加一个订阅者后保存，
-     * 后保存的会覆盖前者。
-     */
+      * Helper: create a stateful mock simulating the DB's read-modify-write behavior
+      * - findOne returns the current in-memory log object (by reference)
+      * - save updates the current in-memory log object
+      *
+      * This genuinely exposes the concurrency race:
+      * if two updateSubscriberRecord calls run concurrently without a lock,
+      * both read subscribers=[], each adds one subscriber and saves,
+      * and the later save overwrites the earlier one.
+      */
     const setupStatefulMock = (initial: Partial<EventLog>): void => {
       let current: EventLog = initial as EventLog;
       repo.findOne.mockImplementation(async () => current);
@@ -373,13 +373,13 @@ describe('EventLogService', () => {
         status: 'emitted',
       });
 
-      // 并发调用两个 recordSubscriberStart
+      // Call two recordSubscriberStart concurrently
       await Promise.all([
         service.recordSubscriberStart(logId, 'SubscriberA'),
         service.recordSubscriberStart(logId, 'SubscriberB'),
       ]);
 
-      // 重新读取最终状态
+      // Re-read the final state
       const finalLog = await repo.findOne({ where: { id: logId } });
       expect(finalLog!.subscribers).toHaveLength(2);
       const names = finalLog!.subscribers.map((s) => s.name);
@@ -395,7 +395,7 @@ describe('EventLogService', () => {
         status: 'emitted',
       });
 
-      // 三个订阅者并发成功完成
+      // Three subscribers complete successfully concurrently
       await Promise.all([
         service.recordSubscriberSuccess(logId, 'SubA', 10, { tasksRegistered: 1 }),
         service.recordSubscriberSuccess(logId, 'SubB', 20, { tasksRegistered: 2 }),
@@ -440,8 +440,8 @@ describe('EventLogService', () => {
       repo.findOne.mockResolvedValue(existingLog as EventLog);
       repo.save.mockResolvedValue(existingLog as EventLog);
 
-      // 模拟 findRecentLogId 通过内存索引返回
-      // 先调用 recordEmission 让内存索引缓存
+      // Simulate findRecentLogId returning via the in-memory index
+      // Call recordEmission first to populate the in-memory index
       repo.create.mockReturnValue({ id: logId } as EventLog);
       await service.recordEmission('device.created', { projectId: 'p1', deviceId: 'd1' });
 
@@ -455,10 +455,10 @@ describe('EventLogService', () => {
       await wrapped({ projectId: 'p1', deviceId: 'd1' });
 
       expect(handler).toHaveBeenCalled();
-      // 应该调用过 recordSubscriberStart 和 recordSubscriberSuccess
+      // recordSubscriberStart and recordSubscriberSuccess should have been called
       expect(repo.save.mock.calls.length).toBeGreaterThanOrEqual(2);
 
-      // 最后一次 save 应包含业务效果
+      // The last save should include the business effect
       const lastSavedLog = repo.save.mock.calls[repo.save.mock.calls.length - 1][0] as EventLog;
       const subscriber = lastSavedLog.subscribers?.find((s) => s.name === 'DeviceConfigWatcher');
       expect(subscriber?.result).toEqual({ connectionId: 'conn-1' });
@@ -489,7 +489,7 @@ describe('EventLogService', () => {
         'Connection refused',
       );
 
-      // 应该有 recordSubscriberFailure 的调用
+      // recordSubscriberFailure should have been called
       const savedLogs = repo.save.mock.calls.map((call) => call[0] as EventLog);
       const failedRecord = savedLogs.find((log) =>
         log.subscribers?.some((s) => s.status === 'failed'),
@@ -498,7 +498,7 @@ describe('EventLogService', () => {
     });
 
     it('未找到 logId 时仍应执行 handler 但不记录追踪', async () => {
-      // 不调用 recordEmission，让 findRecentLogId 返回 null
+      // Do not call recordEmission, so findRecentLogId returns null
       repo.findOne.mockResolvedValue(null);
 
       const handler = jest.fn().mockResolvedValue({ ok: true });
@@ -510,9 +510,9 @@ describe('EventLogService', () => {
 
       await wrapped({ projectId: 'unknown', deviceId: 'unknown' });
 
-      // handler 应被执行
+      // The handler should run
       expect(handler).toHaveBeenCalled();
-      // 不应写入任何订阅者记录
+      // No subscriber records should be written
       expect(repo.save).not.toHaveBeenCalled();
     });
   });

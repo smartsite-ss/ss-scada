@@ -16,20 +16,20 @@ import { TdengineDatabaseService } from './tdengine-database.service';
 import { TdengineSqlQueryBuilder } from './query/tdengine-sql-query.builder';
 import { TdengineJsonParser } from './parse/tdengine-json.parser';
 
-// CODE-05: 单次 fetch 超时（ms），避免半挂时无限等待阻塞 event loop
+// CODE-05: per-fetch timeout (ms), preventing an indefinitely hung request from blocking the event loop
 const FETCH_TIMEOUT_MS = 5000;
 
 /**
- * TDengine 适配器（引擎类型 tdengine）。
+ * TDengine adapter (engine type tdengine).
  *
- * - 写入：复用 serializeLineProtocol → taosAdapter InfluxDB Line Protocol 兼容端点
- *   POST /influxdb/v1/write?db={database}&precision=ns（Basic Auth）；
- *   写入前经 TdengineDatabaseService 幂等确保子表存在（CREATE TABLE ... USING ... TAGS）；
- * - 读取：TdengineSqlQueryBuilder → POST /rest/sql/{database}（INTERVAL/FILL 方言），
- *   结果经 TdengineJsonParser 归一化；
- * - 删除：按子表范围 `DELETE FROM t_{tagId} WHERE ts < ...`（capabilities.delete = true，
- *   超级表级删除受限，须规避）；
- * - 多项目隔离：database = {TDENGINE_DATABASE}_{projectId}，超级表 tag_values + 子表 t_{tagId}。
+ * - Write: reuses serializeLineProtocol → taosAdapter's InfluxDB Line Protocol compatible endpoint
+ *   POST /influxdb/v1/write?db={database}&precision=ns (Basic Auth);
+ *   before writing, TdengineDatabaseService idempotently ensures the child table exists (CREATE TABLE ... USING ... TAGS);
+ * - Read: TdengineSqlQueryBuilder → POST /rest/sql/{database} (INTERVAL/FILL dialect),
+ *   results normalized by TdengineJsonParser;
+ * - Delete: per-child-table range `DELETE FROM t_{tagId} WHERE ts < ...` (capabilities.delete = true;
+ *   super-table-level deletion is restricted and must be avoided);
+ * - Multi-project isolation: database = {TDENGINE_DATABASE}_{projectId}, super table tag_values + child tables t_{tagId}.
  */
 @Injectable()
 export class TdengineAdapterService
@@ -39,9 +39,9 @@ export class TdengineAdapterService
   readonly name = 'TDengine';
   readonly engineType = STORAGE_ENGINE_TYPES.TDENGINE;
   readonly capabilities: AdapterCapabilities = {
-    delete: true, // 支持按子表范围删除（超级表级删除受限）
-    interpolation: true, // FILL(PREV/LINEAR/NULL) 原生支持
-    aggregation: true, // INTERVAL + AVG/MAX/MIN/SUM/COUNT 原生
+    delete: true, // supports per-child-table range delete (super-table-level delete is restricted)
+    interpolation: true, // FILL(PREV/LINEAR/NULL) natively supported
+    aggregation: true, // INTERVAL + AVG/MAX/MIN/SUM/COUNT natively supported
   };
   protected readonly logger = new Logger(TdengineAdapterService.name);
   protected readonly readErrorLabel = 'TDengine query';
@@ -71,15 +71,15 @@ export class TdengineAdapterService
     void this.close();
   }
 
-  // ──────────── 写入钩子：taosAdapter /influxdb/v1/write ────────────
+  // ──────────── Write hook: taosAdapter /influxdb/v1/write ────────────
 
   protected async sendBatch(points: DataPoint[]): Promise<void> {
-    // 强模式约束：写入前幂等确保子表存在（value DOUBLE，非数值已在序列化层分流 value_text）
+    // Strict-mode constraint: idempotently ensure the child table exists before writing (value DOUBLE; non-numeric values already split to value_text in the serialization layer)
     if (this.databaseService) {
       await this.databaseService.ensureSubtables(points);
     }
 
-    // 按项目隔离单元（database）分组发送
+    // Send grouped by project isolation unit (database)
     const pointsByDatabase = new Map<string, DataPoint[]>();
     for (const point of points) {
       const databaseName = this.resolveDatabaseName(point.projectId);
@@ -110,7 +110,7 @@ export class TdengineAdapterService
           'Content-Type': 'text/plain; charset=utf-8',
         },
         body: lines,
-        // CODE-05: fetch 加 5s 超时
+        // CODE-05: add a 5s timeout to fetch
         signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
       },
     );
@@ -121,10 +121,10 @@ export class TdengineAdapterService
     }
   }
 
-  // ──────────── 读取钩子：POST /rest/sql/{database} ────────────
+  // ──────────── Read hook: POST /rest/sql/{database} ────────────
 
   protected async buildReadRequest(options: QueryOptions): Promise<EngineReadRequest> {
-    // 多项目隔离：优先按 options.projectId 路由，未指定走默认 database
+    // Multi-project isolation: route by options.projectId first; fall back to the default database when unspecified
     const databaseName =
       options.projectId && this.databaseService
         ? (await this.databaseService.ensureDatabase(options.projectId))
@@ -151,12 +151,12 @@ export class TdengineAdapterService
     return this.responseParser.parse(rawText);
   }
 
-  // ──────────── delete（按子表范围） ────────────
+  // ──────────── delete (per child table) ────────────
 
   async delete(options: { tagIds?: string[]; before?: Date }): Promise<number> {
     const { tagIds, before } = options;
 
-    // 超级表级删除受限：必须指定 tagIds 逐子表删除
+    // Super-table-level deletion is restricted: must specify tagIds and delete child table by child table
     if (!tagIds || tagIds.length === 0) {
       throw new Error(
         'TDengine delete requires tagIds (super-table level delete is restricted; delete per sub-table instead)',
@@ -167,7 +167,7 @@ export class TdengineAdapterService
     let deletedRows = 0;
     let countAvailable = true;
 
-    // 按子表逐个执行 DELETE FROM t_{tagId} WHERE ts < boundary（走默认 database）
+    // Execute DELETE FROM t_{tagId} WHERE ts < boundary per child table (using the default database)
     for (const tagId of tagIds) {
       const subtableName = this.databaseService
         ? this.databaseService.getSubtableName(tagId)
@@ -202,7 +202,7 @@ export class TdengineAdapterService
       return this.databaseService.executeSql(databaseName, deleteStatement);
     }
 
-    // database 服务缺失时直接走 REST
+    // Without a database service, go through REST directly
     const authorizationToken = Buffer.from(
       `${this.tdengineUser}:${this.tdenginePassword}`,
     ).toString('base64');
@@ -240,7 +240,7 @@ export class TdengineAdapterService
           'Content-Type': 'text/plain; charset=utf-8',
         },
         body: 'SELECT SERVER_STATUS',
-        // CODE-05: fetch 加 5s 超时
+        // CODE-05: add a 5s timeout to fetch
         signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
       });
 
@@ -265,9 +265,9 @@ export class TdengineAdapterService
     }
   }
 
-  // ──────────── 内部方法 ────────────
+  // ──────────── Internal methods ────────────
 
-  /** 项目 → database 名映射（database 服务缺失时退回默认库名） */
+  /** Project → database name mapping (falls back to the default database name when no database service) */
   private resolveDatabaseName(projectId: string): string {
     return this.databaseService ? this.databaseService.getDatabaseName(projectId) : 'ss_node_data';
   }

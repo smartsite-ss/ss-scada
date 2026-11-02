@@ -3,14 +3,14 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * CommandParser — 命令解析器
+ * CommandParser - command parser
  *
- * 基于 commander 注册所有 CLI 命令，包括：
- *   - init / start（基础命令）
- *   - device create-wizard（交互式设备创建向导）
- *   - script create-wizard（交互式脚本创建向导）
+ * Registers all CLI commands via commander, including:
+ *   - init / start (basic commands)
+ *   - device create-wizard (interactive device-creation wizard)
+ *   - script create-wizard (interactive script-creation wizard)
  *
- * 全局选项：--interactive / -i 启用交互模式
+ * Global option: --interactive / -i enables interactive mode
  */
 
 import { Command } from 'commander';
@@ -25,12 +25,12 @@ export class CommandParser {
     this.setupGlobalOptions();
   }
 
-  /** 获取 commander Command 实例（供外部模块注册命令） */
+  /** Get the commander Command instance (for external modules to register commands) */
   getProgram(): Command {
     return this.program;
   }
 
-  /** 配置全局选项和元数据 */
+  /** Configure global options and metadata */
   private setupGlobalOptions(): void {
     this.program
       .name('ss-data')
@@ -39,14 +39,14 @@ export class CommandParser {
       .option('-i, --interactive', 'Enable interactive mode');
   }
 
-  /** 注册所有内置命令 */
+  /** Register all built-in commands */
   registerCommands(): void {
     this.registerInitCommand();
     this.registerStartCommand();
     this.registerScriptCommands();
   }
 
-  /** init 命令 */
+  /** init command */
   private registerInitCommand(): void {
     this.program
       .command('init')
@@ -56,7 +56,7 @@ export class CommandParser {
       });
   }
 
-  /** start 命令 */
+  /** start command */
   private registerStartCommand(): void {
     this.program
       .command('start')
@@ -66,7 +66,7 @@ export class CommandParser {
       });
   }
 
-  /** script 命令组 */
+  /** script command group */
   private registerScriptCommands(): void {
     const script = this.program.command('script').description('Script management commands');
 
@@ -78,7 +78,7 @@ export class CommandParser {
       });
   }
 
-  /** 创建 ApiClient（从环境变量读取配置） */
+  /** Create an ApiClient (reads config from environment variables) */
   createApiClient(): ApiClient {
     const baseUrl = process.env.SS_CLI_SERVER_URL || 'http://localhost:4000';
     const apiKey = process.env.SS_CLI_API_KEY;
@@ -87,7 +87,7 @@ export class CommandParser {
     return new ApiClient({ baseUrl, apiKey, token });
   }
 
-  /** 运行脚本创建向导 */
+  /** Run the script-creation wizard */
   private async runScriptWizard(): Promise<void> {
     try {
       const apiClient = this.createApiClient();
@@ -98,7 +98,7 @@ export class CommandParser {
     }
   }
 
-  /** 解析命令行参数 */
+  /** Parse command-line arguments */
   parse(argv: string[]): void {
     this.program.parse(argv);
   }

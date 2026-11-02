@@ -3,13 +3,13 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 集成测试：Alarm + EventBus 工作流
+ * Integration test: Alarm + EventBus workflow
  *
- * 测试策略：
- * - 使用 ConditionEvaluator 和 AlarmDebouncer 真实实例
- * - 使用 EventBusService 真实实例验证事件发布
- * - Mock EventEmitter2 底层实现
- * - 模拟完整的告警生命周期：触发 → 确认 → 恢复
+ * Test strategy:
+ * - Use real instances of ConditionEvaluator and AlarmDebouncer
+ * - Use a real EventBusService instance to verify event publishing
+ * - Mock the underlying EventEmitter2 implementation
+ * - Simulate the full alarm lifecycle: trigger -> acknowledge -> recover
  */
 
 jest.mock('typeorm', () => {
@@ -106,7 +106,7 @@ import { ConditionEvaluator } from '../../packages/ss-alarm/src/engine/condition
 import { AlarmDebouncer } from '../../packages/ss-alarm/src/engine/alarm-debouncer';
 import { AlarmNotificationService } from '../../packages/ss-alarm/src/alarm-notification.service';
 
-// ─── 模拟告警规则仓储 ───
+// ─── Mock alarm rule repository ───
 
 interface AlarmRuleConfig {
   id: string;
@@ -139,7 +139,7 @@ interface AlarmRecord {
 }
 
 /**
- * 模拟告警引擎 - 组合 ConditionEvaluator + AlarmDebouncer + EventBus
+ * Mock alarm engine - combines ConditionEvaluator + AlarmDebouncer + EventBus
  */
 class SimulatedAlarmEngine {
   private alarmRecords: AlarmRecord[] = [];
@@ -152,7 +152,7 @@ class SimulatedAlarmEngine {
   ) {}
 
   /**
-   * 评估数据点是否触发告警
+   * Evaluate whether a data point triggers an alarm
    */
   evaluateDataPoint(
     rule: AlarmRuleConfig,
@@ -168,7 +168,7 @@ class SimulatedAlarmEngine {
     );
 
     if (!conditionMet) {
-      // 条件不满足，清除消抖
+      // Condition not met, clear debounce
       this.alarmDebouncer.clear(rule.id, rule.tagId);
       return { triggered: false };
     }
@@ -179,10 +179,10 @@ class SimulatedAlarmEngine {
       return { triggered: false };
     }
 
-    // 创建告警记录
+    // Create the alarm record
     const record = this.createAlarmRecord(rule, value, timestamp);
 
-    // 发布告警触发事件
+    // Publish the alarm-triggered event
     this.eventBusService.emitAlarmTriggered({
       alarmId: record.id,
       tagId: rule.tagId,
@@ -199,7 +199,7 @@ class SimulatedAlarmEngine {
   }
 
   /**
-   * 确认告警
+   * Acknowledge the alarm
    */
   acknowledgeAlarm(alarmId: string, userId: string, timestamp: number): AlarmRecord | null {
     const record = this.alarmRecords.find((r) => r.id === alarmId);
@@ -220,7 +220,7 @@ class SimulatedAlarmEngine {
   }
 
   /**
-   * 清除告警（恢复）
+   * Clear the alarm (recover)
    */
   clearAlarm(alarmId: string, userId: string, timestamp: number): AlarmRecord | null {
     const record = this.alarmRecords.find((r) => r.id === alarmId);
@@ -230,7 +230,7 @@ class SimulatedAlarmEngine {
     record.clearedAt = timestamp;
     record.clearedBy = userId;
 
-    // 发布告警恢复事件
+    // Publish the alarm-recovered event
     this.eventBusService.emitHealthRecovered({
       checks: [
         {
@@ -246,14 +246,14 @@ class SimulatedAlarmEngine {
   }
 
   /**
-   * 获取所有告警记录
+   * Get all alarm records
    */
   getRecords(): AlarmRecord[] {
     return [...this.alarmRecords];
   }
 
   /**
-   * 获取活跃告警
+   * Get active alarms
    */
   getActiveAlarms(): AlarmRecord[] {
     return this.alarmRecords.filter((r) => r.status === 'active');
@@ -277,7 +277,7 @@ class SimulatedAlarmEngine {
   }
 }
 
-// ─── 测试套件 ───
+// ─── Test suite ───
 
 describe('Alarm + EventBus 集成测试', () => {
   let eventBusService: EventBusService;
@@ -394,7 +394,7 @@ describe('Alarm + EventBus 集成测试', () => {
       expect(result.record!.status).toBe('active');
       expect(result.record!.triggerValue).toBe(85.5);
 
-      // 验证事件已发布
+      // Verify the event was published
       expect(mockEventEmitter.emit).toHaveBeenCalledWith(
         'alarm_triggered',
         expect.objectContaining({
@@ -439,11 +439,11 @@ describe('Alarm + EventBus 集成测试', () => {
     });
 
     it('范围外告警条件应正确评估', () => {
-      // 在范围内，不应触发
+      // Within range, should not trigger
       const inRange = alarmEngine.evaluateDataPoint(flowRateRule, 50, Date.now());
       expect(inRange.triggered).toBe(false);
 
-      // 超出范围，应触发
+      // Out of range, should trigger
       const outOfRange = alarmEngine.evaluateDataPoint(flowRateRule, 150, Date.now());
       expect(outOfRange.triggered).toBe(true);
     });
@@ -493,9 +493,9 @@ describe('Alarm + EventBus 集成测试', () => {
       const triggerResult = alarmEngine.evaluateDataPoint(temperatureRule, 90.0, Date.now());
       const alarmId = triggerResult.record!.id;
 
-      // 第一次确认
+      // First acknowledgement
       alarmEngine.acknowledgeAlarm(alarmId, TEST_USER_ID, Date.now());
-      // 第二次确认
+      // Second acknowledgement
       const secondAck = alarmEngine.acknowledgeAlarm(alarmId, TEST_USER_ID, Date.now());
 
       expect(secondAck).toBeNull();
@@ -526,21 +526,21 @@ describe('Alarm + EventBus 集成测试', () => {
     it('应能通过通知服务发送批量告警通知', async () => {
       const triggerResult = alarmEngine.evaluateDataPoint(temperatureRule, 90.0, Date.now());
 
-      // 模拟通知：通过事件总线发布 alarm.notification.sent 事件
+      // Simulate notification: publish alarm.notification.sent via the event bus
       eventBusService.emit('alarm.notification.sent' as any, {
         alarmId: triggerResult.record!.id,
         channels: ['sound', 'popup'],
         timestamp: Date.now(),
       });
 
-      // 模拟声音通知
+      // Simulate sound notification
       eventBusService.emit('alarm.sound.trigger' as any, {
         alarmId: triggerResult.record!.id,
         level: triggerResult.record!.level,
         config: { volume: 0.8, repeat: 3 },
       });
 
-      // 模拟弹窗通知
+      // Simulate popup notification
       eventBusService.emit('alarm.popup.show' as any, {
         alarmId: triggerResult.record!.id,
         ruleName: temperatureRule.name,
@@ -551,13 +551,13 @@ describe('Alarm + EventBus 集成测试', () => {
         config: { duration: 10000, requireAck: true },
       });
 
-      // 验证通知发送事件
+      // Verify the notification-sent event
       const notificationCalls = mockEventEmitter.emit.mock.calls.filter(
         (call: any[]) => call[0] === 'alarm.notification.sent',
       );
       expect(notificationCalls.length).toBe(1);
 
-      // 验证声音和弹窗通知
+      // Verify sound and popup notifications
       const soundCalls = mockEventEmitter.emit.mock.calls.filter(
         (call: any[]) => call[0] === 'alarm.sound.trigger',
       );
@@ -625,20 +625,20 @@ describe('Alarm + EventBus 集成测试', () => {
     });
 
     it('应支持完整的告警生命周期：触发 → 确认 → 恢复', () => {
-      // 触发
+      // Trigger
       const triggerResult = alarmEngine.evaluateDataPoint(temperatureRule, 95.0, Date.now());
       expect(triggerResult.triggered).toBe(true);
       const alarmId = triggerResult.record!.id;
 
-      // 确认
+      // Acknowledge
       const ackResult = alarmEngine.acknowledgeAlarm(alarmId, TEST_USER_ID, Date.now());
       expect(ackResult!.status).toBe('acknowledged');
 
-      // 恢复
+      // Recover
       const clearResult = alarmEngine.clearAlarm(alarmId, TEST_USER_ID, Date.now());
       expect(clearResult!.status).toBe('cleared');
 
-      // 验证完整事件序列
+      // Verify the complete event sequence
       const eventTypes = mockEventEmitter.emit.mock.calls.map((call: any[]) => call[0]);
       expect(eventTypes).toContain('alarm_triggered');
       expect(eventTypes).toContain('alarm_acknowledged');
@@ -665,7 +665,7 @@ describe('Alarm + EventBus 集成测试', () => {
 
       alarmEngine.evaluateDataPoint(temperatureRule, 88.0, Date.now());
 
-      // 验证 emit 被正确调用
+      // Verify emit was called correctly
       expect(mockEventEmitter.emit).toHaveBeenCalledWith('alarm_triggered', expect.any(Object));
     });
 
@@ -715,7 +715,7 @@ describe('Alarm + EventBus 集成测试', () => {
   });
 
   // ========================================================================
-  // 边界情况与错误路径
+  // Edge cases and error paths
   // ========================================================================
   describe('边界情况与错误路径', () => {
     it('无消抖时间时应立即触发告警', () => {
@@ -732,7 +732,7 @@ describe('Alarm + EventBus 集成测试', () => {
     it('相同值不应重复触发消抖', () => {
       const debouncedRule = { ...temperatureRule, debounceMs: 5000, id: 'rule-debounce-2' };
       alarmEngine.evaluateDataPoint(debouncedRule, 100.0, Date.now());
-      // 相同值
+      // Same value
       const result = alarmEngine.evaluateDataPoint(debouncedRule, 100.0, Date.now());
       expect(result.triggered).toBe(false);
     });
@@ -742,7 +742,7 @@ describe('Alarm + EventBus 集成测试', () => {
       alarmEngine.evaluateDataPoint(debouncedRule, 100.0, Date.now());
       expect(alarmDebouncer.getDebouncingCount()).toBe(1);
 
-      // 值恢复正常
+      // Value returns to normal
       alarmEngine.evaluateDataPoint(debouncedRule, 50.0, Date.now());
       expect(alarmDebouncer.getDebouncingCount()).toBe(0);
     });

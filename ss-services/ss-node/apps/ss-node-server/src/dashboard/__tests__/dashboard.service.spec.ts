@@ -3,9 +3,9 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * DashboardService 单测（02 模块仪表盘聚合）
+ * DashboardService unit tests (module 02 dashboard aggregation)
  *
- * 覆盖：聚合字段映射、30s 缓存 TTL、forceRefresh 绕过、角色透传、隔离库仓储切换
+ * Coverage: aggregation field mapping, 30s cache TTL, forceRefresh bypass, role passthrough, isolated-database repository switching
  */
 import { DashboardService } from '../dashboard.service';
 import { AlarmLevel, AlarmStatus } from '@ss-node/ss-alarm';

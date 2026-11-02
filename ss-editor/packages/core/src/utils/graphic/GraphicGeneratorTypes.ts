@@ -4,64 +4,64 @@
 
 import { IGraphic } from '@scada-editor/plugin-sdk';
 
-// 布局模式
+// Layout mode
 export type LayoutMode = 'grid' | 'random' | 'flow' | 'spiral';
 
-// 单个图元配置
+// Single graphic configuration
 export interface GraphicConfig {
-  type: string;                      // 图元类型
-  x?: number;                        // X坐标（仅固定位置）
-  y?: number;                        // Y坐标（仅固定位置）
-  width?: number;                    // 宽度
-  height?: number;                   // 高度
-  customProps?: Record<string, any>; // 自定义属性
+  type: string;                      // Graphic type
+  x?: number;                        // X coordinate (fixed position only)
+  y?: number;                        // Y coordinate (fixed position only)
+  width?: number;                    // Width
+  height?: number;                   // Height
+  customProps?: Record<string, any>; // Custom properties
 }
 
-// 生成配置
+// Generation configuration
 export interface GenerateConfig {
-  type: string;                      // 图元类型
-  count: number;                     // 生成数量
-  layoutMode: LayoutMode;            // 布局模式
-  startX: number;                    // 起始X坐标
-  startY: number;                    // 起始Y坐标
-  areaWidth: number;                 // 区域宽度
-  areaHeight: number;                // 区域高度
-  
-  // 图元尺寸配置
-  minWidth?: number;                 // 最小宽度
-  maxWidth?: number;                 // 最大宽度
-  minHeight?: number;                // 最小高度
-  maxHeight?: number;                // 最大高度
-  fixedWidth?: number;               // 固定宽度
-  fixedHeight?: number;              // 固定高度
-  
-  // 间距配置
-  gapX?: number;                     // 横向间距
-  gapY?: number;                     // 纵向间距
-  
-  // 网格配置
-  cols?: number;                     // 网格列数
-  
-  // 随机配置
-  randomColors?: boolean;            // 随机颜色
-  randomSizes?: boolean;             // 随机尺寸
-  randomRotation?: boolean;          // 随机旋转
+  type: string;                      // Graphic type
+  count: number;                     // Number to generate
+  layoutMode: LayoutMode;            // Layout mode
+  startX: number;                    // Start X coordinate
+  startY: number;                    // Start Y coordinate
+  areaWidth: number;                 // Area width
+  areaHeight: number;                // Area height
+
+  // Graphic size configuration
+  minWidth?: number;                 // Minimum width
+  maxWidth?: number;                 // Maximum width
+  minHeight?: number;                // Minimum height
+  maxHeight?: number;                // Maximum height
+  fixedWidth?: number;               // Fixed width
+  fixedHeight?: number;              // Fixed height
+
+  // Spacing configuration
+  gapX?: number;                     // Horizontal gap
+  gapY?: number;                     // Vertical gap
+
+  // Grid configuration
+  cols?: number;                     // Number of grid columns
+
+  // Random configuration
+  randomColors?: boolean;            // Random colors
+  randomSizes?: boolean;             // Random sizes
+  randomRotation?: boolean;          // Random rotation
 }
 
-// 批量生成配置
+// Batch generation configuration
 export interface BatchGenerateConfig {
-  graphics: GraphicConfig[];         // 多种图元配置
-  layoutMode?: LayoutMode;           // 整体布局
+  graphics: GraphicConfig[];         // Multiple graphic configurations
+  layoutMode?: LayoutMode;           // Overall layout
 }
 
-// 生成结果
+// Generation result
 export interface GenerateResult {
-  graphics: IGraphic[];              // 生成的图元数组
-  duration: number;                  // 生成耗时（毫秒）
-  count: number;                     // 实际生成数量
+  graphics: IGraphic[];              // Generated graphic array
+  duration: number;                  // Generation time (milliseconds)
+  count: number;                     // Actual number generated
 }
 
-// 网格选项
+// Grid options
 export interface GridOptions {
   startX?: number;
   startY?: number;
@@ -72,7 +72,7 @@ export interface GridOptions {
   height?: number;
 }
 
-// 随机选项
+// Random options
 export interface RandomOptions {
   areaWidth?: number;
   areaHeight?: number;

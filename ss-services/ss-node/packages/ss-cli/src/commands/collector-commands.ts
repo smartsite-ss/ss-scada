@@ -3,15 +3,15 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * collector-commands.ts — 采集管理命令
+ * collector-commands.ts - collector management commands
  *
- *   collector status — 查看采集状态
+ *   collector status - view collector status
  */
 
 import { ApiError } from '../core/ApiClient';
 import type { CommandParser } from '../core/CommandParser';
 
-/** 创建采集管理子命令组 */
+/** Create the collector-management subcommand group */
 export function registerCommands(parser: CommandParser): void {
   const program = parser.getProgram();
 
@@ -32,7 +32,7 @@ export function registerCommands(parser: CommandParser): void {
     });
 }
 
-/** 从 API 响应中提取列表 */
+/** Extract the list from the API response */
 function extractList<T>(response: unknown): T[] {
   if (Array.isArray(response)) {
     return response as T[];
@@ -50,7 +50,7 @@ function extractList<T>(response: unknown): T[] {
   return [];
 }
 
-/** 格式化输出采集器状态 */
+/** Format and print the collector status */
 function printCollectorStatus(data: unknown): void {
   console.log('\n--- Collector Status ---');
 
@@ -66,7 +66,7 @@ function printCollectorStatus(data: unknown): void {
     console.log(`  Total Collectors:  ${obj.totalCount}`);
   }
 
-  // 打印各采集器详情
+  // Print details of each collector
   if (obj.collectors) {
     const collectors = extractList<Record<string, unknown>>(obj.collectors);
     if (collectors.length > 0) {
@@ -83,7 +83,7 @@ function printCollectorStatus(data: unknown): void {
   }
 }
 
-/** 统一错误处理 */
+/** Unified error handling */
 function handleError(context: string, err: unknown): void {
   if (err instanceof ApiError) {
     console.error(`${context}: ${err.message}`);

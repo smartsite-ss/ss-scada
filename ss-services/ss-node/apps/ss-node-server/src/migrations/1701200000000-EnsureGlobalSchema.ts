@@ -5,11 +5,11 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
- *  兜底建表：补齐 migrations 未覆盖的全局库表/索引。
- *  *
- *  * 与 InitialSchema 内容一致（同源 dump），作为双保险：即使未来新增迁移
- *  * 未跑或部分失败，服务启动时也能保证全部表/索引存在。
- *  * 全部使用 IF NOT EXISTS，天然幂等；对已有库零影响。
+ *  Fallback schema creation: fill in any global-database tables/indexes not covered by migrations.
+ *
+ *  Matches InitialSchema (same-source dump) as a double safety net: even if future migrations are not run or partially fail,
+ *  the service can still guarantee all tables/indexes exist at startup.
+ *  Uses IF NOT EXISTS throughout, so it is naturally idempotent and has zero impact on existing databases.
  */
 export class EnsureGlobalSchema1701200000000 implements MigrationInterface {
   name = 'EnsureGlobalSchema1701200000000';
@@ -113,6 +113,6 @@ export class EnsureGlobalSchema1701200000000 implements MigrationInterface {
   }
 
   public async down(): Promise<void> {
-    // 兜底建表不做回滚（保留用户数据）
+    // Fallback schema creation does not roll back (preserve user data)
   }
 }

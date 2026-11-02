@@ -3,9 +3,9 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * AI 用量与成本日志实体 — P2-T08 成本监控与预算熔断
+ * AI usage and cost log entity - P2-T08 cost monitoring and budget circuit-breaker
  *
- * sys_ai_usage_logs：每次 LLM 调用的 Token 与费用记录
+ * sys_ai_usage_logs: token and cost records for each LLM call
  */
 
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, Index } from 'typeorm';
@@ -15,59 +15,59 @@ export class AiUsageLog {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  /** 供应商 ID（deepseek/zhipu/openai 等） */
+  /** Provider ID (deepseek/zhipu/openai, etc.) */
   @Column({ name: 'provider_id', type: 'varchar', length: 32 })
   @Index()
   providerId: string;
 
-  /** 模型名 */
+  /** Model name */
   @Column({ type: 'varchar', length: 64 })
   @Index()
   model: string;
 
-  /** 任务类型（chat/codegen/scene_create/analysis） */
+  /** Task type (chat/codegen/scene_create/analysis) */
   @Column({ name: 'task_type', type: 'varchar', length: 32, default: 'chat' })
   @Index()
   taskType: string;
 
-  /** 用户 ID */
+  /** User ID */
   @Column({ name: 'user_id', type: 'varchar', length: 36, nullable: true })
   @Index()
   userId: string;
 
-  /** 项目 ID */
+  /** Project ID */
   @Column({ name: 'project_id', type: 'varchar', length: 64, nullable: true })
   projectId: string;
 
-  /** 会话 ID */
+  /** Session ID */
   @Column({ name: 'conversation_id', type: 'varchar', length: 36, nullable: true })
   conversationId: string;
 
-  /** 请求 Token 数 */
+  /** Request token count */
   @Column({ name: 'prompt_tokens', type: 'integer', default: 0 })
   promptTokens: number;
 
-  /** 响应 Token 数 */
+  /** Response token count */
   @Column({ name: 'completion_tokens', type: 'integer', default: 0 })
   completionTokens: number;
 
-  /** 总 Token 数 */
+  /** Total token count */
   @Column({ name: 'total_tokens', type: 'integer', default: 0 })
   totalTokens: number;
 
-  /** 预估费用（美元） */
+  /** Estimated cost (USD) */
   @Column({ name: 'estimated_cost', type: 'decimal', precision: 12, scale: 8, default: 0 })
   estimatedCost: number;
 
-  /** 是否成功 */
+  /** Whether successful */
   @Column({ type: 'integer', default: 1 })
   success: number;
 
-  /** 错误信息 */
+  /** Error message */
   @Column({ name: 'error_message', type: 'text', nullable: true })
   errorMessage: string;
 
-  /** 响应延迟（毫秒） */
+  /** Response latency (ms) */
   @Column({ name: 'latency_ms', type: 'integer', nullable: true })
   latencyMs: number;
 

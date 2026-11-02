@@ -11,11 +11,11 @@ export interface ConnectionSnapshot {
   userId?: string;
   username?: string;
   ip: string;
-  /** 业务来源：客户端建立连接时所在页面路径（如 /system/device-monitor） */
+  /** Business source: page path where the client established the connection (e.g. /system/device-monitor) */
   source?: string;
-  /** 客户端完整 URL（来源于握手 auth.clientUrl 或 Referer 头） */
+  /** Client full URL (from handshake auth.clientUrl or the Referer header) */
   url?: string;
-  /** 客户端 User-Agent */
+  /** Client User-Agent */
   userAgent?: string;
   connectedAt: number;
   projectRooms: string[];
@@ -60,19 +60,19 @@ interface MessageRecord {
 export class ConnectionMonitorService implements OnModuleInit {
   private readonly logger = new Logger(ConnectionMonitorService.name);
 
-  /** 消息记录滑动窗口（用于速率计算） */
+  /** Message-record sliding window (for rate computation) */
   private readonly messageWindow: MessageRecord[] = [];
-  /** 速率计算窗口大小（毫秒），默认 10 秒 */
+  /** Rate-computation window size (ms), default 10 seconds */
   private readonly rateWindowMs = 10000;
-  /** 异常消息速率阈值（msg/sec），默认 100 */
+  /** Abnormal message-rate threshold (msg/sec), default 100 */
   private abnormalRateThreshold = 100;
-  /** 异常连接时长阈值（毫秒），超过 24 小时标记为异常，默认 24h */
+  /** Abnormal connection-duration threshold (ms); connections over 24 hours are flagged abnormal, default 24h */
   private abnormalDurationThreshold = 24 * 60 * 60 * 1000;
 
-  /** 连接信息快照 */
+  /** Connection info snapshot */
   private readonly connectionSnapshots = new Map<string, ConnectionSnapshot>();
 
-  /** 周期检查定时器 */
+  /** Periodic check timer */
   private checkInterval: ReturnType<typeof setInterval> | null = null;
 
   constructor(
@@ -84,7 +84,7 @@ export class ConnectionMonitorService implements OnModuleInit {
   onModuleInit(): void {
     this.logger.log('ConnectionMonitorService initialized');
 
-    // 每 30 秒检查一次异常连接
+    // Check abnormal connections every 30 seconds
     this.checkInterval = setInterval(() => {
       this.detectAbnormalConnections();
     }, 30000);
@@ -97,7 +97,7 @@ export class ConnectionMonitorService implements OnModuleInit {
     }
   }
 
-  /** 注册连接监控 */
+  /** Register connection monitoring */
   registerConnection(
     socketId: string,
     userId?: string,
@@ -122,12 +122,12 @@ export class ConnectionMonitorService implements OnModuleInit {
     });
   }
 
-  /** 注销连接监控 */
+  /** Unregister connection monitoring */
   unregisterConnection(socketId: string): void {
     this.connectionSnapshots.delete(socketId);
   }
 
-  /** 更新连接的项目房间 */
+  /** Update the connection's project rooms */
   updateProjectRooms(socketId: string, rooms: string[]): void {
     const snapshot = this.connectionSnapshots.get(socketId);
     if (snapshot) {
@@ -135,7 +135,7 @@ export class ConnectionMonitorService implements OnModuleInit {
     }
   }
 
-  /** 记录消息 */
+  /** Record a message */
   recordMessage(socketId: string): void {
     const snapshot = this.connectionSnapshots.get(socketId);
     if (snapshot) {
@@ -145,11 +145,11 @@ export class ConnectionMonitorService implements OnModuleInit {
 
     this.messageWindow.push({ socketId, timestamp: Date.now() });
 
-    // 清理过期消息记录
+    // Clean up expired message records
     this.cleanMessageWindow();
   }
 
-  /** 获取消息速率 */
+  /** Get the message rate */
   getMessageRates(): MessageRateStats[] {
     const now = Date.now();
     const windowStart = now - this.rateWindowMs;
@@ -173,7 +173,7 @@ export class ConnectionMonitorService implements OnModuleInit {
     return rates.sort((a, b) => b.messagesPerSecond - a.messagesPerSecond);
   }
 
-  /** 获取连接时长统计 */
+  /** Get connection-duration statistics */
   getDurationStats(): DurationStats {
     const now = Date.now();
     const durations: number[] = [];
@@ -203,12 +203,12 @@ export class ConnectionMonitorService implements OnModuleInit {
     return { avgMs, maxMs, distribution };
   }
 
-  /** 检测异常连接 */
+  /** Detect abnormal connections */
   detectAbnormalConnections(): string[] {
     const abnormal: string[] = [];
     const now = Date.now();
 
-    // 检测高消息速率
+    // Detect high message rates
     const rates = this.getMessageRates();
     for (const rate of rates) {
       if (rate.messagesPerSecond > this.abnormalRateThreshold) {
@@ -219,7 +219,7 @@ export class ConnectionMonitorService implements OnModuleInit {
       }
     }
 
-    // 检测超长连接
+    // Detect overly long connections
     this.connectionSnapshots.forEach((snapshot, socketId) => {
       if (now - snapshot.connectedAt > this.abnormalDurationThreshold) {
         if (!abnormal.includes(socketId)) {
@@ -230,7 +230,7 @@ export class ConnectionMonitorService implements OnModuleInit {
         );
       }
 
-      // 检测长时间无活动
+      // Detect long inactivity
       const idleDuration = now - snapshot.lastActivityAt;
       if (idleDuration > this.abnormalDurationThreshold) {
         if (!abnormal.includes(socketId)) {
@@ -245,14 +245,14 @@ export class ConnectionMonitorService implements OnModuleInit {
     return abnormal;
   }
 
-  /** 获取完整监控统计 */
+  /** Get full monitoring statistics */
   getStats(): MonitorStats {
     const connectionsByProject: Record<string, number> = {};
     const connectionsByUser: Record<string, number> = {};
     const _now = Date.now();
 
     this.connectionSnapshots.forEach((snapshot) => {
-      // 按项目统计
+      // Statistics by project
       for (const room of snapshot.projectRooms) {
         if (room.startsWith('project:')) {
           const projectId = room.replace('project:', '');
@@ -260,7 +260,7 @@ export class ConnectionMonitorService implements OnModuleInit {
         }
       }
 
-      // 按用户统计
+      // Statistics by user
       if (snapshot.userId) {
         connectionsByUser[snapshot.userId] = (connectionsByUser[snapshot.userId] || 0) + 1;
       }
@@ -276,7 +276,7 @@ export class ConnectionMonitorService implements OnModuleInit {
     };
   }
 
-  /** 获取在线连接数（按项目） */
+  /** Get online connection count (by project) */
   getOnlineCountByProject(projectId: string): number {
     let count = 0;
     this.connectionSnapshots.forEach((snapshot) => {
@@ -287,7 +287,7 @@ export class ConnectionMonitorService implements OnModuleInit {
     return count;
   }
 
-  /** 获取在线连接数（按用户） */
+  /** Get online connection count (by user) */
   getOnlineCountByUser(userId: string): number {
     let count = 0;
     this.connectionSnapshots.forEach((snapshot) => {
@@ -298,17 +298,17 @@ export class ConnectionMonitorService implements OnModuleInit {
     return count;
   }
 
-  /** 获取连接快照 */
+  /** Get a connection snapshot */
   getConnectionSnapshot(socketId: string): ConnectionSnapshot | undefined {
     return this.connectionSnapshots.get(socketId);
   }
 
-  /** 获取所有连接快照 */
+  /** Get all connection snapshots */
   getAllSnapshots(): ConnectionSnapshot[] {
     return Array.from(this.connectionSnapshots.values());
   }
 
-  /** 设置异常检测阈值 */
+  /** Set abnormal-detection thresholds */
   setAbnormalThresholds(rateThreshold?: number, durationThresholdMs?: number): void {
     if (rateThreshold !== undefined) {
       this.abnormalRateThreshold = rateThreshold;
@@ -324,7 +324,7 @@ export class ConnectionMonitorService implements OnModuleInit {
       this.messageWindow.shift();
     }
 
-    // 防止消息窗口无限增长
+    // Prevent the message window from growing unboundedly
     if (this.messageWindow.length > 10000) {
       this.messageWindow.splice(0, this.messageWindow.length - 5000);
     }

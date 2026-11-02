@@ -5,24 +5,24 @@
 import { BaseLayout } from '../base/BaseLayout';
 import { IGraphic } from '@scada-editor/plugin-sdk';
 
-// 自由布局类
+// Free layout class
 export class FreeLayout extends BaseLayout {
   constructor() {
     super('free', {
-      // 自由布局没有特定的属性
+      // Free layout has no specific properties
     });
   }
 
   arrange(_graphics: IGraphic[]): void {
-    // 自由布局不做任何处理，图形保持原来的位置
+    // Free layout performs no processing; graphics keep their original positions
   }
 
-  // 应用布局
+  // Apply the layout
   applyLayout(_graphics: IGraphic[]): void {
-    // 自由布局不做任何处理，图形保持原来的位置
+    // Free layout performs no processing; graphics keep their original positions
   }
 
-  // 克隆方法
+  // Clone method
   clone(): FreeLayout {
     const newLayout = new FreeLayout();
     newLayout.properties = { ...this.properties };

@@ -7,10 +7,10 @@ import { EventBusModule } from '../event-bus/event-bus.module';
 import { DeviceStateManager } from './device-state-manager.service';
 
 /**
- * 设备状态模块（全局）
+ * Device-state module (global)
  *
- * 提供 DeviceStateManager 作为设备状态的唯一权威数据源。
- * 内置 setInterval 心跳检测（每 5 秒）。
+ * Provides DeviceStateManager as the single authoritative source of device state.
+ * Built-in setInterval heartbeat detection (every 5 seconds).
  */
 @Global()
 @Module({

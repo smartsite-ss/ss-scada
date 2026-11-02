@@ -72,7 +72,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         const r = res as any;
         message = r.message || exception.message;
         error = r.error || exception.name;
-        // 业务错误码透传：new XxxException({ code, message }) 时优先用自定义码（如 WECHAT_CODE_INVALID）
+        // Business error code passthrough: when using new XxxException({ code, message }), prefer the custom code (e.g. WECHAT_CODE_INVALID)
         if (typeof r.code === 'string' && r.code.length > 0) {
           code = r.code;
         }

@@ -3,14 +3,14 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * AiController 单元测试 — agentExecute SSE 端点
+ * AiController unit tests - agentExecute SSE endpoint
  *
- * 覆盖:
- *   - SSE 响应头设置
- *   - heartbeat 立即发送
- *   - 步骤流式输出
- *   - [DONE] 终止
- *   - 异常处理
+ * Covers:
+ *   - SSE response header setup
+ *   - immediate heartbeat send
+ *   - step-by-step streaming output
+ *   - [DONE] termination
+ *   - exception handling
  */
 
 import { Test, TestingModule } from '@nestjs/testing';
@@ -185,7 +185,7 @@ describe('AiController — agentExecute SSE', () => {
     return module.get<AiController>(AiController);
   }
 
-  // ────── SSE 响应头 ──────
+  // ────── SSE response headers ──────
 
   describe('SSE 响应头', () => {
     it('应设置 Content-Type 为 text/event-stream', async () => {
@@ -243,13 +243,13 @@ describe('AiController — agentExecute SSE', () => {
 
       await controller.agentExecute({ userInput: 'hello' }, { user: { id: 'user-1' } } as any, res as any);
 
-      // 第一个数据块应为 heartbeat
+      // the first data chunk should be the heartbeat
       expect(res.chunks.length).toBeGreaterThanOrEqual(1);
       expect(res.chunks[0]).toContain(': heartbeat');
     });
   });
 
-  // ────── 步骤流式输出 ──────
+  // ────── step streaming output ──────
 
   describe('步骤流式输出', () => {
     it('应逐步骤发送 SSE data 事件', async () => {
@@ -269,7 +269,7 @@ describe('AiController — agentExecute SSE', () => {
 
       await controller.agentExecute({ userInput: 'hello' }, { user: { id: 'user-1' } } as any, res as any);
 
-      // 跳过 heartbeat，检查 data: 行
+      // skip the heartbeat, check the data: lines
       const dataLines = res.chunks.filter((c) => c.startsWith('data:'));
       expect(dataLines.length).toBe(4); // 3 steps + [DONE]
 
@@ -301,7 +301,7 @@ describe('AiController — agentExecute SSE', () => {
     });
   });
 
-  // ────── 异常处理 ──────
+  // ────── exception handling ──────
 
   describe('异常处理', () => {
     it('应发送 SSE error 事件而非崩溃', async () => {
@@ -310,7 +310,7 @@ describe('AiController — agentExecute SSE', () => {
 
       await controller.agentExecute({ userInput: 'hello' }, { user: { id: 'user-1' } } as any, res as any);
 
-      // 应有 event: error 行
+      // there should be an event: error line
       const allText = res.chunks.join('');
       expect(allText).toContain('event: error');
       expect(allText).toContain('LLM 调用超时');
@@ -326,7 +326,7 @@ describe('AiController — agentExecute SSE', () => {
     });
   });
 
-  // ────── 空步骤 ──────
+  // ────── empty steps ──────
 
   describe('空步骤（无工具调用场景）', () => {
     it('应发送 heartbeat + [DONE]', async () => {

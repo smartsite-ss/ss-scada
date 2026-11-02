@@ -91,16 +91,16 @@ export class FormatPainterManager {
 
     graphic.update?.({ style: mergedStyle });
 
-    // 复制 customProps（高级属性）
-    // 注意：BaseGraphic.update() 通过 properties.properties 映射到 config.customProps
+    // Copy customProps (advanced properties)
+    // Note: BaseGraphic.update() maps properties.properties to config.customProps
     if (this._copiedCustomProps) {
       const existingProps = graphic.config?.customProps || {};
 
       if (isSameType) {
-        // 同类图元：完整复制全部高级属性（PropertySchema 字段列表一致）
+        // Same-type graphic: copy all advanced properties completely (PropertySchema field lists match)
         graphic.update?.({ properties: { ...existingProps, ...this._copiedCustomProps } });
       } else {
-        // 异类图元：仅复制名称相同的字段，目标不支持的字段不应用
+        // Different-type graphic: copy only fields with the same name; fields not supported by the target are not applied
         const commonProps: Record<string, any> = {};
         for (const key of Object.keys(this._copiedCustomProps)) {
           if (key in existingProps) {

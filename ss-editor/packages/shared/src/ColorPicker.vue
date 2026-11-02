@@ -3,7 +3,7 @@
     class="color-picker"
     @click="$event.stopPropagation()"
   >
-    <!-- 颜色显示和选择按钮 -->
+    <!-- Color display and select button -->
     <div
       ref="triggerRef"
       class="color-picker-trigger"
@@ -21,14 +21,14 @@
       </div>
     </div>
     
-    <!-- 颜色选择器弹窗 -->
+    <!-- Color picker popup -->
     <div 
       v-if="isOpen" 
       class="color-picker-content" 
       :style="popupPosition"
       @click="$event.stopPropagation()"
     >
-      <!-- 主颜色选择器 -->
+      <!-- Main color selector -->
       <div
         ref="colorSelectorRef"
         class="color-selector"
@@ -44,7 +44,7 @@
           />
         </div>
         
-        <!-- 色相条 -->
+        <!-- Hue slider -->
         <div class="hue-slider">
           <div 
             class="hue-gradient"
@@ -57,7 +57,7 @@
           </div>
         </div>
         
-        <!-- 透明度条 -->
+        <!-- Alpha slider -->
         <div class="alpha-slider">
           <div 
             class="alpha-gradient" 
@@ -72,7 +72,7 @@
         </div>
       </div>
       
-      <!-- 预设颜色 -->
+      <!-- Preset colors -->
       <div class="preset-colors">
         <div 
           v-for="(preset, index) in presetColors" 
@@ -83,7 +83,7 @@
         />
       </div>
       
-      <!-- 颜色值和操作按钮 -->
+      <!-- Color value and action buttons -->
       <div class="color-picker-footer">
         <div class="color-value">
           <input 
@@ -165,13 +165,13 @@ const actualDirection = computed(() => {
   const viewportWidth = window.innerWidth;
   const viewportHeight = window.innerHeight;
   
-  // 计算各个方向的可用空间
+  // Compute available space in each direction
   const spaceTop = rect.top;
   const spaceBottom = viewportHeight - rect.bottom;
   const spaceLeft = rect.left;
   const spaceRight = viewportWidth - rect.right;
   
-  // 优先选择空间最大的方向
+  // Prefer the direction with the most available space
   const spaces = {
     top: spaceTop,
     bottom: spaceBottom,
@@ -190,7 +190,7 @@ const popupPosition = computed(() => {
   
   const rect = triggerRef.value.getBoundingClientRect();
   const contentWidth = 300;
-  const contentHeight = 400; // 估计的颜色选择器高度
+  const contentHeight = 400; // estimated color picker height
   
   let top = 0;
   let left = 0;
@@ -214,7 +214,7 @@ const popupPosition = computed(() => {
       break;
   }
   
-  // 确保弹出框在视口内
+  // Keep the popup within the viewport
   const viewportWidth = window.innerWidth;
   const viewportHeight = window.innerHeight;
   
@@ -317,7 +317,7 @@ function updateColorValue() {
 }
 
 function parseColorValue(value: string) {
-  // 处理 rgba 格式
+  // Handle rgba format
   const rgbaMatch = value.match(/^rgba\((\d+),\s*(\d+),\s*(\d+),\s*([0-9.]+)\)$/);
   if (rgbaMatch) {
     const r = parseInt(rgbaMatch[1]);
@@ -331,7 +331,7 @@ function parseColorValue(value: string) {
     return true;
   }
   
-  // 处理十六进制格式
+  // Handle hex format
   const hexMatch = value.match(/^#([0-9A-Fa-f]{6})$/);
   if (hexMatch) {
     const hex = hexMatch[1];
@@ -354,8 +354,8 @@ function handleColorClick(event: MouseEvent) {
   const rect = colorSelectorRef.value.getBoundingClientRect();
   const x = event.clientX - rect.left;
   const y = event.clientY - rect.top;
-  const width = rect.width - 20; // 减去色相条宽度
-  const height = rect.height - 40; // 减去透明度条高度
+  const width = rect.width - 20; // subtract hue slider width
+  const height = rect.height - 40; // subtract alpha slider height
   
   hue.value = Math.max(0, Math.min(1, x / width));
   saturation.value = Math.max(0, Math.min(1, 1 - y / height));
@@ -384,7 +384,7 @@ function handleAlphaClick(event: MouseEvent) {
 
 function handleColorValueChange() {
   if (!parseColorValue(colorValue.value)) {
-    // 无效的颜色值，恢复之前的颜色
+    // Invalid color value; restore the previous color
     updateColorValue();
   }
 }
@@ -411,12 +411,12 @@ function toggleColorPicker() {
 }
 
 function confirmColor() {
-  // 确认颜色选择并关闭颜色选择器
+  // Confirm color selection and close the picker
   emit('colorChange', colorValue.value);
   isOpen.value = false;
 }
 
-// 点击外部关闭颜色选择器
+// Close the picker on outside click
 function handleClickOutside(_: MouseEvent) {
   if (isOpen.value) {
     isOpen.value = false;
@@ -688,7 +688,7 @@ watch(() => props.modelValue, (newValue) => {
   }
 }
 
-// 深色主题适配
+// Dark theme adaptation
 :deep(.dark) {
   .color-picker {
     .color-picker-trigger {

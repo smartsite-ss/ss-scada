@@ -39,7 +39,7 @@ const createMockEventBus = () => {
     stopListeningTo: jest.fn(),
     toJSON: jest.fn().mockReturnValue({}),
     eventBus: {} as any,
-    /** 手动触发事件（用于测试） */
+    /** Manually trigger the event (for testing) */
     trigger: (event: string, payload: any) => {
       for (const h of handlers[event] || []) h(payload);
     },
@@ -66,7 +66,7 @@ const createMockIsolationFactory = (
 });
 
 // ============================================================
-// 测试数据
+// Test data
 // ============================================================
 const createCrashPayload = (
   overrides: Partial<{
@@ -97,7 +97,7 @@ const createHealthData = (
 });
 
 // ============================================================
-// 测试套件
+// Test suite
 // ============================================================
 describe('IsolationAlarmService', () => {
   let service: IsolationAlarmService;
@@ -122,7 +122,7 @@ describe('IsolationAlarmService', () => {
     });
 
     it('应该启动健康检查定时器', () => {
-      // 验证 timer 已启动（setInterval 被调用）
+      // Verify the timer has started (setInterval was called)
       expect(jest.getTimerCount()).toBeGreaterThan(0);
     });
   });
@@ -165,7 +165,7 @@ describe('IsolationAlarmService', () => {
   describe('checkHighRestart', () => {
     it('10 分钟内重启超过 3 次应触发告警', () => {
       const now = Date.now();
-      // 模拟 4 次崩溃，时间跨度 < 10 分钟
+      // Simulate 4 crashes, time span < 10 minutes
       eventBus.trigger(
         'plugin.isolation.crash',
         createCrashPayload({
@@ -174,11 +174,11 @@ describe('IsolationAlarmService', () => {
         }),
       );
 
-      // 手动标记 firstRestartAt 在 5 分钟前
+      // Manually mark firstRestartAt as 5 minutes ago
       const record = service.getRestartRecord('virtual')!;
       record.firstRestartAt = now - 5 * 60 * 1000;
 
-      // 第 5 次崩溃
+      // 5th crash
       eventBus.trigger(
         'plugin.isolation.crash',
         createCrashPayload({
@@ -219,17 +219,17 @@ describe('IsolationAlarmService', () => {
         }),
       };
 
-      service.onModuleDestroy(); // 清理旧实例
+      service.onModuleDestroy(); // clean up the old instance
       const factory = createMockIsolationFactory({
         getAllHealth: mockGetAllHealth,
         pluginRegistry: mockPluginRegistry,
       });
       service = new IsolationAlarmService(factory as any, eventBus as any);
 
-      // 推进定时器触发健康检查
+      // Advance the timer to trigger the health check
       jest.advanceTimersByTime(30000);
 
-      // 等待异步完成
+      // Wait for async to finish
       await Promise.resolve();
 
       expect(eventBus.emit).toHaveBeenCalledWith(

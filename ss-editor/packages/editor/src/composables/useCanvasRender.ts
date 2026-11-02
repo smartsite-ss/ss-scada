@@ -16,15 +16,15 @@ export interface DrawCanvasOptions {
 }
 
 /**
- * 视口裁剪配置接口
- * 用于在画布渲染时启用/禁用视口裁剪优化
+ * Viewport clipping configuration interface
+ * Used to enable/disable the viewport clipping optimization during canvas rendering
  */
 export interface ViewportCullingOptions {
-  /** 是否启用视口裁剪（默认 false） */
+  /** Whether to enable viewport clipping (default false) */
   enabled?: boolean;
   /**
-   * 裁剪缓冲区比例 (0-1)，扩大检测范围防止边缘闪烁
-   * 默认 0.05 即视口各边外扩 5%
+   * Clipping buffer ratio (0-1), expands the detection range to prevent edge flickering
+   * Default 0.05, i.e. expand 5% beyond each edge of the viewport
    */
   bufferRatio?: number;
 }
@@ -52,24 +52,24 @@ export function useCanvasRender(
   let isPartialPending = false;
   let isDrawing = false;
   
-  // 缓存背景图片对象，避免每次渲染都创建新的 Image()
+  // Cache the background image object to avoid creating a new Image() on every render
   let cachedBgImage: HTMLImageElement | null = null;
   let cachedBgImageSrc: string | null = null;
 
-  // 背景图片加载失败重试次数限制
+  // Retry limit for background image load failures
   const BG_IMAGE_MAX_RETRIES = 3;
   const bgImageRetryCount = new Map<string, number>();
-  const bgImageExhausted = new Set<string>(); // 重试耗尽的图片源
+  const bgImageExhausted = new Set<string>(); // image sources whose retries are exhausted
 
-  // ====== 视口裁剪状态 ======
+  // ====== Viewport clipping state ======
   let viewportConfig: ViewportCullingOptions | null = null;
   let currentViewport: ViewportRect | null = null;
   
-  // 获取或创建缓存的背景图片
+  // Get or create the cached background image
   const getBackgroundImage = async (src: string): Promise<HTMLImageElement | null> => {
     const resolvedSrc = resolveAssetPath(src);
 
-    // 已超过重试次数，不再加载
+    // Retry limit exceeded, no longer loading
     if (bgImageExhausted.has(resolvedSrc)) {
       return null;
     }
@@ -216,7 +216,7 @@ export function useCanvasRender(
   };
 
   /**
-   * 获取带缓冲区的视口（防止边缘图元闪烁）
+   * Get the viewport with buffer (prevents edge graphic flickering)
    */
   const getBufferedViewport = (): ViewportRect | null => {
     if (!currentViewport || !viewportConfig?.enabled) return null;
@@ -234,17 +234,17 @@ export function useCanvasRender(
   };
 
   /**
-   * 快速 AABB 相交检测：判断图元是否在视口内
+   * Fast AABB intersection test: determine whether a graphic is inside the viewport
    */
   const isGraphicInViewport = (graphic: any, vp: ViewportRect): boolean => {
     try {
       if (typeof graphic.getPosition !== 'function' || typeof graphic.getSize !== 'function') return true;
       const { x, y } = graphic.getPosition();
       const { width, height } = graphic.getSize();
-      // AABB 相交检测
+      // AABB intersection test
       return x + width > vp.x && x < vp.x + vp.width && y + height > vp.y && y < vp.y + vp.height;
     } catch {
-      return true; // 无法判断时默认可见，保证不丢失渲染
+      return true; // default to visible when undeterminable, ensuring nothing is lost from rendering
     }
   };
 
@@ -281,7 +281,7 @@ export function useCanvasRender(
       );
     }
 
-    // ====== 视口裁剪：预过滤可见图元 ======
+    // ====== Viewport clipping: pre-filter visible graphics ======
     const bufferedVp = getBufferedViewport();
     const visibleGraphics = bufferedVp
       ? currentSortedGraphics.filter(g => isGraphicInViewport(g, bufferedVp))
@@ -302,15 +302,15 @@ export function useCanvasRender(
         
         if (currentPage.backgroundImage) {
           const resolvedSrc = resolveAssetPath(currentPage.backgroundImage);
-          // 已超过重试次数，不再加载背景图片
+          // Retry limit exceeded, no longer loading the background image
           if (bgImageExhausted.has(resolvedSrc)) {
-            // 不显示背景图片
+            // Do not display the background image
           }
-          // 使用缓存的背景图片，避免闪烁
+          // Use the cached background image to avoid flickering
           else if (cachedBgImage && cachedBgImageSrc === resolvedSrc && cachedBgImage.complete) {
             context.drawImage(cachedBgImage, 0, 0, canvasWidth.value, canvasHeight.value);
           } else {
-            // 异步加载背景图片，加载完成后重新绘制
+            // Load the background image asynchronously and redraw after loading
             getBackgroundImage(currentPage.backgroundImage).then((img) => {
               if (img && img.complete && !isInManipulation()) {
                 drawCanvas();
@@ -482,7 +482,7 @@ export function useCanvasRender(
     }
   });
 
-  // 监听背景图片变更，清除缓存并重试计数
+  // Watch for background image changes, clear cache and retry counts
   let prevBgImage: string | null = null;
   watch(
     () => (pageStore.currentPage as any)?.backgroundImage,
@@ -490,7 +490,7 @@ export function useCanvasRender(
       if (newBg !== prevBgImage) {
         cachedBgImage = null;
         cachedBgImageSrc = null;
-        // 更换背景图片时，清除旧的失败计数
+        // When the background image changes, clear the old failure count
         if (prevBgImage) {
           const oldSrc = resolveAssetPath(prevBgImage);
           bgImageRetryCount.delete(oldSrc);
@@ -504,7 +504,7 @@ export function useCanvasRender(
     }
   );
 
-  // 合并 graphics 和 page 的深度 watch，使用防抖避免双重渲染
+  // Merge the deep watches of graphics and page, using debounce to avoid double rendering
   let pageDrawTimer: ReturnType<typeof setTimeout> | null = null;
   watch(
     () => pageStore.currentPage,
@@ -524,7 +524,7 @@ export function useCanvasRender(
       pageDrawTimer = setTimeout(() => {
         drawCanvas();
         pageDrawTimer = null;
-      }, 16); // ~1帧的防抖，合并连续变更
+      }, 16); // ~1 frame debounce, merging consecutive changes
     },
     { deep: true }
   );
@@ -565,25 +565,25 @@ export function useCanvasRender(
     drawCanvas,
     setManipulationState,
 
-    // ====== 视口裁剪 API ======
+    // ====== Viewport clipping API ======
 
     /**
-     * 设置当前视口矩形（世界坐标）
-     * 启用裁剪后，drawCanvas 仅绘制视口内图元
+     * Set the current viewport rectangle (world coordinates)
+     * After clipping is enabled, drawCanvas only draws graphics inside the viewport
      */
     setViewport(viewport: ViewportRect): void {
       currentViewport = viewport;
     },
 
     /**
-     * 获取当前视口
+     * Get the current viewport
      */
     getViewport(): ViewportRect | null {
       return currentViewport ? { ...currentViewport } : null;
     },
 
     /**
-     * 配置视口裁剪选项
+     * Configure viewport clipping options
      */
     setViewportCulling(options: ViewportCullingOptions): void {
       viewportConfig = { enabled: options.enabled ?? true, bufferRatio: options.bufferRatio ?? 0.05 };
@@ -593,7 +593,7 @@ export function useCanvasRender(
     },
 
     /**
-     * 获取视口裁剪统计（用于调试/基准测试）
+     * Get viewport clipping statistics (for debugging/benchmarks)
      */
     getCullingStats(): { totalGraphics: number; visibleGraphics: number; cullingRatio: number } | null {
       if (!viewportConfig?.enabled || !currentViewport) return null;

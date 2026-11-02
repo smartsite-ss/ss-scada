@@ -5,10 +5,10 @@
 import { type PluginPropertySchema } from '@scada-editor/plugin-sdk';
 
 /**
- * tag 历史趋势组件的全局配置 schema。
- * 仅包含「默认查询方式/默认时间范围 + 标题 + 坐标轴/网格 + 图例 + tooltip + dataZoom + 背景/边框/阴影」。
- * 变量绑定（tags 数组）与每变量趋势样式由 HistoryTrendConfig 以自定义 section 管理，
- * 不进入本 schema。
+ * Global configuration schema of the tag history trend component.
+ * Contains only default query mode/default time range + title + axes/grid + legend + tooltip + dataZoom + background/border/shadow.
+ * Variable binding (tags array) and per-variable trend styles are managed
+ * by HistoryTrendConfig as a custom section and are not part of this schema.
  */
 export const historyTrendPropertySchema: PluginPropertySchema = {
   name: '历史趋势',
@@ -16,7 +16,7 @@ export const historyTrendPropertySchema: PluginPropertySchema = {
   columns: 2,
   propsPath: 'customProps',
   fields: [
-    // ── 默认查询（组态时配置，运行态可覆盖） ──
+    // ── Default query (configured at design time, can be overridden at runtime) ──
     { name: 'defaultInterpolation', label: '默认查询方式', labelKey: 'historyTrend.properties.defaultInterpolation', type: 'select', options: [
       { value: 'raw', label: '原始值', labelKey: 'historyTrend.options.interpolation.raw' },
       { value: 'linear', label: '线性插值', labelKey: 'historyTrend.options.interpolation.linear' },
@@ -41,7 +41,7 @@ export const historyTrendPropertySchema: PluginPropertySchema = {
     { name: 'defaultCustomEnd', label: '自定义结束时间', labelKey: 'historyTrend.properties.defaultCustomEnd', type: 'text', defaultValue: '', group: '查询' },
     { name: 'maxPoints', label: '显示最大点数', labelKey: 'historyTrend.properties.maxPoints', type: 'number', min: 100, max: 20000, step: 100, defaultValue: 2000, group: '查询' },
 
-    // ── 标题 ──
+    // ── Title ──
     { name: 'title', label: '标题', labelKey: 'historyTrend.properties.title', type: 'text', defaultValue: '历史趋势', group: '标题' },
     { name: 'titleColor', label: '标题颜色', labelKey: 'historyTrend.properties.titleColor', type: 'color', defaultValue: '#333333FF', group: '标题' },
     { name: 'titleFontSize', label: '标题字号', labelKey: 'historyTrend.properties.titleFontSize', type: 'number', min: 8, max: 48, step: 1, defaultValue: 14, group: '标题' },
@@ -50,7 +50,7 @@ export const historyTrendPropertySchema: PluginPropertySchema = {
       { value: 'bold', label: '粗体', labelKey: 'historyTrend.options.fontWeight.bold' },
     ], defaultValue: 'bold', group: '标题' },
 
-    // ── 图表 ──
+    // ── Chart ──
     { name: 'decimalPlaces', label: '小数位数', labelKey: 'label.properties.decimalPlaces', type: 'number', min: 0, max: 6, step: 1, defaultValue: 2, group: '图表' },
     { name: 'gridColor', label: '网格颜色', labelKey: 'historyTrend.properties.gridColor', type: 'color', defaultValue: '#E9ECEF', group: '图表' },
     { name: 'axisColor', label: '坐标轴颜色', labelKey: 'historyTrend.properties.axisColor', type: 'color', defaultValue: '#495057', group: '图表' },
@@ -64,13 +64,13 @@ export const historyTrendPropertySchema: PluginPropertySchema = {
     { name: 'showTooltip', label: '显示提示框', labelKey: 'historyTrend.properties.showTooltip', type: 'boolean', defaultValue: true, group: '图表' },
     { name: 'showDataZoom', label: '时间轴缩放', labelKey: 'historyTrend.properties.showDataZoom', type: 'boolean', defaultValue: true, group: '图表' },
 
-    // ── 时间轴 ──
+    // ── Time axis ──
     { name: 'showXAxis', label: '显示时间轴', labelKey: 'historyTrend.properties.showXAxis', type: 'boolean', defaultValue: true, group: '时间轴' },
     { name: 'xAxisLineColor', label: '时间轴颜色', labelKey: 'historyTrend.properties.xAxisLineColor', type: 'color', defaultValue: '#CED4DA', group: '时间轴' },
     { name: 'xAxisLabelFontSize', label: '时间轴字号', labelKey: 'historyTrend.properties.xAxisLabelFontSize', type: 'number', min: 8, max: 24, step: 1, defaultValue: 12, group: '时间轴' },
     { name: 'xAxisLabelRotate', label: '时间轴文字斜度', labelKey: 'historyTrend.properties.xAxisLabelRotate', type: 'number', min: -90, max: 90, step: 1, defaultValue: 0, group: '时间轴' },
 
-    // ── 背景 / 边框 / 阴影 ──
+    // ── Background / border / shadow ──
     { name: 'backgroundColor', label: '背景色', labelKey: 'historyTrend.properties.backgroundColor', type: 'color', defaultValue: '#00000000', group: '样式' },
     { name: 'borderColor', label: '边框色', labelKey: 'historyTrend.properties.borderColor', type: 'color', defaultValue: '#00000000', group: '样式' },
     { name: 'borderWidth', label: '边框宽度', labelKey: 'historyTrend.properties.borderWidth', type: 'number', min: 0, max: 10, step: 1, defaultValue: 0, group: '样式' },

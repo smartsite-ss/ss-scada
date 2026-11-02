@@ -123,7 +123,7 @@ const mockTrendData = [
   },
 ];
 
-// Canvas 相关 mock - must be set before component imports
+// Canvas-related mocks - must be set before component imports
 const mockResizeObserver = vi.fn().mockImplementation(() => ({
   observe: vi.fn(),
   unobserve: vi.fn(),
@@ -150,7 +150,7 @@ describe('HistoricalTrendView', () => {
     vi.clearAllMocks();
     mockShowError.mockClear();
 
-    // 默认 mock 返回值
+    // Default mock return values
     mockProjectApi.list.mockResolvedValue({ data: mockProjects });
     mockDeviceApi.list.mockResolvedValue({ data: mockDevices });
     mockDeviceApi.getById.mockResolvedValue({ data: mockDeviceDetail() });
@@ -170,7 +170,7 @@ describe('HistoricalTrendView', () => {
       const wrapper = await mountHistoricalTrendView();
       await flushPromises();
 
-      // projectStore.fetchProjects() 默认 pageSize=20
+      // projectStore.fetchProjects() defaults to pageSize=20
       expect(mockProjectApi.list).toHaveBeenCalledWith({ page: 1, pageSize: 20, keyword: undefined });
       const vm = wrapper.vm as any;
       expect(vm.projectStore.projects.length).toBe(2);
@@ -197,7 +197,7 @@ describe('HistoricalTrendView', () => {
       await vm.onProjectChange();
       await flushPromises();
 
-      // 验证 pageSize 为 100，不会触发后端 @Max(100) 的 "must not be greater than 100" 错误
+      // Verify pageSize is 100, avoiding the backend @Max(100) "must not be greater than 100" error
       expect(mockDeviceApi.list).toHaveBeenCalledWith('proj-1', { page: 1, pageSize: 100 });
       expect(vm.devices.length).toBe(2);
       expect(vm.devices[0].deviceName).toBe('设备1');
@@ -236,9 +236,9 @@ describe('HistoricalTrendView', () => {
       await vm.onDeviceChange();
       await flushPromises();
 
-      // 验证通过 getById 获取设备详情
+      // Verify device details are fetched via getById
       expect(mockDeviceApi.getById).toHaveBeenCalledWith('proj-1', 'dev-1');
-      // 验证标签从 device.tags 加载
+      // Verify tags are loaded from device.tags
       expect(vm.allTags.length).toBe(3);
       expect(vm.allTags[0].name).toBe('温度');
       expect(vm.allTags[0].address).toBe('40001');
@@ -263,7 +263,7 @@ describe('HistoricalTrendView', () => {
 
     it('设备无 tags 属性时应安全降级为空列表', async () => {
       mockDeviceApi.getById.mockResolvedValue({
-        data: { id: 'dev-1', deviceName: '设备1' }, // 没有 tags
+        data: { id: 'dev-1', deviceName: '设备1' }, // no tags
       });
 
       const wrapper = await mountHistoricalTrendView();
@@ -304,14 +304,14 @@ describe('HistoricalTrendView', () => {
       await flushPromises();
 
       const vm = wrapper.vm as any;
-      // 先设置状态
+      // Set the state first
       vm.selectedProjectId = 'proj-1';
       vm.selectedDeviceId = 'dev-1';
       vm.selectedTagIds = ['tag-1'];
       vm.allTags = [...mockTags];
       vm.chartSeries = [{ tagId: 'tag-1', tagName: '温度', data: [] }];
 
-      // 切换到另一个项目
+      // Switch to another project
       vm.selectedProjectId = 'proj-2';
       await vm.onProjectChange();
       await flushPromises();
@@ -320,7 +320,7 @@ describe('HistoricalTrendView', () => {
       expect(vm.selectedTagIds).toEqual([]);
       expect(vm.allTags).toEqual([]);
       expect(vm.chartSeries).toEqual([]);
-      expect(vm.devices.length).toBe(2); // 新加载了设备
+      expect(vm.devices.length).toBe(2); // newly loaded devices
     });
 
     it('切换设备应清空标签和图表数据', async () => {
@@ -339,7 +339,7 @@ describe('HistoricalTrendView', () => {
       await flushPromises();
 
       expect(vm.selectedTagIds).toEqual([]);
-      expect(vm.allTags.length).toBe(3); // 新设备标签已加载
+      expect(vm.allTags.length).toBe(3); // new device tags loaded
       expect(vm.chartSeries).toEqual([]);
     });
   });
@@ -367,7 +367,7 @@ describe('HistoricalTrendView', () => {
 
       await flushPromises();
 
-      // 查询按钮不应 disable
+      // The query button should not be disabled
       const queryBtn = wrapper.find('.sys-btn-primary');
       expect((queryBtn.element as HTMLButtonElement).disabled).toBe(false);
     });
@@ -385,7 +385,7 @@ describe('HistoricalTrendView', () => {
 
       await flushPromises();
 
-      // 标签选择按钮应存在
+      // The tag selection button should exist
       const tagBtn = wrapper.find('.tag-select-wrapper button');
       expect(tagBtn.exists()).toBe(true);
     });
@@ -400,11 +400,11 @@ describe('HistoricalTrendView', () => {
       vm.showTagPicker = true;
       await flushPromises();
 
-      // 全选
+      // Select all
       vm.toggleAllTags();
       expect(vm.selectedTagIds.length).toBe(3);
 
-      // 取消全选
+      // Deselect all
       vm.toggleAllTags();
       expect(vm.selectedTagIds.length).toBe(0);
     });
@@ -516,9 +516,9 @@ describe('HistoricalTrendView', () => {
       vm.endTime = '2026-07-22T08:00';
       vm.applyPresetRange();
 
-      // startTime 不应被覆盖（无匹配 preset）
+      // startTime should not be overwritten (no matching preset)
       expect(vm.startTime).toBe('2026-07-20T08:00');
-      // endTime 始终被重置为当前时间
+      // endTime is always reset to the current time
       expect(vm.endTime).toBe('2026-07-22T12:00');
     });
   });
@@ -596,7 +596,7 @@ describe('HistoricalTrendView', () => {
     });
 
     it('查询中显示 loading 状态', async () => {
-      // 使用 deferred promise 来测试 loading 状态
+      // Use a deferred promise to test the loading state
       let resolvePromise: any;
       const deferred = new Promise((resolve) => { resolvePromise = resolve; });
       mockDataQueryApi.queryTrend.mockReturnValue(deferred);
@@ -658,7 +658,7 @@ describe('HistoricalTrendView', () => {
       await flushPromises();
 
       wrapper.unmount();
-      // ResizeObserver disconnect 应被调用
+      // ResizeObserver disconnect should be called
       const instance = mockResizeObserver.mock.results[0]?.value;
       expect(instance?.disconnect).toHaveBeenCalled();
     });

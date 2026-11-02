@@ -6,7 +6,7 @@ import { usePageStore } from '../store/page.store';
 import { ExportError, ImportError, errorService } from '../utils/core/errors';
 
 /**
- * 统一的页面导出格式
+ * Unified page export format
  */
 export interface PageExportData {
   version: string;
@@ -27,21 +27,21 @@ export interface PageExportData {
 }
 
 /**
- * 统一的页面导出服务
- * 提供三种导出模式：
- * 1. 导出单页 - 仅当前选中页面
- * 2. 导出场景 - 导出所有页面
- * 3. 导出面板 - JSON编辑器中的格式
+ * Unified page export service
+ * Provides three export modes:
+ * 1. Export single page - only the currently selected page
+ * 2. Export scene - export all pages
+ * 3. Export panel - the format used inside the JSON editor
  */
 export class PageExportService {
   /**
-   * 导出单个页面（完整格式）
-   * @param pageId 页面ID，不传则导出当前页
+   * Export a single page (full format)
+   * @param pageId Page ID; if omitted, exports the current page
    */
   static exportPage(pageId?: string): PageExportData {
     try {
       const pageStore = usePageStore();
-      const page = pageId 
+      const page = pageId
         ? pageStore.pages.find((p) => p.id === pageId)
         : pageStore.currentPage;
 
@@ -79,7 +79,7 @@ export class PageExportService {
   }
 
   /**
-   * 导出场景（所有页面）
+   * Export a scene (all pages)
    */
   static exportScene(): {
     version: string;
@@ -120,12 +120,12 @@ export class PageExportService {
   }
 
   /**
-   * 导出单个页面（BasePage.toJSON格式）
+   * Export a single page (BasePage.toJSON format)
    */
   static exportPageRaw(pageId?: string): any {
     try {
       const pageStore = usePageStore();
-      const page = pageId 
+      const page = pageId
         ? pageStore.pages.find((p) => p.id === pageId)
         : pageStore.currentPage;
 
@@ -145,7 +145,7 @@ export class PageExportService {
   }
 
   /**
-   * 下载JSON文件
+   * Download a JSON file
    */
   static downloadJSON(data: any, filename: string): void {
     try {
@@ -167,7 +167,7 @@ export class PageExportService {
   }
 
   /**
-   * 从JSON字符串导入页面
+   * Import a page from a JSON string
    */
   static importPage(jsonString: string): void {
     try {
@@ -179,16 +179,16 @@ export class PageExportService {
         throw new ImportError('No current page found');
       }
 
-      // 检测数据格式：支持两种格式
-      // 1. JSON面板格式：{ version, page, graphics, timers, groups }
-      // 2. 直接 toJSON 格式：{ id, name, graphics, groups, timers, ... }
+      // Detect data format: supports two formats
+      // 1. JSON panel format: { version, page, graphics, timers, groups }
+      // 2. Direct toJSON format: { id, name, graphics, groups, timers, ... }
       let pageData = data;
       let graphicsData = data.graphics;
       let timersData = data.timers;
       let groupsData = data.groups;
       let dataSourceData = data.dataSource;
 
-      // 如果是 JSON 面板格式，提取数据
+      // If it is the JSON panel format, extract the data
       if (data.version && data.page) {
         pageData = data.page;
         graphicsData = data.graphics;
@@ -201,7 +201,7 @@ export class PageExportService {
         throw new ImportError('Invalid JSON format: graphics array is required');
       }
 
-      // 更新页面属性
+      // Update page properties
       pageStore.updatePage(currentPage.id, {
         name: pageData.name,
         width: pageData.width,
@@ -210,10 +210,10 @@ export class PageExportService {
         backgroundImage: pageData.backgroundImage,
       } as any);
 
-      // 使用页面的 importGraphics 方法
+      // Use the page's importGraphics method
       currentPage.importGraphics(graphicsData);
 
-      // 导入 timers
+      // Import timers
       if (timersData && Array.isArray(timersData)) {
         const timerManager = (currentPage as any).timerManager;
         if (timerManager && timerManager.fromJSON) {
@@ -221,7 +221,7 @@ export class PageExportService {
         }
       }
 
-      // 导入 groups
+      // Import groups
       if (groupsData && Array.isArray(groupsData)) {
         const groupManager = (currentPage as any).getGroupManager?.();
         if (groupManager && groupManager.fromJSON) {

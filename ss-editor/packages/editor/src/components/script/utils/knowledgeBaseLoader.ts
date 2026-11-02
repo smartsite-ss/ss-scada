@@ -3,9 +3,9 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 知识库加载工具函数
+ * Knowledge base loader utility functions
  *
- * 提供 fetch、解析、验证、版本检查等底层能力。
+ * Provides low-level capabilities such as fetch, parsing, validation and version checking.
  */
 
 import { getKnowledgeBaseUrl, getVersionsUrl, getAppVersion, knowledgeBaseConfig } from '../../../config/knowledgeBase.config';
@@ -13,10 +13,10 @@ import type { ApiMethodDef } from '../rules/script-api-registry';
 import type { ScriptExample } from '../rules/types';
 
 // ═══════════════════════════════════════════════════════════════
-// 类型定义
+// Type definitions
 // ═══════════════════════════════════════════════════════════════
 
-/** 知识库元信息 */
+/** Knowledge base metadata */
 export interface KbMeta {
   version: string;
   appVersion: string;
@@ -25,7 +25,7 @@ export interface KbMeta {
   apiNames: string[];
 }
 
-/** 知识库示例分类 */
+/** Knowledge base example category */
 export interface KbExampleCategory {
   category: string;
   label: string;
@@ -33,7 +33,7 @@ export interface KbExampleCategory {
   items: ScriptExample[];
 }
 
-/** 图元属性字段定义 */
+/** Graphic property field definition */
 export interface GraphicFieldDef {
   name: string;
   type: 'number' | 'string' | 'boolean' | 'color' | 'select' | 'textarea';
@@ -47,7 +47,7 @@ export interface GraphicFieldDef {
   group?: string;
 }
 
-/** 图元属性模式 */
+/** Graphic property schema */
 export interface GraphicSchema {
   pluginType: string;
   displayName: string;
@@ -56,12 +56,12 @@ export interface GraphicSchema {
   schemaVersion?: string;
 }
 
-/** 知识库完整数据结构 */
+/** Complete knowledge base data structure */
 export interface KnowledgeBaseJson {
   meta: KbMeta;
   apiRegistry: ApiMethodDef[];
   examples?: KbExampleCategory[];
-  /** 图元属性模式（各图元类型支持的 customProps 定义） */
+  /** Graphic property schema (customProps definitions supported by each graphic type) */
   graphicSchemas?: GraphicSchema[];
   quickStart?: {
     steps: { step: number; action: string; description: string }[];
@@ -72,7 +72,7 @@ export interface KnowledgeBaseJson {
   bestPractices?: { title: string; content: string }[];
 }
 
-/** 版本清单项 */
+/** Version manifest entry */
 export interface VersionInfo {
   version: string;
   path: string;
@@ -81,13 +81,13 @@ export interface VersionInfo {
   changes: string[];
 }
 
-/** 版本清单 */
+/** Version manifest */
 export interface VersionsJson {
   latest: string;
   versions: VersionInfo[];
 }
 
-/** 加载结果 */
+/** Load result */
 export interface LoadResult {
   success: boolean;
   data?: KnowledgeBaseJson;
@@ -96,7 +96,7 @@ export interface LoadResult {
   fromFallback?: boolean;
 }
 
-/** 版本检查结果 */
+/** Version check result */
 export interface VersionCheckResult {
   compatible: boolean;
   kbVersion: string;
@@ -106,11 +106,11 @@ export interface VersionCheckResult {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 加载函数
+// Loading functions
 // ═══════════════════════════════════════════════════════════════
 
 /**
- * 从指定 URL 获取知识库数据
+ * Fetch knowledge base data from the specified URL
  */
 export async function fetchKnowledgeBase(url?: string): Promise<LoadResult> {
   const targetUrl = url || getKnowledgeBaseUrl();
@@ -138,7 +138,7 @@ export async function fetchKnowledgeBase(url?: string): Promise<LoadResult> {
 
     const data = await response.json() as KnowledgeBaseJson;
 
-    // 基础结构验证
+    // Basic structure validation
     if (!data.meta || !data.apiRegistry || !Array.isArray(data.apiRegistry)) {
       return {
         success: false,
@@ -160,7 +160,7 @@ export async function fetchKnowledgeBase(url?: string): Promise<LoadResult> {
 }
 
 /**
- * 获取版本清单
+ * Get the version manifest
  */
 export async function fetchVersions(): Promise<VersionsJson | null> {
   try {
@@ -177,7 +177,7 @@ export async function fetchVersions(): Promise<VersionsJson | null> {
 }
 
 /**
- * 解析知识库数据（基础验证）
+ * Parse knowledge base data (basic validation)
  */
 export function parseKnowledgeBase(data: unknown): KnowledgeBaseJson | null {
   if (!data || typeof data !== 'object') return null;
@@ -192,17 +192,17 @@ export function parseKnowledgeBase(data: unknown): KnowledgeBaseJson | null {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 版本验证
+// Version validation
 // ═══════════════════════════════════════════════════════════════
 
 /**
- * 检查版本兼容性
- * 支持语义化版本范围：>=1.5.0, ^1.5.0, ~1.5.0, 1.5.0
+ * Check version compatibility
+ * Supports semantic version ranges: >=1.5.0, ^1.5.0, ~1.5.0, 1.5.0
  */
 export function validateVersion(kbMeta: KbMeta, appVersion: string = getAppVersion()): VersionCheckResult {
   const requiredVersion = kbMeta.appVersion || '*';
 
-  // 通配符，兼容所有版本
+  // Wildcard, compatible with all versions
   if (requiredVersion === '*') {
     return {
       compatible: true,
@@ -227,10 +227,10 @@ export function validateVersion(kbMeta: KbMeta, appVersion: string = getAppVersi
 }
 
 /**
- * 检查版本是否满足范围要求
+ * Check whether a version satisfies a range requirement
  */
 function checkVersionRange(version: string, range: string): boolean {
-  // 简单实现，支持 >=, >, <=, <, = 前缀
+  // Simple implementation, supports >=, >, <=, <, = prefixes
   const cleanVersion = version.replace(/^v/, '');
   const cleanRange = range.replace(/^v/, '');
 
@@ -250,12 +250,12 @@ function checkVersionRange(version: string, range: string): boolean {
     return compareVersion(cleanVersion, cleanRange.slice(1)) === 0;
   }
 
-  // 默认精确匹配
+  // Default to exact match
   return compareVersion(cleanVersion, cleanRange) === 0;
 }
 
 /**
- * 比较两个版本号
+ * Compare two version numbers
  * @returns -1: v1 < v2, 0: v1 === v2, 1: v1 > v2
  */
 function compareVersion(v1: string, v2: string): number {
@@ -276,17 +276,17 @@ function compareVersion(v1: string, v2: string): number {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 本地缓存
+// Local cache
 // ═══════════════════════════════════════════════════════════════
 
-/** 缓存数据结构 */
+/** Cached data structure */
 interface CacheEntry {
   data: KnowledgeBaseJson;
   timestamp: number;
 }
 
 /**
- * 从 localStorage 读取缓存
+ * Read cache from localStorage
  */
 export function loadFromCache(): KnowledgeBaseJson | null {
   if (!knowledgeBaseConfig.enableCache) return null;
@@ -298,7 +298,7 @@ export function loadFromCache(): KnowledgeBaseJson | null {
     const entry = JSON.parse(raw) as CacheEntry;
     const now = Date.now();
 
-    // 检查缓存是否过期
+    // Check whether the cache has expired
     if (now - entry.timestamp > knowledgeBaseConfig.cacheTtl) {
       localStorage.removeItem(knowledgeBaseConfig.localStorageKey);
       return null;
@@ -311,7 +311,7 @@ export function loadFromCache(): KnowledgeBaseJson | null {
 }
 
 /**
- * 保存到 localStorage 缓存
+ * Save to the localStorage cache
  */
 export function saveToCache(data: KnowledgeBaseJson): void {
   if (!knowledgeBaseConfig.enableCache) return;
@@ -323,17 +323,17 @@ export function saveToCache(data: KnowledgeBaseJson): void {
     };
     localStorage.setItem(knowledgeBaseConfig.localStorageKey, JSON.stringify(entry));
   } catch {
-    // 忽略 localStorage 写入错误（如存储空间不足）
+    // Ignore localStorage write errors (e.g. insufficient storage space)
   }
 }
 
 /**
- * 清除本地缓存
+ * Clear the local cache
  */
 export function clearCache(): void {
   try {
     localStorage.removeItem(knowledgeBaseConfig.localStorageKey);
   } catch {
-    // 忽略错误
+    // Ignore errors
   }
 }

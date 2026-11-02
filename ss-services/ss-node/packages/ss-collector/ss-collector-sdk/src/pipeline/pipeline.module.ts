@@ -30,7 +30,7 @@ import { PluginManagerService } from '../plugins/plugin-manager.service';
 import { EventBusModule } from '@ss-node/ss-core';
 
 // ---------------------------------------------------------------------------
-// 管线初始化器 — 启动时将 Pipeline steps 注入到调度器
+// Pipeline initializer - injects Pipeline steps into the scheduler at startup
 // ---------------------------------------------------------------------------
 
 @Injectable()
@@ -50,7 +50,7 @@ class PipelineInitializer implements OnModuleInit {
     private readonly persist: PersistStep,
     private readonly format: FormatStep,
     private readonly publish: PublishStep,
-    /** PluginModule 是 @Global()，故 PluginManagerService 可跨模块注入；@Optional 以支持单测环境 */
+    /** PluginModule is @Global(), so PluginManagerService can be injected across modules; @Optional supports the unit-test environment */
     @Optional() private readonly pluginManagerService?: PluginManagerService,
   ) {}
 
@@ -67,21 +67,21 @@ class PipelineInitializer implements OnModuleInit {
       this.publish,
     ];
 
-    // 注册到 PipelineOrchestrator
+    // Register with PipelineOrchestrator
     for (const step of steps) {
       this.orchestrator.registerStep(step);
     }
 
-    // 注册到 EnhancedScheduler
+    // Register with EnhancedScheduler
     this.scheduler.setPipelineSteps(steps);
 
-    // 注入 orchestrator 和 metricsService 到调度器，使其委托 orchestrator.execute() 执行 pipeline，
-    // 从而自动记录步骤耗时、错误率、火焰图分解等指标（修复 Pipeline 指标页面无数据问题）
+    // Inject orchestrator and metricsService into the scheduler so it delegates pipeline execution to orchestrator.execute(),
+    // which automatically records step duration, error rate, flame-graph breakdown, etc. (fixes the Pipeline metrics page showing no data)
     this.scheduler.setOrchestrator(this.orchestrator);
     this.scheduler.setPipelineMetricsService(this.pipelineMetricsService);
 
-    // 将 PipelineMetricsService 反向注入到 PluginManagerService，
-    // 使插件列表 API 能返回按协议维度的真实采集指标（活跃连接/总读取次数/平均响应时间）
+    // Inject PipelineMetricsService back into PluginManagerService,
+    // so the plugin-list API can return real per-protocol collection metrics (active connections / total reads / average response time)
     if (this.pluginManagerService) {
       this.pluginManagerService.setPipelineMetricsService(this.pipelineMetricsService);
     }

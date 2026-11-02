@@ -17,7 +17,7 @@ export const DeviceErrors = {
   MAX_GROUPS_EXCEEDED: { code: 'DEV_012', status: 400, message: '分组层级不能超过3级' },
   FORBIDDEN: { code: 'DEV_013', status: 403, message: '无权限操作此设备' },
 
-  // ====== 通道配置错误码 ======
+  // ====== Channel-config error codes ======
   INVALID_CHANNEL_CONFIG: { code: 'DEV_014', status: 400, message: '通道配置无效' },
   CHANNEL_CONNECTION_FAILED: { code: 'DEV_015', status: 500, message: '通道连接失败' },
   CHANNEL_PROTOCOL_MISMATCH: { code: 'DEV_016', status: 400, message: '通道协议与设备类型不匹配' },

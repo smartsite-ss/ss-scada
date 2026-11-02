@@ -22,22 +22,22 @@ export interface AstValidationResult {
 }
 
 /**
- * ScriptEngineService — 脚本沙箱执行引擎
+ * ScriptEngineService — script sandbox execution engine
  *
- * Phase 5.4 加固要点：
- * 1. 新增 `runScript()` 纯执行方法（无 DB 副作用），供 ExecutionQueueService 调用；
- *    `execute()` 内部调用 runScript 后再持久化 ScriptExecution 记录，保持向后兼容。
- * 2. 新增 `validateScriptAst(code)` — 基于 acorn AST 遍历，阻断
- *    eval/Function/Reflect/Proxy/WebAssembly/globalThis 引用及 constructor/__proto__ 属性访问。
- * 3. executeSandboxed 加固：AST 校验前置 + `.call(null)` 确保 this 为 null。
- * 4. createSandboxContext 增加危险全局影子化（Function/Reflect/Proxy/WebAssembly/globalThis = undefined）。
- * 5. executeWithPrivileges 移除重复的 httpGet 注入（由 ScriptApiService 统一提供）。
+ * Phase 5.4 hardening highlights:
+ * 1. Added the `runScript()` pure execution method (no DB side effects) for ExecutionQueueService;
+ *    `execute()` internally calls runScript and then persists a ScriptExecution record, staying backward compatible.
+ * 2. Added `validateScriptAst(code)` — an acorn AST walk that blocks references to
+ *    eval/Function/Reflect/Proxy/WebAssembly/globalThis and property accesses on constructor/__proto__.
+ * 3. Hardened executeSandboxed: AST validation runs first + `.call(null)` ensures this is null.
+ * 4. createSandboxContext now shadows dangerous globals (Function/Reflect/Proxy/WebAssembly/globalThis = undefined).
+ * 5. executeWithPrivileges no longer injects the duplicated httpGet (provided uniformly by ScriptApiService).
  */
 @Injectable()
 export class ScriptEngineService {
   private readonly logger = new Logger(ScriptEngineService.name);
 
-  /** AST 校验阻断的危险标识符引用（非属性键） */
+  /** Dangerous identifier references blocked by AST validation (not property keys) */
   private static readonly DANGEROUS_REFS = new Set([
     'eval',
     'Function',
@@ -47,7 +47,7 @@ export class ScriptEngineService {
     'globalThis',
   ]);
 
-  /** AST 校验阻断的危险属性访问（非计算属性） */
+  /** Dangerous property accesses blocked by AST validation (non-computed) */
   private static readonly DANGEROUS_PROPS = new Set(['constructor', '__proto__']);
 
   constructor(
@@ -56,10 +56,10 @@ export class ScriptEngineService {
   ) {}
 
   /**
-   * 纯执行方法 — 不写 DB，供 ExecutionQueueService 调用
+   * Pure execution method — does not write to the DB, called by ExecutionQueueService
    *
-   * 由调用方（ScriptService）负责创建/更新 ScriptExecution 记录，
-   * 实现执行与持久化解耦，便于队列背压控制和异步执行。
+   * The caller (ScriptService) is responsible for creating/updating ScriptExecution records,
+   * decoupling execution from persistence for queue backpressure control and async execution.
    */
   async runScript(script: Script, context: Record<string, any> = {}): Promise<ExecutionResult> {
     const startedAt = Date.now();
@@ -89,10 +89,10 @@ export class ScriptEngineService {
   }
 
   /**
-   * 执行脚本并持久化执行记录（向后兼容入口）
+   * Execute a script and persist the execution record (backward-compatible entry)
    *
-   * 内部调用 runScript 获取结果，再写入 ScriptExecution 表。
-   * 队列接入后，手动执行仍走此方法；队列执行走 runScript + 手动管理记录。
+   * Internally calls runScript to get the result, then writes to the ScriptExecution table.
+   * After queue integration, manual execution still goes through this method; queue execution uses runScript + manual record management.
    */
   async execute(script: Script, context: Record<string, any> = {}): Promise<ExecutionResult> {
     const startedAt = Date.now();
@@ -128,16 +128,16 @@ export class ScriptEngineService {
   }
 
   /**
-   * AST 校验 — 阻断危险全局访问和原型链逃逸
+   * AST validation — blocks dangerous global access and prototype-chain escapes
    *
-   * 阻断清单：
-   * - 标识符引用：eval / Function / Reflect / Proxy / WebAssembly / globalThis
-   *   （排除作为对象属性键的情况，避免误杀 { eval: 1 } 这类合法字面量）
-   * - 属性访问（非计算）：x.constructor / x.__proto__
-   *   （通过原型链获取 Function 构造器是经典沙箱逃逸手法）
+   * Block list:
+   * - Identifier references: eval / Function / Reflect / Proxy / WebAssembly / globalThis
+   *   (excluding cases used as object property keys, to avoid false positives on legal literals like { eval: 1 })
+   * - Property access (non-computed): x.constructor / x.__proto__
+   *   (obtaining the Function constructor through the prototype chain is a classic sandbox escape)
    *
-   * @param code 脚本代码
-   * @returns 校验结果（valid + errors 列表）
+   * @param code script code
+   * @returns validation result (valid + errors list)
    */
   validateScriptAst(code: string): AstValidationResult {
     const errors: string[] = [];
@@ -155,7 +155,7 @@ export class ScriptEngineService {
     const visit = (node: any, parent?: any): void => {
       if (!node || typeof node !== 'object') return;
 
-      // 阻断危险属性访问（非计算属性）：x.constructor, x.__proto__
+      // Block dangerous property access (non-computed): x.constructor, x.__proto__
       if (node.type === 'MemberExpression' && !node.computed) {
         const propName = node.property?.name;
         if (propName && ScriptEngineService.DANGEROUS_PROPS.has(propName)) {
@@ -163,7 +163,7 @@ export class ScriptEngineService {
         }
       }
 
-      // 阻断危险标识符引用（排除作为属性键的情况）
+      // Block dangerous identifier references (excluding cases used as property keys)
       if (node.type === 'Identifier') {
         const isPropKey =
           parent &&
@@ -175,7 +175,7 @@ export class ScriptEngineService {
         }
       }
 
-      // 递归遍历子节点
+      // Recursively walk child nodes
       for (const key in node) {
         if (key === 'type' || key === 'start' || key === 'end' || key === 'range' || key === 'loc') {
           continue;
@@ -194,7 +194,7 @@ export class ScriptEngineService {
   }
 
   private async executeSandboxed(script: Script, context: Record<string, any>): Promise<any> {
-    // 1. AST 校验前置 — 阻断 eval/Function/constructor/__proto__ 等
+    // 1. Run AST validation first — blocks eval/Function/constructor/__proto__ etc.
     const validation = this.validateScriptAst(script.code);
     if (!validation.valid) {
       throw new Error(`Script AST validation failed: ${validation.errors.join('; ')}`);
@@ -216,7 +216,7 @@ export class ScriptEngineService {
         `,
       );
 
-      // .call(null) 确保 strict 模式下 this 为 null（而非 global 对象）
+      // .call(null) ensures this is null in strict mode (not the global object)
       const result = await Promise.race([
         sandboxFn.call(null, ...Object.values(context)),
         new Promise<never>((_, reject) =>
@@ -239,8 +239,8 @@ export class ScriptEngineService {
 
   private async executeWithPrivileges(script: Script, context: Record<string, any>): Promise<any> {
     this.logger.warn(`Script ${script.name} running with elevated privileges`);
-    // httpGet/httpPost 已由 ScriptApiService 统一提供（受控 HTTP 工具），
-    // 此处不再重复注入原始 require('http')，避免绕过审计。
+    // httpGet/httpPost are provided uniformly by ScriptApiService (controlled HTTP utilities);
+    // the raw require('http') is no longer injected here, preventing audit bypass.
     return this.executeSandboxed(script, context);
   }
 
@@ -267,14 +267,14 @@ export class ScriptEngineService {
       parseInt: parseInt,
       parseFloat: parseFloat,
       isNaN: isNaN,
-      // ── 危险全局影子化（通过函数参数覆盖全局作用域） ──
-      // eval/arguments 在 strict 模式下不能作为参数名，由 AST 校验阻断
+      // ── Dangerous global shadowing (overriding global scope via function parameters) ──
+      // eval/arguments cannot be parameter names in strict mode; blocked by AST validation
       Function: undefined,
       Reflect: undefined,
       Proxy: undefined,
       WebAssembly: undefined,
       globalThis: undefined,
-      // ── 原有阻断 ──
+      // ── Original blockings ──
       setTimeout: undefined,
       setInterval: undefined,
       require: undefined,

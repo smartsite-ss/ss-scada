@@ -41,7 +41,7 @@ export class Project implements IProject {
         return this.getAllPages();
     }
 
-    // ==================== PageManager 代理方法 ====================
+    // ==================== PageManager proxy methods ====================
 
     createPage(config?: { id?: string; name?: string; width?: number; height?: number }): BasePage {
         const page = this.pageManager.createPage(config);
@@ -78,7 +78,7 @@ export class Project implements IProject {
         return this.pageManager.pageCount;
     }
 
-    // ==================== 跨页面图形操作代理方法 ====================
+    // ==================== Cross-page graphic operation proxy methods ====================
 
     copyBetweenPages(graphicIds: string[], fromPageId: string, toPageId: string): IGraphic[] {
         const graphics = this.pageManager.copyBetweenPages(graphicIds, fromPageId, toPageId);
@@ -102,7 +102,7 @@ export class Project implements IProject {
         return graphics;
     }
 
-    // ==================== 剪贴板代理方法 ====================
+    // ==================== Clipboard proxy methods ====================
 
     copyToClipboard(pageId: string, graphicIds: string[]): void {
         this.pageManager.copyToClipboard(pageId, graphicIds);
@@ -138,13 +138,13 @@ export class Project implements IProject {
         this.pageManager.clearClipboard();
     }
 
-    // ==================== 管理器访问方法 ====================
+    // ==================== Manager access methods ====================
 
     getPageManager(): PageManager {
         return this.pageManager;
     }
 
-    // ==================== 项目序列化 ====================
+    // ==================== Project serialization ====================
 
     toJSON(): any {
         return {

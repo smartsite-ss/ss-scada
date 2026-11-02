@@ -27,10 +27,10 @@ export interface S7Config {
 /**
  * Siemens S7 Protocol Adapter (ISO-on-TCP / RFC1006)
  *
- * 支持 S7-300/S7-400/S7-1200/S7-1500 系列 PLC
+ * Supports S7-300/S7-400/S7-1200/S7-1500 series PLCs
  *
- * 使用 Socket 级别的 ISO-on-TCP 协议通信，
- * 可替换为 node-snap7 等原生库以获得更高性能。
+ * Communicates using the socket-level ISO-on-TCP protocol;
+ * can be replaced with a native library such as node-snap7 for higher performance.
  */
 @Injectable()
 @CollectorPlugin({
@@ -56,9 +56,9 @@ export interface S7Config {
   tags: ['siemens', 's7', 'plc', 'industrial'],
 })
 export class S7Service extends BaseCollectorService {
-  /** 优化块读取：相邻标签间允许的最大间隔（字节），超过则拆分为新批次 */
+  /** Optimized block read: max gap (bytes) allowed between adjacent tags; larger gaps start a new batch */
   private readonly OPTIMIZE_READ_GAP_THRESHOLD = 8;
-  /** 优化块读取：单次读取的最大字节数（S7-1200/1500 PDU 上限约 8192，保守取 512） */
+  /** Optimized block read: max bytes per single read (S7-1200/1500 PDU cap ~8192, conservatively 512) */
   private readonly OPTIMIZE_READ_MAX_BATCH_BYTES = 512;
 
   async connect(device: any): Promise<any> {
@@ -153,7 +153,7 @@ export class S7Service extends BaseCollectorService {
     return result;
   }
 
-  /** 覆写 readTag：添加错误捕获，返回 bad quality 而非抛出 */
+  /** Override readTag: add error capture, return bad quality instead of throwing */
   async readTag(client: any, tag: ITagContext): Promise<CollectorReadResult> {
     const tagId = tag.id || 'unknown-tag';
     try {
@@ -237,7 +237,7 @@ export class S7Service extends BaseCollectorService {
   }
 
   /**
-   * 优化块读取：将连续地址的标签分组，以便合并为更少的读取请求。
+   * Optimized block read: group tags with contiguous addresses to merge them into fewer read requests.
    */
   optimizeReads(tags: ITagContext[]): ITagContext[][] {
     const dbGroups = new Map<string, ITagContext[]>();

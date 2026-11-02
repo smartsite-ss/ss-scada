@@ -12,8 +12,8 @@ import {
 import type { ChartDataSource, ChartDataSourceConfig } from './types';
 
 /**
- * 图表数据源工厂：按配置类型创建 static / api / database 数据源。
- * database 需要注入取数/订阅依赖（dataQueryApi + wsStore），由插件层传入。
+ * Chart data source factory: create static / api / database data sources by config type.
+ * database requires injected fetch/subscribe dependencies (dataQueryApi + wsStore) passed in by the plugin layer.
  */
 export function createChartDataSource(
   config: ChartDataSourceConfig,
@@ -30,7 +30,7 @@ export function createChartDataSource(
       );
     case 'database': {
       if (!deps) {
-        throw new Error('[ChartDataSource] database 数据源需要注入 dataQueryApi 与 wsStore 依赖');
+        throw new Error('[ChartDataSource] database data source requires injected dataQueryApi and wsStore dependencies');
       }
       return createDatabaseDataSource(
         config.databaseConfig ?? { mode: 'latest', tags: [] },

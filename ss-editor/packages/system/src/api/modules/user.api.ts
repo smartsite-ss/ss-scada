@@ -45,42 +45,42 @@ export const userApi = {
     return client.get('/users/profile').then((res) => res.data);
   },
 
-  /** 获取用户列表（管理员） */
+  /** Get the user list (admin) */
   getUsers(): Promise<ApiResponse<AdminUserInfo[]>> {
     return client.get('/users').then((res) => res.data);
   },
 
-  /** 创建用户（管理员） */
+  /** Create a user (admin) */
   createUser(dto: CreateUserDto): Promise<ApiResponse<AdminUserInfo>> {
     return client.post('/users', dto).then((res) => res.data);
   },
 
-  /** 更新用户（管理员） */
+  /** Update a user (admin) */
   updateUser(id: string, dto: UpdateUserDto): Promise<ApiResponse<AdminUserInfo>> {
     return client.patch(`/users/${id}`, dto).then((res) => res.data);
   },
 
-  /** 禁用用户（管理员） */
+  /** Disable a user (admin) */
   deleteUser(id: string): Promise<void> {
     return client.delete(`/users/${id}`);
   },
 
-  /** 分配角色 */
+  /** Assign a role */
   assignRole(userId: string, roleId: string): Promise<ApiResponse<AdminUserInfo>> {
     return client.patch(`/users/${userId}/role`, { roleId }).then((res) => res.data);
   },
 
-  /** 分配岗位 */
+  /** Assign a position */
   assignPosition(userId: string, positionId: string): Promise<ApiResponse<AdminUserInfo>> {
     return client.patch(`/users/${userId}/position`, { positionId }).then((res) => res.data);
   },
 
-  /** 更新个人资料 */
+  /** Update personal profile */
   updateProfile(dto: { displayName?: string; email?: string }): Promise<ApiResponse<UserInfo>> {
     return client.patch('/users/profile', dto).then((res) => res.data);
   },
 
-  /** 修改密码 */
+  /** Change password */
   changePassword(dto: { oldPassword: string; newPassword: string; confirmPassword: string }): Promise<ApiResponse<{ message: string }>> {
     return client.post('/users/change-password', dto).then((res) => res.data);
   },

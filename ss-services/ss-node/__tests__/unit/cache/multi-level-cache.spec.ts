@@ -15,7 +15,7 @@ describe('MultiLevelCacheService', () => {
 
     cacheService = module.get<MultiLevelCacheService>(MultiLevelCacheService);
 
-    // 每个测试前清理缓存
+    // Clear the cache before each test
     await cacheService.clear();
   });
 
@@ -92,44 +92,44 @@ describe('MultiLevelCacheService', () => {
     it('TC-CACHE-008: should respect TTL and return undefined after expiration', async () => {
       await cacheService.set('expire-key', 'data', { ttl: 1000 });
 
-      // TTL未过期
+      // TTL not yet expired
       let result = await cacheService.get('expire-key');
       expect(result).toBe('data');
 
-      // 快进时间超过TTL
+      // Advance time beyond the TTL
       jest.advanceTimersByTime(1500);
 
-      // 触发内部检查
+      // Trigger the internal check
       result = await cacheService.get('expire-key');
       expect(result).toBeUndefined(); // 应已过期
     });
 
     it('TC-CACHE-009: should use default TTL when not specified', async () => {
-      // 注意：由于fake timers可能无法正确触发TTL过期检测
-      // （因为isExpired()使用Date.now()），这里只验证配置生效
-      // 实际TTL过期测试需要真实时间或特殊处理
+      // Note: fake timers may not correctly trigger TTL expiry detection
+      // (because isExpired() uses Date.now()), so here we only verify the configuration takes effect
+      // A real TTL expiry test needs real time or special handling
       const _originalConfig = cacheService.getStats();
 
-      // 设置较短的默认TTL用于测试
+      // Set a shorter default TTL for testing
       cacheService.setConfig({ l1DefaultTTL: 1000 });
 
       await cacheService.set('default-ttl-key', 'value');
 
-      // 验证数据可以正常读取（刚设置时应该存在）
+      // Verify data can be read normally (should exist right after being set)
       const resultBefore = await cacheService.get('default-ttl-key');
       expect(resultBefore).toBe('value');
 
-      // 恢复配置
+      // Restore the configuration
       cacheService.setConfig({ l1DefaultTTL: 5000 });
     });
 
     it('TC-CACHE-010: should allow setting custom TTL per operation', async () => {
-      // 短TTL
+      // Short TTL
       await cacheService.set('short-ttl', 'data', { ttl: 500 });
-      // 长TTL
+      // Long TTL
       await cacheService.set('long-ttl', 'data', { ttl: 10000 });
 
-      // 快进600ms
+      // Advance 600ms
       jest.advanceTimersByTime(600);
 
       expect(await cacheService.get('short-ttl')).toBeUndefined(); // 已过期
@@ -142,22 +142,22 @@ describe('MultiLevelCacheService', () => {
       const maxSize = 3;
       cacheService.setConfig({ l1MaxSize: maxSize });
 
-      // 填满缓存
+      // Fill the cache
       for (let i = 0; i < maxSize; i++) {
         await cacheService.set(`key-${i}`, `value-${i}`);
       }
 
-      // 访问key-0使其变为最近使用
+      // Access key-0 to make it most recently used
       await cacheService.get('key-0');
 
-      // 插入新条目，应淘汰最旧的key-1
+      // Insert a new entry, should evict the oldest key-1
       await cacheService.set('new-key', 'new-value');
 
-      // 验证：新key存在，某个旧key被淘汰
+      // Verify: the new key exists, some old key was evicted
       expect(await cacheService.get('new-key')).toBe('new-value');
       expect(await cacheService.get('key-0')).toBe('value-0'); // key-0保留（最近访问）
 
-      // 检查总大小不应超过maxSize + 1（因为可能还没触发清理）
+      // The total size should not exceed maxSize + 1 (cleanup may not have triggered yet)
       const size = await cacheService.getSize();
       expect(size.l1).toBeLessThanOrEqual(maxSize + 1);
     });
@@ -169,19 +169,19 @@ describe('MultiLevelCacheService', () => {
       await cacheService.set('b', '2');
       await cacheService.set('c', '3');
 
-      // 访问a，使其变最新
+      // Access a to make it most recent
       await cacheService.get('a');
 
-      // 插入d，应该淘汰b或c（最久未访问的之一）
+      // Insert d, should evict b or c (one of the least recently used)
       await cacheService.set('d', '4');
 
       expect(await cacheService.get('a')).toBe('1'); // a保留（刚访问过）
       expect(await cacheService.get('c')).toBe('3'); // c应该还在
       expect(await cacheService.get('d')).toBe('4'); // d是新插入的
 
-      // b可能被淘汰了
+      // b may have been evicted
       const _bValue = await cacheService.get('b');
-      // 不强制要求b一定被淘汰，因为实现可能有差异
+      // We do not strictly require b to be evicted, as the implementation may differ
     });
 
     it('TC-CACHE-013: should handle eviction correctly with repeated updates', async () => {
@@ -190,18 +190,18 @@ describe('MultiLevelCacheService', () => {
       await cacheService.set('x', '1');
       await cacheService.set('y', '2');
 
-      // 更新x的值（这应该算作访问/更新）
+      // Update the value of x (this counts as an access/update)
       await cacheService.set('x', '1-updated');
 
-      // 插入z，应淘汰y（因为x刚被更新）
+      // Insert z, should evict y (because x was just updated)
       await cacheService.set('z', '3');
 
       expect(await cacheService.get('x')).toBe('1-updated'); // x保留（刚更新）
       expect(await cacheService.get('z')).toBe('3'); // z保留（新插入）
 
-      // y可能被淘汰
+      // y may have been evicted
       const _yValue = await cacheService.get('y');
-      // y的状态取决于具体实现
+      // y's state depends on the specific implementation
     });
   });
 
@@ -243,9 +243,9 @@ describe('MultiLevelCacheService', () => {
 
       const count = await cacheService.invalidateByPrefix('user:');
 
-      // 注意：由于set()会同时写入L1和L3，
-      // invalidateByPrefix会删除两个层级中的匹配项
-      // 所以count可能是6（3个keys × 2层）而不是3
+      // Note: because set() writes to both L1 and L3,
+      // invalidateByPrefix removes the matching entries from both levels
+      // so count may be 6 (3 keys x 2 levels) instead of 3
       expect(count).toBeGreaterThanOrEqual(3); // 至少删除3个唯一key
       expect(count % 3).toBe(0); // 应该是3的倍数（每个key在L1和L3中各一个）
 
@@ -257,15 +257,15 @@ describe('MultiLevelCacheService', () => {
 
   describe('Statistics and Monitoring', () => {
     it('TC-CACHE-017: should track hit/miss statistics accurately', async () => {
-      // 写入数据
+      // Write data
       await cacheService.set('stat-key', 'data');
 
-      // Hit操作
+      // Hit operation
       await cacheService.get('stat-key');
       await cacheService.get('stat-key');
       await cacheService.get('stat-key');
 
-      // Miss操作
+      // Miss operation
       await cacheService.get('miss-1');
       await cacheService.get('miss-2');
       await cacheService.get('miss-3');
@@ -344,7 +344,7 @@ describe('MultiLevelCacheService', () => {
       expect((await cacheService.get('warm-1'))?.value).toBe(100);
       expect((await cacheService.get('warm-2'))?.value).toBe(200);
 
-      // 验证mock被调用了3次（包括warm-3）
+      // Verify the mock was called 3 times (including warm-3)
       expect(mockDataSource).toHaveBeenCalledTimes(3);
     });
 
@@ -424,17 +424,17 @@ describe('MultiLevelCacheService', () => {
     });
 
     it('TC-CACHE-028: should dynamically update configuration', async () => {
-      // 设置配置
+      // Set the configuration
       cacheService.setConfig({ l1MaxSize: 50, l1DefaultTTL: 1000 });
 
-      // 配置应该立即生效
+      // The configuration should take effect immediately
       await cacheService.set('config-test', 'value');
 
-      // 验证数据可以正常读取（刚设置时应该存在）
+      // Verify data can be read normally (should exist right after being set)
       const result = await cacheService.get('config-test');
       expect(result).toBe('value'); // 配置生效，数据可读
 
-      // 恢复原始配置
+      // Restore the original configuration
       cacheService.setConfig({ l1MaxSize: 10000, l1DefaultTTL: 5000 });
     });
   });

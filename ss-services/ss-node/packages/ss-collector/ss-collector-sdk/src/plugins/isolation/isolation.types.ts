@@ -6,17 +6,17 @@ import { ExecutorHealth } from '../../events/plugin-events.types';
 import { IDeviceContext, ITagContext } from '../../types';
 
 /**
- * 连接分片引用 —— 隔离体内部维护连接的引用句柄
- * 主进程不持有实际的 client 对象，只持有此引用
+ * Connection shard reference - the reference handle to a connection kept inside the isolation unit
+ * The main process does not hold the actual client object, only this reference
  */
 export interface ShardRef {
-  /** 隔离体内部维护的连接 ID */
+  /** Connection ID maintained inside the isolation unit */
   connectionId: string;
-  /** 所属协议 */
+  /** Owning protocol */
   protocol: string;
 }
 
-/** 隔离执行器工厂配置 */
+/** Isolation executor factory configuration */
 export interface RequiredIsolationConfig {
   maxParallel: number;
   requestTimeoutMs: number;
@@ -36,33 +36,33 @@ export const DEFAULT_ISOLATION_CONFIG: RequiredIsolationConfig = {
   maxRestarts: 5,
 };
 
-/** 隔离执行器接口 */
+/** Isolation executor interface */
 export interface IIsolationExecutor {
-  /** 执行器名称 */
+  /** Executor name */
   readonly name: string;
 
-  /** 初始化（启动 Worker/子进程等） */
+  /** Initialize (start Worker/child process, etc.) */
   init(
     protocol: string,
     adapterClass: any,
     config: Partial<RequiredIsolationConfig>,
   ): Promise<void>;
 
-  /** 连接设备，返回连接的引用 ID */
+  /** Connect to device, return the connection reference ID */
   connect(device: IDeviceContext): Promise<ShardRef>;
 
-  /** 读取标签 */
+  /** Read tag */
   readTag(shard: ShardRef, tag: ITagContext): Promise<any>;
 
-  /** 写入标签 */
+  /** Write tag */
   writeTag(shard: ShardRef, tag: ITagContext, value: any): Promise<void>;
 
-  /** 断开连接 */
+  /** Disconnect */
   disconnect(shard: ShardRef): Promise<void>;
 
-  /** 获取健康状态 */
+  /** Get health status */
   getHealth(): Promise<ExecutorHealth>;
 
-  /** 销毁（停止 Worker/子进程等） */
+  /** Destroy (stop Worker/child process, etc.) */
   destroy(): Promise<void>;
 }

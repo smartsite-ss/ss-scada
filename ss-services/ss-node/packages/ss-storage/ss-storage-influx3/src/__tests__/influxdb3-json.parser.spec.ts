@@ -11,7 +11,7 @@ describe('Influxdb3JsonParser', () => {
     parser = new Influxdb3JsonParser();
   });
 
-  // ──────────── 形态 1：columns + rows ────────────
+  // ──────────── Shape 1: columns + rows ────────────
 
   it('TC-IV3-PA-001: should parse columnar rows form', () => {
     const raw = JSON.stringify({
@@ -35,7 +35,7 @@ describe('Influxdb3JsonParser', () => {
     expect(points[0].timestamp).toEqual(new Date('2026-01-01T00:00:00Z'));
   });
 
-  // ──────────── 形态 2：series（InfluxQL 风格） ────────────
+  // ──────────── Shape 2: series (InfluxQL style) ────────────
 
   it('TC-IV3-PA-002: should parse series form', () => {
     const raw = JSON.stringify({
@@ -58,7 +58,7 @@ describe('Influxdb3JsonParser', () => {
     expect(points[1].tagId).toBe('tag-2');
   });
 
-  // ──────────── 形态 3：对象数组 ────────────
+  // ──────────── Shape 3: array of objects ────────────
 
   it('TC-IV3-PA-003: should parse object array form', () => {
     const raw = JSON.stringify([
@@ -73,7 +73,7 @@ describe('Influxdb3JsonParser', () => {
     expect(points[1].value).toBe('OPEN');
   });
 
-  // ──────────── 边界用例 ────────────
+  // ──────────── Edge cases ────────────
 
   it('TC-IV3-PA-010: should prefer numeric value string over value_text', () => {
     const raw = JSON.stringify([

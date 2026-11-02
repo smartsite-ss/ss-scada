@@ -3,24 +3,24 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * AI Controller — P1-T03 后端 AI 服务网关
+ * AI Controller - P1-T03 backend AI service gateway
  *
- * REST API 端点（前缀 /api/v1/ai）：
- *   - GET    /status       — AI 功能开关状态
- *   - GET    /health       — Provider 健康状态（触发实时检查）
- *   - GET    /routing      — 当前路由策略
- *   - POST   /chat          — 非流式对话
- *   - POST   /chat/stream   — 流式对话（SSE）
- *   - POST   /embed         — 文本嵌入（向量化）
+ * REST API endpoints (prefix /api/v1/ai):
+ *   - GET    /status       - AI feature toggle status
+ *   - GET    /health       - Provider health status (triggers a live check)
+ *   - GET    /routing      - current routing policy
+ *   - POST   /chat          - non-streaming chat
+ *   - POST   /chat/stream   - streaming chat (SSE)
+ *   - POST   /embed         - text embedding (vectorization)
  *
- * 鉴权：
- *   - 所有端点要求 JWT 认证（继承现有 JwtAuthGuard）
- *   - embed 端点要求 ADMIN 角色（D-008 权限模型）
+ * Auth:
+ *   - all endpoints require JWT auth (inherits the existing JwtAuthGuard)
+ *   - the embed endpoint requires the ADMIN role (D-008 permission model)
  *
- * 关联决策：
- *   - D-008 继承用户权限 + 高危操作人工确认
- *   - D-009 SSE 流式输出
- *   - D-012 Feature Flag（AI_ENABLED）
+ * Related decisions:
+ *   - D-008 inherit user permissions + human confirmation for high-risk ops
+ *   - D-009 SSE streaming output
+ *   - D-012 Feature Flag (AI_ENABLED)
  */
 
 import {
@@ -80,12 +80,12 @@ class ChatDto {
   @ArrayMinSize(1)
   messages!: ChatMessage[];
 
-  /** 任务类型，决定路由 */
+  /** Task type, determines routing */
   @IsOptional()
   @IsString()
   taskType?: TaskType;
 
-  /** 指定供应商（覆盖任务类型路由，优先使用该供应商） */
+  /** Specified vendor (overrides task-type routing; this vendor is preferred) */
   @IsOptional()
   @IsString()
   providerId?: string;
@@ -117,12 +117,12 @@ class ChatDto {
   @IsString()
   user?: string;
 
-  /** 会话 ID（缺省时自动创建新会话） */
+  /** Conversation ID (a new session is auto-created when omitted) */
   @IsOptional()
   @IsString()
   conversationId?: string;
 
-  /** 项目 ID（创建新会话时使用，缺省 'default'） */
+  /** Project ID (used when creating a new session, defaults to 'default') */
   @IsOptional()
   @IsString()
   projectId?: string;
@@ -189,7 +189,7 @@ export class AiController {
     const projectId = dto.projectId || 'default';
     const taskType = dto.taskType || 'chat';
 
-    // 1. 预算熔断检查
+    // 1. budget circuit-breaker check
     const budgetCheck = await this.costMonitorService.canProceed(userId);
     if (!budgetCheck.allowed) {
       throw new HttpException(
@@ -198,7 +198,7 @@ export class AiController {
       );
     }
 
-    // 2. 会话管理：复用或新建
+    // 2. session management: reuse or create
     let conversationId = dto.conversationId;
     const isNewConversation = !conversationId;
     if (!conversationId) {
@@ -211,7 +211,7 @@ export class AiController {
       conversationId = conv.id;
     }
 
-    // 3. 组装上下文：若客户端只传当前消息 + conversationId，从 DB 恢复历史
+    // 3. assemble context: if the client only sends the current message + conversationId, restore history from DB
     const lastUserMessage = dto.messages[dto.messages.length - 1];
     if (!lastUserMessage || lastUserMessage.role !== 'user') {
       throw new HttpException('messages 最后一条必须为 user 角色', HttpStatus.BAD_REQUEST);
@@ -225,7 +225,7 @@ export class AiController {
       llmMessages = dto.messages;
     }
 
-    // 4. 持久化 user 消息
+    // 4. persist user message
     const userContent =
       typeof lastUserMessage.content === 'string'
         ? lastUserMessage.content
@@ -235,12 +235,12 @@ export class AiController {
       content: userContent,
     });
 
-    // 5. 新会话自动生成标题
+    // 5. auto-generate title for new session
     if (isNewConversation && typeof lastUserMessage.content === 'string') {
       await this.conversationService.autoGenerateTitle(conversationId, lastUserMessage.content);
     }
 
-    // 6. 调用 LLM
+    // 6. call the LLM
     const llmRequest: LLMRequest = {
       messages: llmMessages,
       providerId: dto.providerId,
@@ -259,7 +259,7 @@ export class AiController {
     try {
       response = await this.proxy.generate(llmRequest, taskType);
     } catch (err) {
-      // 失败也记录用量日志
+      // record usage log even on failure
       this.costMonitorService
         .logUsage({
           providerId: dto.providerId || 'unknown',
@@ -278,7 +278,7 @@ export class AiController {
       throw err;
     }
 
-    // 7. 持久化 assistant 消息
+    // 7. persist assistant message
     await this.conversationService.appendMessage(conversationId, {
       role: 'assistant',
       content: response.content,
@@ -286,7 +286,7 @@ export class AiController {
       tokens: response.usage?.totalTokens || 0,
     });
 
-    // 8. 记录用量日志（异步，不阻塞响应）
+    // 8. record usage log (async, non-blocking)
     this.costMonitorService
       .logUsage({
         providerId: response.provider,
@@ -302,7 +302,7 @@ export class AiController {
       })
       .catch((e) => this.logger.warn(`用量日志记录失败: ${e.message}`));
 
-    // 9. 返回值附加 conversationId
+    // 9. attach conversationId to the response
     return { ...response, conversationId };
   }
 
@@ -317,17 +317,17 @@ export class AiController {
     const projectId = dto.projectId || 'default';
     const taskType = dto.taskType || 'chat';
 
-    // SSE 响应头
+    // SSE response headers
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
     res.setHeader('X-Accel-Buffering', 'no');
     res.flushHeaders?.();
 
-    // 心跳：确保浏览器/proxy 感知连接已建立
+    // heartbeat: ensure the browser/proxy perceives the connection as established
     res.write(': heartbeat\n\n');
 
-    // 1. 预算熔断检查
+    // 1. budget circuit-breaker check
     const budgetCheck = await this.costMonitorService.canProceed(userId);
     if (!budgetCheck.allowed) {
       res.write(
@@ -341,7 +341,7 @@ export class AiController {
       return;
     }
 
-    // 2. 会话管理：复用或新建
+    // 2. session management: reuse or create
     let conversationId = dto.conversationId;
     const isNewConversation = !conversationId;
     if (!conversationId) {
@@ -354,7 +354,7 @@ export class AiController {
       conversationId = conv.id;
     }
 
-    // 3. 组装上下文
+    // 3. assemble context
     const lastUserMessage = dto.messages[dto.messages.length - 1];
     if (!lastUserMessage || lastUserMessage.role !== 'user') {
       res.write(
@@ -373,7 +373,7 @@ export class AiController {
       llmMessages = dto.messages;
     }
 
-    // 4. 持久化 user 消息
+    // 4. persist user message
     const userContent =
       typeof lastUserMessage.content === 'string'
         ? lastUserMessage.content
@@ -383,12 +383,12 @@ export class AiController {
       content: userContent,
     });
 
-    // 5. 新会话自动生成标题
+    // 5. auto-generate title for new session
     if (isNewConversation && typeof lastUserMessage.content === 'string') {
       await this.conversationService.autoGenerateTitle(conversationId, lastUserMessage.content);
     }
 
-    // 6. 流式调用 + 累积内容
+    // 6. streaming call + accumulate content
     const llmRequest: LLMRequest = {
       messages: llmMessages,
       providerId: dto.providerId,
@@ -420,7 +420,7 @@ export class AiController {
         if (chunk.usage) {
           finalUsage = chunk.usage;
         }
-        // 在 done=true 的最终 chunk 注入 conversationId
+        // inject conversationId into the final chunk where done=true
         if (chunk.done) {
           res.write(
             `data: ${JSON.stringify({ ...chunk, conversationId })}\n\n`,
@@ -441,7 +441,7 @@ export class AiController {
       res.end();
     }
 
-    // 7. 流结束后异步持久化 assistant 消息 + 记录用量日志（不阻塞响应）
+    // 7. after the stream ends, async-persist the assistant message + record usage log (non-blocking)
     if (accumulatedContent) {
       this.conversationService
         .appendMessage(conversationId, {
@@ -483,7 +483,7 @@ export class AiController {
     return this.proxy.embed(req);
   }
 
-  // ==================== Provider 配置管理 ====================
+  // ==================== Provider config management ====================
 
   @Get('providers')
   @ApiOperation({ summary: '获取所有 AI 供应商配置' })
@@ -519,7 +519,7 @@ export class AiController {
   @UseGuards(JwtAuthGuard)
   async createProvider(@Body() dto: CreateAiProviderDto) {
     const result = await this.providerConfig.create(dto);
-    // 创建后重新加载 Provider 配置
+    // reload Provider config after creation
     await this.proxy.reloadProviders();
     return result;
   }
@@ -552,11 +552,12 @@ export class AiController {
   }
 
   /**
-   * 测试供应商连接
+   * Test vendor connection
    *
-   * 使用数据库中已保存的配置（解密 API Key）向供应商发起一次最小化对话请求，
-   * 返回连接结果与延迟。使用独立 Provider 实例测试，避免覆盖正在服务中的配置；
-   * 不限启用状态（用户可在启用前验证配置），也不受全局 AI_ENABLED 开关影响。
+   * Uses the saved DB config (decrypted API Key) to send a minimal chat request to the vendor,
+   * returning the connection result and latency. A separate Provider instance is used for the test to avoid
+   * overwriting the config currently in service; independent of the enabled state (users can validate
+   * before enabling) and unaffected by the global AI_ENABLED flag.
    */
   @Post('providers/:providerId/test')
   @ApiOperation({ summary: '测试 AI 供应商连接（最小化对话请求 + 延迟测量）' })
@@ -585,7 +586,7 @@ export class AiController {
   }
 
   // ============================================================
-  //  P1-T09：安全防护端点
+  //  P1-T09: safety-protection endpoints
   // ============================================================
 
   @Get('safety/stats')
@@ -605,7 +606,7 @@ export class AiController {
   }
 
   // ============================================================
-  //  P1-T03：Agent 编排端点
+  //  P1-T03: Agent orchestration endpoints
   // ============================================================
 
   @Post('agent/execute')
@@ -616,18 +617,18 @@ export class AiController {
     const projectId = dto.projectId || 'default';
     const isContinuation = !!(dto.sessionId && dto.toolResultPayload);
 
-    // SSE 响应头
+    // SSE response headers
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
     res.setHeader('X-Accel-Buffering', 'no');
     res.flushHeaders?.();
 
-    // 立即发送 heartbeat 注释行，确保浏览器/proxy 感知连接已建立，
-    // 避免在 LLM 思考期间因无数据导致 net::ERR_ABORTED
+    // send the heartbeat comment line immediately so the browser/proxy perceives the connection as established,
+    // avoiding net::ERR_ABORTED caused by no data during LLM thinking
     res.write(': heartbeat\n\n');
 
-    // 1. 预算熔断检查
+    // 1. budget circuit-breaker check
     const budgetCheck = await this.costMonitorService.canProceed(userId);
     if (!budgetCheck.allowed) {
       res.write(
@@ -641,7 +642,7 @@ export class AiController {
       return;
     }
 
-    // 2. 会话管理：仅首次执行（非续执行）时创建/复用会话 + 持久化 user 消息
+    // 2. session management: create/reuse session + persist user message only on first execution (not resume)
     let conversationId = dto.conversationId;
     const isNewConversation = !conversationId;
     if (!isContinuation) {
@@ -655,19 +656,19 @@ export class AiController {
         conversationId = conv.id;
       }
 
-      // 持久化 user 消息
+      // persist user message
       await this.conversationService.appendMessage(conversationId, {
         role: 'user',
         content: dto.userInput,
       });
 
-      // 新会话自动生成标题
+      // auto-generate title for new session
       if (isNewConversation) {
         await this.conversationService.autoGenerateTitle(conversationId, dto.userInput);
       }
     }
 
-    // 3. 执行 Agent 编排，转发步骤到 SSE，在 answer/error 时持久化
+    // 3. run Agent orchestration, forward steps to SSE, persist on answer/error
     const startedAt = Date.now();
     let assistantContent = '';
     let success = true;
@@ -675,7 +676,7 @@ export class AiController {
 
     try {
       for await (const step of this.orchestrator.execute(dto)) {
-        // 捕获 answer 内容用于持久化，并注入 conversationId
+        // capture answer content for persistence and inject conversationId
         if (step.type === 'answer') {
           assistantContent = step.content;
           res.write(
@@ -705,7 +706,7 @@ export class AiController {
       res.end();
     }
 
-    // 4. 流结束后异步持久化 assistant 消息（不阻塞响应）
+    // 4. after the stream ends, async-persist the assistant message (non-blocking)
     if (assistantContent && conversationId) {
       this.conversationService
         .appendMessage(conversationId, {
@@ -715,7 +716,7 @@ export class AiController {
         .catch((e) => this.logger.warn(`Agent 模式持久化 assistant 消息失败: ${e.message}`));
     }
 
-    // 5. 异步记录用量日志（Agent 模式内部多次调用 LLM，token 用量无法精确聚合，暂记 0）
+    // 5. async-record usage log (Agent mode calls the LLM multiple times internally; token usage cannot be aggregated precisely, temporarily recorded as 0)
     if (conversationId) {
       this.costMonitorService
         .logUsage({
@@ -736,7 +737,7 @@ export class AiController {
   }
 
   // ============================================================
-  //  P1-T08：RAG 知识库端点
+  //  P1-T08: RAG knowledge-base endpoints
   // ============================================================
 
   @Post('kb/index')
@@ -802,7 +803,7 @@ export class AiController {
   }
 
   // ============================================================
-  //  Phase 2 智能功能端点（A004/A005/C002/C003/E003）
+  //  Phase 2 smart-feature endpoints (A004/A005/C002/C003/E003)
   // ============================================================
 
   @Post('binding/recommend')
@@ -841,7 +842,7 @@ export class AiController {
   }
 
   // ============================================================
-  //  P2-T08：会话管理端点
+  //  P2-T08: session-management endpoints
   // ============================================================
 
   @Get('conversations')
@@ -941,7 +942,7 @@ export class AiController {
   }
 
   // ============================================================
-  //  P2-T08：用量统计端点
+  //  P2-T08: usage-statistics endpoints
   // ============================================================
 
   @Get('usage/stats')
@@ -979,7 +980,7 @@ export class AiController {
   }
 
   // ============================================================
-  //  P2-T08：Prompt 版本管理端点
+  //  P2-T08: Prompt version-management endpoints
   // ============================================================
 
   @Get('prompts')

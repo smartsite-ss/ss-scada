@@ -2,8 +2,8 @@
 // https://smartsite.top/
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
-// SmartTable 已迁移到 @scada-editor/shared 包
-// 此文件保留作为向后兼容的重新导出，新代码请从 @scada-editor/shared 导入
+// SmartTable has been migrated to the @scada-editor/shared package
+// This file remains as a backward-compatible re-export; import from @scada-editor/shared in new code
 export {
   SmartTable,
   SmartTableCore,

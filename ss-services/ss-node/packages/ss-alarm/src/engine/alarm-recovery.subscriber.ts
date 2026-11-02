@@ -13,20 +13,20 @@ import {
 import { AlarmRule, AlarmRecord, AlarmStatus } from '../entities/alarm.entity';
 
 /**
- * AlarmRecoverySubscriber — 告警自动恢复订阅器（Phase 5 状态机闭环）
+ * AlarmRecoverySubscriber - alarm auto-recovery subscriber (Phase 5 state-machine closed loop)
  *
- * 监听采集管道发出的 `alarm_normalized` 事件（由 AlarmCheckStep 检测到条件恢复正常时发出），
- * 将该标签的所有活跃告警（ACTIVE / ACKNOWLEDGED）自动恢复为 CLEARED，完成告警闭环。
+ * Listens for the `alarm_normalized` event emitted by the collection pipeline (raised by AlarmCheckStep when it detects
+ * the condition has recovered) and auto-recovers all active alarms (ACTIVE / ACKNOWLEDGED) of that tag to CLEARED, closing the loop.
  *
- * 闭环流程：
- * 1. AlarmCheckStep 检测到值不再满足告警条件 → 发出 `alarm_normalized` 事件
- * 2. 本订阅器收到事件 → 查询该项目该 tag 的所有活跃告警
- * 3. 对每条告警检查规则的 autoClear 配置：
- *    - autoClear=true（默认）：自动恢复，设置 clearReason='auto' + recoveredAt + recoveredValue
- *    - autoClear=false：跳过（需人工确认）
- * 4. 发出 `alarm.recovered` 事件 → 供 WebSocket 推送 + 通知服务使用
+ * Closed-loop flow:
+ * 1. AlarmCheckStep detects the value no longer satisfies the alarm condition -> emits the `alarm_normalized` event
+ * 2. This subscriber receives the event -> queries all active alarms of that tag in the project
+ * 3. For each alarm, check the rule's autoClear config:
+ *    - autoClear=true (default): auto-recover, set clearReason='auto' + recoveredAt + recoveredValue
+ *    - autoClear=false: skip (requires manual acknowledgment)
+ * 4. Emit the `alarm.recovered` event -> for WebSocket push + notification service
  *
- * 项目隔离：通过 ProjectDatabaseService.getSystemDb(projectId) 获取项目级 DataSource
+ * Project isolation: obtain the project-level DataSource via ProjectDatabaseService.getSystemDb(projectId)
  */
 @Injectable()
 export class AlarmRecoverySubscriber implements OnModuleInit, OnModuleDestroy {
@@ -69,7 +69,7 @@ export class AlarmRecoverySubscriber implements OnModuleInit, OnModuleDestroy {
       const recordRepo = ds.getRepository(AlarmRecord);
       const ruleRepo = ds.getRepository(AlarmRule);
 
-      // 查找该标签的所有活跃告警（ACTIVE + ACKNOWLEDGED 均可自动恢复）
+      // Find all active alarms of that tag (both ACTIVE + ACKNOWLEDGED can be auto-recovered)
       const activeRecords = await recordRepo.find({
         where: {
           tagId: event.tagId,
@@ -86,7 +86,7 @@ export class AlarmRecoverySubscriber implements OnModuleInit, OnModuleDestroy {
         return;
       }
 
-      // 批量加载相关规则（用于 autoClear 检查）
+      // Batch-load related rules (for the autoClear check)
       const ruleIds = [...new Set(activeRecords.map((r) => r.ruleId).filter(Boolean))] as string[];
       const rules = ruleIds.length > 0 ? await ruleRepo.find({ where: { id: In(ruleIds) } }) : [];
       const ruleMap = new Map(rules.map((r) => [r.id, r]));
@@ -96,7 +96,7 @@ export class AlarmRecoverySubscriber implements OnModuleInit, OnModuleDestroy {
       const recoveredRecords: AlarmRecord[] = [];
 
       for (const record of activeRecords) {
-        // 检查规则是否允许自动恢复
+        // Check whether the rule allows auto-recovery
         const rule = record.ruleId ? ruleMap.get(record.ruleId) : undefined;
         if (rule && !rule.autoClear) {
           this.logger.debug(
@@ -105,7 +105,7 @@ export class AlarmRecoverySubscriber implements OnModuleInit, OnModuleDestroy {
           continue;
         }
 
-        // 执行自动恢复 — 与 AlarmService.recoverAlarm() 逻辑一致
+        // Run auto-recovery - same logic as AlarmService.recoverAlarm()
         record.status = AlarmStatus.CLEARED;
         record.clearedAt = recoveredAt;
         record.clearedBy = 'auto';
@@ -121,7 +121,7 @@ export class AlarmRecoverySubscriber implements OnModuleInit, OnModuleDestroy {
       if (recoveredRecords.length > 0) {
         await recordRepo.save(recoveredRecords);
 
-        // 发出 alarm.recovered 事件（供 WebSocket 推送 + 通知服务使用）
+        // Emit the alarm.recovered event (for WebSocket push + notification service)
         for (const record of recoveredRecords) {
           const recoveredEvent: AlarmRecoveredEvent = {
             recordId: record.id,

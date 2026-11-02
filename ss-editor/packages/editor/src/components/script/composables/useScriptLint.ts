@@ -15,8 +15,8 @@ export function useScriptLint(
     const monaco = monacoRef.value;
     const editor = editorRef.value;
 
-    // 初始清除 TS 语言服务的语义诊断标记（setupLinting 在 onMounted 延迟 500ms 后调用，
-    // 此时 TS 服务已完成首次诊断，初始模板代码的误报标记已存在）
+    // Initially clear the TS language service's semantic diagnostic markers (setupLinting is called 500ms later in onMounted,
+    // by which time the TS service has completed its first diagnostics and the false markers on the initial template code already exist)
     const initialModel = editor.getModel();
     if (initialModel) {
       monaco.editor.setModelMarkers(initialModel, 'typescript', []);
@@ -46,9 +46,9 @@ export function useScriptLint(
 
       monaco.editor.setModelMarkers(model, 'script-engine', markers);
 
-      // 清除 Monaco 内置 TS 语言服务的语义诊断标记
-      // （如 showGraphic、readTag 等自定义 API 被误报为 "未定义"）
-      // 使用 setTimeout 确保在 TS 服务完成诊断后清除
+      // Clear the semantic diagnostic markers of Monaco's built-in TS language service
+      // (e.g. custom APIs like showGraphic and readTag being falsely reported as "undefined")
+      // Use setTimeout to ensure the markers are cleared after the TS service finishes diagnosing
       setTimeout(() => {
         if (monacoRef.value && editorRef.value) {
           const m = editorRef.value.getModel();

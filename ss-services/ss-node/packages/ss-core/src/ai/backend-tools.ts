@@ -3,31 +3,32 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 后端 MCP 工具工厂 — P2-T01
+ * Backend MCP tool factory - P2-T01
  *
- * 为 AgentOrchestratorService 提供真实后端工具实现。
- * 工具通过工厂函数创建，接收具体服务引用作为参数（避免 ss-core 直接依赖业务包）。
+ * Provides real backend tool implementations for AgentOrchestratorService.
+ * Tools are created via factory functions that take concrete service references as parameters
+ * (so ss-core does not directly depend on business packages).
  *
- * 工具清单（17 组）：
- *   data_query       — 数据标签时间范围查询
- *   data_aggregate   — 数据聚合（avg/max/min/sum/count）
- *   device_getStatus — 设备状态总览
- *   device_getHistory — 设备历史数据查询
- *   alarm_getHistory — 报警历史记录
- *   knowledge_search — 知识库搜索
- *   system_getHealth — 系统健康检查
- *   template_list    — 查询可用设备模板列表
- *   template_detail  — 查询模板详情（含变量定义）
- *   template_create  — 创建新的采集变量模板
- *   driver_list      — 查询可用采集驱动及连接配置模板
- *   device_create    — 在项目中创建新设备（从模板实例化）
- *   dict_list        — 查询字典分类树
- *   dict_detail      — 查询字典表详情（含条目）
- *   dict_create      — 创建数据字典表
- *   dict_addItems    — 向字典表追加条目
- *   dict_search      — 跨字典表搜索条目
+ * Tool list (17 groups):
+ *   data_query       - time-range query of data tags
+ *   data_aggregate   - data aggregation (avg/max/min/sum/count)
+ *   device_getStatus - device status overview
+ *   device_getHistory - device history data query
+ *   alarm_getHistory - alarm history records
+ *   knowledge_search - knowledge base search
+ *   system_getHealth - system health check
+ *   template_list    - query available device template list
+ *   template_detail  - query template details (including variable definitions)
+ *   template_create  - create a new collection-variable template
+ *   driver_list      - query available collection drivers and connection config templates
+ *   device_create    - create a new device in a project (instantiated from a template)
+ *   dict_list        - query dictionary category tree
+ *   dict_detail      - query dictionary table details (including entries)
+ *   dict_create      - create a data dictionary table
+ *   dict_addItems    - append entries to a dictionary table
+ *   dict_search      - cross-dictionary entry search
  *
- * 用法（在 app 层注入真实服务）：
+ * Usage (inject real services at the app layer):
  *   import { createAllBackendTools } from '@ss-node/ss-core/ai/backend-tools';
  *   const tools = createAllBackendTools({
  *     deviceService, alarmService, dataQueryService, knowledgeService, healthService, alarmStatisticsService,
@@ -35,9 +36,9 @@
  *   tools.forEach(t => orchestrator.registerTool(t));
  */
 
-/** 工具执行所需的最小服务接口 */
+/** Minimal service interface required for tool execution */
 export interface BackendToolServices {
-  /** 设备管理服务 */
+  /** Device management service */
   deviceService?: {
     getDeviceStats: (projectId: string) => Promise<{
       total: number;
@@ -73,7 +74,7 @@ export interface BackendToolServices {
       status?: string;
     }>;
   };
-  /** 报警管理服务 */
+  /** Alarm management service */
   alarmService?: {
     getRecords: (
       projectId: string,
@@ -125,7 +126,7 @@ export interface BackendToolServices {
       },
     ) => Promise<{ id: string }>;
   };
-  /** 数据查询服务 */
+  /** Data query service */
   dataQueryService?: {
     queryTimeRange: (query: {
       tagId: string;
@@ -174,7 +175,7 @@ export interface BackendToolServices {
       format: string,
     ) => Promise<{ filePath: string; fileName: string }>;
   };
-  /** 知识库服务 */
+  /** Knowledge base service */
   knowledgeService?: {
     search: (
       query: string,
@@ -182,7 +183,7 @@ export interface BackendToolServices {
       lang?: string,
     ) => Promise<Array<{ title: string; snippet: string; module: string; score?: number }>>;
   };
-  /** 健康检查服务 */
+  /** Health check service */
   healthService?: {
     getDetailed: () => Promise<{
       status: string;
@@ -193,7 +194,7 @@ export interface BackendToolServices {
       cpuLoad?: number[];
     }>;
   };
-  /** 报警统计服务 */
+  /** Alarm statistics service */
   alarmStatisticsService?: {
     getStatistics: (projectId: string) => Promise<{
       total: number;
@@ -205,7 +206,7 @@ export interface BackendToolServices {
       byStatus: Record<string, number>;
     }>;
   };
-  /** 设备模板管理服务 */
+  /** Device template management service */
   templateService?: {
     findAll: (query?: { deviceType?: string; keyword?: string; pageSize?: number }) => Promise<{
       data: Array<{
@@ -264,7 +265,7 @@ export interface BackendToolServices {
       authorId: string,
     ) => Promise<{ id: string; name: string; version: string; variableCount: number }>;
   };
-  /** 数据字典服务 */
+  /** Data dictionary service */
   dictService?: {
     getAllCategories: (locale?: string) => Array<{
       category: string;
@@ -336,7 +337,7 @@ export interface BackendToolServices {
       items: Array<{ value: string; label: string; sortOrder: number; description: string }>;
     }>;
   };
-  /** 设备创建服务 */
+  /** Device creation service */
   deviceCreateService?: {
     createDevice: (
       dto: {
@@ -360,7 +361,7 @@ export interface BackendToolServices {
       createdAt: Date;
     }>;
   };
-  /** 外部数据库连接服务 */
+  /** External DB connection service */
   dbConnectionService?: {
     findAll: (projectId: string) => Promise<
       Array<{
@@ -399,7 +400,7 @@ export interface BackendToolServices {
     ) => Promise<Array<{ name: string; type: string }>>;
     executeQuery: (projectId: string, id: string, sql: string) => Promise<unknown[]>;
   };
-  /** 项目管理服务 */
+  /** Project management service */
   projectService?: {
     findAll: (
       userId: string,
@@ -459,7 +460,7 @@ export interface BackendToolServices {
       skipped: string[];
     }>;
   };
-  /** 报表服务 */
+  /** Report service */
   reportService?: {
     generateDailyReport: (projectId: string, date: string) => Promise<Record<string, unknown>>;
     generateMonthlyReport: (projectId: string, month: string) => Promise<Record<string, unknown>>;
@@ -500,7 +501,7 @@ export interface BackendToolServices {
       },
     ) => Promise<Record<string, unknown>>;
   };
-  /** 数据标签服务 */
+  /** Data tag service */
   datatagService?: {
     findAll: (
       projectId: string,
@@ -528,7 +529,7 @@ export interface BackendToolServices {
       dto: Record<string, unknown>,
     ) => Promise<Array<{ id: string; name: string }>>;
   };
-  /** 脚本服务 */
+  /** Script service */
   scriptService?: {
     getApiFunctions: () => Promise<
       Array<{ name: string; description: string; parameters: unknown[] }>
@@ -548,10 +549,10 @@ export interface BackendToolServices {
   };
 
   // ============================================================
-  // 阶段 2 新增服务（30 个运维管理工具）
+  // Phase 2 newly added services (30 ops-management tools)
   // ============================================================
 
-  /** 用户管理服务（用户权限管理 5 工具） */
+  /** User management service (5 user/permission tools) */
   userService?: {
     findAll: (query?: Record<string, unknown>) => Promise<any[]>;
     adminCreateUser: (dto: Record<string, unknown>) => Promise<any>;
@@ -561,7 +562,7 @@ export interface BackendToolServices {
     deleteUser: (id: string) => Promise<void>;
     assignRole: (id: string, roleId: string) => Promise<any>;
   };
-  /** 角色与授权服务 */
+  /** Role and authorization service */
   roleService?: {
     findAll: () => Promise<any[]>;
     findById: (id: string) => Promise<any>;
@@ -573,20 +574,20 @@ export interface BackendToolServices {
     getDeviceAuths: (roleId: string, projectId: string) => Promise<any[]>;
     setDeviceAuths: (roleId: string, projectId: string, auths: any[]) => Promise<void>;
   };
-  /** 会话管理服务 */
+  /** Session management service */
   sessionService?: {
     getUserSessions: (userId: string) => any[];
     forceLogout: (sessionId: string) => boolean;
     logoutAllExcept: (userId: string, currentSessionId: string) => number;
     getLoginHistory: (userId: string) => any[];
   };
-  /** 审计日志服务 */
+  /** Audit log service */
   auditLogService?: {
     query: (query: Record<string, unknown>) => Promise<any>;
     getStats: () => Promise<any>;
     cleanupExpired: () => Promise<number>;
   };
-  /** 菜单管理服务 */
+  /** Menu management service */
   menuService?: {
     getMenu: (subsystem?: string) => Promise<any[]>;
     createMenuItem: (item: any, parentId?: string | null) => Promise<void>;
@@ -596,14 +597,14 @@ export interface BackendToolServices {
     updateMenuButtons: (buttons: any[]) => Promise<void>;
   };
 
-  /** 设备运维服务（设备运维管理 6 工具） */
+  /** Device ops service (6 device-ops tools) */
   deviceOpsService?: {
     update: (id: string, dto: Record<string, unknown>, projectId: string) => Promise<any>;
     remove: (id: string, projectId: string) => Promise<void>;
     moveDevice: (id: string, targetGroupId: string | null, projectId: string) => Promise<any>;
     writeTagValue: (deviceId: string, tagId: string, value: any, projectId: string) => Promise<any>;
   };
-  /** 设备分组服务 */
+  /** Device grouping service */
   deviceGroupService?: {
     getGroups: (projectId: string) => Promise<any[]>;
     getGroupTree: (projectId: string) => Promise<any[]>;
@@ -611,7 +612,7 @@ export interface BackendToolServices {
     updateGroup: (projectId: string, groupId: string, dto: Record<string, unknown>) => Promise<any>;
     deleteGroup: (projectId: string, groupId: string) => Promise<void>;
   };
-  /** 设备诊断服务 */
+  /** Device diagnostic service */
   deviceDiagnosticService?: {
     ping: (deviceId: string, host: string, port: number) => Promise<any>;
     readTag: (deviceId: string, params: Record<string, unknown>) => Promise<any>;
@@ -624,7 +625,7 @@ export interface BackendToolServices {
     ) => Promise<any>;
   };
 
-  /** 报警处理服务（报警处理与运维 7 工具） */
+  /** Alarm handling service (7 alarm-handling/ops tools) */
   alarmOpsService?: {
     acknowledge: (recordId: string, userId: string, projectId: string) => Promise<any>;
     batchAcknowledge: (ids: string[], userId: string, projectId: string) => Promise<any>;
@@ -635,7 +636,7 @@ export interface BackendToolServices {
     getSuppressionRules: (projectId: string) => Promise<any[]>;
   };
 
-  /** 采集插件管理服务（采集器与服务运维 7 工具） */
+  /** Collector plugin management service (7 collector/service-ops tools) */
   pluginManagerService?: {
     listPlugins: (query?: Record<string, unknown>) => Promise<any[]>;
     activate: (protocol: string) => Promise<any>;
@@ -649,27 +650,27 @@ export interface BackendToolServices {
     getPluginConfig: (protocol: string) => any;
     updatePluginConfig: (protocol: string, config: any) => Promise<any>;
   };
-  /** Pipeline 诊断服务 */
+  /** Pipeline diagnostic service */
   pipelineDiagService?: {
     getMetricsSnapshot: () => any;
     getStepTimingStats: () => any;
     getTimingBreakdowns: (limit: number) => any[];
     getDiagnosticInfo: () => any;
   };
-  /** 离线缓存服务 */
+  /** Offline cache service */
   offlineCacheService?: {
     getBufferStats: () => any;
     flush: (maxBatch?: number) => Promise<any[]>;
     clear: () => void;
   };
-  /** 采集器诊断服务 */
+  /** Collector diagnostic service */
   collectorDiagService?: {
     runFullDiagnosis: (deviceId?: string) => Promise<any>;
     checkTagReadability: (tagId: string) => Promise<any>;
     checkPluginHealth: (protocol: string) => Promise<any>;
   };
 
-  /** 基础服务管理（采集器运维 + 数据治理 共用） */
+  /** Base service management (shared by collector ops + data governance) */
   baseServicesService?: {
     getAllStatus: () => Promise<any[]>;
     getStatus: (name: string) => Promise<any>;
@@ -678,7 +679,7 @@ export interface BackendToolServices {
     restart: (name: string) => Promise<any>;
     getLogs: (name: string, limit: number) => Promise<any>;
   };
-  /** InfluxDB 管理服务 */
+  /** InfluxDB management service */
   influxAdminService?: {
     checkSetupStatus: () => Promise<any>;
     checkHealth: () => Promise<any>;
@@ -686,7 +687,7 @@ export interface BackendToolServices {
     listBuckets: () => Promise<any[]>;
     setup: (options?: Record<string, unknown>) => Promise<any>;
   };
-  /** 系统配置管理服务 */
+  /** System config management service */
   systemConfigService?: {
     getAllWithMeta: () => Promise<any[]>;
     get: (key: string) => Promise<any>;
@@ -696,7 +697,7 @@ export interface BackendToolServices {
     getRestartStatus: () => Promise<any>;
   };
 
-  /** 数据导出服务（数据治理与备份 5 工具） */
+  /** Data export service (5 data-governance/backup tools) */
   dataExportService?: {
     exportCsv: (
       tagId: string,
@@ -718,7 +719,7 @@ export interface BackendToolServices {
       filters: Record<string, unknown>,
     ) => Promise<{ filename: string; data: string | Buffer; rowCount: number }>;
   };
-  /** 数据库维护服务 */
+  /** Database maintenance service */
   databaseService?: {
     getAllDatabasesStatus: () => Promise<any>;
     checkSystemIntegrity: () => Promise<any>;
@@ -726,7 +727,7 @@ export interface BackendToolServices {
     vacuumSystem: () => Promise<any>;
     vacuumProject: (projectName: string) => Promise<any>;
   };
-  /** 备份管理服务 */
+  /** Backup management service */
   backupService?: {
     listBackups: (dbType?: string) => Promise<any[]>;
     getBackupStats: () => Promise<any>;
@@ -747,7 +748,7 @@ export interface BackendToolServices {
 }
 
 // ============================================================
-// 工具参数/返回类型定义
+// tool parameter/return type definitions
 // ============================================================
 
 interface BackendToolParam {
@@ -767,10 +768,10 @@ interface BackendToolDef {
 }
 
 // ============================================================
-// 工具工厂
+// tool factories
 // ============================================================
 
-/** 1. data_query — 数据标签时间范围查询 */
+/** 1. data_query - data tag time-range query */
 export function createDataQueryTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.dataQueryService) return null;
 
@@ -820,7 +821,7 @@ export function createDataQueryTool(services: BackendToolServices): BackendToolD
   };
 }
 
-/** 2. data_aggregate — 数据聚合 */
+/** 2. data_aggregate - data aggregation */
 export function createDataAggregateTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.dataQueryService) return null;
 
@@ -875,7 +876,7 @@ export function createDataAggregateTool(services: BackendToolServices): BackendT
   };
 }
 
-/** 3. device_getStatus — 设备状态总览 */
+/** 3. device_getStatus - device status overview */
 export function createDeviceStatusTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.deviceService) return null;
 
@@ -939,7 +940,7 @@ export function createDeviceStatusTool(services: BackendToolServices): BackendTo
   };
 }
 
-/** 4. device_getHistory — 设备历史数据 */
+/** 4. device_getHistory - device history data */
 export function createDeviceHistoryTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.deviceService || !services.dataQueryService) return null;
 
@@ -984,7 +985,7 @@ export function createDeviceHistoryTool(services: BackendToolServices): BackendT
   };
 }
 
-/** 5. alarm_getHistory — 报警历史记录 */
+/** 5. alarm_getHistory - alarm history records */
 export function createAlarmHistoryTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.alarmService) return null;
 
@@ -1031,7 +1032,7 @@ export function createAlarmHistoryTool(services: BackendToolServices): BackendTo
   };
 }
 
-/** 6. knowledge_search — 知识库搜索 */
+/** 6. knowledge_search - knowledge base search */
 export function createKnowledgeSearchTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.knowledgeService) return null;
 
@@ -1075,7 +1076,7 @@ export function createKnowledgeSearchTool(services: BackendToolServices): Backen
   };
 }
 
-/** 7. system_getHealth — 系统健康检查 */
+/** 7. system_getHealth - system health check */
 export function createSystemHealthTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.healthService) return null;
 
@@ -1120,7 +1121,7 @@ export function createSystemHealthTool(services: BackendToolServices): BackendTo
   };
 }
 
-/** 8. template_list — 查询可用设备模板列表 */
+/** 8. template_list - query available device template list */
 export function createTemplateListTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.templateService) return null;
 
@@ -1178,7 +1179,7 @@ export function createTemplateListTool(services: BackendToolServices): BackendTo
   };
 }
 
-/** 9. template_detail — 查询模板详情 */
+/** 9. template_detail - query template details */
 export function createTemplateDetailTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.templateService) return null;
 
@@ -1228,7 +1229,7 @@ export function createTemplateDetailTool(services: BackendToolServices): Backend
   };
 }
 
-/** 10. template_create — 创建新模板 */
+/** 10. template_create - create a new template */
 export function createTemplateCreateTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.templateService) return null;
 
@@ -1303,7 +1304,7 @@ export function createTemplateCreateTool(services: BackendToolServices): Backend
   };
 }
 
-/** 11. driver_list — 查询可用采集驱动 */
+/** 11. driver_list - query available collection drivers */
 export function createDriverListTool(_services: BackendToolServices): BackendToolDef {
   const DRIVERS = [
     {
@@ -1381,7 +1382,7 @@ export function createDriverListTool(_services: BackendToolServices): BackendToo
   };
 }
 
-/** 12. device_create — 创建设备 */
+/** 12. device_create - create a device */
 export function createDeviceCreateTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.deviceCreateService) return null;
 
@@ -1486,10 +1487,10 @@ export function createDeviceCreateTool(services: BackendToolServices): BackendTo
 }
 
 // ============================================================
-// 批量创建
+// batch creation
 // ============================================================
 
-/** 13. dict_list — 查询字典分类树 */
+/** 13. dict_list - query dictionary category tree */
 export function createDictListTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.dictService) return null;
 
@@ -1534,7 +1535,7 @@ export function createDictListTool(services: BackendToolServices): BackendToolDe
   };
 }
 
-/** 14. dict_detail — 查询字典表详情 */
+/** 14. dict_detail - query dictionary table details */
 export function createDictDetailTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.dictService) return null;
 
@@ -1593,7 +1594,7 @@ export function createDictDetailTool(services: BackendToolServices): BackendTool
   };
 }
 
-/** 15. dict_create — 创建字典表 */
+/** 15. dict_create - create a dictionary table */
 export function createDictCreateTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.dictService) return null;
 
@@ -1688,7 +1689,7 @@ export function createDictCreateTool(services: BackendToolServices): BackendTool
   };
 }
 
-/** 16. dict_addItems — 向字典表追加条目 */
+/** 16. dict_addItems - append entries to a dictionary table */
 export function createDictAddItemsTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.dictService) return null;
 
@@ -1764,7 +1765,7 @@ export function createDictAddItemsTool(services: BackendToolServices): BackendTo
   };
 }
 
-/** 17. dict_search — 搜索字典条目 */
+/** 17. dict_search - search dictionary entries */
 export function createDictSearchTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.dictService) return null;
 
@@ -1848,10 +1849,10 @@ export function createDictSearchTool(services: BackendToolServices): BackendTool
 }
 
 // ============================================================
-// 批次 A: 外部数据库接入 (5) + 项目管理 (4) = 9 个工具
+// Batch A: external DB access (5) + project management (4) = 9 tools
 // ============================================================
 
-/** 18. db_connection_list — 查询外部数据库连接列表 */
+/** 18. db_connection_list - query external DB connection list */
 export function createDbConnectionListTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.dbConnectionService) return null;
 
@@ -1886,7 +1887,7 @@ export function createDbConnectionListTool(services: BackendToolServices): Backe
   };
 }
 
-/** 19. db_connection_create — 创建外部数据库连接 */
+/** 19. db_connection_create - create an external DB connection */
 export function createDbConnectionCreateTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.dbConnectionService) return null;
 
@@ -1943,7 +1944,7 @@ export function createDbConnectionCreateTool(services: BackendToolServices): Bac
   };
 }
 
-/** 20. db_connection_test — 测试数据库连接 */
+/** 20. db_connection_test - test DB connection */
 export function createDbConnectionTestTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.dbConnectionService) return null;
 
@@ -1983,7 +1984,7 @@ export function createDbConnectionTestTool(services: BackendToolServices): Backe
   };
 }
 
-/** 21. db_connection_tables — 浏览数据库表结构 */
+/** 21. db_connection_tables - browse DB table schema */
 export function createDbConnectionTablesTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.dbConnectionService) return null;
 
@@ -2038,7 +2039,7 @@ export function createDbConnectionTablesTool(services: BackendToolServices): Bac
   };
 }
 
-/** 22. db_connection_query — 执行 SQL 查询 */
+/** 22. db_connection_query - execute SQL query */
 export function createDbConnectionQueryTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.dbConnectionService) return null;
 
@@ -2091,7 +2092,7 @@ export function createDbConnectionQueryTool(services: BackendToolServices): Back
   };
 }
 
-/** 23. project_list — 查询项目列表 */
+/** 23. project_list - query project list */
 export function createProjectListTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.projectService) return null;
 
@@ -2140,7 +2141,7 @@ export function createProjectListTool(services: BackendToolServices): BackendToo
   };
 }
 
-/** 24. project_info — 查询项目详情 */
+/** 24. project_info - query project details */
 export function createProjectInfoTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.projectService) return null;
 
@@ -2176,7 +2177,7 @@ export function createProjectInfoTool(services: BackendToolServices): BackendToo
   };
 }
 
-/** 25. project_export — 导出项目 */
+/** 25. project_export - export project */
 export function createProjectExportTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.projectService) return null;
 
@@ -2234,7 +2235,7 @@ export function createProjectExportTool(services: BackendToolServices): BackendT
   };
 }
 
-/** 26. project_import — 导入项目 */
+/** 26. project_import - import project */
 export function createProjectImportTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.projectService) return null;
 
@@ -2289,10 +2290,10 @@ export function createProjectImportTool(services: BackendToolServices): BackendT
 }
 
 // ============================================================
-// 批次 B: 趋势数据 (4) + 项目诊断 (4) = 8 个工具
+// Batch B: trend data (4) + project diagnosis (4) = 8 tools
 // ============================================================
 
-/** 27. tag_list — 查询数据标签列表 */
+/** 27. tag_list - query data tag list */
 export function createTagListTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.datatagService) return null;
 
@@ -2338,7 +2339,7 @@ export function createTagListTool(services: BackendToolServices): BackendToolDef
   };
 }
 
-/** 28. trend_query — 趋势数据查询 */
+/** 28. trend_query - trend data query */
 export function createTrendQueryTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.dataQueryService?.queryTrend) return null;
 
@@ -2409,7 +2410,7 @@ export function createTrendQueryTool(services: BackendToolServices): BackendTool
   };
 }
 
-/** 29. trend_aggregate — 趋势数据聚合 */
+/** 29. trend_aggregate - trend data aggregation */
 export function createTrendAggregateTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.dataQueryService) return null;
 
@@ -2455,7 +2456,7 @@ export function createTrendAggregateTool(services: BackendToolServices): Backend
   };
 }
 
-/** 30. trend_export — 趋势数据导出 */
+/** 30. trend_export - trend data export */
 export function createTrendExportTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.dataQueryService?.exportTrend) return null;
 
@@ -2502,7 +2503,7 @@ export function createTrendExportTool(services: BackendToolServices): BackendToo
   };
 }
 
-/** 31. project_manage_info — 项目管理信息 */
+/** 31. project_manage_info - project management info */
 export function createProjectManageInfoTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.projectService) return null;
 
@@ -2539,7 +2540,7 @@ export function createProjectManageInfoTool(services: BackendToolServices): Back
   };
 }
 
-/** 32. project_diagnose — 项目诊断 */
+/** 32. project_diagnose - project diagnosis */
 export function createProjectDiagnoseTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.projectService) return null;
 
@@ -2572,7 +2573,7 @@ export function createProjectDiagnoseTool(services: BackendToolServices): Backen
   };
 }
 
-/** 33. project_init_resources — 初始化项目资源 */
+/** 33. project_init_resources - initialize project resources */
 export function createProjectInitResourcesTool(
   services: BackendToolServices,
 ): BackendToolDef | null {
@@ -2620,7 +2621,7 @@ export function createProjectInitResourcesTool(
   };
 }
 
-/** 34. system_health_detailed — 系统详细健康检查 */
+/** 34. system_health_detailed - detailed system health check */
 export function createSystemHealthDetailedTool(
   services: BackendToolServices,
 ): BackendToolDef | null {
@@ -2674,10 +2675,10 @@ export function createSystemHealthDetailedTool(
 }
 
 // ============================================================
-// 批次 C: 报表 (4) + 报警 (3) + 标签 (2) = 9 个工具
+// Batch C: reports (4) + alarms (3) + tags (2) = 9 tools
 // ============================================================
 
-/** 35. report_template_list — 查询报表模板列表 */
+/** 35. report_template_list - query report template list */
 export function createReportTemplateListTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.reportService) return null;
 
@@ -2718,7 +2719,7 @@ export function createReportTemplateListTool(services: BackendToolServices): Bac
   };
 }
 
-/** 36. report_template_create — 创建报表模板 */
+/** 36. report_template_create - create a report template */
 export function createReportTemplateCreateTool(
   services: BackendToolServices,
 ): BackendToolDef | null {
@@ -2765,7 +2766,7 @@ export function createReportTemplateCreateTool(
   };
 }
 
-/** 37. report_schedule_create — 创建报表定时导出 */
+/** 37. report_schedule_create - create a report scheduled export */
 export function createReportScheduleCreateTool(
   services: BackendToolServices,
 ): BackendToolDef | null {
@@ -2815,7 +2816,7 @@ export function createReportScheduleCreateTool(
   };
 }
 
-/** 38. report_generate — 生成报表 */
+/** 38. report_generate - generate report */
 export function createReportGenerateTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.reportService) return null;
 
@@ -2949,7 +2950,7 @@ export function createReportGenerateTool(services: BackendToolServices): Backend
   };
 }
 
-/** 39. alarm_rule_list — 查询报警规则列表 */
+/** 39. alarm_rule_list - query alarm rule list */
 export function createAlarmRuleListTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.alarmService?.getRules) return null;
 
@@ -2986,7 +2987,7 @@ export function createAlarmRuleListTool(services: BackendToolServices): BackendT
   };
 }
 
-/** 40. alarm_rule_create — 创建报警规则 */
+/** 40. alarm_rule_create - create an alarm rule */
 export function createAlarmRuleCreateTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.alarmService?.createRule) return null;
 
@@ -3059,7 +3060,7 @@ export function createAlarmRuleCreateTool(services: BackendToolServices): Backen
   };
 }
 
-/** 41. alarm_suppression_add — 添加报警抑制规则 */
+/** 41. alarm_suppression_add - add an alarm suppression rule */
 export function createAlarmSuppressionAddTool(
   services: BackendToolServices,
 ): BackendToolDef | null {
@@ -3126,7 +3127,7 @@ export function createAlarmSuppressionAddTool(
   };
 }
 
-/** 42. datatag_configure — 配置单个数据标签 */
+/** 42. datatag_configure - configure a single data tag */
 export function createDatatagConfigureTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.datatagService) return null;
 
@@ -3170,7 +3171,7 @@ export function createDatatagConfigureTool(services: BackendToolServices): Backe
   };
 }
 
-/** 43. datatag_batch_configure — 批量配置数据标签 */
+/** 43. datatag_batch_configure - configure data tags in bulk */
 export function createDatatagBatchConfigureTool(
   services: BackendToolServices,
 ): BackendToolDef | null {
@@ -3221,10 +3222,10 @@ export function createDatatagBatchConfigureTool(
 }
 
 // ============================================================
-// 批次 D: 脚本 (5) = 5 个工具
+// Batch D: scripts (5) = 5 tools
 // ============================================================
 
-/** 44. script_api_list — 查询脚本 API 列表 */
+/** 44. script_api_list - query script API list */
 export function createScriptApiListTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.scriptService) return null;
 
@@ -3254,7 +3255,7 @@ export function createScriptApiListTool(services: BackendToolServices): BackendT
   };
 }
 
-/** 45. script_validate — 校验脚本语法 */
+/** 45. script_validate - validate script syntax */
 export function createScriptValidateTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.scriptService) return null;
 
@@ -3270,7 +3271,7 @@ export function createScriptValidateTool(services: BackendToolServices): Backend
     execute: async (params: Record<string, unknown>) => {
       const { code } = params;
       try {
-        // 使用 try-catch 包裹 SyntaxError 检查
+        // wrap the SyntaxError check in try-catch
         try {
           new Function(String(code));
           return JSON.stringify({
@@ -3293,7 +3294,7 @@ export function createScriptValidateTool(services: BackendToolServices): Backend
   };
 }
 
-/** 46. script_dry_run — 脚本试运行 */
+/** 46. script_dry_run - script dry run */
 export function createScriptDryRunTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.scriptService) return null;
 
@@ -3310,7 +3311,7 @@ export function createScriptDryRunTool(services: BackendToolServices): BackendTo
     execute: async (params: Record<string, unknown>) => {
       const { code, projectId } = params;
       try {
-        // 语法检查
+        // syntax check
         try {
           new Function(String(code));
         } catch (syntaxErr: unknown) {
@@ -3320,7 +3321,7 @@ export function createScriptDryRunTool(services: BackendToolServices): BackendTo
           });
         }
 
-        // 创建临时脚本并执行
+        // create a temporary script and execute it
         const tempScript = await services.scriptService!.create({
           name: `_dry_run_${Date.now()}`,
           code: String(code),
@@ -3346,7 +3347,7 @@ export function createScriptDryRunTool(services: BackendToolServices): BackendTo
   };
 }
 
-/** 47. script_create — 创建脚本 */
+/** 47. script_create - create a script */
 export function createScriptCreateTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.scriptService) return null;
 
@@ -3419,7 +3420,7 @@ export function createScriptCreateTool(services: BackendToolServices): BackendTo
   };
 }
 
-/** 48. script_execute — 执行脚本 */
+/** 48. script_execute - execute a script */
 export function createScriptExecuteTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.scriptService) return null;
 
@@ -3455,10 +3456,10 @@ export function createScriptExecuteTool(services: BackendToolServices): BackendT
 }
 
 // ============================================================
-// 批次 E: 报警处理与运维（7 个工具）
+// Batch E: alarm handling & ops (7 tools)
 // ============================================================
 
-/** 49. alarm_acknowledge — 确认报警 */
+/** 49. alarm_acknowledge - acknowledge alarm */
 export function createAlarmAcknowledgeTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.alarmOpsService) return null;
   return {
@@ -3516,7 +3517,7 @@ export function createAlarmAcknowledgeTool(services: BackendToolServices): Backe
   };
 }
 
-/** 50. alarm_clear — 清除报警 */
+/** 50. alarm_clear - clear alarm */
 export function createAlarmClearTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.alarmOpsService) return null;
   return {
@@ -3550,7 +3551,7 @@ export function createAlarmClearTool(services: BackendToolServices): BackendTool
   };
 }
 
-/** 51. alarm_shelve — 搁置报警 */
+/** 51. alarm_shelve - shelve alarm */
 export function createAlarmShelveTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.alarmOpsService) return null;
   return {
@@ -3590,7 +3591,7 @@ export function createAlarmShelveTool(services: BackendToolServices): BackendToo
   };
 }
 
-/** 52. alarm_statistics — 报警统计分析 */
+/** 52. alarm_statistics - alarm statistics analysis */
 export function createAlarmStatisticsTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.alarmOpsService) return null;
   return {
@@ -3611,7 +3612,7 @@ export function createAlarmStatisticsTool(services: BackendToolServices): Backen
   };
 }
 
-/** 53. alarm_escalation_list — 查询升级规则 */
+/** 53. alarm_escalation_list - query escalation rules */
 export function createAlarmEscalationListTool(
   services: BackendToolServices,
 ): BackendToolDef | null {
@@ -3640,7 +3641,7 @@ export function createAlarmEscalationListTool(
   };
 }
 
-/** 54. alarm_suppression_list — 查询抑制规则 */
+/** 54. alarm_suppression_list - query suppression rules */
 export function createAlarmSuppressionListTool(
   services: BackendToolServices,
 ): BackendToolDef | null {
@@ -3668,7 +3669,7 @@ export function createAlarmSuppressionListTool(
   };
 }
 
-/** 55. alarm_rule_toggle — 启用/禁用报警规则 */
+/** 55. alarm_rule_toggle - enable/disable alarm rule */
 export function createAlarmRuleToggleTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.alarmOpsService) return null;
   return {
@@ -3703,10 +3704,10 @@ export function createAlarmRuleToggleTool(services: BackendToolServices): Backen
 }
 
 // ============================================================
-// 批次 F: 设备运维管理（6 个工具）
+// Batch F: device ops management (6 tools)
 // ============================================================
 
-/** 56. device_list — 查询设备列表 */
+/** 56. device_list - query device list */
 export function createDeviceListTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.deviceService) return null;
   return {
@@ -3758,7 +3759,7 @@ export function createDeviceListTool(services: BackendToolServices): BackendTool
   };
 }
 
-/** 57. device_update — 更新设备配置 */
+/** 57. device_update - update device config */
 export function createDeviceUpdateTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.deviceOpsService) return null;
   return {
@@ -3802,7 +3803,7 @@ export function createDeviceUpdateTool(services: BackendToolServices): BackendTo
   };
 }
 
-/** 58. device_delete — 删除设备 */
+/** 58. device_delete - delete device */
 export function createDeviceDeleteTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.deviceOpsService) return null;
   return {
@@ -3826,7 +3827,7 @@ export function createDeviceDeleteTool(services: BackendToolServices): BackendTo
   };
 }
 
-/** 59. device_group_manage — 设备分组管理 */
+/** 59. device_group_manage - device group management */
 export function createDeviceGroupManageTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.deviceGroupService) return null;
   return {
@@ -3900,7 +3901,7 @@ export function createDeviceGroupManageTool(services: BackendToolServices): Back
   };
 }
 
-/** 60. device_diagnostic — 设备诊断 */
+/** 60. device_diagnostic - device diagnostics */
 export function createDeviceDiagnosticTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.deviceDiagnosticService) return null;
   return {
@@ -3960,7 +3961,7 @@ export function createDeviceDiagnosticTool(services: BackendToolServices): Backe
   };
 }
 
-/** 61. device_write_tag — 写入设备标签值 */
+/** 61. device_write_tag - write a device tag value */
 export function createDeviceWriteTagTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.deviceOpsService) return null;
   return {
@@ -3999,10 +4000,10 @@ export function createDeviceWriteTagTool(services: BackendToolServices): Backend
 }
 
 // ============================================================
-// 批次 G: 用户权限管理（5 个工具）
+// Batch G: user & permission management (5 tools)
 // ============================================================
 
-/** 62. user_manage — 用户管理 */
+/** 62. user_manage - user management */
 export function createUserManageTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.userService) return null;
   return {
@@ -4104,7 +4105,7 @@ export function createUserManageTool(services: BackendToolServices): BackendTool
   };
 }
 
-/** 63. role_manage — 角色与授权管理 */
+/** 63. role_manage - role & authorization management */
 export function createRoleManageTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.roleService) return null;
   return {
@@ -4188,7 +4189,7 @@ export function createRoleManageTool(services: BackendToolServices): BackendTool
   };
 }
 
-/** 64. menu_manage — 菜单与按钮权限 */
+/** 64. menu_manage - menu & button permissions */
 export function createMenuManageTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.menuService) return null;
   return {
@@ -4275,7 +4276,7 @@ export function createMenuManageTool(services: BackendToolServices): BackendTool
   };
 }
 
-/** 65. session_manage — 会话管理 */
+/** 65. session_manage - session management */
 export function createSessionManageTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.sessionService) return null;
   return {
@@ -4341,7 +4342,7 @@ export function createSessionManageTool(services: BackendToolServices): BackendT
   };
 }
 
-/** 66. audit_log_query — 审计日志查询 */
+/** 66. audit_log_query - audit log query */
 export function createAuditLogQueryTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.auditLogService) return null;
   return {
@@ -4419,10 +4420,10 @@ export function createAuditLogQueryTool(services: BackendToolServices): BackendT
 }
 
 // ============================================================
-// 批次 H: 采集器与服务运维（7 个工具）
+// Batch H: collector & service ops (7 tools)
 // ============================================================
 
-/** 67. plugin_manage — 采集插件管理 */
+/** 67. plugin_manage - collector plugin management */
 export function createPluginManageTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.pluginManagerService) return null;
   return {
@@ -4493,7 +4494,7 @@ export function createPluginManageTool(services: BackendToolServices): BackendTo
   };
 }
 
-/** 68. pipeline_diagnose — Pipeline 诊断 */
+/** 68. pipeline_diagnose - Pipeline diagnosis */
 export function createPipelineDiagnoseTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.pipelineDiagService) return null;
   return {
@@ -4538,7 +4539,7 @@ export function createPipelineDiagnoseTool(services: BackendToolServices): Backe
   };
 }
 
-/** 69. offline_cache_manage — 离线缓存管理 */
+/** 69. offline_cache_manage - offline cache management */
 export function createOfflineCacheManageTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.offlineCacheService) return null;
   return {
@@ -4582,7 +4583,7 @@ export function createOfflineCacheManageTool(services: BackendToolServices): Bac
   };
 }
 
-/** 70. collector_diagnostic — 采集器诊断 */
+/** 70. collector_diagnostic - collector diagnostics */
 export function createCollectorDiagnosticTool(
   services: BackendToolServices,
 ): BackendToolDef | null {
@@ -4648,7 +4649,7 @@ export function createCollectorDiagnosticTool(
   };
 }
 
-/** 71. base_service_manage — 基础服务管理 */
+/** 71. base_service_manage - base service management */
 export function createBaseServiceManageTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.baseServicesService) return null;
   return {
@@ -4722,7 +4723,7 @@ export function createBaseServiceManageTool(services: BackendToolServices): Back
   };
 }
 
-/** 72. influxdb_admin — InfluxDB 管理 */
+/** 72. influxdb_admin - InfluxDB management */
 export function createInfluxdbAdminTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.influxAdminService) return null;
   return {
@@ -4770,7 +4771,7 @@ export function createInfluxdbAdminTool(services: BackendToolServices): BackendT
   };
 }
 
-/** 73. system_config_manage — 系统配置管理 */
+/** 73. system_config_manage - system config management */
 export function createSystemConfigManageTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.systemConfigService) return null;
   return {
@@ -4840,10 +4841,10 @@ export function createSystemConfigManageTool(services: BackendToolServices): Bac
 }
 
 // ============================================================
-// 批次 I: 数据治理与备份（5 个工具）
+// Batch I: data governance & backup (5 tools)
 // ============================================================
 
-/** 74. data_export — 数据导出 */
+/** 74. data_export - data export */
 export function createDataExportTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.dataExportService) return null;
   return {
@@ -4925,7 +4926,7 @@ export function createDataExportTool(services: BackendToolServices): BackendTool
   };
 }
 
-/** 75. database_status — 数据库状态查询 */
+/** 75. database_status - database status query */
 export function createDatabaseStatusTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.databaseService) return null;
   return {
@@ -4945,7 +4946,7 @@ export function createDatabaseStatusTool(services: BackendToolServices): Backend
   };
 }
 
-/** 76. database_maintain — 数据库维护 */
+/** 76. database_maintain - database maintenance */
 export function createDatabaseMaintainTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.databaseService) return null;
   return {
@@ -5014,7 +5015,7 @@ export function createDatabaseMaintainTool(services: BackendToolServices): Backe
   };
 }
 
-/** 77. backup_manage — 备份管理 */
+/** 77. backup_manage - backup management */
 export function createBackupManageTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.backupService) return null;
   return {
@@ -5087,7 +5088,7 @@ export function createBackupManageTool(services: BackendToolServices): BackendTo
   };
 }
 
-/** 78. backup_log_query — 备份日志与清理 */
+/** 78. backup_log_query - backup logs & cleanup */
 export function createBackupLogQueryTool(services: BackendToolServices): BackendToolDef | null {
   if (!services.backupService) return null;
   return {
@@ -5146,13 +5147,13 @@ export function createBackupLogQueryTool(services: BackendToolServices): Backend
 }
 
 // ============================================================
-// 批量创建
+// batch creation
 // ============================================================
 
-/** 根据可用服务批量创建所有后端工具 */
+/** Create all backend tools in bulk based on available services */
 export function createAllBackendTools(services: BackendToolServices): BackendToolDef[] {
   const factories = [
-    // 原有 17 个工具
+    // original 17 tools
     createDataQueryTool,
     createDataAggregateTool,
     createDeviceStatusTool,
@@ -5170,7 +5171,7 @@ export function createAllBackendTools(services: BackendToolServices): BackendToo
     createDictCreateTool,
     createDictAddItemsTool,
     createDictSearchTool,
-    // 批次 A: 外部数据库接入 (5) + 项目管理 (4)
+    // Batch A: external DB access (5) + project management (4)
     createDbConnectionListTool,
     createDbConnectionCreateTool,
     createDbConnectionTestTool,
@@ -5180,7 +5181,7 @@ export function createAllBackendTools(services: BackendToolServices): BackendToo
     createProjectInfoTool,
     createProjectExportTool,
     createProjectImportTool,
-    // 批次 B: 趋势数据 (4) + 项目诊断 (4)
+    // Batch B: trend data (4) + project diagnosis (4)
     createTagListTool,
     createTrendQueryTool,
     createTrendAggregateTool,
@@ -5189,7 +5190,7 @@ export function createAllBackendTools(services: BackendToolServices): BackendToo
     createProjectDiagnoseTool,
     createProjectInitResourcesTool,
     createSystemHealthDetailedTool,
-    // 批次 C: 报表 (4) + 报警 (3) + 标签 (2)
+    // Batch C: reports (4) + alarms (3) + tags (2)
     createReportTemplateListTool,
     createReportTemplateCreateTool,
     createReportScheduleCreateTool,
@@ -5199,13 +5200,13 @@ export function createAllBackendTools(services: BackendToolServices): BackendToo
     createAlarmSuppressionAddTool,
     createDatatagConfigureTool,
     createDatatagBatchConfigureTool,
-    // 批次 D: 脚本 (5)
+    // Batch D: scripts (5)
     createScriptApiListTool,
     createScriptValidateTool,
     createScriptDryRunTool,
     createScriptCreateTool,
     createScriptExecuteTool,
-    // 批次 E: 报警处理与运维 (7)
+    // Batch E: alarm handling & ops (7)
     createAlarmAcknowledgeTool,
     createAlarmClearTool,
     createAlarmShelveTool,
@@ -5213,20 +5214,20 @@ export function createAllBackendTools(services: BackendToolServices): BackendToo
     createAlarmEscalationListTool,
     createAlarmSuppressionListTool,
     createAlarmRuleToggleTool,
-    // 批次 F: 设备运维管理 (6)
+    // Batch F: device ops management (6)
     createDeviceListTool,
     createDeviceUpdateTool,
     createDeviceDeleteTool,
     createDeviceGroupManageTool,
     createDeviceDiagnosticTool,
     createDeviceWriteTagTool,
-    // 批次 G: 用户权限管理 (5)
+    // Batch G: user & permission management (5)
     createUserManageTool,
     createRoleManageTool,
     createMenuManageTool,
     createSessionManageTool,
     createAuditLogQueryTool,
-    // 批次 H: 采集器与服务运维 (7)
+    // Batch H: collector & service ops (7)
     createPluginManageTool,
     createPipelineDiagnoseTool,
     createOfflineCacheManageTool,
@@ -5234,7 +5235,7 @@ export function createAllBackendTools(services: BackendToolServices): BackendToo
     createBaseServiceManageTool,
     createInfluxdbAdminTool,
     createSystemConfigManageTool,
-    // 批次 I: 数据治理与备份 (5)
+    // Batch I: data governance & backup (5)
     createDataExportTool,
     createDatabaseStatusTool,
     createDatabaseMaintainTool,

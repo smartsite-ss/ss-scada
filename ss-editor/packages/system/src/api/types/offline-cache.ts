@@ -3,28 +3,28 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 离线缓存相关类型定义
- * 与后端 ss-core OfflineCacheService 对齐
+ * Offline cache type definitions
+ * Aligned with the backend ss-core OfflineCacheService
  */
 
-/** 离线缓存统计 */
+/** Offline cache statistics */
 export interface OfflineCacheStats {
-  /** 当前缓冲的消息数 */
+  /** Currently buffered message count */
   totalBuffered: number;
-  /** 最大容量 */
+  /** Maximum capacity */
   maxCapacity: number;
-  /** 最早缓冲时间戳 */
+  /** Earliest buffered timestamp */
   oldestTimestamp: number | null;
-  /** 最新缓冲时间戳 */
+  /** Latest buffered timestamp */
   newestTimestamp: number | null;
-  /** dump 文件完整路径 */
+  /** Full path of the dump file */
   dumpDir: string;
-  /** dump 文件大小（字节），文件不存在时为 null */
+  /** Dump file size (bytes); null when the file does not exist */
   dumpFileSize: number | null;
 }
 
-/** 刷新结果 */
+/** Flush result */
 export interface OfflineCacheFlushResult {
-  /** 已刷新的消息数 */
+  /** Number of flushed messages */
   flushed: number;
 }

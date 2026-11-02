@@ -2,14 +2,14 @@
 // https://smartsite.top/
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
-// ==================== 基础类型导出 (避免重复定义) ====================
+// ==================== Base type exports (avoid duplicate definitions) ====================
 
-// 重新导出基础接口，确保类型一致性
+// Re-export base interfaces to ensure type consistency
 export type { IGraphic } from '@scada-editor/plugin-sdk';
 export type { IPage } from '../graphic-editing/graphic/base/IPage';
 export type { ILayout } from '../canvas-page/layouts/base/ILayout';
 
-// 重新导出图形属性接口
+// Re-export graphic property interfaces
 export type {
   IPosition, ISize, IGeometry,
   IGraphicStyle, IGraphicConfig, IGraphicProps,
@@ -17,9 +17,9 @@ export type {
   IDataValidation, IDataSource, IAnimation
 } from '../graphic-editing/graphic/base/IProperty';
 
-// ==================== 新增类型 (从 UI 迁移) ====================
+// ==================== New types (migrated from UI) ====================
 
-// 局部渲染选项
+// Partial render options
 export interface PartialRenderOptions {
   partial: boolean;
   dirtyRect: {
@@ -30,10 +30,10 @@ export interface PartialRenderOptions {
   };
 }
 
-// 绘制回调类型
+// Draw callback type
 export type DrawCanvasCallback = (options?: PartialRenderOptions) => void;
 
-// 画布状态
+// Canvas state
 export interface CanvasState {
   width: number;
   height: number;
@@ -49,7 +49,7 @@ export interface CanvasState {
   cursorStyle: string;
 }
 
-// 页面相关类型
+// Page-related types
 export interface IThemeColors {
   primary: string;
   secondary: string;
@@ -63,23 +63,23 @@ export interface ISelectionHistoryItem {
   selectedGraphicIds: string[];
 }
 
-// 控制点相关类型
+// Control-point related types
 export enum ControlPointType {
   RESIZE = 'resize',
   ROTATE = 'rotate',
 }
 
-// 选择模式枚举
+// Selection mode enum
 export enum SelectionMode {
-  SINGLE = 'single',           // 单选模式：点击即选中，取消之前选择
-  ADDITIVE = 'additive',       // 累加模式：
-                               //   - 单个选择：Shift/Ctrl 点击切换选中状态（添加/移除）
-                               //   - 框选：Shift/Ctrl 框选切换选中状态（添加未选中的，移除已选中的）
-  SUBTRACTIVE = 'subtractive', // 减选模式：Ctrl+Shift 点击或框选从选择中移除
-  BOX = 'box',                 // 框选模式：拖动框选替换选择
+  SINGLE = 'single',           // Single mode: click selects, deselecting previous
+  ADDITIVE = 'additive',       // Additive mode:
+                               //   - Single selection: Shift/Ctrl click toggles selection (add/remove)
+                               //   - Box selection: Shift/Ctrl drag toggles selection (adds unselected, removes selected)
+  SUBTRACTIVE = 'subtractive', // Subtractive mode: Ctrl+Shift click or drag removes from selection
+  BOX = 'box',                 // Box mode: drag to replace selection
 }
 
-// 选择框渲染数据接口
+// Selection box render data interface
 export interface SelectionRenderData {
   isSelecting: boolean;
   selectionRect: { left: number; top: number; width: number; height: number };
@@ -87,7 +87,7 @@ export interface SelectionRenderData {
   selectedGraphics: any[];
 }
 
-// 选择状态接口
+// Selection state interface
 export interface ISelectionState {
   selectedGraphicId: string | null;
   selectedGraphicIds: string[];
@@ -109,18 +109,18 @@ export enum ResizeHandleType {
 
 
 
-// 项目相关类型 - 已迁移到 project/Project.ts
+// Project-related types - migrated to project/Project.ts
 export type { IProject } from '../project/Project';
 
-// 模板相关类型
+// Template related types
 export interface GraphicTemplate {
   name: string;
   graphics: any[];
   createdAt: string;
 }
 
-// 定时器相关类型
+// Timer-related types
 export * from './timer';
 
-// 数据源相关类型
+// Data source related types
 export * from './data-source.types';

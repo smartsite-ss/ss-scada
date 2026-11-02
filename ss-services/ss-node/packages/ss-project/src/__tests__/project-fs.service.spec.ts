@@ -10,8 +10,8 @@ import AdmZip from 'adm-zip';
 import { ProjectFsService } from '../services/project-fs.service';
 
 /**
- * ProjectFsService 单元测试（P0-1 原子写 / P0-2 路径安全）
- * 使用真实文件系统 + 真实 adm-zip，重点验证安全边界与原子语义。
+ * ProjectFsService unit tests (P0-1 atomic write / P0-2 path safety)
+ * Uses the real file system + real adm-zip, focusing on security boundaries and atomic semantics.
  */
 describe('ProjectFsService', () => {
   let service: ProjectFsService;
@@ -145,8 +145,8 @@ describe('ProjectFsService', () => {
     });
 
     it('应拒绝 Zip Slip 条目（../ 穿越）且不写出目标目录', () => {
-      // 说明：adm-zip 的 addFile 会消毒条目名（../、前导 / 被清洗），
-      // 无法通过它构造真实恶意 ZIP，因此用鸭子类型 mock 提供原始危险条目名。
+      // Note: adm-zip's addFile sanitizes entry names (../ and leading / are cleaned),
+      // so it cannot build a genuinely malicious ZIP; a duck-typed mock provides the raw dangerous entry names instead.
       const maliciousZip = {
         getEntries: () => [
           {
@@ -167,7 +167,7 @@ describe('ProjectFsService', () => {
         BadRequestException,
       );
 
-      // 越界文件绝不能被写出（无论在目标目录内还是其父目录）
+      // Out-of-bounds files must never be written out (whether inside the target directory or its parent)
       expect(fs.existsSync(path.join(targetDir, 'evil.txt'))).toBe(false);
       expect(fs.existsSync(path.join(tempDir, 'evil.txt'))).toBe(false);
     });

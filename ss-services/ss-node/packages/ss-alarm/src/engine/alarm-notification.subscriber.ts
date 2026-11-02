@@ -8,27 +8,28 @@ import { AlarmNotificationService, NotificationPayload } from '../alarm-notifica
 import type { AlarmRuleResolvedEvent } from '@ss-node/ss-core';
 
 /**
- * AlarmNotificationSubscriber — 告警通知自动触发订阅器（Phase 6 通知接线）
+ * AlarmNotificationSubscriber - auto-triggers alarm notifications (Phase 6 notification wiring)
  *
- * 监听 `alarm.rule_resolved`（P1-4 优化后）和 `alarm.escalated` 事件，自动调用
- * `AlarmNotificationService.sendNotification` 完成 6 通道通知（email/sound/popup/sms/tts/webhook）
- * 的自动触发。
+ * Listens for `alarm.rule_resolved` (after the P1-4 optimization) and `alarm.escalated` events and
+ * automatically calls `AlarmNotificationService.sendNotification` to fire the 6-channel notifications
+ * (email/sound/popup/sms/tts/webhook).
  *
- * P1-4 优化：不再独立查询规则表，直接使用 AlarmEventSubscriber 通过 alarm.rule_resolved
- * 事件预解析的规则数据（含 notifyChannels），消除重复 DB 查询。
+ * P1-4 optimization: no longer queries the rule table independently; instead uses the pre-parsed
+ * rule data (including notifyChannels) carried by the alarm.rule_resolved event from AlarmEventSubscriber,
+ * eliminating duplicate DB queries.
  *
- * 通知渠道决策（规则级配置 ∩ 全局启用渠道）：
- * 1. 使用事件中预解析的 rule.notifyChannels
- * 2. 规则 notifyChannels ∩ AlarmNotificationService 启用渠道 = 实际通知渠道
- * 3. 规则未找到或 notifyChannels 为空时，回退到全局启用渠道
- * 4. 无启用渠道则跳过通知
+ * Notification-channel decision (rule-level config AND globally-enabled channels):
+ * 1. Use the pre-parsed rule.notifyChannels from the event
+ * 2. rule.notifyChannels AND AlarmNotificationService enabled channels = actual notification channels
+ * 3. When the rule is not found or notifyChannels is empty, fall back to globally-enabled channels
+ * 4. Skip notification if no channel is enabled
  */
 @Injectable()
 export class AlarmNotificationSubscriber implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(AlarmNotificationSubscriber.name);
   private readonly triggeredHandler: (event: any) => void;
   private readonly escalatedHandler: (event: any) => void;
-  /** wrapSubscriber 包装后的 handler（off 时需用此引用） */
+  /** The handler wrapped by wrapSubscriber (use this reference when calling off) */
   private wrappedTriggeredHandler?: (event: any) => Promise<void>;
 
   constructor(
@@ -42,7 +43,7 @@ export class AlarmNotificationSubscriber implements OnModuleInit, OnModuleDestro
 
   onModuleInit(): void {
     if (this.eventBus && this.notificationService) {
-      // wrap helper：alarm.rule_resolved 在事件日志白名单中，用 wrapSubscriber 追踪处理结果
+      // wrap helper: alarm.rule_resolved is in the event-log whitelist, so wrapSubscriber tracks the processing result
       const wrap = <T extends any[]>(
         eventType: string,
         handler: (...args: T) => Promise<Record<string, any> | void>,
@@ -61,7 +62,7 @@ export class AlarmNotificationSubscriber implements OnModuleInit, OnModuleDestro
         return { notificationDispatched: true };
       });
       this.eventBus.on('alarm.rule_resolved', this.wrappedTriggeredHandler);
-      // alarm.escalated 不在事件日志白名单中，无需 wrapSubscriber
+      // alarm.escalated is not in the event-log whitelist, so wrapSubscriber is unnecessary
       this.eventBus.on('alarm.escalated', this.escalatedHandler);
       this.logger.log(
         'Subscribed to alarm.rule_resolved + alarm.escalated for notification dispatch',
@@ -79,9 +80,9 @@ export class AlarmNotificationSubscriber implements OnModuleInit, OnModuleDestro
   }
 
   /**
-   * 计算实际通知渠道：规则渠道 ∩ service 启用渠道。规则渠道为空时回退到全局启用渠道。
-   * 微信订阅消息为订阅制通道（接收人由用户授权决定，不参与规则级渠道配置），
-   * 全局启用时始终并入，避免被规则 notifyChannels 交集过滤。
+   * Compute the actual notification channels: rule channels AND service-enabled channels. Falls back to globally-enabled channels when rule channels are empty.
+   * WeChat subscription messages are opt-in channels (recipients are decided by user authorization and not part of rule-level channel config),
+   * so they are always merged in when globally enabled, avoiding being filtered out by the rule notifyChannels intersection.
    */
   private resolveChannels(ruleChannels?: string[]): string[] {
     const enabled = this.notificationService!.getEnabledChannels();
@@ -94,7 +95,7 @@ export class AlarmNotificationSubscriber implements OnModuleInit, OnModuleDestro
     return resolved;
   }
 
-  /** 处理 alarm.rule_resolved 事件 → 派发通知（P1-4 优化：直接使用预解析规则数据） */
+  /** Handle the alarm.rule_resolved event -> dispatch notification (P1-4 optimization: uses pre-parsed rule data directly) */
   private async handleAlarmRuleResolved(event: AlarmRuleResolvedEvent): Promise<void> {
     if (!this.notificationService) return;
 
@@ -130,7 +131,7 @@ export class AlarmNotificationSubscriber implements OnModuleInit, OnModuleDestro
     }
   }
 
-  /** 处理告警升级事件 → 派发升级通知（升级事件无预解析规则，回退到全局启用渠道） */
+  /** Handle the alarm-escalation event -> dispatch escalation notification (escalation events have no pre-parsed rule, falls back to globally-enabled channels) */
   private async handleAlarmEscalated(event: any): Promise<void> {
     if (!this.notificationService) return;
 
@@ -146,7 +147,7 @@ export class AlarmNotificationSubscriber implements OnModuleInit, OnModuleDestro
     );
 
     try {
-      // 升级事件无预解析规则，回退到全局启用渠道
+      // Escalation events have no pre-parsed rule, so fall back to globally-enabled channels
       const channels = this.resolveChannels();
 
       if (channels.length === 0) {

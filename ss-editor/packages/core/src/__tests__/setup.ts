@@ -12,7 +12,7 @@ if (typeof globalThis.crypto === 'undefined' || !globalThis.crypto.getRandomValu
   };
 }
 
-// 模拟 vue，避免 @vite/env 虚拟模块加载失败
+// Mock vue to avoid @vite/env virtual module loading failures
 vi.mock('vue', () => ({
   default: {},
   markRaw: (v: any) => v,
@@ -40,7 +40,7 @@ vi.mock('vue', () => ({
   isReactive: () => false,
 }));
 
-// 模拟 vue-i18n，避免模块加载时初始化失败
+// Mock vue-i18n to avoid initialization failures during module loading
 vi.mock('vue-i18n', () => ({
   createI18n: () => ({
     global: {

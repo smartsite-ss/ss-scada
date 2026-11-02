@@ -3,30 +3,30 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 多标签联动脚本示例
+ * Multi-tag linking script examples
  *
- * === 场景说明 ===
- * 多标签联动场景涉及多个标签之间的关联操作。
- * 当一个标签值变化时，联动更新多个相关图元和其他标签。
- * 适用于泵-管道联动、多设备协同控制等场景。
+ * === Scenario ===
+ * Multi-tag linking scenarios involve associated operations among multiple tags.
+ * When one tag value changes, multiple related graphics and other tags are updated in linkage.
+ * Suitable for pump-pipe linkage, multi-device coordinated control, etc.
  *
- * === 触发方式 ===
- * - dataChange: 绑定到主控标签
- * - expression: 复杂条件组合触发
+ * === Trigger modes ===
+ * - dataChange: bound to the master tag
+ * - expression: triggered by combined complex conditions
  *
- * === 常用 API 组合 ===
- * readTag / writeTag              → 多标签读写
- * setGraphicProps / showGraphic / hideGraphic → 多图元联动
- * moveGraphic / rotateGraphic     → 图元动画
- * mapRange / clamp / round        → 值映射计算
- * triggerAlarm / notify / log     → 结果通知
+ * === Common API combinations ===
+ * readTag / writeTag              → multi-tag read/write
+ * setGraphicProps / showGraphic / hideGraphic → multi-graphic linkage
+ * moveGraphic / rotateGraphic     → graphic animation
+ * mapRange / clamp / round        → value mapping calculation
+ * triggerAlarm / notify / log     → result notification
  */
 
 import type { ScriptExample } from '../types';
 
 export const multiTagLinkingExamples: ScriptExample[] = [
   // ═══════════════════════════════════════════════════════════
-  // 示例 1：泵状态联动管道
+  // Example 1: pump status linked with pipe
   // ═══════════════════════════════════════════════════════════
   {
     id: 'linking-pump-pipe',
@@ -83,7 +83,7 @@ log('info', \`泵状态: \${pumpStatus}, 管道联动完成\`);
   },
 
   // ═══════════════════════════════════════════════════════════
-  // 示例 2：多设备协同控制
+  // Example 2: multi-device coordinated control
   // ═══════════════════════════════════════════════════════════
   {
     id: 'linking-multi-device',
@@ -183,7 +183,7 @@ if (mainSwitch === 'on') {
   },
 
   // ═══════════════════════════════════════════════════════════
-  // 示例 3：液位-阀门-泵 PID 联动
+  // Example 3: level-valve-pump PID linkage
   // ═══════════════════════════════════════════════════════════
   {
     id: 'linking-level-control',

@@ -2,21 +2,21 @@
 // https://smartsite.top/
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
-// 排版设计令牌
+// Typography design tokens
 
-// 字体家族
+// Font families
 export const fonts = {
-  // 主要字体
+  // Primary font
   primary: 'Arial, sans-serif',
-  // 等宽字体
+  // Monospace font
   mono: 'Consolas, Monaco, monospace',
-  // 标题字体
+  // Heading font
   heading: 'Arial, sans-serif',
 };
 
-// 字体大小
+// Font sizes
 export const fontSizes = {
-  // 小字体
+  // Small font
   xs: '10px',
   sm: '12px',
   md: '14px',
@@ -24,8 +24,8 @@ export const fontSizes = {
   xl: '18px',
   xxl: '24px',
   xxxl: '32px',
-  
-  // 标题字体大小
+
+  // Heading font sizes
   heading: {
     h1: '28px',
     h2: '24px',
@@ -36,7 +36,7 @@ export const fontSizes = {
   },
 };
 
-// 字重
+// Font weights
 export const fontWeights = {
   light: 300,
   regular: 400,
@@ -45,19 +45,19 @@ export const fontWeights = {
   bold: 700,
 };
 
-// 行高
+// Line heights
 export const lineHeights = {
   tight: 1.2,
   normal: 1.5,
   relaxed: 1.8,
-  
-  // 标题行高
+
+  // Heading line height
   heading: 1.3,
-  // 正文行高
+  // Body line height
   body: 1.6,
 };
 
-// 字间距
+// Letter spacings
 export const letterSpacings = {
   tight: '-0.025em',
   normal: '0em',
@@ -66,9 +66,9 @@ export const letterSpacings = {
   widest: '0.1em',
 };
 
-// 排版工具函数
+// Typography utility functions
 export const typographyUtils = {
-  // 获取字体样式
+  // Get font style
   getFontStyle: (variant: 'body' | 'heading' | 'caption' | 'button') => {
     switch (variant) {
       case 'body':
@@ -113,8 +113,8 @@ export const typographyUtils = {
         };
     }
   },
-  
-  // 获取标题样式
+
+  // Get heading style
   getHeadingStyle: (level: 1 | 2 | 3 | 4 | 5 | 6) => {
     return {
       fontFamily: fonts.heading,

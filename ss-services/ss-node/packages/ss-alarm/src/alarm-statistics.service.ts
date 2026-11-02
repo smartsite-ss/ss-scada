@@ -70,8 +70,8 @@ export class AlarmStatisticsService {
   async getStatistics(projectId: string): Promise<AlarmStatistics> {
     const repo = await this.getRepo(projectId);
 
-    // 单条聚合查询替代全表加载：用条件 SUM 在数据库侧完成所有 COUNT，
-    // 避免将数万条报警记录拉入内存 → 内存 GC 暂停阻塞事件循环
+    // Single aggregate query instead of loading the whole table: use conditional SUM to do all COUNTs on the database side,
+    // avoiding pulling tens of thousands of alarm records into memory -> memory GC pauses blocking the event loop
     const raw = await repo
       .createQueryBuilder('r')
       .select('COUNT(*)', 'total')
@@ -119,7 +119,7 @@ export class AlarmStatisticsService {
     };
   }
 
-  /** SQL 聚合替代全表加载：strftime 日期分组 + COUNT */
+  /** SQL aggregation instead of full-table load: strftime date grouping + COUNT */
   async getTrends(projectId: string, days: number = 7): Promise<AlarmTrend[]> {
     const repo = await this.getRepo(projectId);
     const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
@@ -144,7 +144,7 @@ export class AlarmStatisticsService {
     }));
   }
 
-  /** SQL 聚合替代全表加载 + JOIN：ruleId 分组 + COUNT + LIMIT + MAX(createdAt) */
+  /** SQL aggregation instead of full-table load + JOIN: ruleId grouping + COUNT + LIMIT + MAX(createdAt) */
   async getTopRules(projectId: string, limit: number = 10): Promise<AlarmTopRule[]> {
     const repo = await this.getRepo(projectId);
 
@@ -169,7 +169,7 @@ export class AlarmStatisticsService {
     }));
   }
 
-  /** SQL 聚合替代全表加载：deviceId 分组 + COUNT + LIMIT */
+  /** SQL aggregation instead of full-table load: deviceId grouping + COUNT + LIMIT */
   async getStatisticsByDevice(projectId: string, limit: number = 10): Promise<DeviceStats[]> {
     const repo = await this.getRepo(projectId);
 
@@ -192,7 +192,7 @@ export class AlarmStatisticsService {
     }));
   }
 
-  /** SQL 聚合替代全表加载：tagId 分组 + COUNT + LIMIT */
+  /** SQL aggregation instead of full-table load: tagId grouping + COUNT + LIMIT */
   async getStatisticsByTag(projectId: string, limit: number = 10): Promise<TagStats[]> {
     const repo = await this.getRepo(projectId);
 
@@ -221,7 +221,7 @@ export class AlarmStatisticsService {
     return recentCount;
   }
 
-  /** 导出报表：添加分页限制（take/skip），避免一次性加载全表 */
+  /** Export report: add pagination limits (take/skip) to avoid loading the whole table at once */
   async exportReport(
     projectId: string,
     format: 'csv' | 'json',

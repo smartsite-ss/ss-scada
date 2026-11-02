@@ -9,15 +9,15 @@ import { EventLogService } from './event-log.service';
 import { EventLogQueryDto } from './event-log-query.dto';
 
 /**
- * 事件日志 REST API Controller — 提供配置变更类事件日志的查询接口
+ * Event-log REST API Controller - query endpoints for config-change event logs
  *
- * 参考 OperationLogController 模式：
- * - 路由前缀：/system/event-logs
- * - 权限：所有登录用户可访问（事件日志用于运维诊断，不限于 ADMIN）
- * - 3 个端点：分页查询 / 失败列表 / 详情
+ * Follows the OperationLogController pattern:
+ * - Route prefix: /system/event-logs
+ * - Permissions: accessible to all logged-in users (event logs are for ops diagnostics, not ADMIN-only)
+ * - 3 endpoints: paginated query / failed list / detail
  *
- * 数据来源：全局 ss-node.db 的 evt_event_log 表
- * 由 EventLogService 在 EventBus emit 时自动写入。
+ * Data source: the evt_event_log table in the global ss-node.db,
+ * written automatically by EventLogService on EventBus emit.
  */
 @ApiTags('事件日志')
 @Controller('system/event-logs')
@@ -27,8 +27,8 @@ export class EventLogController {
   constructor(private readonly eventLogService: EventLogService) {}
 
   /**
-   * 分页查询事件日志
-   * 支持 projectId / eventType / status / emittedBy / 时间范围筛选
+   * Query event logs with pagination
+   * Supports projectId / eventType / status / emittedBy / time-range filters
    */
   @Get()
   @ApiOperation({ summary: '查询事件日志（分页，支持多维筛选）' })
@@ -52,7 +52,7 @@ export class EventLogController {
       hasSubscribers: query.hasSubscribers,
     };
 
-    // ISO 日期字符串 → Date 对象
+    // ISO date string -> Date object
     if (query.startTime) {
       filter.startTime = new Date(query.startTime);
     }
@@ -64,8 +64,8 @@ export class EventLogController {
   }
 
   /**
-   * 查询失败/部分失败的事件（运维快速定位）
-   * 不分页，返回全部失败事件（按时间倒序）
+   * Query failed/partially failed events (fast ops triage)
+   * No pagination; returns all failed events (newest first)
    */
   @Get('failed')
   @ApiOperation({ summary: '查询失败/部分失败的事件（运维诊断）' })
@@ -86,7 +86,7 @@ export class EventLogController {
   }
 
   /**
-   * 查询单个事件日志详情（含 subscribers 完整记录）
+   * Query a single event-log detail (with full subscribers records)
    */
   @Get(':id')
   @ApiOperation({ summary: '事件日志详情（含订阅者追踪记录和业务效果）' })
@@ -95,7 +95,7 @@ export class EventLogController {
   }
 
   /**
-   * 清空所有事件日志（运维操作，谨慎使用）
+   * Clear all event logs (ops operation, use with caution)
    */
   @Delete()
   @ApiOperation({ summary: '清空所有事件日志（运维操作，不可恢复）' })

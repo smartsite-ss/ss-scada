@@ -18,12 +18,12 @@ export interface ItemStyle {
 }
 
 /**
- * useContainerPosition 配置项（优化方案 P0-2）
+ * useContainerPosition options (optimization plan P0-2)
  */
 export interface ContainerPositionOptions {
   /**
-   * canvas 元素引用：提供时直接用该元素计算偏移，替代全局 querySelector。
-   * 修复预览态（canvas class=preview-canvas）查不到 canvas 或错误取到编辑态 canvas 偏移的问题。
+   * canvas element reference: when provided, use it directly to compute the offset instead of a global querySelector.
+   * Fixes the issue where preview mode (canvas class=preview-canvas) could not find the canvas or wrongly used the edit-mode canvas offset.
    */
   canvasEl?: Ref<HTMLCanvasElement | null>;
 }
@@ -33,7 +33,7 @@ export function useContainerPosition(positionOptions?: ContainerPositionOptions)
   const canvasOffset = ref({ left: 0, top: 0 });
 
   const updateCanvasOffset = () => {
-    // 优先使用显式注入的 canvas 引用；未注入时兼容编辑态旧路径（querySelector 兜底）
+    // Prefer the explicitly injected canvas reference; fall back to the edit-mode legacy path (querySelector) when not injected
     const canvas = positionOptions?.canvasEl?.value
       ?? document.querySelector('canvas.design-canvas');
     const container = containerRef.value;
@@ -57,9 +57,9 @@ export function useContainerPosition(positionOptions?: ContainerPositionOptions)
   });
 
   /**
-   * 统一计算容器内图元的位置样式（优化方案 P0-1 非均匀缩放）
-   * 公式: position = geometry × zoomX/zoomY + pan + canvasOffset
-   * zoomY 缺省时退化为均匀缩放（编辑态行为不变）；stretch 模式下 zoomX/zoomY 分别应用
+   * Uniformly compute the position style of graphics within the container (optimization plan P0-1 non-uniform scaling)
+   * Formula: position = geometry x zoomX/zoomY + pan + canvasOffset
+   * When zoomY is absent it degrades to uniform scaling (edit-mode behavior unchanged); in stretch mode zoomX/zoomY are applied separately
    */
   function calcItemStyle(
     graphic: IGraphic,

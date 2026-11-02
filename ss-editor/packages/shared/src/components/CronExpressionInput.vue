@@ -1,6 +1,6 @@
 <template>
   <div class="cron-input-wrap">
-    <!-- 预设选择 -->
+    <!-- Presets -->
     <div class="cron-presets">
       <button
         v-for="preset in presets"
@@ -14,7 +14,7 @@
       </button>
     </div>
 
-    <!-- 手动输入 -->
+    <!-- Manual input -->
     <div class="cron-input-row">
       <input
         type="text"
@@ -31,7 +31,7 @@
       >{{ validityText }}</span>
     </div>
 
-    <!-- 字段说明 -->
+    <!-- Field descriptions -->
     <div class="cron-fields">
       <div
         v-for="(f, i) in fieldLabels"
@@ -43,7 +43,7 @@
       </div>
     </div>
 
-    <!-- 人类可读描述 -->
+    <!-- Human-readable description -->
     <div
       v-if="humanDescription"
       class="cron-desc"
@@ -64,9 +64,9 @@ import { computed } from 'vue';
 
 const props = withDefaults(
   defineProps<{
-    /** Cron 表达式（5 段式：分 时 日 月 周） */
+    /** Cron expression (5-field: minute hour day month weekday) */
     modelValue: string;
-    /** 是否显示预设按钮 */
+    /** Whether to show preset buttons */
     showPresets?: boolean;
   }>(),
   {
@@ -138,7 +138,7 @@ function onBlur(): void {
   emit('change', props.modelValue);
 }
 
-// ==================== Cron 表达式验证 ====================
+// ==================== Cron expression validation ====================
 
 interface ValidationResult {
   valid: boolean;
@@ -178,7 +178,7 @@ function validateField(field: string, range: { min: number; max: number }): Vali
     return { valid: false, reason: '为空' };
   }
 
-  // 支持 * 、 */N 、 N-M 、 N,M 、 N
+  // Supports * , */N , N-M , N,M , N
   const segments = field.split(',');
   for (const seg of segments) {
     if (seg === '*') continue;
@@ -193,7 +193,7 @@ function validateField(field: string, range: { min: number; max: number }): Vali
       continue;
     }
 
-    // N-M/S
+    // N-M
     const rangeMatch = seg.match(/^(\d+)-(\d+)(?:\/(\d+))?$/);
     if (rangeMatch) {
       const start = parseInt(rangeMatch[1], 10);
@@ -226,7 +226,7 @@ function validateField(field: string, range: { min: number; max: number }): Vali
   return { valid: true, reason: '' };
 }
 
-// ==================== Cron 人类可读描述 ====================
+// ==================== Cron human-readable description ====================
 
 function describeCron(expr: string): string {
   const parts = expr.trim().split(/\s+/);
@@ -234,45 +234,45 @@ function describeCron(expr: string): string {
 
   const [min, hour, day, month, week] = parts;
 
-  // 每分钟
+  // Every minute
   if (min === '*' && hour === '*' && day === '*' && month === '*' && week === '*') {
     return '每分钟执行';
   }
 
-  // 每 N 分钟
+  // Every N minutes
   const minStep = min.match(/^\*\/(\d+)$/);
   if (minStep && hour === '*' && day === '*' && month === '*' && week === '*') {
     return `每 ${minStep[1]} 分钟执行`;
   }
 
-  // 每 N 小时
+  // Every N hours
   if (min === '0' && hour && hour.match(/^\*\/(\d+)$/) && day === '*' && month === '*' && week === '*') {
     const h = hour.match(/^\*\/(\d+)$/);
     return `每 ${h?.[1]} 小时执行`;
   }
 
-  // 每天 N 点
+  // Daily at hour N
   if (min === '0' && hour && hour.match(/^\d+$/) && day === '*' && month === '*' && week === '*') {
     return `每天 ${parseInt(hour, 10)} 点执行`;
   }
 
-  // 每天 N:M
+  // Daily at H:M
   if (min && min.match(/^\d+$/) && hour && hour.match(/^\d+$/) && day === '*' && month === '*' && week === '*') {
     return `每天 ${parseInt(hour, 10)}:${min.padStart(2, '0')} 执行`;
   }
 
-  // 每周 X
+  // Weekly on day X
   if (week && week.match(/^\d$/) && min === '0' && hour === '0' && day === '*' && month === '*') {
     const weekNames = ['日', '一', '二', '三', '四', '五', '六'];
     return `每周${weekNames[parseInt(week, 10)]} 0点执行`;
   }
 
-  // 每月 N 日
+  // Monthly on day N
   if (day && day.match(/^\d+$/) && min === '0' && hour === '0' && month === '*' && week === '*') {
     return `每月 ${parseInt(day, 10)} 日 0点执行`;
   }
 
-  // 通用描述
+  // Generic description
   const parts2: string[] = [];
   if (min !== '*') parts2.push(`分=${min}`);
   if (hour !== '*') parts2.push(`时=${hour}`);

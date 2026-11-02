@@ -9,21 +9,21 @@ import type { TagValueEntry } from './ws.store';
 export type DataSourceStatus = 'disconnected' | 'connecting' | 'connected' | 'error';
 
 /**
- * WebSocketDriver — 基于 wsStore 的数据源驱动
+ * WebSocketDriver — data source driver based on wsStore
  *
- * 已从 ws.store.ts 拆分到独立文件，职责：
- * 1. 通过 wsStore.onFlushed 注册增量数据回调，避免 $subscribe 全量触发
- * 2. 仅回调与当前 _tags 匹配的条目，输出符合 IDataSourceDriver.onData 的 TagValue[]
- * 3. 支持 write 操作（通过 wsStore.safeEmit 发送 write:tag 事件）
+ * Split from ws.store.ts into a standalone file. Responsibilities:
+ * 1. Register incremental data callbacks via wsStore.onFlushed, avoiding full $subscribe triggers
+ * 2. Only callbacks entries matching the current _tags, emitting TagValue[] conforming to IDataSourceDriver.onData
+ * 3. Supports write operations (sends the write:tag event via wsStore.safeEmit)
  *
- * 注意：本类不持有 WebSocket 连接，连接由 wsStore 管理；
- * 本类仅作为 DataSourceManager 的 driver 适配器，将 wsStore 的数据流转换为 driver 协议。
+ * Note: this class holds no WebSocket connection; connections are managed by wsStore.
+ * It serves only as the driver adapter of DataSourceManager, converting the wsStore data stream into the driver protocol.
  */
 export class WebSocketDriver {
   private _status: DataSourceStatus = 'disconnected';
   private _callbacks: Array<(values: TagValue[]) => void> = [];
   private _tags: string[] = [];
-  /** 注册到 wsStore 的 onFlushed 回调注销句柄 */
+  /** Unsubscribe handle for the onFlushed callback registered to wsStore */
   private _unregisterFlushed: (() => void) | null = null;
 
   getStatus(): DataSourceStatus {
@@ -44,7 +44,7 @@ export class WebSocketDriver {
       throw new Error('WebSocketDriver: projectId is required');
     }
 
-    // 通过 onFlushed 注册增量回调，避免 $subscribe 全量触发
+    // Register the incremental callback via onFlushed, avoiding full $subscribe triggers
     if (this._unregisterFlushed) {
       this._unregisterFlushed();
       this._unregisterFlushed = null;
@@ -55,11 +55,11 @@ export class WebSocketDriver {
 
     await wsStore.connect(projectId);
 
-    // wsStore.connect 在无 token 时直接 resolve 且未实际连接，必须校验收敛状态
+    // wsStore.connect resolves directly without actually connecting when there is no token; the connection state must be verified
     if (!wsStore.isConnected) {
-      // 无 token（未登录）是预期状态，不是错误 —— 设为 disconnected，不抛异常
-      // wsStore.error 此时已包含用户友好消息（如 "未登录，无法连接 WebSocket"）
-      // DataSourceManager 将通过 getStatus() 读取此状态，在面板中显示"已断开"而非"错误"
+      // No token (not logged in) is an expected state, not an error — set disconnected without throwing
+      // wsStore.error already contains a user-friendly message (e.g. "Not logged in; cannot connect WebSocket")
+      // DataSourceManager will read this status via getStatus() and show "Disconnected" instead of "Error" in the panel
       this._status = 'disconnected';
       return Promise.resolve();
     }
@@ -119,12 +119,12 @@ export class WebSocketDriver {
   }
 
   /**
-   * 处理 wsStore 推送的增量数据（仅本次 flush 的变更条目）。
-   * 仅回调与当前 _tags 匹配的条目，避免重复推送未变化的值。
-   * 输出符合 IDataSourceDriver.onData 的 TagValue[] 类型，sourceId 占位由 DataSourceManager 覆盖。
+   * Handle incremental data pushed by wsStore (only entries changed in this flush).
+   * Only callbacks entries matching the current _tags, avoiding repeated pushes of unchanged values.
+   * Emits TagValue[] conforming to IDataSourceDriver.onData; the sourceId placeholder is overwritten by DataSourceManager.
    */
   private _onFlushed(flushedEntries: Map<string, TagValueEntry>): void {
-    // _tags 为空表示尚未订阅任何 tag，无需回调
+    // Empty _tags means no tag has been subscribed yet; no callback needed
     if (this._tags.length === 0 || flushedEntries.size === 0) return;
 
     const changed: TagValue[] = [];
@@ -136,7 +136,7 @@ export class WebSocketDriver {
           value: val.value,
           quality: val.quality,
           timestamp: val.timestamp,
-          // sourceId 由 DataSourceManager._onDataReceived 中的 TagCache.processReceivedData 覆盖
+          // sourceId is overwritten by TagCache.processReceivedData in DataSourceManager._onDataReceived
           sourceId: 'websocket',
         });
       }

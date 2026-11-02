@@ -24,7 +24,7 @@
         {{ opt.label }}
       </option>
     </select>
-    <!-- 带清除按钮的 select -->
+    <!-- Select with clear button -->
     <div
       v-else
       class="dict-select-clearable"
@@ -65,17 +65,17 @@ import { useDict, type DictOption } from '../composables/useDict';
 
 const props = withDefaults(
   defineProps<{
-    /** 字典标识，如 "priority" */
+    /** Dictionary identifier, e.g. "priority" */
     dictId: string;
-    /** v-model 绑定值 */
+    /** v-model bound value */
     modelValue?: string;
-    /** 占位提示 */
+    /** Placeholder hint */
     placeholder?: string;
-    /** 禁用状态 */
+    /** Disabled state */
     disabled?: boolean;
-    /** 是否显示清除按钮 */
+    /** Whether to show the clear button */
     clearable?: boolean;
-    /** 尺寸 */
+    /** Size */
     size?: 'small' | 'default' | 'large';
   }>(),
   {
@@ -109,7 +109,7 @@ onMounted(async () => {
   await refreshOptions();
 });
 
-// dictId 变化时重新加载
+// Reload when dictId changes
 watch(
   () => props.dictId,
   async () => {

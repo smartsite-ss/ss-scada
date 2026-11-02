@@ -9,15 +9,15 @@ import { AuditLoggerService } from './audit-logger.service';
 import { AuditLogQueryDto } from './audit-log-query.dto';
 
 /**
- * 安全审计日志 REST API Controller — 提供安全审计日志的查询与哈希链验证接口
+ * Security audit-log REST API Controller - query and hash-chain verification endpoints for security audit logs
  *
- * 参考 EventLogController 模式：
- * - 路由前缀：/system/audit-logs
- * - 权限：所有登录用户可访问（审计日志用于安全合规审查）
- * - 3 个端点：分页查询 / 哈希链验证 / 统计概览
+ * Follows the EventLogController pattern:
+ * - Route prefix: /system/audit-logs
+ * - Permissions: accessible to all logged-in users (audit logs serve security-compliance review)
+ * - 3 endpoints: paginated query / hash-chain verification / statistics overview
  *
- * 数据来源：{logDir}/audit/audit-%DATE%.log 文件
- * 由 AuditLoggerService 在安全事件发生时自动写入（哈希链防篡改）。
+ * Data source: the {logDir}/audit/audit-%DATE%.log file,
+ * written automatically by AuditLoggerService when security events occur (hash-chain tamper protection).
  */
 @ApiTags('安全审计日志')
 @Controller('system/audit-logs')
@@ -27,8 +27,8 @@ export class AuditLogController {
   constructor(private readonly auditLoggerService: AuditLoggerService) {}
 
   /**
-   * 分页查询安全审计日志
-   * 支持 date / type / severity / userId / username 筛选
+   * Query security audit logs with pagination
+   * Supports date / type / severity / userId / username filters
    */
   @Get()
   @ApiOperation({ summary: '查询安全审计日志（分页，支持多维筛选）' })
@@ -56,8 +56,8 @@ export class AuditLogController {
   }
 
   /**
-   * 验证指定日期审计日志的哈希链完整性
-   * 用于安全审查时检测日志是否被篡改
+   * Verify the hash-chain integrity of a given day's audit logs
+   * Used to detect tampering during security review
    */
   @Get('verify')
   @ApiOperation({ summary: '验证审计日志哈希链完整性（防篡改检测）' })
@@ -67,8 +67,8 @@ export class AuditLogController {
   }
 
   /**
-   * 获取审计日志统计概览
-   * 包含总数、按类型/严重级别分布、哈希链完整性状态
+   * Get the audit-log statistics overview
+   * Includes total count, distribution by type/severity, and hash-chain integrity status
    */
   @Get('stats')
   @ApiOperation({ summary: '审计日志统计概览（含哈希链完整性状态）' })

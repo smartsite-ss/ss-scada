@@ -7,36 +7,36 @@ import * as winston from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
 
 /**
- * 统一日志配置
+ * Unified logging config
  *
- * 由 LoggerFactory 集中管理所有 Winston transport / logger 的创建，
- * 确保应用日志、错误日志、插件日志使用一致的轮转与压缩策略。
+ * LoggerFactory centrally manages the creation of all Winston transports/loggers,
+ * ensuring app, error, and plugin logs share consistent rotation and compression policies.
  *
- * 目录结构：
- *   {logDir}/app/app-%DATE%.log                — 应用日志（全级别）
- *   {logDir}/error/error-%DATE%.log            — 错误日志（仅 error）
- *   {logDir}/plugins/{protocol}/{protocol}-%DATE%.log — 插件采集日志
+ * Directory structure:
+ *   {logDir}/app/app-%DATE%.log                - app log (all levels)
+ *   {logDir}/error/error-%DATE%.log            - error log (error only)
+ *   {logDir}/plugins/{protocol}/{protocol}-%DATE%.log - plugin collection logs
  *
- * 轮转策略：按天 + 按大小（LOG_MAX_SIZE），历史文件 gzip 压缩（zippedArchive），
- * 超过 LOG_MAX_FILES 自动删除最旧文件。
+ * Rotation policy: daily + by size (LOG_MAX_SIZE), historical files gzip-compressed (zippedArchive),
+ * files beyond LOG_MAX_FILES are auto-deleted oldest-first.
  */
 export interface LogConfig {
-  /** 日志根目录绝对路径 */
+  /** Absolute path of the log root directory */
   logDir: string;
-  /** 单文件最大大小，超过即轮转（如 '10m' / '100m'） */
+  /** Max size per file before rotation (e.g. '10m' / '100m') */
   maxSize: string;
-  /** 保留最近 N 个日志文件（含 .gz，如 '14' / '14d'） */
+  /** Keep the most recent N log files (including .gz, e.g. '14' / '14d') */
   maxFiles: string;
-  /** 日志级别（'debug' | 'info' | 'warn' | 'error'） */
+  /** Log level ('debug' | 'info' | 'warn' | 'error') */
   logLevel: string;
 }
 
 /**
- * 获取项目根目录绝对路径
+ * Get the project-root absolute path
  *
- * 与 PathResolverService 保持一致：
- * - 优先使用 SS_NODE_ROOT（由 main.ts / app.module.ts 在启动时设置）
- * - Fallback 到 process.cwd()
+ * Consistent with PathResolverService:
+ * - Prefers SS_NODE_ROOT (set by main.ts / app.module.ts at startup)
+ * - Falls back to process.cwd()
  */
 function getProjectRoot(): string {
   if (process.env.SS_NODE_ROOT) {
@@ -46,12 +46,12 @@ function getProjectRoot(): string {
 }
 
 /**
- * 将相对路径解析为绝对路径（相对于项目根）
- * - 绝对路径原样返回
- * - 相对路径相对于项目根解析
+ * Resolve a relative path to an absolute path (relative to the project root)
+ * - Absolute paths returned as-is
+ * - Relative paths resolved against the project root
  *
- * 与 PathResolverService.resolve() 逻辑一致，确保 LoggerFactory 在
- * 静态调用场景（非 DI 注入）下也能正确解析路径。
+ * Same logic as PathResolverService.resolve(), ensuring LoggerFactory can
+ * resolve paths correctly even in static-call scenarios (non-DI injection).
  */
 function resolvePath(relativePath: string): string {
   const projectRoot = getProjectRoot();
@@ -61,13 +61,13 @@ function resolvePath(relativePath: string): string {
 }
 
 /**
- * 从环境变量读取统一日志配置
+ * Read the unified logging config from environment variables
  *
- * 环境变量：
- * - LOG_DIR：日志根目录（相对路径基于项目根解析），默认 {projectRoot}/logs
- * - LOG_MAX_SIZE：单文件最大大小（默认 '10m'）
- * - LOG_MAX_FILES：保留文件数（默认 '14'）
- * - LOG_LEVEL：日志级别（默认 'info'）
+ * Env vars:
+ * - LOG_DIR: log root directory (relative paths resolved against the project root), default {projectRoot}/logs
+ * - LOG_MAX_SIZE: max size per file (default '10m')
+ * - LOG_MAX_FILES: number of files to keep (default '14')
+ * - LOG_LEVEL: log level (default 'info')
  */
 export function getLogConfig(): LogConfig {
   const logDir = process.env.LOG_DIR
@@ -83,15 +83,15 @@ export function getLogConfig(): LogConfig {
 }
 
 /**
- * 创建应用日志 transport（全级别 info+warn+error）
+ * Create the app-log transport (all levels: info+warn+error)
  *
- * 文件路径：{logDir}/app/app-%DATE%.log
- * 按天轮转 + 按大小轮转，历史文件 gzip 压缩。
+ * File path: {logDir}/app/app-%DATE%.log
+ * Daily rotation + size-based rotation, historical files gzip-compressed.
  */
 export function createAppFileTransport(config: LogConfig): DailyRotateFile {
   return new DailyRotateFile({
-    // 受 LOG_LEVEL 环境变量控制（默认 'info'）
-    // 与 Console transport 保持一致，避免文件日志仍写入 info 级别
+    // Controlled by the LOG_LEVEL env var (default 'info')
+    // Consistent with the Console transport, avoiding the file log still writing info level
     level: config.logLevel,
     filename: path.join(config.logDir, 'app', 'app-%DATE%.log'),
     datePattern: 'YYYY-MM-DD',
@@ -103,10 +103,10 @@ export function createAppFileTransport(config: LogConfig): DailyRotateFile {
 }
 
 /**
- * 创建错误日志 transport（仅 error 级别）
+ * Create the error-log transport (error level only)
  *
- * 文件路径：{logDir}/error/error-%DATE%.log
- * 按天轮转 + 按大小轮转，历史文件 gzip 压缩。
+ * File path: {logDir}/error/error-%DATE%.log
+ * Daily rotation + size-based rotation, historical files gzip-compressed.
  */
 export function createErrorFileTransport(config: LogConfig): DailyRotateFile {
   return new DailyRotateFile({
@@ -121,15 +121,15 @@ export function createErrorFileTransport(config: LogConfig): DailyRotateFile {
 }
 
 /**
- * 创建插件采集日志 logger（按协议分目录，懒创建）
+ * Create a plugin collection logger (per-protocol subdirectory, lazily created)
  *
- * 文件路径：{logDir}/plugins/{protocol}/{protocol}-%DATE%.log
- * 按天轮转 + 按大小轮转，历史文件 gzip 压缩。
+ * File path: {logDir}/plugins/{protocol}/{protocol}-%DATE%.log
+ * Daily rotation + size-based rotation, historical files gzip-compressed.
  *
- * 格式：[timestamp] [LEVEL] message（与原 PluginMonitorService 格式兼容）
+ * Format: [timestamp] [LEVEL] message (compatible with the original PluginMonitorService format)
  *
- * @param config 日志配置
- * @param protocol 协议名（如 'modbus_tcp' / 'virtual'）
+ * @param config log config
+ * @param protocol protocol name (e.g. 'modbus_tcp' / 'virtual')
  */
 export function createPluginLogger(config: LogConfig, protocol: string): winston.Logger {
   return winston.createLogger({

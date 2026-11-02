@@ -222,7 +222,7 @@ describe('PermissionAuditService', () => {
       expect(auditRepo.findAndCount).toHaveBeenCalledWith(
         expect.objectContaining({
           skip: 0, // (1-1)*20
-          take: 20, // falsy pageSize 回落到默认 20
+          take: 20, // falsy pageSize falls back to the default 20
         }),
       );
     });
@@ -337,7 +337,7 @@ describe('PermissionAuditService', () => {
   });
 });
 
-/** 创建模拟 Repository */
+/** Create a mock Repository */
 function createMockRepo<T>(): jest.Mocked<Repository<T>> {
   return {
     find: jest.fn().mockResolvedValue([]),

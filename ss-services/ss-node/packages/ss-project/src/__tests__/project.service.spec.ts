@@ -157,7 +157,7 @@ jest.mock('fs', () => {
         },
       });
     }),
-    // fs.promises 异步版本（用于 getManageInfo 的非阻塞 I/O）
+    // fs.promises async version (for getManageInfo's non-blocking I/O)
     promises: {
       readdir: jest.fn(async (p: string, _opts?: any) => {
         const np = p.replace(/\\/g, '/');
@@ -243,8 +243,8 @@ jest.mock('adm-zip', () => {
 
 // Mock TypeORM DataSource for checkDbFile in the service
 jest.mock('typeorm', () => {
-  // Repository / AbstractRepository 必须以类形式提供，
-  // 否则 @nestjs/typeorm 的 getRepositoryToken 中 instanceof 检查会抛错
+  // Repository / AbstractRepository must be provided as classes,
+  // otherwise the instanceof check in @nestjs/typeorm's getRepositoryToken throws
   class MockRepository {}
   class MockAbstractRepository {}
   class MockEntityManager {}
@@ -482,8 +482,8 @@ describe('ProjectService', () => {
     it('should create subdirectories (db, rtdb, pages, template)', async () => {
       await service.create(validDto, userId);
 
-      // 使用与 service.getProjectsDir() 一致的路径解析
-      // service 在 PROJECTS_DIR 为绝对路径（含前导 /）时原样返回，不拼接 process.cwd()
+      // Use the same path resolution as service.getProjectsDir()
+      // The service returns PROJECTS_DIR as-is when it is an absolute path (with a leading /), without prepending process.cwd()
       const actualProjectsDir = service.getProjectsDir();
       const dbDir = path.join(actualProjectsDir, 'my-project', 'db');
       const rtdbDir = path.join(actualProjectsDir, 'my-project', 'rtdb');
@@ -776,12 +776,12 @@ describe('ProjectService', () => {
         userId,
       );
       const projectDir = (service as any).getProjectDir(created.projectId);
-      // 在 db 目录下添加 WAL/SHM 临时文件（模拟运行中数据库）
+      // Add WAL/SHM temp files under the db directory (simulating a running database)
       addFile(`${projectDir}/db/system.db`, 'main database');
       addFile(`${projectDir}/db/system.db-wal`, 'wal data');
       addFile(`${projectDir}/db/system.db-shm`, 'shm data');
 
-      // 导出不应抛错（即使存在 WAL/SHM 文件）
+      // The export should not throw (even with WAL/SHM files present)
       const result = await service.exportProject(created.projectId, userId, {
         includePages: false,
         includeProjectDb: true,
@@ -805,10 +805,10 @@ describe('ProjectService', () => {
 
       const archivedNames = mockArchive.file.mock.calls.map((c: any[]) => c[1]?.name);
 
-      // .db 文件应被包含
+      // .db files should be included
       expect(archivedNames).toContain('db/system.db');
 
-      // WAL/SHM 临时文件应被排除
+      // WAL/SHM temp files should be excluded
       expect(archivedNames).not.toContain('db/system.db-wal');
       expect(archivedNames).not.toContain('db/system.db-shm');
     });
@@ -888,7 +888,7 @@ describe('ProjectService', () => {
           {
             isDirectory: false,
             entryName: `${projectName}/projectinfo.json`,
-            // 安全解压（extractZipSafely）逐条目取内容
+            // Safe extraction (extractZipSafely) reads content entry by entry
             getData: jest
               .fn()
               .mockReturnValue(Buffer.from(JSON.stringify(projectInfo), 'utf-8')),
@@ -1020,7 +1020,7 @@ describe('ProjectService', () => {
       await expect(service.importProjectZip(zipBuffer, userId)).rejects.toThrow(
         BadRequestException,
       );
-      // 越界目录绝不能被创建/删除
+      // Out-of-bounds directories must never be created/deleted
       expect(fs.existsSync(path.join(projectsBaseDir, 'evil'))).toBe(false);
     });
 
@@ -1103,7 +1103,7 @@ describe('ProjectService', () => {
         { projectName: 'Broken Project', description: '', config: {} },
         userId,
       );
-      // 使用与 service.getProjectsDir() 一致的路径解析，确保虚拟文件系统中的路径与 service 检查的路径一致
+      // Use the same path resolution as service.getProjectsDir(), ensuring paths in the virtual FS match the paths the service checks
       const actualProjectsDir = service.getProjectsDir();
       const rtdbDir = path.join(actualProjectsDir, created.projectId, 'rtdb');
       virtualDirs.delete(rtdbDir.replace(/\\/g, '/'));
@@ -1194,7 +1194,7 @@ describe('ProjectService', () => {
       expect(result.description).toBe('Test project for manage info');
       expect(result.pageCount).toBe(3);
       expect(result.dbSize).toBe(2048);
-      expect(result.rtdbSize).toBe(0); // rtdb 不再遍历整个目录树
+      expect(result.rtdbSize).toBe(0); // rtdb no longer walks the whole directory tree
       expect(result.dbMode).toBe('isolated');
       expect(result.projectPath).toBeTruthy();
       expect(result.databasePath).toBeTruthy();
@@ -1240,15 +1240,15 @@ describe('ProjectService', () => {
   describe('getOverview', () => {
     const userId = 'user-001';
 
-    /** 在虚拟文件系统中创建一个完整的项目 */
+    /** Create a complete project in the virtual file system */
     async function createProject(name: string, projectId?: string) {
       return service.create({ projectName: name, projectId, description: '', config: {} }, userId);
     }
 
     beforeEach(() => {
       jest.useRealTimers();
-      // 确保虚拟文件系统完全隔离：重置 + 验证
-      // 注意：外层 beforeEach 已调用 resetVirtualFs()，此处再次调用以防万一
+      // Ensure the virtual FS is fully isolated: reset + verify
+      // Note: the outer beforeEach already called resetVirtualFs(); calling again here as a safeguard
       resetVirtualFs();
     });
 
@@ -1522,14 +1522,14 @@ describe('ProjectService', () => {
     });
 
     it('should include manageInfo (dbSize, pageCount) in aggregation', async () => {
-      // 使用 service.create() 创建项目（writeProjectInfo 写入 projectinfo.json）
+      // Create the project via service.create() (writeProjectInfo writes projectinfo.json)
       const created = await service.create(
         { projectName: 'DbTest', projectId: 'mgr-info-test', description: '', config: {} },
         userId,
       );
 
-      // 添加页面目录用于验证 pageCount 聚合
-      // 使用 addDir 而非 addFile 避免触发 readdirSync mock 的文件去重缺陷
+      // Add page directories to verify pageCount aggregation
+      // Use addDir rather than addFile to avoid triggering the readdirSync mock's file-dedup flaw
       addDir(path.join(created.projectPath, 'pages', 'page1'));
       addDir(path.join(created.projectPath, 'pages', 'page2'));
 
@@ -1555,7 +1555,7 @@ describe('ProjectService', () => {
       const result = await service.getOverview();
 
       expect(result.projectCount).toBe(1);
-      // 2 个页面子目录（page1、page2），无 db 文件 → dbSize=0
+      // 2 page subdirectories (page1, page2), no db file -> dbSize=0
       expect(result.totalPageCount).toBe(2);
       expect(result.totalDbSize).toBe(0);
     });
@@ -1588,7 +1588,7 @@ describe('ProjectService', () => {
       expect(mockAlarmStatsService.getStatistics).toHaveBeenCalledWith('call-check');
     });
 
-    // ========== 新增分析测试 ==========
+    // ========== New analysis tests ==========
 
     it('should aggregate all device status categories (degraded, connecting, error)', async () => {
       await createProject('FullStatus', 'full-status');
@@ -1621,7 +1621,7 @@ describe('ProjectService', () => {
       expect(result.deviceStats.degraded).toBe(2);
       expect(result.deviceStats.error).toBe(1);
       expect(result.deviceStats.totalTags).toBe(25);
-      // 验证 3+2+2+2+1 = 10 = total
+      // Verify 3+2+2+2+1 = 10 = total
       expect(
         result.deviceStats.online +
           result.deviceStats.offline +
@@ -1681,7 +1681,7 @@ describe('ProjectService', () => {
       expect(result.alarmStats.acknowledged).toBe(5);
       expect(result.alarmStats.cleared).toBe(3);
       expect(result.alarmStats.shelved).toBe(2);
-      // 验证各状态之和等于 total
+      // Verify the per-status sums equal total
       expect(
         result.alarmStats.active +
           result.alarmStats.acknowledged +
@@ -1691,7 +1691,7 @@ describe('ProjectService', () => {
     });
 
     it('should handle mixed scenario: some succeed, some fail', async () => {
-      // 3 个项目：2 个成功、1 个失败
+      // 3 projects: 2 success, 1 failure
       await createProject('Success1', 'success-1');
       await createProject('Success2', 'success-2');
       await createProject('FailProj', 'fail-proj');
@@ -1748,23 +1748,23 @@ describe('ProjectService', () => {
 
       const result = await service.getOverview();
 
-      // 3 个项目都被扫描到
+      // All 3 projects were scanned
       expect(result.projectCount).toBe(3);
-      // 只有成功项目的数据被聚合：5+3=8 devices, 10+6=16 tags
+      // Only successful projects' data is aggregated: 5+3=8 devices, 10+6=16 tags
       expect(result.deviceStats.total).toBe(8);
       expect(result.deviceStats.online).toBe(6);
       expect(result.deviceStats.totalTags).toBe(16);
-      // 只有成功项目的报警：2+1=3 total, 1+0=1 active
+      // Only successful projects' alarms: 2+1=3 total, 1+0=1 active
       expect(result.alarmStats.total).toBe(3);
       expect(result.alarmStats.active).toBe(1);
     });
 
     it('should skip directory without valid projectinfo.json during scan', async () => {
-      // 创建两个有效项目 + 一个无效目录（无 projectinfo.json）
+      // Create two valid projects + one invalid directory (no projectinfo.json)
       await createProject('Valid1', 'valid-1');
       await createProject('Valid2', 'valid-2');
 
-      // 在项目目录下创建一个无 projectinfo.json 的空目录（模拟损坏的项目）
+      // Create an empty directory without projectinfo.json under a project directory (simulating a corrupted project)
       const projectsDir = service.getProjectsDir();
       addDir(`${projectsDir}/corrupted-dir`);
       addDir(`${projectsDir}/corrupted-dir/pages`);
@@ -1790,7 +1790,7 @@ describe('ProjectService', () => {
 
       const result = await service.getOverview();
 
-      // corrupted-dir 被跳过，仅统计 2 个有效项目
+      // corrupted-dir is skipped; only 2 valid projects are counted
       expect(result.projectCount).toBe(2);
       expect(result.deviceStats.total).toBe(2);
     });
@@ -1798,7 +1798,7 @@ describe('ProjectService', () => {
     it('should skip project with malformed projectinfo.json during scan', async () => {
       await createProject('GoodOne', 'good-one');
 
-      // 手动创建一个包含无效 JSON 的 projectinfo.json
+      // Manually create a projectinfo.json containing invalid JSON
       const projectsDir = service.getProjectsDir();
       addDir(`${projectsDir}/bad-json`);
       addFile(`${projectsDir}/bad-json/projectinfo.json`, '{invalid json!!!}');
@@ -1824,13 +1824,13 @@ describe('ProjectService', () => {
 
       const result = await service.getOverview();
 
-      // bad-json 被跳过（readProjectInfo 内部 JSON.parse 失败 → scanProjects catch），仅统计 good-one
+      // bad-json is skipped (JSON.parse fails inside readProjectInfo -> scanProjects catch); only good-one is counted
       expect(result.projectCount).toBe(1);
       expect(result.deviceStats.total).toBe(5);
     });
 
     it('should handle empty project directory (no subdirs, only projectinfo.json)', async () => {
-      // 模拟极简项目：仅有 projectinfo.json，无任何子目录
+      // Simulate a minimal project: only projectinfo.json, no subdirectories
       await createProject('Minimal', 'minimal');
 
       mockDeviceService.getDeviceStats.mockResolvedValue({
@@ -1862,7 +1862,7 @@ describe('ProjectService', () => {
     });
 
     it('should correctly aggregate with large project count (stress test)', async () => {
-      // 创建 20 个项目，验证并发限流（5 个 workers）下的聚合正确性
+      // Create 20 projects, verifying aggregation correctness under concurrency limiting (5 workers)
       const count = 20;
       for (let i = 0; i < count; i++) {
         await createProject(`Stress${i}`, `stress-${i}`);
@@ -1903,11 +1903,11 @@ describe('ProjectService', () => {
       expect(result.alarmStats.acknowledged).toBe(count);
       expect(result.alarmStats.cleared).toBe(count);
       expect(result.alarmStats.shelved).toBe(0);
-      expect(callCount).toBe(count); // 每个项目恰好调用一次
+      expect(callCount).toBe(count); // called exactly once per project
     });
 
     it('should handle JSON parse error in projectinfo.json during scan', async () => {
-      // 验证 scanProjects 中 catch 分支能正常捕获 readProjectInfo 抛出的 JSON parse 错误
+      // Verify scanProjects' catch branch properly captures the JSON parse error thrown by readProjectInfo
       await createProject('Normal', 'normal');
       const projectsDir = service.getProjectsDir();
       addDir(`${projectsDir}/broken`);
@@ -1932,13 +1932,13 @@ describe('ProjectService', () => {
         byStatus: {} as any,
       });
 
-      // 不应抛出异常，broken 项目被静默跳过
+      // Should not throw; the broken project is silently skipped
       const result = await service.getOverview();
       expect(result.projectCount).toBe(1);
     });
 
     it('should not modify input queue (pure consumer pattern)', async () => {
-      // 验证 worker 并发处理不修改原始项目列表
+      // Verify workers' concurrent processing does not modify the original project list
       await createProject('A1', 'a1');
       await createProject('A2', 'a2');
 
@@ -1963,8 +1963,8 @@ describe('ProjectService', () => {
 
       await service.getOverview();
 
-      // getOverview 中 queue = [...projects] 创建副本，原数组不变
-      // 此处仅验证无异常抛出即可
+      // getOverview's queue = [...projects] creates a copy; the original array is unchanged
+      // Here we only verify no exception is thrown
       expect(true).toBe(true);
     });
   });
@@ -1983,7 +1983,7 @@ describe('ProjectService', () => {
     });
 
     it('should generate pinyin projectId for Chinese-only name', async () => {
-      // 纯中文名走拼音全拼 kebab-case 作为 projectId
+      // Pure-Chinese names use full pinyin kebab-case as the projectId
       const result = await service.create(
         { projectName: '中文项目', description: '', config: {} },
         userId,

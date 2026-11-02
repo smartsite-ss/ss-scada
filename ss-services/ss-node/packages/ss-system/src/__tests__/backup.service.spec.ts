@@ -46,13 +46,13 @@ describe('BackupService', () => {
   beforeAll(() => {
     tempDir = path.join(os.tmpdir(), `backup-test-${Date.now()}`);
 
-    // 创建系统数据库
+    // Create the system database
     const dbDir = path.join(tempDir, 'data');
     systemDbPath = path.join(dbDir, 'database.sqlite');
     fs.mkdirSync(dbDir, { recursive: true });
     fs.writeFileSync(systemDbPath, 'SQLite format 3\x00' + 'test-data'.repeat(100));
 
-    // 创建项目数据库
+    // Create the project database
     projectsDir = path.join(tempDir, 'projects');
     const projectDbDir = path.join(projectsDir, 'test-project', 'db');
     fs.mkdirSync(projectDbDir, { recursive: true });
@@ -111,7 +111,7 @@ describe('BackupService', () => {
     jest.clearAllMocks();
   });
 
-  // ==================== 备份配置（拆分结构） ====================
+  // ==================== Backup configuration (split structure) ====================
 
   describe('getBackupConfig / saveBackupConfig', () => {
     it('TC-BKP-001: should return default split config', () => {
@@ -148,11 +148,11 @@ describe('BackupService', () => {
     });
 
     it('TC-BKP-004: should merge partial config without overwriting unspecified fields', () => {
-      // 先重置为默认配置，确保 system.enabled = true
+      // Reset to defaults first, ensuring system.enabled = true
       service.saveBackupConfig({
         system: { enabled: true, retentionDays: 60 } as any,
       });
-      // 再只更新 project，system 不应被重置
+      // Then update only project; system should not be reset
       const updated = service.saveBackupConfig({
         project: { enabled: true, maxSizeMb: 500 } as any,
       });
@@ -173,7 +173,7 @@ describe('BackupService', () => {
     });
   });
 
-  // ==================== 系统数据库备份 ====================
+  // ==================== System database backup ====================
 
   describe('createSystemBackup', () => {
     it('TC-BKP-010: should create a manual system backup with ISO date', async () => {
@@ -184,7 +184,7 @@ describe('BackupService', () => {
       expect(result.type).toBe('manual');
       expect(result.filename).toContain('system-backup');
       expect(result.size).toBeGreaterThan(0);
-      // createdAt 应为 ISO 格式字符串
+      // createdAt should be an ISO-format string
       expect(typeof result.createdAt).toBe('string');
       expect(new Date(result.createdAt).getTime()).not.toBeNaN();
     });
@@ -223,7 +223,7 @@ describe('BackupService', () => {
     });
   });
 
-  // ==================== 项目数据库备份 ====================
+  // ==================== Project database backup ====================
 
   describe('createProjectBackup', () => {
     it('TC-BKP-020: should create a project database backup', async () => {
@@ -276,7 +276,7 @@ describe('BackupService', () => {
     });
   });
 
-  // ==================== 备份列表 ====================
+  // ==================== Backup list ====================
 
   describe('listBackups', () => {
     it('TC-BKP-030: should list all backups with ISO dates', async () => {
@@ -287,7 +287,7 @@ describe('BackupService', () => {
       expect(list[0].filename).toBeDefined();
       expect(list[0].size).toBeGreaterThan(0);
       expect(list[0].dbType).toBeDefined();
-      // createdAt 应为 ISO 格式字符串
+      // createdAt should be an ISO-format string
       expect(typeof list[0].createdAt).toBe('string');
       expect(new Date(list[0].createdAt).getTime()).not.toBeNaN();
     });
@@ -315,7 +315,7 @@ describe('BackupService', () => {
     });
   });
 
-  // ==================== 备份统计 ====================
+  // ==================== Backup statistics ====================
 
   describe('getBackupStats', () => {
     it('TC-BKP-033: should return backup stats with ISO date strings', async () => {
@@ -326,7 +326,7 @@ describe('BackupService', () => {
       expect(stats.systemCount).toBeGreaterThan(0);
       expect(stats.totalSizeFormatted).toBeDefined();
       expect(stats.backupDir).toBeDefined();
-      // oldestAt/newestAt 应为 ISO 格式字符串
+      // oldestAt/newestAt should be ISO-format strings
       if (stats.oldestAt) {
         expect(typeof stats.oldestAt).toBe('string');
         expect(new Date(stats.oldestAt).getTime()).not.toBeNaN();
@@ -338,7 +338,7 @@ describe('BackupService', () => {
     });
   });
 
-  // ==================== 备份日志查询 ====================
+  // ==================== Backup log query ====================
 
   describe('getBackupLogs', () => {
     it('TC-BKP-035: should query backup logs with filters', async () => {
@@ -348,7 +348,7 @@ describe('BackupService', () => {
     });
   });
 
-  // ==================== 下载 ====================
+  // ==================== Download ====================
 
   describe('getBackupPath', () => {
     it('TC-BKP-040: should return backup file path in subdirectory', async () => {
@@ -364,7 +364,7 @@ describe('BackupService', () => {
     });
   });
 
-  // ==================== 删除 ====================
+  // ==================== Delete ====================
 
   describe('deleteBackup', () => {
     it('TC-BKP-050: should delete a backup in subdirectory', async () => {
@@ -377,7 +377,7 @@ describe('BackupService', () => {
     });
   });
 
-  // ==================== 恢复 ====================
+  // ==================== Restore ====================
 
   describe('restoreBackup', () => {
     it('TC-BKP-060: should restore system database from backup', async () => {
@@ -407,7 +407,7 @@ describe('BackupService', () => {
     });
   });
 
-  // ==================== 清理（按类型） ====================
+  // ==================== Cleanup (by type) ====================
 
   describe('cleanupExpired', () => {
     it('TC-BKP-070: should cleanup expired system backups', async () => {
@@ -437,7 +437,7 @@ describe('BackupService', () => {
 
   describe('cleanupBySize', () => {
     it('TC-BKP-073: should cleanup backups exceeding max size', async () => {
-      // 设置一个非常小的上限，触发清理
+      // Set a very small cap to trigger cleanup
       const count = await service.cleanupBySize('system', 1);
 
       expect(count).toBeGreaterThanOrEqual(0);
@@ -461,7 +461,7 @@ describe('BackupService', () => {
         ? fs.readdirSync(projectDir).filter((f) => f.endsWith('.gz'))
         : [];
 
-      // 如果目录为空，cleanupBySize 应该返回 0
+      // If the directory is empty, cleanupBySize should return 0
       if (files.length === 0) {
         const count = await service.cleanupBySize('project', 1024 * 1024);
         expect(count).toBe(0);
@@ -469,7 +469,7 @@ describe('BackupService', () => {
     });
   });
 
-  // ==================== Cron 状态 ====================
+  // ==================== Cron status ====================
 
   describe('getCronJobStatus', () => {
     it('TC-BKP-080: should return split cron status', () => {

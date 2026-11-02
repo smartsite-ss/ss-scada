@@ -26,7 +26,7 @@ import { JwtAuthGuard, RolesGuard, Roles, UserRole } from '@ss-node/ss-core';
 export class BackupController {
   constructor(private readonly backupService: BackupService) {}
 
-  // ==================== 备份配置 ====================
+  // ==================== Backup configuration ====================
 
   @Get('config')
   @ApiOperation({ summary: '获取备份配置（全局+项目）' })
@@ -46,7 +46,7 @@ export class BackupController {
     return this.backupService.getCronJobStatus();
   }
 
-  // ==================== 备份统计 ====================
+  // ==================== Backup statistics ====================
 
   @Get('stats')
   @ApiOperation({ summary: '获取备份统计信息' })
@@ -54,7 +54,7 @@ export class BackupController {
     return this.backupService.getBackupStats();
   }
 
-  // ==================== 备份日志 ====================
+  // ==================== Backup logs ====================
 
   @Get('logs')
   @ApiOperation({ summary: '查询备份日志' })
@@ -68,7 +68,7 @@ export class BackupController {
     return this.backupService.getBackupLogs({ dbType, backupType, projectName, status, limit });
   }
 
-  // ==================== 备份列表 ====================
+  // ==================== Backup list ====================
 
   @Get()
   @ApiOperation({ summary: '备份列表（可按 dbType 过滤）' })
@@ -76,7 +76,7 @@ export class BackupController {
     return this.backupService.listBackups(dbType);
   }
 
-  // ==================== 手动备份 ====================
+  // ==================== Manual backup ====================
 
   @Post('system')
   @ApiOperation({ summary: '手动创建系统数据库备份' })
@@ -102,7 +102,7 @@ export class BackupController {
     return this.backupService.backupSelectedProjects(body.projectNames || [], 'manual', 'admin');
   }
 
-  // ==================== 下载 ====================
+  // ==================== Download ====================
 
   @Get(':filename/download')
   @ApiOperation({ summary: '下载备份文件' })
@@ -117,7 +117,7 @@ export class BackupController {
     return new StreamableFile(file);
   }
 
-  // ==================== 删除 ====================
+  // ==================== Delete ====================
 
   @Delete(':filename')
   @ApiOperation({ summary: '删除备份文件' })
@@ -126,7 +126,7 @@ export class BackupController {
     return { ok: true };
   }
 
-  // ==================== 恢复 ====================
+  // ==================== Restore ====================
 
   @Post(':filename/restore')
   @ApiOperation({ summary: '恢复系统数据库备份' })
@@ -145,7 +145,7 @@ export class BackupController {
     return { ok: true, message: '项目数据库恢复成功' };
   }
 
-  // ==================== 清理 ====================
+  // ==================== Cleanup ====================
 
   @Delete('cleanup/:dbType/:days')
   @ApiOperation({ summary: '清理过期备份（按类型）' })

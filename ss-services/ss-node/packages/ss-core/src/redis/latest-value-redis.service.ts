@@ -7,12 +7,12 @@ import type Redis from 'ioredis';
 import { REDIS_CLIENT_DEFAULT } from './redis.constants';
 
 /**
- * 最新值条目（反序列化后的语义化结构）
+ * Latest-value entry (semantic structure after deserialization)
  *
- * 由 LatestValueRedisService.deserialize 返回，供 DeviceDataService /
- * AlarmReconciliationService 等读取方使用。携带完整层级信息
- * （projectId → deviceCode → deviceId → tagId），消除对 Redis value
- * 原始 JSON 字段命名（旧 {v,d,q,t} / P0 {value,deviceId,quality,timestamp}）的耦合。
+ * Returned by LatestValueRedisService.deserialize for readers such as DeviceDataService /
+ * AlarmReconciliationService. Carries the full hierarchy info
+ * (projectId -> deviceCode -> deviceId -> tagId), eliminating coupling to the Redis value's
+ * raw JSON field naming (legacy {v,d,q,t} / P0 {value,deviceId,quality,timestamp}).
  */
 export interface LatestValueEntry {
   projectId: string;
@@ -25,40 +25,40 @@ export interface LatestValueEntry {
 }
 
 /**
- * LatestValueRedisService — 实时最新值的 Redis 读写封装（共享服务）
+ * LatestValueRedisService -- Redis read/write wrapper for real-time latest values (shared service)
  *
- * ## Key 层级结构（v3 — 体现 项目→设备→变量 层级）
+ * ## Key hierarchy (v3 -- expresses the project->device->tag hierarchy)
  *
  * ```
- * ss:latest:{projectId}:{deviceCode}    Hash  field=tagId, value=JSON(全语义)
+ * ss:latest:{projectId}:{deviceCode}    Hash  field=tagId, value=JSON(full semantics)
  * ss:latest:tree:{projectId}            Hash  field=deviceId, value=JSON{deviceCode,deviceName}
  * ```
  *
- * - 设备 Key 用 **deviceCode**（人类可读编码）而非 deviceId（UUID），
- *   一眼可看出 `项目 → 设备` 层级（如 `ss:latest:proj-1:pump-station-01`）。
- * - Hash field 为 **tagId**，代表 `设备 → 变量` 层级。
- * - value JSON 包含 **projectId / deviceCode / deviceId / tagId** 全路径，
- *   单条值即可定位其在层级中的位置（自描述）。
- * - tree 索引替换旧的 flat Set（`ss:latest:index:{projectId}`），
- *   HGETALL tree 一次获取项目下所有设备的 {deviceCode, deviceName}，
- *   同时提供 deviceId→deviceCode 反查（供告警对账等持 deviceId 的读取方使用）。
+ * - The device Key uses **deviceCode** (human-readable code) rather than deviceId (UUID),
+ *   so the `project -> device` hierarchy is obvious at a glance (e.g. `ss:latest:proj-1:pump-station-01`).
+ * - The Hash field is **tagId**, representing the `device -> tag` hierarchy.
+ * - The value JSON contains the full path **projectId / deviceCode / deviceId / tagId**,
+ *   so a single value can locate its position in the hierarchy (self-describing).
+ * - The tree index replaces the old flat Set (`ss:latest:index:{projectId}`);
+ *   HGETALL tree fetches all devices' {deviceCode, deviceName} in the project at once,
+ *   and also provides deviceId->deviceCode reverse lookup (for readers holding deviceId, such as alarm reconciliation).
  *
- * ## 不包含的职责（由各使用方自行实现）
- * - 熔断器、TTL 节流、index 清理等容错逻辑（由 RedisLatestValuePersistWriter 负责）
- * - 采集 Pipeline 的高频批量写入（由 RedisLatestValuePersistWriter.writeBatch 负责）
+ * ## Responsibilities NOT included (implemented by each consumer)
+ * - Circuit breaker, TTL throttling, index cleanup, and other fault-tolerance logic (handled by RedisLatestValuePersistWriter)
+ * - High-frequency batch writes from the collection Pipeline (handled by RedisLatestValuePersistWriter.writeBatch)
  *
- * ## 容错
- * - Redis 客户端不可用时（REDIS_HOST 未配置），所有方法为 no-op / 返回空结果
- * - deserialize 对损坏或无法识别的 JSON 返回 null，不抛异常
+ * ## Fault tolerance
+ * - When the Redis client is unavailable (REDIS_HOST unset), all methods are no-op / return empty results
+ * - deserialize returns null for corrupted or unrecognized JSON without throwing
  *
- * ## 向后兼容
- * - deserialize 兼容三种 value 格式：
- *   1. v3（本版本）：{ projectId, deviceCode, deviceId, tagId, value, quality, timestamp }
- *   2. P0：{ value, deviceId, quality, timestamp }
- *   3. 旧：{ v, d, q, t }
- *   7 天 TTL 自然过期后全部为新格式。
- * - 读取时用 key/field 上下文回填 projectId/deviceCode/tagId，
- *   即使存量旧格式 value 也能返回完整 LatestValueEntry。
+ * ## Backward compatibility
+ * - deserialize is compatible with three value formats:
+ *   1. v3 (this version): { projectId, deviceCode, deviceId, tagId, value, quality, timestamp }
+ *   2. P0: { value, deviceId, quality, timestamp }
+ *   3. Legacy: { v, d, q, t }
+ *   After the 7-day TTL expires naturally, everything is the new format.
+ * - When reading, projectId/deviceCode/tagId are backfilled from key/field context,
+ *   so even legacy-format values return a complete LatestValueEntry.
  */
 @Injectable()
 export class LatestValueRedisService {
@@ -73,41 +73,41 @@ export class LatestValueRedisService {
     private readonly redisClient: Redis | null,
   ) {}
 
-  /** Redis 客户端是否可用（供使用方判断是否降级） */
+  /** Whether the Redis client is available (for consumers to decide whether to degrade) */
   get enabled(): boolean {
     return this.redisClient !== null;
   }
 
-  // ──────────── key 构造 ────────────
+  // ──────────── Key construction ────────────
 
   /**
-   * 设备 Key：ss:latest:{projectId}:{deviceCode}（Hash，field=tagId，value=JSON）
+   * Device Key: ss:latest:{projectId}:{deviceCode} (Hash, field=tagId, value=JSON)
    *
-   * 使用 deviceCode（人类可读编码）而非 deviceId（UUID），
-   * 体现 `项目 → 设备` 层级，一眼可识别归属设备。
+   * Uses deviceCode (human-readable code) rather than deviceId (UUID),
+   * expressing the `project -> device` hierarchy so the owning device is recognizable at a glance.
    */
   deviceKey(projectId: string, deviceCode: string): string {
     return `${this.keyPrefix}${projectId}:${deviceCode}`;
   }
 
   /**
-   * tree 索引 Key：ss:latest:tree:{projectId}（Hash，field=deviceId，value=JSON{deviceCode,deviceName}）
+   * Tree-index Key: ss:latest:tree:{projectId} (Hash, field=deviceId, value=JSON{deviceCode,deviceName})
    *
-   * 替换旧的 flat Set（ss:latest:index:{projectId}）。
-   * - HGETALL tree → 一次获取项目下所有设备的 {deviceCode, deviceName}（层级全景）
-   * - HGET tree {deviceId} → 反查 deviceCode（供持 deviceId 的读取方使用）
+   * Replaces the old flat Set (ss:latest:index:{projectId}).
+   * - HGETALL tree -> fetch all devices' {deviceCode, deviceName} in the project at once (full hierarchy view)
+   * - HGET tree {deviceId} -> reverse-lookup deviceCode (for readers holding deviceId)
    */
   treeKey(projectId: string): string {
     return `${this.treePrefix}${projectId}`;
   }
 
-  // ──────────── 序列化 ────────────
+  // ──────────── Serialization ────────────
 
   /**
-   * 序列化为 Redis value（全语义字段，携带完整层级路径）
+   * Serialize to a Redis value (full-semantics fields, carrying the full hierarchy path)
    *
-   * 写入格式：{ projectId, deviceCode, deviceId, tagId, value, quality, timestamp(ISO) }
-   * 单条 value 即可自描述其在 `项目→设备→变量` 层级中的位置。
+   * Write format: { projectId, deviceCode, deviceId, tagId, value, quality, timestamp(ISO) }
+   * A single value self-describes its position in the `project->device->tag` hierarchy.
    */
   serialize(
     projectId: string,
@@ -130,14 +130,14 @@ export class LatestValueRedisService {
   }
 
   /**
-   * 反序列化 Redis value（兼容三种格式）
+   * Deserialize a Redis value (compatible with three formats)
    *
-   * - v3（本版本）：{ projectId, deviceCode, deviceId, tagId, value, quality, timestamp }
-   * - P0：{ value, deviceId, quality, timestamp }
-   * - 旧：{ v, d, q, t }
+   * - v3 (this version): { projectId, deviceCode, deviceId, tagId, value, quality, timestamp }
+   * - P0: { value, deviceId, quality, timestamp }
+   * - Legacy: { v, d, q, t }
    *
-   * 注意：旧格式 value 可能缺少 projectId/deviceCode/tagId，
-   * 调用方（readTag/readDevice 等）会用 key/field 上下文回填这些字段。
+   * Note: legacy values may lack projectId/deviceCode/tagId;
+   * callers (readTag/readDevice etc.) backfill these fields from key/field context.
    */
   deserialize(raw: string | null | undefined): Partial<LatestValueEntry> | null {
     if (!raw) return null;
@@ -145,7 +145,7 @@ export class LatestValueRedisService {
       const parsed = JSON.parse(raw);
       if (!parsed || typeof parsed !== 'object') return null;
 
-      // v3 格式优先（全语义字段 + 层级路径）
+      // v3 format takes priority (full-semantics fields + hierarchy path)
       if (parsed.value !== undefined) {
         return {
           projectId: parsed.projectId ?? '',
@@ -158,7 +158,7 @@ export class LatestValueRedisService {
         };
       }
 
-      // 兼容旧格式（缩写字段 {v,d,q,t}）
+      // Legacy-format compatibility (abbreviated fields {v,d,q,t})
       if (parsed.v !== undefined) {
         return {
           projectId: '',
@@ -177,17 +177,17 @@ export class LatestValueRedisService {
     }
   }
 
-  // ──────────── 写入（手动写入路径）────────────
+  // ──────────── Writes (manual write path) ────────────
 
   /**
-   * 写入单个标签最新值（供 DeviceDataService.updateLatestValue 使用）
+   * Write a single tag's latest value (used by DeviceDataService.updateLatestValue)
    *
-   * 操作：
-   * 1. HSET 设备 Key（ss:latest:{projectId}:{deviceCode}）field=tagId
-   * 2. HSET tree 索引（ss:latest:tree:{projectId}）field=deviceId → {deviceCode, deviceName}
+   * Operations:
+   * 1. HSET device Key (ss:latest:{projectId}:{deviceCode}) field=tagId
+   * 2. HSET tree index (ss:latest:tree:{projectId}) field=deviceId -> {deviceCode, deviceName}
    *
-   * 注意：不做熔断/TTL 节流（由采集写入端 RedisLatestValuePersistWriter 负责），
-   * 手动写入路径失败直接抛错，由调用方处理。
+   * Note: no circuit breaker/TTL throttling (handled by the collection write side, RedisLatestValuePersistWriter);
+   * the manual write path throws directly on failure for the caller to handle.
    */
   async write(params: {
     projectId: string;
@@ -214,7 +214,7 @@ export class LatestValueRedisService {
       timestamp,
     );
     await this.redisClient.hset(dKey, tagId, serialized);
-    // 更新 tree 索引：deviceId → {deviceCode, deviceName}（fire-and-forget，失败不影响主写入）
+    // Update the tree index: deviceId -> {deviceCode, deviceName} (fire-and-forget; failure does not affect the main write)
     this.redisClient
       .hset(tKey, deviceId, JSON.stringify({ deviceCode, deviceName: deviceName ?? '' }))
       .catch((err: Error) => {
@@ -222,9 +222,9 @@ export class LatestValueRedisService {
       });
   }
 
-  // ──────────── 读取（按 deviceCode，直接路径）────────────
+  // ──────────── Reads (by deviceCode, direct path) ────────────
 
-  /** 读取单个标签最新值（HGET，按 deviceCode 直接定位） */
+  /** Read a single tag's latest value (HGET, located directly by deviceCode) */
   async readTag(
     projectId: string,
     deviceCode: string,
@@ -234,7 +234,7 @@ export class LatestValueRedisService {
     const raw = await this.redisClient.hget(this.deviceKey(projectId, deviceCode), tagId);
     const entry = this.deserialize(raw);
     if (!entry) return null;
-    // 用 key/field 上下文回填可能缺失的层级字段（兼容旧格式 value）
+    // Backfill possibly missing hierarchy fields from key/field context (compatible with legacy values)
     return {
       projectId: entry.projectId || projectId,
       deviceCode: entry.deviceCode || deviceCode,
@@ -246,7 +246,7 @@ export class LatestValueRedisService {
     };
   }
 
-  /** 读取单台设备所有标签最新值（HGETALL，按 deviceCode 直接定位） */
+  /** Read all tags' latest values for one device (HGETALL, located directly by deviceCode) */
   async readDevice(
     projectId: string,
     deviceCode: string,
@@ -274,7 +274,7 @@ export class LatestValueRedisService {
   }
 
   /**
-   * 批量读取多台设备的所有标签最新值（pipeline HGETALL，按 deviceCode 直接定位）
+   * Batch-read all tags' latest values for multiple devices (pipeline HGETALL, located directly by deviceCode)
    */
   async readDevices(
     projectId: string,
@@ -319,13 +319,13 @@ export class LatestValueRedisService {
     return result;
   }
 
-  // ──────────── 读取（按 deviceId，经 tree 索引反查 deviceCode）────────────
+  // ──────────── Reads (by deviceId, via tree-index reverse lookup of deviceCode) ────────────
 
   /**
-   * 读取 tree 索引：deviceId → {deviceCode, deviceName}
+   * Read the tree index: deviceId -> {deviceCode, deviceName}
    *
-   * 供持 deviceId 的读取方（如告警对账）批量反查 deviceCode，
-   * 避免逐条 HGET tree 索引。
+   * Lets readers holding deviceId (e.g. alarm reconciliation) batch reverse-lookup deviceCode,
+   * avoiding per-record HGET on the tree index.
    */
   async readTree(
     projectId: string,
@@ -344,7 +344,7 @@ export class LatestValueRedisService {
             });
           }
         } catch {
-          // 损坏的 tree 条目跳过
+          // Skip corrupted tree entries
         }
       }
     }
@@ -352,10 +352,10 @@ export class LatestValueRedisService {
   }
 
   /**
-   * 按 deviceId 读取单个标签最新值（经 tree 索引反查 deviceCode）
+   * Read a single tag's latest value by deviceId (via tree-index reverse lookup of deviceCode)
    *
-   * 供告警对账等持 deviceId 的读取方使用。内部先 HGET tree 取 deviceCode，
-   * 再 HGET 设备 Key。低频场景（5 分钟对账）可接受 2 次 round-trip。
+   * For readers holding deviceId (e.g. alarm reconciliation). Internally first HGET tree for deviceCode,
+   * then HGET the device Key. Acceptable 2 round-trips for low-frequency scenarios (5-minute reconciliation).
    */
   async readTagByDeviceId(
     projectId: string,
@@ -363,7 +363,7 @@ export class LatestValueRedisService {
     tagId: string,
   ): Promise<LatestValueEntry | null> {
     if (!this.redisClient) return null;
-    // 1. tree 索引反查 deviceCode
+    // 1. Tree-index reverse lookup of deviceCode
     const rawTreeEntry = await this.redisClient.hget(this.treeKey(projectId), deviceId);
     if (!rawTreeEntry) return null;
     let deviceCode: string;
@@ -374,27 +374,27 @@ export class LatestValueRedisService {
       return null;
     }
     if (!deviceCode) return null;
-    // 2. 按 deviceCode 读取最新值
+    // 2. Read the latest value by deviceCode
     return this.readTag(projectId, deviceCode, tagId);
   }
 
-  // ──────────── 读取（全项目）────────────
+  // ──────────── Reads (whole project) ────────────
 
   /**
-   * 读取项目下所有设备的所有标签最新值
+   * Read all devices' all tags' latest values in a project
    *
-   * 流程：HGETALL tree → 提取 deviceCode 列表 → pipeline HGETALL 批量
-   * 返回 Map<deviceId, Record<tagId, LatestValueEntry>>（keyed by deviceId 供调用方匹配设备实体）
+   * Flow: HGETALL tree -> extract the deviceCode list -> pipeline HGETALL in batches
+   * Returns Map<deviceId, Record<tagId, LatestValueEntry>> (keyed by deviceId so callers can match device entities)
    */
   async readAll(projectId: string): Promise<Map<string, Record<string, LatestValueEntry>>> {
     const result = new Map<string, Record<string, LatestValueEntry>>();
     if (!this.redisClient) return result;
 
-    // 1. 读取 tree 索引：deviceId → {deviceCode, deviceName}
+    // 1. Read the tree index: deviceId -> {deviceCode, deviceName}
     const tree = await this.readTree(projectId);
     if (tree.size === 0) return result;
 
-    // 2. pipeline HGETALL 所有设备 Key（按 deviceCode）
+    // 2. pipeline HGETALL all device Keys (by deviceCode)
     const deviceIds = [...tree.keys()];
     const deviceCodes = [...tree.values()].map((v) => v.deviceCode);
     const pipeline = this.redisClient.pipeline();
@@ -404,7 +404,7 @@ export class LatestValueRedisService {
     const responses = await pipeline.exec();
     if (!responses) return result;
 
-    // 3. 组装结果（keyed by deviceId，供调用方按 device.id 匹配）
+    // 3. Assemble the result (keyed by deviceId, for callers to match by device.id)
     for (let i = 0; i < deviceIds.length; i++) {
       const deviceId = deviceIds[i];
       const deviceCode = deviceCodes[i];

@@ -9,7 +9,7 @@ import { EnhancedScheduler } from '../pipeline/scheduler/enhanced-scheduler';
 import { DeviceConfigWatcher } from '../pipeline/device-config-watcher.service';
 
 // ============================================================
-// Mock 工厂
+// Mock factory
 // ============================================================
 
 function makeMockEventBus() {
@@ -23,8 +23,8 @@ function makeMockEventBus() {
       handlers.get(event)?.forEach((h) => h(payload));
     }),
     off: jest.fn(),
-    /** 测试辅助：手动触发已注册的处理器，并等待所有异步处理器完成
-     * 模拟真实 EventBus.emit 的错误捕获行为：单个 handler 失败不影响其他 handler */
+    /** Test helper: manually trigger registered handlers and wait for all async handlers to finish
+     * Simulates the real EventBus.emit error-capture behavior: one handler's failure does not affect others */
     async fire(event: string, payload: any) {
       const set = handlers.get(event);
       if (!set) return;
@@ -33,12 +33,12 @@ function makeMockEventBus() {
           try {
             await h(payload);
           } catch {
-            // 模拟 EventBus.emit 的错误捕获：记录但不抛出
+            // Simulate EventBus.emit error capture: log but do not throw
           }
         }),
       );
     },
-    /** 测试辅助：手动触发并收集 handler 抛出的错误（用于验证失败追踪） */
+    /** Test helper: manually trigger and collect errors thrown by handlers (to verify failure tracking) */
     async fireAndCollectErrors(event: string, payload: any): Promise<Error[]> {
       const set = handlers.get(event);
       if (!set) return [];
@@ -54,7 +54,7 @@ function makeMockEventBus() {
       );
       return errors;
     },
-    /** 测试辅助：获取已注册的事件列表 */
+    /** Test helper: get the list of registered events */
     registeredEvents: () => Array.from(handlers.keys()),
   };
 }
@@ -69,7 +69,7 @@ function makeMockEventLogService() {
     shouldPersist: jest.fn().mockReturnValue(true),
   };
 
-  /** 模拟真实 wrapSubscriber：记录开始 → 调用 handler → 记录成功/失败 → 失败时重新抛出 */
+  /** Simulate the real wrapSubscriber: record start -> call handler -> record success/failure -> rethrow on failure */
   self.wrapSubscriber = jest.fn(
     <T extends any[]>(
       eventType: string,
@@ -234,7 +234,7 @@ describe('DeviceConfigWatcher', () => {
         connection: {},
         scanRate: 1000,
       });
-      // 不应抛出，且设备不在活跃列表
+      // Should not throw, and the device is not in the active list
       expect(watcher.getActiveDevices().has('dev-err')).toBe(false);
     });
   });
@@ -242,7 +242,7 @@ describe('DeviceConfigWatcher', () => {
   describe('device.updated 事件', () => {
     beforeEach(async () => {
       watcher.onModuleInit();
-      // 先创建设备
+      // Create the device first
       await eventBus.fire('device.created', {
         deviceId: 'dev-1',
         projectId: 'proj-1',
@@ -283,7 +283,7 @@ describe('DeviceConfigWatcher', () => {
     });
 
     it('scheduler 不可用时 scanRate 变更应记录警告', async () => {
-      // 使用全新的 eventBus，避免原 watcher 的处理器干扰
+      // Use a fresh eventBus to avoid interference from the original watcher's handlers
       const freshBus = makeMockEventBus();
       const watcherNoScheduler = new DeviceConfigWatcher(
         freshBus as unknown as EventBusService,
@@ -292,7 +292,7 @@ describe('DeviceConfigWatcher', () => {
         undefined,
       );
       watcherNoScheduler.onModuleInit();
-      // 先创建设备
+      // Create the device first
       await freshBus.fire('device.created', {
         deviceId: 'dev-2',
         projectId: 'proj-1',
@@ -308,7 +308,7 @@ describe('DeviceConfigWatcher', () => {
         changedFields: ['scanRate'],
         scanRate: 250,
       });
-      // scheduler 为 undefined，不应调用 updateTaskInterval
+      // scheduler is undefined, so updateTaskInterval should not be called
       expect(scheduler.updateTaskInterval).not.toHaveBeenCalled();
     });
 
@@ -425,7 +425,7 @@ describe('DeviceConfigWatcher', () => {
 
     it('删除未知设备应当是安全的', async () => {
       await eventBus.fire('device.deleted', { deviceId: 'unknown-dev' });
-      // 不应抛出错误
+      // Should not throw an error
       expect(watcher.getActiveDevices().has('unknown-dev')).toBe(false);
     });
   });
@@ -447,7 +447,7 @@ describe('DeviceConfigWatcher', () => {
     });
 
     it('device.disabled 应当等同于 device.deleted', async () => {
-      // 先 enable
+      // enable first
       await eventBus.fire('device.enabled', {
         deviceId: 'dev-1',
         projectId: 'proj-1',
@@ -457,7 +457,7 @@ describe('DeviceConfigWatcher', () => {
       });
       expect(watcher.getActiveDevices().has('dev-1')).toBe(true);
 
-      // 再 disable
+      // then disable
       await eventBus.fire('device.disabled', { deviceId: 'dev-1' });
       expect(watcher.getActiveDevices().has('dev-1')).toBe(false);
     });
@@ -524,14 +524,14 @@ describe('DeviceConfigWatcher', () => {
       expect(active.has('dev-1')).toBe(true);
       expect(active.has('dev-2')).toBe(true);
 
-      // 修改返回的 Map 不应影响内部状态
+      // Modifying the returned Map should not affect internal state
       active.delete('dev-1');
       expect(watcher.getActiveDevices().has('dev-1')).toBe(true);
     });
   });
 
   // ==========================================================================
-  // #6 事件持久化：业务效果追踪
+  // #6 Event persistence: business-effect tracking
   // ==========================================================================
   describe('业务效果追踪（EventLogService 集成）', () => {
     let eventLogService: jest.Mocked<EventLogService>;
@@ -549,7 +549,7 @@ describe('DeviceConfigWatcher', () => {
 
     it('onModuleInit 应当为每个事件调用 wrapSubscriber', () => {
       watcher.onModuleInit();
-      // 5 个事件类型都应通过 wrapSubscriber 包装
+      // All 5 event types should be wrapped via wrapSubscriber
       expect(eventLogService.wrapSubscriber).toHaveBeenCalledTimes(5);
       expect(eventLogService.wrapSubscriber).toHaveBeenCalledWith(
         'device.created',
@@ -578,7 +578,7 @@ describe('DeviceConfigWatcher', () => {
         scanRate: 1000,
       });
 
-      // wrapSubscriber 返回的 wrapped handler 调用了真实 handler
+      // The wrapped handler returned by wrapSubscriber called the real handler
       expect(executor.connect).toHaveBeenCalled();
       expect(watcher.getActiveDevices().has('dev-1')).toBe(true);
     });
@@ -587,7 +587,7 @@ describe('DeviceConfigWatcher', () => {
       watcher.onModuleInit();
       executor.connect.mockRejectedValueOnce(new Error('connect fail'));
 
-      // fire 模拟 EventBus 的错误捕获行为
+      // fire simulates EventBus's error-capture behavior
       const errors = await eventBus.fireAndCollectErrors('device.created', {
         deviceId: 'dev-err',
         projectId: 'proj-1',
@@ -596,15 +596,15 @@ describe('DeviceConfigWatcher', () => {
         scanRate: 1000,
       });
 
-      // 外层 catch 应捕获错误，避免 unhandled rejection
+      // The outer catch should capture the error to avoid unhandled rejection
       expect(errors).toHaveLength(0);
-      // wrapSubscriber 应已记录失败业务效果
+      // wrapSubscriber should have recorded the failed business effect
       expect(eventLogService.recordSubscriberFailure).toHaveBeenCalledWith(
         'log-id-mock',
         'DeviceConfigWatcher',
         'connect fail',
       );
-      // 设备不在活跃列表（因为 ensureConnection 失败）
+      // Device is not in the active list (because ensureConnection failed)
       expect(watcher.getActiveDevices().has('dev-err')).toBe(false);
     });
   });

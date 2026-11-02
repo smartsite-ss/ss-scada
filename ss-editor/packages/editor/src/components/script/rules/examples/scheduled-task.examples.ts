@@ -3,29 +3,29 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 定时任务脚本示例
+ * Scheduled task script examples
  *
- * === 场景说明 ===
- * 定时任务脚本通过 Cron 表达式在指定时间自动执行。
- * 适用于周期性报表生成、定时巡检、交班汇总等场景。
+ * === Scenario ===
+ * Scheduled task scripts run automatically at specified times via Cron expressions.
+ * Suitable for periodic report generation, timed inspections, shift handover summaries, etc.
  *
- * === 触发方式 ===
- * - schedule (Cron): 通过 Cron 表达式定时触发
- * - 页面定时器: 页面加载后按固定间隔执行
+ * === Trigger modes ===
+ * - schedule (Cron): triggered on schedule via a Cron expression
+ * - Page timer: runs at a fixed interval after page load
  *
- * === 常用 API 组合 ===
- * readTag / writeTag              → 批量数据读写
- * triggerAlarm / notify / log     → 结果通知
- * getActiveAlarms                 → 告警汇总
- * fetch                           → 数据上报
- * round / clamp / mapRange        → 统计计算
+ * === Common API combinations ===
+ * readTag / writeTag              → batch data read/write
+ * triggerAlarm / notify / log     → result notification
+ * getActiveAlarms                 → alarm summary
+ * fetch                           → data reporting
+ * round / clamp / mapRange        → statistical calculation
  */
 
 import type { ScriptExample } from '../types';
 
 export const scheduledTaskExamples: ScriptExample[] = [
   // ═══════════════════════════════════════════════════════════
-  // 示例 1：每小时产量统计
+  // Example 1: hourly production statistics
   // ═══════════════════════════════════════════════════════════
   {
     id: 'scheduled-hourly-report',
@@ -87,7 +87,7 @@ if (isAlarm(totalOutput, 500, 100)) {
   },
 
   // ═══════════════════════════════════════════════════════════
-  // 示例 2：每日设备巡检
+  // Example 2: daily equipment inspection
   // ═══════════════════════════════════════════════════════════
   {
     id: 'scheduled-daily-inspection',
@@ -181,7 +181,7 @@ log('info', \`巡检报告: 设备\${total}台, 正常\${normalCount}, 警告\${
   },
 
   // ═══════════════════════════════════════════════════════════
-  // 示例 3：定时数据上报
+  // Example 3: scheduled data reporting
   // ═══════════════════════════════════════════════════════════
   {
     id: 'scheduled-data-upload',

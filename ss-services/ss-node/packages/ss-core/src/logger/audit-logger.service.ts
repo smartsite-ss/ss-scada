@@ -19,39 +19,39 @@ import {
 } from './audit-logger.types';
 
 /**
- * S-M02: 审计日志独立通道
+ * S-M02: dedicated audit-log channel
  *
- * 安全事件独立存储，支持哈希链防篡改和合规审查。
+ * Security events stored separately, supporting hash-chain tamper protection and compliance review.
  *
- * 目录结构：{logDir}/audit/audit-%DATE%.log
- * 轮转策略：按天 + 50m 大小，历史文件 gzip 压缩，保留 365 天（合规要求）。
+ * Directory structure: {logDir}/audit/audit-%DATE%.log
+ * Rotation policy: daily + 50m size, historical files gzip-compressed, retained 365 days (compliance requirement).
  *
- * 哈希链防篡改：
- *   每条记录包含 prevHash（前一条的 hash）和 hash（当前记录的 hash）。
+ * Hash-chain tamper protection:
+ *   Each record contains prevHash (the previous record's hash) and hash (the current record's hash).
  *   hash = SHA256(prevHash + canonical_json(timestamp+type+userId+ip+...+prevHash))
- *   创世记录的 prevHash = '0' * 64。
- *   篡改任何一条记录会导致其 hash 变化，进而导致后续所有记录的 prevHash 不匹配。
+ *   The genesis record's prevHash = '0' * 64.
+ *   Tampering with any record changes its hash, which in turn mismatches all subsequent records' prevHash.
  *
- * 重启恢复：
- *   服务重启后，从当天审计日志文件的最后一行读取 hash，恢复哈希链。
- *   如果当天无日志文件，使用创世哈希重新开始。
+ * Restart recovery:
+ *   After a service restart, the hash is read from the last line of the day's audit log file to resume the chain.
+ *   If there is no log file for the day, the chain restarts from the genesis hash.
  */
 @Injectable()
 export class AuditLoggerService {
   private readonly logger = new Logger(AuditLoggerService.name);
   private readonly winstonLogger: winston.Logger;
-  /** 哈希链：前一条记录的 hash */
+  /** Hash chain: the previous record's hash */
   private prevHash: string;
-  /** 创世哈希（哈希链起点） */
+  /** Genesis hash (chain starting point) */
   private static readonly GENESIS_HASH = '0'.repeat(64);
 
   constructor() {
-    // 1. 先从当天日志恢复 prevHash（在创建 winston logger 之前，确保首条记录能接上链）
+    // 1. Restore prevHash from the day's log first (before creating the winston logger, ensuring the first record links up)
     this.prevHash = this.loadLastHashFromToday();
 
-    // 2. 创建 winston 审计日志通道
+    // 2. Create the winston audit-log channel
     const config = getLogConfig();
-    // 确保审计日志目录存在（DailyRotateFile 不会自动创建嵌套目录）
+    // Ensure the audit-log directory exists (DailyRotateFile does not auto-create nested directories)
     const auditDir = path.join(config.logDir, 'audit');
     if (!fs.existsSync(auditDir)) {
       fs.mkdirSync(auditDir, { recursive: true });
@@ -63,13 +63,13 @@ export class AuditLoggerService {
           filename: path.join(config.logDir, 'audit', 'audit-%DATE%.log'),
           datePattern: 'YYYY-MM-DD',
           maxSize: '50m',
-          // 审计日志保留 1 年（合规要求），与 app/error 日志的 14 天不同
+          // Audit logs retained 1 year (compliance requirement), unlike the app/error logs' 14 days
           maxFiles: '365d',
           zippedArchive: true,
-          // 不使用 winston.format.timestamp() + format.json()：
-          // winston 会将传入的对象包裹在 message 字段中，导致顶层字段丢失。
-          // 改为 printf 直接输出 message（即 JSON.stringify(entry) 的结果），
-          // 确保文件每行是一个完整的审计条目 JSON。
+          // Do not use winston.format.timestamp() + format.json():
+          // winston wraps the passed object inside the message field, losing top-level fields.
+          // Instead, printf outputs the message directly (the result of JSON.stringify(entry)),
+          // ensuring each file line is a complete audit-entry JSON.
           format: winston.format.printf((info: winston.Logform.TransformableInfo) => info.message as string),
         }),
       ],
@@ -81,13 +81,13 @@ export class AuditLoggerService {
   }
 
   /**
-   * 记录安全审计事件
+   * Record a security-audit event
    *
-   * 同步计算哈希链并写入日志文件。调用方无需 await（fire-and-forget 友好）。
+   * Computes the hash chain synchronously and writes the log file. Callers need not await (fire-and-forget friendly).
    */
   logSecurityEvent(event: AuditEvent): void {
     try {
-      // 0. 校验必填字段，防止写入不完整条目破坏哈希链
+      // 0. Validate required fields, preventing incomplete entries from breaking the hash chain
       if (!event.type || !event.severity) {
         this.logger.warn(
           `审计事件缺少必填字段，已跳过 | type="${event.type}" severity="${event.severity}"`,
@@ -95,7 +95,7 @@ export class AuditLoggerService {
         return;
       }
 
-      // 1. 构建审计条目（不含 hash，用于计算 hash）
+      // 1. Build the audit entry (without hash, used for hash computation)
       const entry: AuditLogEntry = {
         timestamp: new Date().toISOString(),
         type: event.type,
@@ -106,22 +106,22 @@ export class AuditLoggerService {
         userAgent: event.userAgent,
         details: event.details,
         prevHash: this.prevHash,
-        hash: '', // 占位，下一步计算
+        hash: '', // placeholder, computed in the next step
       };
 
-      // 2. 计算当前条目的 hash = SHA256(prevHash + canonical_json(entry_without_hash))
+      // 2. Compute the current entry's hash = SHA256(prevHash + canonical_json(entry_without_hash))
       const hashInput = this.canonicalString(entry);
       entry.hash = crypto.createHash('sha256').update(hashInput, 'utf-8').digest('hex');
 
-      // 3. 更新内存中的 prevHash，为下一条记录准备
+      // 3. Update prevHash in memory, preparing for the next record
       this.prevHash = entry.hash;
 
-      // 4. 写入日志文件
-      // 传入 JSON 字符串作为 message，配合 printf format 直接输出
-      // 确保 file 每行是一个完整的审计条目 JSON（不被 winston 包裹）
+      // 4. Write the log file
+      // Pass the JSON string as message, output directly via the printf format
+      // Ensures each file line is a complete audit-entry JSON (not wrapped by winston)
       this.winstonLogger.info(JSON.stringify(entry));
     } catch (err) {
-      // 审计日志写入失败不应影响业务流程，仅记录错误
+      // Audit-log write failures must not affect the business flow; only log the error
       this.logger.error(
         `审计日志写入失败 | type="${event.type}" error="${(err as Error).message}"`,
       );
@@ -129,13 +129,13 @@ export class AuditLoggerService {
   }
 
   /**
-   * 验证指定日期审计日志的哈希链完整性
+   * Verify the hash-chain integrity of a given day's audit logs
    *
-   * 用于安全审查时检测日志是否被篡改。
-   * 如果某条记录被修改，其 hash 会变化，导致后续记录的 prevHash 不匹配。
+   * Used to detect tampering during security review.
+   * If a record is modified, its hash changes, causing subsequent records' prevHash to mismatch.
    *
-   * @param date 日期字符串（YYYY-MM-DD），默认今天
-   * @returns 验证结果
+   * @param date date string (YYYY-MM-DD), defaults to today
+   * @returns the verification result
    */
   verifyChain(date?: string): AuditChainVerificationResult {
     const targetDate = date || new Date().toISOString().split('T')[0];
@@ -154,8 +154,8 @@ export class AuditLoggerService {
     const content = fs.readFileSync(auditFile, 'utf-8');
     const lines = content.trim().split('\n').filter(Boolean);
 
-    // 哈希链起点：如果是当天第一条，prevHash 应为创世哈希或前一天的最后一条 hash
-    // 此处简化：第一条记录的 prevHash 应该与文件中记录的一致，我们验证链式关系
+    // Chain starting point: for the day's first record, prevHash should be the genesis hash or the previous day's last hash
+    // Simplified here: the first record's prevHash should match what the file records; we verify the chain relation
     let expectedPrevHash: string | null = null;
     let entryIndex = 0;
 
@@ -174,7 +174,7 @@ export class AuditLoggerService {
         };
       }
 
-      // 防御性检查：prevHash 或 hash 字段缺失时判定为损坏
+      // Defensive check: treat missing prevHash or hash fields as corrupted
       if (!entry.prevHash || !entry.hash) {
         return {
           valid: false,
@@ -185,12 +185,12 @@ export class AuditLoggerService {
         };
       }
 
-      // 第一条记录：初始化 expectedPrevHash
+      // First record: initialize expectedPrevHash
       if (expectedPrevHash === null) {
         expectedPrevHash = entry.prevHash;
       }
 
-      // 验证 prevHash 是否与上一条的 hash 匹配
+      // Verify that prevHash matches the previous record's hash
       if (entry.prevHash !== expectedPrevHash) {
         return {
           valid: false,
@@ -201,7 +201,7 @@ export class AuditLoggerService {
         };
       }
 
-      // 重新计算 hash 验证
+      // Recompute the hash to verify
       const recomputedHash = crypto
         .createHash('sha256')
         .update(this.canonicalString({ ...entry, hash: '' }), 'utf-8')
@@ -217,7 +217,7 @@ export class AuditLoggerService {
         };
       }
 
-      // 更新 expectedPrevHash 为当前条目的 hash
+      // Update expectedPrevHash to the current entry's hash
       expectedPrevHash = entry.hash;
     }
 
@@ -230,16 +230,16 @@ export class AuditLoggerService {
   }
 
   /**
-   * 分页查询审计日志条目
+   * Query audit-log entries with pagination
    *
-   * 支持两种查询模式：
-   *   1. 时间范围模式（startTime/endTime）：扫描范围内所有日期的审计文件，按时间戳过滤
-   *   2. 单日模式（date）：读取指定日期（默认今天）的审计日志文件
+   * Supports two query modes:
+   *   1. Time-range mode (startTime/endTime): scans all audit files in the range, filtering by timestamp
+   *   2. Single-day mode (date): reads the given day's (default today) audit log file
    *
-   * 按条件筛选后分页返回（倒序，最新在前）。
+   * Filters by condition then returns paginated (descending, newest first).
    *
-   * @param filter 查询筛选条件
-   * @returns 分页结果
+   * @param filter query filter conditions
+   * @returns the paginated result
    */
   findEntries(filter: AuditLogQueryFilter = {}): AuditLogQueryResult {
     const page = filter.page && filter.page > 0 ? filter.page : 1;
@@ -248,25 +248,25 @@ export class AuditLoggerService {
     const config = getLogConfig();
     const auditDir = path.join(config.logDir, 'audit');
 
-    // 确定要扫描的日期列表
+    // Determine the list of dates to scan
     let dates: string[];
     let startDateStr: string;
     let endDateStr: string;
 
     if (filter.startTime || filter.endTime) {
-      // 时间范围模式：解析 startTime/endTime，生成日期列表
+      // Time-range mode: parse startTime/endTime and generate the date list
       const today = new Date().toISOString().split('T')[0];
       startDateStr = filter.startTime ? filter.startTime.split('T')[0] : today;
       endDateStr = filter.endTime ? filter.endTime.split('T')[0] : today;
       dates = this.enumerateDates(startDateStr, endDateStr);
     } else {
-      // 单日模式
+      // Single-day mode
       const targetDate = filter.date || new Date().toISOString().split('T')[0];
       startDateStr = endDateStr = targetDate;
       dates = [targetDate];
     }
 
-    // 收集所有日期文件中的条目
+    // Collect entries from all date files
     const filtered: AuditLogEntry[] = [];
     for (const dateStr of dates) {
       const auditFile = path.join(auditDir, `audit-${dateStr}.log`);
@@ -280,22 +280,22 @@ export class AuditLoggerService {
         try {
           entry = JSON.parse(line);
         } catch {
-          continue; // 跳过无法解析的行
+          continue; // skip unparseable lines
         }
 
-        // 防御性处理：旧记录可能缺少 type/severity 字段，归一化为 'unknown'
+        // Defensive handling: old records may lack type/severity fields; normalize to 'unknown'
         if (!entry.type) (entry as any).type = 'unknown';
         if (!entry.severity) (entry as any).severity = 'unknown';
         if (!entry.timestamp) entry.timestamp = 'unknown';
 
-        // 时间范围过滤（仅时间范围模式需要，单日模式文件本身已是当天）
+        // Time-range filtering (needed only in time-range mode; single-day mode files are already that day)
         if (filter.startTime || filter.endTime) {
           if (entry.timestamp !== 'unknown') {
             const entryTime = new Date(entry.timestamp).getTime();
             if (filter.startTime && entryTime < new Date(filter.startTime).getTime()) continue;
             if (filter.endTime) {
               const endMs = new Date(filter.endTime).getTime();
-              // endTime 含 T00:00:00 时只到当天 0 点，需要扩展到 23:59:59
+              // endTime with T00:00:00 only reaches midnight of that day; extend to 23:59:59
               const endTimeStr = filter.endTime.split('T')[1];
               if (!endTimeStr || endTimeStr === '00:00:00') {
                 if (entryTime > endMs + 86400000 - 1) continue;
@@ -315,7 +315,7 @@ export class AuditLoggerService {
       }
     }
 
-    // 倒序（最新在前）
+    // Descending (newest first)
     filtered.reverse();
 
     const total = filtered.length;
@@ -326,7 +326,7 @@ export class AuditLoggerService {
   }
 
   /**
-   * 枚举两个日期之间的所有日期（含两端）
+   * Enumerate all dates between two dates (inclusive)
    */
   private enumerateDates(startDate: string, endDate: string): string[] {
     const dates: string[] = [];
@@ -343,12 +343,12 @@ export class AuditLoggerService {
   }
 
   /**
-   * 获取审计日志统计信息
+   * Get audit-log statistics
    *
-   * 统计当天审计日志的总数、按类型/严重级别分布，以及哈希链完整性状态。
+   * Computes the day's audit-log total count, distribution by type/severity, and hash-chain integrity status.
    *
-   * @param date 日期字符串（YYYY-MM-DD），默认今天
-   * @returns 统计结果
+   * @param date date string (YYYY-MM-DD), defaults to today
+   * @returns the statistics result
    */
   getStats(date?: string): AuditLogStats {
     const targetDate = date || new Date().toISOString().split('T')[0];
@@ -378,14 +378,14 @@ export class AuditLoggerService {
         continue;
       }
       stats.total++;
-      // 防御性处理：旧记录可能缺少 type/severity，归一化为 'unknown' 避免产生 "undefined" 键
+      // Defensive handling: old records may lack type/severity; normalize to 'unknown' to avoid "undefined" keys
       const entryType = entry.type || 'unknown';
       const entrySeverity = entry.severity || 'unknown';
       stats.byType[entryType] = (stats.byType[entryType] || 0) + 1;
       stats.bySeverity[entrySeverity] = (stats.bySeverity[entrySeverity] || 0) + 1;
     }
 
-    // 验证哈希链完整性
+    // Verify hash-chain integrity
     const chainResult = this.verifyChain(targetDate);
     stats.chainValid = chainResult.valid;
 
@@ -393,10 +393,10 @@ export class AuditLoggerService {
   }
 
   /**
-   * 从当天审计日志文件的最后一行恢复 prevHash
+   * Restore prevHash from the last line of the day's audit log file
    *
-   * 服务重启后哈希链需要接续。读取当天日志文件最后一行的 hash 字段。
-   * 如果当天无日志文件，使用创世哈希重新开始。
+   * The hash chain must resume after a service restart. Reads the hash field from the last line of the day's log file.
+   * If there is no log file for the day, restarts from the genesis hash.
    */
   private loadLastHashFromToday(): string {
     try {
@@ -421,7 +421,7 @@ export class AuditLoggerService {
 
       return AuditLoggerService.GENESIS_HASH;
     } catch (err) {
-      // 恢复失败时使用创世哈希（会导致当天哈希链断裂，但优于无法写入）
+      // On restore failure, use the genesis hash (breaks the day's chain, but better than being unable to write)
       console.warn(
         `[AuditLogger] 恢复 prevHash 失败，使用创世哈希: ${(err as Error).message}`,
       );
@@ -430,14 +430,14 @@ export class AuditLoggerService {
   }
 
   /**
-   * 生成规范化 JSON 字符串（顶层键按字母排序），确保 hash 计算的确定性
+   * Generate a canonical JSON string (top-level keys sorted alphabetically), ensuring deterministic hash computation
    *
-   * 排除 hash 字段本身（hash 是计算结果，不能参与自身的计算）
+   * Excludes the hash field itself (hash is the computation result and must not participate in its own computation)
    *
-   * 注意：不使用 JSON.stringify 的 replacer 数组（第二参数），
-   * 因为 replacer 数组会递归过滤所有层级对象的键，
-   * 导致 details 等嵌套对象的子键被丢弃，使不同内容产生相同 hash。
-   * 改为手动构建排序后的新对象再序列化。
+   * Note: do not use JSON.stringify's replacer array (the second argument),
+   * because a replacer array recursively filters keys of objects at all levels,
+   * dropping sub-keys of nested objects like details, making different content produce the same hash.
+   * Instead, manually build a sorted new object and then serialize.
    */
   private canonicalString(entry: AuditLogEntry): string {
     const fields: Record<string, any> = {
@@ -451,8 +451,8 @@ export class AuditLoggerService {
       details: entry.details,
       prevHash: entry.prevHash,
     };
-    // 手动按键排序构建新对象（仅顶层排序），确保确定性
-    // JSON.stringify 会自动忽略 undefined 值
+    // Manually build a new object with sorted keys (top level only), ensuring determinism
+    // JSON.stringify automatically ignores undefined values
     const sortedKeys = Object.keys(fields).sort();
     const sorted: Record<string, any> = {};
     for (const key of sortedKeys) {
@@ -464,16 +464,16 @@ export class AuditLoggerService {
   }
 
   /**
-   * 关闭审计日志通道，等待所有待写入的日志落盘
+   * Close the audit-log channel, awaiting all pending log writes to flush
    *
-   * 用于：
-   * 1. 应用关闭时优雅清理资源（防止日志丢失）
-   * 2. 测试中等待 winston 异步写入完成后读取文件验证
+   * Used for:
+   * 1. Graceful resource cleanup on application shutdown (preventing log loss)
+   * 2. In tests, waiting for winston's async writes to finish before reading the file for verification
    *
-   * 实现说明：
-   *   winston 的 end() 会触发 'finish' 事件，但 DailyRotateFile transport
-   *   的底层 FileStreamRotator 可能延迟刷新。为防止极端情况下 'finish'
-   *   不触发导致 await 永久挂起，增加 2s 兜底超时。
+   * Implementation notes:
+   *   winston's end() triggers the 'finish' event, but DailyRotateFile transport's
+   *   underlying FileStreamRotator may flush late. To prevent 'finish' never firing in edge
+   *   cases and awaiting forever, a 2s fallback timeout is added.
    */
   async close(): Promise<void> {
     return new Promise<void>((resolve) => {
@@ -483,12 +483,12 @@ export class AuditLoggerService {
         settled = true;
         clearTimeout(fallbackTimer);
         this.winstonLogger.removeListener('finish', finishHandler);
-        // setImmediate 确保底层文件流完成最后一次 flush
+        // setImmediate ensures the underlying file stream completes its final flush
         setImmediate(resolve);
       };
       this.winstonLogger.on('finish', finishHandler);
       this.winstonLogger.end();
-      // 兜底：2s 后强制 resolve（防止 'finish' 不触发时永久挂起）
+      // Fallback: force resolve after 2s (prevents hanging forever when 'finish' does not fire)
       const fallbackTimer = setTimeout(() => {
         if (settled) return;
         settled = true;

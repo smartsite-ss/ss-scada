@@ -179,7 +179,7 @@ describe('EventBusService', () => {
     });
   });
 
-  // ===== emit 钩子机制（#6 事件持久化） =====
+  // ===== emit hook mechanism (#6 event persistence) =====
 
   describe('registerEmitHook', () => {
     it('should register hook and call it on emit (sync)', () => {
@@ -201,7 +201,7 @@ describe('EventBusService', () => {
 
       unregister();
       service.emit('device.created', {});
-      expect(hook).toHaveBeenCalledTimes(1); // 不再调用
+      expect(hook).toHaveBeenCalledTimes(1); // no longer called
     });
 
     it('should call multiple hooks on emit', () => {
@@ -225,9 +225,9 @@ describe('EventBusService', () => {
       service.registerEmitHook(goodHook);
 
       expect(() => service.emit('device.created', {})).not.toThrow();
-      // 好钩子仍然被调用
+      // the good hook is still called
       expect(goodHook).toHaveBeenCalled();
-      // eventEmitter.emit 也被调用
+      // eventEmitter.emit is also called
       expect(mockEmitter.emit).toHaveBeenCalled();
     });
 
@@ -236,7 +236,7 @@ describe('EventBusService', () => {
       service.registerEmitHook(badAsyncHook);
 
       expect(() => service.emit('device.created', {})).not.toThrow();
-      // 等待微任务刷新（rejected Promise 的 .catch 已注册）
+      // await microtask flush (the rejected Promise's .catch is already registered)
       await Promise.resolve();
       await Promise.resolve();
     });
@@ -244,7 +244,7 @@ describe('EventBusService', () => {
 
   describe('emitAsync', () => {
     beforeEach(() => {
-      // emitAsync 需要 emitAsync 方法
+      // emitAsync requires an emitAsync method
       (mockEmitter as any).emitAsync = jest.fn();
     });
 
@@ -273,7 +273,7 @@ describe('EventBusService', () => {
 
       await service.emitAsync('device.created', {});
 
-      // 钩子必须在订阅者之前完成
+      // hooks must complete before subscribers
       expect(hookCallOrder).toEqual(['hook-start', 'hook-end', 'subscribers']);
     });
 
@@ -295,10 +295,10 @@ describe('EventBusService', () => {
 
       await service.emitAsync('device.created', {});
 
-      // 两个钩子都被调用
+      // both hooks are called
       expect(badHook).toHaveBeenCalled();
       expect(goodHook).toHaveBeenCalled();
-      // emitAsync 也被调用
+      // emitAsync is also called
       expect((mockEmitter as any).emitAsync).toHaveBeenCalled();
     });
   });

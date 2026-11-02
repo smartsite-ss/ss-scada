@@ -14,7 +14,7 @@ export function useColumnConfig(tableId: () => string, columnsRef: Ref<SmartTabl
 
   const storageKey = computed(() => `${STORAGE_PREFIX}${tableId()}${STORAGE_SUFFIX}`);
 
-  /** 加载持久化配置 */
+  /** Load persisted config */
   function loadFromStorage(): ColumnPersist | null {
     if (!tableId()) return null;
     try {
@@ -26,7 +26,7 @@ export function useColumnConfig(tableId: () => string, columnsRef: Ref<SmartTabl
     }
   }
 
-  /** 持久化到 localStorage */
+  /** Persist to localStorage */
   function persist() {
     if (!tableId()) return;
     try {
@@ -40,7 +40,7 @@ export function useColumnConfig(tableId: () => string, columnsRef: Ref<SmartTabl
     }
   }
 
-  /** 初始化隐藏列 */
+  /** Initialize hidden columns */
   function init() {
     const columns = columnsRef.value;
     const persisted = loadFromStorage();
@@ -55,7 +55,7 @@ export function useColumnConfig(tableId: () => string, columnsRef: Ref<SmartTabl
     }
   }
 
-  // 当 tableId 或 columns 变化时重新初始化
+  // Re-initialize when tableId or columns change
   watch(
     [tableId, columnsRef],
     () => {
@@ -64,17 +64,17 @@ export function useColumnConfig(tableId: () => string, columnsRef: Ref<SmartTabl
     { immediate: true },
   );
 
-  /** 可见列 */
+  /** Visible columns */
   const visibleColumns = computed(() => {
     return columnsRef.value.filter((c) => !hiddenKeys.value.includes(c.key));
   });
 
-  /** 可配置列（非 required） */
+  /** Configurable columns (non-required) */
   const configurableColumns = computed(() => {
     return columnsRef.value.filter((c) => !c.required);
   });
 
-  /** 切换某列的显示/隐藏 */
+  /** Toggle a column's visibility */
   function toggleColumn(key: string) {
     const col = columnsRef.value.find((c) => c.key === key);
     if (!col || col.required) return;
@@ -88,7 +88,7 @@ export function useColumnConfig(tableId: () => string, columnsRef: Ref<SmartTabl
     persist();
   }
 
-  /** 重置为默认 */
+  /** Reset to default */
   function resetToDefault() {
     hiddenKeys.value = columnsRef.value
       .filter((c) => c.defaultVisible === false && !c.required)

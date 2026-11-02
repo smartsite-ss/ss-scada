@@ -3,18 +3,18 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * AI 效果评估运行器 — P1-T10
+ * AI evaluation runner — P1-T10
  *
- * 自动化评估流水线：运行 50+ 基准测试用例，自动评分并生成对比报告。
+ * Automated evaluation pipeline: runs 50+ benchmark cases, auto-scores and generates comparison reports.
  *
- * 核心能力：
- *   - 自动评分：keyword / exact / contains / regex / structure 五种方法
- *   - 人工标记：manual 方法标记为需人工评估
- *   - 加权聚合：按维度权重计算加权总分
- *   - 报告输出：文本 + Markdown 双格式
- *   - 模型对比：多报告聚合对比矩阵
+ * Core capabilities:
+ *   - Auto scoring: five methods — keyword / exact / contains / regex / structure
+ *   - Manual marking: cases with the manual method are marked as requiring human evaluation
+ *   - Weighted aggregation: computes the weighted total score by dimension weights
+ *   - Report output: both text and Markdown formats
+ *   - Model comparison: aggregated comparison matrix from multiple reports
  *
- * 用法:
+ * Usage:
  *   import { runEvaluation, formatReportText } from './eval-runner';
  *   import { EVAL_CASES } from './eval-cases';
  *
@@ -31,46 +31,46 @@
 import { EvalCase, EvalDimension } from './eval-cases';
 
 // ============================================================
-// 配置
+// Configuration
 // ============================================================
 
 export interface EvalRunConfig {
-  /** 评估用例列表 */
+  /** Evaluation case list */
   cases: EvalCase[];
-  /** AI 调用函数（由调用方注入，可以是真实 LLM 或 Mock） */
+  /** AI call function (injected by the caller; can be a real LLM or a Mock) */
   callAI: (
     input: string,
     taskType: string,
     providerId?: string,
     model?: string,
   ) => Promise<EvalAIResponse>;
-  /** 供应商 ID */
+  /** Provider ID */
   providerId?: string;
-  /** 模型名称 */
+  /** Model name */
   model?: string;
-  /** 仅运行指定 category 的用例 */
+  /** Run only cases of the given category */
   categoryFilter?: string;
-  /** 仅运行指定 priority 的用例 */
+  /** Run only cases of the given priority */
   priorityFilter?: string;
-  /** 用例间延迟（ms），避免速率限制 */
+  /** Delay between cases (ms), to avoid rate limits */
   throttleMs?: number;
 }
 
 export interface EvalAIResponse {
-  /** LLM 响应文本 */
+  /** LLM response text */
   content: string;
-  /** Token 用量 */
+  /** Token usage */
   usage?: {
     promptTokens: number;
     completionTokens: number;
     totalTokens: number;
   };
-  /** 响应延迟（ms），如未提供则自动计算 */
+  /** Response latency (ms); computed automatically if not provided */
   latencyMs?: number;
 }
 
 // ============================================================
-// 结果类型
+// Result types
 // ============================================================
 
 export interface EvalCaseResult {
@@ -125,11 +125,11 @@ export interface CategoryStat {
 }
 
 // ============================================================
-// 主入口
+// Main entry
 // ============================================================
 
 /**
- * 运行评估流水线
+ * Run the evaluation pipeline
  */
 export async function runEvaluation(config: EvalRunConfig): Promise<EvalReport> {
   const { callAI, providerId, model, throttleMs = 0 } = config;
@@ -190,7 +190,7 @@ export async function runEvaluation(config: EvalRunConfig): Promise<EvalReport> 
       });
     }
 
-    // 限流
+    // Rate limiting
     if (throttleMs > 0 && i < cases.length - 1) {
       await sleep(throttleMs);
     }
@@ -200,7 +200,7 @@ export async function runEvaluation(config: EvalRunConfig): Promise<EvalReport> 
 }
 
 // ============================================================
-// 维度评分
+// Dimension scoring
 // ============================================================
 
 function scoreDimension(
@@ -381,7 +381,7 @@ function scoreStructureDim(
 }
 
 // ============================================================
-// 报告生成
+// Report generation
 // ============================================================
 
 function buildReport(
@@ -407,7 +407,7 @@ function buildReport(
     0,
   );
 
-  // 分类聚合
+  // Category aggregation
   const byCategory: Record<string, CategoryStat> = {};
   const byPriority: Record<string, CategoryStat> = {};
 
@@ -479,10 +479,10 @@ function buildReport(
 }
 
 // ============================================================
-// 报告格式化
+// Report formatting
 // ============================================================
 
-/** 生成纯文本格式报告 */
+/** Generate a plain-text report */
 export function formatReportText(report: EvalReport): string {
   const lines: string[] = [];
   const { config, summary } = report;
@@ -562,7 +562,7 @@ export function formatReportText(report: EvalReport): string {
   return lines.join('\n');
 }
 
-/** 生成 Markdown 格式报告 */
+/** Generate a Markdown report */
 export function formatReportMarkdown(report: EvalReport): string {
   const lines: string[] = [];
   const { config, summary } = report;
@@ -644,7 +644,7 @@ export function formatReportMarkdown(report: EvalReport): string {
 }
 
 // ============================================================
-// 模型对比矩阵
+// Model comparison matrix
 // ============================================================
 
 export interface ModelComparisonEntry {
@@ -656,7 +656,7 @@ export interface ModelComparisonEntry {
   totalTokens: number;
 }
 
-/** 从多个报告构建模型对比矩阵 */
+/** Build a model comparison matrix from multiple reports */
 export function buildComparisonMatrix(reports: EvalReport[]): ModelComparisonEntry[] {
   return reports.map((r) => ({
     providerId: r.config.providerId || 'unknown',
@@ -668,7 +668,7 @@ export function buildComparisonMatrix(reports: EvalReport[]): ModelComparisonEnt
   }));
 }
 
-/** 格式化模型对比矩阵（文本） */
+/** Format the model comparison matrix (text) */
 export function formatComparisonMatrix(entries: ModelComparisonEntry[]): string {
   if (entries.length === 0) return '无对比数据';
 
@@ -688,7 +688,7 @@ export function formatComparisonMatrix(entries: ModelComparisonEntry[]): string 
   return lines.join('\n');
 }
 
-/** 格式化模型对比矩阵（Markdown） */
+/** Format the model comparison matrix (Markdown) */
 export function formatComparisonMarkdown(entries: ModelComparisonEntry[]): string {
   if (entries.length === 0) return '无对比数据';
 
@@ -706,7 +706,7 @@ export function formatComparisonMarkdown(entries: ModelComparisonEntry[]): strin
 }
 
 // ============================================================
-// 工具
+// Utilities
 // ============================================================
 
 function sleep(ms: number): Promise<void> {

@@ -3,24 +3,25 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * Agent Orchestrator — P1-T03 后端 ReAct 编排器
+ * Agent Orchestrator - P1-T03 backend ReAct orchestrator
  *
- * 实现 ReAct（Reasoning + Acting）循环：
- *   Thought → Action → Observation（循环，上限 12 次）
+ * Implements the ReAct (Reasoning + Acting) loop:
+ *   Thought -> Action -> Observation (loop, max 12 iterations)
  *
- * P1-T04 增强：场景工具（scene.*）委托给前端执行，通过会话机制支持暂停/恢复。
+ * P1-T04 enhancement: scene tools (scene.*) are delegated to the frontend,
+ * supporting pause/resume via a session mechanism.
  *
- * 前端通过 POST /api/v1/ai/agent/execute 调用。
- * 响应：SSE 流式输出（每个步骤以 JSON chunk 推送）。
+ * The frontend calls via POST /api/v1/ai/agent/execute.
+ * Response: SSE streaming output (each step pushed as a JSON chunk).
  *
- * 关联决策：
- *   - D-005 混合模式（复杂意图 → 后端 ReAct）
- *   - D-009 SSE 流式输出
- *   - D-013 MCP 工具协议
+ * Related decisions:
+ *   - D-005 hybrid mode (complex intent -> backend ReAct)
+ *   - D-009 SSE streaming output
+ *   - D-013 MCP tool protocol
  *
- * 用法:
+ * Usage:
  *   const generator = orchestrator.execute({ userInput, context });
- *   for await (const step of generator) { // 按 step 推送SSE }
+ *   for await (const step of generator) { // push step to SSE }
  */
 
 import { Injectable, Logger } from '@nestjs/common';
@@ -30,71 +31,71 @@ import { ChatMessage, LLMRequest } from './llm.types';
 import { FeatureFlagService, AI_FEATURE_FLAGS } from './feature-flag.service';
 import { getSceneCreationSystemPrompt, isSceneCreationIntent } from './scene-creator-agent';
 
-/** 需要委托前端执行的工具名前缀 */
+/** Tool-name prefix that requires frontend delegation */
 const FRONTEND_TOOL_PREFIXES = ['scene_', 'layout_', 'datatag_'];
 
-/** Agent 执行步骤（SSE chunk） */
+/** Agent execution step (SSE chunk) */
 export interface AgentStep {
-  /** 步骤类型 */
+  /** Step type */
   type: 'thought' | 'action' | 'observation' | 'answer' | 'error' | 'pending';
-  /** 步骤内容 */
+  /** Step content */
   content: string;
-  /** 步骤序号（1-based） */
+  /** Step index (1-based) */
   step: number;
-  /** 关联的工具名（action 类型时） */
+  /** Associated tool name (for action steps) */
   toolName?: string;
-  /** 工具参数（action 类型时） */
+  /** Tool parameters (for action steps) */
   toolParams?: Record<string, unknown>;
-  /** 工具结果（observation 类型时） */
+  /** Tool result (for observation steps) */
   toolResult?: string;
-  /** 是否需要前端执行（action 类型时） */
+  /** Whether frontend execution is required (for action steps) */
   delegateToFrontend?: boolean;
-  /** 会话 ID（delegateToFrontend 为 true 时，前端需携带此 ID 回传结果） */
+  /** Session ID (when delegateToFrontend is true, the frontend must carry this ID to return the result) */
   sessionId?: string;
-  /** 时间戳 */
+  /** Timestamp */
   timestamp: number;
-  /** 对话持久化会话 ID（由 Controller 在 answer/error 步骤注入，前端据此更新 currentConversationId） */
+  /** Conversation-persistence session ID (injected by the Controller on answer/error steps; the frontend uses it to update currentConversationId) */
   conversationId?: string;
 }
 
-/** Agent 执行请求 */
+/** Agent execution request */
 export interface AgentExecuteRequest {
-  /** 用户输入 */
+  /** User input */
   userInput: string;
-  /** 编辑器/运行时上下文 */
+  /** Editor/runtime context */
   context?: string;
-  /** 意图类型 */
+  /** Intent type */
   intent?: string;
-  /** 复杂度 */
+  /** Complexity */
   complexity?: 'simple' | 'complex';
-  /** 对话历史 */
+  /** Conversation history */
   history?: ChatMessage[];
-  /** 会话 ID（恢复执行时传入） */
+  /** Session ID (passed when resuming execution) */
   sessionId?: string;
-  /** 工具执行结果（前端回传） */
+  /** Tool execution result (returned by the frontend) */
   toolResultPayload?: { toolName: string; result: string };
-  /** 对话持久化会话 ID（缺省时由 Controller 自动创建新会话） */
+  /** Conversation-persistence session ID (auto-created by the Controller when omitted) */
   conversationId?: string;
-  /** 项目 ID（创建新会话时使用，缺省 'default'） */
+  /** Project ID (used when creating a new session, defaults to 'default') */
   projectId?: string;
 }
 
-/** Agent 执行选项 */
+/** Agent execution options */
 export interface AgentExecuteOptions {
-  /** 最大 ReAct 循环次数 */
+  /** Maximum ReAct loop count */
   maxIterations: number;
-  /** 是否流式输出 */
+  /** Whether to stream output */
   stream: boolean;
 }
 
-/** 暂挂的 Agent 会话 */
+/** Suspended Agent session */
 interface PendingSession {
   req: AgentExecuteRequest;
   messages: ChatMessage[];
   step: number;
   iteration: number;
   activeToolName: string;
-  /** 原始 tool_call_id（来自 LLM 响应），续执行时需与 assistant 消息中的 tool_calls[].id 匹配 */
+  /** Original tool_call_id (from the LLM response); must match assistant message tool_calls[].id when resuming */
   toolCallId: string;
   createdAt: number;
 }
@@ -104,18 +105,18 @@ const DEFAULT_OPTIONS: AgentExecuteOptions = {
   stream: true,
 };
 
-/** 会话超时（5 分钟） */
+/** Session timeout (5 minutes) */
 const SESSION_TIMEOUT_MS = 5 * 60 * 1000;
 
-/** 后端可用工具注册表 */
+/** Backend available-tool registry */
 export interface BackendTool {
   name: string;
   description: string;
   category: string;
   params: Array<{ name: string; type: string; description: string; required: boolean }>;
-  /** 是否需委托前端执行（true = 仅定义 schema，执行由前端完成） */
+  /** Whether frontend delegation is required (true = schema-only definition, executed by the frontend) */
   frontend: boolean;
-  /** 执行工具（frontend=false 时生效） */
+  /** Execute tool (effective when frontend=false) */
   execute?: (params: Record<string, unknown>) => Promise<string>;
 }
 
@@ -124,7 +125,7 @@ export class AgentOrchestratorService {
   private readonly logger = new Logger(AgentOrchestratorService.name);
   private readonly tools = new Map<string, BackendTool>();
 
-  /** 暂挂会话（sessionId → PendingSession） */
+  /** Suspended sessions (sessionId -> PendingSession) */
   private readonly pendingSessions = new Map<string, PendingSession>();
 
   constructor(
@@ -133,14 +134,14 @@ export class AgentOrchestratorService {
     private readonly configService: ConfigService,
   ) {
     this.registerBuiltinTools();
-    // 定期清理超时会话
+    // periodically clean up timed-out sessions
     setInterval(() => this.cleanupExpiredSessions(), 60 * 1000);
   }
 
   /**
-   * 执行 Agent 编排
-   * @param req 请求（首次执行或携带 sessionId + toolResultPayload 续执行）
-   * @returns AsyncGenerator，每个 AgentStep 为一个 chunk
+   * Execute Agent orchestration
+   * @param req request (first execution, or resume with sessionId + toolResultPayload)
+   * @returns AsyncGenerator, each AgentStep is a chunk
    */
   async *execute(
     req: AgentExecuteRequest,
@@ -148,7 +149,7 @@ export class AgentOrchestratorService {
   ): AsyncGenerator<AgentStep, void, unknown> {
     const maxIter = options.maxIterations || DEFAULT_OPTIONS.maxIterations;
 
-    // ── 续执行模式：前端回传了工具结果 ──
+    // ── Resume mode: the frontend returned the tool result ──
     if (req.sessionId && req.toolResultPayload) {
       const session = this.pendingSessions.get(req.sessionId);
       if (!session) {
@@ -164,46 +165,46 @@ export class AgentOrchestratorService {
         `[Agent] 续执行 session=${req.sessionId} tool=${req.toolResultPayload.toolName}`,
       );
 
-      // 将工具结果追加到对话历史（使用原始 tool_call_id 确保与 assistant 消息中的 tool_calls[].id 匹配）
+      // append the tool result to the conversation history (use the original tool_call_id to match assistant message tool_calls[].id)
       session.messages.push({
         role: 'tool',
         content: req.toolResultPayload.result,
         toolCallId: session.toolCallId,
       });
 
-      // 继续 ReAct 循环
+      // continue the ReAct loop
       yield* this.runReActLoop(session.messages, session.step + 1, session.iteration + 1, maxIter);
       return;
     }
 
-    // ── 首次执行模式 ──
+    // ── First-execution mode ──
     this.logger.log(
       `[Agent] 首次执行 intent=${req.intent || 'chat'} input="${req.userInput.substring(0, 80)}" tools=${this.tools.size}`,
     );
 
-    // 检查 Feature Flag
+    // check the Feature Flag
     const requiredFlag = this.getRequiredFlag(req.intent);
     if (requiredFlag && !this.featureFlag.isEnabled(requiredFlag)) {
       yield this.makeStep({ type: 'error', content: `AI 功能未启用：${requiredFlag}`, step: 0 });
       return;
     }
 
-    // 构建初始消息
+    // build the initial message
     const messages: ChatMessage[] = this.buildInitialMessages(req);
 
     yield* this.runReActLoop(messages, 1, 0, maxIter);
   }
 
   /**
-   * 注册后端工具
+   * Register a backend tool
    */
   registerTool(tool: BackendTool): void {
     this.tools.set(tool.name, tool);
   }
 
   /**
-   * 批量注入后端工具（P2-T01）
-   * 覆盖已注册的同名工具（如 stub 替换为真实实现）
+   * Inject backend tools in bulk (P2-T01)
+   * Overwrites already-registered tools with the same name (e.g. replace stub with the real implementation)
    */
   injectBackendTools(tools: BackendTool[]): void {
     let count = 0;
@@ -215,27 +216,27 @@ export class AgentOrchestratorService {
   }
 
   /**
-   * 获取已注册的工具列表
+   * Get the list of registered tools
    */
   getToolList(): BackendTool[] {
     return Array.from(this.tools.values());
   }
 
   /**
-   * 获取暂挂的会话
+   * Get a suspended session
    */
   hasPendingSession(sessionId: string): boolean {
     return this.pendingSessions.has(sessionId);
   }
 
   // ============================================================
-  //  ReAct 循环核心
+  //  ReAct loop core
   // ============================================================
 
   /**
-   * ReAct 主循环：Thought → Action → Observation
-   * 支持前端工具委托（scene.* / datatag.*）：
-   *   遇到 frontend=true 的工具 → 暂存会话 → 发射 pending 步骤 → 等待前端 POST /agent/execute 续执行
+   * ReAct main loop: Thought -> Action -> Observation
+   * Supports frontend tool delegation (scene.* / datatag.*):
+   *   on a frontend=true tool -> suspend session -> emit pending step -> wait for the frontend POST /agent/execute to resume
    */
   private async *runReActLoop(
     messages: ChatMessage[],
@@ -255,7 +256,7 @@ export class AgentOrchestratorService {
           step,
         });
 
-        // 调用 LLM（带工具定义）
+        // call the LLM (with tool definitions)
         const llmReq: LLMRequest = {
           messages,
           stream: false,
@@ -265,20 +266,20 @@ export class AgentOrchestratorService {
 
         const response = await this.proxy.generate(llmReq, 'chat');
 
-        // 检查 tool calls
+        // check tool calls
         if (response.toolCalls && response.toolCalls.length > 0) {
           const toolNames = response.toolCalls.map((t) => t.function.name).join(', ');
           this.logger.log(`[Agent] LLM 请求调用工具: [${toolNames}]`);
 
-          // 判断是否包含前端工具
+          // check whether it contains a frontend tool
           const hasFrontendTool = response.toolCalls.some((tc) => {
             const t = this.tools.get(tc.function.name);
             return t?.frontend ?? this.isFrontendTool(tc.function.name);
           });
 
           if (!hasFrontendTool) {
-            // 全部是后端工具：统一在 tool 结果之前推送 assistant(tool_calls)
-            // OpenAI/DeepSeek 要求: assistant(tool_calls) → tool(response)
+            // all backend tools: push assistant(tool_calls) uniformly before the tool results
+            // OpenAI/DeepSeek require: assistant(tool_calls) -> tool(response)
             messages.push({
               role: 'assistant',
               content: response.content || '',
@@ -295,14 +296,14 @@ export class AgentOrchestratorService {
             const toolParams = this.safeParseJSON(tc.function.arguments);
             const tool = this.tools.get(toolName);
 
-            // 判断是否需要委托前端
+            // decide whether frontend delegation is needed
             const needsFrontend = tool?.frontend ?? this.isFrontendTool(toolName);
 
             if (needsFrontend) {
-              // 生成会话 ID
+              // generate a session ID
               const sessionId = `agent_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 
-              // 追加 assistant 消息（仅含当前前端工具的 tool_call，避免后续 tool 消息数量不匹配）
+              // append an assistant message (only the current frontend tool's tool_call, to avoid later tool-message count mismatch)
               messages.push({
                 role: 'assistant',
                 content: response.content || '',
@@ -315,7 +316,7 @@ export class AgentOrchestratorService {
                 ],
               });
 
-              // 暂存会话
+              // suspend the session
               this.pendingSessions.set(sessionId, {
                 req: {} as AgentExecuteRequest,
                 messages,
@@ -326,7 +327,7 @@ export class AgentOrchestratorService {
                 createdAt: Date.now(),
               });
 
-              // 发射 action 步骤（标记需要前端执行）
+              // emit an action step (marked as requiring frontend execution)
               yield this.makeStep({
                 type: 'action',
                 content: `调用工具: ${toolName}`,
@@ -337,7 +338,7 @@ export class AgentOrchestratorService {
                 sessionId,
               });
 
-              // 发射 pending 步骤（暂停循环，等待前端回传结果）
+              // emit a pending step (pause the loop, wait for the frontend to return the result)
               yield this.makeStep({
                 type: 'pending',
                 content: `等待前端执行工具 ${toolName}...`,
@@ -345,11 +346,11 @@ export class AgentOrchestratorService {
                 sessionId,
               });
 
-              // ★ 暂停循环：由前端 POST agent/execute 携带 sessionId 和 toolResultPayload 续执行
+              // ★ pause the loop: the frontend resumes via POST agent/execute carrying sessionId and toolResultPayload
               return;
             }
 
-            // ── 后端原生工具：直接执行 ──
+            // ── Backend native tools: execute directly ──
             yield this.makeStep({
               type: 'action',
               content: `调用工具: ${toolName}`,
@@ -398,14 +399,14 @@ export class AgentOrchestratorService {
                 step,
                 toolResult: notFoundMsg,
               });
-              // ★ 必须用 role: 'tool' 配对前面的 assistant(tool_calls)，否则 DeepSeek 报 insufficient tool messages
+              // ★ must pair the preceding assistant(tool_calls) with role: 'tool', otherwise DeepSeek throws insufficient tool messages
               messages.push({ role: 'tool', content: notFoundMsg, toolCallId: tc.id });
             }
 
             step++;
           }
         } else {
-          // 无 tool calls → 最终回答
+          // no tool calls -> final answer
           this.logger.log(`[Agent] 最终回答 (${(response.content || '').length} chars)`);
           yield this.makeStep({
             type: 'answer',
@@ -416,7 +417,7 @@ export class AgentOrchestratorService {
         }
       }
 
-      // 达到最大迭代次数
+      // reached the maximum iteration count
       yield this.makeStep({
         type: 'answer',
         content: `已达到最大推理步骤（${maxIter}），当前结果可能不完整。请尝试简化您的问题。`,
@@ -433,19 +434,19 @@ export class AgentOrchestratorService {
   }
 
   // ============================================================
-  //  辅助方法
+  //  Helper methods
   // ============================================================
 
   private makeStep(partial: Omit<AgentStep, 'timestamp'>): AgentStep {
     return { ...partial, timestamp: Date.now() };
   }
 
-  /** 判断工具名是否需要前端执行（按前缀匹配） */
+  /** Check whether a tool name needs frontend execution (prefix match) */
   private isFrontendTool(toolName: string): boolean {
     return FRONTEND_TOOL_PREFIXES.some((prefix) => toolName.startsWith(prefix));
   }
 
-  /** 清理过期会话 */
+  /** Clean up expired sessions */
   private cleanupExpiredSessions(): void {
     const now = Date.now();
     for (const [id, session] of this.pendingSessions) {
@@ -457,7 +458,7 @@ export class AgentOrchestratorService {
   }
 
   private buildInitialMessages(req: AgentExecuteRequest): ChatMessage[] {
-    // 场景创建意图使用专用 System Prompt（P2-T02）
+    // scene-creation intent uses a dedicated System Prompt (P2-T02)
     const systemPrompt = isSceneCreationIntent(req.intent)
       ? getSceneCreationSystemPrompt()
       : this.getDefaultSystemPrompt();
@@ -473,7 +474,7 @@ export class AgentOrchestratorService {
     ];
   }
 
-  /** 默认 System Prompt（通用助手模式） */
+  /** Default System Prompt (general assistant mode) */
   private getDefaultSystemPrompt(): string {
     return `你是一个智能 SCADA 系统 AI 操作助手，可以通过工具调用来执行操作。
 
@@ -644,11 +645,11 @@ export class AgentOrchestratorService {
   }
 
   // ============================================================
-  //  内置工具（P1-T04：scene.* 工具标记为 frontend:true）
+  //  Built-in tools (P1-T04: scene.* tools marked frontend:true)
   // ============================================================
 
   private registerBuiltinTools(): void {
-    // ── scene.* 工具：委托前端执行 ──
+    // ── scene.* tools: delegated to the frontend ──
     this.tools.set('scene_createPage', {
       name: 'scene_createPage',
       description: '创建新的监控画面页面',
@@ -738,7 +739,7 @@ export class AgentOrchestratorService {
       params: [],
     });
 
-    // ── datatag.* 工具：委托前端执行 ──
+    // ── datatag.* tools: delegated to the frontend ──
     this.tools.set('datatag_search', {
       name: 'datatag_search',
       description: '搜索数据标签',
@@ -750,7 +751,7 @@ export class AgentOrchestratorService {
       ],
     });
 
-    // ── 后端原生工具：直接在服务端执行 ──
+    // ── Backend native tools: executed directly on the server ──
     this.tools.set('alarm_query', {
       name: 'alarm_query',
       description: '查询报警记录',

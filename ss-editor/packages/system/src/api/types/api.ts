@@ -78,9 +78,9 @@ export interface RefreshResult {
 }
 
 export interface Project {
-  /** 项目代码（后台 projectId 字段，变量命名格式，不含中文） */
+  /** Project code (backend projectId field, variable-naming format, no Chinese) */
   projectId: string;
-  /** tenantId 多租户预留字段（当前 = projectId，为以后扩展多租户预置） */
+  /** tenantId multi-tenant reserved field (currently = projectId, preset for future multi-tenant expansion) */
   tenantId: string;
   projectName: string;
   description?: string;
@@ -92,17 +92,17 @@ export interface Project {
   pages?: Page[];
   createdAt?: string;
   updatedAt?: string;
-  /** 工程位置（项目目录绝对路径） */
+  /** Project location (absolute path of the project directory) */
   projectPath?: string;
-  /** 数据库位置（项目数据库目录绝对路径） */
+  /** Database location (absolute path of the project database directory) */
   databasePath?: string;
-  /** 项目地址 */
+  /** Project address */
   address?: string;
-  /** 经度（十进制字符串） */
+  /** Longitude (decimal string) */
   longitude?: string;
-  /** 纬度（十进制字符串） */
+  /** Latitude (decimal string) */
   latitude?: string;
-  /** 负责人 */
+  /** Person in charge */
   owner?: string;
 }
 
@@ -123,7 +123,7 @@ export type TagDataType = 'boolean' | 'int16' | 'uint16' | 'int32' | 'uint32' | 
 
 export interface Device {
   id: string;
-  /** 设备编码（项目内唯一的设备标识符） */
+  /** Device code (unique device identifier within the project) */
   deviceCode: string;
   deviceName: string;
   nameAlias?: string;
@@ -148,7 +148,7 @@ export interface Device {
   scanRate?: number;
   offlinePeriod?: number;
   groupId?: string;
-  /** 运行时采集诊断数据（DeviceStateManager 推送） */
+  /** Runtime collection diagnostic data (pushed by DeviceStateManager) */
   _diagnostics?: {
     retryCount?: number;
     circuitState?: 'closed' | 'open' | 'half-open';
@@ -387,7 +387,7 @@ export interface SystemConfig {
   updatedAt?: string;
 }
 
-// ==================== 系统配置管理（Phase 5） ====================
+// ==================== System configuration management (Phase 5) ====================
 
 export type ConfigValueType = 'string' | 'number' | 'boolean' | 'enum' | 'password';
 
@@ -540,7 +540,7 @@ export interface LogEntry {
   raw: string;
 }
 
-// ==================== 安全审计日志（S-M02） ====================
+// ==================== Security audit logs (S-M02) ====================
 
 export interface SecurityAuditLogEntry {
   timestamp: string;
@@ -555,27 +555,27 @@ export interface SecurityAuditLogEntry {
   hash: string;
 }
 
-// ==================== 事件日志（EventLog） ====================
+// ==================== Event logs (EventLog) ====================
 
-/** 订阅者处理记录 — 嵌入在 EventLogItem.subscribers 数组中 */
+/** Subscriber processing record — embedded in the EventLogItem.subscribers array */
 export interface SubscriberRecord {
-  /** 订阅者类名（如 'DeviceConfigWatcher'） */
+  /** Subscriber class name (e.g. DeviceConfigWatcher) */
   name: string;
-  /** 处理状态 */
+  /** Processing status */
   status: 'pending' | 'processing' | 'processed' | 'failed' | 'skipped';
-  /** 开始处理时间（ISO 字符串） */
+  /** Processing start time (ISO string) */
   startedAt?: string;
-  /** 完成时间（ISO 字符串） */
+  /** Completion time (ISO string) */
   completedAt?: string;
-  /** 处理耗时（ms） */
+  /** Processing duration (ms) */
   duration?: number;
-  /** 错误信息（status=failed 时填充） */
+  /** Error message (filled when status=failed) */
   error?: string;
-  /** 业务效果（如 { connectionId, tagsLoaded, tasksRegistered }） */
+  /** Business effect (e.g. { connectionId, tagsLoaded, tasksRegistered }) */
   result?: Record<string, any>;
 }
 
-/** 事件日志状态 */
+/** Event log status */
 export type EventLogStatus =
   | 'emitted'
   | 'processing'
@@ -584,7 +584,7 @@ export type EventLogStatus =
   | 'failed'
   | 'no_subscribers';
 
-/** 事件日志条目（与后端 EventLog 实体对齐） */
+/** Event log entry (aligned with the backend EventLog entity) */
 export interface EventLogItem {
   id: string;
   eventType: string;
@@ -602,7 +602,7 @@ export interface EventLogItem {
   updatedAt: string;
 }
 
-/** 事件日志查询参数 */
+/** Event log query parameters */
 export interface EventLogQueryParams {
   projectId?: string;
   eventType?: string;

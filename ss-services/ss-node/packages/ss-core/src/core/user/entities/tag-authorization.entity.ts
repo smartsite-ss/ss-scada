@@ -14,12 +14,12 @@ import {
 import { Role } from './role.entity';
 
 /**
- * 标签级授权表 — v7.0 新增（3.6 实现）
+ * Tag-level authorization table - added in v7.0 (implemented in 3.6)
  *
- * 控制角色对具体数据标签的访问权限。
- * 当角色无显式标签授权时，回退到所属设备的授权（fallback to device-level）。
+ * Controls a role's access to specific data tags.
+ * When a role has no explicit tag authorization, fall back to the owning device's authorization (fallback to device-level).
  *
- * @see docs/ss-data/02-详细设计/03-设备管理/00-设计-设备管理.md §11
+ * @see device-management design doc section 11
  */
 @Entity('sys_tag_authorizations')
 @Index('idx_ta_role_tag', ['roleId', 'projectId', 'tagId'], { unique: true })
@@ -27,7 +27,7 @@ export class TagAuthorization {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  /** 授权给哪个角色 */
+  /** Which role is authorized */
   @Column({ name: 'role_id' })
   roleId: string;
 
@@ -35,15 +35,15 @@ export class TagAuthorization {
   @JoinColumn({ name: 'role_id' })
   role: Role;
 
-  /** 所属项目 */
+  /** Owning project */
   @Column({ name: 'project_id' })
   projectId: string;
 
-  /** 数据标签 ID */
+  /** Data-tag ID */
   @Column({ name: 'tag_id' })
   tagId: string;
 
-  /** 权限级别：read | write */
+  /** Permission level: read | write */
   @Column({ default: 'read' })
   permission: string;
 

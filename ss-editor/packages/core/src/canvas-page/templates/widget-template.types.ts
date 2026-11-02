@@ -3,25 +3,26 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 组件模板（Widget Template）类型定义
+ * Widget Template type definitions
  *
- * 与页面模板（PageTemplate）平行，但组件模板聚合的是"图元集合"（通常是一个分组），
- * 并通过 `variables` 暴露参数化占位符（{{key}}），供实例化时注入。
+ * Parallel to PageTemplate, but a widget template aggregates a "set of graphics"
+ * (usually a group), and exposes parameterized placeholders ({{key}}) via `variables`
+ * for injection at instantiation time.
  */
 
-/** 变量类型 */
+/** Variable type */
 export type WidgetTemplateVariableType = 'text' | 'number' | 'color' | 'bind-tag';
 
-/** 组件模板变量定义 */
+/** Widget template variable definition */
 export interface WidgetTemplateVariable {
-  key: string; // 占位符键，如 "title"
-  label: string; // 展示名
+  key: string; // Placeholder key, e.g. "title"
+  label: string; // Display name
   type: WidgetTemplateVariableType;
   defaultValue?: string | number;
-  targetPath?: string; // 注入目标，如 "graphics[0].props.text"
+  targetPath?: string; // Injection target, e.g. "graphics[0].props.text"
 }
 
-/** 组件模板完整数据 */
+/** Complete widget template data */
 export interface WidgetTemplate {
   id: string;
   name: string;
@@ -33,12 +34,12 @@ export interface WidgetTemplate {
   createdAt?: string;
   updatedAt?: string;
   schemaVersion: number;
-  graphics: any[]; // IGraphicJSON[] 序列化结果
+  graphics: any[]; // IGraphicJSON[] serialized result
   variables: WidgetTemplateVariable[];
   tags?: string[];
 }
 
-/** 组件模板元数据（列表项，不含 graphics） */
+/** Widget template metadata (list item, without graphics) */
 export interface WidgetTemplateMeta {
   id: string;
   name: string;
@@ -55,7 +56,7 @@ export interface WidgetTemplateMeta {
   tags?: string[];
 }
 
-/** 组件模板分类（与页面模板共享） */
+/** Widget template category (shared with page templates) */
 export type WidgetTemplateCategory =
   | 'common'
   | 'industry'

@@ -12,14 +12,14 @@ import { useTransform } from './useTransform';
 import { useAlignment } from './useAlignment';
 import { useDragDrop } from './useDragDrop';
 
-// 性能优化阈值
-const MOVE_THRESHOLD = 3; // 移动超过3像素才重绘
-const RESIZE_THRESHOLD = 3; // 缩放超过3像素才重绘
+// Performance optimization thresholds
+const MOVE_THRESHOLD = 3; // redraw only when moved more than 3 pixels
+const RESIZE_THRESHOLD = 3; // redraw only when resized more than 3 pixels
 
 export function useCanvasInteraction(options: CanvasInteractionOptions & { setManipulationState?: (state: { moving?: boolean, resizing?: boolean, rotating?: boolean }) => void }) {
   const { panX, panY, cursorStyle, setManipulationState, formatPainterManager } = options;
   
-  // 使用子 composables
+  // Use sub-composables
   const mouseEvents = useMouseEvents(options);
   const selectionBox = useSelectionBox(options);
   const transform = useTransform(options);
@@ -29,20 +29,20 @@ export function useCanvasInteraction(options: CanvasInteractionOptions & { setMa
   const pageStore = usePageStore();
   const graphicStore = useGraphicStore();
 
-  // 记录脏区域
+  // Record dirty regions
   const dirtyRects: { x: number; y: number; width: number; height: number }[] = [];
   
-  // 记录上一次渲染的位置，用于阈值判断
+  // Record the last rendered position, used for threshold checks
   const lastRenderState = {
     moveClientX: 0,
     moveClientY: 0,
     resizeClientX: 0,
     resizeClientY: 0,
-    lastMoved: false, // 标记是否有未渲染的移动
-    lastResized: false, // 标记是否有未渲染的缩放
+    lastMoved: false, // flag whether there are unrendered moves
+    lastResized: false, // flag whether there are unrendered resizes
   };
 
-  // 控制点拖拽状态
+  // Control point drag state
   const cpDragState = {
     active: false,
     graphicId: null as string | null,
@@ -54,14 +54,14 @@ export function useCanvasInteraction(options: CanvasInteractionOptions & { setMa
     startGeometry: null as { x: number; y: number; width: number; height: number; rotation: number } | null,
   };
 
-  // 标记 mousedown 已通过 Ctrl/Shift 处理了选择，click 事件无需再处理
+  // Mark that mousedown already handled selection via Ctrl/Shift, so the click event need not handle it again
   let skipClickSelection = false;
 
-  // 计算图元的包围盒（包括边距）
+  // Calculate the graphic's bounding box (including padding)
   const getGraphicBounds = (graphic: any) => {
     const { x, y } = graphic.getPosition();
     const { width, height } = graphic.getSize();
-    const padding = 20; // 额外的边距，确保手柄也能覆盖
+    const padding = 20; // extra margin to ensure handles are also covered
     return {
       x: x - padding,
       y: y - padding,
@@ -71,7 +71,7 @@ export function useCanvasInteraction(options: CanvasInteractionOptions & { setMa
   };
 
  
-  // 记录选中图元的初始脏区域
+  // Record the initial dirty region of the selected graphic
   const recordInitialDirtyRects = () => {
     dirtyRects.length = 0;
     for (const graphic of graphicStore.selectedGraphics) {
@@ -79,7 +79,7 @@ export function useCanvasInteraction(options: CanvasInteractionOptions & { setMa
     }
   };
 
-  // 全局事件监听管理
+  // Global event listener management
   let globalMouseUpHandler: ((event: MouseEvent) => void) | null = null;
 
   const setupGlobalMouseUpListener = (handler: (event: MouseEvent) => void) => {
@@ -97,7 +97,7 @@ export function useCanvasInteraction(options: CanvasInteractionOptions & { setMa
     }
   };
 
-  // 处理画布点击
+  // Handle canvas click
   const handleCanvasClick = (event: MouseEvent, drawCanvas: DrawCanvasCallback) => {
     if (selectionBox.isSelecting.value) return;
 
@@ -129,14 +129,14 @@ export function useCanvasInteraction(options: CanvasInteractionOptions & { setMa
     }
 
     if (clickedGraphic) {
-      // 格式画笔拦截
+      // Format painter interception
       if (formatPainterManager?.isActive()) {
         formatPainterManager.applyFormat(clickedGraphic);
         drawCanvas();
         return;
       }
 
-      // 如果 mousedown 已通过 Ctrl/Shift 处理了多选，click 不再重复处理
+      // If mousedown already handled multi-select via Ctrl/Shift, the click event does not process it again
       if (skipClickSelection) {
         skipClickSelection = false;
         return;
@@ -153,7 +153,7 @@ export function useCanvasInteraction(options: CanvasInteractionOptions & { setMa
         sm.setMode(SelectionMode.SINGLE);
       }
 
-      // 检查图元是否在分组中，如果是，则选中整个组
+      // Check whether the graphic is in a group; if so, select the entire group
       let idsToSelect = [clickedGraphic.id];
       const currentPage = pageStore.currentPage;
       if (currentPage && typeof currentPage.getGroupManager === 'function') {
@@ -168,7 +168,7 @@ export function useCanvasInteraction(options: CanvasInteractionOptions & { setMa
 
       const oldSelectedIds = [...pageStore.selectedGraphicIds];
       
-      // 如果选中的是分组，则选中所有成员
+      // If a group is selected, select all its members
       if (idsToSelect.length > 1) {
         sm.setMode(SelectionMode.BOX);
         sm.selectMultiple(idsToSelect);
@@ -177,7 +177,7 @@ export function useCanvasInteraction(options: CanvasInteractionOptions & { setMa
         sm.select(clickedGraphic.id);
       }
       
-      // 同步选择状态
+      // Sync selection state
       selectionBox.syncSelectionState(idsToSelect, oldSelectedIds);
       drawCanvas();
       return;
@@ -194,7 +194,7 @@ export function useCanvasInteraction(options: CanvasInteractionOptions & { setMa
     }
   };
 
-  // 处理鼠标按下
+  // Handle mousedown
   const handleCanvasMouseDown = (event: MouseEvent) => {
     if (event.button !== 0) return;
 
@@ -230,15 +230,15 @@ export function useCanvasInteraction(options: CanvasInteractionOptions & { setMa
         }
         recordInitialDirtyRects();
         
-        // 初始化缩放阈值状态
+        // Initialize resize threshold state
         lastRenderState.resizeClientX = event.clientX;
         lastRenderState.resizeClientY = event.clientY;
         lastRenderState.lastResized = false;
         
-        // 开始批量历史记录
+        // Start batch history record
         pageStore.currentPage?.startBatch?.('缩放图元');
 
-        // 设置操作状态
+        // Set operation state
         setManipulationState?.({ resizing: true });
         return;
       }
@@ -315,7 +315,7 @@ export function useCanvasInteraction(options: CanvasInteractionOptions & { setMa
             cpDragState.controlPointIndex = cpIndex;
             cpDragState.startClientX = event.clientX;
             cpDragState.startClientY = event.clientY;
-            // 记录拖拽前的 geometry 用于撤销
+            // Record the geometry before dragging for undo
             {
               const currentPos = graphic.getPosition();
               const currentSize = graphic.getSize();
@@ -328,7 +328,7 @@ export function useCanvasInteraction(options: CanvasInteractionOptions & { setMa
               };
             }
             hitControlPoint = true;
-            // 开始批量历史记录
+            // Start batch history record
             pageStore.currentPage?.startBatch?.('控制点拖动');
             setManipulationState?.({ moving: true });
             break;
@@ -353,7 +353,7 @@ export function useCanvasInteraction(options: CanvasInteractionOptions & { setMa
         lastRenderState.moveClientY = event.clientY;
         lastRenderState.lastMoved = false;
         
-        // 开始批量历史记录
+        // Start batch history record
         pageStore.currentPage?.startBatch?.('移动图元');
 
         setManipulationState?.({ moving: true });
@@ -391,7 +391,7 @@ export function useCanvasInteraction(options: CanvasInteractionOptions & { setMa
         lastRenderState.moveClientY = event.clientY;
         lastRenderState.lastMoved = false;
 
-        // 开始批量历史记录
+        // Start batch history record
         pageStore.currentPage?.startBatch?.('移动图元');
 
         setManipulationState?.({ moving: true });
@@ -399,7 +399,7 @@ export function useCanvasInteraction(options: CanvasInteractionOptions & { setMa
     }
   };
 
-  // 处理鼠标移动
+  // Handle mousemove
   const handleCanvasMouseMove = (event: MouseEvent, drawCanvas: DrawCanvasCallback) => {
     if (
       !selectionBox.isSelecting.value &&
@@ -434,10 +434,10 @@ export function useCanvasInteraction(options: CanvasInteractionOptions & { setMa
       const deltaX = event.clientX - lastRenderState.resizeClientX;
       const deltaY = event.clientY - lastRenderState.resizeClientY;
       
-      // 检查是否超过阈值
+      // Check whether the threshold is exceeded
       const shouldRender = Math.abs(deltaX) >= RESIZE_THRESHOLD || Math.abs(deltaY) >= RESIZE_THRESHOLD;
       
-      // 先更新图元位置（即使不渲染也要更新，避免跳变）
+      // Update graphic positions first (update even when not rendering to avoid jumps)
       const actualDeltaX = (event.clientX - transform.resizeStartX.value) / mouseEvents.getScale();
       const actualDeltaY = (event.clientY - transform.resizeStartY.value) / mouseEvents.getScale();
 
@@ -495,15 +495,15 @@ export function useCanvasInteraction(options: CanvasInteractionOptions & { setMa
       }
       
       if (shouldRender) {
-        // 使用合帧机制重绘
+        // Redraw using the frame-merging mechanism
         drawCanvas();
         
-        // 更新最后渲染位置
+        // Update the last rendered position
         lastRenderState.resizeClientX = event.clientX;
         lastRenderState.resizeClientY = event.clientY;
         lastRenderState.lastResized = false;
       } else {
-        // 记录有未渲染的变化
+        // Record that there are unrendered changes
         lastRenderState.lastResized = true;
       }
     } else if (cpDragState.active && cpDragState.graphicId) {
@@ -520,14 +520,14 @@ export function useCanvasInteraction(options: CanvasInteractionOptions & { setMa
       const deltaX = event.clientX - lastRenderState.moveClientX;
       const deltaY = event.clientY - lastRenderState.moveClientY;
       
-      // 检查是否超过阈值
+      // Check whether the threshold is exceeded
       const shouldRender = Math.abs(deltaX) >= MOVE_THRESHOLD || Math.abs(deltaY) >= MOVE_THRESHOLD;
       
-      // 先更新图元位置（即使不渲染也要更新，避免跳变）
+      // Update graphic positions first (update even when not rendering to avoid jumps)
       const actualDeltaX = (event.clientX - transform.moveStartX.value) / mouseEvents.getScale();
       const actualDeltaY = (event.clientY - transform.moveStartY.value) / mouseEvents.getScale();
 
-      // 智能对齐检测：只对首个图元做试探位置检测，排除所有选中图元
+      // Smart alignment detection: probe positions only for the first graphic, excluding all selected graphics
       const selectedGraphics = graphicStore.selectedGraphics || [];
       let alignApplied = false;
       const firstGraphic = selectedGraphics[0];
@@ -536,14 +536,14 @@ export function useCanvasInteraction(options: CanvasInteractionOptions & { setMa
         const page = pageStore.currentPage as any;
         const smartAlignManager = page?.getSmartAlignManager?.();
         if (smartAlignManager) {
-          // 只把 firstGraphic 移到试探位置，其他选中图元保持原位
+          // Move only firstGraphic to the probe position; other selected graphics stay in place
           const firstOrigPos = { x: firstGraphic.getPosition().x, y: firstGraphic.getPosition().y };
           const startFirstPos = transform.startGraphicPositions.value[firstGraphic.id];
           if (startFirstPos) {
             firstGraphic.setPosition(startFirstPos.x + actualDeltaX, startFirstPos.y + actualDeltaY);
           }
           
-          // 排除所有选中图元（它们正在移动，不能作为对齐参考）
+          // Exclude all selected graphics (they are being moved and cannot serve as alignment references)
           const selectedIds = new Set(selectedGraphics.map((g: any) => g.id));
           const otherGraphics = (graphicStore.sortedGraphics || []).filter(
             (g: any) => !selectedIds.has(g.id)
@@ -558,7 +558,7 @@ export function useCanvasInteraction(options: CanvasInteractionOptions & { setMa
             const offsetX = newFirstPos.x - (startFirstPos.x + actualDeltaX);
             const offsetY = newFirstPos.y - (startFirstPos.y + actualDeltaY);
             
-            // 将对齐偏移同步到其他选中图元
+            // Sync the alignment offset to the other selected graphics
             for (const g of selectedGraphics) {
               if (g.getLocked() || g.id === firstGraphic.id) continue;
               const sp = transform.startGraphicPositions.value[g.id];
@@ -569,7 +569,7 @@ export function useCanvasInteraction(options: CanvasInteractionOptions & { setMa
             drawCanvas();
             alignApplied = true;
           } else {
-            // 无对齐目标 → 还原 firstGraphic 位置
+            // No alignment target → restore firstGraphic's position
             firstGraphic.setPosition(firstOrigPos.x, firstOrigPos.y);
           }
         } else {
@@ -603,22 +603,22 @@ export function useCanvasInteraction(options: CanvasInteractionOptions & { setMa
     }
   };
 
-  // 处理鼠标抬起
+  // Handle mouseup
   const handleCanvasMouseUp = (_: MouseEvent, drawCanvas: DrawCanvasCallback) => {
     skipClickSelection = false;
     if (selectionBox.isSelecting.value) {
       selectionBox.finishSelecting(drawCanvas);
-      // 框选完成后，阻止后续 click 事件清空刚选中的图元
+      // After rubber-band selection completes, prevent the subsequent click event from clearing the just-selected graphics
       skipClickSelection = true;
     }
 
     if (transform.isResizing.value) {
-      // 如果有未渲染的变化，强制渲染一次
+      // If there are unrendered changes, force one render
       if (lastRenderState.lastResized) {
         drawCanvas();
       }
       
-      // 记录拖拽缩放的历史：将整个拖拽过程合并为一个批量历史记录
+      // Record drag/resize history: merge the entire drag process into a single batch history record
       const page = pageStore.currentPage;
       const historyManager = page?.getHistoryManager?.();
       if (historyManager && page) {
@@ -643,7 +643,7 @@ export function useCanvasInteraction(options: CanvasInteractionOptions & { setMa
               height: currentSize.height,
               rotation,
             };
-            // 只在实际有变化时记录
+            // Record only when there is an actual change
             if (
               oldTransform.x !== newTransform.x ||
               oldTransform.y !== newTransform.y ||
@@ -661,7 +661,7 @@ export function useCanvasInteraction(options: CanvasInteractionOptions & { setMa
           }
         }
       }
-      // 结束批量历史记录（匹配 mousedown 时的 startBatch）
+      // End batch history record (matching startBatch from mousedown)
       pageStore.currentPage?.endBatch?.();
       
       transform.isResizing.value = false;
@@ -669,7 +669,7 @@ export function useCanvasInteraction(options: CanvasInteractionOptions & { setMa
       transform.startGraphicSizes.value = {};
       dirtyRects.length = 0;
       
-      // 清除操作状态
+      // Clear operation state
       setManipulationState?.({ resizing: false });
     }
 
@@ -677,7 +677,7 @@ export function useCanvasInteraction(options: CanvasInteractionOptions & { setMa
       transform.isRotating.value = false;
       transform.startGraphicRotations.value = {};
 
-      // 标记页面已修改
+      // Mark the page as modified
       pageStore.currentPage?.markDirty?.();
 
       setManipulationState?.({ rotating: false });
@@ -688,7 +688,7 @@ export function useCanvasInteraction(options: CanvasInteractionOptions & { setMa
         drawCanvas();
       }
 
-      // 记录拖拽移动的历史：将整个拖拽过程（mousedown→mousemove→mouseup）合并为一个批量历史记录
+      // Record drag-move history: merge the entire drag process (mousedown→mousemove→mouseup) into a single batch history record
       const page = pageStore.currentPage;
       const historyManager = page?.getHistoryManager?.();
       if (historyManager && page) {
@@ -709,7 +709,7 @@ export function useCanvasInteraction(options: CanvasInteractionOptions & { setMa
           }
         }
       }
-      // 结束批量历史记录（匹配 mousedown 时的 startBatch）
+      // End batch history record (matching startBatch from mousedown)
       page?.endBatch?.();
 
       transform.isMoving.value = false;
@@ -729,7 +729,7 @@ export function useCanvasInteraction(options: CanvasInteractionOptions & { setMa
         drawCanvas();
       }
 
-      // 记录控制点拖拽的历史
+      // Record the control point drag history
       const startGeo = cpDragState.startGeometry;
       if (graphic && startGeo) {
         const currentPos = graphic.getPosition();
@@ -768,7 +768,7 @@ export function useCanvasInteraction(options: CanvasInteractionOptions & { setMa
 
   };
 
-  // 处理画布双击（用于折弯管道等插入折弯点）
+  // Handle canvas double-click (used to insert bend points for bent pipes, etc.)
   const handleCanvasDoubleClick = (event: MouseEvent, drawCanvas: DrawCanvasCallback) => {
     const canvas = document.querySelector('canvas.design-canvas');
     if (!canvas) return;

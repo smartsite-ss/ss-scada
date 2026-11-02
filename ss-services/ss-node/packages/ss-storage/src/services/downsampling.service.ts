@@ -14,44 +14,44 @@ import {
   INFLUXDB_ADAPTER,
 } from '../interfaces/downsampling.interface';
 
-/** 每天定时执行的间隔（24 小时） */
+/** Interval for the daily scheduled run (24 hours) */
 const DAILY_INTERVAL_MS = 24 * 60 * 60 * 1000;
 
-/** 降采样查询的时间范围映射 */
+/** Time range mapping for downsampling queries */
 const GRANULARITY_RANGE: Record<DownsamplingGranularity, string> = {
   '1h': '-24h',
   '1d': '-7d',
 };
 
-/** 默认聚合函数 */
+/** Default aggregation function */
 const DEFAULT_AGGREGATION: DownsamplingAggregation = 'mean';
 
-/** 降采样后目标 measurement 前缀 */
+/** Prefix of the target measurement after downsampling */
 const TARGET_MEASUREMENT_PREFIX = 'tag_values';
 
 /**
- * InfluxDB 自动降采样服务。
+ * InfluxDB automatic downsampling service.
  *
- * 将原始时序数据按小时/天聚合（mean/min/max/last），写入降采样 measurement，
- * 实现多级数据保留策略。当 InfluxDB 不可用时优雅降级。
+ * Aggregates raw time-series data by hour/day (mean/min/max/last) and writes it into downsampling measurements,
+ * implementing a multi-level data retention policy. Degrades gracefully when InfluxDB is unavailable.
  *
- * 降采样策略（参考设计文档）：
- *   原始数据 tag_values (30天保留)
- *     ↓ 1h 聚合 → tag_values_1h (365天保留)
- *     ↓ 1d 聚合 → tag_values_1d (永久保留)
+ * Downsampling strategy (per the design doc):
+ *   raw data tag_values (30-day retention)
+ *     ↓ 1h aggregation → tag_values_1h (365-day retention)
+ *     ↓ 1d aggregation → tag_values_1d (permanent retention)
  */
 @Injectable()
 export class DownsamplingService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new StructuredLogger();
 
-  /** 定时器引用（初始延迟触发器） */
+  /** Timer reference (initial delay trigger) */
   private scheduleTimer: NodeJS.Timeout | null = null;
-  /** 定时器引用（每日重复执行器） */
+  /** Timer reference (daily repeating trigger) */
   private dailyTimer: NodeJS.Timeout | null = null;
-  /** 是否正在执行降采样（防止并发） */
+  /** Whether downsampling is currently running (concurrency guard) */
   private isRunning = false;
 
-  /** InfluxDB 连接配置 */
+  /** InfluxDB connection configuration */
   private readonly influxUrl: string;
   private readonly influxToken: string;
   private readonly influxOrg: string;
@@ -64,7 +64,7 @@ export class DownsamplingService implements OnModuleInit, OnModuleDestroy {
     this.influxBucket = process.env.INFLUXDB_BUCKET || 'ss_node_data';
   }
 
-  // ──────────── 生命周期 ────────────
+  // ──────────── Lifecycle ────────────
 
   onModuleInit(): void {
     const config = this.getDownsamplingConfig();
@@ -83,14 +83,14 @@ export class DownsamplingService implements OnModuleInit, OnModuleDestroy {
     this.logger.log('DownsamplingService destroyed', 'DownsamplingService');
   }
 
-  // ──────────── 公开方法 ────────────
+  // ──────────── Public methods ────────────
 
   /**
-   * 执行降采样：从源 measurement 读取数据，按指定粒度聚合后写入目标 measurement。
+   * Run downsampling: read data from the source measurement, aggregate at the specified granularity, and write to the target measurement.
    *
-   * @param measurement 源 measurement 名称（如 "tag_values"）
-   * @param granularity 聚合粒度（'1h' 或 '1d'）
-   * @param retention 目标保留策略描述（如 "365d"、"permanent"），用于日志记录
+   * @param measurement source measurement name (e.g. "tag_values")
+   * @param granularity aggregation granularity ('1h' or '1d')
+   * @param retention target retention policy description (e.g. "365d", "permanent"), used for logging
    */
   async executeDownsampling(
     measurement: string,
@@ -121,8 +121,8 @@ export class DownsamplingService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 注册定时任务，每天凌晨执行所有配置的降采样任务。
-   * 如果已有定时器在运行，先清除旧定时器再重新注册。
+   * Register the scheduled task that runs all configured downsampling tasks every early morning.
+   * If a timer is already running, clear the old timer first, then re-register.
    */
   scheduleDownsampling(): void {
     this.clearTimers();
@@ -161,8 +161,8 @@ export class DownsamplingService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 获取降采样配置。
-   * 配置基于设计文档定义的默认策略，未来可扩展为从环境变量或数据库读取。
+   * Get the downsampling configuration.
+   * The configuration is based on the default strategy defined in the design doc; in the future it can be extended to read from env vars or the database.
    */
   getDownsamplingConfig(): DownsamplingConfig {
     const enabled = (process.env.DOWNSAMPLING_ENABLED || 'true').toLowerCase() !== 'false';
@@ -188,7 +188,7 @@ export class DownsamplingService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 执行所有配置的降采样任务（由定时器调用）。
+   * Run all configured downsampling tasks (called by the timer).
    */
   async runAllTasks(): Promise<DownsamplingResult[]> {
     if (this.isRunning) {
@@ -243,10 +243,10 @@ export class DownsamplingService implements OnModuleInit, OnModuleDestroy {
     return results;
   }
 
-  // ──────────── 内部：任务执行 ────────────
+  // ──────────── Internal: task execution ────────────
 
   /**
-   * 执行单个降采样任务：查询 → 聚合 → 写回。
+   * Run a single downsampling task: query → aggregate → write back.
    */
   private async executeDownsamplingTask(task: DownsamplingTask): Promise<DownsamplingResult> {
     const startTime = Date.now();
@@ -267,7 +267,7 @@ export class DownsamplingService implements OnModuleInit, OnModuleDestroy {
     }
 
     try {
-      // 1. 构建并执行 Flux 聚合查询
+      // 1. Build and execute the Flux aggregation query
       const fluxQuery = this.buildAggregationFluxQuery(
         task.measurement,
         task.granularity,
@@ -275,7 +275,7 @@ export class DownsamplingService implements OnModuleInit, OnModuleDestroy {
       );
       const csvResponse = await this.executeFluxQuery(fluxQuery);
 
-      // 2. 解析 CSV 结果为降采样数据点
+      // 2. Parse the CSV result into downsampling data points
       const aggregatedPoints = this.parseAggregationCsv(csvResponse);
       result.processedCount = aggregatedPoints.length;
 
@@ -285,7 +285,7 @@ export class DownsamplingService implements OnModuleInit, OnModuleDestroy {
         return result;
       }
 
-      // 3. 将聚合结果写入目标 measurement
+      // 3. Write the aggregated result to the target measurement
       const written = await this.writeAggregatedPoints(task.targetMeasurement, aggregatedPoints);
       result.writtenCount = written;
       result.success = true;
@@ -298,15 +298,15 @@ export class DownsamplingService implements OnModuleInit, OnModuleDestroy {
     return result;
   }
 
-  // ──────────── 内部：Flux 查询构建 ────────────
+  // ──────────── Internal: Flux query building ────────────
 
   /**
-   * 构建 Flux 聚合查询语句。
+   * Build the Flux aggregation query statement.
    *
-   * 查询逻辑：
-   *   1. 从 bucket 读取源 measurement 的 value 字段
-   *   2. 按 tagId/deviceId/projectId 分组
-   *   3. 使用 aggregateWindow 按指定粒度和函数聚合
+   * Query logic:
+   *   1. Read the value field of the source measurement from the bucket
+   *   2. Group by tagId/deviceId/projectId
+   *   3. Aggregate with aggregateWindow at the specified granularity and function
    */
   private buildAggregationFluxQuery(
     measurement: string,
@@ -326,10 +326,10 @@ export class DownsamplingService implements OnModuleInit, OnModuleDestroy {
     ].join('\n');
   }
 
-  // ──────────── 内部：InfluxDB HTTP 通信 ────────────
+  // ──────────── Internal: InfluxDB HTTP communication ────────────
 
   /**
-   * 通过 InfluxDB /api/v2/query 接口执行 Flux 查询，返回 CSV 文本。
+   * Execute a Flux query via InfluxDB's /api/v2/query endpoint, returning CSV text.
    */
   private async executeFluxQuery(query: string): Promise<string> {
     const url = `${this.influxUrl}/api/v2/query?org=${this.influxOrg}`;
@@ -353,7 +353,7 @@ export class DownsamplingService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 将聚合后的数据点通过 Line Protocol 批量写入目标 measurement。
+   * Write the aggregated data points in batch to the target measurement via Line Protocol.
    */
   private async writeAggregatedPoints(
     targetMeasurement: string,
@@ -382,7 +382,7 @@ export class DownsamplingService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 将单个聚合数据点转换为 InfluxDB Line Protocol 格式。
+   * Convert a single aggregated data point to InfluxDB Line Protocol format.
    */
   private toLineProtocol(measurement: string, point: AggregatedPoint): string {
     const escapeTag = (v: string): string => v.replace(/[,= ]/g, '\\$&');
@@ -397,12 +397,12 @@ export class DownsamplingService implements OnModuleInit, OnModuleDestroy {
     return `${measurement},${tags} value=${point.value} ${ts}`;
   }
 
-  // ──────────── 内部：CSV 解析 ────────────
+  // ──────────── Internal: CSV parsing ────────────
 
   /**
-   * 解析 InfluxDB Flux 查询返回的 CSV，提取聚合数据点。
+   * Parse the CSV returned by the InfluxDB Flux query and extract aggregated data points.
    *
-   * CSV 格式示例：
+   * CSV format example:
    *   #group,false,false,true,...
    *   #datatype,string,long,dateTime:RFC3339,double,...
    *   ,result,table,_time,_value,tagId,deviceId,projectId,_field,_measurement
@@ -412,7 +412,7 @@ export class DownsamplingService implements OnModuleInit, OnModuleDestroy {
     const lines = csvText.trim().split('\n');
     if (lines.length < 2) return [];
 
-    // 跳过以 # 开头的注释行，找到表头行
+    // Skip comment lines starting with # to find the header line
     let headerIdx = 0;
     for (let i = 0; i < lines.length; i++) {
       if (!lines[i].startsWith('#')) {
@@ -459,11 +459,11 @@ export class DownsamplingService implements OnModuleInit, OnModuleDestroy {
     return points;
   }
 
-  // ──────────── 内部：辅助方法 ────────────
+  // ──────────── Internal: helper methods ────────────
 
   /**
-   * 检查 InfluxDB 是否可用（配置了 Token 且健康检查通过）。
-   * 如果注入了 StorageAdapter，优先使用其 health() 方法。
+   * Check whether InfluxDB is available (a token is configured and the health check passes).
+   * If a StorageAdapter is injected, its health() method is preferred.
    */
   private async isInfluxDbAvailable(): Promise<boolean> {
     if (!this.influxToken) return false;
@@ -489,17 +489,17 @@ export class DownsamplingService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 根据粒度获取 Flux range 时间范围。
+   * Get the Flux range time span for the granularity.
    */
   private getRangeForGranularity(granularity: string): string {
     if (granularity === '1h') return GRANULARITY_RANGE['1h'];
     if (granularity === '1d') return GRANULARITY_RANGE['1d'];
-    // 默认查询最近 24 小时
+    // Default to querying the last 24 hours
     return '-24h';
   }
 
   /**
-   * 从粒度推导目标 measurement 名称。
+   * Derive the target measurement name from the granularity.
    * tag_values + 1h → tag_values_1h
    * tag_values_1h + 1d → tag_values_1d
    */
@@ -508,7 +508,7 @@ export class DownsamplingService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 将 retention 字符串解析为天数。
+   * Parse a retention string into days.
    * "365d" → 365, "permanent" → 0, "" → 0
    */
   private parseRetentionDays(retention: string): number {
@@ -518,7 +518,7 @@ export class DownsamplingService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 计算距离下一个午夜（本地时间 00:00:00）的毫秒数。
+   * Compute the milliseconds until the next midnight (local 00:00:00).
    */
   private getMsUntilNextMidnight(): number {
     const now = new Date();
@@ -527,7 +527,7 @@ export class DownsamplingService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 清除所有定时器。
+   * Clear all timers.
    */
   private clearTimers(): void {
     if (this.scheduleTimer) {
@@ -541,10 +541,10 @@ export class DownsamplingService implements OnModuleInit, OnModuleDestroy {
   }
 }
 
-// ──────────── 内部类型 ────────────
+// ──────────── Internal types ────────────
 
 /**
- * 聚合后的数据点（内部使用，用于写入目标 measurement）。
+ * Aggregated data point (internal use, for writing to the target measurement).
  */
 interface AggregatedPoint {
   timestamp: Date;

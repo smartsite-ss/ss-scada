@@ -3,15 +3,15 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * LLMProxyService 单元测试 — P1-T03
+ * LLMProxyService unit tests - P1-T03
  *
- * 验证内容：
- *   1. 任务路由策略（codegen→deepseek, chat→zhipu, embedding→zhipu）
- *   2. 主 Provider 失败时降级到备选 Provider
- *   3. 所有 Provider 均不可用时抛出错误
- *   4. Feature Flag（AI_ENABLED=false 时禁用所有调用）
- *   5. 嵌入任务固定路由到智谱
- *   6. 健康状态缓存
+ * Verified:
+ *   1. task routing policy (codegen->deepseek, chat->zhipu, embedding->zhipu)
+ *   2. fallback to the alternate Provider when the primary fails
+ *   3. error thrown when all Providers are unavailable
+ *   4. Feature Flag (all calls disabled when AI_ENABLED=false)
+ *   5. embedding tasks are always routed to Zhipu
+ *   6. health-status caching
  */
 
 import { LLMProxyService } from '../ai/llm-proxy.service';
@@ -29,7 +29,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { Logger } from '@nestjs/common';
 
-// ---- 测试辅助 ----
+// ---- Test helpers ----
 
 function makeProviderConfig(id: LLMProviderId): ProviderConfig {
   return {
@@ -77,7 +77,7 @@ function makeHealth(id: LLMProviderId, healthy: boolean): ProviderHealth {
   };
 }
 
-/** 构造 mock Provider */
+/** Build a mock Provider */
 function createMockProvider(
   id: LLMProviderId,
   opts: {
@@ -94,7 +94,7 @@ function createMockProvider(
   const ready = opts.ready !== false;
   const config = makeProviderConfig(id);
 
-  // 内部生成器实现
+  // internal generator implementation
   async function* genImpl(): AsyncGenerator<ChatStreamChunk, void, unknown> {
     if (opts.streamError) throw opts.streamError;
     if (opts.streamChunks) {
@@ -105,7 +105,7 @@ function createMockProvider(
     yield { delta: '', done: true, finishReason: 'stop' };
   }
 
-  // stream 必须是 jest.fn 才能被 expect().toHaveBeenCalled() 验证
+  // stream must be a jest.fn so it can be checked via expect().toHaveBeenCalled()
   const streamFn = jest.fn().mockImplementation(() => genImpl());
 
   return {
@@ -133,10 +133,10 @@ function createMockConfigService(env: Record<string, string>): ConfigService {
 }
 
 /**
- * 创建 mock AiProviderConfigService
+ * Create a mock AiProviderConfigService
  *
- * 源码重构后 Provider 配置从数据库加载（而非环境变量），
- * 测试需注入此 mock 模拟数据库返回的已启用 Provider 配置列表。
+ * After the source refactor, Provider config is loaded from the database (not env vars),
+ * so the test injects this mock to simulate the enabled-Provider config list returned by the DB.
  */
 function createMockProviderConfigService(configs?: ProviderConfig[]) {
   const defaultConfigs: ProviderConfig[] = configs || [
@@ -202,16 +202,16 @@ describe('LLMProxyService', () => {
   });
 
   function createService(providers: ILLMProvider[] = [mockDeepseek, mockZhipu]) {
-    // 阻止周期性健康检查
+    // prevent the periodic health check
     const svc = new LLMProxyService(providers as any, mockConfig);
-    // 调用 onModuleInit 手动触发初始化，但禁用健康检查调度
+    // call onModuleInit to trigger initialization manually, but disable the health-check scheduler
     jest.spyOn(svc as any, 'startHealthCheck').mockImplementation(() => {});
     svc.onModuleInit();
     return svc;
   }
 
   // ============================================================
-  // 1. 路由策略
+  // 1. routing policy
   // ============================================================
   describe('路由策略', () => {
     it('codegen 任务路由到 DeepSeek', async () => {
@@ -261,9 +261,9 @@ describe('LLMProxyService', () => {
     });
 
     it('可根据数据库配置自动推断路由策略', async () => {
-      // 源码重构后路由策略从数据库已启用 Provider 列表自动推断，不再从环境变量读取
-      // 模拟数据库返回：deepseek 在前（chat/intent/analysis/codegen → deepseek），
-      // zhipu 支持 embedding（embedding → zhipu）
+      // after the refactor the routing policy is inferred from the DB's enabled-Provider list, no longer read from env vars
+      // simulate the DB returning: deepseek first (chat/intent/analysis/codegen -> deepseek),
+      // zhipu supports embedding (embedding -> zhipu)
       const mockProviderConfigService = createMockProviderConfigService();
       const customConfig = createMockConfigService({
         AI_ENABLED: 'true',
@@ -275,17 +275,17 @@ describe('LLMProxyService', () => {
       );
       jest.spyOn(svc as any, 'startHealthCheck').mockImplementation(() => {});
       svc.onModuleInit();
-      // onModuleInit 中 initializeProvidersAsync 是 fire-and-forget，需等待完成
+      // initializeProvidersAsync inside onModuleInit is fire-and-forget; we must await its completion
       await svc.reloadProviders();
       const routing = svc.getRouting();
-      expect(routing.chat).toBe('deepseek'); // 第一个 Provider
+      expect(routing.chat).toBe('deepseek'); // the first provider
       expect(routing.intent).toBe('deepseek');
-      expect(routing.embedding).toBe('zhipu'); // 支持 embedding 的 Provider
+      expect(routing.embedding).toBe('zhipu'); // provider supporting embedding
     });
   });
 
   // ============================================================
-  // 2. 降级策略
+  // 2. fallback policy
   // ============================================================
   describe('降级策略', () => {
     it('主 Provider 抛错时降级到备选', async () => {
@@ -294,7 +294,7 @@ describe('LLMProxyService', () => {
       });
       const svc = createService();
       const result = await svc.generate({ messages: [{ role: 'user', content: 'hi' }] }, 'chat');
-      // 主（zhipu）失败 → 降级到 deepseek
+      // primary (zhipu) fails -> fall back to deepseek
       expect(mockZhipu.generate).toHaveBeenCalled();
       expect(mockDeepseek.generate).toHaveBeenCalled();
       expect(result.provider).toBe('deepseek');
@@ -317,7 +317,7 @@ describe('LLMProxyService', () => {
       mockZhipu = createMockProvider('zhipu', { ready: false });
       const svc = createService();
       const result = await svc.generate({ messages: [{ role: 'user', content: 'hi' }] }, 'chat');
-      // zhipu 不可用 → 跳过 → 走 deepseek
+      // zhipu unavailable -> skip -> go to deepseek
       expect(mockZhipu.generate).not.toHaveBeenCalled();
       expect(result.provider).toBe('deepseek');
     });
@@ -334,7 +334,7 @@ describe('LLMProxyService', () => {
       )) {
         chunks.push(c);
       }
-      // zhipu 流失败 → 降级到 deepseek
+      // zhipu stream fails -> fall back to deepseek
       expect(mockZhipu.stream).toHaveBeenCalled();
       expect(mockDeepseek.stream).toHaveBeenCalled();
       const deltas = chunks.filter((c) => !c.done).map((c) => c.delta);
@@ -363,7 +363,7 @@ describe('LLMProxyService', () => {
   });
 
   // ============================================================
-  // 3. 嵌入
+  // 3. embedding
   // ============================================================
   describe('嵌入任务', () => {
     it('固定路由到智谱', async () => {
@@ -416,7 +416,7 @@ describe('LLMProxyService', () => {
   });
 
   // ============================================================
-  // 5. 健康检查
+  // 5. health check
   // ============================================================
   describe('健康检查', () => {
     it('getHealth 调用所有 Provider 的 checkHealth', async () => {
@@ -431,7 +431,7 @@ describe('LLMProxyService', () => {
 
     it('getCachedHealth 返回缓存的健康状态', async () => {
       const svc = createService();
-      await svc.getHealth(); // 触发一次检查
+      await svc.getHealth(); // trigger one check
       const cached = svc.getCachedHealth();
       expect(cached).toHaveLength(2);
       expect(cached.map((c) => c.providerId).sort()).toEqual(['deepseek', 'zhipu']);
@@ -439,12 +439,12 @@ describe('LLMProxyService', () => {
   });
 
   // ============================================================
-  // 6. 初始化
+  // 6. initialization
   // ============================================================
   describe('Provider 初始化', () => {
     it('onModuleInit 调用各 Provider 的 initialize', async () => {
-      // 源码重构后 onModuleInit 异步从数据库加载配置并调用 provider.initialize()
-      // 需注入 mock AiProviderConfigService 并等待异步初始化完成
+      // after the refactor onModuleInit asynchronously loads config from the DB and calls provider.initialize()
+      // must inject the mock AiProviderConfigService and await async initialization
       const mockProviderConfigService = createMockProviderConfigService();
       const svc = new LLMProxyService(
         [mockDeepseek, mockZhipu] as any,
@@ -453,7 +453,7 @@ describe('LLMProxyService', () => {
       );
       jest.spyOn(svc as any, 'startHealthCheck').mockImplementation(() => {});
       svc.onModuleInit();
-      await svc.reloadProviders(); // 等待异步初始化完成
+      await svc.reloadProviders(); // wait for async initialization to finish
       expect(mockDeepseek.initialize).toHaveBeenCalledWith(
         expect.objectContaining({
           providerId: 'deepseek',

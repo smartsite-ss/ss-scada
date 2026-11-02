@@ -21,15 +21,15 @@ import { WebSocketAdminController } from './websocket-admin.controller';
 import { REDIS_CLIENT_OFFLINE } from '../redis/redis.constants';
 
 /**
- * WebSocket 模块
+ * WebSocket module
  *
- * Redis 客户端改造（P1-1）：
- * 原先在模块内 useFactory 创建 OFFLINE_REDIS_CLIENT，现改用全局 RedisModule
- * 提供的 REDIS_CLIENT_OFFLINE token（db=1）。RedisModule 在 AppModule 中注册为
- * @Global，无需在此 imports。
+ * Redis-client rework (P1-1):
+ * The module previously created OFFLINE_REDIS_CLIENT via useFactory; now it uses the REDIS_CLIENT_OFFLINE token
+ * (db=1) provided by the global RedisModule. RedisModule is registered as @Global in AppModule,
+ * so no imports are needed here.
  *
- * 离线消息 Redis 持久化是可选的：REDIS_HOST 未配置时 client 为 null，
- * OfflineMessageRedisPersistence 也为 null，OfflineMessageService 内部需容忍此情况。
+ * Offline-message Redis persistence is optional: when REDIS_HOST is unset the client is null,
+ * OfflineMessageRedisPersistence is also null, and OfflineMessageService must tolerate this.
  */
 @Module({
   imports: [
@@ -52,7 +52,7 @@ import { REDIS_CLIENT_OFFLINE } from '../redis/redis.constants';
     OfflineMessageService,
     OfflineMessageCacheService,
     WebSocketMetricsService,
-    // 离线消息持久化：依赖全局 REDIS_CLIENT_OFFLINE（由 RedisModule 提供）
+    // Offline-message persistence: depends on the global REDIS_CLIENT_OFFLINE (provided by RedisModule)
     {
       provide: OfflineMessageRedisPersistence,
       useFactory: (client: Redis | null): OfflineMessageRedisPersistence | null => {

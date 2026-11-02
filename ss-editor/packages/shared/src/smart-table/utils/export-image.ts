@@ -3,9 +3,9 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * PNG 导出 by html2canvas
- * 
- * 注意：需要先安装 html2canvas
+ * Export to PNG via html2canvas
+ *
+ * Note: html2canvas must be installed first
  *   pnpm --filter @scada-editor/system add html2canvas
  */
 export async function exportToImage(

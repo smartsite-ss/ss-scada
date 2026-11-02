@@ -7,60 +7,60 @@ import { ConfigService } from '@nestjs/config';
 import { DataSource } from 'typeorm';
 import { ProjectDatabaseService, PathResolverService, SystemEventService } from '@ss-node/ss-core';
 
-/** 清理调度器配置 */
+/** Cleanup-scheduler config */
 export interface CleanupSchedulerConfig {
-  /** 清理间隔（毫秒），默认 86400000（24小时） */
+  /** Cleanup interval (ms), default 86400000 (24 hours) */
   intervalMs: number;
-  /** 是否启用自动清理，默认 true */
+  /** Whether auto-cleanup is enabled, default true */
   enabled: boolean;
 }
 
 /**
- * 事件数据保留策略
+ * Event-data retention policy
  */
 export interface RetentionPolicy {
-  /** 表名 */
+  /** Table name */
   tableName: string;
-  /** 保留天数（默认 90 天） */
+  /** Retention days (default 90) */
   retentionDays: number;
-  /** 时间戳字段名（默认 "createdAt"） */
+  /** Timestamp field name (default "createdAt") */
   timestampField?: string;
-  /** 是否在清理后执行 VACUUM */
+  /** Whether to run VACUUM after cleanup */
   vacuum?: boolean;
 }
 
 /**
- * 清理结果
+ * Cleanup result
  */
 export interface CleanupResult {
-  /** 表名 */
+  /** Table name */
   tableName: string;
-  /** 删除的行数 */
+  /** Number of deleted rows */
   deletedRows: number;
-  /** 错误信息（如有） */
+  /** Error message (if any) */
   error?: string;
 }
 
 /**
- * 事件数据自动归档与清理服务
+ * Event-data auto-archive and cleanup service
  *
- * 定时清理 system.db 中的过期事件数据：
- * - 告警记录：默认保留 365 天
+ * Periodically cleans expired event data in system.db:
+ * - Alarm records: retained 365 days by default
  */
 @Injectable()
 export class EventCleanupService implements OnModuleDestroy {
   private readonly logger = new Logger(EventCleanupService.name);
 
-  /** 调度器定时器引用 */
+  /** Scheduler timer reference */
   private schedulerTimer: ReturnType<typeof setInterval> | null = null;
 
-  /** 调度器运行状态 */
+  /** Scheduler running state */
   private schedulerRunning = false;
 
-  /** 上次清理时间戳 */
+  /** Last cleanup timestamp */
   private lastCleanupTime: Date | null = null;
 
-  /** 清理统计 */
+  /** Cleanup statistics */
   private cleanupStats = {
     totalRuns: 0,
     totalDeletedRows: 0,
@@ -68,7 +68,7 @@ export class EventCleanupService implements OnModuleDestroy {
     lastRunDurationMs: 0,
   };
 
-  /** system.db 中的表保留策略 */
+  /** Table retention policies in system.db */
   private readonly policies: RetentionPolicy[] = [
     { tableName: 'alm_alarm_records', retentionDays: 365, vacuum: true },
   ];
@@ -81,12 +81,12 @@ export class EventCleanupService implements OnModuleDestroy {
   ) {}
 
   /**
-   * 清理所有项目的过期事件数据
-   * 建议通过外部调度器（如 @nestjs/schedule 或 cron job）定期调用
+   * Clean all projects' expired event data
+   * Recommended to be called periodically by an external scheduler (e.g. @nestjs/schedule or a cron job)
    */
   async cleanupAllProjects(): Promise<void> {
     if (this.projectDbService.getMode() !== 'isolated') {
-      // unified 模式下暂不执行项目级清理
+      // Project-level cleanup is not executed in unified mode for now
       return;
     }
 
@@ -97,17 +97,17 @@ export class EventCleanupService implements OnModuleDestroy {
       await this.cleanupProjectEvents(projectName);
     }
 
-    // P1-6: 清理全局 sys_events 表中的过期事件
+    // P1-6: clean expired events in the global sys_events table
     await this.cleanupGlobalEvents();
 
     this.logger.log('Event data cleanup completed');
   }
 
   /**
-   * 清理指定项目的过期事件数据
+   * Clean a specified project's expired event data
    *
-   * @param projectName 项目名称
-   * @param policies    自定义保留策略（不传则使用默认的）
+   * @param projectName project name
+   * @param policies    custom retention policies (defaults used when omitted)
    */
   async cleanupProjectEvents(
     projectName: string,
@@ -115,7 +115,7 @@ export class EventCleanupService implements OnModuleDestroy {
   ): Promise<{ projectName: string; results: CleanupResult[] }> {
     const results: CleanupResult[] = [];
 
-    // 清理 system.db 中的表（如 alm_alarm_records）
+    // Clean tables in system.db (e.g. alm_alarm_records)
     const systemDs = this.projectDbService.getLoadedSystemDb(projectName);
     if (systemDs) {
       for (const policy of policies) {
@@ -148,7 +148,7 @@ export class EventCleanupService implements OnModuleDestroy {
   }
 
   /**
-   * 清理单个表
+   * Clean a single table
    */
   private async cleanupTable(
     dataSource: DataSource,
@@ -159,7 +159,7 @@ export class EventCleanupService implements OnModuleDestroy {
     const cutoffDate = new Date(Date.now() - policy.retentionDays * 86400000);
     const cutoffISO = cutoffDate.toISOString();
 
-    // 检查表是否存在
+    // Check whether the table exists
     const tables = await dataSource.query(
       `SELECT name FROM sqlite_master WHERE type='table' AND name='${tableName}'`,
     );
@@ -170,7 +170,7 @@ export class EventCleanupService implements OnModuleDestroy {
     const deleteSQL = `DELETE FROM "${tableName}" WHERE "${timestampField}" < ?`;
     const _result = await dataSource.query(deleteSQL, [cutoffISO]);
 
-    // SQLite 的 DELETE 不直接返回 affected rows，需用 changes()
+    // SQLite's DELETE does not directly return affected rows; use changes()
     const changesResult = await dataSource.query('SELECT changes() as count');
     const deletedRows = changesResult[0]?.count || 0;
 
@@ -188,8 +188,8 @@ export class EventCleanupService implements OnModuleDestroy {
   }
 
   /**
-   * P1-6: 清理全局 sys_events 表中的过期系统事件
-   * 默认保留 90 天，通过 SystemEventService.cleanupExpired 执行
+   * P1-6: clean expired system events in the global sys_events table
+   * Retained 90 days by default, executed via SystemEventService.cleanupExpired
    */
   private async cleanupGlobalEvents(): Promise<void> {
     if (!this.systemEventService) {
@@ -210,12 +210,12 @@ export class EventCleanupService implements OnModuleDestroy {
   }
 
   /**
-   * 手动清理指定项目的指定表
+   * Manually clean a specified table of a specified project
    *
-   * @param projectName   项目名称
-   * @param tableName     表名
-   * @param retentionDays 保留天数
-   * @param timestampField 时间戳字段
+   * @param projectName   project name
+   * @param tableName     table name
+   * @param retentionDays retention days
+   * @param timestampField timestamp field
    */
   async manualCleanup(
     projectName: string,
@@ -238,7 +238,7 @@ export class EventCleanupService implements OnModuleDestroy {
   }
 
   /**
-   * 获取数据库文件大小统计
+   * Get database file-size statistics
    */
   async getDatabaseSizeStats(projectName: string): Promise<{
     systemDbSize: number;
@@ -266,17 +266,17 @@ export class EventCleanupService implements OnModuleDestroy {
   }
 
   /**
-   * 获取所有项目目录名称
+   * Get all project directory names
    *
-   * 路径基准：
-   * - dev 模式：__dirname 上溯 4 级 = ss-services/ss-node
-   *   （本文件编译后位于 packages/ss-project/dist/services/，4 级上溯：
-   *    dist/services/ → dist/ → ss-project/ → packages/ → ss-node/）
-   * - 生产模式：process.cwd() = ss-run/ss/services/ss-node
+   * Relative-path base:
+   * - dev mode: __dirname up 4 levels = ss-services/ss-node
+   *   (after compilation this file lives in packages/ss-project/dist/services/, 4 levels up:
+   *    dist/services/ -> dist/ -> ss-project/ -> packages/ -> ss-node/)
+   * - production: process.cwd() = ss-run/ss/services/ss-node
    *
-   * 修复历史：之前用 3 级上溯且不区分 dev/prod，dev 模式下解析到 packages/（错误），
-   * 生产模式下 __dirname 位于 node_modules/@ss-node/ss-project/dist/services/，
-   * 3 级上溯到 node_modules/（错误）。与 project-database.service.ts getProjectDbDir() 保持一致。
+   * Fix history: previously used 3-level traversal without distinguishing dev/prod; in dev mode it resolved to packages/ (wrong),
+   * and in production __dirname lives in node_modules/@ss-node/ss-project/dist/services/, where 3 levels reaches node_modules/ (wrong).
+   * Kept consistent with project-database.service.ts getProjectDbDir().
    */
   private getProjectNames(): string[] {
     const fs = require('fs');
@@ -292,13 +292,13 @@ export class EventCleanupService implements OnModuleDestroy {
   }
 
   // ============================================================
-  // 自动清理调度器
+  // Auto-cleanup scheduler
   // ============================================================
 
   /**
-   * 启动自动清理调度器
+   * Start the auto-cleanup scheduler
    *
-   * @param config 调度器配置（不传则使用默认值：24小时间隔，启用）
+   * @param config scheduler config (defaults used when omitted: 24-hour interval, enabled)
    */
   startScheduler(config?: Partial<CleanupSchedulerConfig>): void {
     if (this.schedulerTimer) {
@@ -312,22 +312,22 @@ export class EventCleanupService implements OnModuleDestroy {
       return;
     }
 
-    const intervalMs = config?.intervalMs || 86400000; // 默认 24 小时
+    const intervalMs = config?.intervalMs || 86400000; // default 24 hours
     this.logger.log(
       `Starting auto-cleanup scheduler (interval: ${intervalMs}ms ≈ ${(intervalMs / 3600000).toFixed(1)}h)`,
     );
 
-    // 立即执行一次清理
+    // Run one cleanup immediately
     this.runScheduledCleanup();
 
-    // 定时执行
+    // Run periodically
     this.schedulerTimer = setInterval(() => {
       this.runScheduledCleanup();
     }, intervalMs);
   }
 
   /**
-   * 停止自动清理调度器
+   * Stop the auto-cleanup scheduler
    */
   stopScheduler(): void {
     if (this.schedulerTimer) {
@@ -338,14 +338,14 @@ export class EventCleanupService implements OnModuleDestroy {
   }
 
   /**
-   * 检查调度器是否正在运行
+   * Check whether the scheduler is running
    */
   isSchedulerRunning(): boolean {
     return this.schedulerTimer !== null;
   }
 
   /**
-   * 获取调度器状态和统计信息
+   * Get scheduler status and statistics
    */
   getSchedulerStatus(): {
     running: boolean;
@@ -363,7 +363,7 @@ export class EventCleanupService implements OnModuleDestroy {
   }
 
   /**
-   * 执行一次定时清理任务
+   * Run one scheduled cleanup task
    */
   private async runScheduledCleanup(): Promise<void> {
     if (this.schedulerRunning) {
@@ -388,7 +388,7 @@ export class EventCleanupService implements OnModuleDestroy {
   }
 
   /**
-   * 模块销毁时停止调度器
+   * Stop the scheduler on module destroy
    */
   onModuleDestroy(): void {
     this.stopScheduler();

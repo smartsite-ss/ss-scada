@@ -7,7 +7,7 @@ import { mount, flushPromises } from '@vue/test-utils';
 import { setActivePinia, createPinia } from 'pinia';
 
 // ======================== Mock i18n ========================
-// formatPeriod 依赖的 i18n 消息模板（与 zh-CN.json 保持一致）
+// i18n message templates required by formatPeriod (kept consistent with zh-CN.json)
 const I18N_TEMPLATES: Record<string, string> = {
   'system.deviceMonitor.durationMs': '{n}ms',
   'system.deviceMonitor.durationSec': '{n}s',
@@ -174,7 +174,7 @@ describe('DeviceMonitorView', () => {
   beforeEach(() => {
     setActivePinia(createPinia());
     vi.clearAllMocks();
-    // 默认 mock 返回值
+    // Default mock return values
     mockDeviceApi.getById.mockResolvedValue({ data: mockDevice() });
     mockDeviceApi.getLatestValues.mockResolvedValue({ data: {} });
     mockDeviceApi.getGroupTree.mockResolvedValue({ data: mockGroupTree() });
@@ -199,7 +199,7 @@ describe('DeviceMonitorView', () => {
     it('应加载项目列表并显示项目节点', async () => {
       const wrapper = await mountMonitorView();
       await flushPromises();
-      // 项目节点应被渲染
+      // Project nodes should be rendered
       const projectNodes = wrapper.findAll('.project-node');
       expect(projectNodes.length).toBeGreaterThan(0);
       expect(projectNodes[0].text()).toContain('测试项目1');
@@ -220,11 +220,11 @@ describe('DeviceMonitorView', () => {
       const projectNode = wrapper.find('.project-node');
       expect(projectNode.classes()).toContain('expanded');
 
-      // 点击收起
+      // Click to collapse
       await projectNode.trigger('click');
-      // 注意：selectProject 会在已展开时收起
+      // Note: selectProject collapses when already expanded
       await flushPromises();
-      // 再次点击展开
+      // Click again to expand
       await projectNode.trigger('click');
       await flushPromises();
       expect(mockDeviceStore.fetchGroupTree).toHaveBeenCalled();
@@ -244,7 +244,7 @@ describe('DeviceMonitorView', () => {
       const wrapper = await mountMonitorView();
       await flushPromises();
       expect(wrapper.find('.tree-empty').text()).toContain('system.devices.noProjects');
-      // 恢复
+      // Restore
       mockProjectStore.projects = [
         { projectId: 'proj-1', projectName: '测试项目1' },
       ];
@@ -255,7 +255,7 @@ describe('DeviceMonitorView', () => {
     it('选中设备后应显示设备头部信息', async () => {
       const wrapper = await mountMonitorView();
       await flushPromises();
-      // 模拟选中设备
+      // Simulate selecting a device
       const vm = wrapper.vm as any;
       vm.selectedDeviceId = 'dev-1';
       vm.projectId = 'proj-1';
@@ -300,7 +300,7 @@ describe('DeviceMonitorView', () => {
       const wrapper = await mountMonitorView();
       await flushPromises();
       const vm = wrapper.vm as any;
-      // 调用 maskSensitive 函数
+      // Call the maskSensitive function
       const result = vm.maskSensitive('password', 'secret123');
       expect(result).toBe('***');
       const normalResult = vm.maskSensitive('host', '192.168.1.1');
@@ -321,7 +321,7 @@ describe('DeviceMonitorView', () => {
 
       expect(mockDeviceApi.getById).toHaveBeenCalledWith('proj-1', 'dev-1');
       expect(mockDeviceApi.getLatestValues).toHaveBeenCalledWith('proj-1', 'dev-1');
-      expect(vm.tagDataList.length).toBe(2); // 两个标签
+      expect(vm.tagDataList.length).toBe(2); // two tags
     });
 
     it('自动刷新应定时调用 refreshRealtimeData', async () => {
@@ -413,12 +413,12 @@ describe('DeviceMonitorView', () => {
       const vm = wrapper.vm as any;
       vm.selectedDeviceId = 'dev-1';
       vm.projectId = 'proj-1';
-      // 设备有 tag-1 和 tag-2
+      // Device has tag-1 and tag-2
       await vm.loadDeviceDetail();
       await vm.loadAlarmRules();
       await flushPromises();
 
-      // 只应保留 tagId 为 tag-1 的规则
+      // Only rules with tagId tag-1 should be kept
       expect(vm.deviceAlarmRules.length).toBe(1);
       expect(vm.deviceAlarmRules[0].id).toBe('rule-1');
     });
@@ -538,7 +538,7 @@ describe('DeviceMonitorView', () => {
       await vm.subscribeWsTags();
       await flushPromises();
 
-      // 取消订阅
+      // Unsubscribe
       vm.unsubscribeWsTags();
       expect(mockWsStore.unsubscribeTags).toHaveBeenCalledWith(['tag-1', 'tag-2']);
     });
@@ -557,7 +557,7 @@ describe('DeviceMonitorView', () => {
       await flushPromises();
 
       wrapper.unmount();
-      // 验证 unsubscribeTags 被调用
+      // Verify unsubscribeTags was called
       expect(mockWsStore.unsubscribeTags).toHaveBeenCalled();
     });
   });

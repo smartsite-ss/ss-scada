@@ -3,33 +3,33 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * Embedding Service — P1-T08 RAG 文本嵌入服务
+ * Embedding Service - P1-T08 RAG text embedding service
  *
- * 调用 AI Provider 的嵌入端点将文本转换为向量。
- * 复用 LLMProxyService 的路由/降级能力。
+ * Calls the AI provider's embedding endpoint to convert text into vectors.
+ * Reuses LLMProxyService's routing/fallback capabilities.
  *
- * 用法:
- *   const vectors = await embeddingService.embed(['文本1', '文本2']);
- *   // → [ [0.123, -0.456, ...], [0.789, -0.012, ...] ]
+ * Usage:
+ *   const vectors = await embeddingService.embed(['text1', 'text2']);
+ *   // -> [ [0.123, -0.456, ...], [0.789, -0.012, ...] ]
  */
 
 import { Injectable, Logger } from '@nestjs/common';
 import { LLMProxyService } from './llm-proxy.service';
 
-/** 嵌入请求 */
+/** Embedding request */
 export interface EmbedRequest {
   texts: string[];
-  /** 嵌入模型（默认自动选择） */
+  /** Embedding model (auto-selected by default) */
   model?: string;
 }
 
-/** 嵌入结果 */
+/** Embedding result */
 export interface EmbedResult {
-  /** 向量列表（与输入 text 一一对应） */
+  /** Vector list (one-to-one with input texts) */
   vectors: number[][];
-  /** 向量维度 */
+  /** Vector dimension */
   dimension: number;
-  /** 使用的模型 */
+  /** Model used */
   model: string;
 }
 
@@ -41,7 +41,7 @@ export class EmbeddingService {
   constructor(private readonly proxy: LLMProxyService) {}
 
   /**
-   * 单文本嵌入
+   * Single text embedding
    */
   async embedSingle(text: string): Promise<number[]> {
     const result = await this.embed([text]);
@@ -49,7 +49,7 @@ export class EmbeddingService {
   }
 
   /**
-   * 批量文本嵌入
+   * Batch text embedding
    */
   async embed(texts: string[]): Promise<EmbedResult> {
     if (!texts.length) {
@@ -78,7 +78,7 @@ export class EmbeddingService {
   }
 
   /**
-   * 获取缓存的向量维度
+   * Get cached vector dimension
    */
   getDimension(): number {
     return this.cachedDimension;

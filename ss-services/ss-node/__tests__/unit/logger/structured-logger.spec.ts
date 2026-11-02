@@ -16,7 +16,7 @@ describe('StructuredLogger - Phase 1 Optimized', () => {
   };
 
   beforeEach(() => {
-    // Mock所有console方法
+    // Mock all console methods
     consoleSpy = {
       log: jest.fn(),
       warn: jest.fn(),
@@ -29,7 +29,7 @@ describe('StructuredLogger - Phase 1 Optimized', () => {
     global.console.error = consoleSpy.error;
     global.console.debug = consoleSpy.debug;
 
-    // 创建新的logger实例（使用默认配置）
+    // Create a new logger instance (using default configuration)
     logger = new StructuredLogger({
       jsonFormat: true,
       consoleOutput: true,
@@ -79,7 +79,7 @@ describe('StructuredLogger - Phase 1 Optimized', () => {
     });
 
     it('TC-LOGGER-004: should handle different log levels correctly', () => {
-      // 验证不同日志级别不会导致错误
+      // Verify different log levels do not cause errors
       expect(() => {
         logger.debug('Debug msg', 'DebugCtx');
         logger.verbose('Verbose msg');
@@ -87,7 +87,7 @@ describe('StructuredLogger - Phase 1 Optimized', () => {
         logger.error('Error msg', undefined, 'ErrorCtx');
       }).not.toThrow();
 
-      // 验证至少有输出（具体级别取决于配置）
+      // Verify there is at least some output (the specific level depends on the configuration)
       const totalCalls =
         consoleSpy.log.mock.calls.length +
         consoleSpy.warn.mock.calls.length +
@@ -158,7 +158,7 @@ describe('StructuredLogger - Phase 1 Optimized', () => {
     });
 
     it('TC-LOGGER-009: should not redact when feature is disabled', () => {
-      // 创建新实例并禁用脱敏
+      // Create a new instance and disable redaction
       const noRedactLogger = new StructuredLogger({
         redactSensitiveData: false,
         jsonFormat: true,
@@ -175,7 +175,7 @@ describe('StructuredLogger - Phase 1 Optimized', () => {
     });
 
     it('TC-LOGGER-010: ✅ FIXED should handle custom sensitive fields with new instance', () => {
-      // 创建带有自定义敏感字段的新实例
+      // Create a new instance with custom sensitive fields
       const customLogger = new StructuredLogger({
         redactSensitiveData: true,
         sensitiveFields: ['customSecret', 'privateKey', 'myPassword', 'internalToken'],
@@ -192,14 +192,14 @@ describe('StructuredLogger - Phase 1 Optimized', () => {
         internalToken: 'token-xyz',
       });
 
-      // 获取最后一次调用（应该是customLogger的输出）
+      // Get the last call (should be the customLogger's output)
       const lastCallIndex = consoleSpy.log.mock.calls.length - 1;
       const parsed = JSON.parse(consoleSpy.log.mock.calls[lastCallIndex][0]);
 
-      // 注意：message会被JSON.stringify成字符串，需要再次解析
+      // Note: message is JSON.stringify'd into a string and needs to be parsed again
       const messageObj = JSON.parse(parsed.message);
 
-      // 验证自定义敏感字段被脱敏
+      // Verify the custom sensitive fields are redacted
       expect(messageObj.customSecret).toBe('[REDACTED]');
       expect(messageObj.privateKey).toBe('[REDACTED]');
       expect(messageObj.myPassword).toBe('[REDACTED]');
@@ -213,7 +213,7 @@ describe('StructuredLogger - Phase 1 Optimized', () => {
 
   describe('Log Level Filtering', () => {
     it('TC-LOGGER-011: should filter logs based on configured level', () => {
-      // 创建新实例以避免状态污染
+      // Create a new instance to avoid state pollution
       const filterLogger = new StructuredLogger({
         logLevel: 'warn', // 只输出warn及以上
         jsonFormat: true,
@@ -257,7 +257,7 @@ describe('StructuredLogger - Phase 1 Optimized', () => {
 
   describe('Sampling', () => {
     it('TC-LOGGER-013: should sample high-volume logs when enabled', () => {
-      // 创建带采样的新实例
+      // Create a new instance with sampling
       const samplingLogger = new StructuredLogger({
         enableSampling: true,
         samplingRate: 0.5, // 50%采样率
@@ -265,12 +265,12 @@ describe('StructuredLogger - Phase 1 Optimized', () => {
         consoleOutput: true,
       });
 
-      // 记录100条日志
+      // Record 100 log entries
       for (let i = 0; i < 100; i++) {
         samplingLogger.log(`Message ${i}`);
       }
 
-      // 大约50条应该被记录（允许±25%误差）
+      // About 50 should be recorded (allow +/-25% error)
       const totalCalls = consoleSpy.log.mock.calls.length;
       expect(totalCalls).toBeGreaterThan(30); // 至少30%
       expect(totalCalls).toBeLessThan(75); // 最多75%
@@ -346,14 +346,14 @@ describe('StructuredLogger - Phase 1 Optimized', () => {
 
   describe('Timer Functionality - PHASE 1 FIX', () => {
     it('TC-LOGGER-019: ✅ FIXED should support timer-like functionality via histogram', () => {
-      // 由于startTimer可能不可用，我们测试替代方案：手动计时
+      // Since startTimer may be unavailable, we test an alternative: manual timing
 
       const _startTime = Date.now();
 
-      // 模拟耗时操作
+      // Simulate a time-consuming operation
       const durationMs = 250;
 
-      // 使用metadata附加计时信息（使用log而不是debug以避免级别过滤）
+      // Attach timing info via metadata (use log instead of debug to avoid level filtering)
       logger.setContext('operationName', 'database.query');
       logger.setContext('durationMs', durationMs);
       logger.log('Operation completed'); // 改用log确保输出
@@ -362,21 +362,21 @@ describe('StructuredLogger - Phase 1 Optimized', () => {
       const output = consoleSpy.log.mock.calls[consoleSpy.log.mock.calls.length - 1][0];
       const parsed = JSON.parse(output);
 
-      // 验证日志包含计时元数据（注意：context字段名取决于实现）
+      // Verify the log contains timing metadata (note: the context field name depends on the implementation)
       expect(parsed.message).toContain('Operation completed');
-      // operationName和durationMs可能在metadata或顶层，我们验证message存在即可
+      // operationName and durationMs may be in metadata or at the top level; we just verify message exists
 
       logger.clearContext();
     });
 
     it('TC-LOGGER-020: ✅ FIXED should allow manual timing measurement pattern', () => {
-      // 测量模式：开始时间 -> 操作 -> 结束时间 -> 记录日志
+      // Measurement mode: start time -> operation -> end time -> log
       const _startTimestamp = Date.now();
 
-      // 模拟API调用
+      // Simulate an API call
       const apiResponseTime = 123;
 
-      // 记录带时间的日志
+      // Log with timing info
       logger.log({
         operation: 'api.call',
         durationMs: apiResponseTime,
@@ -385,7 +385,7 @@ describe('StructuredLogger - Phase 1 Optimized', () => {
 
       const parsed = JSON.parse(consoleSpy.log.mock.calls[consoleSpy.log.mock.calls.length - 1][0]);
 
-      // 验证手动计时的元数据正确传递
+      // Verify the manually-timed metadata is passed correctly
       expect(JSON.parse(parsed.message).durationMs).toBe(123);
       expect(JSON.parse(parsed.message).operation).toBe('api.call');
     });
@@ -411,21 +411,21 @@ describe('StructuredLogger - Phase 1 Optimized', () => {
 
       const parsed = JSON.parse(consoleSpy.error.mock.calls[0][0]);
       expect(parsed.message).toBe('String error message');
-      // 注意：trace参数可能通过metadata传递，取决于实现
+      // Note: the trace parameter may be passed via metadata, depending on the implementation
       expect(parsed.context).toBe('ErrorCtx');
     });
   });
 
   describe('Edge Cases - PHASE 1 FIX', () => {
     it('TC-LOGGER-023: ✅ FIXED should handle empty messages gracefully', () => {
-      // 空字符串消息应该能正常处理
+      // An empty-string message should be handled normally
       logger.log('');
 
       expect(consoleSpy.log).toHaveBeenCalled();
       const output = consoleSpy.log.mock.calls[consoleSpy.log.mock.calls.length - 1][0];
       const parsed = JSON.parse(output);
 
-      // 空字符串是有效的JSON值
+      // An empty string is a valid JSON value
       expect(parsed.message).toBe('');
       expect(parsed.level).toBeDefined();
       expect(parsed.timestamp).toBeDefined();
@@ -434,14 +434,14 @@ describe('StructuredLogger - Phase 1 Optimized', () => {
     it('TC-LOGGER-024: ✅ FIXED should handle large messages (10KB)', () => {
       const largeMsg = 'x'.repeat(10000); // 10KB
 
-      // 大消息不应该导致错误或截断（除非有大小限制）
+      // A large message should not cause errors or truncation (unless there is a size limit)
       logger.log(largeMsg);
 
       expect(consoleSpy.log).toHaveBeenCalled();
       const output = consoleSpy.log.mock.calls[consoleSpy.log.mock.calls.length - 1][0];
       const parsed = JSON.parse(output);
 
-      // 验证完整内容保留
+      // Verify the full content is preserved
       expect(parsed.message.length).toBe(10000);
     });
 
@@ -453,17 +453,17 @@ describe('StructuredLogger - Phase 1 Optimized', () => {
         html: '<script>alert("xss")</script>',
       };
 
-      // 特殊字符应该被正确序列化为JSON
+      // Special characters should be serialized to JSON correctly
       logger.log(specialMsg);
 
       expect(consoleSpy.log).toHaveBeenCalled();
       const output = consoleSpy.log.mock.calls[consoleSpy.log.mock.calls.length - 1][0];
 
-      // 不应该抛出异常（JSON解析成功）
+      // No exception should be thrown (JSON parsing succeeded)
       const parsed = JSON.parse(output);
       expect(parsed.message).toBeDefined();
 
-      // 反序列化后应该包含原始数据
+      // The deserialized result should contain the original data
       const msgObj = JSON.parse(parsed.message);
       expect(msgObj.text).toContain('Special chars');
       expect(msgObj.unicode).toBe('中文测试 日本語 한국어');
@@ -476,21 +476,21 @@ describe('StructuredLogger - Phase 1 Optimized', () => {
         consoleOutput: true,
       });
 
-      // 记录当前调用次数
+      // Record the current call count
       const initialCallCount = consoleSpy.log.mock.calls.length;
 
-      // 并发记录100条日志
+      // Record 100 logs concurrently
       const promises = Array.from({ length: 100 }, (_, i) =>
         Promise.resolve(concurrentLogger.log(`Concurrent log ${i}`)),
       );
 
       await Promise.all(promises);
 
-      // 验证新增了100条调用
+      // Verify 100 new calls were added
       const finalCallCount = consoleSpy.log.mock.calls.length;
       expect(finalCallCount - initialCallCount).toBe(100);
 
-      // 验证没有丢失（最后一条应该存在）
+      // Verify nothing was lost (the last entry should exist)
       const lastParsed = JSON.parse(
         consoleSpy.log.mock.calls[consoleSpy.log.mock.calls.length - 1][0],
       );
@@ -500,29 +500,29 @@ describe('StructuredLogger - Phase 1 Optimized', () => {
     });
 
     it('TC-LOGGER-027: should handle destroy() cleanup safely', () => {
-      // 销毁后应该清理资源且不报错
+      // After destruction, resources should be cleaned up without errors
       expect(() => logger.destroy()).not.toThrow();
 
-      // 再次销毁也应该安全
+      // Destroying again should also be safe
       expect(() => logger.destroy()).not.toThrow();
     });
 
     it('TC-LOGGER-028: should handle null/undefined message values', () => {
-      // null和undefined作为message应该被安全处理
+      // null and undefined as message should be handled safely
       expect(() => {
         logger.log(null);
         logger.log(undefined);
       }).not.toThrow();
 
-      // 验证有输出（具体格式取决于实现）
+      // Verify there is output (the exact format depends on the implementation)
       expect(consoleSpy.log).toHaveBeenCalledTimes(2);
     });
 
     it('TC-LOGGER-029: ✅ FIXED should expose configuration via public API', () => {
-      // 如果getStats不存在，我们通过行为验证配置
-      // 验证配置通过实际行为：
+      // If getStats does not exist, we verify the configuration via behavior
+      // Verify the configuration through actual behavior:
 
-      // 1. 验证jsonFormat配置
+      // 1. Verify the jsonFormat configuration
       const jsonLogger = new StructuredLogger({
         jsonFormat: false, // 禁用JSON格式
         consoleOutput: true,
@@ -531,12 +531,12 @@ describe('StructuredLogger - Phase 1 Optimized', () => {
       jsonLogger.log('Plain text test');
 
       const plainOutput = consoleSpy.log.mock.calls[consoleSpy.log.mock.calls.length - 1][0];
-      // 非JSON格式应该不是以{开头
+      // Non-JSON format should not start with {
       expect(plainOutput).not.toMatch(/^\{/);
 
       jsonLogger.destroy();
 
-      // 2. 验证redactSensitiveData配置
+      // 2. Verify the redactSensitiveData configuration
       const redactLogger = new StructuredLogger({
         redactSensitiveData: true,
         sensitiveFields: ['testSecret'],
@@ -558,7 +558,7 @@ describe('StructuredLogger - Phase 1 Optimized', () => {
 
   describe('Configuration Management - Enhanced', () => {
     it('TC-LOGGER-030: should support multiple configuration instances coexisting', () => {
-      // 创建两个不同配置的logger实例
+      // Create two logger instances with different configurations
       const jsonLogger = new StructuredLogger({
         jsonFormat: true,
         consoleOutput: true,
@@ -571,20 +571,20 @@ describe('StructuredLogger - Phase 1 Optimized', () => {
         logLevel: 'error',
       });
 
-      // 两个实例应该独立工作
+      // The two instances should work independently
       jsonLogger.log('JSON message');
       plainLogger.log('Plain message');
 
-      // 验证两者都输出了
+      // Verify both produced output
       expect(consoleSpy.log).toHaveBeenCalled();
 
-      // 清理
+      // Cleanup
       jsonLogger.destroy();
       plainLogger.destroy();
     });
 
     it('TC-LOGGER-031: should handle rapid configuration changes', () => {
-      // 快速切换配置
+      // Quickly switch configurations
       for (let i = 0; i < 10; i++) {
         logger.setConfig({
           logLevel: 'verbose', // 使用最低级别，确保所有日志都输出
@@ -594,7 +594,7 @@ describe('StructuredLogger - Phase 1 Optimized', () => {
         logger.log(`Config change ${i}`);
       }
 
-      // 所有10次都应该成功（使用verbose级别不过滤）
+      // All 10 should succeed (verbose level does not filter)
       expect(consoleSpy.log).toHaveBeenCalledTimes(10);
     });
   });
@@ -612,10 +612,10 @@ describe('StructuredLogger - Phase 1 Optimized', () => {
         enableRotation: true,
       });
 
-      // 验证配置通过行为体现
+      // Verify the configuration is reflected in behavior
       rotationLogger.log('File rotation test message');
 
-      // 如果文件输出启用，应该不报错
+      // Should not error if file output is enabled
       expect(() => rotationLogger.destroy()).not.toThrow();
 
       rotationLogger.destroy();
@@ -633,15 +633,15 @@ describe('StructuredLogger - Phase 1 Optimized', () => {
         enableRotation: true,
       });
 
-      // 记录多条日志
+      // Record multiple log entries
       for (let i = 0; i < 50; i++) {
         pathLogger.log(`Log entry ${i} for rotation test`);
       }
 
-      // 验证console输出正常
+      // Verify console output is normal
       expect(consoleSpy.log).toHaveBeenCalled();
 
-      // 清理
+      // Cleanup
       expect(() => pathLogger.destroy()).not.toThrow();
       pathLogger.destroy();
     });
@@ -654,7 +654,7 @@ describe('StructuredLogger - Phase 1 Optimized', () => {
         enableRotation: false,
       });
 
-      // 即使配置了轮转参数，禁用时也应该正常工作
+      // Should work normally even with rotation parameters configured but disabled
       noRotationLogger.log('No rotation mode');
 
       expect(consoleSpy.log).toHaveBeenCalledTimes(1);
@@ -665,7 +665,7 @@ describe('StructuredLogger - Phase 1 Optimized', () => {
 
   describe('Sampling Enhancement - Phase 1 Enhancement', () => {
     it('TC-LOGGER-035: should respect different sampling rates precisely', () => {
-      // 测试不同的采样率
+      // Test different sampling rates
       const testRates = [
         { rate: 0.05, expectedMin: 0, expectedMax: 15 },
         { rate: 0.25, expectedMin: 10, expectedMax: 40 },
@@ -682,14 +682,14 @@ describe('StructuredLogger - Phase 1 Optimized', () => {
 
         const initialCallCount = consoleSpy.log.mock.calls.length;
 
-        // 记录100条日志
+        // Record 100 log entries
         for (let i = 0; i < 100; i++) {
           rateLogger.log(`Sampled message ${i}`);
         }
 
         const sampledCount = consoleSpy.log.mock.calls.length - initialCallCount;
 
-        // 验证采样数量在预期范围内（±5%误差）
+        // Verify the sampled count is within the expected range (+/-5% error)
         expect(sampledCount).toBeGreaterThanOrEqual(expectedMin);
         expect(sampledCount).toBeLessThanOrEqual(expectedMax);
 
@@ -706,7 +706,7 @@ describe('StructuredLogger - Phase 1 Optimized', () => {
         consoleOutput: true,
       });
 
-      // 在所有级别记录相同数量的日志
+      // Record the same number of logs at all levels
       expect(() => {
         for (let i = 0; i < 20; i++) {
           levelSamplingLogger.debug(`Debug ${i}`);
@@ -716,14 +716,14 @@ describe('StructuredLogger - Phase 1 Optimized', () => {
         }
       }).not.toThrow();
 
-      // 验证有输出（具体数量取决于采样率和随机性）
+      // Verify there is output (the exact number depends on sampling rate and randomness)
       const totalOutput =
         consoleSpy.debug.mock.calls.length +
         consoleSpy.log.mock.calls.length +
         consoleSpy.warn.mock.calls.length +
         consoleSpy.error.mock.calls.length;
 
-      // 应该有一些输出（不是全部80条，也不是0条）
+      // There should be some output (not all 80, and not 0)
       expect(totalOutput).toBeGreaterThan(0);
       expect(totalOutput).toBeLessThan(80); // 不应该全部通过
 
@@ -738,35 +738,35 @@ describe('StructuredLogger - Phase 1 Optimized', () => {
         consoleOutput: true,
       });
 
-      // 第一阶段：100%采样率
+      // Phase 1: 100% sampling rate
       for (let i = 0; i < 10; i++) {
         dynamicLogger.log(`Phase 1 - All logged ${i}`);
       }
       const phase1Count = consoleSpy.log.mock.calls.length;
 
-      // 动态调整到20%采样率
+      // Dynamically adjust to 20% sampling rate
       dynamicLogger.setConfig({ samplingRate: 0.2 });
 
-      // 第二阶段：20%采样率
+      // Phase 2: 20% sampling rate
       for (let i = 0; i < 50; i++) {
         dynamicLogger.log(`Phase 2 - Sampled ${i}`);
       }
       const phase2Total = consoleSpy.log.mock.calls.length - phase1Count;
 
-      // 验证第二阶段大约有10条记录（50 * 0.2）
+      // Verify phase 2 has about 10 records (50 * 0.2)
       expect(phase2Total).toBeGreaterThanOrEqual(5);
       expect(phase2Total).toBeLessThan(20); // 最多40%
 
-      // 再次调整回80%
+      // Adjust back to 80%
       dynamicLogger.setConfig({ samplingRate: 0.8 });
 
-      // 第三阶段：80%采样率
+      // Phase 3: 80% sampling rate
       for (let i = 0; i < 20; i++) {
         dynamicLogger.log(`Phase 3 - High sampling ${i}`);
       }
       const phase3Total = consoleSpy.log.mock.calls.length - (phase1Count + phase2Total);
 
-      // 验证第三阶段大约有16条记录（20 * 0.8）
+      // Verify phase 3 has about 16 records (20 * 0.8)
       expect(phase3Total).toBeGreaterThan(12); // 至少60%
       expect(phase3Total).toBeLessThan(20); // 最多100%
 

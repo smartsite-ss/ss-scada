@@ -8,14 +8,14 @@ import type {
   StaticSourceConfig,
 } from './types';
 
-/** 空结果快捷构造 */
+/** Convenience constructor for an empty result */
 export function createEmptyResult(): ChartDataResult {
   return { dimensions: [], source: [], state: 'empty' };
 }
 
 /**
- * 静态数据源：数据固化在组件配置内，无后端依赖。
- * load() 直接返回配置中的 dimensions + source，无订阅。
+ * Static data source: data is fixed inside the component config, with no backend dependency.
+ * load() returns the dimensions + source from config directly; no subscription.
  */
 export function createStaticDataSource(config: StaticSourceConfig): ChartDataSource {
   const listeners = new Set<(result: ChartDataResult) => void>();
@@ -34,10 +34,10 @@ export function createStaticDataSource(config: StaticSourceConfig): ChartDataSou
     type: 'static',
     load: () => Promise.resolve(buildResult()),
     subscribe: () => {
-      /* 静态数据源无订阅 */
+      /* static data source has no subscription */
     },
     unsubscribe: () => {
-      /* 静态数据源无资源 */
+      /* static data source holds no resources */
     },
     onChange: (listener) => {
       listeners.add(listener);

@@ -3,14 +3,14 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * ScriptGeneratorAgent 单元测试 — P1-T06
+ * ScriptGeneratorAgent unit tests — P1-T06
  *
- * 覆盖:
- *   - analyze(): 触发匹配 + System Prompt 构建
- *   - buildSystemPrompt(): 注入 26 个 ScriptAPI
- *   - 触发类型代码模板注入（dataChange/timer/event/manual）
- *   - ChatMessage 构建
- *   - 典型场景验收
+ * Covers:
+ *   - analyze(): trigger matching + System Prompt building
+ *   - buildSystemPrompt(): injects 26 ScriptAPIs
+ *   - Trigger-type code template injection (dataChange/timer/event/manual)
+ *   - ChatMessage building
+ *   - Typical scenario acceptance
  */
 
 import { describe, it, expect } from 'vitest';
@@ -49,13 +49,13 @@ describe('ScriptGeneratorAgent', () => {
     });
   });
 
-  // ────── System Prompt 内容 ──────
+  // ────── System Prompt content ──────
 
   describe('System Prompt 内容', () => {
     it('应包含 26 个 ScriptAPI 文档', () => {
       const result = agent.analyze('当温度超过80度时触发告警');
 
-      // 检查关键 API 是否在 System Prompt 中
+      // Check whether key APIs appear in the System Prompt
       const requiredAPIs = [
         'readTag',
         'writeTag',
@@ -115,7 +115,7 @@ describe('ScriptGeneratorAgent', () => {
     });
   });
 
-  // ────── 触发模板 ──────
+  // ────── Trigger templates ──────
 
   describe('触发类型代码模板', () => {
     it('dataChange 模板应包含标签 ID 和条件', () => {
@@ -136,7 +136,7 @@ describe('ScriptGeneratorAgent', () => {
     });
   });
 
-  // ────── ChatMessage 构建 ──────
+  // ────── ChatMessage building ──────
 
   describe('ChatMessage 构建', () => {
     it('应生成 system + user 两条消息', () => {
@@ -153,20 +153,20 @@ describe('ScriptGeneratorAgent', () => {
     });
   });
 
-  // ────── 典型场景（P1-T06 验收标准） ──────
+  // ────── Typical scenarios (P1-T06 acceptance criteria) ──────
 
   describe('典型场景验收', () => {
     it('"当温度超过80度时触发告警" 应生成含告警API的System Prompt', () => {
       const result = agent.analyze('当温度超过80度时触发告警');
 
-      // 触发匹配
+      // Trigger matching
       expect(result.trigger.type).toBe('dataChange');
 
-      // System Prompt 应包含 triggerAlarm API
+      // The System Prompt should include the triggerAlarm API
       expect(result.systemPrompt).toContain('triggerAlarm');
       expect(result.systemPrompt).toContain('readTag');
 
-      // 应包含代码模板
+      // It should include the code template
       expect(result.systemPrompt).toContain('dataChange 触发');
     });
 
@@ -196,7 +196,7 @@ describe('ScriptGeneratorAgent', () => {
     });
   });
 
-  // ────── 单例导出 ──────
+  // ────── Singleton export ──────
 
   describe('单例', () => {
     it('导出的 scriptGeneratorAgent 应是 ScriptGeneratorAgent 实例', async () => {

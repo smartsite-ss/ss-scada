@@ -8,7 +8,7 @@ export { PluginDevServer } from './plugin-dev-server';
 export { scaffoldPlugin } from './scaffold';
 export type { ScaffoldOptions, ScaffoldResult } from './scaffold';
 
-// ─── 通用类型 + 协议接口类型（2026-07-17 从 ss-core 迁移至此） ───
+// ─── Common types + protocol interface types (migrated here from ss-core on 2026-07-17) ───
 export type {
   Quality,
   TransformConfig,
@@ -22,14 +22,14 @@ export type {
   ChannelValidationResult,
 } from './types';
 
-// ─── 插件事件类型（2026-07-18 从 ss-core 迁移至此） ───
+// ─── Plugin event types (migrated here from ss-core on 2026-07-18) ───
 export type {
   PluginLifecycleEvent,
   ExecutorHealth,
   IsolationCrashEvent,
 } from './events/plugin-events.types';
 
-// ─── 通用工具 ───
+// ─── Common utilities ───
 export { ValueTransformUtil } from './value-transform.util';
 export { ConfigValidator } from './config-validator.util';
 export { JsonPathUtil } from './jsonpath.util';
@@ -37,7 +37,7 @@ export { BatchReadOptimizer } from './batch-read-optimizer.util';
 export type { BatchGroup } from './batch-read-optimizer.util';
 export { isBooleanDataType, isStringDataType } from './data-type.util';
 
-// ─── 插件管理（从 ss-core 迁移至 ss-collector-sdk，2026-07-17） ───
+// ─── Plugin management (migrated from ss-core to ss-collector-sdk on 2026-07-17) ───
 export {
   PluginModule,
   PluginRegistry,
@@ -80,13 +80,13 @@ export type {
 } from './plugins';
 export { ACTIVE_DEVICE_TRACKER } from './plugins';
 
-// ─── 采集诊断（从 ss-core 迁移至 ss-collector-sdk，2026-07-17） ───
+// ─── Collection diagnostics (migrated from ss-core to ss-collector-sdk on 2026-07-17) ───
 export { DiagnosticsModule } from './diagnostics/diagnostics.module';
 export { CollectorDiagnosticsService } from './diagnostics/collector-diagnostics.service';
 export type { DiagnosisResult, DiagnosisReport } from './diagnostics/collector-diagnostics.service';
 export { CollectorDiagnosticsController } from './diagnostics/collector-diagnostics.controller';
 
-// ─── Pipeline 流水线引擎（从 ss-core 迁移至 ss-collector-sdk，2026-07-17） ───
+// ─── Pipeline engine (migrated from ss-core to ss-collector-sdk on 2026-07-17) ───
 export {
   PipelineOrchestrator,
   PipelineContext,

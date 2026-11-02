@@ -3,17 +3,17 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * useAgentStream 单元测试 — SSE 解析 + 错误处理 + AbortError
+ * useAgentStream unit tests — SSE parsing + error handling + AbortError
  *
- * 覆盖:
- *   - data: 行解析 → 回调触发
- *   - : heartbeat 注释 → 跳过
- *   - event: error → onError 回调
- *   - data: [DONE] → 流结束
- *   - AbortError → 静默处理
- *   - HTTP 非 200 → 抛出错误
- *   - 并发保护
- *   - delegateToFrontend → 工具执行
+ * Covers:
+ *   - data: line parsing → callback fired
+ *   - : heartbeat comment → skipped
+ *   - event: error → onError callback
+ *   - data: [DONE] → stream end
+ *   - AbortError → handled silently
+ *   - HTTP non-200 → throws
+ *   - Concurrency protection
+ *   - delegateToFrontend → tool execution
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
@@ -77,7 +77,7 @@ function createMockSSEResponse(chunks: string[], status = 200): Response {
   } as unknown as Response;
 }
 
-/** 构造标准 SSE 步骤行 */
+/** Construct a standard SSE step line */
 function stepLine(step: Partial<AgentStreamStep>): string {
   return `data: ${JSON.stringify({ timestamp: Date.now(), ...step })}\n\n`;
 }
@@ -99,7 +99,7 @@ describe('useAgentStream', () => {
     vi.restoreAllMocks();
   });
 
-  // ────── 基本 SSE 解析 ──────
+  // ────── Basic SSE parsing ──────
 
   describe('SSE data: 行解析', () => {
     it('应解析 data: 行并触发 onThought 回调', async () => {
@@ -144,7 +144,7 @@ describe('useAgentStream', () => {
 
       await execute('hello');
 
-      // heartbeat 不应触发任何回调
+      // A heartbeat should not trigger any callback
       expect(onThought).toHaveBeenCalledTimes(1);
     });
 
@@ -159,13 +159,13 @@ describe('useAgentStream', () => {
       );
 
       const result = await execute('hello');
-      // 没有 pending，流意外结束 → 返回 error 步骤
+      // No pending and the stream ended unexpectedly → return an error step
       expect(result.type).toBe('error');
       expect(result.content).toContain('意外结束');
     });
   });
 
-  // ────── event: error 处理 ──────
+  // ────── event: error handling ──────
 
   describe('event: error 处理', () => {
     it('应解析 event: error 并触发 onError 回调', async () => {
@@ -211,8 +211,8 @@ describe('useAgentStream', () => {
 
       const result = await execute('hello');
 
-      // error 的 JSON 解析失败，回退到正常解析，但也失败 → skip
-      // 后续的 answer 应正常触发
+      // The error's JSON parse failed, falling back to normal parsing which also fails → skip
+      // The subsequent answer should fire normally
       expect(result.type).toBe('answer');
     });
   });
@@ -224,17 +224,17 @@ describe('useAgentStream', () => {
       const onError = vi.fn();
       const { execute, abort } = useAgentStream({ onError });
 
-      // fetch 被 abort
+      // fetch was aborted
       globalThis.fetch = vi.fn().mockImplementation(() => {
         return new Promise((_resolve, reject) => {
           const err = new DOMException('The user aborted a request', 'AbortError');
-          // 使用 setTimeout 让 execute 先设置好 abortController
+          // Use setTimeout so execute sets up the abortController first
           setTimeout(() => reject(err), 10);
         });
       });
 
       const executePromise = execute('hello');
-      // 立即中止
+      // Abort immediately
       abort();
 
       const result = await executePromise;
@@ -245,7 +245,7 @@ describe('useAgentStream', () => {
     });
   });
 
-  // ────── HTTP 错误响应 ──────
+  // ────── HTTP error responses ──────
 
   describe('HTTP 错误响应', () => {
     it('非 200 响应应抛出错误并触发 onError', async () => {
@@ -278,33 +278,33 @@ describe('useAgentStream', () => {
     });
   });
 
-  // ────── 并发保护 ──────
+  // ────── Concurrency protection ──────
 
   describe('并发保护', () => {
     it('正在执行时再次调用 execute 应抛出错误', async () => {
       const { execute } = useAgentStream();
 
-      // 第一个 execute 会阻塞（fetch 永远不 resolve）
+      // The first execute will block (fetch never resolves)
       globalThis.fetch = vi.fn().mockImplementation(
-        () => new Promise(() => {}), // 永远 pending
+        () => new Promise(() => {}), // never resolves
       );
 
       const firstPromise = execute('first');
-      // 给第一个 execute 时间设置 isStreaming
+      // Give the first execute time to set isStreaming
       await new Promise((r) => setTimeout(r, 0));
 
       await expect(execute('second')).rejects.toThrow('Agent is already running');
 
-      // 清理
+      // Cleanup
       firstPromise.catch(() => {});
     });
   });
 
-  // ────── 无 token 场景 ──────
+  // ────── No-token scenario ──────
 
   describe('无 JWT token', () => {
     it('无 token 时仍应发送请求（authHeaders 为空）', async () => {
-      localStorageMock.setItem('scada_access_token', ''); // 移除 token
+      localStorageMock.setItem('scada_access_token', ''); // remove the token
       const onAnswer = vi.fn();
       const { execute } = useAgentStream({ onAnswer });
 
@@ -318,7 +318,7 @@ describe('useAgentStream', () => {
 
       await execute('hello');
 
-      // 验证 fetch 被调用且没有 Authorization header
+      // Verify fetch was called without an Authorization header
       expect(globalThis.fetch).toHaveBeenCalledWith(
         '/api/v1/ai/agent/execute',
         expect.objectContaining({
@@ -331,7 +331,7 @@ describe('useAgentStream', () => {
     });
   });
 
-  // ────── 多步骤 + tool 回调 ──────
+  // ────── Multi-step + tool callback ──────
 
   describe('多步骤 SSE 流', () => {
     it('应正确处理 thought → action → observation → answer 全流程', async () => {

@@ -3,22 +3,22 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * useAgentStream — P1-T04 Agent SSE 流 + 前端工具执行 Composable
+ * useAgentStream — P1-T04 Agent SSE stream + frontend tool execution Composable
  *
- * 负责后端 ReAct 编排的 SSE 流消费，并自动处理前端工具委托：
- *   1. POST /api/v1/ai/agent/execute → 开始 SSE 流
- *   2. 解析 AgentStep chunks（thought / action / observation / pending / answer / error）
- *   3. 遇到 delegateToFrontend 的 action：调用 ToolExecutor 执行真实工具
- *   4. 遇到 pending：POST 工具结果回 /api/v1/ai/agent/execute（sessionId + toolResultPayload）
- *   5. 循环直至 answer 或 error
+ * Consumes the SSE stream of the backend ReAct orchestration and automatically handles frontend tool delegation:
+ *   1. POST /api/v1/ai/agent/execute → start the SSE stream
+ *   2. Parse AgentStep chunks (thought / action / observation / pending / answer / error)
+ *   3. On a delegateToFrontend action: call ToolExecutor to run the real tool
+ *   4. On pending: POST the tool result back to /api/v1/ai/agent/execute (sessionId + toolResultPayload)
+ *   5. Loop until answer or error
  *
- * 用法:
+ * Usage:
  *   const { execute, abort } = useAgentStream({
  *     onThought: (step) => { ... },
  *     onAnswer: (step) => { ... },
  *     onError: (step) => { ... },
  *   });
- *   await execute('帮我创建泵站页面');
+ *   await execute('Help me create a pump station page');
  */
 
 import { ref, readonly } from 'vue';
@@ -31,8 +31,8 @@ const TOKEN_KEY = 'scada_access_token';
 const API_BASE = '/api/v1/ai';
 
 /**
- * S-C03: Token 通过 HttpOnly Cookie 传输，getToken() 仅用于兼容回退。
- * 认证依赖 fetch 的 credentials: 'include'（见 execute() 中的 fetch 调用）。
+ * S-C03: the Token is transmitted via HttpOnly Cookie; getToken() is only for compatibility fallback.
+ * Authentication relies on fetch's credentials: 'include' (see the fetch call in execute()).
  */
 function getToken(): string | null {
   return localStorage.getItem(TOKEN_KEY);
@@ -43,7 +43,7 @@ function authHeaders(): Record<string, string> {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-// Agent 执行步骤（对应后端 AgentStep）
+// Agent execution steps (corresponding to the backend AgentStep)
 export interface AgentStreamStep {
   type: 'thought' | 'action' | 'observation' | 'answer' | 'error' | 'pending';
   content: string;
@@ -54,7 +54,7 @@ export interface AgentStreamStep {
   delegateToFrontend?: boolean;
   sessionId?: string;
   timestamp: number;
-  /** 对话持久化会话 ID（answer/error 步骤由后端注入） */
+  /** Conversation persistence session ID (injected by the backend in answer/error steps) */
   conversationId?: string;
 }
 
@@ -68,11 +68,11 @@ export interface AgentStreamCallbacks {
 }
 
 export interface AgentStreamOptions extends AgentStreamCallbacks {
-  /** 最大工具执行轮次（默认 30） */
+  /** Max tool execution rounds (default 30) */
   maxRoundtrips?: number;
 }
 
-/** Agent 执行请求体 */
+/** Agent execution request body */
 interface AgentExecuteBody {
   userInput: string;
   context?: string;
@@ -81,9 +81,9 @@ interface AgentExecuteBody {
   history?: ChatMessage[];
   sessionId?: string;
   toolResultPayload?: { toolName: string; result: string };
-  /** 对话持久化会话 ID（缺省时后端自动创建） */
+  /** Conversation persistence session ID (auto-created by the backend when omitted) */
   conversationId?: string;
-  /** 项目 ID（创建新会话时使用） */
+  /** Project ID (used when creating a new session) */
   projectId?: string;
 }
 
@@ -95,19 +95,19 @@ export function useAgentStream(callbacks: AgentStreamCallbacks = {}) {
   let abortController: AbortController | null = null;
 
   /**
-   * 执行 Agent 编排（含自动工具回传循环）
+   * Execute the Agent orchestration (including the automatic tool result loop)
    *
-   * 持久化策略（P2-T08）：
-   *   - 首次执行时传入 conversationId（若有）+ projectId，后端据此创建/复用会话
-   *   - 后端在 answer/error 步骤注入 conversationId，前端据此更新 currentConversationId
-   *   - 续执行（工具回传）时同样携带 conversationId，确保后端不重复创建会话
+   * Persistence strategy (P2-T08):
+   *   - On first execution, pass conversationId (if any) + projectId; the backend creates/reuses the session accordingly
+   *   - The backend injects conversationId in answer/error steps; the frontend updates currentConversationId accordingly
+   *   - Continued execution (tool result round trips) also carries conversationId, ensuring the backend does not duplicate sessions
    *
-   * @param userInput 用户输入
-   * @param intent 意图类型
-   * @param context 编辑器上下文
-   * @param conversationId 对话持久化会话 ID（缺省时后端自动创建）
-   * @param projectId 项目 ID（创建新会话时使用）
-   * @returns 最终 AgentStep（answer 或 error，含 conversationId）
+   * @param userInput user input
+   * @param intent intent type
+   * @param context editor context
+   * @param conversationId conversation persistence session ID (auto-created by the backend when omitted)
+   * @param projectId project ID (used when creating a new session)
+   * @returns the final AgentStep (answer or error, with conversationId)
    */
   async function execute(
     userInput: string,
@@ -138,12 +138,12 @@ export function useAgentStream(callbacks: AgentStreamCallbacks = {}) {
     const maxRoundtrips = 30;
 
     try {
-      // 循环：每次遇到 pending 步骤，前端执行工具并回传结果
+      // Loop: each time a pending step appears, execute the tool on the frontend and send back the result
       while (roundtrip < maxRoundtrips) {
         roundtrip++;
 
-        // 调用后端 agent/execute
-        // S-C03: Token 通过 HttpOnly Cookie 自动传输（credentials: 'include'）
+        // Call the backend agent/execute
+        // S-C03: the Token is transmitted automatically via HttpOnly Cookie (credentials: 'include')
         const token = getToken();
         if (!token) {
           console.debug('[useAgentStream] Token not in localStorage (using HttpOnly Cookie auth)');
@@ -153,7 +153,7 @@ export function useAgentStream(callbacks: AgentStreamCallbacks = {}) {
           `${API_BASE}/agent/execute`,
           {
             method: 'POST',
-            // S-C03: 携带 HttpOnly Cookie 凭证
+            // S-C03: carry HttpOnly Cookie credentials
             credentials: 'include',
             headers: {
               'Content-Type': 'application/json',
@@ -171,7 +171,7 @@ export function useAgentStream(callbacks: AgentStreamCallbacks = {}) {
           throw new Error(`Agent 请求失败 (${resp.status}): ${errText.substring(0, 200)}`);
         }
 
-        // 解析 SSE 流
+        // Parse the SSE stream
         const reader = resp.body?.getReader();
         if (!reader) {
           throw new Error('SSE response body is not readable');
@@ -180,7 +180,7 @@ export function useAgentStream(callbacks: AgentStreamCallbacks = {}) {
         const decoder = new TextDecoder();
         let buffer = '';
         let nextBody: AgentExecuteBody | null = null;
-        let currentEvent = ''; // 跟踪 SSE event: 行
+        let currentEvent = ''; // track the SSE event: line
 
         // eslint-disable-next-line no-constant-condition
         while (true) {
@@ -191,12 +191,12 @@ export function useAgentStream(callbacks: AgentStreamCallbacks = {}) {
           console.log(`[useAgentStream] Raw chunk (${chunk.length} chars):`, chunk.substring(0, 500));
           buffer += chunk;
           const lines = buffer.split('\n');
-          buffer = lines.pop() || ''; // 保留未完成的行
+          buffer = lines.pop() || ''; // keep the incomplete line
 
           for (const line of lines) {
             const trimmed = line.trim();
             if (!trimmed) {
-              currentEvent = ''; // 空行标志 SSE 事件结束，重置 event
+              currentEvent = ''; // blank line marks the end of an SSE event, reset event
               continue;
             }
             if (trimmed === 'data: [DONE]') {
@@ -204,19 +204,19 @@ export function useAgentStream(callbacks: AgentStreamCallbacks = {}) {
               continue;
             }
 
-            // 跟踪 event: 行
+            // Track the event: line
             if (trimmed.startsWith('event: ')) {
               currentEvent = trimmed.slice(7).trim();
               console.log(`[useAgentStream] SSE event type: "${currentEvent}"`);
               continue;
             }
 
-            // SSE 注释行（如 heartbeat），跳过
+            // SSE comment line (e.g. heartbeat), skip
             if (trimmed.startsWith(':')) continue;
 
             if (!trimmed.startsWith('data: ')) continue;
 
-            // 处理后端发送的 event: error
+            // Handle the backend-sent event: error
             if (currentEvent === 'error') {
               try {
                 const errData = JSON.parse(trimmed.slice(6));
@@ -231,7 +231,7 @@ export function useAgentStream(callbacks: AgentStreamCallbacks = {}) {
                 currentEvent = '';
                 return errStep;
               } catch {
-                // JSON 解析失败，继续尝试正常解析
+                // JSON parse failed; continue trying normal parsing
               }
             }
 
@@ -242,14 +242,14 @@ export function useAgentStream(callbacks: AgentStreamCallbacks = {}) {
               console.log(`[useAgentStream] Parsed step type="${step.type}" step=${step.step}`);
               currentStep.value = step.step;
 
-              // 触发回调
+              // Fire the callbacks
               switch (step.type) {
                 case 'thought':
                   callbacks.onThought?.(step);
                   break;
                 case 'action':
                   callbacks.onAction?.(step);
-                  // 如果标记了前端委托，执行真实工具
+                  // If frontend delegation is marked, execute the real tool
                   if (step.delegateToFrontend && step.toolName && step.toolParams && step.sessionId) {
                     let resultText: string;
                     try {
@@ -261,7 +261,7 @@ export function useAgentStream(callbacks: AgentStreamCallbacks = {}) {
                       resultText = `工具执行错误: ${(err as Error).message}`;
                     }
 
-                    // 准备回传体（携带 conversationId/projectId 确保续执行不重复创建会话）
+                    // Prepare the result payload (carrying conversationId/projectId to ensure continued execution does not duplicate sessions)
                     nextBody = {
                       userInput,
                       intent,
@@ -289,18 +289,18 @@ export function useAgentStream(callbacks: AgentStreamCallbacks = {}) {
                   return step;
               }
             } catch {
-              // 忽略解析错误（无效 JSON 行）
+              // Ignore parse errors (invalid JSON lines)
             }
           }
         }
 
-        // 处理工具回传
+        // Handle the tool result round trip
         if (nextBody) {
           body = nextBody;
           continue;
         }
 
-        // 没有 pending → 结束
+        // No pending → end
         return {
           type: 'error',
           content: 'Agent 流意外结束',
@@ -309,7 +309,7 @@ export function useAgentStream(callbacks: AgentStreamCallbacks = {}) {
         };
       }
 
-      // 达到最大轮次
+      // Max rounds reached
       return {
         type: 'error',
         content: `工具执行轮次达到上限 (${maxRoundtrips})`,
@@ -317,7 +317,7 @@ export function useAgentStream(callbacks: AgentStreamCallbacks = {}) {
         timestamp: Date.now(),
       };
     } catch (err) {
-      // AbortError：用户主动中止或组件卸载，不展示为错误
+      // AbortError: user-initiated abort or component unmount; do not show as an error
       if (err instanceof DOMException && err.name === 'AbortError') {
         isStreaming.value = false;
         abortController = null;
@@ -343,7 +343,7 @@ export function useAgentStream(callbacks: AgentStreamCallbacks = {}) {
     }
   }
 
-  /** 中止当前流 */
+  /** Abort the current stream */
   function abort(): void {
     if (abortController) {
       abortController.abort();

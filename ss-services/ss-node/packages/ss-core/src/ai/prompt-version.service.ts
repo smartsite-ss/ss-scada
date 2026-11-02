@@ -3,13 +3,13 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * AI Prompt 版本管理 Service — P2-T08
+ * AI Prompt version-management Service - P2-T08
  *
- * 提供：
- *   1. Prompt 模板 CRUD
- *   2. 版本管理（draft→active→archived 流转）
- *   3. 模板渲染（{{variable}} 语法）
- *   4. A/B 测试辅助
+ * Provides:
+ *   1. Prompt template CRUD
+ *   2. Version management (draft->active->archived transition)
+ *   3. Template rendering ({{variable}} syntax)
+ *   4. A/B test helper
  */
 
 import { Injectable, Logger } from '@nestjs/common';
@@ -17,7 +17,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AiPrompt, AiPromptVersion } from './entities/ai-prompt.entity';
 
-/** 创建 Prompt 的 DTO */
+/** DTO for creating a Prompt */
 export interface CreatePromptDto {
   key: string;
   name: string;
@@ -25,7 +25,7 @@ export interface CreatePromptDto {
   description?: string;
 }
 
-/** 创建版本的 DTO */
+/** DTO for creating a version */
 export interface CreateVersionDto {
   promptId: string;
   version: string;
@@ -36,7 +36,7 @@ export interface CreateVersionDto {
   createdBy?: string;
 }
 
-/** 版本流程操作 */
+/** Version flow operation */
 export type VersionAction = 'publish' | 'archive' | 'rollback';
 
 @Injectable()
@@ -51,10 +51,10 @@ export class PromptVersionService {
   ) {}
 
   // ============================================================
-  //  Prompt 模板 CRUD
+  //  Prompt template CRUD
   // ============================================================
 
-  /** 创建 Prompt 模板 */
+  /** Create a Prompt template */
   async createPrompt(dto: CreatePromptDto): Promise<AiPrompt> {
     const prompt = this.promptRepo.create({
       key: dto.key,
@@ -65,26 +65,26 @@ export class PromptVersionService {
     return this.promptRepo.save(prompt);
   }
 
-  /** 获取所有 Prompt 模板 */
+  /** Get all Prompt templates */
   async listPrompts(): Promise<AiPrompt[]> {
     return this.promptRepo.find({ order: { updatedAt: 'DESC' } });
   }
 
-  /** 按 key 查找 Prompt */
+  /** Find Prompt by key */
   async getPromptByKey(key: string): Promise<AiPrompt | null> {
     return this.promptRepo.findOne({ where: { key } });
   }
 
-  /** 更新 Prompt 模板 */
+  /** Update Prompt template */
   async updatePrompt(id: string, dto: Partial<CreatePromptDto>): Promise<void> {
     await this.promptRepo.update(id, dto);
   }
 
   // ============================================================
-  //  版本管理
+  //  Version management
   // ============================================================
 
-  /** 创建新版本（状态为 draft） */
+  /** Create a new version (status = draft) */
   async createVersion(dto: CreateVersionDto): Promise<AiPromptVersion> {
     const version = this.versionRepo.create({
       promptId: dto.promptId,
@@ -99,7 +99,7 @@ export class PromptVersionService {
     return this.versionRepo.save(version);
   }
 
-  /** 获取 Prompt 的所有版本 */
+  /** Get all versions of a Prompt */
   async listVersions(promptId: string): Promise<AiPromptVersion[]> {
     return this.versionRepo.find({
       where: { promptId },
@@ -107,14 +107,14 @@ export class PromptVersionService {
     });
   }
 
-  /** 获取活跃版本 */
+  /** Get the active version */
   async getActiveVersion(promptId: string): Promise<AiPromptVersion | null> {
     return this.versionRepo.findOne({
       where: { promptId, status: 'active' },
     });
   }
 
-  /** 获取活跃版本的 System Prompt（按 prompt key） */
+  /** Get the active version's System Prompt (by prompt key) */
   async getActiveSystemPrompt(promptKey: string): Promise<string | null> {
     const prompt = await this.getPromptByKey(promptKey);
     if (!prompt) return null;
@@ -122,14 +122,14 @@ export class PromptVersionService {
     return version?.systemPrompt || null;
   }
 
-  /** 发布版本（draft → active，旧 active → archived） */
+  /** Publish a version (draft -> active, old active -> archived) */
   async publishVersion(versionId: string): Promise<void> {
     const version = await this.versionRepo.findOne({ where: { id: versionId } });
     if (!version || version.status !== 'draft') {
       throw new Error(`版本 ${versionId} 不是 draft 状态，无法发布`);
     }
 
-    // 将旧的 active 版本归档
+    // Archive the old active version
     const oldActive = await this.versionRepo.findOne({
       where: { promptId: version.promptId, status: 'active' },
     });
@@ -137,14 +137,14 @@ export class PromptVersionService {
       await this.versionRepo.update(oldActive.id, { status: 'archived' });
     }
 
-    // 发布新版本
+    // Publish the new version
     await this.versionRepo.update(versionId, { status: 'active' });
     await this.promptRepo.update(version.promptId, { activeVersionId: versionId });
 
     this.logger.log(`Prompt ${version.promptId} 版本已发布: ${version.version}`);
   }
 
-  /** 归档版本（active → archived） */
+  /** Archive a version (active -> archived) */
   async archiveVersion(versionId: string): Promise<void> {
     const version = await this.versionRepo.findOne({ where: { id: versionId } });
     if (!version || version.status !== 'active') {
@@ -154,12 +154,12 @@ export class PromptVersionService {
     await this.promptRepo.update(version.promptId, { activeVersionId: null as any });
   }
 
-  /** 回滚到指定版本 */
+  /** Roll back to a specified version */
   async rollbackToVersion(versionId: string): Promise<void> {
     const target = await this.versionRepo.findOne({ where: { id: versionId } });
     if (!target) throw new Error(`版本 ${versionId} 不存在`);
 
-    // 将当前 active 归档
+    // Archive the current active version
     const current = await this.versionRepo.findOne({
       where: { promptId: target.promptId, status: 'active' },
     });
@@ -167,7 +167,7 @@ export class PromptVersionService {
       await this.versionRepo.update(current.id, { status: 'archived' });
     }
 
-    // 将目标版本设为 active
+    // Set the target version as active
     await this.versionRepo.update(versionId, { status: 'active' });
     await this.promptRepo.update(target.promptId, { activeVersionId: versionId });
 
@@ -175,15 +175,15 @@ export class PromptVersionService {
   }
 
   // ============================================================
-  //  模板渲染
+  //  Template rendering
   // ============================================================
 
   /**
-   * 渲染 System Prompt 模板（{{variable}} 语法）
+   * Render the System Prompt template ({{variable}} syntax)
    *
-   * @param template 模板字符串
-   * @param variables 变量键值对
-   * @returns 渲染后的字符串
+   * @param template  template string
+   * @param variables key-value pairs of variables
+   * @returns rendered string
    */
   renderTemplate(template: string, variables: Record<string, string>): string {
     return template.replace(/\{\{(\w+)\}\}/g, (match, key) => {
@@ -192,11 +192,11 @@ export class PromptVersionService {
   }
 
   /**
-   * 获取并渲染活跃版本的 System Prompt
+   * Get and render the active version's System Prompt
    *
-   * @param promptKey Prompt 标识键
-   * @param variables 模板变量
-   * @returns 渲染后的 System Prompt，若不存在则返回 null
+   * @param promptKey Prompt identifier key
+   * @param variables template variables
+   * @returns rendered System Prompt, or null if it does not exist
    */
   async getRenderedSystemPrompt(
     promptKey: string,
@@ -208,10 +208,10 @@ export class PromptVersionService {
   }
 
   // ============================================================
-  //  A/B 测试辅助
+  //  A/B test helper
   // ============================================================
 
-  /** 获取指定版本的 System Prompt */
+  /** Get the System Prompt of a specified version */
   async getVersionSystemPrompt(versionId: string): Promise<string | null> {
     const version = await this.versionRepo.findOne({ where: { id: versionId } });
     return version?.systemPrompt || null;

@@ -49,13 +49,13 @@ export class UpgradeService {
   }
 
   /**
-   * 获取 ss-services/ss-node 项目根目录的绝对路径
+   * Get the absolute path of the ss-services/ss-node project root
    *
-   * 相对路径基准：
-   * - dev 模式：__dirname 上溯 4 级 = ss-services/ss-node（本文件位于 packages/ss-system/dist/upgrade/）
-   * - 生产模式：process.cwd() = ss-run/ss/services/ss-node
+   * Relative-path baselines:
+   * - dev mode: go up 4 levels from __dirname = ss-services/ss-node (this file lives in packages/ss-system/dist/upgrade/)
+   * - production mode: process.cwd() = ss-run/ss/services/ss-node
    *
-   * 与 app.module.ts getDatabaseConfig()、backup.service.ts getProjectRoot() 保持一致。
+   * Kept consistent with app.module.ts getDatabaseConfig() and backup.service.ts getProjectRoot().
    */
   private getProjectRoot(): string {
     return this.pathResolver.getProjectRoot();
@@ -65,7 +65,7 @@ export class UpgradeService {
     return this.pathResolver.resolve(p);
   }
 
-  /** 版本检测 */
+  /** Version check */
   async checkVersion(): Promise<UpgradeInfo> {
     const currentVersion = this.getCurrentVersion();
     const latestVersion = await this.getLatestVersion();
@@ -78,7 +78,7 @@ export class UpgradeService {
     };
   }
 
-  /** 下载升级包 */
+  /** Download the upgrade package */
   async downloadUpgrade(version: string): Promise<{ path: string; sha256: string }> {
     const downloadDir = path.join(this.getProjectRoot(), 'upgrades');
     if (!fs.existsSync(downloadDir)) {
@@ -97,7 +97,7 @@ export class UpgradeService {
     return { path: filePath, sha256 };
   }
 
-  /** 数据库迁移 */
+  /** Database migration */
   async runMigrations(): Promise<MigrationRecord[]> {
     const records: MigrationRecord[] = [];
 
@@ -117,27 +117,27 @@ export class UpgradeService {
     return records;
   }
 
-  /** 执行升级 */
+  /** Execute the upgrade */
   async performUpgrade(version: string): Promise<UpgradeResult> {
     const currentVersion = this.getCurrentVersion();
     this.previousVersion = currentVersion;
 
     try {
-      // 升级前自动备份
+      // Automatic backup before upgrading
       this.logger.log('Creating backup before upgrade...');
       await this.backupService.createSystemBackup('auto');
 
-      // 下载升级包
+      // Download the upgrade package
       const { path: upgradePath, sha256 } = await this.downloadUpgrade(version);
 
-      // 验证 SHA256
+      // Verify SHA256
       const fileData = fs.readFileSync(upgradePath);
       const actualSha256 = crypto.createHash('sha256').update(fileData).digest('hex');
       if (actualSha256 !== sha256) {
         throw new Error('SHA256 verification failed');
       }
 
-      // 运行数据库迁移
+      // Run the database migration
       await this.runMigrations();
 
       this.logger.log(`Upgrade completed: ${currentVersion} -> ${version}`);
@@ -160,7 +160,7 @@ export class UpgradeService {
     }
   }
 
-  /** 回滚 */
+  /** Rollback */
   async rollback(): Promise<UpgradeResult> {
     if (!this.previousVersion) {
       throw new BadRequestException('No previous version to rollback to');

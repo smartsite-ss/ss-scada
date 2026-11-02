@@ -15,7 +15,7 @@ export interface DataPoint {
 export interface QueryOptions {
   tagIds?: string[];
   deviceIds?: string[];
-  /** 多项目隔离路由：指定后按项目隔离单元（bucket / database）查询，未指定时走默认隔离单元 */
+  /** Multi-project isolation routing: when specified, queries the project isolation unit (bucket / database); otherwise uses the default isolation unit */
   projectId?: string;
   startTime?: Date;
   endTime?: Date;
@@ -26,7 +26,7 @@ export interface QueryOptions {
     function: 'avg' | 'max' | 'min' | 'sum' | 'count';
     interval?: string; // '1m', '5m', '1h', '1d'
   };
-  /** 插值方式：与上层 InterpolationType 对齐（raw=空窗跳过 / linear=线性 / step=前值保持） */
+  /** Interpolation method: aligned with the upper-layer InterpolationType (raw=skip empty windows / linear=linear / step=hold previous value) */
   interpolation?: 'raw' | 'linear' | 'step';
 }
 
@@ -38,23 +38,23 @@ export interface WriteResult {
 }
 
 /**
- * 适配器能力声明：上层（data-query.service / 报表 / 趋势 API）在调用前据此降级，
- * 避免运行期才发现不支持（如 InfluxDB 3 Core 无 compactor 不支持 delete）。
+ * Adapter capability declaration: upper layers (data-query.service / reports / trend API) degrade accordingly before calling,
+ * avoiding discovering the lack of support at runtime (e.g. InfluxDB 3 Core has no compactor and cannot delete).
  */
 export interface AdapterCapabilities {
-  /** 是否支持 delete()；InfluxDB 3 Core = false（无 compactor） */
+  /** Whether delete() is supported; InfluxDB 3 Core = false (no compactor) */
   delete: boolean;
-  /** 是否原生支持插值；false 时上层回退到应用层插值或 raw */
+  /** Whether interpolation is natively supported; when false the upper layer falls back to application-layer interpolation or raw */
   interpolation: boolean;
-  /** 是否支持服务端聚合；false 时上层取原始点后本地聚合 */
+  /** Whether server-side aggregation is supported; when false the upper layer fetches raw points and aggregates locally */
   aggregation: boolean;
 }
 
 export interface StorageAdapter {
   readonly name: string;
-  /** 引擎类型标识（'influxdb2' / 'influxdb3' / 'tdengine' / ...），用于配置与观测 */
+  /** Engine type identifier ('influxdb2' / 'influxdb3' / 'tdengine' / ...), used for configuration and observability */
   readonly engineType: string;
-  /** 能力声明，上层按能力降级（删除/插值/聚合） */
+  /** Capability declaration; upper layers degrade by capability (delete/interpolation/aggregation) */
   readonly capabilities: AdapterCapabilities;
   write(points: DataPoint[]): Promise<WriteResult>;
   read(options: QueryOptions): Promise<DataPoint[]>;
@@ -64,8 +64,8 @@ export interface StorageAdapter {
 }
 
 /**
- * 能力未支持错误：适配器对 capabilities 中声明为 false 的能力，
- * 在对应方法内直接抛出本错误，上层应在调用前检查 capabilities 提前降级。
+ * Capability-not-supported error: for capabilities declared false in capabilities,
+ * the adapter throws this error directly in the corresponding method; upper layers should check capabilities and degrade before calling.
  */
 export class NotSupportedError extends Error {
   constructor(message: string) {

@@ -150,7 +150,7 @@ export class ProjectController {
     @Body('resources') resources?: string[],
   ) {
     const result = await this.projectService.initProjectResources(projectId, resources);
-    // 修复后自动诊断，返回修复后健康度
+    // Auto-diagnose after repair, returning the post-repair health
     const diagnoseResult = await this.projectService.diagnoseProject(projectId);
     return { ...result, healthAfter: diagnoseResult.health };
   }
@@ -191,7 +191,7 @@ export class ProjectController {
     if (!filePath) {
       throw new NotFoundException('项目封面图片不存在');
     }
-    // 根据扩展名设置 Content-Type
+    // Set Content-Type by extension
     const ext = path.extname(filePath).toLowerCase();
     const mimeMap: Record<string, string> = {
       '.png': 'image/png',
@@ -225,7 +225,7 @@ export class ProjectController {
     @Query('includeRtdb') includeRtdb?: string,
   ) {
     try {
-      // 解析选择性导出参数：'true'/'false' 字符串转布尔，未传则 undefined（走默认全量）
+      // Parse selective-export params: 'true'/'false' strings to booleans; undefined when omitted (defaulting to full export)
       const parseBool = (v: string | undefined): boolean | undefined => {
         if (v === undefined) return undefined;
         return v === 'true' || v === '1';

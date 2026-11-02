@@ -84,7 +84,7 @@ describe('HealthController', () => {
     controller = module.get<HealthController>(HealthController);
   });
 
-  // ==================== 简单健康检查 ====================
+  // ==================== Simple health check ====================
 
   describe('GET /health', () => {
     it('TC-HCTL-001: should return simple health status', () => {
@@ -98,7 +98,7 @@ describe('HealthController', () => {
     });
   });
 
-  // ==================== 详细健康检查 ====================
+  // ==================== Detailed health check ====================
 
   describe('GET /health/detailed', () => {
     it('TC-HCTL-010: should return detailed health with all metrics', async () => {
@@ -139,7 +139,7 @@ describe('HealthController', () => {
     });
   });
 
-  // ==================== 磁盘信息 ====================
+  // ==================== Disk info ====================
 
   describe('GET /health/disk-info', () => {
     it('TC-HCTL-020: should return disk partition info', async () => {
@@ -154,7 +154,7 @@ describe('HealthController', () => {
     });
   });
 
-  // ==================== Liveness 探针 ====================
+  // ==================== Liveness probe ====================
 
   describe('GET /health/live', () => {
     it('TC-HCTL-030: should return liveness status', () => {
@@ -167,7 +167,7 @@ describe('HealthController', () => {
     });
   });
 
-  // ==================== Readiness 探针 ====================
+  // ==================== Readiness probe ====================
 
   describe('GET /health/ready', () => {
     it('TC-HCTL-040: should return readiness with checks', async () => {

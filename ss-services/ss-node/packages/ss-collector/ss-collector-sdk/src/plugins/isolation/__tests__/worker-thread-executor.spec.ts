@@ -7,7 +7,7 @@ import { IsolationMode } from '../../plugin.types';
 import { IDeviceContext, ITagContext } from '../../../types';
 
 // ============================================================
-// 真正的 EventEmitter 风格 Mock Worker
+// Real EventEmitter-style Mock Worker
 // ============================================================
 const createMockWorker = () => {
   const handlers: Record<string, Function[]> = {};
@@ -67,7 +67,7 @@ const createMockEventBus = () => ({
 });
 
 // ============================================================
-// 测试数据
+// Test data
 // ============================================================
 const mockDevice: IDeviceContext = {
   id: 'dev-001',
@@ -99,7 +99,7 @@ const mockTag: ITagContext = {
 } as any;
 
 // ============================================================
-// 辅助函数
+// Helper functions
 // ============================================================
 const getWorker = () => mockWorkerInstance;
 
@@ -120,7 +120,7 @@ const simulateCrash = (msg: string) => {
 };
 
 // ============================================================
-// 测试套件
+// Test suite
 // ============================================================
 describe('WorkerThreadExecutor', () => {
   let executor: WorkerThreadExecutor;
@@ -326,7 +326,7 @@ describe('WorkerThreadExecutor', () => {
 
       simulateCrash('Worker crashed');
 
-      // 不应再创建新的 Worker（maxRestarts=0, restartCount=1 > 0）
+      // Should not create a new Worker (maxRestarts=0, restartCount=1 > 0)
       expect(Worker).not.toHaveBeenCalled();
     });
   });

@@ -28,7 +28,7 @@ export class CollectorDiagnosticsService {
   constructor(@Optional() private readonly pluginRegistry?: PluginRegistry) {}
 
   /**
-   * 检查设备连通性 — 通过插件注册表判断协议是否支持
+   * Check device connectivity - determine protocol support via the plugin registry
    */
   async checkDeviceConnectivity(deviceId: string): Promise<DiagnosisResult> {
     this.logger.log(`Running device connectivity check for: ${deviceId}`);
@@ -63,7 +63,7 @@ export class CollectorDiagnosticsService {
   }
 
   /**
-   * 检查标签可读性 — 标签是否可读
+   * Check tag readability - whether the tag is readable
    */
   async checkTagReadability(tagId: string): Promise<DiagnosisResult> {
     this.logger.log(`Running tag readability check for: ${tagId}`);
@@ -104,7 +104,7 @@ export class CollectorDiagnosticsService {
   }
 
   /**
-   * 检查数据质量 — 检查数据质量指标（错误率、响应时间等）
+   * Check data quality - inspect data-quality metrics (error rate, response time, etc.)
    */
   async checkDataQuality(deviceId: string): Promise<DiagnosisResult[]> {
     this.logger.log(`Running data quality check for: ${deviceId}`);
@@ -137,7 +137,7 @@ export class CollectorDiagnosticsService {
     for (const plugin of allPlugins) {
       const { metrics, meta } = plugin;
 
-      // 检查错误率
+      // Check error rate
       if (metrics.totalReads > 0) {
         const errorRate = metrics.totalErrors / metrics.totalReads;
         if (errorRate > 0.1) {
@@ -171,7 +171,7 @@ export class CollectorDiagnosticsService {
         }
       }
 
-      // 检查响应时间
+      // Check response time
       if (metrics.avgResponseTime > 5000) {
         results.push({
           checkName: `数据质量-${meta.protocol}响应延迟`,
@@ -186,9 +186,9 @@ export class CollectorDiagnosticsService {
         });
       }
 
-      // 检查数据新鲜度
+      // Check data freshness
       if (metrics.lastActivity) {
-        const staleThreshold = 5 * 60 * 1000; // 5分钟
+        const staleThreshold = 5 * 60 * 1000; // 5 minutes
         const timeSinceLastActivity = Date.now() - metrics.lastActivity.getTime();
         if (timeSinceLastActivity > staleThreshold) {
           results.push({
@@ -206,7 +206,7 @@ export class CollectorDiagnosticsService {
         }
       }
 
-      // 检查活跃连接数
+      // Check active connection count
       if (plugin.status === 'active' && metrics.activeConnections === 0) {
         results.push({
           checkName: `数据质量-${meta.protocol}连接状态`,
@@ -239,7 +239,7 @@ export class CollectorDiagnosticsService {
   }
 
   /**
-   * 检查插件健康状态
+   * Check plugin health status
    */
   async checkPluginHealth(protocol: string): Promise<DiagnosisResult> {
     this.logger.log(`Running plugin health check for: ${protocol}`);
@@ -331,13 +331,13 @@ export class CollectorDiagnosticsService {
   }
 
   /**
-   * 运行全量诊断
+   * Run full diagnostics
    */
   async runFullDiagnosis(deviceId?: string): Promise<DiagnosisReport> {
     this.logger.log(`Running full diagnosis${deviceId ? ` for device: ${deviceId}` : ''}`);
     const results: DiagnosisResult[] = [];
 
-    // 插件健康检查
+    // Plugin health checks
     if (this.pluginRegistry) {
       const _allPlugins = this.pluginRegistry.listPlugins();
       const supportedProtocols = this.pluginRegistry.getSupportedProtocols();
@@ -365,17 +365,17 @@ export class CollectorDiagnosticsService {
       });
     }
 
-    // 设备连通性检查
+    // Device connectivity checks
     if (deviceId) {
       results.push(await this.checkDeviceConnectivity(deviceId));
     }
 
-    // 数据质量检查
+    // Data-quality checks
     if (deviceId) {
       const qualityResults = await this.checkDataQuality(deviceId);
       results.push(...qualityResults);
     } else if (this.pluginRegistry) {
-      // 没有指定设备时，检查所有插件的整体数据质量
+      // When no device is specified, check the overall data quality of all plugins
       const allPlugins = this.pluginRegistry.listPlugins();
       for (const plugin of allPlugins) {
         const { metrics, meta } = plugin;
@@ -422,7 +422,7 @@ export class CollectorDiagnosticsService {
       }
     }
 
-    // 汇总统计
+    // Aggregate statistics
     const summary = {
       ok: results.filter((r) => r.status === 'ok').length,
       warning: results.filter((r) => r.status === 'warning').length,

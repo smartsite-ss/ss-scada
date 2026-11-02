@@ -6,13 +6,13 @@ import { Injectable, Logger, OnModuleInit, Inject } from '@nestjs/common';
 import { I18nService } from '@ss-node/ss-i18n';
 
 export interface ConnectionLimiterConfig {
-  /** 单用户最大连接数，默认 5 */
+  /** Max connections per user, default 5 */
   maxConnectionsPerUser: number;
-  /** 全局最大连接数，默认 1000 */
+  /** Global max connections, default 1000 */
   maxGlobalConnections: number;
-  /** 单IP最大连接数，默认 10 */
+  /** Max connections per IP, default 10 */
   maxConnectionsPerIp: number;
-  /** 空闲超时分钟数（无业务消息），默认 30 */
+  /** Idle timeout in minutes (no business messages), default 30 */
   idleTimeoutMinutes: number;
 }
 
@@ -63,7 +63,7 @@ export class ConnectionLimiterService implements OnModuleInit {
     return { ...this.config };
   }
 
-  /** 注册新连接，返回是否允许 */
+  /** Register a new connection, returns whether it is allowed */
   registerConnection(
     socketId: string,
     userId: string | undefined,
@@ -71,7 +71,7 @@ export class ConnectionLimiterService implements OnModuleInit {
   ): { allowed: boolean; reason?: string } {
     const now = Date.now();
 
-    // 全局连接数检查
+    // Global connection-count check
     if (this.connections.size >= this.config.maxGlobalConnections) {
       const reason = this.i18n.tSync('websocket.connection.global_limit_exceeded', {
         current: String(this.connections.size),
@@ -83,7 +83,7 @@ export class ConnectionLimiterService implements OnModuleInit {
       return { allowed: false, reason };
     }
 
-    // IP 连接数检查
+    // IP connection-count check
     const ipSet = this.ipConnections.get(ip);
     if (ipSet && ipSet.size >= this.config.maxConnectionsPerIp) {
       const reason = this.i18n.tSync('websocket.connection.ip_limit_exceeded', {
@@ -97,7 +97,7 @@ export class ConnectionLimiterService implements OnModuleInit {
       return { allowed: false, reason };
     }
 
-    // 用户连接数检查
+    // User connection-count check
     if (userId) {
       const userSet = this.userConnections.get(userId);
       if (userSet && userSet.size >= this.config.maxConnectionsPerUser) {
@@ -113,7 +113,7 @@ export class ConnectionLimiterService implements OnModuleInit {
       }
     }
 
-    // 记录连接
+    // Record the connection
     const record: ConnectionRecord = {
       socketId,
       userId,
@@ -123,13 +123,13 @@ export class ConnectionLimiterService implements OnModuleInit {
     };
     this.connections.set(socketId, record);
 
-    // 更新 IP 索引
+    // Update the IP index
     if (!this.ipConnections.has(ip)) {
       this.ipConnections.set(ip, new Set());
     }
     this.ipConnections.get(ip)!.add(socketId);
 
-    // 更新用户索引
+    // Update the user index
     if (userId) {
       if (!this.userConnections.has(userId)) {
         this.userConnections.set(userId, new Set());
@@ -140,14 +140,14 @@ export class ConnectionLimiterService implements OnModuleInit {
     return { allowed: true };
   }
 
-  /** 注销连接 */
+  /** Unregister a connection */
   unregisterConnection(socketId: string): void {
     const record = this.connections.get(socketId);
     if (!record) return;
 
     this.connections.delete(socketId);
 
-    // 清理 IP 索引
+    // Clean up the IP index
     const ipSet = this.ipConnections.get(record.ip);
     if (ipSet) {
       ipSet.delete(socketId);
@@ -156,7 +156,7 @@ export class ConnectionLimiterService implements OnModuleInit {
       }
     }
 
-    // 清理用户索引
+    // Clean up the user index
     if (record.userId) {
       const userSet = this.userConnections.get(record.userId);
       if (userSet) {
@@ -168,7 +168,7 @@ export class ConnectionLimiterService implements OnModuleInit {
     }
   }
 
-  /** 记录业务消息活动 */
+  /** Record business-message activity */
   recordActivity(socketId: string): void {
     const record = this.connections.get(socketId);
     if (record) {
@@ -176,7 +176,7 @@ export class ConnectionLimiterService implements OnModuleInit {
     }
   }
 
-  /** 检查空闲超时连接，返回需要断开的 socketId 列表 */
+  /** Check idle-timed-out connections, returning the socketId list to disconnect */
   checkIdleConnections(): string[] {
     const now = Date.now();
     const idleTimeoutMs = this.config.idleTimeoutMinutes * 60 * 1000;
@@ -195,7 +195,7 @@ export class ConnectionLimiterService implements OnModuleInit {
     return idleSocketIds;
   }
 
-  /** 获取连接统计 */
+  /** Get connection statistics */
   getStats(): {
     totalConnections: number;
     userConnections: number;
@@ -215,27 +215,27 @@ export class ConnectionLimiterService implements OnModuleInit {
     };
   }
 
-  /** 获取用户连接数 */
+  /** Get a user's connection count */
   getUserConnectionCount(userId: string): number {
     return this.userConnections.get(userId)?.size || 0;
   }
 
-  /** 获取IP连接数 */
+  /** Get an IP's connection count */
   getIpConnectionCount(ip: string): number {
     return this.ipConnections.get(ip)?.size || 0;
   }
 
-  /** 获取连接记录 */
+  /** Get a connection record */
   getConnection(socketId: string): ConnectionRecord | undefined {
     return this.connections.get(socketId);
   }
 
-  /** 获取所有连接 */
+  /** Get all connections */
   getAllConnections(): ConnectionRecord[] {
     return Array.from(this.connections.values());
   }
 
-  /** 获取连接IP */
+  /** Get the connection's IP */
   getConnectionIp(socketId: string): string | undefined {
     return this.connections.get(socketId)?.ip;
   }

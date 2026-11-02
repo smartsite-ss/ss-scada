@@ -4,7 +4,7 @@
     :class="[`ss-loading--${size}`]"
   >
     <div class="ss-loading__container">
-      <!-- 加载文字 -->
+      <!-- Loading text -->
       <div
         v-if="text"
         class="ss-loading__text"
@@ -17,11 +17,11 @@
         </span>
       </div>
 
-      <!-- 动画区域：光晕 + 双环 + SS 标识 -->
+      <!-- Animation area: glow + double rings + SS logo -->
       <div class="ss-loading__animation">
         <div class="ss-loading__glow" />
 
-        <!-- 外环（反向旋转 + 虚线） -->
+        <!-- Outer ring (counter-rotating + dashed) -->
         <div class="ss-loading__ring ss-loading__ring--outer">
           <svg
             class="ss-loading__ring-svg"
@@ -40,7 +40,7 @@
           </svg>
         </div>
 
-        <!-- 主旋转光环 -->
+        <!-- Main rotating halo -->
         <div class="ss-loading__ring ss-loading__ring--main">
           <svg
             class="ss-loading__ring-svg"
@@ -66,7 +66,7 @@
           </svg>
         </div>
 
-        <!-- SS 标识 -->
+        <!-- SS logo -->
         <div class="ss-loading__logo">
           <div class="ss-loading__logo-bg" />
           <span class="ss-loading__logo-text">SS</span>
@@ -78,12 +78,12 @@
 
 <script setup lang="ts">
 defineProps({
-  /** 加载提示文字 */
+  /** Loading hint text */
   text: {
     type: String,
     default: '',
   },
-  /** 尺寸：small | medium | large */
+  /** Size: small | medium | large */
   size: {
     type: String as () => 'small' | 'medium' | 'large',
     default: 'medium',
@@ -93,7 +93,7 @@ defineProps({
 
 <style scoped>
 /* ═══════════════════════════════════════════════
-   SsLoading — 美化版加载动画
+   SsLoading — beautified loading animation
    ═══════════════════════════════════════════════ */
 
 .ss-loading {
@@ -111,7 +111,7 @@ defineProps({
   position: relative;
 }
 
-/* ── 尺寸变体 ── */
+/* ── Size variants ── */
 .ss-loading--small .ss-loading__ring {
   width: 52px;
   height: 52px;
@@ -184,7 +184,7 @@ defineProps({
   margin-bottom: 16px;
 }
 
-/* ── 动画区域 ── */
+/* ── Animation area ── */
 .ss-loading__animation {
   position: relative;
   display: flex;
@@ -192,7 +192,7 @@ defineProps({
   justify-content: center;
 }
 
-/* ── 光晕背景 ── */
+/* ── Glow background ── */
 .ss-loading__glow {
   position: absolute;
   top: 50%;
@@ -220,7 +220,7 @@ defineProps({
   }
 }
 
-/* ── 旋转光环 ── */
+/* ── Rotating halo ── */
 .ss-loading__ring {
   position: absolute;
   top: 50%;
@@ -233,7 +233,7 @@ defineProps({
   height: 100%;
 }
 
-/* ── 外环（反向旋转虚线） ── */
+/* ── Outer ring (counter-rotating dashed) ── */
 .ss-loading__ring--outer {
   animation: ss-ring-rotate-outer 8s linear infinite;
 }
@@ -249,7 +249,7 @@ defineProps({
   }
 }
 
-/* ── 主环 ── */
+/* ── Main ring ── */
 .ss-loading__ring--main {
   animation: ss-ring-rotate 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
@@ -287,7 +287,7 @@ defineProps({
   }
 }
 
-/* ── SS 标识 ── */
+/* ── SS logo ── */
 .ss-loading__logo {
   position: absolute;
   top: 50%;
@@ -348,7 +348,7 @@ defineProps({
   }
 }
 
-/* ── 加载文字 ── */
+/* ── Loading text ── */
 .ss-loading__text {
   display: flex;
   align-items: center;

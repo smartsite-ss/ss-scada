@@ -3,10 +3,10 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 防抖/节流工具模块
+ * Debounce/throttle utility module
  */
 
-// 防抖函数 - 返回可取消的版本
+// Debounce function - returns a cancellable version
 export function debounce<T extends (...args: any[]) => any>(
   func: T,
   wait: number,
@@ -103,7 +103,7 @@ export function debounce<T extends (...args: any[]) => any>(
   return debounced;
 }
 
-// 节流函数
+// Throttle function
 export function throttle<T extends (...args: any[]) => any>(
   func: T,
   limit: number,
@@ -160,12 +160,12 @@ export function throttle<T extends (...args: any[]) => any>(
   return throttled;
 }
 
-// 延迟执行
+// Deferred execution
 export function delay(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-// 重试函数
+// Retry function
 export async function retry<T>(
   fn: () => Promise<T>,
   times: number = 3,

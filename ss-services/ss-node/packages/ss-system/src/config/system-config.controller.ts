@@ -31,7 +31,7 @@ export class SystemConfigController {
     private readonly restartService: SystemRestartService,
   ) {}
 
-  // ==================== 配置元数据 ====================
+  // ==================== Config metadata ====================
 
   @Get('configs/metadata')
   @Roles(UserRole.ADMIN)
@@ -57,7 +57,7 @@ export class SystemConfigController {
     return result;
   }
 
-  // ==================== 配置 CRUD ====================
+  // ==================== Config CRUD ====================
 
   @Get('configs')
   @Roles(UserRole.ADMIN)
@@ -94,7 +94,7 @@ export class SystemConfigController {
     return { ok: true };
   }
 
-  // ==================== 待重启清单 ====================
+  // ==================== Pending-restart list ====================
 
   @Get('configs/restart-required/list')
   @Roles(UserRole.ADMIN)
@@ -112,7 +112,7 @@ export class SystemConfigController {
     return { ok: true };
   }
 
-  // ==================== 系统重启 ====================
+  // ==================== System restart ====================
 
   @Post('restart')
   @Roles(UserRole.ADMIN)

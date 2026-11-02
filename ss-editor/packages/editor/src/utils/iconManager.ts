@@ -42,9 +42,9 @@ import {
   Star
 } from '@vicons/ionicons5';
 
-// 图标名称枚举（语义化命名）
+// Icon name enum (semantic naming)
 export enum IconName {
-  // ===== 基础操作 =====
+  // ===== Basic operations =====
   add = 'add',
   remove = 'remove',
   undo = 'undo',
@@ -53,16 +53,16 @@ export enum IconName {
   paste = 'paste',
   delete = 'delete',
 
-  // ===== 文件操作 =====
+  // ===== File operations =====
   save = 'save',
   open = 'open',
   download = 'download',
   print = 'print',
 
-  // ===== 搜索与筛选 =====
+  // ===== Search and filter =====
   search = 'search',
 
-  // ===== 系统设置 =====
+  // ===== System settings =====
   settings = 'settings',
   help = 'help',
   info = 'info',
@@ -70,14 +70,14 @@ export enum IconName {
   success = 'success',
   error = 'error',
 
-  // ===== 数据可视化 =====
+  // ===== Data visualization =====
   time = 'time',
   location = 'location',
   chartBar = 'chart-bar',
   chartPie = 'chart-pie',
   trending = 'trending',
 
-  // ===== 布局与视图 =====
+  // ===== Layout and view =====
   grid = 'grid',
   list = 'list',
   layers = 'layers',
@@ -86,21 +86,21 @@ export enum IconName {
   unlock = 'unlock',
   lock = 'lock',
 
-  // ===== 内容编辑 =====
+  // ===== Content editing =====
   color = 'color',
   text = 'text',
   image = 'image',
 
-  // ===== 几何图形 =====
+  // ===== Geometric shapes =====
   document = 'document',
   square = 'square',
   ellipse = 'ellipse',
   star = 'star'
 }
 
-// 图标映射表（IconName → ionicons5 组件）
+// Icon mapping table (IconName → ionicons5 components)
 const iconMap: Record<IconName, any> = {
-  // 基础操作
+  // Basic operations
   [IconName.add]: Add,
   [IconName.remove]: Remove,
   [IconName.undo]: ArrowUndo,
@@ -109,16 +109,16 @@ const iconMap: Record<IconName, any> = {
   [IconName.paste]: Clipboard,
   [IconName.delete]: Trash,
 
-  // 文件操作
+  // File operations
   [IconName.save]: Save,
   [IconName.open]: FolderOpen,
   [IconName.download]: Download,
   [IconName.print]: Print,
 
-  // 搜索与筛选
+  // Search and filter
   [IconName.search]: Search,
 
-  // 系统设置
+  // System settings
   [IconName.settings]: Settings,
   [IconName.help]: HelpCircle,
   [IconName.info]: InformationCircle,
@@ -126,14 +126,14 @@ const iconMap: Record<IconName, any> = {
   [IconName.success]: CheckmarkCircle,
   [IconName.error]: CloseCircle,
 
-  // 数据可视化
+  // Data visualization
   [IconName.time]: TimeOutline,
   [IconName.location]: LocationOutline,
   [IconName.chartBar]: BarChart,
   [IconName.chartPie]: PieChart,
   [IconName.trending]: TrendingUp,
 
-  // 布局与视图
+  // Layout and view
   [IconName.grid]: Grid,
   [IconName.list]: List,
   [IconName.layers]: Layers,
@@ -142,12 +142,12 @@ const iconMap: Record<IconName, any> = {
   [IconName.unlock]: LockOpen,
   [IconName.lock]: LockClosed,
 
-  // 内容编辑
+  // Content editing
   [IconName.color]: ColorPalette,
   [IconName.text]: Text,
   [IconName.image]: Image,
 
-  // 几何图形
+  // Geometric shapes
   [IconName.document]: Document,
   [IconName.square]: Square,
   [IconName.ellipse]: Ellipse,
@@ -155,16 +155,16 @@ const iconMap: Record<IconName, any> = {
 };
 
 /**
- * 获取图标组件
- * @param iconName 图标名称
- * @returns 图标组件或null
+ * Get an icon component
+ * @param iconName Icon name
+ * @returns Icon component or null
  */
 export function getIcon(iconName: IconName): any | null {
   return iconMap[iconName] || null;
 }
 
 /**
- * 获取所有可用的图标名称列表
+ * Get the list of all available icon names
  */
 export function getAvailableIcons(): IconName[] {
   return Object.values(IconName);

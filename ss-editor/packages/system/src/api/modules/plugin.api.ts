@@ -61,41 +61,41 @@ export const pluginApi = {
     return client.get('/plugins/health').then((res) => res.data);
   },
 
-  /** 校验通道配置 */
+  /** Validate the channel configuration */
   validateChannelConfig(protocol: string, config: Record<string, any>): Promise<ApiResponse<{ valid: boolean; errors: Array<{ field: string; message: string }> }>> {
     return client.post(`/plugins/${protocol}/validate`, config).then((res) => res.data);
   },
 
-  /** 获取插件正在采集的活跃设备列表 */
+  /** Get the list of active devices being collected by a plugin */
   getActiveDevices(protocol: string): Promise<ApiResponse<PluginActiveDevices>> {
     return client.get(`/plugins/${protocol}/active-devices`).then((res) => res.data);
   },
 
-  /** 获取所有插件的设备统计（在线/离线数量） */
+  /** Get device statistics for all plugins (online/offline counts) */
   getDeviceStats(): Promise<ApiResponse<Record<string, DeviceStats>>> {
     return client.get('/plugins/device-stats').then((res) => res.data);
   },
 
-  /** 获取插件运行监控数据（内存/CPU + 采集日志） */
+  /** Get plugin runtime monitoring data (memory/CPU + collection logs) */
   getMonitor(protocol: string): Promise<ApiResponse<PluginMonitorData>> {
     return client.get(`/plugins/${protocol}/monitor`).then((res) => res.data);
   },
 
-  /** 清空插件采集日志 */
+  /** Clear plugin collection logs */
   clearMonitorLogs(protocol: string): Promise<ApiResponse<{ cleared: boolean }>> {
     return client.delete(`/plugins/${protocol}/monitor/logs`).then((res) => res.data);
   },
 
   // -----------------------------------------------------------------------
-  //  运行时配置持久化
+  //  Runtime configuration persistence
   // -----------------------------------------------------------------------
 
-  /** 获取插件运行时配置 */
+  /** Get the plugin runtime configuration */
   getPluginConfig(protocol: string): Promise<ApiResponse<PluginRuntimeConfig>> {
     return client.get(`/plugins/${protocol}/config`).then((res) => res.data);
   },
 
-  /** 更新插件运行时配置（如隔离模式） */
+  /** Update the plugin runtime configuration (e.g. isolation mode) */
   updatePluginConfig(
     protocol: string,
     config: { isolationMode?: string },
@@ -103,7 +103,7 @@ export const pluginApi = {
     return client.put(`/plugins/${protocol}/config`, config).then((res) => res.data);
   },
 
-  /** 重启插件（用于隔离模式等配置变更后重载 executor） */
+  /** Restart the plugin (reloads the executor after configuration changes such as isolation mode) */
   restartPlugin(protocol: string): Promise<ApiResponse<{ protocol: string; isolationMode: string; elapsed: number }>> {
     return client.post(`/plugins/${protocol}/restart`).then((res) => res.data);
   },

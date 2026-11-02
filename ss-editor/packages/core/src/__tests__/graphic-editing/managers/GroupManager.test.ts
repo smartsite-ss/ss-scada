@@ -472,7 +472,7 @@ describe('GroupManager', () => { let mgr: GroupManager; let graphics: TestGraphi
     });
 
     it('should not throw for non-existent group', () => {
-      expect(() => mgr.rotateGroup('no-group', 45)).not.toThrow(); }); }); /* ============ 序列化 ============ */ describe('toJSON / fromJSON / clear', () => {
+      expect(() => mgr.rotateGroup('no-group', 45)).not.toThrow(); }); }); /* ============ Serialization ============ */ describe('toJSON / fromJSON / clear', () => {
     it('should serialize groups to JSON', () => {
       mgr.createGroup([graphics[0].id]);
       mgr.createGroup([graphics[1].id]);

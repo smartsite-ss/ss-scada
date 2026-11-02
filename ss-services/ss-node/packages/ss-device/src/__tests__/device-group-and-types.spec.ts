@@ -39,7 +39,7 @@ function createMockRepo<T>(): MockRepository<T> {
 }
 
 // ============================================================
-// 辅助工厂函数：创建设备 DTO
+// Helper factory: create a device DTO
 // ============================================================
 function makeCreateDeviceDto(
   overrides: Partial<{
@@ -164,7 +164,7 @@ describe('DeviceService - 设备分组与多项目设备管理', () => {
   });
 
   // ============================================================
-  // 一、分组管理
+  // I. Group management
   // ============================================================
   describe('分组管理', () => {
     describe('TC-GROUP-001: 创建分组', () => {
@@ -222,7 +222,7 @@ describe('DeviceService - 设备分组与多项目设备管理', () => {
       });
 
       it('应支持三级分组树', async () => {
-        // 厂区 → 车间 → 产线
+        // Plant -> workshop -> production line
         const _l1 = makeMockGroup({ id: 'grp-l1', name: '厂区A' });
         const _l2 = makeMockGroup({ id: 'grp-l2', name: '车间1', parentId: 'grp-l1' });
         const l3 = makeMockGroup({ id: 'grp-l3', name: '产线A', parentId: 'grp-l2' });
@@ -387,7 +387,7 @@ describe('DeviceService - 设备分组与多项目设备管理', () => {
   });
 
   // ============================================================
-  // 二、不同设备类型/模板/驱动插件
+  // II. Different device types/templates/driver plugins
   // ============================================================
   describe('不同类型/模板/插件设备', () => {
     describe('TC-DEVTYPE-001: Modbus TCP 设备', () => {
@@ -606,7 +606,7 @@ describe('DeviceService - 设备分组与多项目设备管理', () => {
   });
 
   // ============================================================
-  // 三、分组与设备关联
+  // III. Group-device association
   // ============================================================
   describe('分组与设备关联', () => {
     describe('TC-LINK-001: 创建设备时指定分组', () => {
@@ -682,7 +682,7 @@ describe('DeviceService - 设备分组与多项目设备管理', () => {
   });
 
   // ============================================================
-  // 四、多项目设备管理
+  // IV. Multi-project device management
   // ============================================================
   describe('多项目设备管理', () => {
     describe('TC-PROJ-001: 不同项目创建不同设备', () => {
@@ -718,11 +718,11 @@ describe('DeviceService - 设备分组与多项目设备管理', () => {
 
     describe('TC-PROJ-002: 同一tid在不同项目可重复', () => {
       it('不同项目可以使用相同的 tid', async () => {
-        // 项目A中 tid 不存在
+        // The tid does not exist in project A
         deviceRepo.findOne = jest
           .fn()
-          .mockResolvedValueOnce(null) // 项目A中不存在
-          .mockResolvedValueOnce(null); // 项目B中也不存在
+          .mockResolvedValueOnce(null) // not present in project A
+          .mockResolvedValueOnce(null); // not present in project B either
 
         const devA = makeMockDevice({ id: 'dev-a', deviceCode: 'same-tid', projectId: 'proj-a' });
         const devB = makeMockDevice({ id: 'dev-b', deviceCode: 'same-tid', projectId: 'proj-b' });
@@ -782,7 +782,7 @@ describe('DeviceService - 设备分组与多项目设备管理', () => {
   });
 
   // ============================================================
-  // 五、设备扫描周期配置
+  // V. Device scan-period config
   // ============================================================
   describe('设备扫描周期', () => {
     it('应支持自定义 scanRate', async () => {

@@ -22,7 +22,7 @@ export class DictController {
   constructor(private readonly dictLoader: DictionaryLoaderService) {}
 
   /**
-   * 获取分类树结构
+   * Get the category tree structure
    */
   @Get()
   getCategories(@Query('locale') locale?: string) {
@@ -31,7 +31,7 @@ export class DictController {
   }
 
   /**
-   * 获取所有字典
+   * Get all dictionaries
    */
   @Get('all')
   getAllDicts(@Query('locale') locale?: string) {
@@ -40,7 +40,7 @@ export class DictController {
   }
 
   /**
-   * 获取单个字典
+   * Get a single dictionary
    */
   @Get(':dictId')
   getDict(@Param('dictId') dictId: string, @Query('locale') locale?: string) {
@@ -52,7 +52,7 @@ export class DictController {
   }
 
   /**
-   * 热重载所有字典
+   * Hot-reload all dictionaries
    */
   @Post('reload')
   reloadDicts() {

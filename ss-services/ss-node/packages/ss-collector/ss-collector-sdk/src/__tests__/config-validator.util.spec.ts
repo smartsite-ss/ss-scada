@@ -31,15 +31,15 @@ describe('ConfigValidator', () => {
     });
 
     it('应拒绝格式错误的主机（结构错误）', () => {
-      // 注：源码 IPV4_REGEX 仅校验段数与每段位数（1-3 位），不校验每段范围
-      // 故 999.999.999.999 会通过校验；
-      // 注：HOSTNAME_REGEX 接受任意数量的点分段，故 1.2.3 / 1.2.3.4.5 也合法
-      // 此处仅测试结构错误：起始/末尾点、连续点、特殊字符
-      expect(ConfigValidator.isValidHost('1.2.3.')).toBe(false); // 末尾点
-      expect(ConfigValidator.isValidHost('1..2.3')).toBe(false); // 连续点
-      expect(ConfigValidator.isValidHost('.1.2.3')).toBe(false); // 起始点
-      expect(ConfigValidator.isValidHost('host with space')).toBe(false); // 含空格
-      expect(ConfigValidator.isValidHost('host@invalid')).toBe(false); // 含特殊字符
+      // Note: the source IPV4_REGEX only checks segment count and per-segment digit count (1-3), not per-segment range
+      // so 999.999.999.999 passes validation;
+      // Note: HOSTNAME_REGEX accepts any number of dot-separated segments, so 1.2.3 / 1.2.3.4.5 are also valid
+      // Here we test only structural errors: leading/trailing dots, consecutive dots, special characters
+      expect(ConfigValidator.isValidHost('1.2.3.')).toBe(false); // trailing dot
+      expect(ConfigValidator.isValidHost('1..2.3')).toBe(false); // consecutive dots
+      expect(ConfigValidator.isValidHost('.1.2.3')).toBe(false); // leading dot
+      expect(ConfigValidator.isValidHost('host with space')).toBe(false); // contains a space
+      expect(ConfigValidator.isValidHost('host@invalid')).toBe(false); // contains special characters
     });
 
     it('应拒绝非法主机名', () => {
@@ -79,8 +79,8 @@ describe('ConfigValidator', () => {
   describe('isInRange', () => {
     it('值在范围内应返回 true', () => {
       expect(ConfigValidator.isInRange(5, 1, 10)).toBe(true);
-      expect(ConfigValidator.isInRange(1, 1, 10)).toBe(true); // 边界
-      expect(ConfigValidator.isInRange(10, 1, 10)).toBe(true); // 边界
+      expect(ConfigValidator.isInRange(1, 1, 10)).toBe(true); // boundary
+      expect(ConfigValidator.isInRange(10, 1, 10)).toBe(true); // boundary
     });
 
     it('值小于 min 应返回 false', () => {

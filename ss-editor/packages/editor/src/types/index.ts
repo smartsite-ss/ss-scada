@@ -4,7 +4,7 @@
 
 import type { Ref, Component } from 'vue';
 
-// 画布交互选项
+// Canvas interaction options
 export interface CanvasInteractionOptions {
   panX: Ref<number>;
   panY: Ref<number>;
@@ -16,7 +16,7 @@ export interface CanvasInteractionOptions {
   formatPainterManager?: import('@scada-editor/core').FormatPainterManager;
 }
 
-// 面板配置
+// Panel configuration
 export interface PanelConfig {
   id: string;
   title: string;
@@ -26,7 +26,7 @@ export interface PanelConfig {
   icon?: string;
 }
 
-// 工具配置
+// Tool configuration
 export interface ToolConfig {
   id: string;
   name: string;
@@ -36,7 +36,7 @@ export interface ToolConfig {
   onDeactivate?: () => void;
 }
 
-// UI 插件接口
+// UI plugin interface
 export interface UIPlugin {
   name: string;
   install(context: any): void;

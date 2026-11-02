@@ -3,15 +3,15 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * AI 对话持久化 Service — P2-T08
+ * AI conversation persistence Service - P2-T08
  *
- * 提供：
- *   1. 会话 CRUD（创建/列表/详情/归档/删除）
- *   2. 消息 CRUD（追加/批量保存/查询）
- *   3. 上下文窗口管理（FIFO/Sliding/Summary 三种截断策略）
- *   4. 会话历史恢复（ChatMessage[] 格式，供 LLM 直接消费）
+ * Provides:
+ *   1. Session CRUD (create/list/detail/archive/delete)
+ *   2. Message CRUD (append/batch-save/query)
+ *   3. Context-window management (FIFO/Sliding/Summary truncation strategies)
+ *   4. Session history recovery (ChatMessage[] format, consumed directly by the LLM)
  *
- * 数据按项目隔离，按用户过滤。
+ * Data is isolated by project and filtered by user.
  */
 
 import { Injectable, Logger } from '@nestjs/common';
@@ -20,18 +20,18 @@ import { Repository } from 'typeorm';
 import { AiConversation, AiMessage } from './entities/ai-conversation.entity';
 import { ChatMessage } from './llm.types';
 
-/** 上下文窗口截断策略 */
+/** Context-window truncation strategy */
 export type TruncationStrategy = 'fifo' | 'sliding' | 'summary';
 
-/** 上下文窗口配置 */
+/** Context-window config */
 export interface ContextWindowConfig {
-  /** 截断策略 */
+  /** Truncation strategy */
   strategy: TruncationStrategy;
-  /** 最大消息数 */
+  /** Maximum message count */
   maxMessages: number;
-  /** 最大 Token 数（约，按 1 token ≈ 4 字符估算） */
+  /** Maximum token count (approx, estimated as 1 token ≈ 4 chars) */
   maxTokens: number;
-  /** 摘要比例（summary 模式，保留开头消息的比例 0-1） */
+  /** Summary ratio (summary mode: fraction of leading messages to keep, 0-1) */
   summaryRatio: number;
 }
 
@@ -54,10 +54,10 @@ export class ConversationService {
   ) {}
 
   // ============================================================
-  //  会话 CRUD
+  //  Session CRUD
   // ============================================================
 
-  /** 创建新会话 */
+  /** Create a new session */
   async createConversation(data: {
     title?: string;
     projectId: string;
@@ -75,7 +75,7 @@ export class ConversationService {
     return this.convRepo.save(conv);
   }
 
-  /** 获取用户的会话列表（projectId 可选，缺省时返回该用户所有项目的会话） */
+  /** Get the user's session list (projectId optional; when omitted, returns sessions across all the user's projects) */
   async listConversations(userId: string, projectId?: string): Promise<AiConversation[]> {
     return this.convRepo.find({
       where: projectId
@@ -85,32 +85,32 @@ export class ConversationService {
     });
   }
 
-  /** 获取会话详情 */
+  /** Get session details */
   async getConversation(id: string): Promise<AiConversation | null> {
     return this.convRepo.findOne({ where: { id } });
   }
 
-  /** 更新会话标题 */
+  /** Update session title */
   async updateTitle(id: string, title: string): Promise<void> {
     await this.convRepo.update(id, { title });
   }
 
-  /** 归档/取消归档会话 */
+  /** Archive/unarchive a session */
   async archiveConversation(id: string, archived: boolean): Promise<void> {
     await this.convRepo.update(id, { archived: archived ? 1 : 0 });
   }
 
-  /** 删除会话及其消息 */
+  /** Delete a session and its messages */
   async deleteConversation(id: string): Promise<void> {
     await this.msgRepo.delete({ conversationId: id });
     await this.convRepo.delete(id);
   }
 
   // ============================================================
-  //  消息 CRUD
+  //  Message CRUD
   // ============================================================
 
-  /** 追加一条消息到会话 */
+  /** Append a message to a session */
   async appendMessage(
     conversationId: string,
     msg: {
@@ -122,7 +122,7 @@ export class ConversationService {
       tokens?: number;
     },
   ): Promise<AiMessage> {
-    // 获取当前最大 seq
+    // get the current max seq
     const maxSeq = (await this.msgRepo.maximum('seq', { conversationId })) || 0;
     const message = this.msgRepo.create({
       conversationId,
@@ -136,7 +136,7 @@ export class ConversationService {
     });
     const saved = await this.msgRepo.save(message);
 
-    // 更新会话统计
+    // update session statistics
     await this.convRepo.increment({ id: conversationId }, 'messageCount', 1);
     if (msg.tokens) {
       await this.convRepo.increment({ id: conversationId }, 'totalTokens', msg.tokens);
@@ -145,7 +145,7 @@ export class ConversationService {
     return saved;
   }
 
-  /** 批量保存消息（用于首次保存或恢复） */
+  /** Batch-save messages (for first save or recovery) */
   async saveMessages(conversationId: string, messages: ChatMessage[]): Promise<void> {
     let seq = 0;
     const entities = messages.map((m) => {
@@ -164,7 +164,7 @@ export class ConversationService {
     await this.convRepo.update(conversationId, { messageCount: seq });
   }
 
-  /** 获取会话的所有消息 */
+  /** Get all messages of a session */
   async getMessages(conversationId: string): Promise<AiMessage[]> {
     return this.msgRepo.find({
       where: { conversationId },
@@ -172,7 +172,7 @@ export class ConversationService {
     });
   }
 
-  /** 获取会话的最近 N 条消息 */
+  /** Get the latest N messages of a session */
   async getRecentMessages(conversationId: string, limit: number): Promise<AiMessage[]> {
     return this.msgRepo
       .find({
@@ -184,15 +184,15 @@ export class ConversationService {
   }
 
   // ============================================================
-  //  上下文窗口管理
+  //  Context-window management
   // ============================================================
 
   /**
-   * 获取会话历史（ChatMessage[] 格式），应用上下文窗口截断
+   * Get session history (ChatMessage[] format) with context-window truncation applied
    *
-   * @param conversationId 会话 ID
-   * @param config 窗口配置（可选，默认 sliding/50 条/8000 tokens）
-   * @returns ChatMessage[]（可直接传入 LLM API）
+   * @param conversationId session ID
+   * @param config window config (optional; defaults to sliding / 50 messages / 8000 tokens)
+   * @returns ChatMessage[] (can be passed directly to the LLM API)
    */
   async getConversationHistory(
     conversationId: string,
@@ -216,12 +216,12 @@ export class ConversationService {
     }
   }
 
-  /** FIFO 策略：保留最近的消息 */
+  /** FIFO strategy: keep the most recent messages */
   private fifoWindow(messages: AiMessage[], config: ContextWindowConfig): ChatMessage[] {
     return this.toChatMessages(messages.slice(-config.maxMessages));
   }
 
-  /** Sliding 策略：保留开头 N/5 条 + 最近 4N/5 条 */
+  /** Sliding strategy: keep the first N/5 messages + the most recent 4N/5 messages */
   private slidingWindow(messages: AiMessage[], config: ContextWindowConfig): ChatMessage[] {
     const keepHead = Math.ceil(config.maxMessages / 5);
     const keepTail = config.maxMessages - keepHead;
@@ -230,7 +230,7 @@ export class ConversationService {
     return this.toChatMessages([...head, ...tail]);
   }
 
-  /** Summary 策略：保留比例的开头 + 最近（需有摘要能力，当前简化） */
+  /** Summary strategy: keep a fraction of the beginning + the most recent (requires summarization capability; currently simplified) */
   private summaryWindow(messages: AiMessage[], config: ContextWindowConfig): ChatMessage[] {
     const headCount = Math.ceil(config.maxMessages * config.summaryRatio);
     const tailCount = config.maxMessages - headCount;
@@ -250,12 +250,12 @@ export class ConversationService {
   }
 
   /**
-   * 根据 Token 预算截断（简化版：按字符数估算）
+   * Truncate by token budget (simplified: estimated by character count)
    */
   truncateByTokens(messages: ChatMessage[], maxTokens: number): ChatMessage[] {
     let tokenCount = 0;
     const result: ChatMessage[] = [];
-    // 从后往前保留（保留最近的）
+    // keep from the end backwards (keep the most recent)
     for (let i = messages.length - 1; i >= 0; i--) {
       const contentStr =
         typeof messages[i].content === 'string'
@@ -271,9 +271,9 @@ export class ConversationService {
     return result;
   }
 
-  /** 根据对话内容自动生成标题 */
+  /** Auto-generate a title from the conversation content */
   async autoGenerateTitle(conversationId: string, firstUserMessage: string): Promise<void> {
-    // 使用用户首条消息的前 30 个字符作为标题
+    // use the first 30 characters of the user's first message as the title
     const title =
       firstUserMessage.length > 30 ? firstUserMessage.substring(0, 30) + '...' : firstUserMessage;
     await this.convRepo.update(conversationId, { title });

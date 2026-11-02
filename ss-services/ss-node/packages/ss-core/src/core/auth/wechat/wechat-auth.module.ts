@@ -14,17 +14,17 @@ import { WechatStateService } from './wechat-state.service';
 import { ProjectAuthorization } from '../../user/entities/project-authorization.entity';
 
 /**
- * 微信扫码登录模块
+ * WeChat scan-login module
  *
- * 注册方式：在 app.module.ts 的 sharedModules 中独立注册（在 AuthModule 之后）。
+ * Registration: registered independently in app.module.ts's sharedModules (after AuthModule).
  *
- * 依赖关系：
- *   - imports: [AuthModule] —— 显式导入以注入 AuthService（AuthModule 非 @Global，
- *             必须显式 import 才能在 WechatAuthService 中注入 AuthService。
- *             AuthModule 不反向导入 WechatAuthModule，故无循环依赖）
- *   - @Global 模块自动可用：RedisModule（REDIS_CLIENT_DEFAULT）、
- *     UserModule（UserService）、AuditLoggerModule（AuditLoggerService）、
- *     I18nModule（I18nService）
+ * Dependencies:
+ *   - imports: [AuthModule] -- explicitly imported to inject AuthService (AuthModule is not @Global,
+ *             must be explicitly imported to inject AuthService into WechatAuthService.
+ *             AuthModule does not import WechatAuthModule in return, so no circular dependency)
+ *   - @Global modules auto-available: RedisModule (REDIS_CLIENT_DEFAULT),
+ *     UserModule (UserService), AuditLoggerModule (AuditLoggerService),
+ *     I18nModule (I18nService)
  *   - providers: WechatAuthService, WechatApiService, WechatStateService
  *   - controllers: WechatAuthController
  *   - exports: WechatAuthService

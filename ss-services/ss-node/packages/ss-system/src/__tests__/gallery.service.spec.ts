@@ -12,16 +12,16 @@ import { GalleryService } from '../gallery/gallery.service';
 import { PathResolverService } from '@ss-node/ss-core';
 
 /**
- * GalleryService 单元测试 — 纯文件方案
+ * GalleryService unit tests — pure-file approach
  *
- * 覆盖场景：
- *  1. 服务初始化（自动创建图库根目录）
- *  2. listFormats（格式目录列表 + 图片计数）
- *  3. listCategories（分类目录列表 + 图片计数）
- *  4. listImages（图片文件列表 + URL + 大小）
- *  5. uploadImage（上传写入 + 文件名净化 + 扩展名校验）
- *  6. deleteImage（删除）
- *  7. resolveImagePath（路径解析 + 越界/遍历防护）
+ * Covered scenarios:
+ *  1. Service initialization (auto-creates the gallery root directory)
+ *  2. listFormats (format directory list + image counts)
+ *  3. listCategories (category directory list + image counts)
+ *  4. listImages (image file list + URLs + sizes)
+ *  5. uploadImage (upload write + filename sanitization + extension validation)
+ *  6. deleteImage (deletion)
+ *  7. resolveImagePath (path resolution + traversal protection)
  */
 describe('GalleryService', () => {
   let service: GalleryService;
@@ -73,7 +73,7 @@ describe('GalleryService', () => {
     await service.onModuleInit();
   });
 
-  // ==================== 1. 初始化 ====================
+  // ==================== 1. Initialization ====================
 
   describe('onModuleInit', () => {
     it('应创建图库根目录', () => {
@@ -239,7 +239,7 @@ describe('GalleryService', () => {
     });
   });
 
-  // ==================== 7. resolveImagePath 路径遍历防护 ====================
+  // ==================== 7. resolveImagePath path-traversal protection ====================
 
   describe('resolveImagePath', () => {
     it('应解析到图库根目录内的绝对路径', () => {

@@ -20,20 +20,20 @@ export class RolesGuard implements CanActivate {
       return true;
     }
     const { user } = context.switchToHttp().getRequest();
-    // 标准角色（admin/user/viewer）：按角色 code 检查
+    // Standard roles (admin/user/viewer): checked by role code
     if (requiredRoles.some((role) => user?.role === role)) {
       return true;
     }
-    // v7.2: 自建角色（role code 不在标准 UserRole 枚举，如 test）按实际 permissions 兜底。
-    // JwtStrategy.validate 已通过 findById 加载 roleEntity，可直接读取 permissions。
+    // v7.2: self-built roles (role code not in the standard UserRole enum, e.g. test) fall back to actual permissions.
+    // JwtStrategy.validate already loaded roleEntity via findById, so permissions can be read directly.
     if (user?.role && !Object.values(UserRole).includes(user.role as UserRole)) {
       const permissions: string[] = user?.roleEntity?.permissions || [];
-      // admin 级别（*:*）：放行所有
+      // admin level (*:*) : allow all
       if (permissions.includes('*:*')) {
         return true;
       }
-      // ReadRoles（含 VIEWER）：已授权自建角色（permissions 非空）放行读操作。
-      // 写操作（WriteRoles/AdminRoles 不含 VIEWER）仍需 *:* 或改用 @Permissions 细粒度校验。
+      // ReadRoles (includes VIEWER): self-built roles with non-empty permissions are allowed for read ops.
+      // Write ops (WriteRoles/AdminRoles exclude VIEWER) still require *:* or fine-grained @Permissions checks.
       if (requiredRoles.includes(UserRole.VIEWER) && permissions.length > 0) {
         return true;
       }

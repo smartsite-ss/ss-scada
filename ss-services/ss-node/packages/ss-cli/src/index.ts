@@ -12,10 +12,10 @@ import { registerCommands as registerCollectorCommands } from './commands/collec
 
 const parser = new CommandParser();
 
-// 注册内置基础命令
+// Register built-in basic commands
 parser.registerCommands();
 
-// 注册业务命令模块
+// Register business command modules
 registerDeviceCommands(parser);
 registerDataCommands(parser);
 registerAlarmCommands(parser);

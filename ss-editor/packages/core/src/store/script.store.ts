@@ -10,7 +10,7 @@ import { ScriptEngine } from '../scada-data/engine/ScriptEngine';
 export const useScriptRuntimeStore = defineStore('scriptRuntime', () => {
   const engine = ScriptEngine.getInstance();
 
-  // ─── 状态 ───
+  // ─── State ───
   const registeredScripts = ref<ScriptDefinition[]>([]);
   const scheduledTasks = ref<ScheduledTask[]>([]);
   const executionLogs = ref<ScriptLog[]>([]);
@@ -19,7 +19,7 @@ export const useScriptRuntimeStore = defineStore('scriptRuntime', () => {
   const activeScriptCount = computed(() => registeredScripts.value.filter((s) => s.enabled).length);
   const totalExecutionCount = computed(() => registeredScripts.value.reduce((sum, s) => sum + s.executeCount, 0));
 
-  // ─── 脚本管理 ───
+  // ─── Script management ───
 
   function registerScript(definition: ScriptDefinition): void {
     engine.registerScript(definition);
@@ -44,7 +44,7 @@ export const useScriptRuntimeStore = defineStore('scriptRuntime', () => {
 
   function clearPageScripts(pageId: string): void {
     const toRemove = registeredScripts.value.filter((s) => {
-      // 假设脚本按页面组织，通过 id 前缀判断
+      // Assume scripts are organized per page, identified by id prefix
       return s.id.startsWith(pageId);
     });
     for (const script of toRemove) {
@@ -52,7 +52,7 @@ export const useScriptRuntimeStore = defineStore('scriptRuntime', () => {
     }
   }
 
-  // ─── 执行 ───
+  // ─── Execution ───
 
   async function executeScript(scriptId: string): Promise<void> {
     const result = await engine.executeAsync(scriptId, 'manual');
@@ -60,7 +60,7 @@ export const useScriptRuntimeStore = defineStore('scriptRuntime', () => {
     executionLogs.value = engine.getLogs();
   }
 
-  // ─── 日志 ───
+  // ─── Logs ───
 
   function refreshLogs(): void {
     executionLogs.value = engine.getLogs();

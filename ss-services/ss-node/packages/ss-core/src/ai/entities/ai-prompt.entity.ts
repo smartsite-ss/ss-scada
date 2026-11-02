@@ -3,10 +3,10 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * AI Prompt 版本管理实体 — P2-T08 Prompt 版本管理
+ * AI Prompt version-management entity - P2-T08 Prompt version management
  *
- * sys_ai_prompts：       Prompt 模板定义（按任务类型）
- * sys_ai_prompt_versions：Prompt 版本历史（draft→active→archived）
+ * sys_ai_prompts:        Prompt template definitions (by task type)
+ * sys_ai_prompt_versions: Prompt version history (draft->active->archived)
  */
 
 import {
@@ -17,7 +17,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-/** Prompt 版本状态 */
+/** Prompt version status */
 export type PromptVersionStatus = 'draft' | 'active' | 'archived';
 
 @Entity('sys_ai_prompts')
@@ -25,23 +25,23 @@ export class AiPrompt {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  /** Prompt 标识键（如 scene_creation、plugin_gen、script_gen） */
+  /** Prompt identifier key (e.g. scene_creation, plugin_gen, script_gen) */
   @Column({ type: 'varchar', length: 64, unique: true })
   key: string;
 
-  /** 显示名称 */
+  /** Display name */
   @Column({ type: 'varchar', length: 128 })
   name: string;
 
-  /** 任务类型 */
+  /** Task type */
   @Column({ name: 'task_type', type: 'varchar', length: 32, default: 'chat' })
   taskType: string;
 
-  /** 描述 */
+  /** Description */
   @Column({ type: 'varchar', length: 512, nullable: true })
   description: string;
 
-  /** 当前活跃版本 ID */
+  /** Current active version ID */
   @Column({ name: 'active_version_id', type: 'varchar', length: 36, nullable: true })
   activeVersionId: string;
 
@@ -57,39 +57,39 @@ export class AiPromptVersion {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  /** 关联 Prompt ID */
+  /** Related Prompt ID */
   @Column({ name: 'prompt_id', type: 'varchar', length: 36 })
   promptId: string;
 
-  /** 版本号（如 v1.0, v1.1） */
+  /** Version number (e.g. v1.0, v1.1) */
   @Column({ type: 'varchar', length: 16 })
   version: string;
 
-  /** 版本状态（draft/active/archived） */
+  /** Version status (draft/active/archived) */
   @Column({ type: 'varchar', length: 16, default: 'draft' })
   status: PromptVersionStatus;
 
-  /** System Prompt 模板内容（支持 {{variable}} 模板语法） */
+  /** System Prompt template content (supports {{variable}} template syntax) */
   @Column({ name: 'system_prompt', type: 'text' })
   systemPrompt: string;
 
-  /** 模板变量列表（JSON 数组字符串） */
+  /** Template variable list (JSON array string) */
   @Column({ type: 'text', nullable: true })
   variables: string;
 
-  /** LLM 配置建议（JSON：model/temperature/maxTokens） */
+  /** Suggested LLM config (JSON: model/temperature/maxTokens) */
   @Column({ type: 'text', nullable: true })
   llmConfig: string;
 
-  /** 变更说明 */
+  /** Change description */
   @Column({ type: 'varchar', length: 512, nullable: true })
   changelog: string;
 
-  /** 评估指标（JSON：测试通过数、准确率、平均延迟等） */
+  /** Evaluation metrics (JSON: tests passed, accuracy, average latency, etc.) */
   @Column({ type: 'text', nullable: true })
   metrics: string;
 
-  /** 创建用户 ID */
+  /** Creating user ID */
   @Column({ name: 'created_by', type: 'varchar', length: 36, nullable: true })
   createdBy: string;
 

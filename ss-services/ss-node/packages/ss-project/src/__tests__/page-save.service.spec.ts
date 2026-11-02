@@ -30,7 +30,7 @@ describe('PageSaveService', () => {
   const mockPreview = Buffer.from('mock-preview-png-data');
   const mockPreviewSmall = Buffer.from('mock-preview-small-png-data');
 
-  // ── 辅助：返回带有 p_ 前缀的页面路径 ──
+  // ── Helper: return a page path with the p_ prefix ──
   function pagePath(...segments: string[]) {
     return path.join(tempDir, testProjectName, 'pages', ...segments);
   }
@@ -239,7 +239,7 @@ describe('PageSaveService', () => {
       const leftoverTmpFiles = fs.readdirSync(pageDir).filter((f) => f.endsWith('.tmp'));
       expect(leftoverTmpFiles).toEqual([]);
 
-      // 二次保存（覆盖已存在的 page.json）后内容仍完整
+      // After a second save (overwriting the existing page.json) the content is still complete
       service.savePage(testProjectName, 'MainPage', {
         ...pageData,
         widgets: [{ type: 'label' }],
@@ -265,22 +265,22 @@ describe('PageSaveService', () => {
 
       const pageDir = pagePath(p('MainPage'));
 
-      // 文件夹存在
+      // The folder exists
       expect(fs.existsSync(pageDir)).toBe(true);
       expect(fs.statSync(pageDir).isDirectory()).toBe(true);
 
-      // page.json 存在
+      // page.json exists
       const jsonPath = pagePath(p('MainPage'), 'page.json');
       expect(fs.existsSync(jsonPath)).toBe(true);
       const savedData = JSON.parse(fs.readFileSync(jsonPath, 'utf-8'));
       expect(savedData.id).toBe('page1');
 
-      // preview.png 存在
+      // preview.png exists
       const previewPath = pagePath(p('MainPage'), 'preview.png');
       expect(fs.existsSync(previewPath)).toBe(true);
       expect(fs.readFileSync(previewPath)).toEqual(mockPreview);
 
-      // 文件夹只有这两个文件（不含其他）
+      // The folder contains only these two files (nothing else)
       const files = fs.readdirSync(pageDir);
       expect(files).toEqual(expect.arrayContaining(['page.json', 'preview.png']));
       expect(files.length).toBe(2);
@@ -363,7 +363,7 @@ describe('PageSaveService', () => {
     });
 
     it('【ID 保护】page.json 已有 id 时，savePage 应保留原始 id 不被覆盖', () => {
-      // 第一次保存：写入 id = "page-abc"
+      // First save: writes id = "page-abc"
       const originalData = { id: 'page-abc', name: 'ProtectedPage', widgets: ['w1'] };
       service.savePage(testProjectName, 'ProtectedPage', originalData);
 
@@ -371,14 +371,14 @@ describe('PageSaveService', () => {
       let savedData = JSON.parse(fs.readFileSync(jsonPath, 'utf-8'));
       expect(savedData.id).toBe('page-abc');
 
-      // 第二次保存：传入不同的 id（模拟前端用 name 覆盖 id）
+      // Second save: passing a different id (simulating the frontend overwriting id with name)
       const updateData = { id: 'ProtectedPage', name: 'ProtectedPage', widgets: ['w2'] };
       service.savePage(testProjectName, 'ProtectedPage', updateData);
 
       savedData = JSON.parse(fs.readFileSync(jsonPath, 'utf-8'));
-      // ID 应保持不变
+      // The ID should stay unchanged
       expect(savedData.id).toBe('page-abc');
-      // 其他字段应更新
+      // Other fields should update
       expect(savedData.widgets).toEqual(['w2']);
       expect(savedData.name).toBe('ProtectedPage');
     });
@@ -468,7 +468,7 @@ describe('PageSaveService', () => {
       expect(fs.readFileSync(path.join(pageADir, 'preview.png'))).toEqual(mockPreview);
       expect(fs.readFileSync(path.join(pageADir, 'preview_small.png'))).toEqual(mockPreviewSmall);
 
-      // 其它页不应有预览
+      // Other pages should not have previews
       expect(fs.existsSync(path.join(pageBDir, 'preview.png'))).toBe(false);
       expect(fs.existsSync(path.join(pageBDir, 'preview_small.png'))).toBe(false);
     });
@@ -485,7 +485,7 @@ describe('PageSaveService', () => {
     });
 
     it('【ID 保护】saveAllPages 应保留 page.json 中已有的 id', async () => {
-      // 第一次保存：写入真实 ID
+      // First save: writes the real ID
       const pages1 = [{ id: 'page-uuid-001', name: 'IDPage' }];
       await service.saveAllPages(testProjectName, pages1);
 
@@ -493,12 +493,12 @@ describe('PageSaveService', () => {
       let savedData = JSON.parse(fs.readFileSync(jsonPath, 'utf-8'));
       expect(savedData.id).toBe('page-uuid-001');
 
-      // 第二次保存：用 name 覆盖 id
+      // Second save: overwrites id with name
       const pages2 = [{ id: 'IDPage', name: 'IDPage', widgets: ['new'] }];
       await service.saveAllPages(testProjectName, pages2);
 
       savedData = JSON.parse(fs.readFileSync(jsonPath, 'utf-8'));
-      // ID 应保持原始值
+      // The ID should keep its original value
       expect(savedData.id).toBe('page-uuid-001');
       expect(savedData.widgets).toEqual(['new']);
     });
@@ -565,9 +565,9 @@ describe('PageSaveService', () => {
     });
 
     it('should include pages from root and all groups', () => {
-      // 根目录页面
+      // Root-directory pages
       service.savePage(testProjectName, 'RootPage', { id: '1' });
-      // 分组页面
+      // Group pages
       service.createGroup(testProjectName, 'group1');
       service.savePage(testProjectName, 'GroupPage', { id: '2' }, 'group1');
       service.createGroup(testProjectName, 'group2');
@@ -584,18 +584,18 @@ describe('PageSaveService', () => {
     });
 
     it('should deduplicate pages with the same name (root page takes priority)', () => {
-      // 在根目录和分组中各保存一个同名页面
+      // Save same-named pages in both the root and a group
       service.savePage(testProjectName, 'SameName', { id: '1', content: 'root' });
       service.createGroup(testProjectName, 'group1');
       service.savePage(testProjectName, 'SameName', { id: '2', content: 'group' }, 'group1');
 
       const result = service.listAllPages(testProjectName);
 
-      // 应该去重，只保留 1 个
+      // Should dedupe, keeping only 1
       expect(result.pages).toHaveLength(1);
       expect(result.pages[0].name).toBe('SameName');
 
-      // 验证路径指向根目录（首次出现优先）
+      // Verify the path points to the root (first occurrence wins)
       expect(result.pages[0].filePath).toContain(path.join('pages', p('SameName'), 'page.json'));
       expect(result.pages[0].filePath).not.toContain('group1');
     });
@@ -608,29 +608,29 @@ describe('PageSaveService', () => {
 
       const result = service.listAllPages(testProjectName);
 
-      // 应该只保留第一个 group 中的页面
+      // Only the page in the first group should be kept
       expect(result.pages).toHaveLength(1);
       expect(result.pages[0].name).toBe('DupPage');
     });
 
     it('should handle multiple pages with mixed duplicates across root and groups', () => {
-      // 根目录页面
+      // Root-directory pages
       service.savePage(testProjectName, 'PageA', { id: '1' });
       service.savePage(testProjectName, 'PageB', { id: '2' });
 
-      // 分组页面（包含一个与根目录同名的 PageA，以及一个独有的 PageC）
+      // A group page (containing a PageA with the same name as the root, plus a unique PageC)
       service.createGroup(testProjectName, 'group1');
-      service.savePage(testProjectName, 'PageA', { id: '3' }, 'group1'); // 重复
-      service.savePage(testProjectName, 'PageC', { id: '4' }, 'group1'); // 独有
+      service.savePage(testProjectName, 'PageA', { id: '3' }, 'group1'); // duplicate
+      service.savePage(testProjectName, 'PageC', { id: '4' }, 'group1'); // unique
 
-      // 另一个分组（包含与 group1 同名的 PageC，以及独有的 PageD）
+      // Another group (containing a PageC with the same name as group1, plus a unique PageD)
       service.createGroup(testProjectName, 'group2');
-      service.savePage(testProjectName, 'PageC', { id: '5' }, 'group2'); // 重复
-      service.savePage(testProjectName, 'PageD', { id: '6' }, 'group2'); // 独有
+      service.savePage(testProjectName, 'PageC', { id: '5' }, 'group2'); // duplicate
+      service.savePage(testProjectName, 'PageD', { id: '6' }, 'group2'); // unique
 
       const result = service.listAllPages(testProjectName);
 
-      // 应有 4 个不重复页面：PageA(根), PageB, PageC(group1), PageD
+      // There should be 4 unique pages: PageA(root), PageB, PageC(group1), PageD
       expect(result.pages).toHaveLength(4);
 
       const pageNames = result.pages.map((p) => p.name);
@@ -639,7 +639,7 @@ describe('PageSaveService', () => {
     });
 
     it('should not include pages that exist only in groups when root has same name', () => {
-      // 根目录有 UniquePage，分组有一个同名页面
+      // The root has UniquePage, and a group has a page with the same name
       service.savePage(testProjectName, 'UniquePage', { id: '1' });
       service.createGroup(testProjectName, 'group1');
       service.savePage(
@@ -648,12 +648,12 @@ describe('PageSaveService', () => {
         { id: '2', extra: 'should be ignored' },
         'group1',
       );
-      // 分组有独立的页面
+      // The group has an independent page
       service.savePage(testProjectName, 'IndependentPage', { id: '3' }, 'group1');
 
       const result = service.listAllPages(testProjectName);
 
-      // 只应有 2 个页面：UniquePage(根), IndependentPage(分组)
+      // There should be only 2 pages: UniquePage(root), IndependentPage(group)
       expect(result.pages).toHaveLength(2);
 
       const rootUnique = result.pages.find((p) => p.name === 'UniquePage');
@@ -966,7 +966,7 @@ describe('PageSaveService', () => {
 
       const bgPath = pagePath(p('BgPage'), 'bg.png');
       expect(fs.existsSync(bgPath)).toBe(true);
-      // bg.exe 不再存在（统一为 bg.png）
+      // bg.exe no longer exists (unified to bg.png)
       const bgExePath = pagePath(p('BgPage'), 'bg.exe');
       expect(fs.existsSync(bgExePath)).toBe(false);
     });
@@ -988,7 +988,7 @@ describe('PageSaveService', () => {
 
   describe('migrateProject', () => {
     it('should migrate page directories to p_ prefix', () => {
-      // 创建存量页面（无前缀）
+      // Create a legacy page (no prefix)
       const pagesDir = path.join(tempDir, testProjectName, 'pages');
       const oldPageDir = path.join(pagesDir, 'MyPage');
       fs.mkdirSync(oldPageDir, { recursive: true });
@@ -999,14 +999,14 @@ describe('PageSaveService', () => {
       expect(result.migratedPages).toBe(1);
       expect(result.migratedGroups).toBe(0);
 
-      // 验证已重命名为 p_MyPage
+      // Verify it was renamed to p_MyPage
       expect(fs.existsSync(oldPageDir)).toBe(false);
       expect(fs.existsSync(pagePath(p('MyPage')))).toBe(true);
     });
 
     it('should migrate group directories to g_ prefix', () => {
       const pagesDir = path.join(tempDir, testProjectName, 'pages');
-      // 创建存量分组（无前缀）
+      // Create a legacy group (no prefix)
       const oldGroupDir = path.join(pagesDir, 'MyGroup');
       const oldPageDir = path.join(oldGroupDir, 'MyPage');
       fs.mkdirSync(oldPageDir, { recursive: true });
@@ -1017,7 +1017,7 @@ describe('PageSaveService', () => {
       expect(result.migratedPages).toBe(1);
       expect(result.migratedGroups).toBe(1);
 
-      // 验证分组和页面都已重命名
+      // Verify both the group and the page were renamed
       expect(fs.existsSync(oldGroupDir)).toBe(false);
       expect(fs.existsSync(pagePath(g('MyGroup')))).toBe(true);
       expect(fs.existsSync(pagePath(g('MyGroup'), p('MyPage')))).toBe(true);
@@ -1025,8 +1025,8 @@ describe('PageSaveService', () => {
 
     it('should remove duplicate pages during migration', () => {
       const pagesDir = path.join(tempDir, testProjectName, 'pages');
-      // 创建两个同名页面（规范化后同名）
-      // "Duplicate-Page" 和 "Duplicate  Page"（双空格）规范化后都是 "Duplicate-Page"
+      // Create two same-named pages (same after normalization)
+      // "Duplicate-Page" and "Duplicate  Page" (double space) both normalize to "Duplicate-Page"
       const page1 = path.join(pagesDir, 'Duplicate-Page');
       const page2 = path.join(pagesDir, 'Duplicate  Page');
       fs.mkdirSync(page1, { recursive: true });
@@ -1034,13 +1034,13 @@ describe('PageSaveService', () => {
       fs.writeFileSync(path.join(page1, 'page.json'), JSON.stringify({ id: '1' }));
       fs.writeFileSync(path.join(page2, 'page.json'), JSON.stringify({ id: '2' }));
 
-      // 先规范化 page1（手动创建 p_ 前缀）
+      // Normalize page1 first (manually create the p_ prefix)
       const newPage1 = path.join(pagesDir, p('Duplicate-Page'));
       fs.renameSync(page1, newPage1);
 
       const result = service.migrateProject(testProjectName);
 
-      // page2（Duplicate  Page）规范化后为 Duplicate-Page，即 p_Duplicate-Page 已存在，应被删除
+      // page2 (Duplicate  Page) normalizes to Duplicate-Page, i.e. p_Duplicate-Page already exists, so it should be deleted
       expect(result.migratedPages).toBe(0);
       expect(result.migratedGroups).toBe(0);
       expect(result.removedDuplicates).toBe(1);
@@ -1048,7 +1048,7 @@ describe('PageSaveService', () => {
 
     it('should skip already migrated entries', () => {
       const _pagesDir = path.join(tempDir, testProjectName, 'pages');
-      // 创建已迁移的页面
+      // Create an already-migrated page
       fs.mkdirSync(pagePath(p('AlreadyMigrated')), { recursive: true });
       fs.writeFileSync(pagePath(p('AlreadyMigrated'), 'page.json'), JSON.stringify({ id: '1' }));
 
@@ -1093,7 +1093,7 @@ describe('PageSaveService', () => {
       expect(result.groups).toEqual([]);
       expect(result.totalPageCount).toBe(2);
 
-      // 验证每个页面都有更新时间
+      // Verify every page has an update time
       for (const page of result.rootPages) {
         expect(page.updatedAt).toBeDefined();
         expect(new Date(page.updatedAt).getTime()).not.toBeNaN();
@@ -1124,7 +1124,7 @@ describe('PageSaveService', () => {
 
       const result = service.getProjectOutline(testProjectName);
 
-      // 根目录和分组的页面 ID 不同（'1' vs '2'），两者都应出现在 outline 中
+      // Root and group page IDs differ ('1' vs '2'); both should appear in the outline
       expect(result.rootPages).toHaveLength(1);
       expect(result.rootPages[0].name).toBe('DupPage');
       expect(result.groups).toHaveLength(1);
@@ -1156,9 +1156,9 @@ describe('PageSaveService', () => {
     });
 
     it('【去重】outline 使用 id 去重，相同 id 的页面只出现一次（第一个出现位置）', () => {
-      // 手动创建两个 page.json 具有相同 id（模拟异常情况）
+      // Manually create two page.json files with the same id (simulating an anomaly)
       service.savePage(testProjectName, 'First', { id: 'same-uuid', name: 'First' });
-      // 在另一个目录写入相同 id（模拟异常情况）
+      // Write the same id in another directory (simulating an anomaly)
       const pagesDir = path.join(tempDir, testProjectName, 'pages');
       const dupDir = path.join(pagesDir, 'p_Second');
       fs.mkdirSync(dupDir, { recursive: true });
@@ -1170,7 +1170,7 @@ describe('PageSaveService', () => {
 
       const result = service.getProjectOutline(testProjectName);
 
-      // 相同 id 的页面应只出现一次
+      // Pages with the same id should appear only once
       expect(result.rootPages).toHaveLength(1);
       expect(result.rootPages[0].name).toBe('First');
       expect(result.totalPageCount).toBe(1);
@@ -1191,7 +1191,7 @@ describe('PageSaveService', () => {
     });
 
     it('should not read any page.json content (only metadata)', () => {
-      // 保存带大数据的页面，验证大纲不解析 page.json 内容
+      // Save a page with large data, verifying the outline does not parse page.json content
       const largeData = { id: '1', data: 'x'.repeat(10000) };
       service.savePage(testProjectName, 'LargePage', largeData);
 
@@ -1200,7 +1200,7 @@ describe('PageSaveService', () => {
       expect(result.rootPages).toHaveLength(1);
       expect(result.rootPages[0].name).toBe('LargePage');
       expect(result.rootPages[0].updatedAt).toBeDefined();
-      // 确认响应中不包含 page.json 的数据字段
+      // Confirm the response does not include page.json's data fields
       expect((result as any).pages).toBeUndefined();
       expect((result as any).data).toBeUndefined();
     });
@@ -1208,7 +1208,7 @@ describe('PageSaveService', () => {
 
   describe('端到端：前缀命名规范目录结构', () => {
     it('应生成符合 p_ / g_ 前缀规范的目录结构', () => {
-      // MainPage — 保存时同时写入 page.json 和 preview.png
+      // MainPage - save writes both page.json and preview.png
       service.savePage(
         testProjectName,
         'MainPage',
@@ -1222,7 +1222,7 @@ describe('PageSaveService', () => {
         expect.arrayContaining(['page.json', 'preview.png']),
       );
 
-      // SubPage — 保存时同时写入 page.json 和 preview.png
+      // SubPage - save writes both page.json and preview.png
       service.savePage(
         testProjectName,
         'SubPage',
@@ -1236,7 +1236,7 @@ describe('PageSaveService', () => {
         expect.arrayContaining(['page.json', 'preview.png']),
       );
 
-      // group1/GroupPage — 分组内页面保存
+      // group1/GroupPage - saving a page inside a group
       service.createGroup(testProjectName, 'group1');
       service.savePage(
         testProjectName,
@@ -1251,7 +1251,7 @@ describe('PageSaveService', () => {
         expect.arrayContaining(['page.json', 'preview.png']),
       );
 
-      // 验证完整目录树：
+      // Verify the complete directory tree:
       // pages/
       //   p_MainPage/page.json + preview.png
       //   p_SubPage/page.json + preview.png
@@ -1265,7 +1265,7 @@ describe('PageSaveService', () => {
       const groupDirs = groupEntries.filter((e) => e.isDirectory()).map((e) => e.name);
       expect(groupDirs).toEqual([p('GroupPage')]);
 
-      // 确认每个页面文件夹内刚好包含 page.json + preview.png
+      // Confirm each page folder contains exactly page.json + preview.png
       const verifyPageDir = (dir: string) => {
         const files = fs.readdirSync(dir);
         expect(files).toHaveLength(2);

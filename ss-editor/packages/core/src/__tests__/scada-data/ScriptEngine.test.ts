@@ -10,7 +10,7 @@ describe('ScriptEngine', () => {
   let engine: ScriptEngine;
 
   beforeEach(() => {
-    // 重建单例
+    // Rebuild the singleton
     engine = ScriptEngine.getInstance();
     engine.destroy();
     engine = ScriptEngine.getInstance();

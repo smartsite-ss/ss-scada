@@ -7,12 +7,12 @@ import { Request, Response } from 'express';
 import { randomUUID } from 'crypto';
 
 /**
- * 请求 ID 注入中间件
+ * Request ID injection middleware
  *
- * 为每个请求注入唯一 requestId，贯穿请求-响应-日志，便于前后端联调。
- * - 优先使用客户端传入的 X-Request-Id
- * - 无则自动生成 UUID
- * - 透传到响应头，供前端日志关联
+ * Injects a unique requestId into every request, threaded through request-response-logging for easier frontend/backend joint debugging.
+ * - Prefer the client-supplied X-Request-Id header
+ * - Generate a UUID automatically when absent
+ * - Propagate it to the response header so the frontend can correlate logs
  */
 @Injectable()
 export class RequestIdMiddleware implements NestMiddleware {
@@ -20,10 +20,10 @@ export class RequestIdMiddleware implements NestMiddleware {
     const existingId = req.headers['x-request-id'] as string | undefined;
     const requestId = existingId || randomUUID();
 
-    // 确保请求头中有 requestId（供后续 filter/interceptor 读取）
+    // Ensure the request header carries requestId (read later by filters/interceptors)
     req.headers['x-request-id'] = requestId;
 
-    // 透传到响应头
+    // Propagate to the response header
     res.setHeader('X-Request-Id', requestId);
 
     next();

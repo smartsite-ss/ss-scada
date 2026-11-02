@@ -3,34 +3,34 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * InteractivePrompts — 基于 Node.js 内置 readline 模块的交互式提示工具
+ * InteractivePrompts - an interactive prompt utility built on Node.js built-in readline
  *
- * 不依赖 inquirer.js，使用 readline + process.stdin 实现。
- * 在非 TTY 环境下优雅降级（抛出明确错误）。
+ * Does not depend on inquirer.js; implemented with readline + process.stdin.
+ * Degrades gracefully in non-TTY environments (throws a clear error).
  */
 
 import * as readline from 'readline';
 import * as tty from 'tty';
 
-/** 选择项（单选） */
+/** Choice (single-select) */
 export interface SelectChoice {
   name: string;
   value: string;
 }
 
-/** 选择项（多选） */
+/** Choice (multi-select) */
 export interface MultiSelectChoice {
   name: string;
   value: string;
   checked?: boolean;
 }
 
-/** 校验器：返回 null 表示通过，返回字符串表示错误信息 */
+/** Validator: returns null on success, or a string error message on failure */
 export type Validator = (value: string) => string | null;
 
 /**
- * 确保当前环境支持交互式输入
- * 在非 TTY 环境下抛出明确错误
+ * Ensure the current environment supports interactive input
+ * Throws a clear error in non-TTY environments
  */
 function ensureTty(): void {
   if (!process.stdin.isTTY) {
@@ -41,7 +41,7 @@ function ensureTty(): void {
   }
 }
 
-/** 创建 readline 接口 */
+/** Create the readline interface */
 function createInterface(): readline.Interface {
   return readline.createInterface({
     input: process.stdin,
@@ -50,10 +50,10 @@ function createInterface(): readline.Interface {
 }
 
 /**
- * 确认提示
- * @param message 提示消息
- * @param defaultValue 默认值（用户直接回车时使用）
- * @returns 用户选择 true/false
+ * Confirmation prompt
+ * @param message prompt message
+ * @param defaultValue default value (used when the user presses Enter directly)
+ * @returns the user's choice, true/false
  */
 export function confirm(message: string, defaultValue?: boolean): Promise<boolean> {
   ensureTty();
@@ -75,11 +75,11 @@ export function confirm(message: string, defaultValue?: boolean): Promise<boolea
 }
 
 /**
- * 输入提示
- * @param message 提示消息
- * @param defaultValue 默认值
- * @param validator 校验函数（可选）
- * @returns 用户输入的字符串
+ * Input prompt
+ * @param message prompt message
+ * @param defaultValue default value
+ * @param validator validation function (optional)
+ * @returns the string entered by the user
  */
 export function input(
   message: string,
@@ -117,11 +117,11 @@ export function input(
 }
 
 /**
- * 单选提示
- * @param message 提示消息
- * @param choices 选项列表
- * @param defaultValue 默认选中的 value
- * @returns 用户选择的 value
+ * Single-select prompt
+ * @param message prompt message
+ * @param choices choice list
+ * @param defaultValue the value selected by default
+ * @returns the value chosen by the user
  */
 export function select(
   message: string,
@@ -168,10 +168,10 @@ export function select(
 }
 
 /**
- * 多选提示
- * @param message 提示消息
- * @param choices 选项列表（checked=true 的项默认选中）
- * @returns 用户选择的 value 数组
+ * Multi-select prompt
+ * @param message prompt message
+ * @param choices choice list (items with checked=true are selected by default)
+ * @returns the array of values chosen by the user
  */
 export function multiSelect(message: string, choices: MultiSelectChoice[]): Promise<string[]> {
   ensureTty();
@@ -221,9 +221,9 @@ export function multiSelect(message: string, choices: MultiSelectChoice[]): Prom
 }
 
 /**
- * 密码输入（不回显字符，用 * 代替）
- * @param message 提示消息
- * @returns 用户输入的密码
+ * Password input (characters are not echoed; replaced with *)
+ * @param message prompt message
+ * @returns the password entered by the user
  */
 export function password(message: string): Promise<string> {
   ensureTty();
@@ -276,7 +276,7 @@ export function password(message: string): Promise<string> {
   });
 }
 
-/** 交互式提示工具集 */
+/** Interactive prompt toolkit */
 export const InteractivePrompts = {
   confirm,
   input,

@@ -35,11 +35,11 @@ export interface PluginInfo {
   metrics: PluginMetrics;
   registeredAt: string;
   activatedAt?: string;
-  /** 运行时进程名（child_process / in_process 模式） */
+  /** Runtime process name (child_process / in_process mode) */
   processName?: string;
-  /** 运行时进程 PID（child_process / in_process 模式） */
+  /** Runtime process PID (child_process / in_process mode) */
   processId?: number;
-  /** 运行时线程 ID（仅 worker_thread 模式） */
+  /** Runtime thread ID (worker_thread mode only) */
   threadId?: number;
 }
 
@@ -65,13 +65,13 @@ export interface PluginHealthResult {
 }
 
 /**
- * 插件管理服务 — 面向 Controller 层的业务编排
+ * Plugin management service - business orchestration for the Controller layer
  */
 @Injectable()
 export class PluginManagerService {
   private readonly logger = new Logger(PluginManagerService.name);
 
-  /** PipelineMetricsService 实例（由 PipelineInitializer 通过 setter 注入） */
+  /** PipelineMetricsService instance (injected by PipelineInitializer via setter) */
   private pipelineMetricsService?: PipelineMetricsService;
 
   constructor(
@@ -87,10 +87,10 @@ export class PluginManagerService {
   ) {}
 
   /**
-   * 注入 PipelineMetricsService（由 PipelineInitializer.onModuleInit 调用）
+   * Inject PipelineMetricsService (called by PipelineInitializer.onModuleInit)
    *
-   * 采用 setter 注入模式避免 PluginModule 静态依赖 PipelineModule，
-   * 与 EnhancedScheduler.setPipelineMetricsService() 保持一致。
+   * Uses the setter-injection pattern to avoid a static PluginModule dependency on PipelineModule,
+   * consistent with EnhancedScheduler.setPipelineMetricsService().
    */
   setPipelineMetricsService(service: PipelineMetricsService): void {
     this.pipelineMetricsService = service;
@@ -101,11 +101,11 @@ export class PluginManagerService {
   }
 
   /**
-   * 获取插件列表（含运行时进程/线程信息和真实 Pipeline 指标）
+   * Get the plugin list (including runtime process/thread info and real Pipeline metrics)
    *
-   * 隔离模式下从 executor 获取子进程 PID 或线程 ID；
-   * in_process 模式下返回主进程信息。
-   * 同时从 PipelineMetricsService 合并按协议维度的真实采集指标。
+   * In isolation mode, the child-process PID or thread ID is taken from the executor;
+   * in in_process mode, the main-process info is returned.
+   * Real collection metrics grouped by protocol are also merged in from PipelineMetricsService.
    */
   async listPluginsWithRuntime(filter?: {
     status?: string;
@@ -114,12 +114,12 @@ export class PluginManagerService {
     const plugins = this.listPlugins(filter);
     if (!this.isolationFactory) return plugins;
 
-    // 合并 Pipeline 真实采集指标（由 PipelineInitializer 通过 setter 注入）
+    // Merge real Pipeline collection metrics (injected by PipelineInitializer via setter)
     const metricsService = this.pipelineMetricsService;
 
     const results = await Promise.all(
       plugins.map(async (plugin) => {
-        // 合并 Pipeline 真实指标
+        // Merge real Pipeline metrics
         if (metricsService) {
           const realMetrics = metricsService.getProtocolMetrics(plugin.protocol);
           if (realMetrics) {
@@ -145,7 +145,7 @@ export class PluginManagerService {
           const health = await executor.getHealth();
           if (health.pid) {
             plugin.processId = health.pid;
-            // 与 ensureNodeExe 一致：Windows 下为 ss-collector-{protocol}.exe
+            // Consistent with ensureNodeExe: on Windows it is ss-collector-{protocol}.exe
             const isWin = process.platform === 'win32';
             plugin.processName = isWin
               ? `ss-collector-${plugin.protocol}.exe`
@@ -156,7 +156,7 @@ export class PluginManagerService {
             plugin.processName = `worker (${plugin.protocol})`;
           }
         } catch {
-          // executor 未启动，保持 undefined
+          // Executor not yet started, keep undefined
         }
         return plugin;
       }),
@@ -189,10 +189,10 @@ export class PluginManagerService {
   }
 
   /**
-   * 重启插件（用于隔离模式等需要重新初始化 executor 的配置变更）
+   * Restart a plugin (used for config changes such as isolation mode that require reinitializing the executor)
    *
-   * 流程：deactivate → 销毁旧 executor → activate
-   * 下次 getExecutor() 将按最新的 isolationMode 创建新 executor
+   * Flow: deactivate -> destroy old executor -> activate
+   * the next getExecutor() creates a fresh executor using the latest isolationMode
    */
   async restartPlugin(
     protocol: string,
@@ -206,17 +206,17 @@ export class PluginManagerService {
 
     this.logger.log(`Restarting plugin "${protocol}" (wasActive=${wasActive}, mode=${newMode})`);
 
-    // 1. 停用
+    // 1. Deactivate
     if (wasActive) {
       await this.deactivate(protocol);
     }
 
-    // 2. 销毁旧隔离执行器，确保下次用新模式重建
+    // 2. Destroy the old isolation executor, ensuring a rebuild with the new mode next time
     if (this.isolationFactory) {
       await this.isolationFactory.destroyExecutor(protocol);
     }
 
-    // 3. 重新激活
+    // 3. Reactivate
     if (wasActive) {
       await this.activate(protocol);
     }
@@ -288,7 +288,7 @@ export class PluginManagerService {
     return plugin?.meta.connectionSchema ?? null;
   }
 
-  /** 调用采集插件的 validateChannelConfig() 校验通道配置 */
+  /** Call the collection plugin's validateChannelConfig() to validate the channel config */
   async validateChannelConfig(
     protocol: string,
     config: Record<string, any>,
@@ -297,7 +297,7 @@ export class PluginManagerService {
     return adapter.validateChannelConfig(config);
   }
 
-  /** 获取插件正在采集的活跃设备列表 */
+  /** Get the active device list currently being collected by the plugin */
   getPluginActiveDevices(protocol: string): ActiveDeviceInfo[] {
     if (!this.activeDeviceTracker) {
       return [];
@@ -308,7 +308,7 @@ export class PluginManagerService {
       .filter(Boolean) as ActiveDeviceInfo[];
   }
 
-  /** 获取所有插件的设备统计（在线/离线数量） */
+  /** Get device statistics for all plugins (online/offline counts) */
   getAllDeviceStats(): Record<string, DeviceStats> {
     const result: Record<string, DeviceStats> = {};
     if (!this.activeDeviceTracker) {
@@ -327,24 +327,24 @@ export class PluginManagerService {
   }
 
   /**
-   * 获取插件运行监控数据（内存/CPU + 采集日志）
+   * Get plugin runtime monitoring data (memory/CPU + collection logs)
    *
-   * 隔离模式下从子进程 executor 获取实际 PID 和运行指标；
-   * in_process 模式下返回主进程指标。
+   * In isolation mode, the real PID and runtime metrics are taken from the child-process executor;
+   * in in_process mode, the main-process metrics are returned.
    */
   async getMonitorData(protocol: string): Promise<MonitorData> {
     const plugin = this.registry.getPlugin(protocol);
     const isolationMode = plugin?.meta?.isolationMode ?? 'in_process';
     const data = this.monitor.getMonitorData(protocol, isolationMode);
 
-    // 隔离模式：从 executor 获取子进程实际 PID/线程 ID 和运行指标
+    // Isolation mode: get the real child-process PID/thread ID and runtime metrics from the executor
     if (this.isolationFactory && isolationMode !== 'in_process') {
       try {
         const executor = this.isolationFactory.getExecutor(protocol);
         const health = await executor.getHealth();
         if (health.pid) {
           data.processId = health.pid;
-          // 与实际 execPath 一致：Windows 下为 ss-collector-{protocol}.exe，Linux/macOS 为 node
+          // Consistent with the actual execPath: on Windows it is ss-collector-{protocol}.exe, on Linux/macOS it is node
           const isWin = process.platform === 'win32';
           data.processName = isWin ? `ss-collector-${protocol}.exe` : `ss-collector-${protocol}`;
         }
@@ -352,24 +352,24 @@ export class PluginManagerService {
           data.threadId = health.threadId;
           data.processName = `worker (${protocol})`;
         }
-        // 用 executor 的运行统计覆盖（requestCount/errorCount/uptime 更准确）
+        // Override with the executor's runtime stats (requestCount/errorCount/uptime are more accurate)
         if (health.uptime) {
           data.metrics.uptime = Math.round(health.uptime / 1000);
         }
       } catch {
-        // executor 未启动或已销毁，保持主进程数据
+        // Executor not started or already destroyed, keep the main-process data
       }
     }
 
     return data;
   }
 
-  /** 清空插件采集日志 */
+  /** Clear plugin collection logs */
   clearPluginLogs(protocol: string): ClearLogsResult {
     return this.monitor.clearLogs(protocol);
   }
 
-  /** 写入采集日志 */
+  /** Write collection logs */
   writePluginLog(
     protocol: string,
     level: 'INFO' | 'WARN' | 'ERROR' | 'DEBUG',
@@ -379,20 +379,20 @@ export class PluginManagerService {
   }
 
   // -----------------------------------------------------------------------
-  //  运行时配置持久化（隔离模式等）
+  //  Runtime config persistence (isolation mode, etc.)
   // -----------------------------------------------------------------------
 
-  /** 获取插件运行时配置 */
+  /** Get plugin runtime config */
   getPluginConfig(protocol: string): PluginRuntimeConfig {
     return this.configService.getConfig(protocol);
   }
 
   /**
-   * 更新插件运行时配置
+   * Update plugin runtime config
    *
-   * - 持久化到磁盘 JSON 文件
-   * - 若修改了 isolationMode，同步更新内存中的 meta，下次 readTag 生效
-   * - 若当前插件已激活且模式变化为 worker_thread/child_process，需要重启隔离
+   * - persist to a JSON file on disk
+   * - if isolationMode changed, sync the in-memory meta so the next readTag takes effect
+   * - if the plugin is already active and the mode changed to worker_thread/child_process, isolation must be restarted
    */
   async updatePluginConfig(
     protocol: string,
@@ -401,7 +401,7 @@ export class PluginManagerService {
     const merged = this.configService.saveConfig(protocol, partial);
     const plugin = this.registry.getPlugin(protocol);
 
-    // 同步更新内存中的 meta，使 ProtocolReadStep 读取最新 isolationMode
+    // Sync the in-memory meta so ProtocolReadStep reads the latest isolationMode
     if (plugin && merged.isolationMode) {
       (plugin.meta as any).isolationMode = merged.isolationMode;
       this.logger.log(
@@ -412,7 +412,7 @@ export class PluginManagerService {
     return merged;
   }
 
-  /** 便捷方法：设置插件隔离模式 */
+  /** Convenience method: set the plugin isolation mode */
   async setPluginIsolationMode(protocol: string, mode: string): Promise<PluginRuntimeConfig> {
     return this.updatePluginConfig(protocol, { isolationMode: mode });
   }

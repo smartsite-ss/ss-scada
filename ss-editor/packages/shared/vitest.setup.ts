@@ -4,7 +4,7 @@
 
 import { config } from '@vue/test-utils';
 
-// 全局 mock vue-i18n 的 $t，避免 SmartTablePagination 等组件在单测中报错
+// Globally mock vue-i18n's $t to prevent components like SmartTablePagination from erroring in unit tests
 config.global.mocks = {
   $t: (key: string, params?: Record<string, any>) => {
     if (!params) return key;

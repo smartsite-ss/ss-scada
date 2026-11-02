@@ -6,17 +6,17 @@ import { BasePlugin, Graphic, DrawContext, InferSchemaProps, buildDefaultsFromSc
 import { i18n, registerLocaleModules } from '@scada-editor/core';
 import { eventPanelPropertySchema } from './eventPanelPropertySchema';
 
-// 动态扫描 locales 目录，新增语言只需添加对应 json 文件，无需改动本文件
+// Dynamically scan the locales directory; adding a new language only requires adding the corresponding json file, no changes to this file needed
 registerLocaleModules(import.meta.glob('./locales/*.json', { eager: true }));
 
 import pkg from './package.json';
 
 export type EventPanelProps = InferSchemaProps<typeof eventPanelPropertySchema> & {
-  /** 项目 ID（空 = 全部事件，含系统级） */
+  /** Project ID (empty = all events, including system-level) */
   projectId: string;
-  /** 事件类型筛选（空 = 全部类型） */
+  /** Event type filter (empty = all types) */
   eventType: string;
-  /** 事件状态筛选（空 = 全部状态） */
+  /** Event status filter (empty = all statuses) */
   status: string;
 };
 
@@ -54,7 +54,7 @@ export class EventPanelPlugin extends BasePlugin<EventPanelProps> {
   };
 
   protected render(_dc: DrawContext): void {
-    // Vue SFC 模式：主渲染由 Vue DOM 层完成
+    // Vue SFC mode: main rendering is done by the Vue DOM layer
   }
 
   constructor(x = 0, y = 0, w = 480, h = 320) {

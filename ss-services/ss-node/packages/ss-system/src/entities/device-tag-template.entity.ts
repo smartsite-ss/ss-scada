@@ -13,7 +13,7 @@ import { DeviceType } from '@ss-node/ss-sdk';
 import { TemplateStatus } from '../enums/template-status.enum';
 
 export interface TemplateVariable {
-  /** 不可变唯一标识（UUID v4），首次创建时生成，永不改变 */
+  /** Immutable unique identifier (UUID v4), generated on first creation and never changed */
   guid: string;
   order: number;
   name: string;

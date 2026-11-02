@@ -3,11 +3,11 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 状态变量组件 - 状态匹配纯函数。
- * 仅依赖输入参数，无副作用，便于单元测试。
+ * State variable component - state matching pure functions.
+ * Depends only on input parameters, no side effects, easy to unit test.
  */
 
-/** 比较运算符（全语义命名，禁止缩写） */
+/** Comparison operators (fully semantic naming, no abbreviations) */
 export type StateOperator =
   | 'equal'
   | 'notEqual'
@@ -20,23 +20,23 @@ export type StateOperator =
   | 'startsWith'
   | 'endsWith';
 
-/** 一条状态规则：比较运算符 + 比较值 + 命中图片 */
+/** A state rule: comparison operator + comparison value + matched image */
 export interface StateRule {
-  /** 规则唯一 ID（用于 Vue key / 删除 / 排序） */
+  /** Rule unique ID (used for Vue key / deletion / sorting) */
   id: string;
-  /** 状态名称（展示用，如「运行」「故障」） */
+  /** State name (for display, e.g. Running, Fault) */
   label: string;
-  /** 比较运算符 */
+  /** Comparison operator */
   operator: StateOperator;
-  /** 比较值（字符串存储，匹配时按 dataType 转换） */
+  /** Comparison value (stored as string, converted by dataType when matching) */
   value: string;
-  /** 比较值 2（仅 between 区间使用，可为空） */
+  /** Comparison value 2 (only used by the between range, may be empty) */
   value2?: string;
-  /** 命中时显示的图片 URL / base64 / 图库地址 */
+  /** Image URL / base64 / gallery address shown when matched */
   image: string;
 }
 
-/** 数值数据类型集合（含 SCADA 系统实际的 DataTag 类型） */
+/** Numeric data type set (includes the actual SCADA DataTag types) */
 const NUMERIC_TYPES = new Set([
   'float',
   'double',
@@ -59,10 +59,10 @@ const NUMERIC_TYPES = new Set([
   'float64',
 ]);
 
-/** 布尔数据类型集合 */
+/** Boolean data type set */
 const BOOLEAN_TYPES = new Set(['bool', 'boolean']);
 
-/** 仅数值类型生效的运算符 */
+/** Operators effective only for numeric types */
 const NUMERIC_ONLY_OPERATORS = new Set<StateOperator>([
   'greaterThan',
   'greaterOrEqual',
@@ -71,7 +71,7 @@ const NUMERIC_ONLY_OPERATORS = new Set<StateOperator>([
   'between',
 ]);
 
-/** 将 tag 原始值归一化为可比较值 */
+/** Normalize the raw tag value into a comparable value */
 function normalizeValue(value: unknown, dataType: string): unknown {
   if (value === null || value === undefined) return null;
 
@@ -90,14 +90,14 @@ function normalizeValue(value: unknown, dataType: string): unknown {
   return String(value);
 }
 
-/** 单条规则是否命中当前值 */
+/** Whether a single rule matches the current value */
 export function matchState(value: unknown, rule: StateRule, dataType: string): boolean {
   const current = normalizeValue(value, dataType);
   if (current === null) return false;
 
   const isNumeric = typeof current === 'number';
 
-  // 大小/区间比较仅数值类型生效，类型不符直接不匹配
+  // Size/range comparisons are effective only for numeric types; type mismatch means no match
   if (NUMERIC_ONLY_OPERATORS.has(rule.operator) && !isNumeric) return false;
 
   switch (rule.operator) {
@@ -137,8 +137,8 @@ export function matchState(value: unknown, rule: StateRule, dataType: string): b
 }
 
 /**
- * 遍历状态规则，返回第一条命中规则的图片。
- * 未命中任何规则时返回 defaultImage（可为空字符串）。
+ * Iterate the state rules and return the image of the first matching rule.
+ * Returns defaultImage (possibly an empty string) when no rule matches.
  */
 export function resolveStateImage(
   value: unknown,
@@ -154,12 +154,12 @@ export function resolveStateImage(
   return defaultImage || '';
 }
 
-/** 生成规则唯一 ID（避免直接依赖 crypto 环境，兼容测试与旧浏览器） */
+/** Generate a unique rule ID (avoids direct dependency on the crypto environment, compatible with tests and legacy browsers) */
 export function generateRuleId(): string {
   return `rule-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
-/** 根据数据类型返回可用的比较运算符（配置面板据此动态裁剪选项） */
+/** Return the available comparison operators for a data type (the config panel dynamically prunes options accordingly) */
 export function getAvailableOperators(dataType: string): StateOperator[] {
   if (BOOLEAN_TYPES.has(dataType)) {
     return ['equal', 'notEqual'];

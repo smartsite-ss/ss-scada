@@ -8,7 +8,7 @@ import { ShortcutConfig } from '../../canvas-page/shortcuts.config';
 
 describe('KeyboardService', () => {
   beforeEach(() => {
-    /* 清理和重置 */
+    /* Cleanup and reset */
     keyboardService.clear();
     keyboardService.setContext(KeyboardContext.GLOBAL);
     keyboardService.stopListening();
@@ -123,7 +123,7 @@ describe('KeyboardService', () => {
       const handler = vi.fn();
       keyboardService.registerKey('c', handler, { ctrl: true }, KeyboardContext.EDIT);
       keyboardService.setContext(KeyboardContext.EDIT);
-      /* 我们需要直接测试 key 匹配，不依赖 DOM 的事件监听 */
+      /* We need to test key matching directly, without relying on DOM event listeners */
       const bindings = keyboardService.getBindings();
       const match = bindings.find(b => b.key === 'c' &&
         b.modifiers.ctrl === true &&
@@ -216,7 +216,7 @@ describe('KeyboardService', () => {
       keyboardService.registerKey('x', lowPriorityHandler, {}, KeyboardContext.GLOBAL, 1);
       keyboardService.registerKey('x', highPriorityHandler, {}, KeyboardContext.GLOBAL, 10);
       const bindings = keyboardService.getBindings();
-      /* 高优先级的应该在前 */
+      /* Higher priority items should come first */
       expect(bindings[0].priority).toBe(10);
       expect(bindings[1].priority).toBe(1);
     });
@@ -315,13 +315,13 @@ describe('KeyboardService', () => {
   });
 });
 
-/* 单独测试编辑操作相关的快捷键配置 */
+/* Standalone tests for shortcut configs related to editing operations */
 describe('快捷键配置完整性', () => {
   it('应该包含所有核心编辑操作的快捷键', async () => {
     await import('../../canvas-page/shortcuts.config');
     
-    // 我们需要检查快捷键配置文件是否包含预期的快捷键
-    // 这里我们做一些简单的验证
-    expect(true).toBe(true); // 占位，简化测试
+    // We need to check that the shortcut config file contains the expected shortcuts
+    // Here we do some simple verifications
+    expect(true).toBe(true); // placeholder, simplified test
   });
 });

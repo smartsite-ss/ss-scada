@@ -71,7 +71,7 @@ describe('MonitorGroupTreeNode', () => {
 
     it('应显示设备总数徽章', async () => {
       const wrapper = await mountTreeNode(makeProps());
-      // 树中有 2 个设备（1 直属 + 1 子分组）
+      // The tree has 2 devices (1 direct + 1 in a child group)
       expect(wrapper.find('.node-count').text()).toBe('2');
     });
 
@@ -105,10 +105,10 @@ describe('MonitorGroupTreeNode', () => {
       });
       const wrapper = await mountTreeNode(props);
       expect(wrapper.find('.group-children').exists()).toBe(true);
-      // 应渲染子分组节点
+      // Child group nodes should be rendered
       const childNodes = wrapper.findAll('.group-node');
-      expect(childNodes.length).toBe(2); // 父分组 + 子分组
-      // 应渲染设备节点（直属1 + 子分组1）
+      expect(childNodes.length).toBe(2); // parent group + child group
+      // Device nodes should be rendered (1 direct + 1 in the child group)
       const deviceNodes = wrapper.findAll('.device-node');
       expect(deviceNodes.length).toBe(2);
     });
@@ -174,9 +174,9 @@ describe('MonitorGroupTreeNode', () => {
       const wrapper = await mountTreeNode(props);
       const statusDots = wrapper.findAll('.status-dot');
       expect(statusDots.length).toBe(2);
-      // 子分组设备先渲染: 设备2 (offline)
+      // Child group devices render first: Device 2 (offline)
       expect(statusDots[0].classes()).toContain('status-offline');
-      // 直属设备后渲染: 设备1 (online)
+      // Direct devices render after: Device 1 (online)
       expect(statusDots[1].classes()).toContain('status-online');
     });
 
@@ -245,10 +245,10 @@ describe('MonitorGroupTreeNode', () => {
         groupTreeCache: new Map([['proj-1', tree]]),
       });
       const wrapper = await mountTreeNode(props);
-      // 应有 3 个分组节点（1 + 1-1 + deep）
+      // There should be 3 group nodes (1 + 1-1 + deep)
       const groupNodes = wrapper.findAll('.group-node');
       expect(groupNodes.length).toBe(3);
-      // 应有 1 个设备节点
+      // There should be 1 device node
       const deviceNodes = wrapper.findAll('.device-node');
       expect(deviceNodes.length).toBe(1);
     });

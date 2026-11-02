@@ -24,32 +24,33 @@ export interface ScriptApiFunction {
   description: string;
   parameters: string[];
   /**
-   * 工厂函数：接收 projectId，返回已绑定项目上下文的函数。
+   * Factory function: takes a projectId and returns functions bound to that project context.
    *
-   * 采用工厂模式而非「将 projectId 追加为末尾位置参数」的原因：
-   * 当函数存在可选中间参数（如 triggerAlarm 的 options、queryTagHistory 的 options、
-   * httpGet/httpPost 的 options）时，调用方省略中间参数会导致 projectId 错位落到
-   * options 槽位，projectId 反而变成默认值 ''，破坏项目隔离。
-   * 工厂闭包让 projectId 直接进入函数作用域，与调用方传参位置解耦，彻底消除错位风险。
+   * Rationale for the factory pattern instead of "appending projectId as a trailing positional argument":
+   * when a function has optional middle parameters (e.g. triggerAlarm's options, queryTagHistory's options,
+   * httpGet/httpPost's options), a caller omitting the middle parameter would shift projectId into
+   * the options slot, turning projectId into the default '' and breaking project isolation.
+   * The factory closure puts projectId directly into the function scope, decoupled from the caller's
+   * argument positions, eliminating the misalignment risk entirely.
    */
   factory: (projectId: string) => ((...args: any[]) => any | Promise<any>);
 }
 
 /**
- * ScriptApiService — 脚本沙箱内可调用的全局 API
+ * ScriptApiService — global APIs callable inside the script sandbox
  *
- * Phase 4 改造：从 stub 替换为真实实现
- * - readTag/writeTag：连接 DataPointCacheService（ss-core）读写实时值
- * - triggerAlarm：通过 EventBus 发出 'alarm_triggered' 事件（AlarmEventSubscriber 监听后创建 AlarmRecord）
- * - acknowledgeAlarm：调用 AlarmService.acknowledgeAlarm
- * - queryTagHistory：调用 DataQueryService.queryTrendData（InfluxDB）
- * - httpGet/httpPost：统一 HTTP 工具，替换 EngineService 中的重复实现
+ * Phase 4 rework: replaced the stub with a real implementation
+ * - readTag/writeTag: connects to DataPointCacheService (ss-core) to read/write live values
+ * - triggerAlarm: emits the 'alarm_triggered' event via EventBus (AlarmEventSubscriber listens and creates AlarmRecord)
+ * - acknowledgeAlarm: calls AlarmService.acknowledgeAlarm
+ * - queryTagHistory: calls DataQueryService.queryTrendData (InfluxDB)
+ * - httpGet/httpPost: unified HTTP utilities replacing the duplicated implementations in EngineService
  *
- * getApiProvider(projectId) 闭包方案：通过工厂模式为每个 projectId 生成一组
- * 已绑定项目上下文的函数，脚本调用时只需传业务参数（如 readTag('tag-1')），
- * projectId 在闭包中被自动捕获，确保项目隔离。
+ * getApiProvider(projectId) closure approach: the factory pattern generates, per projectId, a set of
+ * functions bound to that project context; scripts only pass business parameters (e.g. readTag('tag-1')),
+ * and projectId is captured automatically inside the closure, ensuring project isolation.
  *
- * 所有依赖均 @Optional 注入，保证在缺少依赖时降级返回假数据而不崩溃。
+ * All dependencies are injected @Optional so that missing dependencies degrade to fake data instead of crashing.
  */
 @Injectable()
 export class ScriptApiService {
@@ -68,13 +69,13 @@ export class ScriptApiService {
   }
 
   private registerBuiltInFunctions(): void {
-    // ── readTag：读取数据标签当前值 ──
+    // ── readTag: read a data tag's current value ──
     this.register({
       name: 'readTag',
       description: '读取数据标签当前值',
       parameters: ['tagId'],
       factory: (projectId: string) => async (tagId: string) => {
-        void projectId; // 项目上下文（readTag 通过 cacheService 按 tagId 读取，projectId 保留以备审计）
+        void projectId; // project context (readTag reads via cacheService by tagId; projectId kept for audit)
         if (!this.cacheService) {
           this.logger.warn('[ScriptAPI] readTag: DataPointCacheService not available');
           return { tagId, value: null, quality: 'unknown', timestamp: new Date().toISOString() };
@@ -92,7 +93,7 @@ export class ScriptApiService {
       },
     });
 
-    // ── readTags：批量读取数据标签当前值 ──
+    // ── readTags: read multiple data tags' current values in batch ──
     this.register({
       name: 'readTags',
       description: '批量读取数据标签当前值',
@@ -116,13 +117,13 @@ export class ScriptApiService {
       },
     });
 
-    // ── writeTag：写入数据标签值（更新缓存 + 发 EventBus 事件） ──
+    // ── writeTag: write a data tag value (update cache + emit EventBus event) ──
     this.register({
       name: 'writeTag',
       description: '写入数据标签值',
       parameters: ['tagId', 'value'],
       factory: (projectId: string) => async (tagId: string, value: any) => {
-        // 1. 查 DataTag 获取 deviceId
+        // 1. Look up the DataTag to get deviceId
         let deviceId = '';
         let actualProjectId = projectId;
         if (this.dataTagService) {
@@ -134,7 +135,7 @@ export class ScriptApiService {
             this.logger.warn(`[ScriptAPI] writeTag: DataTag not found ${tagId}, proceeding without deviceId`);
           }
         }
-        // 2. 更新缓存
+        // 2. Update the cache
         const now = Date.now();
         const dataPoint: CachedDataPoint = {
           tagId,
@@ -148,7 +149,7 @@ export class ScriptApiService {
         if (this.cacheService) {
           await this.cacheService.set(dataPoint);
         }
-        // 3. 发 EventBus 事件（TagUpdatePayload 格式，timestamp 为 ISO 字符串）
+        // 3. Emit the EventBus event (TagUpdatePayload format, timestamp as ISO string)
         if (this.eventBusService) {
           this.eventBusService.emit('data_point_changed', {
             tagId,
@@ -163,7 +164,7 @@ export class ScriptApiService {
       },
     });
 
-    // ── writeTags：批量写入数据标签值 ──
+    // ── writeTags: write multiple data tag values in batch ──
     this.register({
       name: 'writeTags',
       description: '批量写入数据标签值',
@@ -179,7 +180,7 @@ export class ScriptApiService {
       },
     });
 
-    // ── log：输出日志 ──
+    // ── log: output a log entry ──
     this.register({
       name: 'log',
       description: '输出日志',
@@ -204,7 +205,7 @@ export class ScriptApiService {
       },
     });
 
-    // ── sleep：脚本休眠（毫秒） ──
+    // ── sleep: suspend the script (milliseconds) ──
     this.register({
       name: 'sleep',
       description: '脚本休眠（毫秒）',
@@ -216,8 +217,8 @@ export class ScriptApiService {
       },
     });
 
-    // ── triggerAlarm：触发报警（通过 EventBus 发出 alarm_triggered 事件） ──
-    // 事件格式匹配 AlarmEventSubscriber.handleAlarmTriggered 的期望：
+    // ── triggerAlarm: raise an alarm (emit the alarm_triggered event via EventBus) ──
+    // Event format expected by AlarmEventSubscriber.handleAlarmTriggered:
     // { alarmId, tagId, deviceId, projectId, condition:{severity,type}, value, timestamp, message }
     this.register({
       name: 'triggerAlarm',
@@ -253,7 +254,7 @@ export class ScriptApiService {
         },
     });
 
-    // ── acknowledgeAlarm：确认报警 ──
+    // ── acknowledgeAlarm: acknowledge an alarm ──
     this.register({
       name: 'acknowledgeAlarm',
       description: '确认报警',
@@ -271,7 +272,7 @@ export class ScriptApiService {
       },
     });
 
-    // ── queryTagHistory：查询标签历史数据（InfluxDB） ──
+    // ── queryTagHistory: query a tag's historical data (InfluxDB) ──
     this.register({
       name: 'queryTagHistory',
       description: '查询标签历史数据',
@@ -304,7 +305,7 @@ export class ScriptApiService {
         },
     });
 
-    // ── httpGet：HTTP GET 请求（真实实现，统一替代 EngineService 中的重复注入） ──
+    // ── httpGet: HTTP GET request (real implementation, unified replacement for the duplicated injection in EngineService) ──
     this.register({
       name: 'httpGet',
       description: 'HTTP GET 请求',
@@ -316,7 +317,7 @@ export class ScriptApiService {
         },
     });
 
-    // ── httpPost：HTTP POST 请求 ──
+    // ── httpPost: HTTP POST request ──
     this.register({
       name: 'httpPost',
       description: 'HTTP POST 请求',
@@ -332,7 +333,7 @@ export class ScriptApiService {
         },
     });
 
-    // ── getTime：获取当前时间戳 ──
+    // ── getTime: get the current timestamp ──
     this.register({
       name: 'getTime',
       description: '获取当前时间戳',
@@ -345,7 +346,7 @@ export class ScriptApiService {
   }
 
   /**
-   * 统一 HTTP 请求工具方法（替换 EngineService.executeWithPrivileges 中的重复 httpGet 实现）
+   * Unified HTTP request utility (replaces the duplicated httpGet implementation in EngineService.executeWithPrivileges)
    */
   private async httpRequest(
     method: 'GET' | 'POST',
@@ -403,19 +404,19 @@ export class ScriptApiService {
   }
 
   /**
-   * 获取 API Provider 映射（绑定 projectId 闭包）
+   * Get the API provider map (with projectId-bound closures)
    *
-   * 通过工厂模式为每个 projectId 生成一组独立绑定的函数：
-   * 脚本调用时只需传业务参数（如 triggerAlarm('rule','msg','warning',{tagId})），
-   * projectId 在工厂闭包中被捕获，与调用方传参位置完全解耦，
-   * 彻底避免「可选中间参数省略导致 projectId 错位」的隔离泄漏问题。
+   * The factory pattern generates, per projectId, a set of independently bound functions:
+   * scripts only pass business parameters (e.g. triggerAlarm('rule','msg','warning',{tagId})),
+   * projectId is captured in the factory closure, fully decoupled from the caller's argument positions,
+   * completely avoiding the isolation leak where "omitting an optional middle parameter misaligns projectId".
    *
-   * @param projectId 项目 ID（用于项目隔离：triggerAlarm/writeTag/queryTagHistory 等）
+   * @param projectId project ID (for project isolation: triggerAlarm/writeTag/queryTagHistory etc.)
    */
   getApiProvider(projectId: string): Record<string, (...args: any[]) => any | Promise<any>> {
     const provider: Record<string, (...args: any[]) => any | Promise<any>> = {};
     for (const [name, func] of this.apiFunctions) {
-      // 工厂生成绑定 projectId 的函数，不同 projectId 产生独立闭包
+      // The factory generates functions bound to projectId; different projectIds produce independent closures
       provider[name] = func.factory(projectId);
     }
     return provider;

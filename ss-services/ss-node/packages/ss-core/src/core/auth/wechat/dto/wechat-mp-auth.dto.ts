@@ -5,7 +5,7 @@
 import { IsString, MinLength, MaxLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-/** 小程序微信登录请求（wx.login 获取的 code，5 分钟时效） */
+/** Mini-program WeChat login request (code from wx.login, 5-minute validity) */
 export class WechatMpLoginDto {
   @ApiProperty({ description: '微信登录临时凭证（wx.login code）' })
   @IsString()
@@ -14,7 +14,7 @@ export class WechatMpLoginDto {
   loginCode: string;
 }
 
-/** 小程序账密登录请求（不依赖微信 code，直接用系统账号密码登录） */
+/** Mini-program account-password login request (does not depend on WeChat code, uses system account/password directly) */
 export class WechatMpPasswordLoginDto {
   @ApiProperty({ description: '系统账号用户名' })
   @IsString()
@@ -27,7 +27,7 @@ export class WechatMpPasswordLoginDto {
   password: string;
 }
 
-/** 小程序账号绑定请求（提交时新取 loginCode，避免停留过久导致过期） */
+/** Mini-program account-binding request (fetch a fresh loginCode at submit time to avoid expiration from lingering) */
 export class WechatMpBindAccountDto {
   @ApiProperty({ description: '微信登录临时凭证（wx.login code）' })
   @IsString()

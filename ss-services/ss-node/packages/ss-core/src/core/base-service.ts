@@ -7,15 +7,15 @@ import { Repository, FindOptionsWhere } from 'typeorm';
 import { PaginationDto, PaginationUtil, PaginatedResult } from '@ss-node/ss-sdk';
 
 /**
- * 通用业务服务基类
+ * Generic business-service base class
  *
- * 提供各业务 Service 共用的工具方法：
- * - Logger 实例
- * - 分页参数计算
- * - 分页结果构建
- * - findOneOrThrow（查询并自动抛出 NotFoundException）
+ * Provides utility methods shared by business Services:
+ * - Logger instance
+ * - Pagination param calculation
+ * - Pagination result construction
+ * - findOneOrThrow (query and auto-throw NotFoundException)
  *
- * 使用方式：
+ * Usage:
  * ```typescript
  * export class DeviceService extends BaseService<Device> {
  *   constructor(
@@ -34,7 +34,7 @@ export abstract class BaseService<T> {
   }
 
   /**
-   * 计算分页参数（skip + take）
+   * Calculate pagination params (skip + take)
    */
   protected getPaginationParams(query?: PaginationDto): { skip: number; take: number } {
     const page = query?.page ?? 1;
@@ -43,7 +43,7 @@ export abstract class BaseService<T> {
   }
 
   /**
-   * 构建分页结果
+   * Build pagination result
    */
   protected buildPaginatedResult(
     items: T[],
@@ -56,12 +56,12 @@ export abstract class BaseService<T> {
   }
 
   /**
-   * 按条件查询单个实体，不存在时抛出 NotFoundException
+   * Query a single entity by condition, throw NotFoundException if not found
    *
    * @param repo TypeORM Repository
-   * @param where 查询条件
-   * @param entityName 实体名称（用于错误消息）
-   * @param relations 可选的关联加载
+   * @param where query condition
+   * @param entityName entity name (for error message)
+   * @param relations optional relation loading
    */
   protected async findOneOrThrow(
     repo: Repository<T>,

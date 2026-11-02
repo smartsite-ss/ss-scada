@@ -4,7 +4,7 @@
 
 import { type PluginPropertySchema } from '@scada-editor/plugin-sdk';
 
-/** chart-pie 饼图全局配置（数据源由 ChartDataSourceEditor 自定义 section 管理） */
+/** chart-pie pie chart global config (data source is managed by the ChartDataSourceEditor custom section) */
 export const chartPiePropertySchema: PluginPropertySchema = {
   name: '饼图',
   layout: 'grid',

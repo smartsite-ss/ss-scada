@@ -17,17 +17,17 @@ export type TagBindingMode = 'flat' | 'array-single' | 'array-multiple';
 export type TagBindingItem = ChartVariableBinding | ChartTagBinding;
 
 export interface TagBindingOptions {
-  /** 绑定存储形态：flat 平铺字段 / array-single 单变量数组 / array-multiple 多变量数组 */
+  /** Binding storage form: flat flat fields / array-single single-variable array / array-multiple multi-variable array */
   mode: TagBindingMode;
-  /** 绑定项是否附带趋势样式（仅 array-multiple 趋势组件使用） */
+  /** Whether binding items carry trend styles (used only by array-multiple trend components) */
   withStyle?: boolean;
-  /** flat 模式选中变量时额外写回的字段（如 unit / decimalPlaces 带出） */
+  /** Extra fields written back when a variable is selected in flat mode (e.g. unit / decimalPlaces carry-over) */
   extraFields?: (variable: SelectableVariable) => Record<string, unknown>;
 }
 
 /**
- * 统一管理「设备变量绑定」的读写逻辑，供各系统插件配置面板复用。
- * 泛型 TBinding 用于区分无样式（ChartVariableBinding）与带趋势样式（ChartTagBinding）两种绑定项。
+ * Unified management of device-variable binding read/write logic, reused by config panels of system plugins.
+ * The generic TBinding distinguishes style-less (ChartVariableBinding) from trend-styled (ChartTagBinding) binding items.
  */
 export function useTagBinding<TBinding extends TagBindingItem = ChartVariableBinding>(
   props: { graphicProperties: any },
@@ -85,7 +85,7 @@ export function useTagBinding<TBinding extends TagBindingItem = ChartVariableBin
     emit();
   }
 
-  /** 以替换引用的方式修改 tags，保证编辑态响应式刷新；趋势组件复用此方法修改每变量样式 */
+  /** Modify tags by replacing the reference to guarantee reactive refresh in edit mode; trend components reuse this method to modify per-variable styles */
   function mutateTags(mutator: (list: TBinding[]) => void) {
     const next = tags.value.slice();
     mutator(next);

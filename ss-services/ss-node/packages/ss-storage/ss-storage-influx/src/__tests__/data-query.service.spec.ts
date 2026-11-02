@@ -7,8 +7,8 @@ import { HistoricalData } from '../entities/historical-data.entity';
 import { Repository, Between } from 'typeorm';
 
 /**
- * Mock ProjectDatabaseService — 返回项目级 DataSource
- * 模拟项目数据库隔离模式，使 DataQueryService 查询正确的数据库
+ * Mock ProjectDatabaseService — returns the project-level DataSource
+ * Simulates project database isolation mode so DataQueryService queries the correct database
  */
 function createMockProjectDbService(mockRepo: jest.Mocked<Repository<HistoricalData>>) {
   const mockDataSource = {
@@ -38,7 +38,7 @@ describe('DataQueryService', () => {
     } as HistoricalData;
   };
 
-  /** Mock ConfigService — 返回 HISTORICAL_DATA_BACKEND=sqlite 以测试 SQLite 后端路径 */
+  /** Mock ConfigService — returns HISTORICAL_DATA_BACKEND=sqlite to test the SQLite backend path */
   const mockConfigService = {
     get: jest.fn().mockReturnValue('sqlite'),
   } as any;
@@ -714,7 +714,7 @@ describe('DataQueryService', () => {
     });
   });
 
-  // ──────────── queryTrendData with aggregation (三期增强：08 #6) ────────────
+  // ──────────── queryTrendData with aggregation (Phase 3 enhancement: 08 #6) ────────────
 
   describe('queryTrendData with aggregation', () => {
     const startTime = new Date('2025-01-01T00:00:00Z');
@@ -742,7 +742,7 @@ describe('DataQueryService', () => {
       expect(result.data[0].data.length).toBe(2);
       expect(result.data[0].data[0].value).toBe(15);
       expect(result.data[0].data[1].value).toBe(30);
-      // 窗口起始时间作为数据点时间戳（ISO 字符串）
+      // The window start time is used as the data point timestamp (ISO string)
       expect(result.data[0].data[0].timestamp).toBe('2025-01-01T00:00:00.000Z');
       expect(result.data[0].data[1].timestamp).toBe('2025-01-01T00:10:00.000Z');
       expect(result.pagination.total).toBe(2);
@@ -1056,7 +1056,7 @@ describe('DataQueryService', () => {
     });
   });
 
-  // ──────────── 项目级数据库查询 (projectId) ────────────
+  // ──────────── Project-level database queries (projectId) ────────────
 
   describe('project-scoped queries', () => {
     const startTime = new Date('2025-01-01T00:00:00Z');
@@ -1074,9 +1074,9 @@ describe('DataQueryService', () => {
         projectId,
       });
 
-      // 验证调用了 ProjectDatabaseService.getSystemDb
+      // Verify ProjectDatabaseService.getSystemDb was called
       expect(mockProjectDbService.getSystemDb).toHaveBeenCalledWith(projectId);
-      // 验证查询仍然使用 mockRepo（来自 mock DataSource）
+      // Verify the query still uses mockRepo (from the mock DataSource)
       expect(mockRepo.find).toHaveBeenCalled();
     });
 
@@ -1085,7 +1085,7 @@ describe('DataQueryService', () => {
 
       await service.queryTrendData({ tagIds: ['tag-a'], startTime, endTime });
 
-      // 不应该调用 ProjectDatabaseService
+      // ProjectDatabaseService should not be called
       expect(mockProjectDbService.getSystemDb).not.toHaveBeenCalled();
       expect(mockRepo.find).toHaveBeenCalled();
     });

@@ -4,7 +4,7 @@
 
 import type { TrendSeriesStyle } from './types';
 
-/** 默认色板（8 色），新增变量时按顺序循环分配 */
+/** Default palette (8 colors); new series are assigned cyclically in order */
 export const DEFAULT_TREND_COLORS = [
   '#4dabf7',
   '#51cf66',
@@ -16,7 +16,7 @@ export const DEFAULT_TREND_COLORS = [
   '#ff6b6b',
 ];
 
-/** 依据主色构建默认趋势样式（对齐参考组件 LineCommon 默认项） */
+/** Build the default trend series style from the primary color (aligned with the LineCommon reference component defaults) */
 export function createDefaultSeriesStyle(color: string): TrendSeriesStyle {
   return {
     lineStyle: { width: 3, type: 'solid', color },

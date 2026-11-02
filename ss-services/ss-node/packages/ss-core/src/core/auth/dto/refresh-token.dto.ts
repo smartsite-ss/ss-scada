@@ -5,7 +5,7 @@
 import { IsString, IsOptional } from 'class-validator';
 
 /**
- * S-C03: refreshToken 改为可选（Cookie 模式下通过 HttpOnly Cookie 传输，body 可为空）
+ * S-C03: refreshToken is now optional (transported via HttpOnly Cookie in Cookie mode, body may be empty)
  */
 export class RefreshTokenDto {
   @IsOptional()

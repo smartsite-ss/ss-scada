@@ -5,8 +5,8 @@
 import { IGraphic } from '../types';
 
 /**
- * 协作服务
- * 支持多人协作编辑功能
+ * Collaboration service
+ * Supports multi-user collaborative editing
  */
 export class CollaborationService {
   private static instance: CollaborationService;
@@ -29,8 +29,8 @@ export class CollaborationService {
   }
 
   /**
-   * 连接到协作服务器
-   * @param url 服务器 URL
+   * Connect to the collaboration server
+   * @param url Server URL
    */
   connect(url: string = 'ws://localhost:8800'): Promise<boolean> {
     return new Promise((resolve) => {
@@ -70,7 +70,7 @@ export class CollaborationService {
   }
 
   /**
-   * 断开连接
+   * Disconnect
    */
   disconnect(): void {
     if (this.socket) {
@@ -81,8 +81,8 @@ export class CollaborationService {
   }
 
   /**
-   * 发送消息
-   * @param message 消息内容
+   * Send a message
+   * @param message Message content
    */
   private send(message: any): void {
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
@@ -91,8 +91,8 @@ export class CollaborationService {
   }
 
   /**
-   * 处理收到的消息
-   * @param data 消息数据
+   * Handle received messages
+   * @param data Message data
    */
   private handleMessage(data: string): void {
     try {
@@ -130,9 +130,9 @@ export class CollaborationService {
   }
 
   /**
-   * 监听事件
-   * @param event 事件名称
-   * @param callback 回调函数
+   * Listen for an event
+   * @param event Event name
+   * @param callback Callback function
    */
   on(event: string, callback: (...args: any[]) => any): void {
     if (!this.listeners.has(event)) {
@@ -142,9 +142,9 @@ export class CollaborationService {
   }
 
   /**
-   * 移除事件监听
-   * @param event 事件名称
-   * @param callback 回调函数
+   * Remove an event listener
+   * @param event Event name
+   * @param callback Callback function
    */
   off(event: string, callback: (...args: any[]) => any): void {
     if (this.listeners.has(event)) {
@@ -158,9 +158,9 @@ export class CollaborationService {
   }
 
   /**
-   * 触发事件
-   * @param event 事件名称
-   * @param data 事件数据
+   * Emit an event
+   * @param event Event name
+   * @param data Event data
    */
   private emit(event: string, data: any): void {
     if (this.listeners.has(event)) {
@@ -175,8 +175,8 @@ export class CollaborationService {
   }
 
   /**
-   * 发送图形添加事件
-   * @param graphic 图形对象
+   * Send a graphic-added event
+   * @param graphic Graphic object
    */
   sendGraphicAdded(graphic: IGraphic): void {
     this.send({
@@ -190,8 +190,8 @@ export class CollaborationService {
   }
 
   /**
-   * 发送图形更新事件
-   * @param graphic 图形对象
+   * Send a graphic-updated event
+   * @param graphic Graphic object
    */
   sendGraphicUpdated(graphic: IGraphic): void {
     this.send({
@@ -205,8 +205,8 @@ export class CollaborationService {
   }
 
   /**
-   * 发送图形删除事件
-   * @param graphicId 图形 ID
+   * Send a graphic-deleted event
+   * @param graphicId Graphic ID
    */
   sendGraphicDeleted(graphicId: string): void {
     this.send({
@@ -220,8 +220,8 @@ export class CollaborationService {
   }
 
   /**
-   * 发送选择变化事件
-   * @param selectedGraphicIds 选中的图形 ID 列表
+   * Send a selection-changed event
+   * @param selectedGraphicIds List of selected graphic IDs
    */
   sendSelectionChanged(selectedGraphicIds: string[]): void {
     this.send({
@@ -235,9 +235,9 @@ export class CollaborationService {
   }
 
   /**
-   * 发送光标移动事件
-   * @param x X 坐标
-   * @param y Y 坐标
+   * Send a cursor-moved event
+   * @param x X coordinate
+   * @param y Y coordinate
    */
   sendCursorMoved(x: number, y: number): void {
     this.send({
@@ -252,16 +252,16 @@ export class CollaborationService {
   }
 
   /**
-   * 获取当前用户信息
-   * @returns 用户信息
+   * Get the current user information
+   * @returns User information
    */
   getUserInfo(): { userId: string; userName: string } {
     return { userId: this.userId, userName: this.userName };
   }
 
   /**
-   * 检查是否连接
-   * @returns 是否连接
+   * Check whether connected
+   * @returns Whether connected
    */
   getIsConnected(): boolean {
     return this.isConnected;

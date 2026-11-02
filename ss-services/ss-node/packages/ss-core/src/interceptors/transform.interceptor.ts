@@ -18,14 +18,14 @@ export class TransformInterceptor<T> implements NestInterceptor<T, ApiResponse<T
   intercept(context: ExecutionContext, next: CallHandler): Observable<ApiResponse<T> | T> {
     const request = context.switchToHttp().getRequest();
 
-    // 跳过健康检查等基础端点，直接返回原始数据
+    // Skip basic endpoints such as health checks and return raw data
     if (request.url?.startsWith('/api/v1/system/health')) {
       return next.handle();
     }
 
     return next.handle().pipe(
       map((data) => {
-        // 已包含标准包装字段（code + data + message + timestamp）的响应不再重复包装
+        // Responses already containing the standard wrapper fields (code + data + message + timestamp) are not wrapped again
         if (
           data &&
           typeof data === 'object' &&
@@ -37,7 +37,7 @@ export class TransformInterceptor<T> implements NestInterceptor<T, ApiResponse<T
           return data;
         }
 
-        // 分页查询响应（兼容 data 和 items 两种字段名）
+        // Paginated query responses (compatible with both the data and items field names)
         if (data && typeof data === 'object' && 'pagination' in data) {
           const paginated = data as any;
           return {
@@ -49,11 +49,11 @@ export class TransformInterceptor<T> implements NestInterceptor<T, ApiResponse<T
           } as PaginatedResponse<T>;
         }
 
-        // 文件流下载（StreamableFile）—— 交由 NestJS 内置流式响应处理，不包装
-        // 否则会被 wrapResponse 序列化为 {code,data:{stream:...}} 导致下载内容错误
+        // File-stream download (StreamableFile) -- left to NestJS built-in streaming response, not wrapped
+        // Otherwise wrapResponse would serialize it as {code,data:{stream:...}}, corrupting the download content
         if (data instanceof StreamableFile) return data;
 
-        // 文件下载 / Stream 等非 JSON 响应
+        // Non-JSON responses such as file downloads / streams
         if (Buffer.isBuffer(data)) return data as any;
 
         return this.wrapResponse(data);

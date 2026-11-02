@@ -17,8 +17,8 @@ interface ValidationError {
 }
 
 /**
- * 校验通道配置，按协议类型校验必填字段
- * @returns 错误列表，空数组表示校验通过
+ * Validate the channel config, checking required fields per protocol type
+ * @returns the error list; an empty array means validation passed
  */
 export function validateChannelConfig(config: DeviceChannelConfig): ValidationError[] {
   const errors: ValidationError[] = [];
@@ -51,7 +51,7 @@ export function validateChannelConfig(config: DeviceChannelConfig): ValidationEr
       validateSiemensS7(config as SiemensS7Channel, errors);
       break;
     case 'virtual':
-      // 虚拟设备通道无需必填校验
+      // Virtual-device channels need no required-field validation
       break;
     default:
       errors.push({ field: 'protocol', message: `不支持的协议类型: ${protocol}` });
@@ -132,7 +132,7 @@ function validateSiemensS7(config: SiemensS7Channel, errors: ValidationError[]):
   }
 }
 
-/** 简单的主机地址校验（IP 或 域名） */
+/** Simple host-address validation (IP or domain) */
 function isValidHost(host: string): boolean {
   const ipRegex = /^(\d{1,3}\.){3}\d{1,3}$/;
   const hostnameRegex =

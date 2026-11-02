@@ -6,9 +6,9 @@ import { InfluxQueryService } from '../influx-query.service';
 import { InfluxBucketService } from '../influx-bucket.service';
 
 /**
- * 构造 InfluxDB pivoted CSV 响应（模拟 range → pivot → group 的结果）
+ * Construct an InfluxDB pivoted CSV response (simulating the range → pivot → group result)
  *
- * InfluxDB v2 在 range + pivot + group 后的 CSV 格式：
+ * InfluxDB v2's CSV format after range + pivot + group:
  *   #datatype,string,long,dateTime:RFC3339,dateTime:RFC3339,dateTime:RFC3339,string,string,string,double,string
  *   #group,false,false,true,true,true,false,false,false,false,false
  *   #default,_result,,,,,,,,
@@ -44,7 +44,7 @@ function buildPivotedCsv(
   return lines.join('\n');
 }
 
-/** 构造聚合查询 CSV（无 pivot，只有 _time 和 _value） */
+/** Construct an aggregation-query CSV (no pivot; only _time and _value) */
 function buildAggregateCsv(rows: Array<{ time: string; value: number }>): string {
   const lines: string[] = [];
   lines.push('#datatype,string,long,dateTime:RFC3339,double');
@@ -57,7 +57,7 @@ function buildAggregateCsv(rows: Array<{ time: string; value: number }>): string
   return lines.join('\n');
 }
 
-/** 构造空结果 CSV */
+/** Construct an empty-result CSV */
 function buildEmptyCsv(): string {
   return [
     '#datatype,string,long,dateTime:RFC3339,dateTime:RFC3339,dateTime:RFC3339,string,string,string,double,string',
@@ -102,7 +102,7 @@ describe('InfluxQueryService', () => {
     jest.restoreAllMocks();
   });
 
-  // ──────────── queryRange — 单标签时间范围查询 ────────────
+  // ──────────── queryRange — single-tag time-range query ────────────
 
   describe('queryRange', () => {
     it('TC-IQS-001: should parse pivoted CSV with _start/_stop columns and return correct values', async () => {
@@ -263,7 +263,7 @@ describe('InfluxQueryService', () => {
     });
   });
 
-  // ──────────── queryRangeBatch — 批量标签查询 ────────────
+  // ──────────── queryRangeBatch — batch tag queries ────────────
 
   describe('queryRangeBatch', () => {
     it('TC-IQS-010: should parse multiple tags from pivoted CSV', async () => {
@@ -354,7 +354,7 @@ describe('InfluxQueryService', () => {
     });
   });
 
-  // ──────────── queryAggregate — 聚合查询（无 pivot） ────────────
+  // ──────────── queryAggregate — aggregation query (no pivot) ────────────
 
   describe('queryAggregate', () => {
     it('TC-IQS-020: should parse aggregate CSV with _value column (no pivot)', async () => {
@@ -391,7 +391,7 @@ describe('InfluxQueryService', () => {
     });
   });
 
-  // ──────────── queryLatest — 最新值查询 ────────────
+  // ──────────── queryLatest — latest-value query ────────────
 
   describe('queryLatest', () => {
     it('TC-IQS-030: should parse latest values for multiple tags', async () => {
@@ -426,7 +426,7 @@ describe('InfluxQueryService', () => {
     });
   });
 
-  // ──────────── 错误处理 ────────────
+  // ──────────── Error handling ────────────
 
   describe('error handling', () => {
     it('TC-IQS-040: should throw on non-ok HTTP response', async () => {
@@ -460,7 +460,7 @@ describe('InfluxQueryService', () => {
     });
   });
 
-  // ──────────── CSV 解析边界条件 ────────────
+  // ──────────── CSV parsing edge cases ────────────
 
   describe('CSV parsing edge cases', () => {
     it('TC-IQS-050: should handle very large numeric values', async () => {
@@ -510,7 +510,7 @@ describe('InfluxQueryService', () => {
     });
 
     it('TC-IQS-052: should handle quality column missing in headers (aggregate pivoted)', async () => {
-      // 模拟一种边界情况：pivot 后没有 quality 列（只有 value 被选中）
+      // Simulate an edge case: no quality column after pivot (only value is selected)
       const lines = [
         '#datatype,string,long,dateTime:RFC3339,string,string,string,double',
         '#group,false,false,false,false,false,false,false',
@@ -529,7 +529,7 @@ describe('InfluxQueryService', () => {
 
       expect(rows).toHaveLength(1);
       expect(rows[0].value).toBe(42.5);
-      expect(rows[0].quality).toBe('0'); // 默认值
+      expect(rows[0].quality).toBe('0'); // default value
     });
 
     it('TC-IQS-053: should handle integer values without decimal point', async () => {
@@ -579,7 +579,7 @@ describe('InfluxQueryService', () => {
     });
 
     it('TC-IQS-055: should handle CRLF line endings (InfluxDB \\r\\n format)', async () => {
-      // 模拟 InfluxDB 真实 \\r\\n 响应 —— value 列在末尾会带 \\r 后缀
+      // Simulate InfluxDB's real \\r\\n response — the value column carries a \\r suffix at the end
       const csvWithCRLF = buildPivotedCsv([
         {
           time: '2026-07-23T14:30:00Z',
@@ -615,7 +615,7 @@ describe('InfluxQueryService', () => {
     });
 
     it('TC-IQS-056: should handle \\r\\n with quality as second-to-last column', async () => {
-      // quality 是倒数第二列，value 是倒数第一列（带 \\r 的是 value）
+      // quality is the second-to-last column, value is the last (the one with \\r is value)
       const csvWithCRLF = buildPivotedCsv([
         {
           time: '2026-07-23T14:30:00Z',

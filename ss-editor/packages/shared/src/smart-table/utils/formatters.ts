@@ -5,7 +5,7 @@
 import type { FormatterType } from '../types';
 
 /**
- * 从嵌套路径取值  e.g. "user.profile.name"
+ * Get a value by nested path, e.g. "user.profile.name"
  */
 export function getNestedValue(obj: any, path: string): any {
   if (!obj || !path) return undefined;
@@ -13,7 +13,7 @@ export function getNestedValue(obj: any, path: string): any {
 }
 
 /**
- * 内置格式化器注册表
+ * Built-in formatter registry
  */
 const formatterMap: Record<FormatterType, (value: any, _row?: any) => string> = {
   time: (v) => {
@@ -70,7 +70,7 @@ const formatterMap: Record<FormatterType, (value: any, _row?: any) => string> = 
 };
 
 /**
- * 应用格式化器
+ * Apply a formatter
  */
 export function applyFormatter(
   value: any,

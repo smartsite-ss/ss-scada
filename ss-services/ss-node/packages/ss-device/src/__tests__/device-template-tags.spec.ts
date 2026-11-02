@@ -142,7 +142,7 @@ describe('DeviceService - 批量标签与模板应用 (3.7/3.8)', () => {
   });
 
   // ============================================================
-  // 3.7 批量标签管理 — addTags
+  // 3.7 Batch tag management - addTags
   // ============================================================
   describe('3.7 批量标签: addTags', () => {
     it('TC-TAG-001: 应成功批量创建多个标签', async () => {
@@ -214,7 +214,7 @@ describe('DeviceService - 批量标签与模板应用 (3.7/3.8)', () => {
   });
 
   // ============================================================
-  // 3.8 模板应用 — applyTemplate
+  // 3.8 Template application - applyTemplate
   // ============================================================
   describe('3.8 模板应用: applyTemplate', () => {
     it('TC-TPL-001: 找到模板时应实例化变量为 DataTag', async () => {
@@ -236,7 +236,7 @@ describe('DeviceService - 批量标签与模板应用 (3.7/3.8)', () => {
       expect(dataTagRepo.create).toHaveBeenCalledTimes(2);
       expect(dataTagRepo.save).toHaveBeenCalled();
       expect(result).toHaveLength(2);
-      // 验证设备被保存并设置了模板信息
+      // Verify the device was saved with template info set
       expect(deviceRepo.save).toHaveBeenCalledWith(
         expect.objectContaining({
           templateId: 'tpl-001',
@@ -304,11 +304,11 @@ describe('DeviceService - 批量标签与模板应用 (3.7/3.8)', () => {
   });
 
   // ============================================================
-  // 3.8 模板同步 — syncTemplateTags
+  // 3.8 Template sync - syncTemplateTags
   // ============================================================
   describe('3.8 模板同步: syncTemplateTags', () => {
     it('TC-SYNC-001: TemplateLoaderService 不可用时应返回零值', async () => {
-      // 重新构建无 TemplateLoaderService 的模块
+      // Rebuild the module without TemplateLoaderService
       const device = makeMockDevice();
       deviceRepo.findOne.mockResolvedValue(device);
       const moduleWithoutTpl: TestingModule = await Test.createTestingModule({
@@ -357,7 +357,7 @@ describe('DeviceService - 批量标签与模板应用 (3.7/3.8)', () => {
       });
       mockTemplateLoader.getTemplate.mockReturnValue(template);
 
-      // 已有标签：temperature（将更新）+ obsolete（将删除），pressure 不存在（将新增）
+      // Existing tags: temperature (will update) + obsolete (will delete); pressure does not exist (will be added)
       const existingTags = [
         { id: 'tag-1', name: 'temperature', deviceId: 'dev-001', address: 'HR40001-OLD' },
         { id: 'tag-2', name: 'obsolete', deviceId: 'dev-001', address: 'HR40099' },
@@ -372,7 +372,7 @@ describe('DeviceService - 批量标签与模板应用 (3.7/3.8)', () => {
       expect(result.updated).toBe(1);
       expect(result.added).toBe(1);
       expect(result.removed).toBe(1);
-      // 验证删除了多余的 obsolete 标签
+      // Verify the extra obsolete tag was deleted
       expect(dataTagRepo.remove).toHaveBeenCalledWith(
         expect.objectContaining({ name: 'obsolete' }),
       );

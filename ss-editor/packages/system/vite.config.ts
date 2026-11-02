@@ -62,13 +62,13 @@ export default defineConfig({
         'pinia',
         'axios',
         'socket.io-client',
-        // echarts 全部子模块
+        // All echarts sub-modules
         /^echarts/,
         'vue-echarts',
         // monaco-editor
         '@monaco-editor/loader',
         'monaco-editor',
-        // 内部包依赖
+        // Internal package dependencies
         '@scada-editor/core',
         '@scada-editor/shared',
         'vue-i18n',

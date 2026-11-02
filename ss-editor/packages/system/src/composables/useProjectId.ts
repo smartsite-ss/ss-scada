@@ -6,8 +6,8 @@ import { computed } from 'vue';
 import { useProjectStore } from '../stores/project.store';
 
 /**
- * 统一提取当前项目 ID。
- * 优先取 Pinia 当前项目，其次从编辑器路由 /editor/:projectId 兜底。
+ * Extract the current project ID uniformly.
+ * Prefers the Pinia current project; falls back to the editor route /editor/:projectId.
  */
 export function useProjectId() {
   const projectStore = useProjectStore();

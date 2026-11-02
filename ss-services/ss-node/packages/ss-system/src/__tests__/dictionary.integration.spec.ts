@@ -99,7 +99,7 @@ describe('DictionaryController - HTTP Integration (supertest)', () => {
     jest.clearAllMocks();
   });
 
-  // ==================== 分类管理 ====================
+  // ==================== Category management ====================
 
   describe('POST /api/v1/dicts/categories', () => {
     it('should create a category', () => {
@@ -138,7 +138,7 @@ describe('DictionaryController - HTTP Integration (supertest)', () => {
     });
   });
 
-  // ==================== 字典表管理 ====================
+  // ==================== Dictionary-table management ====================
 
   describe('POST /api/v1/dicts/tables', () => {
     it('should create a table', () => {

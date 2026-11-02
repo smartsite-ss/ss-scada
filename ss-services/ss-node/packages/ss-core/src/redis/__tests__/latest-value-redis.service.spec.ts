@@ -6,16 +6,16 @@ import { LatestValueRedisService } from '../latest-value-redis.service';
 import type Redis from 'ioredis';
 
 /**
- * LatestValueRedisService 单元测试（v3 — 项目→设备→变量 层级结构）
+ * LatestValueRedisService unit tests (v3 -- project->device->tag hierarchy)
  *
- * 覆盖:
- * - key 构造: deviceKey(projectId, deviceCode) / treeKey(projectId)
- * - serialize(全语义 7 字段) / deserialize(v3/P0/旧 {v,d,q,t} 三格式兼容 + 容错)
+ * Covers:
+ * - key construction: deviceKey(projectId, deviceCode) / treeKey(projectId)
+ * - serialize (full-semantics 7 fields) / deserialize (v3/P0/legacy {v,d,q,t} three-format compatibility + fault tolerance)
  * - enabled
- * - write(params 对象 → HSET 设备 Key + HSET tree 索引)
- * - readTag / readDevice / readDevices(pipeline) — 按 deviceCode 直接路径
- * - readTree(HGETALL tree 索引) / readTagByDeviceId(tree 反查) — 按 deviceId
- * - readAll(readTree + pipeline HGETALL,结果 keyed by deviceId)
+ * - write (params object -> HSET device Key + HSET tree index)
+ * - readTag / readDevice / readDevices (pipeline) -- direct path by deviceCode
+ * - readTree (HGETALL tree index) / readTagByDeviceId (tree reverse lookup) -- by deviceId
+ * - readAll (readTree + pipeline HGETALL, result keyed by deviceId)
  */
 describe('LatestValueRedisService', () => {
   let mockRedis: jest.Mocked<Pick<Redis, 'hget' | 'hgetall' | 'hset' | 'pipeline'>>;
@@ -40,7 +40,7 @@ describe('LatestValueRedisService', () => {
     jest.clearAllMocks();
   });
 
-  // ──────────── key 构造 ────────────
+  // ──────────── Key construction ────────────
 
   describe('key construction', () => {
     it('TC-LVR-001: deviceKey 应拼接 projectId 与 deviceCode', () => {
@@ -256,7 +256,7 @@ describe('LatestValueRedisService', () => {
     });
 
     it('TC-LVR-023: tree HSET 失败不应影响主写入(fire-and-forget)', async () => {
-      // 第二次 hset(tree)失败,第一次 hset(设备 Key)应仍成功
+      // The second hset (tree) fails; the first hset (device Key) should still succeed
       mockRedis.hset
         .mockResolvedValueOnce(1)
         .mockRejectedValueOnce(new Error('tree HSET failed') as never);
@@ -287,7 +287,7 @@ describe('LatestValueRedisService', () => {
     });
   });
 
-  // ──────────── readTag (按 deviceCode) ────────────
+  // ──────────── readTag (by deviceCode) ────────────
 
   describe('readTag', () => {
     it('TC-LVR-025: 应 HGET 指定 field 并反序列化,回填层级字段', async () => {
@@ -348,7 +348,7 @@ describe('LatestValueRedisService', () => {
     });
   });
 
-  // ──────────── readDevice (按 deviceCode) ────────────
+  // ──────────── readDevice (by deviceCode) ────────────
 
   describe('readDevice', () => {
     it('TC-LVR-029: 应 HGETALL 并反序列化所有 field', async () => {
@@ -398,7 +398,7 @@ describe('LatestValueRedisService', () => {
     });
   });
 
-  // ──────────── readDevices (按 deviceCode 批量) ────────────
+  // ──────────── readDevices (batch by deviceCode) ────────────
 
   describe('readDevices', () => {
     it('TC-LVR-032: 应为每台设备 pipeline HGETALL,返回 Map<deviceCode, entries>', async () => {
@@ -467,7 +467,7 @@ describe('LatestValueRedisService', () => {
     });
   });
 
-  // ──────────── readTree (tree 索引,按 deviceId 反查) ────────────
+  // ──────────── readTree (tree index, reverse lookup by deviceId) ────────────
 
   describe('readTree', () => {
     it('TC-LVR-036: 应 HGETALL tree 索引,返回 Map<deviceId, {deviceCode, deviceName}>', async () => {
@@ -505,12 +505,12 @@ describe('LatestValueRedisService', () => {
     });
   });
 
-  // ──────────── readTagByDeviceId (tree 反查 deviceCode 后读取) ────────────
+  // ──────────── readTagByDeviceId (tree reverse lookup for deviceCode then read) ────────────
 
   describe('readTagByDeviceId', () => {
     it('TC-LVR-040: 应先 HGET tree 反查 deviceCode,再 HGET 设备 Key 读取值', async () => {
-      // 第一次 hget: tree 索引反查
-      // 第二次 hget: 设备 Key 读取最新值
+      // First hget: tree-index reverse lookup
+      // Second hget: read the latest value from the device Key
       mockRedis.hget
         .mockResolvedValueOnce(
           JSON.stringify({ deviceCode: 'pump-01', deviceName: '泵站A' }) as never,
@@ -543,7 +543,7 @@ describe('LatestValueRedisService', () => {
     it('TC-LVR-041: tree 索引无此 deviceId 时应返回 null', async () => {
       mockRedis.hget.mockResolvedValue(null as never);
       expect(await service.readTagByDeviceId('proj-1', 'unknown-dev', 'tag-1')).toBeNull();
-      expect(mockRedis.hget).toHaveBeenCalledTimes(1); // 仅 tree 查询,不读设备 Key
+      expect(mockRedis.hget).toHaveBeenCalledTimes(1); // tree query only, no device key read
     });
 
     it('TC-LVR-042: tree 条目损坏(无 deviceCode)时应返回 null', async () => {
@@ -558,11 +558,11 @@ describe('LatestValueRedisService', () => {
     });
   });
 
-  // ──────────── readAll (全项目,tree + pipeline) ────────────
+  // ──────────── readAll (whole project, tree + pipeline) ────────────
 
   describe('readAll', () => {
     it('TC-LVR-044: 应 HGETALL tree 后 pipeline 批量读取,返回 Map<deviceId, entries>', async () => {
-      // readTree: hgetall tree 索引
+      // readTree: hgetall the tree index
       mockRedis.hgetall.mockResolvedValue({
         'dev-uuid-1': JSON.stringify({ deviceCode: 'pump-01', deviceName: '泵站A' }),
         'dev-uuid-2': JSON.stringify({ deviceCode: 'pump-02', deviceName: '泵站B' }),

@@ -20,13 +20,13 @@ export interface SourceStatusEntry {
 }
 
 /**
- * DriverRegistry — 驱动注册/查找/生命周期管理
+ * DriverRegistry — driver registration / lookup / lifecycle management
  *
- * 职责：
- * - 管理驱动工厂注册表（registerDriverFactory）
- * - 管理驱动实例（connect/disconnect/lookup）
- * - 管理数据源信息（DataSourceInfo）和状态条目（SourceStatusEntry）
- * - 内置驱动的自动注册
+ * Responsibilities:
+ * - Manage the driver factory registry (registerDriverFactory)
+ * - Manage driver instances (connect/disconnect/lookup)
+ * - Manage data source info (DataSourceInfo) and status entries (SourceStatusEntry)
+ * - Auto-register built-in drivers
  */
 export class DriverRegistry {
   private _driverFactory: Map<string, () => IDataSourceDriver> = new Map();
@@ -43,7 +43,7 @@ export class DriverRegistry {
     this.registerDriverFactory('api', () => new HttpPollingDriver());
     this.registerDriverFactory('static', () => new StaticDataSourceDriver());
     this.registerDriverFactory('expression', () => new ExpressionDataSourceDriver());
-    // SQL 驱动需应用层显式注册（Node.js require 不适用于浏览器环境）
+    // SQL driver must be explicitly registered by the app layer (Node.js require is unavailable in the browser)
   }
 
   registerDriverFactory(type: string, factory: () => IDataSourceDriver): void {
@@ -71,8 +71,9 @@ export class DriverRegistry {
   }
 
   /**
-   * 创建驱动实例并注册到内部映射表。
-   * 返回驱动、数据源信息和状态条目——连接和配置由调用方负责。
+   * Create a driver instance and register it into the internal maps.
+   * Returns the driver, data source info and status entry — connection and
+   * configuration are the caller's responsibility.
    */
   createDriver(
     dsType: string,

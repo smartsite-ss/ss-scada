@@ -11,11 +11,11 @@ import { useDict, type DictItem } from '../composables/useDict';
 
 const props = withDefaults(
   defineProps<{
-    /** 字典标识 */
+    /** Dictionary identifier */
     dictId: string;
-    /** 字典条目 value */
+    /** Dictionary item value */
     value: string;
-    /** 未匹配时显示的兜底文字，默认显示 value 本身 */
+    /** Fallback text shown when no match; defaults to the value itself */
     fallback?: string;
   }>(),
   {
@@ -25,19 +25,19 @@ const props = withDefaults(
 
 const { loadDict } = useDict();
 
-/** 已加载的字典条目（用于 value 变化时同步解析，无需再次请求） */
+/** Loaded dictionary items (used to resolve on value change without re-requesting) */
 const items = ref<DictItem[]>([]);
 
-/** 当前显示文本 */
+/** Current display text */
 const displayText = ref<string>(props.fallback || props.value);
 
-/** tooltip 文本：value — label */
+/** Tooltip text: value — label */
 const titleText = computed(() => {
   const display = displayText.value;
   return display !== props.value ? `${props.value} — ${display}` : display;
 });
 
-/** 根据 items 和 value 解析 label */
+/** Resolve the label from items and value */
 function resolveLabel() {
   const item = items.value.find((it) => it.value === props.value);
   displayText.value = item?.label ?? (props.fallback || props.value);
@@ -54,13 +54,13 @@ async function loadAndResolve() {
 
 onMounted(loadAndResolve);
 
-// dictId 变化时重新加载
+// Reload when dictId changes
 watch(() => props.dictId, loadAndResolve);
 
-// value 变化时从已缓存的 items 中解析（无需再次请求）
+// Resolve from cached items on value change (no re-request)
 watch(() => props.value, resolveLabel);
 
-// fallback 变化时重新解析
+// Re-resolve when fallback changes
 watch(() => props.fallback, resolveLabel);
 </script>
 

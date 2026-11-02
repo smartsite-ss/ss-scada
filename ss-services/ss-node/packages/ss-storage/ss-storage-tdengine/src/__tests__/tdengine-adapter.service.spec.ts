@@ -25,7 +25,7 @@ const createResponse = (overrides: Partial<Response> = {}): Response =>
     ...overrides,
   }) as unknown as Response;
 
-/** root:taosdata 的 Basic 凭证 */
+/** Basic credentials of root:taosdata */
 const expectedBasicToken = () => `Basic ${Buffer.from('root:taosdata').toString('base64')}`;
 
 describe('TdengineAdapterService', () => {
@@ -45,7 +45,7 @@ describe('TdengineAdapterService', () => {
     jest.clearAllMocks();
   });
 
-  // ──────────── 引擎标识与能力 ────────────
+  // ──────────── Engine identity and capabilities ────────────
 
   it('TC-TDE-AD-001: should declare tdengine engine type and capabilities', () => {
     expect(adapter.engineType).toBe(STORAGE_ENGINE_TYPES.TDENGINE);
@@ -155,7 +155,7 @@ describe('TdengineAdapterService', () => {
       before: new Date('2026-01-01T00:00:00Z'),
     });
 
-    // 无 database 服务时走 REST 删除，taosAdapter 不返回行数 → -1（计数不可用）
+    // Without a database service it falls back to REST delete; taosAdapter returns no row count → -1 (count unavailable)
     expect(result).toBe(-1);
     expect(fetchSpy).toHaveBeenCalledTimes(2);
 

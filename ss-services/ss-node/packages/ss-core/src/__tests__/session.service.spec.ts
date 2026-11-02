@@ -113,7 +113,7 @@ describe('SessionService', () => {
       const session = service.createSession('user-1', '192.168.1.1', 'Chrome');
       const originalActivity = session.lastActivity;
 
-      // 全局 fake timers 下 setTimeout 不会触发，改用 advanceTimersByTime 推进时钟
+      // under global fake timers setTimeout never fires; use advanceTimersByTime to advance the clock
       jest.advanceTimersByTime(10);
       service.updateActivity(session.id);
 

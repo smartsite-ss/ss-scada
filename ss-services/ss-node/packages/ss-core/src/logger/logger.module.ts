@@ -6,15 +6,15 @@ import { Module, Global } from '@nestjs/common';
 import { StructuredLogger } from './structured-logger.service';
 
 /**
- * LoggerModule — 全局日志模块
+ * LoggerModule - global logging module
  *
- * StructuredLogger 保留上下文/脱敏/采样能力，但文件输出已统一委托给
- * 全局 Winston（main.ts 通过 LoggerFactory 创建 DailyRotateFile transport）。
- * 此处不再需要 resolveLogFilePath / fileOutput 配置。
+ * StructuredLogger keeps context/redaction/sampling capabilities, but file output is uniformly
+ * delegated to global Winston (main.ts creates DailyRotateFile transports via LoggerFactory).
+ * No resolveLogFilePath / fileOutput config is needed here anymore.
  *
- * 文件日志目录与轮转策略由 LoggerFactory.getLogConfig() 集中管理：
- *   {LOG_DIR}/app/app-%DATE%.log        — 应用日志
- *   {LOG_DIR}/error/error-%DATE%.log    — 错误日志
+ * The file-log directory and rotation policy are centrally managed by LoggerFactory.getLogConfig():
+ *   {LOG_DIR}/app/app-%DATE%.log        - app log
+ *   {LOG_DIR}/error/error-%DATE%.log    - error log
  */
 @Global()
 @Module({

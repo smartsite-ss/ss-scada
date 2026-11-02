@@ -4,24 +4,24 @@
 
 import { IGraphic } from '@scada-editor/plugin-sdk';
 
-// 布局接口
+// Layout interface
 export interface ILayout {
   id: string;
   type: string;
   properties: Record<string, any>;
 
-  // 应用布局
+  // Apply the layout
   applyLayout(graphics: IGraphic[]): void;
 
-  // 更新属性
+  // Update properties
   update(properties: Partial<Record<string, any>>): void;
 
-  // 序列化
+  // Serialize
   toJSON(): any;
 
-  // 反序列化
+  // Deserialize
   fromJSON(data: any): void;
 
-  // 克隆方法
+  // Clone method
   clone(): ILayout;
 }

@@ -7,12 +7,12 @@ import { Roles } from './roles.decorator';
 import { UserRole } from '../../user/entities/user.entity';
 
 /**
- * 只读角色组合装饰器
+ * Read-only role-combination decorator
  *
- * 等价于 `@Roles(UserRole.ADMIN, UserRole.USER, UserRole.VIEWER)`，
- * 适用于 GET 查询类端点。
+ * Equivalent to `@Roles(UserRole.ADMIN, UserRole.USER, UserRole.VIEWER)`,
+ * for GET query-type endpoints.
  *
- * 使用方式：
+ * Usage:
  * ```typescript
  * @Get()
  * @ReadRoles()
@@ -24,12 +24,12 @@ export function ReadRoles() {
 }
 
 /**
- * 读写角色组合装饰器
+ * Read-write role-combination decorator
  *
- * 等价于 `@Roles(UserRole.ADMIN, UserRole.USER)`，
- * 适用于 POST/PATCH/DELETE 等修改类端点。
+ * Equivalent to `@Roles(UserRole.ADMIN, UserRole.USER)`,
+ * for POST/PATCH/DELETE and other mutation-type endpoints.
  *
- * 使用方式：
+ * Usage:
  * ```typescript
  * @Post()
  * @WriteRoles()

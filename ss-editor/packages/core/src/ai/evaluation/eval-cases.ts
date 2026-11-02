@@ -3,67 +3,67 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * AI 效果评估基准 — P1-T10
+ * AI evaluation benchmark — P1-T10
  *
- * 评估用例定义：覆盖 4 大场景（插件生成、脚本生成、知识问答、告警分析）
- * 每个用例包含输入、预期输出判断标准和评估权重。
+ * Evaluation case definitions: covers 4 scenarios (plugin generation, script generation, knowledge Q&A, alarm analysis).
+ * Each case contains input, expected-output criteria and evaluation weights.
  *
- * 用法:
+ * Usage:
  *   import { EVAL_CASES } from './eval-cases';
- *   // 遍历用例执行评估
+ *   // iterate cases and run the evaluation
  */
 
 export interface EvalCase {
-  /** 用例 ID */
+  /** Case ID */
   id: string;
-  /** 用例名称 */
+  /** Case name */
   name: string;
-  /** 评估场景 */
+  /** Evaluation scenario */
   category: 'plugin-gen' | 'script-gen' | 'kb-qa' | 'alarm-analysis' | 'safety';
-  /** 优先级 */
+  /** Priority */
   priority: 'P0' | 'P1' | 'P2';
-  /** 用户输入 */
+  /** User input */
   input: string;
-  /** 期望的 TaskType */
+  /** Expected TaskType */
   taskType: 'plugin-dev' | 'script-dev' | 'chat' | 'analysis';
-  /** 评估维度 */
+  /** Evaluation dimensions */
   dimensions: EvalDimension[];
-  /** 最低通过分数（0-1） */
+  /** Minimum passing score (0-1) */
   minScore: number;
 }
 
 export interface EvalDimension {
-  /** 维度名称 */
+  /** Dimension name */
   name: string;
-  /** 权重（0-1，同类用例权重和为 1） */
+  /** Weight (0-1; weights within the same case sum to 1) */
   weight: number;
-  /** 评估方式 */
+  /** Evaluation method */
   method: 'exact' | 'contains' | 'regex' | 'keyword' | 'manual' | 'structure';
-  /** 期望值（针对 exact/contains/regex） */
+  /** Expected value (for exact/contains/regex) */
   expected?: string | string[];
-  /** 关键词列表（针对 keyword） */
+  /** Keyword list (for keyword) */
   keywords?: string[];
-  /** 结构检查列表（针对 structure） */
+  /** Structure checks (for structure) */
   structureChecks?: EvalStructureCheck[];
-  /** 说明 */
+  /** Description */
   description?: string;
 }
 
 export interface EvalStructureCheck {
   name: string;
   description: string;
-  /** 检测正则 */
+  /** Detection regex */
   pattern?: string;
-  /** 或检测关键词 */
+  /** Or detection keywords */
   keyword?: string;
 }
 
 // ============================================================
-// 评估用例库（50+ 条）
+// Evaluation case library (50+ cases)
 // ============================================================
 
 export const EVAL_CASES: EvalCase[] = [
-  // ────── A. 插件生成（P1-T05）─ 15 条 ──────
+  // ────── A. Plugin generation (P1-T05) — 15 cases ──────
   {
     id: 'plugin-001',
     name: '阀门插件（开关+状态灯）',
@@ -305,7 +305,7 @@ export const EVAL_CASES: EvalCase[] = [
     minScore: 0.5,
   },
 
-  // ────── B. 脚本生成（P1-T06）─ 15 条 ──────
+  // ────── B. Script generation (P1-T06) — 15 cases ──────
   {
     id: 'script-001',
     name: '温度告警（dataChange）',
@@ -557,7 +557,7 @@ export const EVAL_CASES: EvalCase[] = [
     minScore: 0.5,
   },
 
-  // ────── C. 知识问答 — 8 条 ──────
+  // ────── C. Knowledge Q&A — 8 cases ──────
   {
     id: 'kb-001',
     name: '插件开发API查询',
@@ -680,7 +680,7 @@ export const EVAL_CASES: EvalCase[] = [
     minScore: 0.5,
   },
 
-  // ────── D. 告警分析 — 5 条 ──────
+  // ────── D. Alarm analysis — 5 cases ──────
   {
     id: 'alarm-001',
     name: '温度告警根因分析',
@@ -760,7 +760,7 @@ export const EVAL_CASES: EvalCase[] = [
     minScore: 0.45,
   },
 
-  // ────── E. 安全防护 — 7 条 ──────
+  // ────── E. Safety protection — 7 cases ──────
   {
     id: 'safety-001',
     name: 'Prompt 注入—角色扮演',
@@ -857,7 +857,7 @@ export const EVAL_CASES: EvalCase[] = [
 ];
 
 // ============================================================
-// 统计信息
+// Statistics
 // ============================================================
 
 export const EVAL_STATS = {
@@ -876,5 +876,5 @@ export const EVAL_STATS = {
   },
 };
 
-// 50+ 用例达标确认
+// 50+ case target confirmation
 console.assert(EVAL_STATS.total >= 50, `评估用例数量不达标: ${EVAL_STATS.total} < 50`);

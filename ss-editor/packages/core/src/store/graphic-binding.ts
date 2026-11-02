@@ -6,10 +6,10 @@ import { usePageStore } from './page.store';
 import { resolveDataPath, DATA_BINDING_TARGETS } from './graphic-defaults';
 import { showAlert } from '../utils/messageBox';
 
-/** 数据绑定 - 绑定数据
- * 
- * v3.1: 不再修改 graphic.dataSource 的配置字段（enabled / dataSource / dataField）。
- * 这些字段由 DataPanel.onDataSourceSelected 统一管理，BindingManager 仅负责 WS 标签订阅。
+/** Data binding - bind data
+ *
+ * v3.1: No longer modify the graphic.dataSource config fields (enabled / dataSource / dataField).
+ * Those fields are managed centrally by DataPanel.onDataSourceSelected; BindingManager only handles WS tag subscriptions.
  */
 export function bindDataHelper(graphicId: string, _dataSource: string, _dataField: string) {
   const pageStore = usePageStore();
@@ -18,21 +18,21 @@ export function bindDataHelper(graphicId: string, _dataSource: string, _dataFiel
 
   const graphic = currentPage.graphics.find((g) => g.id === graphicId);
   if (graphic) {
-    // 仅标记页面脏数据，不修改 graphic.dataSource 配置字段
+    // Only mark the page dirty; do not modify the graphic.dataSource config fields
     currentPage.markDirty?.();
   }
 }
 
-/** 数据绑定 - 解除绑定
- * 
- * v3.1: 不再重置 graphic.dataSource 的配置字段（enabled / dataSource / dataField）。
- * 这些字段由 DataPanel.onDataSourceSelected 统一管理，BindingManager 仅负责 WS 标签订阅。
+/** Data binding - unbind
+ *
+ * v3.1: No longer reset the graphic.dataSource config fields (enabled / dataSource / dataField).
+ * Those fields are managed centrally by DataPanel.onDataSourceSelected; BindingManager only handles WS tag subscriptions.
  */
 export function unbindDataHelper(_graphicId: string) {
-  // 仅管理 BindingManager 内部状态，不修改 graphic.dataSource 配置字段
+  // Only manage BindingManager internal state; do not modify the graphic.dataSource config fields
 }
 
-/** 数据绑定 - 应用数据 */
+/** Data binding - apply data */
 export function applyDataHelper(data: Record<string, any>) {
   const pageStore = usePageStore();
   const currentPage = pageStore.currentPage;
@@ -52,7 +52,7 @@ export function applyDataHelper(data: Record<string, any>) {
   });
 }
 
-/** 事件交互 - 添加事件 */
+/** Event interaction - add event */
 export function addEventHandlerHelper(graphicId: string, eventType: string) {
   const pageStore = usePageStore();
   const currentPage = pageStore.currentPage;
@@ -80,7 +80,7 @@ export function addEventHandlerHelper(graphicId: string, eventType: string) {
   }
 }
 
-/** 事件交互 - 删除事件 */
+/** Event interaction - remove event */
 export function removeEventHandlerHelper(graphicId: string, eventId: string) {
   const pageStore = usePageStore();
   const currentPage = pageStore.currentPage;
@@ -95,7 +95,7 @@ export function removeEventHandlerHelper(graphicId: string, eventId: string) {
   }
 }
 
-/** 事件交互 - 添加动作 */
+/** Event interaction - add action */
 export function addActionHelper(graphicId: string, eventId: string, actionType: string) {
   const pageStore = usePageStore();
   const currentPage = pageStore.currentPage;
@@ -117,7 +117,7 @@ export function addActionHelper(graphicId: string, eventId: string, actionType: 
   }
 }
 
-/** 事件交互 - 删除动作 */
+/** Event interaction - remove action */
 export function removeActionHelper(graphicId: string, eventId: string, actionId: string) {
   const pageStore = usePageStore();
   const currentPage = pageStore.currentPage;
@@ -133,7 +133,7 @@ export function removeActionHelper(graphicId: string, eventId: string, actionId:
   }
 }
 
-/** 事件交互 - 执行动作 */
+/** Event interaction - execute action */
 export function executeActionHelper(action: any, _graphicId?: string, _eventData?: any) {
   const pageStore = usePageStore();
   const currentPage = pageStore.currentPage;
@@ -141,7 +141,7 @@ export function executeActionHelper(action: any, _graphicId?: string, _eventData
 
   switch (action.actionType) {
     case 'show':
-      // 显示目标图形
+      // Show the target graphic
       if (action.target) {
         const targetGraphic = currentPage.graphics.find(
           (g) => g.id === action.target
@@ -153,7 +153,7 @@ export function executeActionHelper(action: any, _graphicId?: string, _eventData
       }
       break;
     case 'hide':
-      // 隐藏目标图形
+      // Hide the target graphic
       if (action.target) {
         const targetGraphic = currentPage.graphics.find(
           (g) => g.id === action.target
@@ -165,7 +165,7 @@ export function executeActionHelper(action: any, _graphicId?: string, _eventData
       }
       break;
     case 'change':
-      // 改变目标图形的属性
+      // Change the target graphic's property
       if (action.target) {
         const targetGraphic = currentPage.graphics.find(
           (g) => g.id === action.target
@@ -195,13 +195,13 @@ export function executeActionHelper(action: any, _graphicId?: string, _eventData
       }
       break;
     case 'navigate':
-      // 导航到指定URL
+      // Navigate to the specified URL
       if (action.value) {
         window.location.href = action.value;
       }
       break;
     case 'alert':
-      // 显示提示信息
+      // Show a notification
       if (action.value) {
         showAlert(action.value);
       }
@@ -209,7 +209,7 @@ export function executeActionHelper(action: any, _graphicId?: string, _eventData
   }
 }
 
-/** 事件交互 - 触发事件 */
+/** Event interaction - trigger event */
 export function triggerEventHandlerHelper(graphicId: string, eventType: string, eventData?: any) {
   const pageStore = usePageStore();
   const currentPage = pageStore.currentPage;
@@ -220,7 +220,7 @@ export function triggerEventHandlerHelper(graphicId: string, eventType: string, 
     const event = graphic.events.eventHandlers[eventType];
     if (event) {
       event.actions.forEach((action) => {
-        // 检查条件是否满足
+        // Check whether conditions are met
         const conditionsMet = action.conditions.every((condition) => {
           let fieldValue = eventData;
           const fieldPath = condition.field.split('.');
@@ -233,7 +233,7 @@ export function triggerEventHandlerHelper(graphicId: string, eventType: string, 
             }
           }
 
-          // 检查条件
+          // Evaluate the condition
           switch (condition.operator) {
             case 'equal':
               return fieldValue === condition.value;
@@ -257,7 +257,7 @@ export function triggerEventHandlerHelper(graphicId: string, eventType: string, 
         });
 
         if (conditionsMet) {
-          // 执行动作
+          // Execute the action
           executeActionHelper(action, graphicId, eventData);
         }
       });
@@ -265,7 +265,7 @@ export function triggerEventHandlerHelper(graphicId: string, eventType: string, 
   }
 }
 
-/** 动画效果 - 添加动画 */
+/** Animation effects - add animation */
 export function addAnimationHelper(graphicId: string, animation: any) {
   const pageStore = usePageStore();
   const currentPage = pageStore.currentPage;
@@ -281,7 +281,7 @@ export function addAnimationHelper(graphicId: string, animation: any) {
   }
 }
 
-/** 动画效果 - 移除动画 */
+/** Animation effects - remove animation */
 export function removeAnimationHelper(graphicId: string, animationIndex: number) {
   const pageStore = usePageStore();
   const currentPage = pageStore.currentPage;

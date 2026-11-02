@@ -12,14 +12,14 @@ import { FlowLayout } from '../canvas-page/layouts/types/FlowLayout';
 import { CircleLayout } from '../canvas-page/layouts/types/CircleLayout';
 import { GraphicFactory } from '../graphic-editing/graphic/factory/GraphicFactory';
 
-// 创建默认页面
+// Create default page
 function createDefaultPage(): IPage {
   const page = new BasePage();
   page.init({
     id: 'page-1',
     name: 'Page1',
     width: 1920,
-    height: 1080, 
+    height: 1080,
     backgroundColor: '#808080',
     themeColors: {
       primary: '#409EFF',
@@ -40,13 +40,13 @@ function createDefaultPage(): IPage {
   return page;
 }
 
-// 页面分组类型
+// Page group type
 export interface PageGroup {
   id: string;
   name: string;
 }
 
-// 页面状态管理
+// Page state management
 export const usePageStore = defineStore('page', {
   state: () => ({
     pages: [
@@ -61,7 +61,7 @@ export const usePageStore = defineStore('page', {
     scaleMax: 300,
     zoomStep: 1.05,
     pageMode: 'edit' as 'edit' | 'preview',
-    /** Phase 15.5: 编辑态图元级原值浮层开关（DataPanel checkbox 控制） */
+    /** Phase 15.5: toggle for per-graphic raw-value overlay in edit mode (controlled by DataPanel checkbox) */
     showValueOverlay: false,
   }),
 
@@ -70,7 +70,7 @@ export const usePageStore = defineStore('page', {
       return state.pages.find((page) => page.id === state.currentPageId);
     },
     openPages: (state): IPage[] => {
-      // 访问 dirty 确保响应式系统能追踪页面修改状态变化
+      // Access dirty so the reactivity system tracks page modification state changes
       state.pages.forEach(p => { void p.dirty; });
       return state.pages.filter((p) => !state.closedPageIds.includes(p.id));
     },
@@ -115,7 +115,7 @@ export const usePageStore = defineStore('page', {
   },
 
   actions: {
-    // 添加页面
+    // Add page
     addPage(name?: string, groupId?: string): IPage {
       const pageName = name || `Page${this.pages.length + 1}`;
       const newPage = new BasePage();
@@ -151,7 +151,7 @@ export const usePageStore = defineStore('page', {
       return newPage;
     },
 
-    // 删除页面
+    // Remove page
     removePage(id: string) {
       const index = this.pages.findIndex((page) => page.id === id);
       if (index === -1 || this.pages.length <= 1) return;
@@ -167,7 +167,7 @@ export const usePageStore = defineStore('page', {
       delete this.pageGroupMap[id];
     },
 
-    // 添加页面分组
+    // Add page group
     addPageGroup(name: string): PageGroup {
       const group: PageGroup = {
         id: `group-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
@@ -177,7 +177,7 @@ export const usePageStore = defineStore('page', {
       return group;
     },
 
-    // 删除页面分组
+    // Remove page group
     removePageGroup(groupId: string) {
       const index = this.pageGroups.findIndex((g) => g.id === groupId);
       if (index === -1) return;
@@ -189,7 +189,7 @@ export const usePageStore = defineStore('page', {
       }
     },
 
-    // 重命名页面分组
+    // Rename page group
     renamePageGroup(groupId: string, name: string) {
       const group = this.pageGroups.find((g) => g.id === groupId);
       if (group) {
@@ -197,22 +197,22 @@ export const usePageStore = defineStore('page', {
       }
     },
 
-    // 移动页面到分组
+    // Move page to group
     movePageToGroup(pageId: string, groupId: string) {
       this.pageGroupMap[pageId] = groupId;
     },
 
-    // 从分组中移除页面
+    // Remove page from group
     removePageFromGroup(pageId: string) {
       delete this.pageGroupMap[pageId];
     },
 
-    // 复制页面
+    // Copy page
     copyPage(id: string): IPage | null {
       const page = this.pages.find((page) => page.id === id);
       if (page) {
         const newPage = new BasePage();
-        // 使用唯一 ID，避免删除后重建产生重复
+        // Use a unique ID to avoid duplicates when recreating after deletion
         const uniqueId = `page-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
         newPage.init({
           id: uniqueId,
@@ -224,7 +224,7 @@ export const usePageStore = defineStore('page', {
           themeColors: { ...page.themeColors },
           layout: page.layout.clone() as ILayout,
           graphics: page.graphics.map((g) => {
-            // 深度克隆图形
+            // Deep-clone the graphic
             const clonedGraphic = GraphicFactory.createGraphicFromJSON(
               g.toJSON()
             );
@@ -245,7 +245,7 @@ export const usePageStore = defineStore('page', {
       return null;
     },
 
-    // 重命名页面
+    // Rename page
     renamePage(id: string, name: string) {
       const page = this.pages.find((page) => page.id === id);
       if (page) {
@@ -253,7 +253,7 @@ export const usePageStore = defineStore('page', {
       }
     },
 
-    // 页面排序
+    // Reorder pages
     reorderPages(oldIndex: number, newIndex: number) {
       if (
         oldIndex >= 0 &&
@@ -267,7 +267,7 @@ export const usePageStore = defineStore('page', {
       }
     },
 
-    // 在同一分组内拖拽排序
+    // Drag-reorder within the same group
     reorderPageInGroup(pageId: string, targetPageId: string) {
       const draggedIndex = this.pages.findIndex(p => p.id === pageId);
       const targetIndex = this.pages.findIndex(p => p.id === targetPageId);
@@ -275,7 +275,7 @@ export const usePageStore = defineStore('page', {
       this.reorderPages(draggedIndex, targetIndex);
     },
 
-    // 移动页面到指定位置
+    // Move page to a specific position
     movePage(id: string, direction: 'prev' | 'next' | 'first' | 'last') {
       const index = this.pages.findIndex((p) => p.id === id);
       if (index === -1) return;
@@ -290,7 +290,7 @@ export const usePageStore = defineStore('page', {
       this.pages.splice(newIndex, 0, page);
     },
 
-    // 设置页面图标
+    // Set page icon
     setPageIcon(id: string, icon: string) {
       const page = this.pages.find((p) => p.id === id);
       if (page) {
@@ -298,20 +298,20 @@ export const usePageStore = defineStore('page', {
       }
     },
 
-    // 设置当前页面
+    // Set current page
     setCurrentPage(id: string) {
       const closedIndex = this.closedPageIds.indexOf(id);
       if (closedIndex !== -1) {
         this.closedPageIds.splice(closedIndex, 1);
       }
       this.currentPageId = id;
-      // 记录最近打开的页面到 localStorage，下次打开工程时只恢复此页面
+      // Record the most recently opened page in localStorage; only this page is restored next time the project opens
       try {
         localStorage.setItem('scada-last-page-id', id);
       } catch { /* ignore */ }
     },
 
-    // 切换编辑态缩放居中
+    // Toggle auto-fit scaling in edit mode
     toggleAutoFit() {
       this.enableAutoFit = !this.enableAutoFit;
     },
@@ -380,7 +380,7 @@ export const usePageStore = defineStore('page', {
       }
     },
 
-    // 更新页面属性
+    // Update page properties
     updatePage(id: string, properties: Partial<IPage>) {
       const page = this.pages.find((page) => page.id === id);
       if (page) {
@@ -388,7 +388,7 @@ export const usePageStore = defineStore('page', {
       }
     },
 
-    // 设置页面布局
+    // Set page layout
     setPageLayout(id: string, layoutType: string) {
       const page = this.pages.find((page) => page.id === id);
       if (page) {
@@ -409,7 +409,7 @@ export const usePageStore = defineStore('page', {
       }
     },
 
-    // 导入页面
+    // Import pages
     importPages(data: any[]) {
       this.pages = data.map((pageData) => {
         const page = new BasePage();
@@ -421,7 +421,7 @@ export const usePageStore = defineStore('page', {
       }
     },
 
-    // 导出页面
+    // Export pages
     exportPages() {
       return this.pages.map((page) => ({
         ...page,
@@ -429,7 +429,7 @@ export const usePageStore = defineStore('page', {
       }));
     },
 
-    // 从 JSON 创建布局
+    // Create layout from JSON
     createLayoutFromJSON(data: any): ILayout {
       switch (data.type) {
         case 'free':

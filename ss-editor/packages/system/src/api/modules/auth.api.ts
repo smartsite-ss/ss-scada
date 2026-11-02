@@ -6,28 +6,28 @@ import client from '../client';
 import type { ApiResponse, LoginDto, RegisterDto, AuthResult } from '../types/api';
 
 /**
- * 微信扫码二维码响应
+ * WeChat QR code response
  */
 export interface WechatQrcodeResult {
-  /** state 参数（CSRF 防护 + 会话标识） */
+  /** state parameter (CSRF protection + session identifier) */
   state: string;
-  /** 微信扫码授权 URL（真实模式嵌入 iframe；Mock 模式为 mock:// 协议） */
+  /** WeChat scan authorization URL (real mode embedded in an iframe; Mock mode uses the mock:// protocol) */
   wechatUrl: string;
-  /** 是否为 Mock 模式（前端据此显示模拟按钮或 iframe） */
+  /** Whether Mock mode (the frontend shows a simulated button or an iframe accordingly) */
   mock: boolean;
-  /** 过期时间戳（毫秒） */
+  /** Expiry timestamp (milliseconds) */
   expiresAt: number;
 }
 
 /**
- * 微信扫码状态查询响应
+ * WeChat scan status query response
  */
 export interface WechatScanStatusResult {
-  /** 扫码状态：pending/scanned/confirmed/expired/cancelled */
+  /** Scan status: pending/scanned/confirmed/expired/cancelled */
   status: 'pending' | 'scanned' | 'confirmed' | 'expired' | 'cancelled';
-  /** 剩余有效秒数 */
+  /** Remaining valid seconds */
   remainingSeconds: number;
-  /** confirmed 时填充的用户信息 */
+  /** User info filled when confirmed */
   user?: {
     id: string;
     username: string;
@@ -38,12 +38,12 @@ export interface WechatScanStatusResult {
 }
 
 /**
- * 登录功能开关（登录页初始化时查询，决定是否显示微信扫码/短信登录入口）
+ * Login feature switches (queried at login page initialization, deciding whether to show WeChat scan / SMS login entries)
  */
 export interface LoginFeatures {
-  /** 微信扫码登录是否启用（WECHAT_LOGIN_ENABLED） */
+  /** Whether WeChat scan login is enabled (WECHAT_LOGIN_ENABLED) */
   wechatLoginEnabled: boolean;
-  /** 短信验证码登录是否启用（SMS_LOGIN_ENABLED，§2.7 预留） */
+  /** Whether SMS verification code login is enabled (SMS_LOGIN_ENABLED, reserved in §2.7) */
   smsLoginEnabled: boolean;
 }
 
@@ -57,26 +57,26 @@ export const authApi = {
   },
 
   /**
-   * S-C03: refreshToken 通过 HttpOnly Cookie 自动传输，无需在 body 中传递
-   */
+     * S-C03: refreshToken is transported automatically via HttpOnly Cookie, no need to pass it in the body
+     */
   refreshToken(): Promise<ApiResponse<{ message: string }>> {
     return client.post('/auth/refresh', {}).then((res) => res.data);
   },
 
   /**
-   * S-C03: Cookie 模式下 refreshToken 通过 HttpOnly Cookie 自动传输；
-   * Bearer 模式（桌面端）下需通过 body 显式传入以撤销服务端的刷新令牌。
-   */
+     * S-C03: in Cookie mode refreshToken is transported automatically via HttpOnly Cookie;
+     * in Bearer mode (desktop) it must be passed explicitly via the body to revoke the server-side refresh token.
+     */
   logout(refreshToken?: string): Promise<void> {
     return client.post('/auth/logout', refreshToken ? { refreshToken } : {});
   },
 
-  // ── 微信扫码登录 ──
+  // ── WeChat scan login ──
 
   /**
-   * 生成微信扫码二维码
-   * 后端返回 state + wechatUrl + mock 标识，前端据此渲染 iframe 或 Mock 按钮
-   */
+     * Generate a WeChat scan QR code
+     * The backend returns state + wechatUrl + a mock flag; the frontend renders an iframe or a Mock button accordingly
+     */
   generateWechatQrcode(): Promise<WechatQrcodeResult> {
     return client
       .post('/auth/wechat/qrcode', {})
@@ -84,8 +84,8 @@ export const authApi = {
   },
 
   /**
-   * 查询扫码状态（前端轮询，confirmed 时后端一次性下发 HttpOnly Cookie）
-   */
+     * Query the scan status (frontend polls; on confirmed the backend delivers the HttpOnly Cookie once)
+     */
   getWechatScanStatus(state: string): Promise<WechatScanStatusResult> {
     return client
       .get('/auth/wechat/status', { params: { state } })
@@ -93,8 +93,8 @@ export const authApi = {
   },
 
   /**
-   * Mock 扫码确认/取消（仅 WECHAT_MOCK=true 时可用，开发调试用）
-   */
+     * Mock scan confirm/cancel (only available when WECHAT_MOCK=true, for development and debugging)
+     */
   wechatMockScan(
     state: string,
     action: 'confirm' | 'cancel',
@@ -105,9 +105,9 @@ export const authApi = {
   },
 
   /**
-   * 获取登录功能开关（公开接口，登录前调用）
-   * 后端 GET /auth/features 返回 { wechatLoginEnabled, smsLoginEnabled }
-   */
+     * Get the login feature switches (public endpoint, called before login)
+     * The backend GET /auth/features returns { wechatLoginEnabled, smsLoginEnabled }
+     */
   getLoginFeatures(): Promise<LoginFeatures> {
     return client
       .get('/auth/features')

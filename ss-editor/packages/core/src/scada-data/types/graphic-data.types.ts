@@ -4,7 +4,7 @@
 
 export type TagDataType = 'boolean' | 'int16' | 'uint16' | 'int32' | 'uint32' | 'float32' | 'float64' | 'string';
 
-// QualityCode 统一定义于 quality.types.ts，此处 re-export 保持向后兼容
+// QualityCode is centrally defined in quality.types.ts; re-exported here for backward compatibility
 export type { QualityCode } from './quality.types';
 import type { QualityCode } from './quality.types';
 

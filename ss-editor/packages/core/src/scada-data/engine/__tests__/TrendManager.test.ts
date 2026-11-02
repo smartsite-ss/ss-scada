@@ -7,11 +7,11 @@ import { TrendManager, type TrendPoint } from '../TrendManager';
 import { EventBus } from '../EventBus';
 
 /**
- * 生成测试用数据点
- * @param count 数据点数量
- * @param startTimestamp 起始时间戳
- * @param intervalMs 时间间隔（毫秒）
- * @param valueFn 值生成函数
+ * Generate test data points
+ * @param count number of data points
+ * @param startTimestamp start timestamp
+ * @param intervalMs time interval (ms)
+ * @param valueFn value generator function
  */
 function generatePoints(
   count: number,
@@ -50,7 +50,7 @@ describe('TrendManager', () => {
 
   // ==================== downsample (LTTB) ====================
   describe('downsample (LTTB algorithm)', () => {
-    // ---------- 空数据处理 ----------
+    // ---------- Empty data handling ----------
     it('TC-TRD-001: should return empty array for empty data', () => {
       const result = TrendManager.downsample([], 100);
       expect(result).toEqual([]);
@@ -61,7 +61,7 @@ describe('TrendManager', () => {
       expect(TrendManager.downsample(undefined as unknown as TrendPoint[], 100)).toEqual([]);
     });
 
-    // ---------- 单点数据处理 ----------
+    // ---------- Single data point handling ----------
     it('TC-TRD-003: should return original data for single point', () => {
       const data: TrendPoint[] = [
         { tagId: 't1', value: 10, quality: 'good', timestamp: 1000 },
@@ -81,7 +81,7 @@ describe('TrendManager', () => {
       expect(result.length).toBe(2);
     });
 
-    // ---------- 数据量 <= threshold 时返回原数据 ----------
+    // ---------- Data volume <= threshold returns the original data ----------
     it('TC-TRD-010: should return original data when data length <= threshold', () => {
       const data = generatePoints(500);
       const result = TrendManager.downsample(data, 500);
@@ -101,7 +101,7 @@ describe('TrendManager', () => {
       expect(result).toBe(data);
     });
 
-    // ---------- 数据量 > threshold 时返回 threshold 个点 ----------
+    // ---------- Data volume > threshold returns threshold points ----------
     it('TC-TRD-020: should downsample to threshold count when data exceeds threshold', () => {
       const data = generatePoints(5000);
       const result = TrendManager.downsample(data, 500);
@@ -126,7 +126,7 @@ describe('TrendManager', () => {
       expect(result.length).toBe(3);
     });
 
-    // ---------- 第一个和最后一个点被保留 ----------
+    // ---------- First and last points are kept ----------
     it('TC-TRD-030: should preserve the first point', () => {
       const data = generatePoints(1000);
       const result = TrendManager.downsample(data, 100);
@@ -148,7 +148,7 @@ describe('TrendManager', () => {
       expect(result[result.length - 1].timestamp).toBe(5000 + 1999 * 100);
     });
 
-    // ---------- 降采样后数据视觉特征保留 ----------
+    // ---------- Downsampled data retains visual characteristics ----------
     it('TC-TRD-040: should preserve visual characteristics - average value close to original', () => {
       const data = generatePoints(5000, 0, 1, (i) => Math.sin(i / 50) * 30 + 50);
       const threshold = 500;
@@ -159,7 +159,7 @@ describe('TrendManager', () => {
       const sampledAvg =
         result.reduce((sum, p) => sum + Number(p.value), 0) / result.length;
 
-      // 平均值偏差应在 20% 以内
+      // Mean deviation should be within 20%
       const deviation = Math.abs(sampledAvg - originalAvg) / Math.abs(originalAvg);
       expect(deviation).toBeLessThan(0.2);
     });
@@ -171,7 +171,7 @@ describe('TrendManager', () => {
       const originalMax = Math.max(...data.map((p) => Number(p.value)));
       const sampledMax = Math.max(...result.map((p) => Number(p.value)));
 
-      // 最大值偏差应在 15% 以内
+      // Max value deviation should be within 15%
       const deviation = Math.abs(sampledMax - originalMax) / Math.abs(originalMax);
       expect(deviation).toBeLessThan(0.15);
     });
@@ -184,18 +184,18 @@ describe('TrendManager', () => {
       const originalMaxVal = Math.max(...data.map((p) => Number(p.value)));
       const sampledMin = Math.min(...result.map((p) => Number(p.value)));
 
-      // 最小值偏差应在 15% 以内（使用值域作为参考）
+      // Min value deviation should be within 15% (using the value range as reference)
       const range = originalMaxVal - originalMin;
       const deviation = Math.abs(sampledMin - originalMin) / Math.abs(range);
       expect(deviation).toBeLessThan(0.15);
     });
 
     it('TC-TRD-043: should preserve peak value when peak is significant', () => {
-      // 构造一个有明显峰值的数据，LTTB 应能保留峰值附近的数据点
+      // Build data with a clear peak; LTTB should retain points near the peak
       const data: TrendPoint[] = [];
       for (let i = 0; i < 1000; i++) {
         let value = 10;
-        if (i === 500) value = 100; // 单点峰值
+        if (i === 500) value = 100; // single-point peak
         else if (i === 499 || i === 501) value = 90;
         data.push({
           tagId: 't1',
@@ -206,13 +206,13 @@ describe('TrendManager', () => {
       }
       const result = TrendManager.downsample(data, 100);
 
-      // 采样后的最大值应该非常接近原始峰值
+      // The sampled max value should be very close to the original peak
       const originalMax = Math.max(...data.map((p) => Number(p.value)));
       const sampledMax = Math.max(...result.map((p) => Number(p.value)));
       expect(sampledMax).toBeGreaterThanOrEqual(originalMax * 0.85);
     });
 
-    // ---------- threshold 边界情况 ----------
+    // ---------- threshold boundary cases ----------
     it('TC-TRD-050: should handle threshold of 1 - return only first point', () => {
       const data = generatePoints(100);
       const result = TrendManager.downsample(data, 1);
@@ -231,12 +231,12 @@ describe('TrendManager', () => {
     it('TC-TRD-052: should handle threshold of 0 - return empty for large data', () => {
       const data = generatePoints(100);
       const result = TrendManager.downsample(data, 0);
-      // threshold < 3 且 threshold != 2，返回首点（受 threshold=1 分支影响，threshold=0 走 threshold<3 且 !=2，返回首点）
+      // threshold < 3 and threshold != 2 returns the first point (affected by the threshold=1 branch; threshold=0 goes through threshold<3 && !=2, returning the first point)
       expect(result.length).toBe(1);
       expect(result[0]).toBe(data[0]);
     });
 
-    // ---------- 数据完整性 ----------
+    // ---------- Data integrity ----------
     it('TC-TRD-060: should preserve TrendPoint structure in result', () => {
       const data = generatePoints(1000);
       const result = TrendManager.downsample(data, 100);
@@ -259,18 +259,18 @@ describe('TrendManager', () => {
     it('TC-TRD-062: should return points that are references to original data (no cloning)', () => {
       const data = generatePoints(1000);
       const result = TrendManager.downsample(data, 100);
-      // 结果中的点应是原数组中的引用（LTTB 算法特性）
+      // Points in the result should be references from the original array (an LTTB property)
       for (const point of result) {
         expect(data).toContain(point);
       }
     });
 
-    // ---------- 不同数据模式 ----------
+    // ---------- Different data patterns ----------
     it('TC-TRD-070: should handle constant value data', () => {
       const data = generatePoints(1000, 0, 1, () => 42);
       const result = TrendManager.downsample(data, 100);
       expect(result.length).toBe(100);
-      // 所有值应保持为 42
+      // All values should stay 42
       for (const p of result) {
         expect(Number(p.value)).toBe(42);
       }
@@ -298,7 +298,7 @@ describe('TrendManager', () => {
     const BASE_TIME = 1000000;
 
     beforeEach(() => {
-      // 向缓冲区写入测试数据，每次推进时间以获得递增的时间戳
+      // Write test data to the buffer, advancing time each step for increasing timestamps
       for (let i = 0; i < 1500; i++) {
         vi.setSystemTime(BASE_TIME + i * 1000);
         manager.recordDataPoint('tag-1', Math.sin(i / 10) * 50 + 50, 'good');
@@ -306,7 +306,7 @@ describe('TrendManager', () => {
     });
 
     it('TC-TRD-100: should return all points when below default threshold (1000)', () => {
-      // 写入少量数据
+      // Write a small amount of data
       manager.clearAll();
       for (let i = 0; i < 500; i++) {
         vi.setSystemTime(BASE_TIME + i * 1000);
@@ -320,7 +320,7 @@ describe('TrendManager', () => {
     it('TC-TRD-101: should apply downsampling when data exceeds default threshold', () => {
       const result = manager.queryHistory(['tag-1']);
       expect(result.length).toBe(1);
-      // 默认 threshold=1000，数据 1500 应被降采样到 1000
+      // Default threshold=1000; 1500 data points should be downsampled to 1000
       expect(result[0].points.length).toBe(1000);
     });
 
@@ -335,7 +335,7 @@ describe('TrendManager', () => {
     });
 
     it('TC-TRD-104: should filter by startTime and endTime', () => {
-      // tag-1 的时间戳范围：BASE_TIME 到 BASE_TIME + 1499 * 1000
+      // tag-1's timestamp range: BASE_TIME to BASE_TIME + 1499 * 1000
       const startTime = BASE_TIME + 200 * 1000;
       const endTime = BASE_TIME + 800 * 1000;
 
@@ -345,10 +345,10 @@ describe('TrendManager', () => {
         downsampleThreshold: 2000,
       });
       const filteredTimes = filteredResult[0].points.map((p) => p.time);
-      // 过滤后应在 [startTime, endTime] 范围内
+      // After filtering, points should be within [startTime, endTime]
       expect(Math.min(...filteredTimes)).toBeGreaterThanOrEqual(startTime);
       expect(Math.max(...filteredTimes)).toBeLessThanOrEqual(endTime);
-      // 800 - 200 + 1 = 601 个点
+      // 800 - 200 + 1 = 601 points
       expect(filteredResult[0].points.length).toBe(601);
     });
 
@@ -384,7 +384,7 @@ describe('TrendManager', () => {
     it('TC-TRD-108: should preserve first and last points after downsampling', () => {
       const result = manager.queryHistory(['tag-1'], { downsampleThreshold: 500 });
       const points = result[0].points;
-      // 降采样后首尾时间戳应与原数据一致
+      // After downsampling, the head/tail timestamps should match the original data
       expect(points[0].time).toBe(BASE_TIME);
       expect(points[points.length - 1].time).toBe(BASE_TIME + 1499 * 1000);
     });

@@ -3,10 +3,10 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * AI Provider 配置实体 — 全局数据库表 sys_ai_providers
+ * AI Provider config entity - global database table sys_ai_providers
  *
- * 存储各 LLM 供应商的配置（API Key、模型、开关等），
- * 供 LLMProxyService 在运行时读取并初始化 Provider。
+ * Stores the configuration of each LLM provider (API key, models, switch, etc.),
+ * read and initialized by LLMProxyService at runtime.
  */
 
 import {
@@ -17,7 +17,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-/** 供应商类型 */
+/** Provider type */
 export type AiProviderType = 'deepseek' | 'zhipu' | 'openai' | 'custom';
 
 @Entity('sys_ai_providers')
@@ -25,39 +25,39 @@ export class AiProvider {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  /** 供应商类型标识 */
+  /** Provider type identifier */
   @Column({ name: 'provider_id', type: 'varchar', length: 32 })
   providerId: string;
 
-  /** 显示名称 */
+  /** Display name */
   @Column({ type: 'varchar', length: 64 })
   name: string;
 
-  /** API Key（加密存储，ENC: 前缀） */
+  /** API key (encrypted storage, ENC: prefix) */
   @Column({ name: 'api_key', type: 'text' })
   apiKey: string;
 
-  /** API 基础地址 */
+  /** API base URL */
   @Column({ name: 'api_base', type: 'varchar', length: 256 })
   apiBase: string;
 
-  /** 默认模型 */
+  /** Default model */
   @Column({ name: 'default_model', type: 'varchar', length: 64 })
   defaultModel: string;
 
-  /** 可用模型列表（JSON 数组字符串） */
+  /** Available model list (JSON array string) */
   @Column({ type: 'text', default: '[]' })
   models: string;
 
-  /** 是否启用 */
+  /** Whether enabled */
   @Column({ type: 'integer', default: 1 })
   enabled: number;
 
-  /** 排序序号 */
+  /** Sort order */
   @Column({ name: 'sort_order', type: 'integer', default: 0 })
   sortOrder: number;
 
-  /** 扩展配置（JSON 字符串：timeout、maxRetries、codegenModel 等） */
+  /** Extension config (JSON string: timeout, maxRetries, codegenModel, etc.) */
   @Column({ type: 'text', default: '{}' })
   config: string;
 

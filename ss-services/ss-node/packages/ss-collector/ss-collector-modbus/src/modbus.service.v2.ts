@@ -68,13 +68,13 @@ export class ModbusService extends BaseCollectorService {
     };
 
     if (alreadyConnected) {
-      // 检查底层客户端是否仍然打开，若已断开则继续重新连接
+      // Check whether the underlying client is still open; if disconnected, keep reconnecting
       const entries = this.getClientEntries();
       const entry = entries.get(deviceId);
       if (entry?.client?.isOpen) {
         return { type: 'modbus', deviceId, config };
       }
-      // 客户端已断开，继续重新连接
+      // Client is disconnected, keep reconnecting
     }
 
     this.logger.log(
@@ -154,16 +154,16 @@ export class ModbusService extends BaseCollectorService {
     return result;
   }
 
-  /** 覆写 readTag：添加错误捕获，返回 bad quality 而非抛出。
-   *  注意：验证类错误（无效地址、不支持的数据类型）应当抛出，
-   *  仅通信类错误才返回 bad quality 结果。 */
+  /** Override readTag: add error capture, return bad quality instead of throwing.
+   *  Note: validation errors (invalid address, unsupported data type) should still be thrown;
+   *  only communication errors should return a bad-quality result. */
   async readTag(client: any, tag: ITagContext): Promise<CollectorReadResult> {
     const tagId = tag.id || 'unknown-tag';
     try {
       return await this.doReadTag(client, tag);
     } catch (error) {
       const msg = (error as Error).message;
-      // 验证错误（无效地址）应当抛出，不应吞掉
+      // Validation errors (invalid address) should be thrown, not swallowed
       if (msg.startsWith('Invalid address')) {
         throw error;
       }

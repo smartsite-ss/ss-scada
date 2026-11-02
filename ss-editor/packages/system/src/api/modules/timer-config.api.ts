@@ -4,7 +4,7 @@
 
 import client from '../client';
 
-/** 定时器配置条目 */
+/** Timer configuration entry */
 export interface TimerConfigEntry {
   id: string;
   name: string;
@@ -16,24 +16,24 @@ export interface TimerConfigEntry {
 }
 
 export const timerConfigApi = {
-  /** 获取所有定时任务配置 */
+  /** Get all scheduled task configurations */
   getAll(): Promise<TimerConfigEntry[]> {
     return client.get('/system/timer-configs').then((res) => res.data);
   },
 
-  /** 获取单个定时任务配置 */
+  /** Get a single scheduled task configuration */
   getById(id: string): Promise<TimerConfigEntry> {
     return client.get(`/system/timer-configs/${id}`).then((res) => res.data);
   },
 
-  /** 更新定时任务间隔 */
+  /** Update a scheduled task interval */
   updateInterval(id: string, interval: number): Promise<TimerConfigEntry> {
     return client
       .put(`/system/timer-configs/${id}`, { interval })
       .then((res) => res.data);
   },
 
-  /** 重置定时任务为默认值 */
+  /** Reset a scheduled task to its default value */
   resetInterval(id: string): Promise<TimerConfigEntry> {
     return client
       .post(`/system/timer-configs/${id}/reset`)

@@ -25,9 +25,9 @@ interface AuthenticatedSocket extends Socket {
 }
 
 /**
- * WebSocket CORS 白名单：与 HTTP 层（main.ts enableCors）保持一致的环境变量来源，
- * 并强制包含 Tauri 桌面端源（页面源 https://tauri.localhost 与后端跨源，
- * 缺失时 socket.io 握手被拒，表现为设备监控实时数据不更新）。
+ * WebSocket CORS whitelist: sourced from the same env vars as the HTTP layer (main.ts enableCors),
+ * and always includes the Tauri desktop origin (the page origin https://tauri.localhost is cross-origin to the backend;
+ * if missing, the socket.io handshake is rejected, manifesting as device-monitor real-time data not updating).
  */
 function buildWsCorsOrigins(): string[] {
   const origins = (process.env.CORS_ORIGINS || 'http://localhost:5173,http://localhost:4000')
@@ -57,15 +57,15 @@ export class ScadaWebSocketGateway implements OnGatewayConnection, OnGatewayDisc
   private readonly logger = new Logger(ScadaWebSocketGateway.name);
   private connectedClients = new Map<string, AuthenticatedSocket>();
 
-  /** 批量更新缓冲区：projectId → 待推送标签数据列表 */
+  /** Batch-update buffer: projectId -> pending tag-data list */
   private batchUpdateBuffer = new Map<
     string,
     Array<{ tagId: string; tagName: string; value: number; quality: string; timestamp: string }>
   >();
-  /** 批量刷新定时器（合并 200ms 窗口内的多次推送） */
+  /** Batch-flush timer (merges pushes within a 200ms window) */
   private batchFlushTimer: ReturnType<typeof setInterval> | null = null;
   private readonly batchFlushIntervalMs = 200;
-  /** 空闲连接清理定时器（每 60 秒检查一次） */
+  /** Idle-connection cleanup timer (checked every 60 seconds) */
   private idleCheckTimer: ReturnType<typeof setInterval> | null = null;
   private readonly idleCheckIntervalMs = 60000;
 
@@ -76,7 +76,7 @@ export class ScadaWebSocketGateway implements OnGatewayConnection, OnGatewayDisc
     private readonly connectionLimiter: ConnectionLimiterService,
     private readonly connectionMonitor: ConnectionMonitorService,
   ) {
-    // 空闲连接清理定时器：每 60 秒检查一次，断开超时连接
+    // Idle-connection cleanup timer: check every 60 seconds, disconnect timed-out connections
     this.idleCheckTimer = setInterval(() => {
       try {
         const idleSocketIds = this.connectionLimiter.checkIdleConnections();
@@ -102,15 +102,15 @@ export class ScadaWebSocketGateway implements OnGatewayConnection, OnGatewayDisc
           client.user = { sub: payload.sub, username: payload.username, role: payload.role };
           client.connectedAt = Date.now();
 
-          // 加入用户专属房间 (用于私人通知)
+          // Join the user's private room (for personal notifications)
           client.join(`user:${payload.sub}`);
         } catch {
-          // 未认证用户可连接但功能受限
+          // Unauthenticated users may connect but with limited functionality
           this.logger.warn(`Unauthenticated WS connection: ${client.id}`);
         }
       }
 
-      // 连接限制检查（JWT 认证后、加入 connectedClients 前）
+      // Connection-limit check (after JWT auth, before adding to connectedClients)
       const ip = client.handshake.address || client.conn.remoteAddress || 'unknown';
       const userId = client.user?.sub;
       const username = client.user?.username;
@@ -122,7 +122,7 @@ export class ScadaWebSocketGateway implements OnGatewayConnection, OnGatewayDisc
         return;
       }
 
-      // 提取业务来源信息（用于监控页区分连接来自哪个页面/模块）
+      // Extract business-source info (so the monitoring page can tell which page/module the connection came from)
       const handshakeAuth = (client.handshake.auth || {}) as {
         source?: string;
         clientUrl?: string;
@@ -132,7 +132,7 @@ export class ScadaWebSocketGateway implements OnGatewayConnection, OnGatewayDisc
       const url = handshakeAuth.clientUrl || headers.referer || headers.origin || '';
       const userAgent = (headers['user-agent'] as string) || '';
 
-      // 注册连接监控
+      // Register connection monitoring
       this.connectionMonitor.registerConnection(
         client.id,
         userId,
@@ -157,7 +157,7 @@ export class ScadaWebSocketGateway implements OnGatewayConnection, OnGatewayDisc
         timestamp: new Date().toISOString(),
       });
 
-      // 离线消息补发：检查并补发客户端离线期间的缓存消息
+      // Offline-message replay: check and replay messages cached while the client was offline
       this.resendPendingMessages(client);
     } catch (error) {
       this.logger.error(`WS connection error: ${(error as Error).message}`);
@@ -167,17 +167,17 @@ export class ScadaWebSocketGateway implements OnGatewayConnection, OnGatewayDisc
 
   handleDisconnect(client: Socket): void {
     this.connectedClients.delete(client.id);
-    // 注销连接限制记录
+    // Unregister the connection-limit record
     this.connectionLimiter.unregisterConnection(client.id);
-    // 注销连接监控记录
+    // Unregister the connection-monitor record
     this.connectionMonitor.unregisterConnection(client.id);
-    // 注意：不清除离线消息缓存，保留以等待客户端重连后补发
+    // Note: do not clear the offline-message cache; keep it for replay when the client reconnects
     this.logger.log(`WS client disconnected: ${client.id} [total: ${this.connectedClients.size}]`);
   }
 
   /**
-   * 补发客户端离线期间的缓存消息
-   * 使用 userId 作为客户端标识（稳定标识，不随 socket.id 变化）
+   * Replay messages cached while the client was offline
+   * Uses userId as the client identifier (stable, does not change with socket.id)
    */
   private resendPendingMessages(client: AuthenticatedSocket): void {
     if (!client.user) {
@@ -200,13 +200,13 @@ export class ScadaWebSocketGateway implements OnGatewayConnection, OnGatewayDisc
       client.emit(message.event, message.data);
     }
 
-    // 补发完成后清除缓存
+    // Clear the cache after replay completes
     this.offlineCache.clearMessages(clientId);
   }
 
   /**
-   * 获取当前在线的已认证用户 ID 集合
-   * 用于离线消息缓存判断哪些客户端处于离线状态
+   * Get the set of currently online authenticated user IDs
+   * Used by the offline-message cache to decide which clients are offline
    */
   getOnlineUserIds(): Set<string> {
     const onlineIds = new Set<string>();
@@ -219,9 +219,9 @@ export class ScadaWebSocketGateway implements OnGatewayConnection, OnGatewayDisc
   }
 
   /**
-   * 为离线客户端缓存消息
-   * @param event 事件名称
-   * @param data 消息数据
+   * Cache messages for offline clients
+   * @param event event name
+   * @param data message data
    */
   private cacheForOfflineClients(event: string, data: unknown): void {
     const onlineIds = this.getOnlineUserIds();
@@ -232,7 +232,7 @@ export class ScadaWebSocketGateway implements OnGatewayConnection, OnGatewayDisc
     }
   }
 
-  // ── 心跳 ──
+  // ── Heartbeat ──
   @SubscribeMessage('ping')
   handlePing(@ConnectedSocket() client: Socket): void {
     this.connectionLimiter.recordActivity(client.id);
@@ -244,7 +244,7 @@ export class ScadaWebSocketGateway implements OnGatewayConnection, OnGatewayDisc
     });
   }
 
-  // ── 房间管理 ──
+  // ── Room management ──
 
   @SubscribeMessage('subscribe:project')
   handleSubscribeProject(
@@ -253,7 +253,7 @@ export class ScadaWebSocketGateway implements OnGatewayConnection, OnGatewayDisc
   ): void {
     const room = `project:${data.projectId}`;
     client.join(room);
-    // 更新连接监控的项目房间信息
+    // Update the connection monitor's project-room info
     this.connectionMonitor.updateProjectRooms(client.id, [room]);
     this.connectionLimiter.recordActivity(client.id);
     this.connectionMonitor.recordMessage(client.id);
@@ -297,24 +297,24 @@ export class ScadaWebSocketGateway implements OnGatewayConnection, OnGatewayDisc
     this.connectionMonitor.recordMessage(client.id);
   }
 
-  // ── 数据广播 ──
+  // ── Data broadcasting ──
 
   /**
-   * 记录广播指标（监控消息的"去"过程）
-   * @param event WebSocket 事件名
-   * @param room 目标房间名
+   * Record broadcast metrics (monitoring the "outgoing" leg of messages)
+   * @param event WebSocket event name
+   * @param room target room name
    */
   private recordBroadcastMetric(event: string, room: string): void {
     try {
       const recipientCount = this.getRoomSize(room);
       this.metricsService.recordBroadcast(event, room, recipientCount);
     } catch (err) {
-      // 指标记录失败不影响广播
+      // Metric-recording failure does not affect broadcasting
       this.metricsService.recordBroadcastError(event);
     }
   }
 
-  /** 广播标签值变更到项目房间 */
+  /** Broadcast tag-value changes to the project room */
   broadcastTagUpdate(
     projectId: string,
     tagData: {
@@ -331,17 +331,17 @@ export class ScadaWebSocketGateway implements OnGatewayConnection, OnGatewayDisc
       event: 'tagValueChanged',
       ...tagData,
     });
-    // 同时推送到标签专属房间
+    // Also push to the tag-specific room
     this.server.to(tagRoom).emit('data:update', {
       event: 'tagValueChanged',
       ...tagData,
     });
-    // 记录广播指标
+    // Record broadcast metrics
     this.recordBroadcastMetric('data:update', projectRoom);
     this.recordBroadcastMetric('data:update', tagRoom);
   }
 
-  /** 批量广播标签值（缓冲合并：200ms 窗口内的多次调用合并为一次推送，降低频率） */
+  /** Batch-broadcast tag values (buffer merge: multiple calls within a 200ms window coalesce into one push, lowering frequency) */
   broadcastBatchUpdate(
     projectId: string,
     tags: Array<{
@@ -352,24 +352,24 @@ export class ScadaWebSocketGateway implements OnGatewayConnection, OnGatewayDisc
       timestamp: string;
     }>,
   ): void {
-    // 缓冲到 batchUpdateBuffer，由定时器统一刷新
+    // Buffer into batchUpdateBuffer, flushed uniformly by the timer
     const existing = this.batchUpdateBuffer.get(projectId) || [];
     existing.push(...tags);
     this.batchUpdateBuffer.set(projectId, existing);
 
-    // 启动定时刷新定时器（如未启动）
+    // Start the periodic flush timer (if not started)
     if (!this.batchFlushTimer) {
       this.batchFlushTimer = setInterval(() => this.flushBatchUpdates(), this.batchFlushIntervalMs);
     }
   }
 
   /**
-   * 刷新批量更新缓冲区
-   * 将缓冲的标签数据一次性推送到对应项目房间，并在无数据时停止定时器
+   * Flush the batch-update buffer
+   * Pushes the buffered tag data to the corresponding project rooms in one shot, stopping the timer when there is no data
    */
   private flushBatchUpdates(): void {
     if (this.batchUpdateBuffer.size === 0) {
-      // 无待刷新数据，停止定时器（下次调用 broadcastBatchUpdate 时会重新启动）
+      // Nothing to flush; stop the timer (restarted on the next broadcastBatchUpdate call)
       if (this.batchFlushTimer) {
         clearInterval(this.batchFlushTimer);
         this.batchFlushTimer = null;
@@ -384,16 +384,16 @@ export class ScadaWebSocketGateway implements OnGatewayConnection, OnGatewayDisc
         data: tags,
         timestamp: now,
       });
-      // 记录广播指标
+      // Record broadcast metrics
       this.recordBroadcastMetric('data:batch', `project:${projectId}`);
     }
 
     this.batchUpdateBuffer.clear();
   }
 
-  // ── 报警广播 ──
+  // ── Alarm broadcasting ──
 
-  /** 广播报警触发 */
+  /** Broadcast an alarm trigger */
   broadcastAlarmTrigger(
     projectId: string,
     alarmData: {
@@ -411,11 +411,11 @@ export class ScadaWebSocketGateway implements OnGatewayConnection, OnGatewayDisc
       event: 'alarmTriggered',
       ...alarmData,
     });
-    // 记录广播指标
+    // Record broadcast metrics
     this.recordBroadcastMetric('alarm:trigger', projectRoom);
   }
 
-  /** 广播报警确认 */
+  /** Broadcast an alarm acknowledgement */
   broadcastAlarmAcknowledged(
     projectId: string,
     data: {
@@ -429,11 +429,11 @@ export class ScadaWebSocketGateway implements OnGatewayConnection, OnGatewayDisc
       ...data,
     };
     this.server.to(`project:${projectId}`).emit('alarm:acknowledged', payload);
-    // 为离线客户端缓存消息
+    // Cache the message for offline clients
     this.cacheForOfflineClients('alarm:acknowledged', payload);
   }
 
-  /** 广播报警清除 */
+  /** Broadcast an alarm clear */
   broadcastAlarmCleared(
     projectId: string,
     data: {
@@ -447,11 +447,11 @@ export class ScadaWebSocketGateway implements OnGatewayConnection, OnGatewayDisc
       ...data,
     };
     this.server.to(`project:${projectId}`).emit('alarm:cleared', payload);
-    // 为离线客户端缓存消息
+    // Cache the message for offline clients
     this.cacheForOfflineClients('alarm:cleared', payload);
   }
 
-  /** 广播报警自动恢复 */
+  /** Broadcast an alarm auto-recovery */
   broadcastAlarmRecovered(
     projectId: string,
     data: {
@@ -466,13 +466,13 @@ export class ScadaWebSocketGateway implements OnGatewayConnection, OnGatewayDisc
       ...data,
     };
     this.server.to(`project:${projectId}`).emit('alarm:recovered', payload);
-    // 为离线客户端缓存消息
+    // Cache the message for offline clients
     this.cacheForOfflineClients('alarm:recovered', payload);
   }
 
-  // ── 设备状态广播 ──
+  // ── Device-status broadcasting ──
 
-  /** 广播设备状态变更 */
+  /** Broadcast a device-status change */
   broadcastDeviceStatus(
     projectId: string,
     deviceId: string,
@@ -495,14 +495,14 @@ export class ScadaWebSocketGateway implements OnGatewayConnection, OnGatewayDisc
       deviceId,
       ...status,
     });
-    // 记录广播指标
+    // Record broadcast metrics
     this.recordBroadcastMetric('device:statusChange', projectRoom);
     this.recordBroadcastMetric('device:statusChange', deviceRoom);
   }
 
-  // ── 系统广播 ──
+  // ── System broadcasting ──
 
-  /** 全系统广播（仅管理员房间） */
+  /** System-wide broadcast (admin room only) */
   broadcastSystem(message: string, data?: unknown): void {
     const payload = {
       event: 'systemBroadcast',
@@ -511,16 +511,16 @@ export class ScadaWebSocketGateway implements OnGatewayConnection, OnGatewayDisc
       timestamp: new Date().toISOString(),
     };
     this.server.emit('system:broadcast', payload);
-    // 为离线客户端缓存系统广播消息
+    // Cache system-broadcast messages for offline clients
     this.cacheForOfflineClients('system:broadcast', payload);
   }
 
-  /** 给指定用户发送通知 */
+  /** Send a notification to a specific user */
   sendToUser(userId: string, event: string, data: any): void {
     this.server.to(`user:${userId}`).emit(event, data);
   }
 
-  /** 管理员强制断开连接 */
+  /** Admin force-disconnect a connection */
   forceDisconnect(socketId: string): boolean {
     const client = this.connectedClients.get(socketId);
     if (client) {
@@ -530,7 +530,7 @@ export class ScadaWebSocketGateway implements OnGatewayConnection, OnGatewayDisc
     return false;
   }
 
-  // ── 统计 ──
+  // ── Statistics ──
 
   getConnectionCount(): number {
     return this.connectedClients.size;
@@ -549,7 +549,7 @@ export class ScadaWebSocketGateway implements OnGatewayConnection, OnGatewayDisc
     const adapter = this.server.sockets.adapter;
     const rooms: Array<{ name: string; size: number }> = [];
     adapter.rooms.forEach((sockets, roomName) => {
-      // 排除 socket.id == roomName 的默认房间
+      // Exclude the default room where socket.id == roomName
       if (roomName.length < 20) {
         rooms.push({ name: roomName, size: sockets.size });
       }

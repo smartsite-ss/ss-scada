@@ -65,7 +65,7 @@ export class SqlQueryDriver extends AbstractBaseDriver {
         return this._executeQuery();
       }
 
-      // 超过最大重试次数，推送 stale 降级数据（统一质量码 'stale'）
+      // Exceeded max retries; push stale fallback data (unified 'stale' quality code)
       this._notifyStaleData('stale');
       throw err;
     }

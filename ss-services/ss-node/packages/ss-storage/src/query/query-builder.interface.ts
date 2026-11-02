@@ -5,15 +5,15 @@
 import { QueryOptions } from '../interfaces/storage-adapter.interface';
 
 /**
- * 查询方言构建器契约：把统一语义的 QueryOptions 翻译成引擎查询语言。
+ * Query dialect builder contract: translates the unified-semantics QueryOptions into an engine query language.
  *
- * 各引擎实现：
- * - FluxQueryBuilder（InfluxDB 2，Flux）
- * - Influxdb3SqlQueryBuilder（InfluxDB 3 Core，DataFusion SQL）
- * - TdengineSqlQueryBuilder（TDengine，TDengine SQL 方言）
+ * Engine implementations:
+ * - FluxQueryBuilder (InfluxDB 2, Flux)
+ * - Influxdb3SqlQueryBuilder (InfluxDB 3 Core, DataFusion SQL)
+ * - TdengineSqlQueryBuilder (TDengine, TDengine SQL dialect)
  *
- * @param options 统一查询语义
- * @param isolation 项目隔离单元（v2=bucket 名，v3/TDengine=database 名）
+ * @param options unified query semantics
+ * @param isolation project isolation unit (v2=bucket name, v3/TDengine=database name)
  */
 export interface QueryBuilder {
   buildQuery(options: QueryOptions, isolation: { name: string }): string;

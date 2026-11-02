@@ -2,18 +2,18 @@
 // https://smartsite.top/
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
-// 过渡和动画设计令牌
+// Transition and animation design tokens
 
-// 过渡时长
+// Transition durations
 export const transitionDurations = {
-  // 快速
+  // Fast
   fast: '0.2s',
-  // 正常
+  // Normal
   normal: '0.3s',
-  // 慢速
+  // Slow
   slow: '0.5s',
-  
-  // 常用组件过渡
+
+  // Common component transitions
   button: '0.2s',
   input: '0.2s',
   card: '0.3s',
@@ -21,53 +21,53 @@ export const transitionDurations = {
   dropdown: '0.2s',
 };
 
-// 过渡缓动函数
+// Transition easing functions
 export const transitionEasings = {
-  // 线性
+  // Linear
   linear: 'linear',
-  // 缓入
+  // Ease in
   easeIn: 'ease-in',
-  // 缓出
+  // Ease out
   easeOut: 'ease-out',
-  // 缓入缓出
+  // Ease in-out
   easeInOut: 'ease-in-out',
-  
-  // 弹性
+
+  // Elastic
   elastic: 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
-  // 反弹
+  // Bounce
   bounce: 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
-  // 平滑
+  // Smooth
   smooth: 'cubic-bezier(0.4, 0, 0.2, 1)',
 };
 
-// 过渡属性
+// Transition properties
 export const transitionProperties = {
-  // 所有属性
+  // All properties
   all: 'all',
-  // 颜色
+  // Color
   color: 'color',
-  // 背景色
+  // Background color
   backgroundColor: 'background-color',
-  // 边框
+  // Border
   border: 'border',
-  // 变换
+  // Transform
   transform: 'transform',
-  // 不透明度
+  // Opacity
   opacity: 'opacity',
-  // 宽度
+  // Width
   width: 'width',
-  // 高度
+  // Height
   height: 'height',
 };
 
-// 过渡工具函数
+// Transition utility functions
 export const transitionUtils = {
-  // 获取过渡样式
+  // Get transition style
   getTransition: (property: keyof typeof transitionProperties, duration: keyof typeof transitionDurations, easing: keyof typeof transitionEasings) => {
     return `${transitionProperties[property]} ${transitionDurations[duration]} ${transitionEasings[easing]}`;
   },
-  
-  // 获取默认过渡
+
+  // Get default transition
   getDefaultTransition: () => {
     return `${transitionProperties.all} ${transitionDurations.normal} ${transitionEasings.easeInOut}`;
   },

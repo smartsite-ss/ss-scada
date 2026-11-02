@@ -5,14 +5,14 @@
 import { IPage } from '../types';
 
 /**
- * 导出服务
- * 支持将设计导出为不同的格式
+ * Export service
+ * Supports exporting the design to different formats
  */
 export class ExportService {
   /**
-   * 导出为 PNG 格式
-   * @param canvas Canvas 元素
-   * @param filename 文件名
+   * Export as PNG format
+   * @param canvas Canvas element
+   * @param filename File name
    */
   static exportAsPNG(
     canvas: HTMLCanvasElement,
@@ -28,10 +28,10 @@ export class ExportService {
   }
 
   /**
-   * 导出为 JPEG 格式
-   * @param canvas Canvas 元素
-   * @param filename 文件名
-   * @param quality 图片质量 (0-1)
+   * Export as JPEG format
+   * @param canvas Canvas element
+   * @param filename File name
+   * @param quality Image quality (0-1)
    */
   static exportAsJPEG(
     canvas: HTMLCanvasElement,
@@ -48,9 +48,9 @@ export class ExportService {
   }
 
   /**
-   * 导出为 SVG 格式
-   * @param page 页面对象
-   * @param filename 文件名
+   * Export as SVG format
+   * @param page Page object
+   * @param filename File name
    */
   static exportAsSVG(page: IPage, filename: string = 'design.svg'): void {
     try {
@@ -64,9 +64,9 @@ export class ExportService {
   }
 
   /**
-   * 导出为 JSON 格式
-   * @param page 页面对象
-   * @param filename 文件名
+   * Export as JSON format
+   * @param page Page object
+   * @param filename File name
    */
   static exportAsJSON(page: IPage, filename: string = 'design.json'): void {
     try {
@@ -82,9 +82,9 @@ export class ExportService {
   }
 
   /**
-   * 下载文件
-   * @param url 文件 URL
-   * @param filename 文件名
+   * Download a file
+   * @param url File URL
+   * @param filename File name
    */
   private static downloadFile(url: string, filename: string): void {
     const link = document.createElement('a');
@@ -96,15 +96,15 @@ export class ExportService {
   }
 
   /**
-   * 生成 SVG 内容
-   * @param page 页面对象
-   * @returns SVG 内容
+   * Generate SVG content
+   * @param page Page object
+   * @returns SVG content
    */
   private static generateSVG(page: IPage): string {
     const { width, height } = page.getSize();
     let svgContent = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">`;
 
-    // 绘制图形
+    // Draw graphics
     const graphics = page.getGraphics();
     graphics.forEach((graphic) => {
       const { x, y } = graphic.getPosition();
@@ -176,13 +176,13 @@ export class ExportService {
   }
 
   /**
-   * 生成按钮的 SVG
-   * @param x X 坐标
-   * @param y Y 坐标
-   * @param width 宽度
-   * @param height 高度
-   * @param props 属性
-   * @returns SVG 字符串
+   * Generate SVG for a button
+   * @param x X coordinate
+   * @param y Y coordinate
+   * @param width Width
+   * @param height Height
+   * @param props Properties
+   * @returns SVG string
    */
   private static generateButtonSVG(
     x: number,
@@ -213,13 +213,13 @@ export class ExportService {
   }
 
   /**
-   * 生成标签的 SVG
-   * @param x X 坐标
-   * @param y Y 坐标
-   * @param width 宽度
-   * @param height 高度
-   * @param props 属性
-   * @returns SVG 字符串
+   * Generate SVG for a label
+   * @param x X coordinate
+   * @param y Y coordinate
+   * @param width Width
+   * @param height Height
+   * @param props Properties
+   * @returns SVG string
    */
   private static generateLabelSVG(
     x: number,
@@ -242,13 +242,13 @@ export class ExportService {
   }
 
   /**
-   * 生成输入框的 SVG
-   * @param x X 坐标
-   * @param y Y 坐标
-   * @param width 宽度
-   * @param height 高度
-   * @param props 属性
-   * @returns SVG 字符串
+   * Generate SVG for an input box
+   * @param x X coordinate
+   * @param y Y coordinate
+   * @param width Width
+   * @param height Height
+   * @param props Properties
+   * @returns SVG string
    */
   private static generateInputSVG(
     x: number,
@@ -277,13 +277,13 @@ export class ExportService {
   }
 
   /**
-   * 生成图片的 SVG
-   * @param x X 坐标
-   * @param y Y 坐标
-   * @param width 宽度
-   * @param height 高度
-   * @param props 属性
-   * @returns SVG 字符串
+   * Generate SVG for an image
+   * @param x X coordinate
+   * @param y Y coordinate
+   * @param width Width
+   * @param height Height
+   * @param props Properties
+   * @returns SVG string
    */
   private static generateImageSVG(
     x: number,
@@ -300,13 +300,13 @@ export class ExportService {
   }
 
   /**
-   * 生成形状的 SVG
-   * @param x X 坐标
-   * @param y Y 坐标
-   * @param width 宽度
-   * @param height 高度
-   * @param props 属性
-   * @returns SVG 字符串
+   * Generate SVG for a shape
+   * @param x X coordinate
+   * @param y Y coordinate
+   * @param width Width
+   * @param height Height
+   * @param props Properties
+   * @returns SVG string
    */
   private static generateShapeSVG(
     x: number,
@@ -345,13 +345,13 @@ export class ExportService {
   }
 
   /**
-   * 生成文本框的 SVG
-   * @param x X 坐标
-   * @param y Y 坐标
-   * @param width 宽度
-   * @param height 高度
-   * @param props 属性
-   * @returns SVG 字符串
+   * Generate SVG for a textbox
+   * @param x X coordinate
+   * @param y Y coordinate
+   * @param width Width
+   * @param height Height
+   * @param props Properties
+   * @returns SVG string
    */
   private static generateTextboxSVG(
     x: number,
@@ -375,7 +375,7 @@ export class ExportService {
     if (textAlign === 'center') textAnchor = 'middle';
     if (textAlign === 'right') textAnchor = 'end';
 
-    // 处理多行文本
+    // Handle multi-line text
     const lines = text.split('\n');
     const lineHeight = fontSize * 1.5;
     let textSVG = '';

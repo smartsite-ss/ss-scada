@@ -3,28 +3,28 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * Redis 客户端注入 Token 常量
+ * Redis client injection-Token constants
  *
- * 设计原则：
- * - 按用途区分 client，便于按 db 索引隔离、独立监控、独立熔断
- * - 所有 token 字符串以 REDIS_CLIENT_ 为前缀，避免与业务 token 冲突
- * - Provider 在 RedisModule 中统一注册，业务模块通过 imports 引入
+ * Design principles:
+ * - Separate clients by purpose, for per-db isolation, independent monitoring, and independent circuit breaking
+ * - All token strings are prefixed with REDIS_CLIENT_ to avoid clashing with business tokens
+ * - Providers are registered centrally in RedisModule; business modules import it
  */
 
 /**
- * 默认 Redis 客户端（db=0）
- * 用途：Pipeline latest value 写入（ss:latest:{projectId}:{deviceId}）
+ * Default Redis client (db=0)
+ * Purpose: Pipeline latest-value writes (ss:latest:{projectId}:{deviceId})
  */
 export const REDIS_CLIENT_DEFAULT = 'REDIS_CLIENT_DEFAULT';
 
 /**
- * 离线消息 Redis 客户端（db=1）
- * 用途：WebSocket 离线消息缓存
+ * Offline-message Redis client (db=1)
+ * Purpose: WebSocket offline-message cache
  */
 export const REDIS_CLIENT_OFFLINE = 'REDIS_CLIENT_OFFLINE';
 
 /**
- * Redis client 用途描述（用于日志诊断）
+ * Redis client purpose description (for log diagnostics)
  */
 export const REDIS_CLIENT_PURPOSE = {
   [REDIS_CLIENT_DEFAULT]: 'latest-value',

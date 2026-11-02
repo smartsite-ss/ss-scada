@@ -3,16 +3,16 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * Single Step Agent — P1-T03 前端单步 Agent
+ * Single Step Agent — P1-T03 frontend single-step Agent
  *
- * 处理简单意图（chat/alarm_query/device_query/kb_query），
- * 单次 LLM 调用 + 可选工具执行（无需 ReAct 循环）。
+ * Handles simple intents (chat/alarm_query/device_query/kb_query),
+ * a single LLM call + optional tool execution (no ReAct loop needed).
  *
- * 复杂意图 → 转发到后端 ReAct 编排器。
+ * Complex intents → forwarded to the backend ReAct orchestrator.
  *
- * 关联决策：D-005 混合模式
+ * Related decision: D-005 hybrid mode
  *
- * 用法:
+ * Usage:
  *   const agent = new SingleStepAgent();
  *   const result = await agent.run(intentResult, context);
  */
@@ -22,23 +22,23 @@ import { IntentResult } from './intent-parser';
 import { contextManager } from './context-manager';
 import { ToolExecutor, toolExecutor, ToolDefinition } from './tool-executor';
 
-/** 单步 Agent 执行结果 */
+/** Single-step Agent execution result */
 export interface SingleStepResult {
-  /** 响应文本 */
+  /** Response text */
   content: string;
-  /** 执行时间（毫秒） */
+  /** Execution time (ms) */
   latencyMs: number;
-  /** 是否包含工具调用 */
+  /** Whether tool calls were included */
   hasToolCalls: boolean;
-  /** 工具执行结果 */
+  /** Tool execution results */
   toolResults?: Array<{ name: string; success: boolean; data?: unknown }>;
 }
 
-/** Agent 配置 */
+/** Agent config */
 export interface AgentConfig {
-  /** 超时毫秒 */
+  /** Timeout in ms */
   timeout: number;
-  /** 最大工具调用数 */
+  /** Max tool calls */
   maxToolCalls: number;
 }
 
@@ -57,9 +57,9 @@ export class SingleStepAgent {
   }
 
   /**
-   * 运行单步 Agent
-   * @param intent — 意图解析结果
-   * @returns 执行结果
+   * Run the single-step Agent
+   * @param intent — intent parsing result
+   * @returns execution result
    */
   async run(intent: IntentResult): Promise<SingleStepResult> {
     const startTime = Date.now();
@@ -71,7 +71,7 @@ export class SingleStepAgent {
       { role: 'user', content: intent.rawInput },
     ];
 
-    // 获取可用工具
+    // Get available tools
     const tools = this.executor.getToolSchemas();
 
     try {
@@ -83,7 +83,7 @@ export class SingleStepAgent {
 
       const latencyMs = Date.now() - startTime;
 
-      // 检查是否有 Tool Call
+      // Check for tool calls
       const assistantMsg = response;
       const toolCalls = assistantMsg?.toolCalls;
 
@@ -112,21 +112,21 @@ export class SingleStepAgent {
   }
 
   /**
-   * 是否需要转发到后端 ReAct 编排器
+   * Whether to forward to the backend ReAct orchestrator
    */
   shouldDelegate(intent: IntentResult): boolean {
     return intent.complexity === 'complex';
   }
 
   /**
-   * 注册前端工具
+   * Register frontend tools
    */
   registerTool(tool: ToolDefinition): void {
     this.executor.register(tool);
   }
 
   /**
-   * 意图类型 → 任务类型映射
+   * Intent type → task type mapping
    */
   private mapIntentToTaskType(intent: IntentResult['intent']): TaskType {
     const map: Record<string, TaskType> = {
@@ -146,7 +146,7 @@ export class SingleStepAgent {
   }
 
   /**
-   * 执行工具调用链
+   * Execute the tool call chain
    */
   private async executeTools(
     toolCalls: Array<{ function: { name: string; arguments: string } }>,
@@ -173,5 +173,5 @@ export class SingleStepAgent {
   }
 }
 
-/** 单例 */
+/** Singleton */
 export const singleStepAgent = new SingleStepAgent();

@@ -7,7 +7,7 @@ import { IsolationMode } from '../../plugin.types';
 import { IDeviceContext, ITagContext } from '../../../types';
 
 // ============================================================
-// 真正的 EventEmitter 风格 Mock ChildProcess
+// Real EventEmitter-style Mock ChildProcess
 // ============================================================
 const createMockChild = () => {
   const handlers: Record<string, Function[]> = {};
@@ -71,7 +71,7 @@ const createMockEventBus = () => ({
 });
 
 // ============================================================
-// 测试数据
+// Test data
 // ============================================================
 const mockDevice: IDeviceContext = {
   id: 'dev-001',
@@ -103,7 +103,7 @@ const mockTag: ITagContext = {
 } as any;
 
 // ============================================================
-// 辅助函数
+// Helper functions
 // ============================================================
 const getChild = () => mockChildInstance;
 
@@ -124,7 +124,7 @@ const simulateExit = (code: number | null, signal: string | null) => {
 };
 
 // ============================================================
-// 测试套件
+// Test suite
 // ============================================================
 describe('ChildProcessExecutor', () => {
   let executor: ChildProcessExecutor;

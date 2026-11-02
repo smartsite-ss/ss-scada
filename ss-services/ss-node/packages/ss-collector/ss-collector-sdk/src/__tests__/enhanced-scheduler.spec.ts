@@ -59,26 +59,26 @@ describe('EnhancedScheduler', () => {
 
   describe('adaptive throttling (handleCommSuccess)', () => {
     /**
-     * 验证自适应节流：min(scanRate, 30s)
-     * 高频任务按 scanRate 节流，低频任务按 30s 上限节流。
+     * Verify adaptive throttling: min(scanRate, 30s)
+     * High-frequency tasks are throttled by scanRate; low-frequency tasks are throttled by the 30s cap.
      */
     it('高频任务（100ms）应按 scanRate 节流，不受 30s 上限影响', async () => {
       const task = makeTask({ interval: 100 });
       scheduler.registerTask(task);
 
-      // 模拟 handleCommSuccess（通过访问内部方法）
+      // Simulate handleCommSuccess (by accessing the internal method)
       const handleCommSuccess = (scheduler as any).handleCommSuccess.bind(scheduler);
 
-      // 第一次发射
+      // First emission
       handleCommSuccess('device-001', task);
       expect(mockEventBus.emitDeviceStatusChanged).toHaveBeenCalledTimes(1);
 
-      // 50ms 后不应发射（未超过 100ms 节流）
+      // Should not emit after 50ms (within the 100ms throttle window)
       jest.spyOn(Date, 'now').mockReturnValue(Date.now() + 50);
       handleCommSuccess('device-001', task);
       expect(mockEventBus.emitDeviceStatusChanged).toHaveBeenCalledTimes(1);
 
-      // 150ms 后应发射（已超过 100ms 节流）
+      // Should emit after 150ms (past the 100ms throttle window)
       jest.spyOn(Date, 'now').mockReturnValue(Date.now() + 150);
       handleCommSuccess('device-001', task);
       expect(mockEventBus.emitDeviceStatusChanged).toHaveBeenCalledTimes(2);
@@ -90,18 +90,18 @@ describe('EnhancedScheduler', () => {
 
       const handleCommSuccess = (scheduler as any).handleCommSuccess.bind(scheduler);
 
-      // 第一次发射
+      // First emission
       const baseTime = Date.now();
       jest.spyOn(Date, 'now').mockReturnValue(baseTime);
       handleCommSuccess('device-001', task);
       expect(mockEventBus.emitDeviceStatusChanged).toHaveBeenCalledTimes(1);
 
-      // 20s 后不应发射（未超过 30s 上限）
+      // Should not emit after 20s (within the 30s cap)
       jest.spyOn(Date, 'now').mockReturnValue(baseTime + 20000);
       handleCommSuccess('device-001', task);
       expect(mockEventBus.emitDeviceStatusChanged).toHaveBeenCalledTimes(1);
 
-      // 35s 后应发射（已超过 30s 上限，即使未超过 60s scanRate）
+      // Should emit after 35s (past the 30s cap, even though below the 60s scanRate)
       jest.spyOn(Date, 'now').mockReturnValue(baseTime + 35000);
       handleCommSuccess('device-001', task);
       expect(mockEventBus.emitDeviceStatusChanged).toHaveBeenCalledTimes(2);
@@ -118,12 +118,12 @@ describe('EnhancedScheduler', () => {
       handleCommSuccess('device-001', task);
       expect(mockEventBus.emitDeviceStatusChanged).toHaveBeenCalledTimes(1);
 
-      // 29s 后不应发射
+      // Should not emit after 29s
       jest.spyOn(Date, 'now').mockReturnValue(baseTime + 29000);
       handleCommSuccess('device-001', task);
       expect(mockEventBus.emitDeviceStatusChanged).toHaveBeenCalledTimes(1);
 
-      // 31s 后应发射
+      // Should emit after 31s
       jest.spyOn(Date, 'now').mockReturnValue(baseTime + 31000);
       handleCommSuccess('device-001', task);
       expect(mockEventBus.emitDeviceStatusChanged).toHaveBeenCalledTimes(2);
@@ -135,14 +135,14 @@ describe('EnhancedScheduler', () => {
       const task = makeTask({ id: 'task-A', deviceId: 'device-A' });
       scheduler.registerTask(task);
 
-      // 触发一次 online 事件，写入 lastOnlineEmitAt
+      // Trigger an online event and write lastOnlineEmitAt
       const handleCommSuccess = (scheduler as any).handleCommSuccess.bind(scheduler);
       handleCommSuccess('device-A', task);
 
       const lastOnlineEmitAt = (scheduler as any).lastOnlineEmitAt as Map<string, number>;
       expect(lastOnlineEmitAt.has('device-A')).toBe(true);
 
-      // 注销任务后应清理
+      // After deregistering the task, the state should be cleaned up
       scheduler.unregisterTask('task-A');
       expect(lastOnlineEmitAt.has('device-A')).toBe(false);
     });
@@ -158,7 +158,7 @@ describe('EnhancedScheduler', () => {
 
       const lastOnlineEmitAt = (scheduler as any).lastOnlineEmitAt as Map<string, number>;
 
-      // 注销 task-A，但 device-A 还有 task-B，不应清理
+      // Deregister task-A, but device-A still has task-B, so it should not be cleaned up
       scheduler.unregisterTask('task-A');
       expect(lastOnlineEmitAt.has('device-A')).toBe(true);
     });

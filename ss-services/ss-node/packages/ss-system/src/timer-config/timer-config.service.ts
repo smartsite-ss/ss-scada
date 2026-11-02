@@ -8,28 +8,28 @@ import { EventBusService } from '@ss-node/ss-core';
 import { SystemConfigService } from '../config/system-config.service';
 
 /**
- * 定时器配置条目
+ * Timer configuration entry
  */
 export interface TimerEntry {
-  /** 唯一标识，对应 .env 变量名 */
+  /** Unique identifier, corresponding to the .env variable name */
   id: string;
-  /** 中文名称 */
+  /** Display name */
   name: string;
-  /** 所属模块 */
+  /** Owning module */
   module: string;
-  /** 当前间隔（毫秒） */
+  /** Current interval (milliseconds) */
   currentInterval: number;
-  /** 默认间隔（毫秒） */
+  /** Default interval (milliseconds) */
   defaultInterval: number;
-  /** 功能描述 */
+  /** Feature description */
   description: string;
-  /** 是否支持运行时热更新 */
+  /** Whether runtime hot-reload is supported */
   runtimeUpdate: boolean;
-  /** 运行时更新回调（需 service 注册时提供） */
+  /** Runtime update callback (must be provided at service registration) */
   restartFn?: (newInterval: number) => void;
 }
 
-/** 系统定时器默认配置（硬编码 fallback） */
+/** System timer default configuration (hard-coded fallback) */
 const DEFAULT_TIMERS: Omit<TimerEntry, 'currentInterval' | 'restartFn'>[] = [
   {
     id: 'DEVICE_HEARTBEAT_CHECK_INTERVAL_MS',
@@ -81,7 +81,7 @@ const DEFAULT_TIMERS: Omit<TimerEntry, 'currentInterval' | 'restartFn'>[] = [
   },
 ];
 
-/** DB 存储的 key 前缀 */
+/** Prefix of keys stored in the DB */
 const CONFIG_KEY_PREFIX = 'timer.';
 
 @Injectable()
@@ -100,7 +100,7 @@ export class TimerConfigService implements OnModuleInit {
   }
 
   /**
-   * 加载默认配置：DB 优先 → .env → 硬编码
+   * Load default configuration: DB first → .env → hard-coded
    */
   private async loadDefaults(): Promise<void> {
     for (const tpl of DEFAULT_TIMERS) {
@@ -119,7 +119,7 @@ export class TimerConfigService implements OnModuleInit {
   }
 
   /**
-   * 外部服务注册定时器（支持运行时热更新回调）
+   * Register an external service's timer (supports runtime hot-reload callbacks)
    */
   register(id: string, restartFn?: (newInterval: number) => void): void {
     const existing = this.configs.get(id);
@@ -134,17 +134,17 @@ export class TimerConfigService implements OnModuleInit {
   }
 
   /**
-   * 获取所有定时器配置
+   * Get all timer configurations
    */
   getAll(): TimerEntry[] {
     return Array.from(this.configs.values()).map((e) => ({
       ...e,
-      restartFn: undefined, // 不暴露回调给外部
+      restartFn: undefined, // do not expose the callback externally
     }));
   }
 
   /**
-   * 获取单个定时器配置
+   * Get a single timer configuration
    */
   getById(id: string): TimerEntry | undefined {
     const entry = this.configs.get(id);
@@ -153,11 +153,11 @@ export class TimerConfigService implements OnModuleInit {
   }
 
   /**
-   * 更新定时器间隔
+   * Update a timer's interval
    *
-   * - 持久化到 system_configs 表
-   * - 如服务注册了 restartFn 则运行时热更新
-   * - 发射 EventBus 事件通知订阅者
+   * - Persists to the system_configs table
+   * - Hot-reloads at runtime if the service registered a restartFn
+   * - Emits an EventBus event to notify subscribers
    */
   async updateInterval(id: string, interval: number): Promise<TimerEntry> {
     const entry = this.configs.get(id);
@@ -165,21 +165,21 @@ export class TimerConfigService implements OnModuleInit {
       throw new Error(`Timer "${id}" not found`);
     }
 
-    // 验证间隔范围（至少 100ms）
+    // Validate the interval range (at least 100ms)
     if (interval < 100) {
       throw new Error(`Interval must be >= 100ms, got ${interval}`);
     }
 
-    // 持久化到 DB
+    // Persist to the DB
     await this.systemConfigService.set(CONFIG_KEY_PREFIX + id, String(interval));
 
-    // 更新内存值
+    // Update the in-memory value
     entry.currentInterval = interval;
 
-    // 通知订阅者
+    // Notify subscribers
     this.eventBus.emit('timer:configChanged', { id, interval });
 
-    // 如有运行时热更新回调，立即重启定时器
+    // If a runtime hot-reload callback exists, restart the timer immediately
     if (entry.restartFn) {
       entry.restartFn(interval);
       this.logger.log(`Timer "${id}" hot-reloaded to ${interval}ms (restarted)`);
@@ -193,7 +193,7 @@ export class TimerConfigService implements OnModuleInit {
   }
 
   /**
-   * 重置定时器为默认值
+   * Reset a timer to its default value
    */
   async resetInterval(id: string): Promise<TimerEntry> {
     const entry = this.configs.get(id);
@@ -201,7 +201,7 @@ export class TimerConfigService implements OnModuleInit {
       throw new Error(`Timer "${id}" not found`);
     }
 
-    // 删除 DB 中的自定义值，恢复为 .env 或硬编码默认
+    // Delete the custom value in the DB, restoring the .env or hard-coded default
     await this.systemConfigService.delete(CONFIG_KEY_PREFIX + id);
 
     const envVal = this.configService.get<number>(entry.id);
@@ -220,7 +220,7 @@ export class TimerConfigService implements OnModuleInit {
   }
 
   /**
-   * 获取当前所有定时器 ID（用于调试/日志）
+   * Get all current timer IDs (for debugging/logging)
    */
   get allIds(): string[] {
     return Array.from(this.configs.keys());

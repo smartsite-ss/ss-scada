@@ -13,13 +13,13 @@ import { EventBusService } from '@ss-node/ss-core';
 import { PluginMonitorService } from '../plugin-monitor.service';
 
 /**
- * 隔离执行器工厂 —— 按插件配置创建/获取对应的执行器
+ * Isolation executor factory - creates/retrieves the executor for a plugin config
  *
- * 设计：
- * - 每个协议维护一个 executor 实例（懒加载）
- * - in_process 模式：InProcessExecutor 直接调用 adapter
- * - worker_thread / child_process 模式：调用 prepare() 提前启动
- * - onModuleDestroy 时销毁所有 executor
+ * Design:
+ * - each protocol keeps one executor instance (lazily loaded)
+ * - in_process mode: InProcessExecutor invokes the adapter directly
+ * - worker_thread / child_process mode: call prepare() to start ahead of time
+ * - on onModuleDestroy, all executors are destroyed
  */
 @Injectable()
 export class IsolationFactory implements OnModuleDestroy {
@@ -33,7 +33,7 @@ export class IsolationFactory implements OnModuleDestroy {
   ) {}
 
   /**
-   * 获取或创建指定协议的隔离执行器
+   * Get or create the isolation executor for the specified protocol
    */
   getExecutor(protocol: string): IIsolationExecutor {
     const existing = this.executors.get(protocol);
@@ -65,22 +65,22 @@ export class IsolationFactory implements OnModuleDestroy {
   }
 
   /**
-   * 在插件发现后提前启动 Worker/子进程
-   * 在 PluginExplorerService 发现插件后调用
+   * Pre-start the Worker/child process after plugin discovery
+   * Called by PluginExplorerService after a plugin is discovered
    */
   async prepare(protocol: string): Promise<void> {
     const plugin = this.pluginRegistry.getPlugin(protocol);
     if (!plugin) return;
 
     const mode = plugin.meta?.isolationMode ?? IsolationMode.IN_PROCESS;
-    if (mode === IsolationMode.IN_PROCESS) return; // 无需预热
+    if (mode === IsolationMode.IN_PROCESS) return; // no warm-up needed
 
     try {
       const executor = this.getExecutor(protocol);
       const config: Partial<IsolationConfig> = plugin.meta?.isolation || {};
       await executor.init(protocol, null, config);
     } catch (err) {
-      // 初始化失败不应导致应用崩溃，后续读取会降级到进程内模式
+      // Initialization failure must not crash the app; later reads degrade to in-process mode
       this.logger.error(
         `Failed to prepare executor for [${protocol}]: ${(err as Error).message} — will fallback to in-process`,
       );
@@ -89,7 +89,7 @@ export class IsolationFactory implements OnModuleDestroy {
   }
 
   /**
-   * 销毁指定协议的隔离执行器，下次 getExecutor() 将按最新 isolationMode 重建
+   * Destroy the isolation executor for the specified protocol; the next getExecutor() rebuilds it using the latest isolationMode
    */
   async destroyExecutor(protocol: string): Promise<void> {
     const executor = this.executors.get(protocol);
@@ -97,7 +97,7 @@ export class IsolationFactory implements OnModuleDestroy {
       try {
         await executor.destroy();
       } catch {
-        // 静默处理 destroy 失败
+        // Silently handle destroy failure
       }
       this.executors.delete(protocol);
       this.logger.log(`Executor destroyed for [${protocol}], will recreate on next use`);
@@ -105,7 +105,7 @@ export class IsolationFactory implements OnModuleDestroy {
   }
 
   /**
-   * 获取所有 executor 的健康状态
+   * Get health status of all executors
    */
   async getAllHealth(): Promise<Map<string, any>> {
     const health = new Map<string, any>();
@@ -120,7 +120,7 @@ export class IsolationFactory implements OnModuleDestroy {
   }
 
   /**
-   * 检查协议是否使用隔离模式
+   * Check whether the protocol uses isolation mode
    */
   isIsolated(protocol: string): boolean {
     const plugin = this.pluginRegistry.getPlugin(protocol);

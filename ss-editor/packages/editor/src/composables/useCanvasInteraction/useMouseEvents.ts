@@ -11,12 +11,12 @@ export function useMouseEvents(options: CanvasInteractionOptions) {
   const pageStore = usePageStore();
   const graphicStore = useGraphicStore();
 
-  // 获取当前页面的缩放比例
+  // Get the current page's zoom scale
   const getScale = () => {
     return pageStore.currentPageScaleFactor;
   };
 
-  // 检查是否点击在选择手柄上
+  // Check whether the click is on a selection handle
   const checkHandleClick = (x: number, y: number) => {
     if (graphicStore.selectedGraphic) {
       const graphic = graphicStore.selectedGraphic;
@@ -49,7 +49,7 @@ export function useMouseEvents(options: CanvasInteractionOptions) {
     return null;
   };
 
-  // 检查鼠标是否悬停在控制点上
+  // Check whether the mouse is hovering over a control point
   const checkControlPointHover = (event: MouseEvent) => {
     const canvas = document.querySelector('canvas.design-canvas');
     if (!canvas) {
@@ -72,7 +72,7 @@ export function useMouseEvents(options: CanvasInteractionOptions) {
     const x = logicalPos.x;
     const y = logicalPos.y;
 
-    // 检查单个图形控制点
+    // Check control points of a single graphic
     if (graphicStore.selectedGraphic) {
       const graphic = graphicStore.selectedGraphic;
       const { x: gx, y: gy } = graphic.getPosition();
@@ -105,7 +105,7 @@ export function useMouseEvents(options: CanvasInteractionOptions) {
       }
     }
 
-    // 检查多选图形
+    // Check multi-selected graphics
     if (pageStore.selectedGraphicIds && pageStore.selectedGraphicIds.length > 1) {
       const selectedGraphics = graphicStore.selectedGraphics;
       if (selectedGraphics && selectedGraphics.length > 0) {
@@ -158,7 +158,7 @@ export function useMouseEvents(options: CanvasInteractionOptions) {
       }
     }
 
-    // 检查悬停在非选择的图形上
+    // Check hovering over a non-selected graphic
     const graphics = graphicStore.sortedGraphics || [];
     for (let i = graphics.length - 1; i >= 0; i--) {
       const graphic = graphics[i];

@@ -3,16 +3,16 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * useWidgetTemplateStore —— 组件模板统一状态层（Pinia）
+ * useWidgetTemplateStore — unified state layer for component templates (Pinia)
  *
- * 与 useTemplateStore（页面模板）保持完全一致的风格：
- * - 维护 builtin / user / current 三层组件模板
- * - 通过后端 API 读写 JSON 文件，路径：
- *     系统级 → /api/v1/widget-templates
- *     项目级 → /api/v1/projects/{projectId}/widget-templates
- * - 不依赖独立 WidgetTemplateManager 类
+ * Follows exactly the same style as useTemplateStore (page templates):
+ * - Maintains three layers of component templates: builtin / user / current
+ * - Reads/writes JSON files via backend APIs:
+ *     System level → /api/v1/widget-templates
+ *     Project level → /api/v1/projects/{projectId}/widget-templates
+ * - Does not depend on a standalone WidgetTemplateManager class
  *
- * 注意：系统级 templateApi（device-templates）是设备模板接口，与此无关。
+ * Note: the system-level templateApi (device-templates) is the device template API and is unrelated.
  */
 
 import { defineStore } from 'pinia';
@@ -171,7 +171,7 @@ export const useWidgetTemplateStore = defineStore('widgetTemplate', () => {
     }
   }
 
-  /** 将草稿图元数组保存为新的组件模板（系统级） */
+  /** Save the draft graphics array as a new component template (system level) */
   async function saveAsWidgetTemplate(params: {
     name: string;
     description?: string;
