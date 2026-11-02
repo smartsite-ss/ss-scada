@@ -23,7 +23,7 @@
     "@ss-node/ss-sdk": "workspace:*",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
-    "mysql2": "^3.9.0",
+    "mysql2": "^3.9.8",
     "oracledb": "^6.3.0",
     "reflect-metadata": "^0.1.14",
     "sqlite3": "^5.1.7",

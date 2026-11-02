@@ -9,6 +9,7 @@ overrides:
   '@nestjs/core': 10.4.22
   '@nestjs/config': 3.3.0
   '@nestjs/event-emitter': 3.0.1
+  mysql2: ^3.9.8
 
 importers:
 
@@ -563,7 +564,7 @@ importers:
         specifier: ^0.14.1
         version: 0.14.4
       mysql2:
-        specifier: ^3.9.0
+        specifier: ^3.9.8
         version: 3.23.0(@types/node@20.19.43)
       oracledb:
         specifier: ^6.3.0
