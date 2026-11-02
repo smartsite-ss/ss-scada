@@ -36,48 +36,48 @@ describe('RolesGuard', () => {
   /** WriteRoles equivalent: [ADMIN, USER] */
   const WRITE_ROLES = [UserRole.ADMIN, UserRole.USER];
 
-  describe('canActivate - 无角色要求', () => {
-    it('requiredRoles 为 undefined 时放行', () => {
+  describe('canActivate - no role requirement', () => {
+    it('Allowed when requiredRoles is undefined', () => {
       mockReflector.getAllAndOverride.mockReturnValue(undefined);
       const ctx = createMockContext({ id: 'u1', role: 'user' });
       expect(guard.canActivate(ctx)).toBe(true);
     });
 
-    it('requiredRoles 为空数组时放行', () => {
+    it('Allowed when requiredRoles is an empty array', () => {
       mockReflector.getAllAndOverride.mockReturnValue([]);
       const ctx = createMockContext({ id: 'u1', role: 'user' });
       expect(guard.canActivate(ctx)).toBe(true);
     });
   });
 
-  describe('canActivate - 标准角色（按角色 code 检查）', () => {
-    it('admin + ReadRoles 放行', () => {
+  describe('canActivate - standard roles (checked by role code)', () => {
+    it('admin + ReadRoles → allowed', () => {
       mockReflector.getAllAndOverride.mockReturnValue(READ_ROLES);
       const ctx = createMockContext({ id: 'u1', role: UserRole.ADMIN });
       expect(guard.canActivate(ctx)).toBe(true);
     });
 
-    it('user + ReadRoles 放行', () => {
+    it('user + ReadRoles → allowed', () => {
       mockReflector.getAllAndOverride.mockReturnValue(READ_ROLES);
       const ctx = createMockContext({ id: 'u1', role: UserRole.USER });
       expect(guard.canActivate(ctx)).toBe(true);
     });
 
-    it('viewer + ReadRoles 放行', () => {
+    it('viewer + ReadRoles → allowed', () => {
       mockReflector.getAllAndOverride.mockReturnValue(READ_ROLES);
       const ctx = createMockContext({ id: 'u1', role: UserRole.VIEWER });
       expect(guard.canActivate(ctx)).toBe(true);
     });
 
-    it('viewer + WriteRoles（不含 viewer）拒绝', () => {
+    it('viewer + WriteRoles (not including viewer) → denied', () => {
       mockReflector.getAllAndOverride.mockReturnValue(WRITE_ROLES);
       const ctx = createMockContext({ id: 'u1', role: UserRole.VIEWER });
       expect(guard.canActivate(ctx)).toBe(false);
     });
   });
 
-  describe('canActivate - 自建角色兜底（v7.2 新增）', () => {
-    it('自建角色 + ReadRoles + permissions 非空 → 放行（读操作）', () => {
+  describe('canActivate - custom role fallback (added in v7.2)', () => {
+    it('Custom role + ReadRoles + non-empty permissions → allowed (read operation)', () => {
       mockReflector.getAllAndOverride.mockReturnValue(READ_ROLES);
       const ctx = createMockContext({
         id: 'u1',
@@ -87,7 +87,7 @@ describe('RolesGuard', () => {
       expect(guard.canActivate(ctx)).toBe(true);
     });
 
-    it('自建角色 + ReadRoles + permissions 含 *:* → 放行（admin 级别）', () => {
+    it('Custom role + ReadRoles + permissions with *:* → allowed (admin level)', () => {
       mockReflector.getAllAndOverride.mockReturnValue(READ_ROLES);
       const ctx = createMockContext({
         id: 'u1',
@@ -97,7 +97,7 @@ describe('RolesGuard', () => {
       expect(guard.canActivate(ctx)).toBe(true);
     });
 
-    it('自建角色 + ReadRoles + permissions 空 → 拒绝（未授权）', () => {
+    it('Custom role + ReadRoles + empty permissions → denied (unauthorized)', () => {
       mockReflector.getAllAndOverride.mockReturnValue(READ_ROLES);
       const ctx = createMockContext({
         id: 'u1',
@@ -107,13 +107,13 @@ describe('RolesGuard', () => {
       expect(guard.canActivate(ctx)).toBe(false);
     });
 
-    it('自建角色 + ReadRoles + roleEntity 缺失 → 拒绝（兜底为空 permissions）', () => {
+    it('Custom role + ReadRoles + missing roleEntity → denied (falls back to empty permissions)', () => {
       mockReflector.getAllAndOverride.mockReturnValue(READ_ROLES);
       const ctx = createMockContext({ id: 'u1', role: 'test' });
       expect(guard.canActivate(ctx)).toBe(false);
     });
 
-    it('自建角色 + WriteRoles + 无 *:* → 拒绝（写操作需 admin 级别）', () => {
+    it('Custom role + WriteRoles + no *:* → denied (write operations require admin level)', () => {
       mockReflector.getAllAndOverride.mockReturnValue(WRITE_ROLES);
       const ctx = createMockContext({
         id: 'u1',
@@ -123,7 +123,7 @@ describe('RolesGuard', () => {
       expect(guard.canActivate(ctx)).toBe(false);
     });
 
-    it('自建角色 + WriteRoles + *:* → 放行（admin 级别）', () => {
+    it('Custom role + WriteRoles + *:* → allowed (admin level)', () => {
       mockReflector.getAllAndOverride.mockReturnValue(WRITE_ROLES);
       const ctx = createMockContext({
         id: 'u1',
@@ -133,7 +133,7 @@ describe('RolesGuard', () => {
       expect(guard.canActivate(ctx)).toBe(true);
     });
 
-    it('自建角色 + AdminRoles（仅 admin）+ *:* → 放行', () => {
+    it('Custom role + AdminRoles (admin only) + *:* → allowed', () => {
       mockReflector.getAllAndOverride.mockReturnValue([UserRole.ADMIN]);
       const ctx = createMockContext({
         id: 'u1',
@@ -143,7 +143,7 @@ describe('RolesGuard', () => {
       expect(guard.canActivate(ctx)).toBe(true);
     });
 
-    it('自建角色 + AdminRoles（仅 admin）+ 无 *:* → 拒绝', () => {
+    it('Custom role + AdminRoles (admin only) + no *:* → denied', () => {
       mockReflector.getAllAndOverride.mockReturnValue([UserRole.ADMIN]);
       const ctx = createMockContext({
         id: 'u1',
@@ -154,8 +154,8 @@ describe('RolesGuard', () => {
     });
   });
 
-  describe('canActivate - 边界情况', () => {
-    it('user 对象缺失时拒绝', () => {
+  describe('canActivate - edge cases', () => {
+    it('Denied when the user object is missing', () => {
       mockReflector.getAllAndOverride.mockReturnValue(READ_ROLES);
       const ctx = createMockContext(null);
       expect(guard.canActivate(ctx)).toBe(false);

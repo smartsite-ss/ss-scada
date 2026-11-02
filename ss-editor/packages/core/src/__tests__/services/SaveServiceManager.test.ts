@@ -46,7 +46,7 @@ describe('SaveServiceManager', () => {
     pages: [
       {
         id: 'page-1',
-        name: 'Page 1',
+        name: '页面1',
         width: 1920,
         height: 1080,
         backgroundColor: '#ffffff',
@@ -317,7 +317,7 @@ describe('SaveServiceManager', () => {
     });
 
     it('TC-SAVE-005-11: hasSavedData should return false on fetch error', async () => {
-      mockFetch.mockRejectedValueOnce(new Error('Network error'));
+      mockFetch.mockRejectedValueOnce(new Error('网络错误'));
 
       manager.init({ type: 'server', apiBaseUrl: 'http://localhost:4000' });
 

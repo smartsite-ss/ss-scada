@@ -71,13 +71,13 @@ export class EndToEndValidator<T extends BasePlugin<any>> {
 
   private validateSchema(): string[] {
     const errs: string[] = [];
-    if (!this.schema.name) errs.push('schema.name 缺失');
-    if (!this.schema.fields || this.schema.fields.length === 0) errs.push('schema.fields 为空');
+    if (!this.schema.name) errs.push('schema.name missing\r');
+    if (!this.schema.fields || this.schema.fields.length === 0) errs.push('schema.fields is empty\r');
     for (const f of this.schema.fields) {
-      if (!f.name) errs.push('存在无名 field');
-      if (!f.type) errs.push(`${f.name}: type 缺失`);
+      if (!f.name) errs.push('Exists an unnamed field\r');
+      if (!f.type) errs.push(`${f.name: type is missing);
       if (f.type === 'select' && (!f.options || f.options.length === 0)) {
-        errs.push(`${f.name}: select 的 options 为空`);
+        errs.push(`${f.name: select options is empty);
       }
     }
     return errs;

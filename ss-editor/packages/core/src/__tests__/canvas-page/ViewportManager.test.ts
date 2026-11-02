@@ -46,13 +46,13 @@ class TestShape extends BaseGraphic {
     });
   });
 
-  describe('网格吸附功能', () => {
-    it('应该能够获取网格吸附管理器', () => {
+  describe('Grid snapping features', () => {
+    it('Should be able to get the grid snapping manager', () => {
       const gridSnapManager = page.getGridSnapManager();
       expect(gridSnapManager).toBeInstanceOf(GridSnapManager);
     });
 
-    it('应该能够设置网格吸附配置', () => {
+    it('Should be able to set the grid snapping configuration', () => {
       const config = {
         enabled: true,
         gridSize: 20,
@@ -73,7 +73,7 @@ class TestShape extends BaseGraphic {
       expect(currentConfig.snapDistance).toBe(8);
     });
 
-    it('应该能够启用和禁用网格吸附', () => {
+    it('Should be able to enable and disable grid snapping', () => {
       page.setGridSnapConfig({ enabled: true });
       expect(page.getGridSnapConfig().enabled).toBe(true);
 
@@ -81,7 +81,7 @@ class TestShape extends BaseGraphic {
       expect(page.getGridSnapConfig().enabled).toBe(false);
     });
 
-    it('应该能够进行位置吸附', () => {
+    it('Should be able to perform position snapping', () => {
       page.setGridSnapConfig({ enabled: true, gridSize: 20, snapDistance: 8 });
       
       const result = page.snapPosition(25, 35);
@@ -92,14 +92,14 @@ class TestShape extends BaseGraphic {
     });
   });
 
-  describe('智能对齐功能', () => {
-    it('应该能够设置对齐距离', () => {
+  describe('Smart alignment features', () => {
+    it('Should be able to set the snap distance', () => {
       page.setAlignDistance(10);
       const smartAlignManager = page.getSmartAlignManager();
       expect(smartAlignManager).toBeDefined();
     });
 
-    it('应该能够检测对齐目标', () => {
+    it('Should be able to detect alignment targets', () => {
       const graphic1 = new TestShape(100, 100, 50, 50);
       const graphic2 = new TestShape(200, 200, 50, 50);
       page.addGraphic(graphic1);
@@ -112,8 +112,8 @@ class TestShape extends BaseGraphic {
     });
   });
 
-  describe('辅助线管理功能', () => {
-    it('应该能够添加水平辅助线', () => {
+  describe('Guide line management features', () => {
+    it('Should be able to add a horizontal guide line', () => {
       const lineId = page.addGuideLine(100, 'horizontal');
       
       expect(lineId).toBeDefined();
@@ -126,7 +126,7 @@ class TestShape extends BaseGraphic {
       expect(lines[0].direction).toBe('horizontal');
     });
 
-    it('应该能够添加垂直辅助线', () => {
+    it('Should be able to add a vertical guide line', () => {
       const lineId = page.addGuideLine(200, 'vertical');
       
       expect(lineId).toBeDefined();
@@ -136,7 +136,7 @@ class TestShape extends BaseGraphic {
       expect(lines[0].direction).toBe('vertical');
     });
 
-    it('应该能够获取单个辅助线', () => {
+    it('Should be able to get a single guide line', () => {
       const lineId = page.addGuideLine(150, 'horizontal');
       const line = page.getGuideLine(lineId);
       
@@ -145,7 +145,7 @@ class TestShape extends BaseGraphic {
       expect(line?.position).toBe(150);
     });
 
-    it('应该能够更新辅助线位置', () => {
+    it('Should be able to update a guide line position', () => {
       const lineId = page.addGuideLine(100, 'horizontal');
       page.updateGuideLinePosition(lineId, 200);
       
@@ -153,7 +153,7 @@ class TestShape extends BaseGraphic {
       expect(line?.position).toBe(200);
     });
 
-    it('应该能够删除辅助线', () => {
+    it('Should be able to delete a guide line', () => {
       const lineId = page.addGuideLine(100, 'horizontal');
       expect(page.getAllGuideLines().length).toBe(1);
       
@@ -161,7 +161,7 @@ class TestShape extends BaseGraphic {
       expect(page.getAllGuideLines().length).toBe(0);
     });
 
-    it('应该能够清除所有辅助线', () => {
+    it('Should be able to clear all guide lines', () => {
       page.addGuideLine(100, 'horizontal');
       page.addGuideLine(200, 'vertical');
       page.addGuideLine(300, 'horizontal');
@@ -172,21 +172,21 @@ class TestShape extends BaseGraphic {
       expect(page.getAllGuideLines().length).toBe(0);
     });
 
-    it('应该能够获取不存在的辅助线返回 null', () => {
+    it('Should be able to get a non-existent guide line and return null', () => {
       const line = page.getGuideLine('non-existent-id');
       expect(line).toBeNull();
     });
   });
 
-  describe('页面尺寸管理', () => {
-    it('应该能够获取页面尺寸', () => {
+  describe('Page size management', () => {
+    it('Should be able to get the page size', () => {
       const size = page.getSize();
       
       expect(size.width).toBe(1920);
       expect(size.height).toBe(1080);
     });
 
-    it('应该能够正确初始化自定义尺寸', () => {
+    it('Should correctly initialize custom sizes', () => {
       const customPage = new BasePage();
       customPage.init({
         id: 'custom-page',
@@ -201,8 +201,8 @@ class TestShape extends BaseGraphic {
     });
   });
 
-  describe('图元尺寸调整功能', () => {
-    it('应该能够使选中图元等宽', () => {
+  describe('Graphic resize features', () => {
+    it('Should be able to make selected graphics equal in width', () => {
       const graphic1 = new TestShape(0, 0, 50, 100);
       const graphic2 = new TestShape(100, 0, 100, 80);
       const graphic3 = new TestShape(200, 0, 75, 90);
@@ -223,7 +223,7 @@ class TestShape extends BaseGraphic {
       expect(widths.every(w => w === 100)).toBe(true);
     });
 
-    it('应该能够使选中图元等高', () => {
+    it('Should be able to make selected graphics equal in height', () => {
       const graphic1 = new TestShape(0, 0, 50, 50);
       const graphic2 = new TestShape(100, 0, 100, 100);
       const graphic3 = new TestShape(200, 0, 75, 75);
@@ -244,7 +244,7 @@ class TestShape extends BaseGraphic {
       expect(heights.every(h => h === 100)).toBe(true);
     });
 
-    it('应该能够使选中图元等尺寸', () => {
+    it('Should be able to make selected graphics equal in size', () => {
       const graphic1 = new TestShape(0, 0, 50, 50);
       const graphic2 = new TestShape(100, 0, 100, 80);
       
@@ -265,7 +265,7 @@ class TestShape extends BaseGraphic {
       expect(size2.height).toBe(80);
     });
 
-    it('等宽等高操作对不足2个图元应该不生效', () => {
+    it('Equal width/height operations should have no effect with fewer than 2 graphics', () => {
       const graphic1 = new TestShape(0, 0, 50, 50);
       page.addGraphic(graphic1);
 
@@ -274,8 +274,8 @@ class TestShape extends BaseGraphic {
     });
   });
 
-  describe('页面边缘对齐功能', () => {
-    it('应该能够将图元对齐到页面边缘', () => {
+  describe('Page edge alignment features', () => {
+    it('Should be able to align a graphic to the page edge', () => {
       const graphic = new TestShape(100, 100, 100, 100);
       page.addGraphic(graphic);
 
@@ -292,7 +292,7 @@ class TestShape extends BaseGraphic {
       expect(graphic.getPosition().y).toBe(1080 - 100);
     });
 
-    it('应该能够将图元居中到页面', () => {
+    it('Should be able to center a graphic on the page', () => {
       const graphic = new TestShape(0, 0, 100, 100);
       page.addGraphic(graphic);
 
@@ -308,57 +308,57 @@ class TestShape extends BaseGraphic {
     });
   });
 
-  describe('智能自适应策略', () => {
+  describe('Smart adaptive strategy', () => {
     describe('ZoomManager.autoSelectFitMode', () => {
-      it('应该为竖屏选择 fitHeight 模式', () => {
+      it('Should select the fitHeight mode for portrait screens', () => {
         const result = ZoomManager.autoSelectFitMode(0.45, defaultAutoFitConfig); /* portrait phone 1080x2400 */
         expect(result).toBe('fitHeight');
       });
 
-      it('应该为接近正方形选择 contain 模式', () => {
+      it('Should select the contain mode for near-square screens', () => {
         const result = ZoomManager.autoSelectFitMode(1.0, defaultAutoFitConfig); /* square screen */
         expect(result).toBe('contain');
       });
 
-      it('应该为宽屏选择 fitWidth 模式', () => {
+      it('Should select the fitWidth mode for wide screens', () => {
         const result = ZoomManager.autoSelectFitMode(1.78, defaultAutoFitConfig); /* standard monitor 1920x1080 */
         expect(result).toBe('fitWidth');
       });
 
-      it('应该为超宽屏选择 fitWidth 模式', () => {
+      it('Should select the fitWidth mode for ultrawide screens', () => {
         const result = ZoomManager.autoSelectFitMode(2.39, defaultAutoFitConfig); /* ultrawide 3440x1440 */
         expect(result).toBe('fitWidth');
       });
     });
 
     describe('ZoomManager.calculateFitScale', () => {
-      it('应该正确计算 contain 模式的缩放', () => {
+      it('Should compute the contain-mode scale correctly', () => {
         const scale = ZoomManager.calculateFitScale('contain', 1920, 1080, 1280, 720);
         expect(scale).toBeCloseTo(66.67, 2);
       });
 
-      it('应该正确计算 fitWidth 模式的缩放', () => {
+      it('Should compute the fitWidth-mode scale correctly', () => {
         const scale = ZoomManager.calculateFitScale('fitWidth', 1920, 1080, 1280, 720);
         expect(scale).toBeCloseTo(66.67, 2);
       });
 
-      it('应该正确计算 fitHeight 模式的缩放', () => {
+      it('Should compute the fitHeight-mode scale correctly', () => {
         const scale = ZoomManager.calculateFitScale('fitHeight', 1920, 1080, 1280, 720);
         expect(scale).toBeCloseTo(66.67, 2);
       });
     });
 
     describe('ZoomManager.calculateAutoFitScale', () => {
-      it('应该为竖屏自动选择 fitHeight 并计算缩放', () => {
+      it('Should auto-select fitHeight for portrait screens and compute the scale', () => {
         const result = ZoomManager.calculateAutoFitScale(1920, 1080, 1080, 2400);
-        expect(result.fitMode).toBe('fitHeight'); expect(result.scale).toBeGreaterThan(100); /* portrait needs upscaling */ }); it('应该为宽屏自动选择 fitWidth 并计算缩放', () => {
+        expect(result.fitMode).toBe('fitHeight'); expect(result.scale).toBeGreaterThan(100); /* portrait needs upscaling */ }); it('Should auto-select fitWidth for wide screens and compute the scale', () => {
         const result = ZoomManager.calculateAutoFitScale(1920, 1080, 3440, 1440);
-        expect(result.fitMode).toBe('fitWidth'); expect(result.scale).toBeGreaterThan(100); /* landscape needs upscaling */ }); it('应该限制缩放范围在 10%-200%', () => { const result = ZoomManager.calculateAutoFitScale(1920, 1080, 100, 100); expect(result.scale).toBe(10); /* minimum scale */ const result2 = ZoomManager.calculateAutoFitScale(100, 100, 10000, 10000); expect(result2.scale).toBe(200); /* maximum scale */ }); }); describe('页面适配方法', () => {
-      it('应该默认使用 auto 模式', () => {
+        expect(result.fitMode).toBe('fitWidth'); expect(result.scale).toBeGreaterThan(100); /* landscape needs upscaling */ }); it('Should limit the scale to 10%-200%', () => { const result = ZoomManager.calculateAutoFitScale(1920, 1080, 100, 100); expect(result.scale).toBe(10); /* minimum scale */ const result2 = ZoomManager.calculateAutoFitScale(100, 100, 10000, 10000); expect(result2.scale).toBe(200); /* maximum scale */ }); }); describe('Page fitting methods', () => {
+      it('Should use auto mode by default', () => {
         expect(page.getFitMode()).toBe('auto');
       });
 
-      it('应该能够设置和获取适配模式', () => {
+      it('Should be able to set and get the fit mode', () => {
         page.setFitMode('fitWidth');
         expect(page.getFitMode()).toBe('fitWidth');
         
@@ -375,7 +375,7 @@ class TestShape extends BaseGraphic {
         expect(page.getFitMode()).toBe('auto');
       });
 
-      it('应该能够执行自动适配', () => {
+      it('Should be able to perform auto fitting', () => {
         page.autoFit(1280, 720);
         
         expect(page.fitMode).toBeDefined();
@@ -383,17 +383,17 @@ class TestShape extends BaseGraphic {
         expect(page.scale).toBeGreaterThan(0);
       });
 
-      it('auto 模式下应该自动选择最佳适配模式', () => {
+      it('auto mode should auto-select the best fit mode', () => {
         // Defaults to auto mode
         expect(page.getFitMode()).toBe('auto'); /* perform fit on a wide screen */ page.autoFit(1920, 1080); /* should auto-select fitWidth mode */ expect(page.fitMode).toBe('fitWidth');
       });
 
-      it('手动选择模式后应该保持用户选择', () => {
+      it('After manual selection mode, the user\'s choice should be kept', () => {
         // Set to manual mode
         page.setFitMode('contain'); /* perform fit */ page.autoFit(1920, 1080); /* should keep the user-selected mode */ expect(page.fitMode).toBe('contain');
       });
 
-      it('应该能够重置适配模式', () => {
+      it('Should be able to reset the fit mode', () => {
         page.setFitMode('fitWidth');
         page.scale = 150;
         
@@ -404,8 +404,8 @@ class TestShape extends BaseGraphic {
       });
     });
 
-    describe('fitMode 溢出场景', () => {
-      it('fitWidth 在超宽屏(2560x800)上页面1920x1080时scale应超过contain上限', () => {
+    describe('fitMode overflow scenarios', () => {
+      it('fitWidth on ultrawide (2560x800) with a 1920x1080 page should exceed the contain cap', () => {
         const pageW = 1920, pageH = 1080, vw = 2560, vh = 800;
         const fitWidthScale = ZoomManager.calculateFitScale('fitWidth', pageW, pageH, vw, vh);
         const containScale = ZoomManager.calculateFitScale('contain', pageW, pageH, vw, vh);
@@ -413,14 +413,14 @@ class TestShape extends BaseGraphic {
         expect(containScale).toBeCloseTo(74.07, 2);
       });
 
-      it('fitWidth 在普通宽屏(1600x900)上页面1920x1080时不应溢出', () => {
+      it('fitWidth on a normal wide screen (1600x900) with a 1920x1080 page should not overflow', () => {
         const pageW = 1920, pageH = 1080, vw = 1600, vh = 900;
         const fitWidthScale = ZoomManager.calculateFitScale('fitWidth', pageW, pageH, vw, vh);
         const containScale = ZoomManager.calculateFitScale('contain', pageW, pageH, vw, vh);
         expect(Math.abs(fitWidthScale - containScale)).toBeLessThan(1);
       });
 
-      it('auto模式在超宽屏上应选fitWidth但被overflow保护回退contain', () => {
+      it('auto mode should select fitWidth on ultrawide screens but fall back to contain via overflow protection', () => {
         const result = ZoomManager.calculateAutoFitScale(1920, 1080, 2560, 800);
         expect(result.fitMode).toBe('fitWidth');
         const safeScale = ZoomManager.clampScale(
@@ -429,15 +429,15 @@ class TestShape extends BaseGraphic {
         expect(result.scale).toBeGreaterThan(safeScale);
       });
 
-      it('视口尺寸变化时auto模式应动态切换子模式', () => {
+      it('In auto mode, sub-modes should switch dynamically when the viewport size changes', () => {
         // Square screen → contain
         const r1 = ZoomManager.calculateAutoFitScale(1920, 1080, 1200, 1000);
         expect(r1.fitMode).toBe('contain'); /* landscape → fitWidth */ const r2 = ZoomManager.calculateAutoFitScale(1920, 1080, 2400, 1200); expect(r2.fitMode).toBe('fitWidth'); /* portrait → fitHeight */ const r3 = ZoomManager.calculateAutoFitScale(1920, 1080, 600, 1200); expect(r3.fitMode).toBe('fitHeight');
       });
     });
 
-    describe('屏幕方向判断', () => {
-      it('在非浏览器环境下应该返回 false', () => {
+    describe('Screen orientation detection', () => {
+      it('Should return false in a non-browser environment', () => {
         const result = ZoomManager.isPortrait();
         const result2 = ZoomManager.isWideScreen();
         // There is no window object in Node.js, so it should return false
@@ -445,7 +445,7 @@ class TestShape extends BaseGraphic {
         expect(typeof result2).toBe('boolean');
       });
 
-      it('getCurrentScreenFitMode 在有 window 对象环境下应返回合理值', () => {
+      it('getCurrentScreenFitMode should return a reasonable value in a window-object environment', () => {
         const result = ZoomManager.getCurrentScreenFitMode();
         expect(['contain', 'fitWidth', 'fitHeight', 'fill']).toContain(result);
       });

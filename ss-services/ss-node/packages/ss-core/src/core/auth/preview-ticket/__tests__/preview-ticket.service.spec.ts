@@ -46,7 +46,7 @@ describe('PreviewTicketService', () => {
     jest.useRealTimers();
   });
 
-  it('签发的票据可兑换为 Token 对（用户身份取自签发时绑定的 userId）', async () => {
+  it('Issued tickets can be redeemed for a token pair (user identity taken from the userId bound at issuance)', async () => {
     const previewTicket = service.issuePreviewTicket('user-1');
 
     const tokenPair = await service.consumePreviewTicket(previewTicket);
@@ -60,14 +60,14 @@ describe('PreviewTicketService', () => {
     });
   });
 
-  it('票据一次性消费：第二次兑换同票据抛 401（防重放）', async () => {
+  it('Ticket single consumption: redeeming the same ticket a second time throws 401 (anti-replay)', async () => {
     const previewTicket = service.issuePreviewTicket('user-1');
     await service.consumePreviewTicket(previewTicket);
 
     await expect(service.consumePreviewTicket(previewTicket)).rejects.toBeInstanceOf(UnauthorizedException);
   });
 
-  it('超过 60 秒有效期的票据不可兑换', async () => {
+  it('Tickets older than 60 seconds cannot be redeemed', async () => {
     const previewTicket = service.issuePreviewTicket('user-1');
     jest.advanceTimersByTime(61 * 1000);
 
@@ -75,11 +75,11 @@ describe('PreviewTicketService', () => {
     expect(mockAuthService.generateTokensForUser).not.toHaveBeenCalled();
   });
 
-  it('未知票据兑换抛 401', async () => {
+  it('Redeeming an unknown ticket throws 401', async () => {
     await expect(service.consumePreviewTicket('nonexistent-ticket')).rejects.toBeInstanceOf(UnauthorizedException);
   });
 
-  it('票据绑定用户不存在时抛 401', async () => {
+  it('Ticket bound user does not exist throws 401', async () => {
     mockUserService.findById.mockResolvedValue(null);
     const previewTicket = service.issuePreviewTicket('user-deleted');
 
@@ -87,7 +87,7 @@ describe('PreviewTicketService', () => {
     expect(mockAuthService.generateTokensForUser).not.toHaveBeenCalled();
   });
 
-  describe('buildPreviewUrl（方案 C：后端下发完整壳 URL）', () => {
+  describe('buildPreviewUrl (Plan C: backend delivers the full shell URL)', () => {
     const originalShellBaseUrl = process.env.SCADA_SHELL_BASE_URL;
 
     afterEach(() => {
@@ -98,7 +98,7 @@ describe('PreviewTicketService', () => {
       }
     });
 
-    it('未配置 SCADA_SHELL_BASE_URL 时返回 undefined（前端回退本地拼接）', () => {
+    it('Returns undefined when SCADA_SHELL_BASE_URL is not configured (frontend falls back to local assembly)', () => {
       delete process.env.SCADA_SHELL_BASE_URL;
 
       expect(
@@ -106,7 +106,7 @@ describe('PreviewTicketService', () => {
       ).toBeUndefined();
     });
 
-    it('按配置基地址拼装完整预览 URL（含全部可选参数）', () => {
+    it('Assemble the full preview URL from the configured base address (including all optional parameters)', () => {
       process.env.SCADA_SHELL_BASE_URL = 'http://localhost:5173';
 
       expect(
@@ -120,7 +120,7 @@ describe('PreviewTicketService', () => {
       );
     });
 
-    it('可选参数缺省时不拼接对应查询项，且去除基地址尾部斜杠', () => {
+    it('When optional parameters are missing, the corresponding query items are not appended and the trailing slash of the base address is removed', () => {
       process.env.SCADA_SHELL_BASE_URL = '/scada-preview/';
 
       expect(service.buildPreviewUrl('ticket-abc', {})).toBe('/scada-preview/preview?ticket=ticket-abc');

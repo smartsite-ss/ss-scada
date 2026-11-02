@@ -279,7 +279,7 @@ class SimulatedAlarmEngine {
 
 // ─── Test suite ───
 
-describe('Alarm + EventBus 集成测试', () => {
+describe('Alarm + EventBus integration tests', () => {
   let eventBusService: EventBusService;
   let conditionEvaluator: ConditionEvaluator;
   let alarmDebouncer: AlarmDebouncer;
@@ -384,8 +384,8 @@ describe('Alarm + EventBus 集成测试', () => {
   // ========================================================================
   // TC-INT-010: Tag value exceeds threshold → alarm triggered → event published via event bus
   // ========================================================================
-  describe('TC-INT-010: 标签值超阈值 → 告警触发 → 事件总线发布', () => {
-    it('温度超过阈值应触发告警并发布 alarm_triggered 事件', () => {
+  describe('TC-INT-010: tag value exceeds threshold → alarm triggered → event bus publishes', () => {
+    it('Temperature exceeding the threshold should trigger an alarm and publish alarm_triggered', () => {
       const result = alarmEngine.evaluateDataPoint(temperatureRule, 85.5, Date.now());
 
       expect(result.triggered).toBe(true);
@@ -407,7 +407,7 @@ describe('Alarm + EventBus 集成测试', () => {
       );
     });
 
-    it('温度未超过阈值不应触发告警', () => {
+    it('Temperature below the threshold should not trigger an alarm', () => {
       const result = alarmEngine.evaluateDataPoint(temperatureRule, 75.0, Date.now());
 
       expect(result.triggered).toBe(false);
@@ -415,14 +415,14 @@ describe('Alarm + EventBus 集成测试', () => {
       expect(mockEventEmitter.emit).not.toHaveBeenCalled();
     });
 
-    it('温度等于阈值不应触发 GT 告警', () => {
+    it('Temperature equal to the threshold should not trigger a GT alarm', () => {
       const result = alarmEngine.evaluateDataPoint(temperatureRule, 80.0, Date.now());
 
       expect(result.triggered).toBe(false);
       expect(mockEventEmitter.emit).not.toHaveBeenCalled();
     });
 
-    it('压力低于阈值应触发告警（LT 条件）', () => {
+    it('Pressure below the threshold should trigger an alarm (LT condition)', () => {
       const result = alarmEngine.evaluateDataPoint(pressureRule, 5.0, Date.now());
 
       expect(result.triggered).toBe(true);
@@ -438,7 +438,7 @@ describe('Alarm + EventBus 集成测试', () => {
       );
     });
 
-    it('范围外告警条件应正确评估', () => {
+    it('Out-of-range alarm conditions should evaluate correctly', () => {
       // Within range, should not trigger
       const inRange = alarmEngine.evaluateDataPoint(flowRateRule, 50, Date.now());
       expect(inRange.triggered).toBe(false);
@@ -448,7 +448,7 @@ describe('Alarm + EventBus 集成测试', () => {
       expect(outOfRange.triggered).toBe(true);
     });
 
-    it('禁用的告警规则不应触发', () => {
+    it('Disabled alarm rules should not trigger', () => {
       const result = alarmEngine.evaluateDataPoint(disabledRule, 100, Date.now());
 
       expect(result.triggered).toBe(false);
@@ -459,8 +459,8 @@ describe('Alarm + EventBus 集成测试', () => {
   // ========================================================================
   // TC-INT-011: Alarm acknowledged → event published
   // ========================================================================
-  describe('TC-INT-011: 告警确认 → 事件发布', () => {
-    it('确认活跃告警应发布 alarm_acknowledged 事件', () => {
+  describe('TC-INT-011: alarm acknowledged → event published', () => {
+    it('Acknowledging an active alarm should publish the alarm_acknowledged event', () => {
       const triggerResult = alarmEngine.evaluateDataPoint(temperatureRule, 90.0, Date.now());
       expect(triggerResult.triggered).toBe(true);
 
@@ -484,12 +484,12 @@ describe('Alarm + EventBus 集成测试', () => {
       );
     });
 
-    it('确认不存在的告警应返回 null', () => {
+    it('Acknowledging a non-existent alarm should return null', () => {
       const result = alarmEngine.acknowledgeAlarm('non-existent', TEST_USER_ID, Date.now());
       expect(result).toBeNull();
     });
 
-    it('确认已确认的告警应返回 null（不允许重复确认）', () => {
+    it('Acknowledging an already-acknowledged alarm should return null (duplicate acknowledgment not allowed)', () => {
       const triggerResult = alarmEngine.evaluateDataPoint(temperatureRule, 90.0, Date.now());
       const alarmId = triggerResult.record!.id;
 
@@ -505,8 +505,8 @@ describe('Alarm + EventBus 集成测试', () => {
   // ========================================================================
   // TC-INT-012: Multiple alarms → batched notification
   // ========================================================================
-  describe('TC-INT-012: 多个告警 → 批量通知', () => {
-    it('多个告警应分别触发独立的 alarm_triggered 事件', () => {
+  describe('TC-INT-012: multiple alarms → batch notification', () => {
+    it('Multiple alarms should each trigger an independent alarm_triggered event', () => {
       alarmEngine.evaluateDataPoint(temperatureRule, 85.0, Date.now());
       alarmEngine.evaluateDataPoint(pressureRule, 5.0, Date.now());
       alarmEngine.evaluateDataPoint(flowRateRule, 150, Date.now());
@@ -523,7 +523,7 @@ describe('Alarm + EventBus 集成测试', () => {
       expect(levels).toContain('high');
     });
 
-    it('应能通过通知服务发送批量告警通知', async () => {
+    it('Should be able to send batch alarm notifications via the notification service', async () => {
       const triggerResult = alarmEngine.evaluateDataPoint(temperatureRule, 90.0, Date.now());
 
       // Simulate notification: publish alarm.notification.sent via the event bus
@@ -569,7 +569,7 @@ describe('Alarm + EventBus 集成测试', () => {
       expect(popupCalls.length).toBe(1);
     });
 
-    it('应能获取活跃告警列表', () => {
+    it('Should be able to get the active alarm list', () => {
       alarmEngine.evaluateDataPoint(temperatureRule, 85.0, Date.now());
       alarmEngine.evaluateDataPoint(pressureRule, 5.0, Date.now());
 
@@ -577,7 +577,7 @@ describe('Alarm + EventBus 集成测试', () => {
       expect(activeAlarms.length).toBe(2);
     });
 
-    it('确认一个告警不会影响其他活跃告警', () => {
+    it('Acknowledging one alarm does not affect other active alarms', () => {
       const r1 = alarmEngine.evaluateDataPoint(temperatureRule, 85.0, Date.now());
       const r2 = alarmEngine.evaluateDataPoint(pressureRule, 5.0, Date.now());
 
@@ -592,8 +592,8 @@ describe('Alarm + EventBus 集成测试', () => {
   // ========================================================================
   // TC-INT-013: Alarm recovery → event published
   // ========================================================================
-  describe('TC-INT-013: 告警恢复 → 事件发布', () => {
-    it('清除告警应发布 health_recovered 事件', () => {
+  describe('TC-INT-013: alarm recovered → event published', () => {
+    it('Clearing an alarm should publish the health_recovered event', () => {
       const triggerResult = alarmEngine.evaluateDataPoint(temperatureRule, 90.0, Date.now());
       const alarmId = triggerResult.record!.id;
 
@@ -616,7 +616,7 @@ describe('Alarm + EventBus 集成测试', () => {
       );
     });
 
-    it('告警恢复后不再出现在活跃告警列表中', () => {
+    it('Recovered alarms no longer appear in the active alarm list', () => {
       const r1 = alarmEngine.evaluateDataPoint(temperatureRule, 85.0, Date.now());
       expect(alarmEngine.getActiveAlarms().length).toBe(1);
 
@@ -624,7 +624,7 @@ describe('Alarm + EventBus 集成测试', () => {
       expect(alarmEngine.getActiveAlarms().length).toBe(0);
     });
 
-    it('应支持完整的告警生命周期：触发 → 确认 → 恢复', () => {
+    it('Should support the full alarm lifecycle: trigger → acknowledge → recover', () => {
       // Trigger
       const triggerResult = alarmEngine.evaluateDataPoint(temperatureRule, 95.0, Date.now());
       expect(triggerResult.triggered).toBe(true);
@@ -649,15 +649,15 @@ describe('Alarm + EventBus 集成测试', () => {
   // ========================================================================
   // TC-INT-014: Event bus subscriber receives alarm events
   // ========================================================================
-  describe('TC-INT-014: 事件总线订阅者接收告警事件', () => {
-    it('事件总线应能注册告警事件订阅者', () => {
+  describe('TC-INT-014: event bus subscribers receive alarm events', () => {
+    it('The event bus should be able to register alarm event subscribers', () => {
       const handler = jest.fn();
       eventBusService.on('alarm_triggered' as any, handler);
 
       expect(eventBusService.getListenerCount('alarm_triggered')).toBe(1);
     });
 
-    it('订阅者应收到告警触发事件', () => {
+    it('Subscribers should receive alarm triggered events', () => {
       const receivedEvents: any[] = [];
       eventBusService.on('alarm_triggered' as any, (event) => {
         receivedEvents.push(event);
@@ -669,7 +669,7 @@ describe('Alarm + EventBus 集成测试', () => {
       expect(mockEventEmitter.emit).toHaveBeenCalledWith('alarm_triggered', expect.any(Object));
     });
 
-    it('订阅者应收到告警确认事件', () => {
+    it('Subscribers should receive alarm acknowledged events', () => {
       const receivedEvents: any[] = [];
       eventBusService.on('alarm_acknowledged' as any, (event) => {
         receivedEvents.push(event);
@@ -682,7 +682,7 @@ describe('Alarm + EventBus 集成测试', () => {
       expect(mockEventEmitter.emit).toHaveBeenCalledWith('alarm_acknowledged', expect.any(Object));
     });
 
-    it('多个订阅者应同时收到同一事件', () => {
+    it('Multiple subscribers should receive the same event simultaneously', () => {
       const handler1 = jest.fn();
       const handler2 = jest.fn();
 
@@ -692,7 +692,7 @@ describe('Alarm + EventBus 集成测试', () => {
       expect(eventBusService.getListenerCount('alarm_triggered')).toBe(2);
     });
 
-    it('取消订阅后不应再收到事件', () => {
+    it('Should no longer receive events after unsubscribing', () => {
       const handler = jest.fn();
       eventBusService.on('alarm_triggered' as any, handler);
       expect(eventBusService.getListenerCount('alarm_triggered')).toBe(1);
@@ -701,7 +701,7 @@ describe('Alarm + EventBus 集成测试', () => {
       expect(eventBusService.getListenerCount('alarm_triggered')).toBe(0);
     });
 
-    it('应能订阅多种告警相关事件', () => {
+    it('Should be able to subscribe to multiple alarm-related events', () => {
       const alarmHandler = jest.fn();
       const ackHandler = jest.fn();
       const notificationHandler = jest.fn();
@@ -717,19 +717,19 @@ describe('Alarm + EventBus 集成测试', () => {
   // ========================================================================
   // Edge cases and error paths
   // ========================================================================
-  describe('边界情况与错误路径', () => {
-    it('无消抖时间时应立即触发告警', () => {
+  describe('Edge cases and error paths', () => {
+    it('Should trigger the alarm immediately when there is no debounce time', () => {
       const result = alarmEngine.evaluateDataPoint(temperatureRule, 100.0, Date.now());
       expect(result.triggered).toBe(true);
     });
 
-    it('有消抖时间时应延迟触发', () => {
+    it('With a debounce time, triggering should be delayed', () => {
       const debouncedRule = { ...temperatureRule, debounceMs: 5000, id: 'rule-debounced' };
       const result = alarmEngine.evaluateDataPoint(debouncedRule, 100.0, Date.now());
       expect(result.triggered).toBe(false);
     });
 
-    it('相同值不应重复触发消抖', () => {
+    it('Same values should not re-trigger the debounce', () => {
       const debouncedRule = { ...temperatureRule, debounceMs: 5000, id: 'rule-debounce-2' };
       alarmEngine.evaluateDataPoint(debouncedRule, 100.0, Date.now());
       // Same value
@@ -737,7 +737,7 @@ describe('Alarm + EventBus 集成测试', () => {
       expect(result.triggered).toBe(false);
     });
 
-    it('值恢复正常后应清除消抖状态', () => {
+    it('Debounce state should be cleared after the value recovers', () => {
       const debouncedRule = { ...temperatureRule, debounceMs: 5000, id: 'rule-clear-test' };
       alarmEngine.evaluateDataPoint(debouncedRule, 100.0, Date.now());
       expect(alarmDebouncer.getDebouncingCount()).toBe(1);
@@ -747,7 +747,7 @@ describe('Alarm + EventBus 集成测试', () => {
       expect(alarmDebouncer.getDebouncingCount()).toBe(0);
     });
 
-    it('GTE 和 LTE 条件应正确处理边界值', () => {
+    it('GTE and LTE conditions should handle boundary values correctly', () => {
       const gteRule: AlarmRuleConfig = {
         ...temperatureRule,
         id: 'rule-gte',
@@ -771,7 +771,7 @@ describe('Alarm + EventBus 集成测试', () => {
       expect(alarmEngine.evaluateDataPoint(lteRule, 10.1, Date.now()).triggered).toBe(false);
     });
 
-    it('通知服务应支持配置不同渠道', () => {
+    it('The notification service should support configuring different channels', () => {
       notificationService.configureChannel('email', {
         enabled: true,
         config: { smtpHost: 'smtp.test.com', smtpPort: 587 },

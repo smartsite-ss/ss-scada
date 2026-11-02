@@ -62,25 +62,25 @@ describe('MonitorGroupTreeNode', () => {
     vi.clearAllMocks();
   });
 
-  describe('渲染', () => {
-    it('应渲染分组节点', async () => {
+  describe('Render', () => {
+    it('Should render the group node', async () => {
       const wrapper = await mountTreeNode(makeProps());
       expect(wrapper.find('.group-node').exists()).toBe(true);
       expect(wrapper.find('.node-label').text()).toBe('测试分组1');
     });
 
-    it('应显示设备总数徽章', async () => {
+    it('Should show the total device count badge', async () => {
       const wrapper = await mountTreeNode(makeProps());
       // The tree has 2 devices (1 direct + 1 in a child group)
       expect(wrapper.find('.node-count').text()).toBe('2');
     });
 
-    it('有子分组时应显示展开箭头', async () => {
+    it('Should show the expand arrow when there are subgroups', async () => {
       const wrapper = await mountTreeNode(makeProps());
       expect(wrapper.find('.chevron').exists()).toBe(true);
     });
 
-    it('无子分组时应显示占位符', async () => {
+    it('Should show a placeholder when there are no subgroups', async () => {
       const tree = [
         {
           group: { id: 'group-leaf', name: '叶子分组', projectId: 'proj-1' },
@@ -98,8 +98,8 @@ describe('MonitorGroupTreeNode', () => {
     });
   });
 
-  describe('展开/收起', () => {
-    it('展开时应显示子分组和设备', async () => {
+  describe('Expand/collapse', () => {
+    it('Should show subgroups and devices when expanded', async () => {
       const props = makeProps({
         expandedGroups: new Set(['group-1', 'group-1-1']),
       });
@@ -113,19 +113,19 @@ describe('MonitorGroupTreeNode', () => {
       expect(deviceNodes.length).toBe(2);
     });
 
-    it('收起时不应显示子分组和设备', async () => {
+    it('Should not show subgroups and devices when collapsed', async () => {
       const wrapper = await mountTreeNode(makeProps());
       expect(wrapper.find('.group-children').exists()).toBe(false);
     });
 
-    it('点击分组节点应触发 toggleGroup 事件', async () => {
+    it('Clicking a group node should trigger the toggleGroup event', async () => {
       const wrapper = await mountTreeNode(makeProps());
       await wrapper.find('.group-node').trigger('click');
       expect(wrapper.emitted('toggleGroup')).toBeTruthy();
       expect(wrapper.emitted('toggleGroup')![0]).toEqual(['group-1']);
     });
 
-    it('点击展开箭头也应触发 toggleGroup', async () => {
+    it('Clicking the expand arrow should also trigger toggleGroup', async () => {
       const wrapper = await mountTreeNode(makeProps());
       await wrapper.find('.chevron').trigger('click');
       expect(wrapper.emitted('toggleGroup')).toBeTruthy();
@@ -133,8 +133,8 @@ describe('MonitorGroupTreeNode', () => {
     });
   });
 
-  describe('设备选择', () => {
-    it('点击设备节点应触发 selectDevice 事件', async () => {
+  describe('Device selection', () => {
+    it('Clicking a device node should trigger the selectDevice event', async () => {
       const props = makeProps({
         expandedGroups: new Set(['group-1']),
       });
@@ -145,7 +145,7 @@ describe('MonitorGroupTreeNode', () => {
       expect(wrapper.emitted('selectDevice')![0]).toEqual(['proj-1', 'group-1', 'dev-1']);
     });
 
-    it('选中的设备应有 active 类', async () => {
+    it('The selected device should have the active class', async () => {
       const props = makeProps({
         expandedGroups: new Set(['group-1']),
         selectedDeviceId: 'dev-1',
@@ -155,7 +155,7 @@ describe('MonitorGroupTreeNode', () => {
       expect(deviceNodes[0].classes()).toContain('active');
     });
 
-    it('未选中的设备不应有 active 类', async () => {
+    it('Unselected devices should not have the active class', async () => {
       const props = makeProps({
         expandedGroups: new Set(['group-1']),
         selectedDeviceId: 'dev-other',
@@ -166,8 +166,8 @@ describe('MonitorGroupTreeNode', () => {
     });
   });
 
-  describe('设备状态显示', () => {
-    it('应根据设备状态显示对应的状态点', async () => {
+  describe('Device status display', () => {
+    it('Should show the corresponding status dot based on the device status', async () => {
       const props = makeProps({
         expandedGroups: new Set(['group-1', 'group-1-1']),
       });
@@ -180,7 +180,7 @@ describe('MonitorGroupTreeNode', () => {
       expect(statusDots[1].classes()).toContain('status-online');
     });
 
-    it('设备状态为空时应默认显示 offline', async () => {
+    it('Should default to offline when the device status is empty', async () => {
       const tree = [
         {
           group: { id: 'group-1', name: '分组1', projectId: 'proj-1' },
@@ -198,8 +198,8 @@ describe('MonitorGroupTreeNode', () => {
     });
   });
 
-  describe('空状态', () => {
-    it('分组无设备且无子分组时应显示空提示', async () => {
+  describe('Empty state', () => {
+    it('Should show the empty hint when a group has no devices and no subgroups', async () => {
       const tree = [
         {
           group: { id: 'group-empty', name: '空分组', projectId: 'proj-1' },
@@ -218,8 +218,8 @@ describe('MonitorGroupTreeNode', () => {
     });
   });
 
-  describe('递归渲染', () => {
-    it('应递归渲染多层子分组', async () => {
+  describe('Recursive rendering', () => {
+    it('Should recursively render multi-level subgroups', async () => {
       const deepChild = { id: 'group-deep', name: '深层分组', projectId: 'proj-1' };
       const tree = [
         {
@@ -254,19 +254,19 @@ describe('MonitorGroupTreeNode', () => {
     });
   });
 
-  describe('只读模式（无编辑操作）', () => {
-    it('不应渲染编辑按钮', async () => {
+  describe('Read-only mode (no editing operations)', () => {
+    it('Should not render the edit button', async () => {
       const wrapper = await mountTreeNode(makeProps());
       expect(wrapper.find('.group-actions').exists()).toBe(false);
       expect(wrapper.find('.btn-tree-action').exists()).toBe(false);
     });
 
-    it('不应触发 editGroup 事件', async () => {
+    it('Should not trigger the editGroup event', async () => {
       const wrapper = await mountTreeNode(makeProps());
       expect(wrapper.emitted('editGroup')).toBeFalsy();
     });
 
-    it('不应触发 deleteGroup 事件', async () => {
+    it('Should not trigger the deleteGroup event', async () => {
       const wrapper = await mountTreeNode(makeProps());
       expect(wrapper.emitted('deleteGroup')).toBeFalsy();
     });

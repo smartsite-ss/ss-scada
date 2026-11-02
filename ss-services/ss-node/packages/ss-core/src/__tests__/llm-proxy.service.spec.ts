@@ -213,18 +213,18 @@ describe('LLMProxyService', () => {
   // ============================================================
   // 1. routing policy
   // ============================================================
-  describe('路由策略', () => {
-    it('codegen 任务路由到 DeepSeek', async () => {
+  describe('Routing strategy', () => {
+    it('codegen tasks route to DeepSeek', async () => {
       const svc = createService();
       const req: LLMRequest = {
-        messages: [{ role: 'user', content: '生成一段代码' }],
+        messages: [{ role: 'user', content: 'Generate a piece of code' }],
       };
       await svc.generate(req, 'codegen');
       expect(mockDeepseek.generate).toHaveBeenCalled();
       expect(mockZhipu.generate).not.toHaveBeenCalled();
     });
 
-    it('chat 任务路由到智谱', async () => {
+    it('chat tasks route to Zhipu', async () => {
       const svc = createService();
       const req: LLMRequest = {
         messages: [{ role: 'user', content: '你好' }],
@@ -234,33 +234,33 @@ describe('LLMProxyService', () => {
       expect(mockDeepseek.generate).not.toHaveBeenCalled();
     });
 
-    it('intent 任务路由到智谱', async () => {
+    it('intent tasks route to Zhipu', async () => {
       const svc = createService();
       await svc.generate({ messages: [{ role: 'user', content: '识别意图' }] }, 'intent');
       expect(mockZhipu.generate).toHaveBeenCalled();
       expect(mockDeepseek.generate).not.toHaveBeenCalled();
     });
 
-    it('analysis 任务路由到智谱', async () => {
+    it('analysis tasks route to Zhipu', async () => {
       const svc = createService();
       await svc.generate({ messages: [{ role: 'user', content: '分析数据' }] }, 'analysis');
       expect(mockZhipu.generate).toHaveBeenCalled();
       expect(mockDeepseek.generate).not.toHaveBeenCalled();
     });
 
-    it('默认 taskType 为 chat', async () => {
+    it('Default taskType is chat', async () => {
       const svc = createService();
       await svc.generate({ messages: [{ role: 'user', content: 'hi' }] });
       expect(mockZhipu.generate).toHaveBeenCalled();
     });
 
-    it('getRouting 返回当前路由策略', () => {
+    it('getRouting returns the current routing strategy', () => {
       const svc = createService();
       const routing = svc.getRouting();
       expect(routing).toEqual(DEFAULT_ROUTING);
     });
 
-    it('可根据数据库配置自动推断路由策略', async () => {
+    it('Should infer the routing strategy automatically from database configuration', async () => {
       // after the refactor the routing policy is inferred from the DB's enabled-Provider list, no longer read from env vars
       // simulate the DB returning: deepseek first (chat/intent/analysis/codegen -> deepseek),
       // zhipu supports embedding (embedding -> zhipu)
@@ -287,8 +287,8 @@ describe('LLMProxyService', () => {
   // ============================================================
   // 2. fallback policy
   // ============================================================
-  describe('降级策略', () => {
-    it('主 Provider 抛错时降级到备选', async () => {
+  describe('Degradation strategy', () => {
+    it('Fall back to the backup when the primary provider throws', async () => {
       mockZhipu = createMockProvider('zhipu', {
         generateError: new Error('zhipu down'),
       });
@@ -300,7 +300,7 @@ describe('LLMProxyService', () => {
       expect(result.provider).toBe('deepseek');
     });
 
-    it('所有 Provider 均失败时抛出错误', async () => {
+    it('Throws an error when all providers fail', async () => {
       mockDeepseek = createMockProvider('deepseek', {
         generateError: new Error('deepseek down'),
       });
@@ -313,7 +313,7 @@ describe('LLMProxyService', () => {
       ).rejects.toThrow(/所有 Provider 均失败/);
     });
 
-    it('Provider 不可用（isReady=false）时跳过', async () => {
+    it('Skip Providers that are unavailable (isReady=false)', async () => {
       mockZhipu = createMockProvider('zhipu', { ready: false });
       const svc = createService();
       const result = await svc.generate({ messages: [{ role: 'user', content: 'hi' }] }, 'chat');
@@ -322,7 +322,7 @@ describe('LLMProxyService', () => {
       expect(result.provider).toBe('deepseek');
     });
 
-    it('流式：主 Provider 失败时降级到备选', async () => {
+    it('Streaming: falls back to the backup when the primary provider fails', async () => {
       mockZhipu = createMockProvider('zhipu', {
         streamError: new Error('zhipu stream failed'),
       });
@@ -341,7 +341,7 @@ describe('LLMProxyService', () => {
       expect(deltas).toContain('chunk-deepseek');
     });
 
-    it('流式：所有 Provider 均失败时抛出错误', async () => {
+    it('Streaming: throws an error when all providers fail', async () => {
       mockDeepseek = createMockProvider('deepseek', {
         streamError: new Error('deepseek stream failed'),
       });
@@ -365,8 +365,8 @@ describe('LLMProxyService', () => {
   // ============================================================
   // 3. embedding
   // ============================================================
-  describe('嵌入任务', () => {
-    it('固定路由到智谱', async () => {
+  describe('Embedding tasks', () => {
+    it('Fixed routing to Zhipu', async () => {
       const svc = createService();
       const result = await svc.embed({ inputs: ['hello'] });
       expect(mockZhipu.embed).toHaveBeenCalled();
@@ -374,7 +374,7 @@ describe('LLMProxyService', () => {
       expect(result.provider).toBe('zhipu');
     });
 
-    it('智谱不可用时直接抛出（无降级）', async () => {
+    it('Zhipu unavailable throws directly (no fallback)', async () => {
       mockZhipu = createMockProvider('zhipu', { ready: false });
       const svc = createService();
       await expect(svc.embed({ inputs: ['x'] })).rejects.toThrow(/不可用，无法降级/);
@@ -385,7 +385,7 @@ describe('LLMProxyService', () => {
   // 4. Feature Flag
   // ============================================================
   describe('Feature Flag', () => {
-    it('AI_ENABLED=false 时禁用所有调用', async () => {
+    it('AI_ENABLED=false disables all calls', async () => {
       mockConfig = createMockConfigService({
         AI_ENABLED: 'false',
         DEEPSEEK_API_KEY: 'k',
@@ -409,7 +409,7 @@ describe('LLMProxyService', () => {
       await expect(svc.embed({ inputs: ['x'] })).rejects.toThrow(/未启用/);
     });
 
-    it('AI_ENABLED=true 时启用', () => {
+    it('AI_ENABLED=true enables them', () => {
       const svc = createService();
       expect(svc.isEnabled()).toBe(true);
     });
@@ -419,7 +419,7 @@ describe('LLMProxyService', () => {
   // 5. health check
   // ============================================================
   describe('健康检查', () => {
-    it('getHealth 调用所有 Provider 的 checkHealth', async () => {
+    it('getHealth calls checkHealth on all Providers', async () => {
       const svc = createService();
       const results = await svc.getHealth();
       expect(mockDeepseek.checkHealth).toHaveBeenCalled();
@@ -429,7 +429,7 @@ describe('LLMProxyService', () => {
       expect(results.find((r) => r.providerId === 'zhipu')?.healthy).toBe(true);
     });
 
-    it('getCachedHealth 返回缓存的健康状态', async () => {
+    it('getCachedHealth returns the cached health status', async () => {
       const svc = createService();
       await svc.getHealth(); // trigger one check
       const cached = svc.getCachedHealth();
@@ -441,8 +441,8 @@ describe('LLMProxyService', () => {
   // ============================================================
   // 6. initialization
   // ============================================================
-  describe('Provider 初始化', () => {
-    it('onModuleInit 调用各 Provider 的 initialize', async () => {
+  describe('Provider initialization', () => {
+    it('onModuleInit calls each Provider\'s initialize', async () => {
       // after the refactor onModuleInit asynchronously loads config from the DB and calls provider.initialize()
       // must inject the mock AiProviderConfigService and await async initialization
       const mockProviderConfigService = createMockProviderConfigService();

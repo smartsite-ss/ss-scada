@@ -238,24 +238,24 @@ describe('useAuthStore', () => {
   });
 
   describe('menuIds & isAdmin', () => {
-    it('initial menuIds 应为空数组', () => {
+    it('Initially menuIds should be an empty array', () => {
       const store = useAuthStore();
       expect(store.menuIds).toEqual([]);
     });
 
-    it('initial isAdmin 应为 false（user 为 null）', () => {
+    it('Initially isAdmin should be false (user is null)', () => {
       const store = useAuthStore();
       expect(store.isAdmin).toBe(false);
     });
 
-    it('initDebugSession 后 isAdmin 应为 true（DEBUG_USER.role=admin）且 menuIds 为空', () => {
+    it('After initDebugSession, isAdmin should be true (DEBUG_USER.role=admin) and menuIds empty', () => {
       const store = useAuthStore();
       store.initDebugSession();
       expect(store.isAdmin).toBe(true);
       expect(store.menuIds).toEqual([]);
     });
 
-    it('login 后应从 profile.roleEntity.menuIds 加载 menuIds', async () => {
+    it('After login, menuIds should be loaded from profile.roleEntity.menuIds', async () => {
       const { authApi } = await import('../../api/modules/auth.api');
       const { userApi } = await import('../../api/modules/user.api');
       (authApi.login as any).mockResolvedValueOnce({
@@ -276,7 +276,7 @@ describe('useAuthStore', () => {
       expect(store.isAdmin).toBe(false);
     });
 
-    it('admin 用户登录后 isAdmin 应为 true（基于 roleEntity.code）', async () => {
+    it('After login, isAdmin should be true for an admin user (based on roleEntity.code)', async () => {
       const { authApi } = await import('../../api/modules/auth.api');
       const { userApi } = await import('../../api/modules/user.api');
       (authApi.login as any).mockResolvedValueOnce({
@@ -296,7 +296,7 @@ describe('useAuthStore', () => {
       expect(store.menuIds).toEqual([]);
     });
 
-    it('logout 后 menuIds 应清空', async () => {
+    it('After logout, menuIds should be cleared', async () => {
       const store = useAuthStore();
       store.initDebugSession();
       expect(store.menuIds).toEqual([]);
@@ -306,7 +306,7 @@ describe('useAuthStore', () => {
       expect(store.isAdmin).toBe(false);
     });
 
-    it('restoreSession 失败后 menuIds 应清空', async () => {
+    it('After restoreSession fails, menuIds should be cleared', async () => {
       const { userApi } = await import('../../api/modules/user.api');
       (userApi.getProfile as any).mockRejectedValueOnce(new Error('expired'));
 

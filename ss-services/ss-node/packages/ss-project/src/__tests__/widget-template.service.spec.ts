@@ -102,8 +102,8 @@ describe('WidgetTemplateService', () => {
     }
   });
 
-  describe('种子内置模板', () => {
-    it('onModuleInit 应落地内置组件模板到系统目录', () => {
+  describe('Seeded built-in template', () => {
+    it('onModuleInit should materialize built-in component templates into the system directory', () => {
       const dir = path.join(systemDir, 'widget-templates');
       expect(fs.existsSync(dir)).toBe(true);
       const files = fs.readdirSync(dir).filter((f) => f.endsWith('_meta.json'));
@@ -112,7 +112,7 @@ describe('WidgetTemplateService', () => {
   });
 
   describe('createTemplate', () => {
-    it('应在系统目录写入数据文件与元数据文件', () => {
+    it('Should write data and metadata files into the system directory', () => {
       const tpl = createMockWidgetTemplate();
       const res = service.createTemplate(tpl);
       expect(res.success).toBe(true);
@@ -121,20 +121,20 @@ describe('WidgetTemplateService', () => {
       expect(fs.existsSync(path.join(systemDir, 'widget-templates', `${tpl.id}_meta.json`))).toBe(true);
     });
 
-    it('缺失 name 应抛异常', () => {
+    it('Missing name should throw', () => {
       expect(() => service.createTemplate({} as any)).toThrow();
     });
   });
 
   describe('listTemplates', () => {
-    it('应列出内置模板', () => {
+    it('Should list built-in templates', () => {
       const res = service.listTemplates();
       expect(res.success).toBe(true);
       expect(res.data.length).toBeGreaterThanOrEqual(2);
       expect(res.data.every((t) => t.source === 'builtin')).toBe(true);
     });
 
-    it('应按分类筛选', () => {
+    it('Should filter by category', () => {
       const tpl = createMockWidgetTemplate({ category: 'industry' });
       service.createTemplate(tpl);
       const res = service.listTemplates('industry');
@@ -143,7 +143,7 @@ describe('WidgetTemplateService', () => {
       expect(res.data.some((t) => t.id === tpl.id)).toBe(true);
     });
 
-    it('应按来源筛选', () => {
+    it('Should filter by source', () => {
       service.createTemplate(createMockWidgetTemplate());
       const res = service.listTemplates(undefined, 'user');
       expect(res.data.every((t) => t.source === 'user')).toBe(true);
@@ -151,7 +151,7 @@ describe('WidgetTemplateService', () => {
   });
 
   describe('readTemplate', () => {
-    it('应返回完整数据含 graphics 与 variables', () => {
+    it('Should return complete data including graphics and variables', () => {
       const tpl = createMockWidgetTemplate();
       service.createTemplate(tpl);
       const res = service.readTemplate(tpl.id);
@@ -160,28 +160,28 @@ describe('WidgetTemplateService', () => {
       expect(res.data.variables.length).toBe(2);
     });
 
-    it('不存在应抛 NotFoundException', () => {
+    it('Should throw NotFoundException when not found', () => {
       expect(() => service.readTemplate('nope')).toThrow();
     });
   });
 
   describe('updateTemplate', () => {
-    it('应更新用户模板', () => {
+    it('Should update the user template', () => {
       const tpl = createMockWidgetTemplate();
       service.createTemplate(tpl);
-      const res = service.updateTemplate(tpl.id, { name: '改名' });
+      const res = service.updateTemplate(tpl.id, { name: 'Rename' });
       expect(res.success).toBe(true);
-      expect(service.readTemplate(tpl.id).data.name).toBe('改名');
+      expect(service.readTemplate(tpl.id).data.name).toBe('Rename');
     });
 
-    it('内置模板不可更新', () => {
+    it('Built-in templates cannot be updated', () => {
       const builtins = service.listTemplates().data;
       expect(() => service.updateTemplate(builtins[0].id, { name: 'x' })).toThrow();
     });
   });
 
   describe('deleteTemplate', () => {
-    it('应删除用户模板', () => {
+    it('Should delete the user template', () => {
       const tpl = createMockWidgetTemplate();
       service.createTemplate(tpl);
       const res = service.deleteTemplate(tpl.id);
@@ -196,7 +196,7 @@ describe('WidgetTemplateService', () => {
   });
 
   describe('import / export', () => {
-    it('导出再导入应保持一致', () => {
+    it('Export then import should stay consistent', () => {
       const tpl = createMockWidgetTemplate();
       service.createTemplate(tpl);
       const json = service.exportTemplate(tpl.id);
@@ -209,7 +209,7 @@ describe('WidgetTemplateService', () => {
   });
 
   describe('promoteToSystem', () => {
-    it('项目级模板提升为系统级应生成新 id', () => {
+    it('Promoting a project-level template to system level should generate a new id', () => {
       const projectId = 'proj-1';
       const tpl = createMockWidgetTemplate();
       service.createTemplate(tpl, projectId);
@@ -225,8 +225,8 @@ describe('WidgetTemplateService', () => {
     });
   });
 
-  describe('项目级隔离', () => {
-    it('项目级模板应写入 projects/{id}/canvas/widget-templates', () => {
+  describe('Project-level isolation', () => {
+    it('Project-level templates should be written to projects/{id}/canvas/widget-templates', () => {
       const projectId = 'proj-iso';
       const tpl = createMockWidgetTemplate();
       service.createTemplate(tpl, projectId);

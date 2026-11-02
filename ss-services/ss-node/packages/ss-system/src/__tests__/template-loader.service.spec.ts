@@ -34,7 +34,7 @@ const mockIndexJson = {
       icon: 'factory',
       categories: [
         {
-          name: 'PLC控制器',
+          name: 'PLC controller',
           description: 'PLC category',
           templates: [
             {
@@ -53,7 +53,7 @@ const mockIndexJson = {
             },
             {
               id: 'tpl-mitsubishi',
-              name: '三菱 FX5U',
+              name: 'Mitsubishi FX5U',
               relativePath: '工业自动化/PLC控制器/mitsubishi-fx5u.json',
               deviceType: 'modbus_tcp',
               deviceModel: 'MITSUBISHI_FX5U',
@@ -61,7 +61,7 @@ const mockIndexJson = {
               status: 'planned',
               isDefault: false,
               variableCount: 0,
-              tags: ['三菱', 'FX5U', 'PLC'],
+              tags: ['Mitsubishi', 'FX5U', 'PLC'],
               createdAt: '2026-01-01T00:00:00Z',
               updatedAt: '2026-01-02T00:00:00Z',
             },
@@ -75,8 +75,8 @@ const mockIndexJson = {
       icon: 'bolt',
       categories: [
         {
-          name: '电能计量',
-          description: 'Power meter',
+          name: 'Energy metering',
+          description: '电表',
           templates: [
             {
               id: 'tpl-meter',
@@ -88,7 +88,7 @@ const mockIndexJson = {
               status: 'published',
               isDefault: true,
               variableCount: 12,
-              tags: ['电表', '三相', 'OPC UA'],
+              tags: ['电表', 'Three-phase', 'OPC UA'],
               createdAt: '2026-01-01T00:00:00Z',
               updatedAt: '2026-01-02T00:00:00Z',
             },
@@ -364,9 +364,9 @@ describe('TemplateLoaderService', () => {
     });
 
     it('TC-LOAD-060: should search by name', () => {
-      const result = service.searchTemplates('三菱');
+      const result = service.searchTemplates('Mitsubishi');
       expect(result).toHaveLength(1);
-      expect(result[0].name).toContain('三菱');
+      expect(result[0].name).toContain('Mitsubishi');
       expect(result[0].id).toBe('tpl-mitsubishi');
     });
 
@@ -433,7 +433,7 @@ describe('TemplateLoaderService', () => {
     it('TC-LOAD-090: should set industry and category on loaded templates', () => {
       const tpl = service.getTemplate('tpl-s7-1200');
       expect(tpl!.industry).toBe('工业自动化');
-      expect(tpl!.category).toBe('PLC控制器');
+      expect(tpl!.category).toBe('PLC controller');
     });
 
     it('TC-LOAD-091: should set isDefault field', () => {

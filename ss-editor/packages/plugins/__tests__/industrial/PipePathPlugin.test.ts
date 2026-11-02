@@ -113,7 +113,7 @@ describe('PipePathPlugin — Declaration-rendering mapping validation (Layer 3)'
     expect(() => (plugin as any).render(dc)).not.toThrow();
   });
 
-  it('修改 flowingColor 后 render 应使用新的颜色值', () => {
+  it('After changing flowingColor, render should use the new color value', () => {
     const plugin = new PipePathPlugin(0, 0, 200, 60);
     (plugin as any).setPluginProps({ status: 'flowing', flowingColor: '#FF0000FF' });
 
@@ -123,7 +123,7 @@ describe('PipePathPlugin — Declaration-rendering mapping validation (Layer 3)'
     expect(calls.length).toBeGreaterThan(0);
   });
 
-  it('所有字段在 render 源码中有引用', () => {
+  it('All fields are referenced in the render source code', () => {
     const mapper = new RenderFieldMapper(
       pipePathPropertySchema,
       './industrial/pipe-path/PipePathPlugin.ts',

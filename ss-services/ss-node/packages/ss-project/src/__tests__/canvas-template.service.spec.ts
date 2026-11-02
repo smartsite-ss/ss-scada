@@ -88,17 +88,17 @@ describe('CanvasTemplateService', () => {
   // ─── getTemplatesDir ───
 
   describe('getTemplatesDir', () => {
-    it('系统级路径 → {PROJECTS_DIR}/../canvas-templates/pages/', () => {
+    it('System-level path → {PROJECTS_DIR}/../canvas-templates/pages/', () => {
       const dir = service.getTemplatesDir();
       expect(dir).toBe(path.join(path.dirname(tempDir), 'canvas-templates', 'pages'));
     });
 
-    it('项目级路径 → {PROJECTS_DIR}/{projectId}/canvas-templates/pages/', () => {
+    it('Project-level path → {PROJECTS_DIR}/{projectId}/canvas-templates/pages/', () => {
       const dir = service.getTemplatesDir('my-project');
       expect(dir).toBe(path.join(tempDir, 'my-project', 'canvas-templates', 'pages'));
     });
 
-    it('不同 projectId 返回不同的项目级路径', () => {
+    it('Different projectIds return different project-level paths', () => {
       const dir1 = service.getTemplatesDir('project-a');
       const dir2 = service.getTemplatesDir('project-b');
       expect(dir1).toContain('project-a');
@@ -109,8 +109,8 @@ describe('CanvasTemplateService', () => {
 
   // ─── createTemplate - actual file writes ───
 
-  describe('createTemplate — 文件写入', () => {
-    it('项目级模板 → 写入 {PROJECTS_DIR}/{projectId}/canvas-templates/pages/{id}.json', () => {
+  describe('createTemplate — file writing', () => {
+    it('Project-level templates → written to {PROJECTS_DIR}/{projectId}/canvas-templates/pages/{id}.json', () => {
       const template = createMockTemplate({ id: 'tpl-proj-test' });
       const result = service.createTemplate(template, 'demo-project');
 
@@ -129,7 +129,7 @@ describe('CanvasTemplateService', () => {
       expect(parsed.pageConfig.width).toBe(1920);
     });
 
-    it('系统级模板 → 写入 data/canvas-templates/pages/{id}.json', () => {
+    it('System-level templates → written to data/canvas-templates/pages/{id}.json', () => {
       const template = createMockTemplate({ id: 'tpl-sys-test' });
       const result = service.createTemplate(template);
 
@@ -144,7 +144,7 @@ describe('CanvasTemplateService', () => {
       expect(parsed.id).toBe('tpl-sys-test');
     });
 
-    it('项目级模板 → 不在系统级目录出现', () => {
+    it('Project-level templates → do not appear in the system-level directory', () => {
       const template = createMockTemplate({ id: 'tpl-proj-isolated' });
       service.createTemplate(template, 'demo-project');
 
@@ -156,7 +156,7 @@ describe('CanvasTemplateService', () => {
       }
     });
 
-    it('系统级模板 → 不在项目级目录出现', () => {
+    it('System-level templates → do not appear in the project-level directory', () => {
       const template = createMockTemplate({ id: 'tpl-sys-isolated' });
       service.createTemplate(template);
 
@@ -168,7 +168,7 @@ describe('CanvasTemplateService', () => {
       }
     });
 
-    it('自动生成 id 如果未提供', () => {
+    it('Auto-generate id when not provided', () => {
       const template = createMockTemplate();
       delete (template as any).id;
 
@@ -178,7 +178,7 @@ describe('CanvasTemplateService', () => {
       expect(result.data.id.length).toBeGreaterThan(4);
     });
 
-    it('重复 id 抛出错误', () => {
+    it('Duplicate ids throw an error', () => {
       const template = createMockTemplate({ id: 'tpl-dup' });
       service.createTemplate(template);
 
@@ -190,8 +190,8 @@ describe('CanvasTemplateService', () => {
 
   // ─── listTemplates - read the list ───
 
-  describe('listTemplates — 模板列表', () => {
-    it('创建后 listTemplates 能列出项目级模板', () => {
+  describe('listTemplates — template list', () => {
+    it('After creation, listTemplates can list project-level templates', () => {
       const template = createMockTemplate({ id: 'tpl-list-proj', name: '列表测试模板' });
       service.createTemplate(template, 'demo-project');
 
@@ -202,7 +202,7 @@ describe('CanvasTemplateService', () => {
       expect(result.templates[0].name).toBe('列表测试模板');
     });
 
-    it('空目录返回空列表', () => {
+    it('An empty directory returns an empty list', () => {
       // Query directly without creating any templates
       const result = service.listTemplates(undefined, undefined, 'empty-project');
       expect(result.success).toBe(true);
@@ -210,7 +210,7 @@ describe('CanvasTemplateService', () => {
       expect(result.templates).toEqual([]);
     });
 
-    it('按 category 筛选', () => {
+    it('Filter by category', () => {
       service.createTemplate(createMockTemplate({ id: 'tpl-cat1', category: 'dashboard' }));
       service.createTemplate(createMockTemplate({ id: 'tpl-cat2', category: 'blank' }));
 
@@ -219,7 +219,7 @@ describe('CanvasTemplateService', () => {
       expect(result.templates[0].id).toBe('tpl-cat1');
     });
 
-    it('按 source 筛选', () => {
+    it('Filter by source', () => {
       service.createTemplate(createMockTemplate({ id: 'tpl-src1', source: 'user' }));
       service.createTemplate(createMockTemplate({ id: 'tpl-src2', source: 'builtin' }));
 
@@ -235,19 +235,19 @@ describe('CanvasTemplateService', () => {
 
   // ─── readTemplate - read a single one ───
 
-  describe('readTemplate — 读取单个', () => {
-    it('能读取已创建的项目级模板', () => {
-      const template = createMockTemplate({ id: 'tpl-read-proj', name: '读取测试' });
+  describe('readTemplate — read a single one', () => {
+    it('Created project-level templates can be read', () => {
+      const template = createMockTemplate({ id: 'tpl-read-proj', name: 'Read test' });
       service.createTemplate(template, 'demo-project');
 
       const result = service.readTemplate('tpl-read-proj', 'demo-project');
       expect(result.success).toBe(true);
       expect(result.data).not.toBeNull();
-      expect(result.data!.name).toBe('读取测试');
+      expect(result.data!.name).toBe('Read test');
       expect(result.data!.pageConfig.width).toBe(1920);
     });
 
-    it('不存在的模板返回 success=false', () => {
+    it('Non-existent template returns success=false', () => {
       const result = service.readTemplate('nonexistent-template');
       expect(result.success).toBe(false);
       expect(result.data).toBeNull();
@@ -256,8 +256,8 @@ describe('CanvasTemplateService', () => {
 
   // ─── deleteTemplate - delete a template ───
 
-  describe('deleteTemplate — 删除', () => {
-    it('删除模板后文件不存在', () => {
+  describe('deleteTemplate — delete', () => {
+    it('File does not exist after template deletion', () => {
       const template = createMockTemplate({ id: 'tpl-del-proj' });
       service.createTemplate(template, 'demo-project');
 
@@ -269,13 +269,13 @@ describe('CanvasTemplateService', () => {
       expect(fs.existsSync(filePath)).toBe(false);
     });
 
-    it('删除不存在的模板抛出错误', () => {
+    it('Deleting a non-existent template throws an error', () => {
       expect(() => {
         service.deleteTemplate('nonexistent');
       }).toThrow();
     });
 
-    it('禁止删除系统级内置模板', () => {
+    it('Deleting system-level built-in templates is forbidden', () => {
       // Create a system-level template with source=builtin
       const template = createMockTemplate({ id: 'builtin-test', source: 'builtin' });
       service.createTemplate(template);
@@ -285,7 +285,7 @@ describe('CanvasTemplateService', () => {
       }).toThrow('不允许删除内置模板');
     });
 
-    it('允许删除项目级模板（即使是 builtin source）', () => {
+    it('Allow deleting project-level templates (even with builtin source)', () => {
       const template = createMockTemplate({ id: 'tpl-proj-del-ok', source: 'builtin' });
       service.createTemplate(template, 'demo-project');
 
@@ -296,8 +296,8 @@ describe('CanvasTemplateService', () => {
 
   // ─── Integration scenario: full flow of saving a project page as a template ───
 
-  describe('集成场景：项目页面保存为模板', () => {
-    it('完整流程：创建 → 文件存在 → 列表可见 → 读取正确 → 删除清理', () => {
+  describe('Integration scenario: saving project pages as templates', () => {
+    it('Full flow: create → file exists → visible in list → reads correctly → delete cleans up', () => {
       const projectId = 'real-project';
       const templateId = 'tpl-integration';
 

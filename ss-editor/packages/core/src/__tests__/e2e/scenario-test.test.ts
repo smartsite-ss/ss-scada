@@ -74,7 +74,7 @@ class TestShape extends BaseGraphic {
     });
   });
 
-  describe('选择管理场景', () => {
+  describe('Selection management scenarios', () => {
     it('should manage selection correctly', () => {
       const editor = new Editor({ name: 'Selection Management' });
       const page = editor.createPage({ name: 'Selection Page' });
@@ -105,7 +105,7 @@ class TestShape extends BaseGraphic {
     });
   });
 
-  describe('集成测试场景', () => {
+  describe('Integration test scenarios', () => {
     it('should handle basic workflow', () => {
       const editor = new Editor({ name: 'Basic Workflow' });
       const page = editor.createPage({ name: 'Workflow Page' });

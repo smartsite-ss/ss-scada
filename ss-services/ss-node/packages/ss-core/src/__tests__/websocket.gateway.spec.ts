@@ -403,7 +403,7 @@ describe('ScadaWebSocketGateway', () => {
         tagName: 'Temperature',
         level: 'critical',
         value: 100,
-        message: 'Temperature exceeds threshold',
+        message: '温度超过阈值',
         timestamp: '2024-01-01T00:00:00.000Z',
       };
 

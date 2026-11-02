@@ -138,8 +138,8 @@ class TestShape extends BaseGraphic {
     });
   });
 
-  describe('剪切 (Cut)', () => {
-    it('剪切后应该保持图元数量不变（剪切功能由上层实现）', () => {
+  describe('Cut', () => {
+    it('After cut the graphic count should stay the same (cutting is implemented by the upper layer)', () => {
       const editor = new Editor({ name: 'Cut Test' });
       const page = editor.createPage({ name: 'Cut Page' });
       
@@ -195,7 +195,7 @@ class TestShape extends BaseGraphic {
       expect(() => editor.pasteFromClipboard()).not.toThrow();
     });
 
-    it('一次复制多次粘贴时，图元位置应该有累积偏移', () => {
+    it('With one copy and multiple pastes, graphic positions should accumulate offsets', () => {
       const editor = new Editor({ name: 'Multiple Paste Offset Test' });
       const page = editor.createPage({ name: 'Multiple Paste Offset Page'}); /* create the original graphic */ const originalGraphic = new TestShape(100, 100, 50, 50); originalGraphic.id ='original-graphic'; page.addGraphic(originalGraphic as any); /* copy the graphic */ editor.copyToClipboard(['original-graphic']); /* first paste - position should be offset by 20px */ const pasted1 = editor.pasteFromClipboard(); expect(pasted1.length).toBe(1); const pos1 = pasted1[0].getPosition(); expect(pos1.x).toBe(120); /* 100 + 20 */ expect(pos1.y).toBe(120); /* 100 + 20 */ /* second paste - position should be offset by 40px */ const pasted2 = editor.pasteFromClipboard(); expect(pasted2.length).toBe(1); const pos2 = pasted2[0].getPosition(); expect(pos2.x).toBe(140); /* 100 + 40 */ expect(pos2.y).toBe(140); /* 100 + 40 */ /* third paste - position should be offset by 60px */ const pasted3 = editor.pasteFromClipboard(); expect(pasted3.length).toBe(1); const pos3 = pasted3[0].getPosition(); expect(pos3.x).toBe(160); /* 100 + 60 */ expect(pos3.y).toBe(160); /* 100 + 60 */ /* verify 4 graphics in total */ expect(page.graphics.length).toBe(4); }); }); describe('Duplicate', () => {
     it('should create graphic duplicate', () => {
@@ -215,7 +215,7 @@ class TestShape extends BaseGraphic {
       expect(page.graphics.length).toBe(2);
     });
 
-    it('复制后应该只选中新图元', () => {
+    it('After copy, only the new graphics should be selected', () => {
       const editor = new Editor({ name: 'Duplicate Selection Test' });
       const page = editor.createPage({ name: 'Duplicate Selection Page' });
       
@@ -320,14 +320,14 @@ class TestShape extends BaseGraphic {
       expect(page.graphics.length).toBe(2);
     });
 
-    it('取消不存在的分组不应该报错', () => {
+    it('Canceling a non-existent group should not error', () => {
       const editor = new Editor({ name: 'Ungroup Non-existent Test' });
       const page = editor.createPage({ name: 'Ungroup Non-existent Page' });
       
       expect(() => page.ungroupGraphic('non-existent-group')).not.toThrow();
     });
 
-    it('isGroup 应该正确识别分组', () => {
+    it('isGroup should identify groups correctly', () => {
       const editor = new Editor({ name: 'Is Group Test' });
       const page = editor.createPage({ name: 'Is Group Page' });
       
@@ -423,7 +423,7 @@ class TestShape extends BaseGraphic {
       expect(graphic2.config.geometry.rotation).toBe(90);
     });
 
-    it('getGroupBounds 应该返回正确的组合边界框', () => {
+    it('getGroupBounds should return the correct group bounding box', () => {
       const editor = new Editor({ name: 'Get Group Bounds Test' });
       const page = editor.createPage({ name: 'Get Group Bounds Page' });
       
@@ -447,8 +447,8 @@ class TestShape extends BaseGraphic {
     });
   });
 
-  describe('组合图元选择行为', () => {
-    it('组合后组内图元应该处于选中状态', () => {
+  describe('Group graphic selection behavior', () => {
+    it('After grouping, graphics in the group should be selected', () => {
       const editor = new Editor({ name: 'Group Select After Grouping Test' });
       const page = editor.createPage({ name: 'Group Select Page' });
       
@@ -468,7 +468,7 @@ class TestShape extends BaseGraphic {
       expect(page.selectedGraphicIds).toContain('group-after-graphic-2');
     });
 
-    it('点击组内图元应该选中整个组', () => {
+    it('Clicking a graphic inside a group should select the whole group', () => {
       const editor = new Editor({ name: 'Select Group Test' });
       const page = editor.createPage({ name: 'Select Group Page' });
       
@@ -491,7 +491,7 @@ class TestShape extends BaseGraphic {
       expect(page.selectedGraphicIds).toContain('select-group-graphic-2');
     });
 
-    it('进入组编辑模式后应该可以选择单个图元', () => {
+    it('After entering group edit mode, a single graphic should be selectable', () => {
       const editor = new Editor({ name: 'Group Edit Mode Test' });
       const page = editor.createPage({ name: 'Group Edit Mode Page' });
       
@@ -517,7 +517,7 @@ class TestShape extends BaseGraphic {
       expect(page.selectedGraphicIds).toContain('edit-mode-graphic-1');
     });
 
-    it('退出组编辑模式后应该恢复正常选择行为', () => {
+    it('After exiting group edit mode, normal selection behavior should be restored', () => {
       const editor = new Editor({ name: 'Exit Group Edit Mode Test' });
       const page = editor.createPage({ name: 'Exit Group Edit Mode Page' });
       
@@ -565,8 +565,8 @@ class TestShape extends BaseGraphic {
     });
   });
 
-  describe('组合图元增减成员', () => {
-    it('addToGroup 应该将图元添加到组合', () => {
+  describe('Adding/removing group members', () => {
+    it('addToGroup should add the graphic to the group', () => {
       const editor = new Editor({ name: 'Add To Group Test' });
       const page = editor.createPage({ name: 'Add To Group Page' });
       
@@ -615,8 +615,8 @@ class TestShape extends BaseGraphic {
     });
   });
 
-  describe('图元区选中 vs 编辑区选中', () => {
-    it('在图元区（画布）点击组内图元时应选中整个组', () => {
+  describe('Graphic-area selection vs edit-area selection', () => {
+    it('Clicking a graphic inside a group in the graphic area (canvas) should select the whole group', () => {
       const editor = new Editor({ name: 'Canvas Select Group Test' });
       const page = editor.createPage({ name: 'Canvas Select Page' });
 
@@ -650,7 +650,7 @@ class TestShape extends BaseGraphic {
       expect(selectedAgain).toContain('canvas-select-g2');
     });
 
-    it('在编辑区（层叠面板）通过selectGroupMembers选中组成员', () => {
+    it('Select group members via selectGroupMembers in the edit area (stacked panel)', () => {
       const editor = new Editor({ name: 'Panel Select Test' });
       const page = editor.createPage({ name: 'Panel Select Page' });
 
@@ -727,7 +727,7 @@ class TestShape extends BaseGraphic {
       expect(g2.config.geometry.y).toBe(y2Before);
     });
 
-    it('退出组编辑模式后恢复全组选中', () => {
+    it('After exiting group edit mode, restore whole-group selection', () => {
       const editor = new Editor({ name: 'Edit Exit Test' });
       const page = editor.createPage({ name: 'Edit Exit Page' });
 
@@ -751,7 +751,7 @@ class TestShape extends BaseGraphic {
       expect(selected).toContain('edit-exit-g2');
     });
 
-    it('整体移动组合应保持成员相对位置', () => {
+    it('Whole-group movement should keep members\' relative positions', () => {
       const editor = new Editor({ name: 'Group Move Test' });
       const page = editor.createPage({ name: 'Group Move Page' });
 
@@ -791,7 +791,7 @@ class TestShape extends BaseGraphic {
       expect((page as any).selectionManager.getSelectedGraphicIds()).toHaveLength(2);
     });
 
-    it('缩放组合后成员尺寸和位置应相对于组中心变化', () => {
+    it('After group scaling, member size and position should change relative to the group center', () => {
       const editor = new Editor({ name: 'Scale Group Test' });
       const page = editor.createPage({ name: 'Scale Group Page' });
 
@@ -825,7 +825,7 @@ class TestShape extends BaseGraphic {
       expect((page as any).selectionManager.getSelectedGraphicIds()).toHaveLength(2);
     });
 
-    it('旋转组合后成员位置应围绕组中心旋转', () => {
+    it('After group rotation, member positions should rotate around the group center', () => {
       const editor = new Editor({ name: 'Rotate Group Test' });
       const page = editor.createPage({ name: 'Rotate Group Page' });
 

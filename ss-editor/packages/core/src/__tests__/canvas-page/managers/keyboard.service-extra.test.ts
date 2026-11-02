@@ -6,7 +6,7 @@
  * @vitest-environment jsdom
  */
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { KeyboardService, KeyboardContext } from '../../../canvas-page/keyboard.service'; /** * KeyboardService supplementary tests: trigger real keyboard events */ describe('KeyboardService - 键盘事件派发补充测试', () => {
+import { KeyboardService, KeyboardContext } from '../../../canvas-page/keyboard.service'; /** * KeyboardService supplementary tests: trigger real keyboard events */ describe('KeyboardService - keyboard event dispatch supplementary tests', () => {
   let keyboardService: KeyboardService;
 
   beforeEach(() => {
@@ -19,7 +19,7 @@ import { KeyboardService, KeyboardContext } from '../../../canvas-page/keyboard.
   });
 
   describe('startListening / stopListening', () => {
-    it('startListening 后键盘事件应被处理', () => {
+    it('After startListening, keyboard events should be handled', () => {
       const handler = vi.fn();
       keyboardService.registerKey('z', handler, { ctrl: true }); /* registerKey internally calls startListening */ const event = new KeyboardEvent('keydown', {
         key: 'z', ctrlKey: true, bubbles: true, cancelable: true
@@ -28,7 +28,7 @@ import { KeyboardService, KeyboardContext } from '../../../canvas-page/keyboard.
       expect(handler).toHaveBeenCalledTimes(1);
     });
 
-    it('stopListening 后键盘事件不再被处理', () => {
+    it('After stopListening, keyboard events are no longer handled', () => {
       const handler = vi.fn();
       keyboardService.registerKey('c', handler, { ctrl: true });
       keyboardService.stopListening();
@@ -39,7 +39,7 @@ import { KeyboardService, KeyboardContext } from '../../../canvas-page/keyboard.
       expect(handler).not.toHaveBeenCalled();
     });
 
-    it('多次 stopListening 后 startListening 可恢复', () => {
+    it('startListening can resume after multiple stopListening calls', () => {
       const handler = vi.fn();
       keyboardService.registerKey('v', handler, { ctrl: true });
       keyboardService.stopListening();
@@ -53,8 +53,8 @@ import { KeyboardService, KeyboardContext } from '../../../canvas-page/keyboard.
     });
   });
 
-  describe('修饰键组合匹配', () => {
-    it('Ctrl+Z 精确匹配', () => {
+  describe('Modifier combination matching', () => {
+    it('Ctrl+Z exact match', () => {
       const handler = vi.fn();
       keyboardService.registerKey('z', handler, { ctrl: true });
       document.dispatchEvent(new KeyboardEvent('keydown', {
@@ -63,7 +63,7 @@ import { KeyboardService, KeyboardContext } from '../../../canvas-page/keyboard.
       expect(handler).toHaveBeenCalledTimes(1);
     });
 
-    it('Ctrl+Shift+Z 不匹配 Ctrl+Z', () => {
+    it('Ctrl+Shift+Z does not match Ctrl+Z', () => {
       const handler = vi.fn();
       keyboardService.registerKey('z', handler, { ctrl: true, shift: false });
       document.dispatchEvent(new KeyboardEvent('keydown', {
@@ -72,7 +72,7 @@ import { KeyboardService, KeyboardContext } from '../../../canvas-page/keyboard.
       expect(handler).not.toHaveBeenCalled();
     });
 
-    it('应支持 Alt 修饰键', () => {
+    it('Should support the Alt modifier', () => {
       const handler = vi.fn();
       keyboardService.registerKey('a', handler, { alt: true });
       document.dispatchEvent(new KeyboardEvent('keydown', {
@@ -81,7 +81,7 @@ import { KeyboardService, KeyboardContext } from '../../../canvas-page/keyboard.
       expect(handler).toHaveBeenCalledTimes(1);
     });
 
-    it('单独按键 Delete 应匹配', () => {
+    it('Standalone Delete key should match', () => {
       const handler = vi.fn();
       keyboardService.registerKey('Delete', handler);
       document.dispatchEvent(new KeyboardEvent('keydown', {
@@ -91,8 +91,8 @@ import { KeyboardService, KeyboardContext } from '../../../canvas-page/keyboard.
     });
   });
 
-  describe('上下文管理', () => {
-    it('EDIT 上下文的快捷键在 PREVIEW 下不应触发', () => {
+  describe('Context management', () => {
+    it('EDIT-context shortcuts should not trigger in PREVIEW', () => {
       const editHandler = vi.fn();
       keyboardService.registerKey('e', editHandler, { ctrl: true }, KeyboardContext.EDIT);
       keyboardService.setContext(KeyboardContext.PREVIEW);
@@ -100,7 +100,7 @@ import { KeyboardService, KeyboardContext } from '../../../canvas-page/keyboard.
       expect(editHandler).not.toHaveBeenCalled();
     });
 
-    it('GLOBAL 上下文的快捷键在任何上下文都应触发', () => {
+    it('GLOBAL-context shortcuts should trigger in any context', () => {
       const globalHandler = vi.fn();
       keyboardService.registerKey('s', globalHandler, { ctrl: true }, KeyboardContext.GLOBAL);
       keyboardService.setContext(KeyboardContext.EDIT);
@@ -109,8 +109,8 @@ import { KeyboardService, KeyboardContext } from '../../../canvas-page/keyboard.
     });
   });
 
-  describe('优先级与冲突', () => {
-    it('注册的 handler 应被依次执行', () => {
+  describe('Priorities and conflicts', () => {
+    it('Registered handlers should be executed in order', () => {
       const order: number[] = [];
       
       const keyboardService = new KeyboardService();
@@ -126,16 +126,16 @@ import { KeyboardService, KeyboardContext } from '../../../canvas-page/keyboard.
     });
   });
 
-  describe('快捷键卸载', () => {
-    it('注册后 ID 可用', () => {
+  describe('Shortcut unloading', () => {
+    it('ID available after registration', () => {
       const handler = vi.fn();
       const id = keyboardService.registerKey('z', handler, { ctrl: true });
       expect(id).toBeTruthy();
     });
   });
 
-  describe('边界条件', () => {
-    it('注销后可注册新 handler', () => {
+  describe('Boundary conditions', () => {
+    it('New handlers can be registered after unregistration', () => {
       const handler1 = vi.fn();
       const handler2 = vi.fn();
       keyboardService.registerKey('x', handler1, { ctrl: true });
@@ -149,7 +149,7 @@ import { KeyboardService, KeyboardContext } from '../../../canvas-page/keyboard.
       expect(handler2).toHaveBeenCalledTimes(1);
     });
 
-    it('不同 modifier 的同一按键应独立', () => {
+    it('Same key with different modifiers should be independent', () => {
       const ctrlHandler = vi.fn();
       const noModHandler = vi.fn();
       keyboardService.registerKey('k', ctrlHandler, { ctrl: true });
@@ -162,7 +162,7 @@ import { KeyboardService, KeyboardContext } from '../../../canvas-page/keyboard.
       expect(noModHandler).toHaveBeenCalledTimes(1);
     });
 
-    it('特殊键名大小写匹配', () => {
+    it('Special key name case matching', () => {
       const handler = vi.fn();
       keyboardService.registerKey('Escape', handler);
       document.dispatchEvent(new KeyboardEvent('keydown', {
@@ -171,7 +171,7 @@ import { KeyboardService, KeyboardContext } from '../../../canvas-page/keyboard.
       expect(handler).toHaveBeenCalledTimes(1);
     });
 
-    it('不匹配的按键不影响注册的 handler', () => {
+    it('Mismatched keys do not affect registered handlers', () => {
       const handler = vi.fn();
       keyboardService.registerKey('z', handler, { ctrl: true });
       document.dispatchEvent(new KeyboardEvent('keydown', {
@@ -183,7 +183,7 @@ import { KeyboardService, KeyboardContext } from '../../../canvas-page/keyboard.
       expect(handler).not.toHaveBeenCalled();
     });
 
-    it('Shift 修饰键独立匹配', () => {
+    it('Shift modifier independent matching', () => {
       const handler = vi.fn();
       keyboardService.registerKey('ArrowUp', handler, { shift: true });
       document.dispatchEvent(new KeyboardEvent('keydown', {

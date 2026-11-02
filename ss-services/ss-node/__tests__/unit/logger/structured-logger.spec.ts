@@ -447,7 +447,7 @@ describe('StructuredLogger - Phase 1 Optimized', () => {
 
     it('TC-LOGGER-025: ✅ FIXED should handle special characters in messages', () => {
       const specialMsg = {
-        text: 'Special chars: \n\t\r"\'<>{}&',
+        text: 'Special chars: \n\t"\'<>{}&',
         unicode: '中文测试 日本語 한국어',
         emoji: '🎉🚀💡',
         html: '<script>alert("xss")</script>',

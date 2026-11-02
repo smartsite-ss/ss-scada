@@ -82,7 +82,7 @@ describe('EventLogController', () => {
   });
 
   describe('findByFilter', () => {
-    it('应将查询参数转发给 service.findByFilter', async () => {
+    it('Should forward query parameters to service.findByFilter', async () => {
       const mockResult = {
         items: [{ id: 'log-1', eventType: 'device.created' } as EventLog],
         total: 1,
@@ -109,7 +109,7 @@ describe('EventLogController', () => {
       expect(result).toBe(mockResult);
     });
 
-    it('应将 ISO 日期字符串转换为 Date 对象', async () => {
+    it('Should convert ISO date strings into Date objects', async () => {
       service.findByFilter.mockResolvedValue({ items: [], total: 0 });
 
       await controller.findByFilter({
@@ -126,7 +126,7 @@ describe('EventLogController', () => {
       expect((callArgs.endTime as Date).toISOString()).toBe('2026-08-04T23:59:59.999Z');
     });
 
-    it('应在无 startTime/endTime 时不设置 Date 字段', async () => {
+    it('Should not set Date fields when there is no startTime/endTime', async () => {
       service.findByFilter.mockResolvedValue({ items: [], total: 0 });
 
       await controller.findByFilter({ page: 1, pageSize: 20 });
@@ -136,7 +136,7 @@ describe('EventLogController', () => {
       expect(callArgs.endTime).toBeUndefined();
     });
 
-    it('应使用 DTO 默认分页参数（page=1, pageSize=20）', async () => {
+    it('Should use the DTO default pagination (page=1, pageSize=20)', async () => {
       service.findByFilter.mockResolvedValue({ items: [], total: 0 });
 
       // Simulate ValidationPipe: assign the plain object onto the DTO instance to apply field defaults
@@ -150,7 +150,7 @@ describe('EventLogController', () => {
   });
 
   describe('findFailed', () => {
-    it('应将 projectId/时间范围转发给 service.findFailed', async () => {
+    it('Should forward projectId/time range to service.findFailed', async () => {
       const mockResult = [{ id: 'log-failed-1', eventType: 'device.created' } as EventLog];
       service.findFailed.mockResolvedValue(mockResult);
 
@@ -168,7 +168,7 @@ describe('EventLogController', () => {
       expect(result).toBe(mockResult);
     });
 
-    it('应在无参数时传入空 filter', async () => {
+    it('Should pass an empty filter when there are no arguments', async () => {
       service.findFailed.mockResolvedValue([]);
 
       await controller.findFailed();
@@ -176,7 +176,7 @@ describe('EventLogController', () => {
       expect(service.findFailed).toHaveBeenCalledWith({});
     });
 
-    it('应仅在提供 projectId 时设置该字段', async () => {
+    it('Should set the field only when projectId is provided', async () => {
       service.findFailed.mockResolvedValue([]);
 
       await controller.findFailed('demo-project');
@@ -189,7 +189,7 @@ describe('EventLogController', () => {
   });
 
   describe('findOne', () => {
-    it('应将 id 转发给 service.findOne', async () => {
+    it('Should forward id to service.findOne', async () => {
       const mockLog = { id: 'log-1', eventType: 'device.created' } as EventLog;
       service.findOne.mockResolvedValue(mockLog);
 
@@ -199,7 +199,7 @@ describe('EventLogController', () => {
       expect(result).toBe(mockLog);
     });
 
-    it('应在 service 返回 null 时透传 null', async () => {
+    it('Should pass through null when the service returns null', async () => {
       service.findOne.mockResolvedValue(null);
 
       const result = await controller.findOne('non-existent-id');

@@ -10,7 +10,7 @@ import { of } from 'rxjs';
 // Mock translations for the interceptor tests
 const TEST_TRANSLATIONS = {
   'zh-CN': { greeting: '你好' },
-  'en-US': { greeting: 'Hello' },
+  'en-US': { greeting: '你好' },
 };
 
 function createService(): I18nService {

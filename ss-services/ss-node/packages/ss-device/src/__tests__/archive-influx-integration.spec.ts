@@ -58,8 +58,8 @@ function createMockDataQueryService() {
   };
 }
 
-describe('3.15 + 3.17 — DeviceArchiveService InfluxDB 集成', () => {
-  describe('InfluxWriteService 可用时', () => {
+describe('3.15 + 3.17 — DeviceArchiveService InfluxDB integration', () => {
+  describe('When InfluxWriteService is available', () => {
     let service: DeviceArchiveService;
     let mockInfluxWrite: any;
 
@@ -72,7 +72,7 @@ describe('3.15 + 3.17 — DeviceArchiveService InfluxDB 集成', () => {
       service = new DeviceArchiveService(mockRepo as any, mockPdb, mockInfluxWrite, mockDataQuery);
     });
 
-    it('TC-ARC-IFLX-001: archiveToInfluxDB 应调用 influxWriteService.writePoint', async () => {
+    it('TC-ARC-IFLX-001: archiveToInfluxDB should call influxWriteService.writePoint', async () => {
       const startTime = new Date('2024-01-01T00:00:00.000Z');
       const endTime = new Date('2024-01-01T00:01:00.000Z');
 
@@ -99,7 +99,7 @@ describe('3.15 + 3.17 — DeviceArchiveService InfluxDB 集成', () => {
       );
     });
 
-    it('TC-ARC-IFLX-002: toInfluxPoint 映射应包含 measurement/tags/fields/timestamp', async () => {
+    it('TC-ARC-IFLX-002: the toInfluxPoint mapping should include measurement/tags/fields/timestamp', async () => {
       const startTime = new Date('2024-01-01T00:00:00.000Z');
       const endTime = new Date('2024-01-01T00:01:00.000Z');
 
@@ -123,7 +123,7 @@ describe('3.15 + 3.17 — DeviceArchiveService InfluxDB 集成', () => {
       expect(call.timestamp).toBeInstanceOf(Date);
     });
 
-    it('TC-ARC-IFLX-003: queryArchive 应从 DataQueryService 查询', async () => {
+    it('TC-ARC-IFLX-003: queryArchive should query from DataQueryService', async () => {
       const startTime = new Date('2024-01-01T00:00:00.000Z');
       const endTime = new Date('2024-01-01T00:01:00.000Z');
 
@@ -154,12 +154,12 @@ describe('3.15 + 3.17 — DeviceArchiveService InfluxDB 集成', () => {
       expect(result.total).toBe(1);
     });
 
-    it('TC-ARC-IFLX-004: DataQueryService 查询失败时降级到内存', async () => {
+    it('TC-ARC-IFLX-004: should degrade to memory when the DataQueryService query fails', async () => {
       const startTime = new Date('2024-01-01T00:00:00.000Z');
       const endTime = new Date('2024-01-01T00:01:00.000Z');
 
       const mockDataQuery = (service as any).dataQueryService;
-      mockDataQuery.queryTimeRange.mockRejectedValue(new Error('DB connection failed'));
+      mockDataQuery.queryTimeRange.mockRejectedValue(new Error('DB 连接失败'));
 
       const result = await service.queryArchive('tag-004', {
         startTime,
@@ -172,7 +172,7 @@ describe('3.15 + 3.17 — DeviceArchiveService InfluxDB 集成', () => {
     });
   });
 
-  describe('InfluxWriteService 不可用时（降级模式）', () => {
+  describe('When InfluxWriteService is unavailable (degraded mode)', () => {
     let service: DeviceArchiveService;
 
     beforeEach(() => {
@@ -182,7 +182,7 @@ describe('3.15 + 3.17 — DeviceArchiveService InfluxDB 集成', () => {
       service = new DeviceArchiveService(mockRepo as any, mockPdb);
     });
 
-    it('TC-ARC-IFLX-010: 无 InfluxWriteService 时应降级到内存 Map', async () => {
+    it('TC-ARC-IFLX-010: should degrade to an in-memory Map without InfluxWriteService', async () => {
       const startTime = new Date('2024-01-01T00:00:00.000Z');
       const endTime = new Date('2024-01-01T00:01:00.000Z');
 
@@ -193,7 +193,7 @@ describe('3.15 + 3.17 — DeviceArchiveService InfluxDB 集成', () => {
       expect(result.jobId).toMatch(/^arc_/);
     });
 
-    it('TC-ARC-IFLX-011: 无 DataQueryService 时 queryArchive 降级到内存查询', async () => {
+    it('TC-ARC-IFLX-011: queryArchive degrades to an in-memory query without DataQueryService', async () => {
       const startTime = new Date('2024-01-01T00:00:00.000Z');
       const endTime = new Date('2024-01-01T00:01:00.000Z');
 
@@ -206,7 +206,7 @@ describe('3.15 + 3.17 — DeviceArchiveService InfluxDB 集成', () => {
       expect(result.total).toBe(0);
     });
 
-    it('TC-ARC-IFLX-012: fetchDataPoints 无 DataQueryService 时返回空数组不生成随机数', async () => {
+    it('TC-ARC-IFLX-012: fetchDataPoints returns an empty array without DataQueryService instead of generating random numbers', async () => {
       const startTime = new Date('2024-01-01T00:00:00.000Z');
       const endTime = new Date('2024-01-01T00:01:00.000Z');
 
@@ -217,8 +217,8 @@ describe('3.15 + 3.17 — DeviceArchiveService InfluxDB 集成', () => {
   });
 });
 
-describe('3.17 — ArchiveService InfluxDB 集成', () => {
-  describe('InfluxWriteService 可用时', () => {
+describe('3.17 — ArchiveService InfluxDB integration', () => {
+  describe('When InfluxWriteService is available', () => {
     let archiveService: ArchiveService;
     let mockInfluxWrite: any;
 
@@ -228,7 +228,7 @@ describe('3.17 — ArchiveService InfluxDB 集成', () => {
       archiveService = new ArchiveService(mockInfluxWrite, mockDataQuery);
     });
 
-    it('TC-ARC-SVC-001: archiveDataPoint 应调用 influxWriteService.writePoint', async () => {
+    it('TC-ARC-SVC-001: archiveDataPoint should call influxWriteService.writePoint', async () => {
       const point = {
         tagId: 'tag-100',
         deviceId: 'device-001',
@@ -246,7 +246,7 @@ describe('3.17 — ArchiveService InfluxDB 集成', () => {
       expect(call.fields.value).toBe(88.8);
     });
 
-    it('TC-ARC-SVC-002: queryHistory 应调用 dataQueryService.queryTimeRange', async () => {
+    it('TC-ARC-SVC-002: queryHistory should call dataQueryService.queryTimeRange', async () => {
       const start = new Date('2024-01-01T00:00:00.000Z');
       const end = new Date('2024-01-01T01:00:00.000Z');
 
@@ -266,7 +266,7 @@ describe('3.17 — ArchiveService InfluxDB 集成', () => {
       expect(result[0].value).toBe(10);
     });
 
-    it('TC-ARC-SVC-003: writePoint 失败时应捕获错误不抛出', async () => {
+    it('TC-ARC-SVC-003: errors thrown by writePoint should be caught without rethrowing', async () => {
       mockInfluxWrite.writePoint.mockRejectedValue(new Error('InfluxDB down'));
 
       await archiveService.archiveDataPoint({
@@ -281,14 +281,14 @@ describe('3.17 — ArchiveService InfluxDB 集成', () => {
     });
   });
 
-  describe('InfluxWriteService 不可用时', () => {
+  describe('When InfluxWriteService is unavailable', () => {
     let archiveService: ArchiveService;
 
     beforeEach(() => {
       archiveService = new ArchiveService(undefined, undefined);
     });
 
-    it('TC-ARC-SVC-010: archiveDataPoint 无 InfluxWrite 时应仅记录日志', async () => {
+    it('TC-ARC-SVC-010: archiveDataPoint should only log without InfluxWrite', async () => {
       await archiveService.archiveDataPoint({
         tagId: 'tag-noop',
         deviceId: 'dev-001',
@@ -300,7 +300,7 @@ describe('3.17 — ArchiveService InfluxDB 集成', () => {
       expect(true).toBe(true);
     });
 
-    it('TC-ARC-SVC-011: queryHistory 无 DataQuery 时应返回空数组', async () => {
+    it('TC-ARC-SVC-011: queryHistory should return an empty array without DataQuery', async () => {
       const result = await archiveService.queryHistory(
         'tag-noop',
         new Date('2024-01-01'),

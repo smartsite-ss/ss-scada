@@ -16,9 +16,9 @@ import {
 } from '../../canvas-page/theme/config/themes';
 import { themeManager, ThemeManager } from '../../canvas-page/theme/ThemeManager';
 
-describe('主题系统测试', () => {
-  describe('主题定义验证', () => {
-    it('应该正确获取所有主题名称', () => {
+describe('Theme system test', () => {
+  describe('Theme definition validation', () => {
+    it('Should get all theme names correctly', () => {
       const themeNames = getThemeNames();
       expect(themeNames).toContain('light');
       expect(themeNames).toContain('dark');
@@ -34,55 +34,55 @@ describe('主题系统测试', () => {
       expect(themeNames.length).toBe(11);
     });
 
-    it('应该正确获取浅色主题', () => {
+    it('Should get the light theme correctly', () => {
       const theme = getTheme('light');
       expect(theme).toEqual(lightTheme);
       expect(theme.primary).toBe('#2196F3');
       expect(theme.background).toBe('#F5F5F5');
     });
 
-    it('应该正确获取深色主题', () => {
+    it('Should get the dark theme correctly', () => {
       const theme = getTheme('dark');
       expect(theme).toEqual(darkTheme);
       expect(theme.primary).toBe('#4A90D9');
       expect(theme.background).toBe('#14181E');
     });
 
-    it('应该正确获取科技浅蓝主题', () => {
+    it('Should get the tech light blue theme correctly', () => {
       const theme = getTheme('tech-light-blue');
       expect(theme).toEqual(techLightBlueTheme);
       expect(theme.primary).toBe('#3B82F6');
       expect(theme.background).toBe('#F0F9FF');
     });
 
-    it('应该正确获取科技深蓝主题', () => {
+    it('Should get the tech dark blue theme correctly', () => {
       const theme = getTheme('tech-dark-blue');
       expect(theme).toEqual(techDarkBlueTheme);
       expect(theme.primary).toBe('#0A2463');
       expect(theme.background).toBe('#0A1929');
     });
 
-    it('应该正确获取蓝色主题', () => {
+    it('Should get the blue theme correctly', () => {
       const theme = getTheme('blue');
       expect(theme).toEqual(blueTheme);
       expect(theme.primary).toBe('#1976D2');
       expect(theme.background).toBe('#E3F2FD');
     });
 
-    it('应该正确获取高对比度主题', () => {
+    it('Should get the high-contrast theme correctly', () => {
       const theme = getTheme('high-contrast');
       expect(theme).toEqual(highContrastTheme);
       expect(theme.primary).toBe('#0066cc');
       expect(theme.background).toBe('#ffffff');
     });
 
-    it('对于不存在的主题，应该默认返回浅色主题', () => {
+    it('For a non-existent theme, should return the light theme by default', () => {
       const theme = getTheme('non-existent-theme');
       expect(theme).toEqual(lightTheme);
     });
   });
 
-  describe('主题结构验证', () => {
+  describe('Theme structure validation', () => {
     const themes = [
       { name: 'light', theme: lightTheme },
       { name: 'dark', theme: darkTheme },
@@ -160,8 +160,8 @@ describe('主题系统测试', () => {
     });
   });
 
-  describe('主题切换测试', () => {
-    it('应该能够在所有主题之间切换', () => {
+  describe('Theme switching test', () => {
+    it('Should be able to switch between all themes', () => {
       const themeNames = getThemeNames();
       
       // Fetch all themes one by one
@@ -172,7 +172,7 @@ describe('主题系统测试', () => {
       expect(uniqueThemes.size).toBe(themeNames.length);
     });
 
-    it('getTheme 函数应该支持类型安全的主题名称', () => {
+    it('The getTheme function should support type-safe theme names', () => {
       const validThemeNames: ThemeName[] = ['light', 'dark', 'tech-light-blue', 'tech-dark-blue', 'blue', 'high-contrast'];
       
       validThemeNames.forEach(name => {
@@ -182,8 +182,8 @@ describe('主题系统测试', () => {
     });
   });
 
-  describe('主题功能完整性', () => {
-    it('所有主题都应该包含完整的状态色', () => {
+  describe('Theme feature completeness', () => {
+    it('All themes should contain complete status colors', () => {
       const themeNames = getThemeNames();
       
       themeNames.forEach(name => {
@@ -195,7 +195,7 @@ describe('主题系统测试', () => {
       });
     });
 
-    it('所有主题都应该包含完整的阴影配置', () => {
+    it('All themes should contain complete shadow configs', () => {
       const themeNames = getThemeNames();
       
       themeNames.forEach(name => {
@@ -206,7 +206,7 @@ describe('主题系统测试', () => {
       });
     });
 
-    it('所有主题都应该包含完整的过渡配置', () => {
+    it('All themes should contain complete transition configs', () => {
       const themeNames = getThemeNames();
       
       themeNames.forEach(name => {
@@ -219,7 +219,7 @@ describe('主题系统测试', () => {
   });
 });
 
-describe('ThemeManager 测试', () => {
+describe('ThemeManager tests', () => {
   let mockManager: ThemeManager;
 
   beforeEach(() => {
@@ -233,61 +233,61 @@ describe('ThemeManager 测试', () => {
     vi.restoreAllMocks();
   });
 
-  describe('单例实例 themeManager', () => {
-    it('应该Export单例实例', () => {
+  describe('Singleton instance themeManager', () => {
+    it('Should export the singleton instance', () => {
       expect(themeManager).toBeInstanceOf(ThemeManager);
     });
 
-    it('多次访问应该返回同一个实例', () => {
+    it('Multiple accesses should return the same instance', () => {
       const manager1 = themeManager;
       const manager2 = themeManager;
       expect(manager1).toBe(manager2);
     });
   });
 
-  describe('初始化状态', () => {
-    it('初始主题应该是 dark', () => {
+  describe('Initialization state', () => {
+    it('Initial theme should be dark', () => {
       expect(mockManager.getCurrentThemeName()).toBe('dark');
     });
 
-    it('初始主题配置应该是 darkTheme', () => {
+    it('Initial theme config should be darkTheme', () => {
       const theme = mockManager.getCurrentTheme();
       expect(theme).toEqual(darkTheme);
     });
   });
 
-  describe('主题切换', () => {
-    it('应该能够切换到 dark 主题', () => {
+  describe('Theme switching', () => {
+    it('Should be able to switch to the dark theme', () => {
       mockManager.setTheme('dark');
       expect(mockManager.getCurrentThemeName()).toBe('dark');
       expect(mockManager.getCurrentTheme()).toEqual(darkTheme);
     });
 
-    it('应该能够切换到 tech-light-blue 主题', () => {
+    it('Should be able to switch to the tech-light-blue theme', () => {
       mockManager.setTheme('tech-light-blue');
       expect(mockManager.getCurrentThemeName()).toBe('tech-light-blue');
       expect(mockManager.getCurrentTheme()).toEqual(techLightBlueTheme);
     });
 
-    it('应该能够切换到 tech-dark-blue 主题', () => {
+    it('Should be able to switch to the tech-dark-blue theme', () => {
       mockManager.setTheme('tech-dark-blue');
       expect(mockManager.getCurrentThemeName()).toBe('tech-dark-blue');
       expect(mockManager.getCurrentTheme()).toEqual(techDarkBlueTheme);
     });
 
-    it('应该能够切换到 blue 主题', () => {
+    it('Should be able to switch to the blue theme', () => {
       mockManager.setTheme('blue');
       expect(mockManager.getCurrentThemeName()).toBe('blue');
       expect(mockManager.getCurrentTheme()).toEqual(blueTheme);
     });
 
-    it('应该能够切换到 high-contrast 主题', () => {
+    it('Should be able to switch to the high-contrast theme', () => {
       mockManager.setTheme('high-contrast');
       expect(mockManager.getCurrentThemeName()).toBe('high-contrast');
       expect(mockManager.getCurrentTheme()).toEqual(highContrastTheme);
     });
 
-    it('对于不存在的主题，应该回退到 dark 并警告', () => {
+    it('For a non-existent theme, should fall back to dark with a warning', () => {
       mockManager.setTheme('non-existent' as ThemeName);
       expect(mockManager.getCurrentThemeName()).toBe('dark');
       expect(mockManager.getCurrentTheme()).toEqual(darkTheme);
@@ -295,8 +295,8 @@ describe('ThemeManager 测试', () => {
     });
   });
 
-  describe('主题订阅', () => {
-    it('订阅应该立即收到当前主题', () => {
+  describe('Theme subscription', () => {
+    it('Subscribing should immediately receive the current topic', () => {
       const callback = vi.fn();
       const unsubscribe = mockManager.subscribe(callback);
       
@@ -306,7 +306,7 @@ describe('ThemeManager 测试', () => {
       unsubscribe();
     });
 
-    it('主题切换时订阅者应该收到通知', () => {
+    it('Subscribers should be notified when the theme switches', () => {
       const callback = vi.fn();
       const unsubscribe = mockManager.subscribe(callback);
       
@@ -319,7 +319,7 @@ describe('ThemeManager 测试', () => {
       unsubscribe();
     });
 
-    it('多次订阅应该都能收到通知', () => {
+    it('Multiple subscriptions should all receive notifications', () => {
       const callback1 = vi.fn();
       const callback2 = vi.fn();
       
@@ -338,7 +338,7 @@ describe('ThemeManager 测试', () => {
       unsubscribe2();
     });
 
-    it('取消订阅后不应该再收到通知', () => {
+    it('Should no longer receive notifications after unsubscribing', () => {
       const callback = vi.fn();
       const unsubscribe = mockManager.subscribe(callback);
       
@@ -354,28 +354,28 @@ describe('ThemeManager 测试', () => {
       expect(callback).not.toHaveBeenCalled();
     });
 
-    it('应该能够获取所有可用主题', () => {
+    it('Should be able to get all available themes', () => {
       const themes = mockManager.getAvailableThemeNames();
       expect(themes).toEqual(expect.arrayContaining(['light', 'dark', 'high-contrast', 'blue', 'tech-dark-blue', 'tech-light-blue', 'blue-light', 'blue-dark', 'green-tech', 'orange-warm', 'enterprise']));
     });
   });
 
-  describe('CSS 变量注入', () => {
-    it('applyThemeToDOM 应该设置 data-theme 属性', () => {
+  describe('CSS variable injection', () => {
+    it('applyThemeToDOM should set the data-theme attribute', () => {
       const root = document.documentElement;
       mockManager.applyThemeToDOM();
       
       expect(root.getAttribute('data-theme')).toBe('dark');
     });
 
-    it('切换主题后 data-theme 应该更新', () => {
+    it('After switching themes, data-theme should update', () => {
       const root = document.documentElement;
       mockManager.setTheme('dark');
       
       expect(root.getAttribute('data-theme')).toBe('dark');
     });
 
-    it('应该注入所有基础颜色变量', () => {
+    it('Should inject all base color variables', () => {
       const root = document.documentElement;
       mockManager.setTheme('light');
       
@@ -390,7 +390,7 @@ describe('ThemeManager 测试', () => {
       expect(root.style.getPropertyValue('--border-light')).toBe('#E0E0E0');
     });
 
-    it('应该注入所有状态颜色变量', () => {
+    it('Should inject all status color variables', () => {
       const root = document.documentElement;
       mockManager.setTheme('light');
       
@@ -400,7 +400,7 @@ describe('ThemeManager 测试', () => {
       expect(root.style.getPropertyValue('--status-info')).toBe('#2196F3');
     });
 
-    it('应该注入所有按钮颜色变量', () => {
+    it('Should inject all button color variables', () => {
       const root = document.documentElement;
       mockManager.setTheme('light');
       
@@ -410,7 +410,7 @@ describe('ThemeManager 测试', () => {
       expect(root.style.getPropertyValue('--button-text')).toBe('#FFFFFF');
     });
 
-    it('应该注入所有控制按钮颜色变量', () => {
+    it('Should inject all control button color variables', () => {
       const root = document.documentElement;
       mockManager.setTheme('light');
       
@@ -422,34 +422,34 @@ describe('ThemeManager 测试', () => {
     });
   });
 
-  describe('主题持久化', () => {
-    it('应该在切换主题时更新当前主题', () => {
+  describe('Theme persistence', () => {
+    it('Should update the current theme when switching themes', () => {
       mockManager.setTheme('dark');
       
       expect(mockManager.getCurrentThemeName()).toBe('dark');
     });
 
-    it('应该在初始化时使用默认主题', () => {
+    it('Should use the default theme at initialization', () => {
       const newManager = new ThemeManager();
       expect(newManager.getCurrentThemeName()).toBe('dark');
       expect(newManager.getCurrentTheme()).toEqual(darkTheme);
     });
 
-    it('localStorage 中的无效主题应该被忽略', () => {
+    it('Invalid themes in localStorage should be ignored', () => {
       localStorage.setItem('scada-editor-theme', 'invalid-theme');
       
       const newManager = new ThemeManager();
       expect(newManager.getCurrentThemeName()).toBe('dark');
     });
 
-    it('localStorage 为空时应该使用默认主题', () => {
+    it('Should use the default theme when localStorage is empty', () => {
       localStorage.removeItem('scada-editor-theme');
       
       const newManager = new ThemeManager();
       expect(newManager.getCurrentThemeName()).toBe('dark');
     });
 
-    it('localStorage 异常时应该使用默认主题', () => {
+    it('Should use the default theme when localStorage throws', () => {
       const newManager = new ThemeManager();
       expect(newManager.getCurrentThemeName()).toBe('dark');
     });

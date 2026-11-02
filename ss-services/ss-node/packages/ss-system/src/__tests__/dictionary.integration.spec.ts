@@ -53,7 +53,7 @@ const sampleTable: DictTable = {
   sortOrder: 4,
   items: [
     { value: 'bool', label: '布尔', sortOrder: 1, description: '布尔类型' },
-    { value: 'int16', label: '整型', sortOrder: 2, description: '16位整型' },
+    { value: 'int16', label: 'Integer', sortOrder: 2, description: '16-bit integer' },
   ],
 };
 
@@ -206,7 +206,7 @@ describe('DictionaryController - HTTP Integration (supertest)', () => {
       return request(app.getHttpServer())
         .put('/api/v1/dicts/tables/someDict')
         .query({ locale: 'en-US', category: 'basic-data' })
-        .send({ table: { dictName: 'Test' } })
+        .send({ table: { dictName: '测试' } })
         .expect(200);
     });
 

@@ -46,7 +46,7 @@ describe('UserAdminService', () => {
       username: 'operator',
       password: 'hashed',
       email: 'op@test.com',
-      displayName: 'Operator',
+      displayName: '操作员',
       role: UserRole.USER,
       isActive: true,
       createdAt: new Date('2026-06-03'),

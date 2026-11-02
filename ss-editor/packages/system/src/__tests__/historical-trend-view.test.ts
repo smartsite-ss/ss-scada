@@ -165,8 +165,8 @@ describe('HistoricalTrendView', () => {
     vi.useRealTimers();
   });
 
-  describe('项目加载', () => {
-    it('挂载后应加载项目列表', async () => {
+  describe('Project loading', () => {
+    it('Should load the project list after mount', async () => {
       const wrapper = await mountHistoricalTrendView();
       await flushPromises();
 
@@ -177,8 +177,8 @@ describe('HistoricalTrendView', () => {
       expect(vm.projectStore.projects[0].projectId).toBe('proj-1');
     });
 
-    it('项目列表加载失败应静默处理', async () => {
-      mockProjectApi.list.mockRejectedValue(new Error('Network error'));
+    it('Project list load failure should be handled silently', async () => {
+      mockProjectApi.list.mockRejectedValue(new Error('网络错误'));
       const wrapper = await mountHistoricalTrendView();
       await flushPromises();
 
@@ -187,8 +187,8 @@ describe('HistoricalTrendView', () => {
     });
   });
 
-  describe('设备加载 - pageSize 修复验证', () => {
-    it('选择项目后应以 pageSize=100 加载设备列表（修复校验超限）', async () => {
+  describe('Device loading - pageSize fix verification', () => {
+    it('After selecting a project, the device list should load with pageSize=100 (fix validation overflow)', async () => {
       const wrapper = await mountHistoricalTrendView();
       await flushPromises();
 
@@ -203,7 +203,7 @@ describe('HistoricalTrendView', () => {
       expect(vm.devices[0].deviceName).toBe('设备1');
     });
 
-    it('设备列表加载失败应静默处理', async () => {
+    it('Device list load failure should be handled silently', async () => {
       mockDeviceApi.list.mockRejectedValue(new Error('Backend error'));
       const wrapper = await mountHistoricalTrendView();
       await flushPromises();
@@ -216,7 +216,7 @@ describe('HistoricalTrendView', () => {
       expect(vm.devices.length).toBe(0);
     });
 
-    it('未选择项目时设备下拉应禁用', async () => {
+    it('The device dropdown should be disabled when no project is selected', async () => {
       const wrapper = await mountHistoricalTrendView();
       await flushPromises();
 
@@ -225,8 +225,8 @@ describe('HistoricalTrendView', () => {
     });
   });
 
-  describe('标签加载 - device.tags 修复验证', () => {
-    it('选择设备后应从 device.tags 加载标签（修复 dataTags→tags）', async () => {
+  describe('Tag loading - device.tags fix verification', () => {
+    it('After selecting a device, tags should be loaded from device.tags (fix dataTags→tags)', async () => {
       const wrapper = await mountHistoricalTrendView();
       await flushPromises();
 
@@ -244,7 +244,7 @@ describe('HistoricalTrendView', () => {
       expect(vm.allTags[0].address).toBe('40001');
     });
 
-    it('设备无标签时应加载空列表', async () => {
+    it('Should load an empty list when the device has no tags', async () => {
       mockDeviceApi.getById.mockResolvedValue({
         data: { id: 'dev-1', deviceName: '设备1', tags: [] },
       });
@@ -261,7 +261,7 @@ describe('HistoricalTrendView', () => {
       expect(vm.allTags.length).toBe(0);
     });
 
-    it('设备无 tags 属性时应安全降级为空列表', async () => {
+    it('Should degrade safely to an empty list when the device has no tags property', async () => {
       mockDeviceApi.getById.mockResolvedValue({
         data: { id: 'dev-1', deviceName: '设备1' }, // no tags
       });
@@ -278,7 +278,7 @@ describe('HistoricalTrendView', () => {
       expect(vm.allTags.length).toBe(0);
     });
 
-    it('API 直接返回数组格式也能正确加载标签（无 data wrapper）', async () => {
+    it('Should load tags correctly when the API returns a bare array format (no data wrapper)', async () => {
       mockDeviceApi.getById.mockResolvedValue({
         id: 'dev-1',
         deviceName: '设备1',
@@ -298,8 +298,8 @@ describe('HistoricalTrendView', () => {
     });
   });
 
-  describe('级联重置', () => {
-    it('切换项目应清空设备、标签和图表', async () => {
+  describe('Cascade reset', () => {
+    it('Switching projects should clear devices, tags and charts', async () => {
       const wrapper = await mountHistoricalTrendView();
       await flushPromises();
 
@@ -323,7 +323,7 @@ describe('HistoricalTrendView', () => {
       expect(vm.devices.length).toBe(2); // newly loaded devices
     });
 
-    it('切换设备应清空标签和图表数据', async () => {
+    it('Switching devices should clear tags and chart data', async () => {
       const wrapper = await mountHistoricalTrendView();
       await flushPromises();
 
@@ -344,8 +344,8 @@ describe('HistoricalTrendView', () => {
     });
   });
 
-  describe('查询按钮状态', () => {
-    it('未选项目时查询按钮应禁用', async () => {
+  describe('Query button status', () => {
+    it('The query button should be disabled when no project is selected', async () => {
       const wrapper = await mountHistoricalTrendView();
       await flushPromises();
 
@@ -353,7 +353,7 @@ describe('HistoricalTrendView', () => {
       expect((queryBtn.element as HTMLButtonElement).disabled).toBe(true);
     });
 
-    it('完整选择后可查询', async () => {
+    it('Queryable after full selection', async () => {
       const wrapper = await mountHistoricalTrendView();
       await flushPromises();
 
@@ -373,8 +373,8 @@ describe('HistoricalTrendView', () => {
     });
   });
 
-  describe('标签选择器交互', () => {
-    it('点击标签按钮应展开选择器', async () => {
+  describe('Tag selector interaction', () => {
+    it('Clicking the tag button should expand the selector', async () => {
       const wrapper = await mountHistoricalTrendView();
       await flushPromises();
 
@@ -390,7 +390,7 @@ describe('HistoricalTrendView', () => {
       expect(tagBtn.exists()).toBe(true);
     });
 
-    it('全选 / 取消全选', async () => {
+    it('Select all / deselect all', async () => {
       const wrapper = await mountHistoricalTrendView();
       await flushPromises();
 
@@ -409,7 +409,7 @@ describe('HistoricalTrendView', () => {
       expect(vm.selectedTagIds.length).toBe(0);
     });
 
-    it('部分选中时 allTagsSelected 为 false', async () => {
+    it('allTagsSelected is false when partially selected', async () => {
       const wrapper = await mountHistoricalTrendView();
       await flushPromises();
 
@@ -419,7 +419,7 @@ describe('HistoricalTrendView', () => {
       expect(vm.allTagsSelected).toBe(false);
     });
 
-    it('全部选中时 allTagsSelected 为 true', async () => {
+    it('allTagsSelected is true when all are selected', async () => {
       const wrapper = await mountHistoricalTrendView();
       await flushPromises();
 
@@ -429,7 +429,7 @@ describe('HistoricalTrendView', () => {
       expect(vm.allTagsSelected).toBe(true);
     });
 
-    it('标签搜索过滤', async () => {
+    it('Tag search filtering', async () => {
       const wrapper = await mountHistoricalTrendView();
       await flushPromises();
 
@@ -447,7 +447,7 @@ describe('HistoricalTrendView', () => {
       expect(vm.filteredTags[0].address).toBe('40002');
     });
 
-    it('搜索无结果时显示空提示', async () => {
+    it('Show the empty hint when search has no results', async () => {
       const wrapper = await mountHistoricalTrendView();
       await flushPromises();
 
@@ -460,7 +460,7 @@ describe('HistoricalTrendView', () => {
       expect(vm.filteredTags.length).toBe(0);
     });
 
-    it('toggleTag 正确添加/移除标签', async () => {
+    it('toggleTag correctly adds/removes tags', async () => {
       const wrapper = await mountHistoricalTrendView();
       await flushPromises();
 
@@ -475,8 +475,8 @@ describe('HistoricalTrendView', () => {
     });
   });
 
-  describe('时间预设', () => {
-    it('applyPresetRange 1h 应正确计算', async () => {
+  describe('Time presets', () => {
+    it('applyPresetRange 1h should compute correctly', async () => {
       vi.useFakeTimers();
       vi.setSystemTime(new Date('2026-07-22T12:00:00'));
       const wrapper = await mountHistoricalTrendView();
@@ -490,7 +490,7 @@ describe('HistoricalTrendView', () => {
       expect(vm.startTime).toContain('2026-07-22');
     });
 
-    it('applyPresetRange 24h 应正确计算', async () => {
+    it('applyPresetRange 24h should compute correctly', async () => {
       vi.useFakeTimers();
       vi.setSystemTime(new Date('2026-07-22T12:00:00'));
       const wrapper = await mountHistoricalTrendView();
@@ -504,7 +504,7 @@ describe('HistoricalTrendView', () => {
       expect(vm.endTime).toContain('2026-07-22');
     });
 
-    it('自定义时间时 endTime 重置为当前时间，startTime 保持不变', async () => {
+    it('With custom time, endTime resets to now while startTime stays unchanged', async () => {
       vi.useFakeTimers();
       vi.setSystemTime(new Date('2026-07-22T12:00:00'));
       const wrapper = await mountHistoricalTrendView();
@@ -523,8 +523,8 @@ describe('HistoricalTrendView', () => {
     });
   });
 
-  describe('查询趋势数据', () => {
-    it('成功查询后应生成 chartSeries', async () => {
+  describe('Query trend data', () => {
+    it('Should generate chartSeries after a successful query', async () => {
       const wrapper = await mountHistoricalTrendView();
       await flushPromises();
 
@@ -551,7 +551,7 @@ describe('HistoricalTrendView', () => {
       expect(vm.visibleSeries.size).toBe(2);
     });
 
-    it('查询失败应调用 showError', async () => {
+    it('Query failure should call showError', async () => {
       mockDataQueryApi.queryTrend.mockRejectedValue({
         _errorHandled: false,
         message: 'Server error',
@@ -575,7 +575,7 @@ describe('HistoricalTrendView', () => {
       expect(vm.queryLoading).toBe(false);
     });
 
-    it('空数据返回时 chartSeries 为空', async () => {
+    it('When empty data is returned, chartSeries is empty', async () => {
       mockDataQueryApi.queryTrend.mockResolvedValue({ data: { data: [] } });
 
       const wrapper = await mountHistoricalTrendView();
@@ -595,7 +595,7 @@ describe('HistoricalTrendView', () => {
       expect(vm.chartSeries.length).toBe(0);
     });
 
-    it('查询中显示 loading 状态', async () => {
+    it('Show loading state while querying', async () => {
       // Use a deferred promise to test the loading state
       let resolvePromise: any;
       const deferred = new Promise((resolve) => { resolvePromise = resolve; });
@@ -624,8 +624,8 @@ describe('HistoricalTrendView', () => {
     });
   });
 
-  describe('图例交互', () => {
-    it('toggleSeries 应切换可见性', async () => {
+  describe('Legend interaction', () => {
+    it('toggleSeries should toggle visibility', async () => {
       const wrapper = await mountHistoricalTrendView();
       await flushPromises();
 
@@ -645,15 +645,15 @@ describe('HistoricalTrendView', () => {
     });
   });
 
-  describe('Canvas 图表渲染', () => {
-    it('挂载时应注册 ResizeObserver', async () => {
+  describe('Canvas chart rendering', () => {
+    it('Should register ResizeObserver on mount', async () => {
       const _wrapper = await mountHistoricalTrendView();
       await flushPromises();
 
       expect(mockResizeObserver).toHaveBeenCalled();
     });
 
-    it('卸载时应清理 ResizeObserver', async () => {
+    it('Should clean up ResizeObserver on unmount', async () => {
       const wrapper = await mountHistoricalTrendView();
       await flushPromises();
 
@@ -665,7 +665,7 @@ describe('HistoricalTrendView', () => {
   });
 
   describe('toLocalDatetime', () => {
-    it('应正确格式化日期', async () => {
+    it('Should format dates correctly', async () => {
       const wrapper = await mountHistoricalTrendView();
       await flushPromises();
 
@@ -675,7 +675,7 @@ describe('HistoricalTrendView', () => {
       expect(result).toBe('2026-07-22T12:05');
     });
 
-    it('个位数月/日/时/分应补零', async () => {
+    it('Single-digit months/days/hours/minutes should be zero-padded', async () => {
       const wrapper = await mountHistoricalTrendView();
       await flushPromises();
 

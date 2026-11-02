@@ -33,14 +33,14 @@ function makeService() {
 }
 
 describe('PromptVersionService — Prompt CRUD', () => {
-  it('应创建 Prompt 模板', async () => {
+  it('Should create a Prompt template', async () => {
     const { service, mockPromptRepo } = makeService();
     const prompt = await service.createPrompt({ key: 'test', name: '测试' });
     expect(prompt.key).toBe('test');
     expect(mockPromptRepo.save).toHaveBeenCalledTimes(1);
   });
 
-  it('应列出所有 Prompt', async () => {
+  it('Should list all Prompts', async () => {
     const { service, mockPromptRepo } = makeService();
     mockPromptRepo.find = jest.fn(() =>
       Promise.resolve([
@@ -52,7 +52,7 @@ describe('PromptVersionService — Prompt CRUD', () => {
     expect(list.length).toBe(2);
   });
 
-  it('应按 key 查找 Prompt', async () => {
+  it('Should find the Prompt by key', async () => {
     const { service, mockPromptRepo } = makeService();
     mockPromptRepo.findOne = jest.fn(() => Promise.resolve({ id: 'p1', key: 'test' }));
     const prompt = await service.getPromptByKey('test');
@@ -60,8 +60,8 @@ describe('PromptVersionService — Prompt CRUD', () => {
   });
 });
 
-describe('PromptVersionService — 版本管理', () => {
-  it('应创建版本', async () => {
+describe('PromptVersionService — version management', () => {
+  it('Should create a version', async () => {
     const { service, mockVersionRepo } = makeService();
     const version = await service.createVersion({
       promptId: 'p1',
@@ -72,7 +72,7 @@ describe('PromptVersionService — 版本管理', () => {
     expect(mockVersionRepo.save).toHaveBeenCalledTimes(1);
   });
 
-  it('应列出版本', async () => {
+  it('Should list versions', async () => {
     const { service, mockVersionRepo } = makeService();
     mockVersionRepo.find = jest.fn(() =>
       Promise.resolve([
@@ -84,7 +84,7 @@ describe('PromptVersionService — 版本管理', () => {
     expect(list.length).toBe(2);
   });
 
-  it('应获取活跃版本', async () => {
+  it('Should get the active version', async () => {
     const { service, mockVersionRepo } = makeService();
     mockVersionRepo.findOne = jest.fn(() =>
       Promise.resolve({
@@ -97,7 +97,7 @@ describe('PromptVersionService — 版本管理', () => {
     expect(v?.systemPrompt).toBe('active prompt');
   });
 
-  it('应发布版本（draft → active）', async () => {
+  it('Should publish the version (draft → active)', async () => {
     const { service, mockVersionRepo, mockPromptRepo } = makeService();
     mockVersionRepo.findOne = jest
       .fn()
@@ -109,7 +109,7 @@ describe('PromptVersionService — 版本管理', () => {
     expect(mockPromptRepo.update).toHaveBeenCalledWith('p1', { activeVersionId: 'v2' });
   });
 
-  it('非 draft 版本不能发布', async () => {
+  it('Non-draft versions cannot be published', async () => {
     const { service, mockVersionRepo } = makeService();
     mockVersionRepo.findOne = jest.fn(() =>
       Promise.resolve({
@@ -121,7 +121,7 @@ describe('PromptVersionService — 版本管理', () => {
     await expect(service.publishVersion('v1')).rejects.toThrow('不是 draft 状态');
   });
 
-  it('应回滚版本', async () => {
+  it('Should roll back the version', async () => {
     const { service, mockVersionRepo } = makeService();
     mockVersionRepo.findOne = jest
       .fn()
@@ -134,8 +134,8 @@ describe('PromptVersionService — 版本管理', () => {
   });
 });
 
-describe('PromptVersionService — 模板渲染', () => {
-  it('应渲染模板变量', () => {
+describe('PromptVersionService — template rendering', () => {
+  it('Should render template variables', () => {
     const { service } = makeService();
     const result = service.renderTemplate('你好 {{name}}，设备 {{device}}', {
       name: '张三',
@@ -144,13 +144,13 @@ describe('PromptVersionService — 模板渲染', () => {
     expect(result).toBe('你好 张三，设备 水泵1号');
   });
 
-  it('缺失变量应保留原占位符', () => {
+  it('Missing variables should keep the original placeholder', () => {
     const { service } = makeService();
     const result = service.renderTemplate('你好 {{name}}', {});
     expect(result).toBe('你好 {{name}}');
   });
 
-  it('应获取并渲染活跃版本 Prompt', async () => {
+  it('Should fetch and render the active version Prompt', async () => {
     const { service, mockPromptRepo, mockVersionRepo } = makeService();
     mockPromptRepo.findOne = jest.fn(() => Promise.resolve({ id: 'p1', key: 'test' }));
     mockVersionRepo.findOne = jest.fn(() =>

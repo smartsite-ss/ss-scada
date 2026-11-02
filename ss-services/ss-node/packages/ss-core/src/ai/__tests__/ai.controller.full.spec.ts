@@ -232,7 +232,7 @@ async function createController(
 // test suites
 // ============================================================
 
-describe('AiController — 全端点 API 测试', () => {
+describe('AiController — full-endpoint API tests', () => {
   let controller: AiController;
 
   beforeEach(async () => {
@@ -243,7 +243,7 @@ describe('AiController — 全端点 API 测试', () => {
   // 1. GET /status
   // ============================================================
   describe('GET /status', () => {
-    it('应返回 enabled + features 对象', () => {
+    it('Should return the enabled + features object', () => {
       const result = controller.getStatus();
       expect(result).toHaveProperty('enabled');
       expect(result).toHaveProperty('features');
@@ -255,7 +255,7 @@ describe('AiController — 全端点 API 测试', () => {
   // 2. GET /health
   // ============================================================
   describe('GET /health', () => {
-    it('应返回 providers 数组', async () => {
+    it('Should return the providers array', async () => {
       const result = await controller.getHealth();
       expect(result).toHaveProperty('providers');
     });
@@ -265,7 +265,7 @@ describe('AiController — 全端点 API 测试', () => {
   // 3. GET /routing
   // ============================================================
   describe('GET /routing', () => {
-    it('应返回 routing 对象', () => {
+    it('Should return the routing object', () => {
       const result = controller.getRouting();
       expect(result).toHaveProperty('routing');
     });
@@ -275,11 +275,11 @@ describe('AiController — 全端点 API 测试', () => {
   // 4. POST /chat
   // ============================================================
   describe('POST /chat', () => {
-    it('应拒绝空 messages', async () => {
+    it('Should reject empty messages', async () => {
       await expect(controller.chat({ messages: [] }, { user: { id: 'user-1' } } as any)).rejects.toThrow(HttpException);
     });
 
-    it('应调用 proxy.generate 并返回结果', async () => {
+    it('Should call proxy.generate and return the result', async () => {
       const result = await controller.chat({ messages: [{ role: 'user', content: 'hi' }] }, { user: { id: 'user-1' } } as any);
       expect(result).toBeDefined();
     });
@@ -289,7 +289,7 @@ describe('AiController — 全端点 API 测试', () => {
   // 5. POST /chat/stream
   // ============================================================
   describe('POST /chat/stream', () => {
-    it('应设置 SSE 响应头', async () => {
+    it('Should set the SSE response headers', async () => {
       const res = mockResponse();
       await controller.chatStream({ messages: [{ role: 'user', content: 'hi' }] }, { user: { id: 'user-1' } } as any, res);
       expect(res.headers['content-type']).toBe('text/event-stream');
@@ -297,12 +297,12 @@ describe('AiController — 全端点 API 测试', () => {
       expect(res.headers['connection']).toBe('keep-alive');
     });
 
-    it('应拒绝空 messages', async () => {
+    it('Should reject empty messages', async () => {
       const res = mockResponse();
       await expect(controller.chatStream({ messages: [] }, { user: { id: 'user-1' } } as any, res)).rejects.toThrow(HttpException);
     });
 
-    it('应调用 proxy.streamChat 并设置 SSE 头', async () => {
+    it('Should call proxy.streamChat and set the SSE headers', async () => {
       const streamChat = jest.fn().mockImplementation(async function* () {
         yield { content: 'hello' };
       });
@@ -323,11 +323,11 @@ describe('AiController — 全端点 API 测试', () => {
   // 6. POST /embed
   // ============================================================
   describe('POST /embed', () => {
-    it('应拒绝空 inputs', async () => {
+    it('Should reject empty inputs', async () => {
       await expect(controller.embed({ inputs: [] })).rejects.toThrow(HttpException);
     });
 
-    it('应调用 proxy.embed', async () => {
+    it('Should call proxy.embed', async () => {
       const result = await controller.embed({ inputs: ['test'] });
       expect(result).toBeDefined();
     });
@@ -337,7 +337,7 @@ describe('AiController — 全端点 API 测试', () => {
   // 7. GET /providers
   // ============================================================
   describe('GET /providers', () => {
-    it('应返回 providers 数组', async () => {
+    it('Should return the providers array', async () => {
       const result = await controller.getProviders();
       expect(result).toHaveProperty('providers');
     });
@@ -347,7 +347,7 @@ describe('AiController — 全端点 API 测试', () => {
   // 8. GET /providers/presets
   // ============================================================
   describe('GET /providers/presets', () => {
-    it('应返回 presets 数组', () => {
+    it('Should return the presets array', () => {
       const result = controller.getPresets();
       expect(result).toHaveProperty('presets');
     });
@@ -357,19 +357,19 @@ describe('AiController — 全端点 API 测试', () => {
   // 9. POST /providers/from-preset
   // ============================================================
   describe('POST /providers/from-preset', () => {
-    it('应拒绝空 providerId', async () => {
+    it('Should reject an empty providerId', async () => {
       await expect(controller.createFromPreset({ providerId: '', apiKey: 'k' })).rejects.toThrow(
         HttpException,
       );
     });
 
-    it('应拒绝空 apiKey', async () => {
+    it('Should reject an empty apiKey', async () => {
       await expect(
         controller.createFromPreset({ providerId: 'deepseek', apiKey: '' }),
       ).rejects.toThrow(HttpException);
     });
 
-    it('应创建并重新加载', async () => {
+    it('Should create and reload', async () => {
       controller = await createController({
         providerConfig: { createFromPreset: jest.fn().mockResolvedValue({ id: 'p1' }) },
       });
@@ -385,7 +385,7 @@ describe('AiController — 全端点 API 测试', () => {
   // 10. POST /providers
   // ============================================================
   describe('POST /providers', () => {
-    it('应创建供应商', async () => {
+    it('Should create a supplier', async () => {
       const result = await controller.createProvider({} as any);
       expect(result).toBeDefined();
     });
@@ -395,7 +395,7 @@ describe('AiController — 全端点 API 测试', () => {
   // 11. PUT /providers/:id
   // ============================================================
   describe('PUT /providers/:id', () => {
-    it('应更新供应商', async () => {
+    it('Should update the supplier', async () => {
       const result = await controller.updateProvider('p1', {} as any);
       expect(result).toBeDefined();
     });
@@ -405,7 +405,7 @@ describe('AiController — 全端点 API 测试', () => {
   // 12. DELETE /providers/:id
   // ============================================================
   describe('DELETE /providers/:id', () => {
-    it('应删除供应商', async () => {
+    it('Should delete the supplier', async () => {
       const result = await controller.deleteProvider('p1');
       expect(result).toEqual({ success: true });
     });
@@ -415,7 +415,7 @@ describe('AiController — 全端点 API 测试', () => {
   // 13. PUT /providers/:id/toggle
   // ============================================================
   describe('PUT /providers/:id/toggle', () => {
-    it('应切换启用状态', async () => {
+    it('Should toggle the enabled state', async () => {
       const result = await controller.toggleProvider('p1', true);
       expect(result).toBeDefined();
     });
@@ -425,11 +425,11 @@ describe('AiController — 全端点 API 测试', () => {
   // 14. POST /providers/:id/test
   // ============================================================
   describe('POST /providers/:id/test', () => {
-    it('供应商不存在时应抛 404', async () => {
+    it('Should throw 404 when the supplier does not exist', async () => {
       await expect(controller.testProvider('not-exist')).rejects.toThrow(HttpException);
     });
 
-    it('无 apiKey 时应返回 success: false', async () => {
+    it('Should return success: false when there is no apiKey', async () => {
       controller = await createController({
         providerConfig: {
           getProviderConfigById: jest.fn().mockResolvedValue({ providerId: 'p1', apiKey: '' }),
@@ -445,7 +445,7 @@ describe('AiController — 全端点 API 测试', () => {
   // 15. GET /safety/stats
   // ============================================================
   describe('GET /safety/stats', () => {
-    it('应返回统计对象', () => {
+    it('Should return the statistics object', () => {
       const result = controller.getSafetyStats();
       expect(result).toBeDefined();
     });
@@ -455,7 +455,7 @@ describe('AiController — 全端点 API 测试', () => {
   // 16. POST /safety/override
   // ============================================================
   describe('POST /safety/override', () => {
-    it('应返回 overrideToken', () => {
+    it('Should return overrideToken', () => {
       const result = controller.generateSafetyOverride();
       expect(result).toHaveProperty('overrideToken');
       expect(result).toHaveProperty('expiresIn');
@@ -466,7 +466,7 @@ describe('AiController — 全端点 API 测试', () => {
   // 17. POST /agent/execute
   // ============================================================
   describe('POST /agent/execute', () => {
-    it('应设置 SSE 响应头并写入 heartbeat', async () => {
+    it('Should set the SSE response headers and write heartbeat', async () => {
       const res = mockResponse();
       await controller.agentExecute({ messages: [], taskType: 'chat' } as any, { user: { id: 'user-1' } } as any, res);
       expect(res.headers['content-type']).toBe('text/event-stream');
@@ -474,7 +474,7 @@ describe('AiController — 全端点 API 测试', () => {
       expect(res.chunks[0]).toContain('heartbeat');
     });
 
-    it('应流式输出步骤并以 [DONE] 结束', async () => {
+    it('Should stream steps and end with [DONE]', async () => {
       const res = mockResponse();
       await controller.agentExecute({ messages: [], taskType: 'chat' } as any, { user: { id: 'user-1' } } as any, res);
       const data = res.chunks.join('');
@@ -482,7 +482,7 @@ describe('AiController — 全端点 API 测试', () => {
       expect(data).toContain('[DONE]');
     });
 
-    it('orchestrator 异常时应发送 error 事件', async () => {
+    it('Should send the error event when the orchestrator throws', async () => {
       controller = await createController({
         orchestrator: {
           async *execute() {
@@ -501,11 +501,11 @@ describe('AiController — 全端点 API 测试', () => {
   // 18. POST /kb/index
   // ============================================================
   describe('POST /kb/index', () => {
-    it('应拒绝空 items', async () => {
+    it('Should reject empty items', async () => {
       await expect(controller.indexKnowledge({ items: [] })).rejects.toThrow(HttpException);
     });
 
-    it('应调用 ragQA.indexDocuments', async () => {
+    it('Should call ragQA.indexDocuments', async () => {
       const result = await controller.indexKnowledge({
         items: [{ id: 'd1', content: 'test' }] as any,
       });
@@ -517,11 +517,11 @@ describe('AiController — 全端点 API 测试', () => {
   // 19. POST /kb/ask
   // ============================================================
   describe('POST /kb/ask', () => {
-    it('应拒绝空 question', async () => {
+    it('Should reject an empty question', async () => {
       await expect(controller.askKnowledge({ question: '' })).rejects.toThrow(HttpException);
     });
 
-    it('应调用 ragQA.ask', async () => {
+    it('Should call ragQA.ask', async () => {
       const result = await controller.askKnowledge({ question: '如何使用？' });
       expect(result).toBeDefined();
     });
@@ -531,20 +531,20 @@ describe('AiController — 全端点 API 测试', () => {
   // 20. POST /kb/ask/stream
   // ============================================================
   describe('POST /kb/ask/stream', () => {
-    it('应设置 SSE 响应头', async () => {
+    it('Should set the SSE response headers', async () => {
       const res = mockResponse();
       await controller.askKnowledgeStream({ question: '如何？' }, res);
       expect(res.headers['content-type']).toBe('text/event-stream');
     });
 
-    it('应拒绝空 question', async () => {
+    it('Should reject an empty question', async () => {
       const res = mockResponse();
       await expect(controller.askKnowledgeStream({ question: '' }, res)).rejects.toThrow(
         HttpException,
       );
     });
 
-    it('应以 [DONE] 结束', async () => {
+    it('Should end with [DONE]', async () => {
       const res = mockResponse();
       await controller.askKnowledgeStream({ question: '如何？' }, res);
       const data = res.chunks.join('');
@@ -556,7 +556,7 @@ describe('AiController — 全端点 API 测试', () => {
   // 21. GET /kb/status
   // ============================================================
   describe('GET /kb/status', () => {
-    it('应返回 indexed + chunks', () => {
+    it('Should return indexed + chunks', () => {
       const result = controller.getKBStatus();
       expect(result).toHaveProperty('indexed');
       expect(result).toHaveProperty('chunks');
@@ -567,7 +567,7 @@ describe('AiController — 全端点 API 测试', () => {
   // 22. POST /binding/recommend (A004)
   // ============================================================
   describe('POST /binding/recommend (A004)', () => {
-    it('应调用 phase2.recommendBindings', async () => {
+    it('Should call phase2.recommendBindings', async () => {
       const phase2 = {
         recommendBindings: jest.fn().mockReturnValue({ recommendations: [], strategy: 'semantic' }),
       };
@@ -585,7 +585,7 @@ describe('AiController — 全端点 API 测试', () => {
   // 23. POST /layout/optimize (A005)
   // ============================================================
   describe('POST /layout/optimize (A005)', () => {
-    it('应调用 phase2.optimizeLayout', async () => {
+    it('Should call phase2.optimizeLayout', async () => {
       const phase2 = {
         optimizeLayout: jest.fn().mockReturnValue({
           graphics: [],
@@ -608,7 +608,7 @@ describe('AiController — 全端点 API 测试', () => {
   // 24. POST /context/help (C002)
   // ============================================================
   describe('POST /context/help (C002)', () => {
-    it('应调用 phase2.getContextHelp', async () => {
+    it('Should call phase2.getContextHelp', async () => {
       const phase2 = {
         getContextHelp: jest
           .fn()
@@ -625,7 +625,7 @@ describe('AiController — 全端点 API 测试', () => {
   // 25. POST /search (C003)
   // ============================================================
   describe('POST /search (C003)', () => {
-    it('应调用 phase2.smartSearch', async () => {
+    it('Should call phase2.smartSearch', async () => {
       const phase2 = {
         smartSearch: jest.fn().mockReturnValue({ results: [], total: 0, elapsed: 0 }),
       };
@@ -640,7 +640,7 @@ describe('AiController — 全端点 API 测试', () => {
   // 26. POST /command/parse (E003)
   // ============================================================
   describe('POST /command/parse (E003)', () => {
-    it('应调用 phase2.parseCommand', async () => {
+    it('Should call phase2.parseCommand', async () => {
       const phase2 = {
         parseCommand: jest
           .fn()

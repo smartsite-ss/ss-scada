@@ -66,14 +66,14 @@ describe('Phase2FeaturesService', () => {
       ],
     };
 
-    it('应为每个属性返回候选列表', () => {
+    it('Should return a candidate list for each property', () => {
       const result = service.recommendBindings(baseReq);
       expect(result.recommendations).toHaveLength(1);
       expect(result.recommendations[0].property).toBe('flow');
       expect(result.recommendations[0].candidates.length).toBeGreaterThan(0);
     });
 
-    it('数据类型匹配应加分（+40）', () => {
+    it('Data type match should add score (+40)', () => {
       const result = service.recommendBindings(baseReq);
       const flowCandidate = result.recommendations[0].candidates.find((c) => c.tagId === 'tag-1');
       expect(flowCandidate).toBeDefined();
@@ -81,14 +81,14 @@ describe('Phase2FeaturesService', () => {
       expect(flowCandidate!.score).toBeGreaterThanOrEqual(40);
     });
 
-    it('单位匹配应加分（+25）', () => {
+    it('Unit match should add score (+25)', () => {
       const result = service.recommendBindings(baseReq);
       const flowCandidate = result.recommendations[0].candidates.find((c) => c.tagId === 'tag-1');
       expect(flowCandidate!.matchReasons).toContain('单位匹配');
       expect(flowCandidate!.score).toBeGreaterThanOrEqual(65);
     });
 
-    it('同设备应加分（+20）', () => {
+    it('Same device should add score (+20)', () => {
       const req = { ...baseReq, deviceId: 'device-1' };
       const result = service.recommendBindings(req);
       const device1Candidate = result.recommendations[0].candidates.find(
@@ -97,7 +97,7 @@ describe('Phase2FeaturesService', () => {
       expect(device1Candidate!.matchReasons).toContain('同设备优先');
     });
 
-    it('历史绑定偏好应加分（+10）', () => {
+    it('Historical binding preference should add score (+10)', () => {
       const req = {
         ...baseReq,
         historicalBindings: [{ property: 'flow', tagId: 'tag-1' }],
@@ -109,7 +109,7 @@ describe('Phase2FeaturesService', () => {
       expect(historicalCandidate!.matchReasons).toContain('历史绑定偏好');
     });
 
-    it('strategy 应按优先级选择：device-priority > historical > unit-match > semantic', () => {
+    it('The strategy should choose by priority: device-priority > historical > unit-match > semantic', () => {
       // has deviceId -> device-priority
       expect(service.recommendBindings({ ...baseReq, deviceId: 'device-1' }).strategy).toBe(
         'device-priority',
@@ -132,7 +132,7 @@ describe('Phase2FeaturesService', () => {
       expect(service.recommendBindings(noUnitReq).strategy).toBe('semantic');
     });
 
-    it('打分后应降序排序', () => {
+    it('Should sort descending after scoring', () => {
       const result = service.recommendBindings(baseReq);
       const candidates = result.recommendations[0].candidates;
       for (let i = 1; i < candidates.length; i++) {
@@ -140,7 +140,7 @@ describe('Phase2FeaturesService', () => {
       }
     });
 
-    it('零分候选应被过滤', () => {
+    it('Zero-score candidates should be filtered out', () => {
       const req = {
         graphicType: 'valve',
         properties: [{ type: 'valve', property: 'unknown', dataType: 'string' as const }],
@@ -152,7 +152,7 @@ describe('Phase2FeaturesService', () => {
       expect(result.recommendations[0].candidates).toHaveLength(0);
     });
 
-    it('最多返回 5 个候选', () => {
+    it('Return at most 5 candidates', () => {
       const manyTags = Array.from({ length: 10 }, (_, i) => ({
         tagId: `tag-${i}`,
         tagName: `tag-${i}`,
@@ -171,7 +171,7 @@ describe('Phase2FeaturesService', () => {
       expect(result.recommendations[0].candidates.length).toBeLessThanOrEqual(5);
     });
 
-    it('空候选池应返回空推荐', () => {
+    it('An empty candidate pool should return empty recommendations', () => {
       const req = {
         graphicType: 'valve',
         properties: [{ type: 'valve', property: 'flow', dataType: 'number' as const }],
@@ -192,7 +192,7 @@ describe('Phase2FeaturesService', () => {
       { id: 'g3', x: 400, y: 100, width: 80, height: 60, type: 'valve' },
     ];
 
-    it('空图元列表应返回空结果', () => {
+    it('An empty graphic list should return an empty result', () => {
       const result = service.optimizeLayout({
         graphics: [],
         canvasWidth: 800,
@@ -203,7 +203,7 @@ describe('Phase2FeaturesService', () => {
       expect(result.metrics.aligned).toBe(0);
     });
 
-    it('grid 策略应自动换行', () => {
+    it('The grid strategy should auto-wrap', () => {
       const result = service.optimizeLayout({
         graphics: baseGraphics,
         canvasWidth: 300, // force line wrap
@@ -215,7 +215,7 @@ describe('Phase2FeaturesService', () => {
       expect(result.graphics[0].y).toBe(20);
     });
 
-    it('cluster 策略应按图元类型分组', () => {
+    it('The cluster strategy should group by graphic type', () => {
       const result = service.optimizeLayout({
         graphics: [
           { id: 'g1', x: 0, y: 0, width: 80, height: 60, type: 'valve' },
@@ -232,7 +232,7 @@ describe('Phase2FeaturesService', () => {
       expect(valve1!.y).toBe(valve2!.y);
     });
 
-    it('align 策略应将坐标对齐到网格', () => {
+    it('The align strategy should align coordinates to the grid', () => {
       const result = service.optimizeLayout({
         graphics: [{ id: 'g1', x: 103, y: 107, width: 80, height: 60 }],
         canvasWidth: 800,
@@ -243,7 +243,7 @@ describe('Phase2FeaturesService', () => {
       expect(result.graphics[0].y % 5).toBe(0);
     });
 
-    it('flow 策略应等价于 grid', () => {
+    it('The flow strategy should be equivalent to grid', () => {
       const req = {
         graphics: baseGraphics,
         canvasWidth: 800,
@@ -255,7 +255,7 @@ describe('Phase2FeaturesService', () => {
       expect(resultFlow.graphics).toEqual(resultGrid.graphics);
     });
 
-    it('应记录位置变化', () => {
+    it('Should record position changes', () => {
       const result = service.optimizeLayout({
         graphics: baseGraphics,
         canvasWidth: 300,
@@ -268,7 +268,7 @@ describe('Phase2FeaturesService', () => {
       expect(result.changes[0]).toHaveProperty('reason');
     });
 
-    it('应检测碰撞', () => {
+    it('Should detect collisions', () => {
       const overlappingGraphics = [
         { id: 'g1', x: 0, y: 0, width: 100, height: 100, type: 'valve' },
         { id: 'g2', x: 50, y: 50, width: 100, height: 100, type: 'pump' },
@@ -283,7 +283,7 @@ describe('Phase2FeaturesService', () => {
       expect(result.metrics.collisions).toBe(0);
     });
 
-    it('metrics 应正确统计', () => {
+    it('metrics should be counted correctly', () => {
       const result = service.optimizeLayout({
         graphics: baseGraphics,
         canvasWidth: 300,
@@ -293,7 +293,7 @@ describe('Phase2FeaturesService', () => {
       expect(result.metrics.aligned + result.metrics.spacingFixed).toBe(result.changes.length);
     });
 
-    it('默认策略应为 grid', () => {
+    it('The default strategy should be grid', () => {
       const result = service.optimizeLayout({
         graphics: baseGraphics,
         canvasWidth: 800,
@@ -308,7 +308,7 @@ describe('Phase2FeaturesService', () => {
   // C002 context-aware help
   // ============================================================
   describe('C002 getContextHelp', () => {
-    it('基于选中图元类型匹配帮助文档', async () => {
+    it('Match help docs by selected graphic type', async () => {
       const result = await service.getContextHelp({
         context: { selectedGraphicType: 'valve' },
       });
@@ -316,28 +316,28 @@ describe('Phase2FeaturesService', () => {
       expect(result.matchedDocs.some((d) => d.title === '图元数据绑定')).toBe(true);
     });
 
-    it('基于操作匹配帮助文档', async () => {
+    it('Match help docs by operation', async () => {
       const result = await service.getContextHelp({
         context: { operation: 'bind' },
       });
       expect(result.matchedDocs.some((d) => d.title === '图元数据绑定')).toBe(true);
     });
 
-    it('应返回建议列表', async () => {
+    it('Should return the suggestion list', async () => {
       const result = await service.getContextHelp({
         context: { selectedGraphicType: 'pump' },
       });
       expect(result.suggestions.length).toBeGreaterThan(0);
     });
 
-    it('应返回相关操作列表', async () => {
+    it('Should return the related operations list', async () => {
       const result = await service.getContextHelp({
         context: { selectedGraphicType: 'valve' },
       });
       expect(result.relatedOperations.length).toBeGreaterThan(0);
     });
 
-    it('应去重匹配的文档', async () => {
+    it('Should dedupe matched documents', async () => {
       const result = await service.getContextHelp({
         context: {
           selectedGraphicType: 'valve', // matches the widget data-binding rule (test keyword is CJK)
@@ -348,21 +348,21 @@ describe('Phase2FeaturesService', () => {
       expect(bindDocs).toHaveLength(1);
     });
 
-    it('最多返回 5 个文档', async () => {
+    it('Return at most 5 documents', async () => {
       const result = await service.getContextHelp({
         context: { selectedGraphicType: 'valve', operation: 'event' },
       });
       expect(result.matchedDocs.length).toBeLessThanOrEqual(5);
     });
 
-    it('无匹配上下文时应返回空结果', async () => {
+    it('Should return an empty result when no context matches', async () => {
       const result = await service.getContextHelp({
         context: { selectedGraphicType: 'unknown-graphic' },
       });
       expect(result.matchedDocs).toHaveLength(0);
     });
 
-    it('无 RAG 时不应抛错', async () => {
+    it('Should not throw without RAG', async () => {
       await expect(
         service.getContextHelp({
           context: {},
@@ -376,34 +376,34 @@ describe('Phase2FeaturesService', () => {
   // C003 smart search
   // ============================================================
   describe('C003 smartSearch', () => {
-    it('应返回匹配结果', () => {
+    it('Should return match results', () => {
       const result = service.smartSearch({ query: '泵站' });
       expect(result.results.length).toBeGreaterThan(0);
       expect(result.results.some((r) => r.title.includes('泵站'))).toBe(true);
     });
 
-    it('完全匹配应高分（+50）', () => {
+    it('Exact match should score high (+50)', () => {
       const result = service.smartSearch({ query: '阀门图元' });
       expect(result.results[0].score).toBeGreaterThanOrEqual(50);
     });
 
-    it('关键词匹配应加分（+10）', () => {
+    it('Keyword match should add score (+10)', () => {
       const result = service.smartSearch({ query: '温度 压力' });
       expect(result.results.length).toBeGreaterThan(0);
     });
 
-    it('空查询应返回空结果', () => {
+    it('Empty query should return an empty result', () => {
       const result = service.smartSearch({ query: '' });
       expect(result.results).toHaveLength(0);
       expect(result.total).toBe(0);
     });
 
-    it('空白查询应返回空结果', () => {
+    it('Blank query should return an empty result', () => {
       const result = service.smartSearch({ query: '   ' });
       expect(result.results).toHaveLength(0);
     });
 
-    it('scope 过滤应生效', () => {
+    it('scope filtering should take effect', () => {
       const result = service.smartSearch({
         query: '泵站',
         scopes: ['page'],
@@ -411,7 +411,7 @@ describe('Phase2FeaturesService', () => {
       expect(result.results.every((r) => r.scope === 'page')).toBe(true);
     });
 
-    it('limit 应限制返回数量', () => {
+    it('limit should cap the number of results', () => {
       const result = service.smartSearch({
         query: 'a', // matches no results
         limit: 2,
@@ -419,20 +419,20 @@ describe('Phase2FeaturesService', () => {
       expect(result.results.length).toBeLessThanOrEqual(2);
     });
 
-    it('应返回耗时（毫秒）', () => {
+    it('Should return the duration (ms)', () => {
       const result = service.smartSearch({ query: '泵站' });
       expect(result.elapsed).toBeGreaterThanOrEqual(0);
       expect(typeof result.elapsed).toBe('number');
     });
 
-    it('应按分数降序排序', () => {
-      const result = service.smartSearch({ query: '泵站 监控' });
+    it('Should sort by score descending', () => {
+      const result = service.smartSearch({ query: '泵站监控' });
       for (let i = 1; i < result.results.length; i++) {
         expect(result.results[i - 1].score).toBeGreaterThanOrEqual(result.results[i].score);
       }
     });
 
-    it('无匹配应返回空结果', () => {
+    it('No match should return an empty result', () => {
       const result = service.smartSearch({ query: '完全不存在的关键词xyz123' });
       expect(result.results).toHaveLength(0);
       expect(result.total).toBe(0);
@@ -443,18 +443,18 @@ describe('Phase2FeaturesService', () => {
   // E003 natural-language command parsing
   // ============================================================
   describe('E003 parseCommand', () => {
-    it('空输入应返回 unknown 意图', () => {
+    it('Empty input should return the unknown intent', () => {
       const result = service.parseCommand({ input: '' });
       expect(result.intent).toBe('unknown');
       expect(result.confidence).toBe(0);
     });
 
-    it('空白输入应返回 unknown 意图', () => {
+    it('Blank input should return the unknown intent', () => {
       const result = service.parseCommand({ input: '   ' });
       expect(result.intent).toBe('unknown');
     });
 
-    it('创建页面意图识别', () => {
+    it('Create-page intent recognition', () => {
       const cases = ['创建一个新页面', '新建页面', '添加页面', '新增页面', '生成页面'];
       for (const input of cases) {
         const result = service.parseCommand({ input });
@@ -463,7 +463,7 @@ describe('Phase2FeaturesService', () => {
       }
     });
 
-    it('切换页面意图识别', () => {
+    it('Switch-page intent recognition', () => {
       const cases = ['切换到页面', '打开页面', '跳转页面', '进入页面'];
       for (const input of cases) {
         const result = service.parseCommand({ input });
@@ -471,23 +471,23 @@ describe('Phase2FeaturesService', () => {
       }
     });
 
-    it('添加图元意图识别 + 参数提取', () => {
+    it('Add-graphic intent recognition + parameter extraction', () => {
       const result = service.parseCommand({ input: '添加一个阀门' });
       expect(result.intent).toBe('graphic.add');
       expect(result.params.graphicType).toBe('阀门');
     });
 
-    it('选中图元意图识别', () => {
+    it('Select-graphic intent recognition', () => {
       const result = service.parseCommand({ input: '选中图元' });
       expect(result.intent).toBe('graphic.select');
     });
 
-    it('删除图元意图识别', () => {
+    it('Delete-graphic intent recognition', () => {
       const result = service.parseCommand({ input: '删除图元' });
       expect(result.intent).toBe('graphic.delete');
     });
 
-    it('修改图元属性意图识别', () => {
+    it('Modify-graphic-property intent recognition', () => {
       const cases = ['修改属性', '更新位置', '设置大小', '调整颜色'];
       for (const input of cases) {
         const result = service.parseCommand({ input });
@@ -495,17 +495,17 @@ describe('Phase2FeaturesService', () => {
       }
     });
 
-    it('绑定数据意图识别', () => {
+    it('Binding data intent recognition', () => {
       const result = service.parseCommand({ input: '绑定数据' });
       expect(result.intent).toBe('binding.set');
     });
 
-    it('执行脚本意图识别', () => {
+    it('Execute-script intent recognition', () => {
       const result = service.parseCommand({ input: '执行脚本' });
       expect(result.intent).toBe('script.run');
     });
 
-    it('搜索意图识别', () => {
+    it('Search intent recognition', () => {
       const cases = ['搜索一下', '查找设备', '找泵', '查一下报警'];
       for (const input of cases) {
         const result = service.parseCommand({ input });
@@ -513,7 +513,7 @@ describe('Phase2FeaturesService', () => {
       }
     });
 
-    it('帮助意图识别', () => {
+    it('Help intent recognition', () => {
       const cases = ['帮助', '怎么使用', '如何配置', '说明', '教程'];
       for (const input of cases) {
         const result = service.parseCommand({ input });
@@ -521,24 +521,24 @@ describe('Phase2FeaturesService', () => {
       }
     });
 
-    it('未识别意图应返回 unknown', () => {
+    it('Unrecognized intents should return unknown', () => {
       const result = service.parseCommand({ input: '你好世界' });
       expect(result.intent).toBe('unknown');
       expect(result.confidence).toBe(0);
     });
 
-    it('应返回描述信息', () => {
+    it('Should return description info', () => {
       const result = service.parseCommand({ input: '创建页面' });
       expect(result.description).toBe('创建新页面');
     });
 
-    it('应返回置信度（0-1）', () => {
+    it('Should return confidence (0-1)', () => {
       const result = service.parseCommand({ input: '创建页面' });
       expect(result.confidence).toBeGreaterThan(0);
       expect(result.confidence).toBeLessThanOrEqual(1);
     });
 
-    it('可能返回备选意图', () => {
+    it('May return fallback intents', () => {
       // input matching multiple intents simultaneously
       const result = service.parseCommand({ input: '创建页面并搜索' });
       if (result.alternatives && result.alternatives.length > 0) {

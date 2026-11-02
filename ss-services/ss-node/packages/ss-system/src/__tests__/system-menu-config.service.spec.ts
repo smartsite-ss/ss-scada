@@ -8,7 +8,7 @@ import { Repository } from 'typeorm';
 import { SystemMenuConfigService, SystemMenuItem } from '../config/system-menu-config.service';
 import { Menu, MenuButton } from '../entities/system.entity';
 
-describe('SystemMenuConfigService (v7.1 — DB 唯一数据源)', () => {
+describe('SystemMenuConfigService (v7.1 — DB as the single data source)', () => {
   let service: SystemMenuConfigService;
   let menuRepo: jest.Mocked<Repository<Menu>>;
   let buttonRepo: jest.Mocked<Repository<MenuButton>>;

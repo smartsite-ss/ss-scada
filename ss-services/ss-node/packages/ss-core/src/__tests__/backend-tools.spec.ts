@@ -65,16 +65,16 @@ function makeMockServices(overrides?: Partial<BackendToolServices>): BackendTool
   };
 }
 
-describe('BackendTools — 字典管理', () => {
+describe('BackendTools — dictionary management', () => {
   describe('createDictListTool', () => {
     const services = makeMockServices();
 
-    it('TC-DICT-TOOL-001: 无 dictService 时返回 null', () => {
+    it('TC-DICT-TOOL-001: returns null without dictService', () => {
       const tool = createDictListTool({});
       expect(tool).toBeNull();
     });
 
-    it('TC-DICT-TOOL-002: 返回分类树结构', async () => {
+    it('TC-DICT-TOOL-002: returns the category tree structure', async () => {
       const tool = createDictListTool(services)!;
       expect(tool).not.toBeNull();
       expect(tool.name).toBe('dict_list');
@@ -89,7 +89,7 @@ describe('BackendTools — 字典管理', () => {
       expect(parsed.categories[0].tables[0].dictId).toBe('protocolType');
     });
 
-    it('TC-DICT-TOOL-003: 默认语言为 zh-CN', async () => {
+    it('TC-DICT-TOOL-003: default language is zh-CN', async () => {
       const tool = createDictListTool(services)!;
       const result = await tool.execute({});
       const parsed = JSON.parse(result);
@@ -100,12 +100,12 @@ describe('BackendTools — 字典管理', () => {
   describe('createDictDetailTool', () => {
     const services = makeMockServices();
 
-    it('TC-DICT-TOOL-004: 无 dictService 时返回 null', () => {
+    it('TC-DICT-TOOL-004: returns null without dictService', () => {
       const tool = createDictDetailTool({});
       expect(tool).toBeNull();
     });
 
-    it('TC-DICT-TOOL-005: 查询存在的字典表详情', async () => {
+    it('TC-DICT-TOOL-005: query an existing dictionary table\'s details', async () => {
       const tool = createDictDetailTool(services)!;
       const result = await tool.execute({ dictId: 'protocolType' });
       const parsed = JSON.parse(result);
@@ -116,7 +116,7 @@ describe('BackendTools — 字典管理', () => {
       expect(parsed.dict.items[0].value).toBe('modbus_tcp');
     });
 
-    it('TC-DICT-TOOL-006: 查询不存在的字典表返回错误', async () => {
+    it('TC-DICT-TOOL-006: querying a non-existent dictionary table returns an error', async () => {
       const tool = createDictDetailTool(services)!;
       const result = await tool.execute({ dictId: 'nonexistent' });
       const parsed = JSON.parse(result);
@@ -128,12 +128,12 @@ describe('BackendTools — 字典管理', () => {
   describe('createDictCreateTool', () => {
     const services = makeMockServices();
 
-    it('TC-DICT-TOOL-007: 无 dictService 时返回 null', () => {
+    it('TC-DICT-TOOL-007: returns null without dictService', () => {
       const tool = createDictCreateTool({});
       expect(tool).toBeNull();
     });
 
-    it('TC-DICT-TOOL-008: 创建新字典表成功', async () => {
+    it('TC-DICT-TOOL-008: creating a new dictionary table succeeds', async () => {
       const tool = createDictCreateTool(services)!;
       const result = await tool.execute({
         locale: 'zh-CN',
@@ -154,12 +154,12 @@ describe('BackendTools — 字典管理', () => {
       expect(services.dictService!.createTable).toHaveBeenCalled();
     });
 
-    it('TC-DICT-TOOL-009: items 为空数组时返回错误', async () => {
+    it('TC-DICT-TOOL-009: returns an error when items is an empty array', async () => {
       const tool = createDictCreateTool(services)!;
       const result = await tool.execute({
         locale: 'zh-CN',
         dictId: 'empty',
-        dictName: '空字典',
+        dictName: 'Empty dictionary',
         category: 'system',
         items: [],
       });
@@ -168,7 +168,7 @@ describe('BackendTools — 字典管理', () => {
       expect(parsed.error).toContain('非空数组');
     });
 
-    it('TC-DICT-TOOL-010: items 缺失时返回错误', async () => {
+    it('TC-DICT-TOOL-010: returns an error when items is missing', async () => {
       const tool = createDictCreateTool(services)!;
       const result = await tool.execute({
         locale: 'zh-CN',
@@ -184,12 +184,12 @@ describe('BackendTools — 字典管理', () => {
   describe('createDictAddItemsTool', () => {
     const services = makeMockServices();
 
-    it('TC-DICT-TOOL-011: 无 dictService 时返回 null', () => {
+    it('TC-DICT-TOOL-011: returns null without dictService', () => {
       const tool = createDictAddItemsTool({});
       expect(tool).toBeNull();
     });
 
-    it('TC-DICT-TOOL-012: 向现有字典追加条目成功', async () => {
+    it('TC-DICT-TOOL-012: appending entries to an existing dictionary succeeds', async () => {
       const tool = createDictAddItemsTool(services)!;
       const result = await tool.execute({
         locale: 'zh-CN',
@@ -204,7 +204,7 @@ describe('BackendTools — 字典管理', () => {
       expect(services.dictService!.updateTable).toHaveBeenCalled();
     });
 
-    it('TC-DICT-TOOL-013: 向不存在的字典追加条目返回错误', async () => {
+    it('TC-DICT-TOOL-013: appending entries to a non-existent dictionary returns an error', async () => {
       const tool = createDictAddItemsTool(services)!;
       const result = await tool.execute({
         locale: 'zh-CN',
@@ -217,7 +217,7 @@ describe('BackendTools — 字典管理', () => {
       expect(parsed.error).toContain('不存在');
     });
 
-    it('TC-DICT-TOOL-014: items 为空数组时返回错误', async () => {
+    it('TC-DICT-TOOL-014: returns an error when items is an empty array', async () => {
       const tool = createDictAddItemsTool(services)!;
       const result = await tool.execute({
         locale: 'zh-CN',
@@ -233,12 +233,12 @@ describe('BackendTools — 字典管理', () => {
   describe('createDictSearchTool', () => {
     const services = makeMockServices();
 
-    it('TC-DICT-TOOL-015: 无 dictService 时返回 null', () => {
+    it('TC-DICT-TOOL-015: returns null without dictService', () => {
       const tool = createDictSearchTool({});
       expect(tool).toBeNull();
     });
 
-    it('TC-DICT-TOOL-016: 按 label 搜索匹配到条目', async () => {
+    it('TC-DICT-TOOL-016: searching by label matches entries', async () => {
       const tool = createDictSearchTool(services)!;
       const result = await tool.execute({ keyword: 'TCP' });
       const parsed = JSON.parse(result);
@@ -248,7 +248,7 @@ describe('BackendTools — 字典管理', () => {
       expect(parsed.results[0].item.value).toBe('modbus_tcp');
     });
 
-    it('TC-DICT-TOOL-017: 按 value 搜索匹配到条目', async () => {
+    it('TC-DICT-TOOL-017: searching by value matches entries', async () => {
       const tool = createDictSearchTool(services)!;
       const result = await tool.execute({ keyword: 'opc_ua' });
       const parsed = JSON.parse(result);
@@ -257,7 +257,7 @@ describe('BackendTools — 字典管理', () => {
       expect(parsed.results[0].item.label).toBe('OPC UA');
     });
 
-    it('TC-DICT-TOOL-018: 关键词不匹配时返回空结果', async () => {
+    it('TC-DICT-TOOL-018: returns an empty result when the keyword does not match', async () => {
       const tool = createDictSearchTool(services)!;
       const result = await tool.execute({ keyword: 'xyz_unknown' });
       const parsed = JSON.parse(result);
@@ -266,7 +266,7 @@ describe('BackendTools — 字典管理', () => {
       expect(parsed.total).toBe(0);
     });
 
-    it('TC-DICT-TOOL-019: 限定分类搜索', async () => {
+    it('TC-DICT-TOOL-019: search limited to a category', async () => {
       const tool = createDictSearchTool(services)!;
       const result = await tool.execute({ keyword: 'TCP', category: 'device' });
       const parsed = JSON.parse(result);
@@ -275,7 +275,7 @@ describe('BackendTools — 字典管理', () => {
       expect(parsed.results).toHaveLength(0);
     });
 
-    it('TC-DICT-TOOL-020: 限制 pageSize', async () => {
+    it('TC-DICT-TOOL-020: pageSize limit', async () => {
       // use a dict containing multiple matching items
       const multiItemServices = makeMockServices();
       (multiItemServices.dictService!.getAllDicts as jest.Mock).mockReturnValue([
@@ -297,8 +297,8 @@ describe('BackendTools — 字典管理', () => {
     });
   });
 
-  describe('createAllBackendTools — 集成', () => {
-    it('TC-DICT-TOOL-021: 包含字典服务的批量创建应包含 dict 工具', () => {
+  describe('createAllBackendTools — integration', () => {
+    it('TC-DICT-TOOL-021: batch creation with the dictionary service should include dict tools', () => {
       const services = makeMockServices();
       const tools = createAllBackendTools(services);
       const dictTools = tools.filter((t) => t.category === 'dict');
@@ -312,7 +312,7 @@ describe('BackendTools — 字典管理', () => {
       ]);
     });
 
-    it('TC-DICT-TOOL-022: 无字典服务时不应包含 dict 工具', () => {
+    it('TC-DICT-TOOL-022: should not include dict tools without the dictionary service', () => {
       const tools = createAllBackendTools({});
       const dictTools = tools.filter((t) => t.category === 'dict');
       expect(dictTools).toHaveLength(0);

@@ -24,13 +24,13 @@ const mockTemplate: PageTemplate = {
   },
   graphics: [
     { type: 'rect', config: { geometry: { x: 0, y: 0, width: 100, height: 50 } } },
-    { type: 'text', config: { text: 'Hello' } },
+    { type: 'text', config: { text: '你好' } },
   ],
   createdAt: Date.now(),
   updatedAt: Date.now(),
 };
 
-describe('模板引用 — BasePage getter/setter', () => {
+describe('Template reference — BasePage getter/setter', () => {
   let page: BasePage;
 
   beforeEach(() => {
@@ -44,29 +44,29 @@ describe('模板引用 — BasePage getter/setter', () => {
     });
   });
 
-  it('设置 templateId 后应可通过 getter 读取', () => {
+  it('After setting templateId, it should be readable via the getter', () => {
     page.templateId = 'builtin-dashboard';
     expect(page.templateId).toBe('builtin-dashboard');
   });
 
-  it('设置 templateMode 后应可通过 getter 读取', () => {
+  it('After setting templateMode, it should be readable via the getter', () => {
     page.templateMode = 'reference';
     expect(page.templateMode).toBe('reference');
   });
 
-  it('初始 templateId/templateMode 应为 undefined', () => {
+  it('Initial templateId/templateMode should be undefined', () => {
     expect(page.templateId).toBeUndefined();
     expect(page.templateMode).toBeUndefined();
   });
 
-  it('可设为 copy 模式', () => {
+  it('Can be set to copy mode', () => {
     page.templateMode = 'copy';
     expect(page.templateMode).toBe('copy');
   });
 });
 
-describe('模板引用 — toJSON 序列化', () => {
-  it('toJSON 应包含 templateId 和 templateMode（设置后）', () => {
+describe('Template reference — toJSON serialization', () => {
+  it('toJSON should include templateId and templateMode (after being set)', () => {
     const page = new BasePage();
     page.init({ id: 'p1', name: 'P1', width: 800, height: 600, backgroundColor: '#fff' });
     page.templateId = 'builtin-dashboard';
@@ -77,7 +77,7 @@ describe('模板引用 — toJSON 序列化', () => {
     expect(json).toHaveProperty('templateMode', 'reference');
   });
 
-  it('toJSON 的 templateId 应为 undefined（未设置时）', () => {
+  it('toJSON\'s templateId should be undefined (when not set)', () => {
     const page = new BasePage();
     page.init({ id: 'p2', name: 'P2', width: 800, height: 600, backgroundColor: '#fff' });
     const json = page.toJSON();
@@ -85,7 +85,7 @@ describe('模板引用 — toJSON 序列化', () => {
     expect(json.templateMode).toBeUndefined();
   });
 
-  it('JSON.stringify 后应包含 templateId 字段', () => {
+  it('After JSON.stringify, the templateId field should be included', () => {
     const page = new BasePage();
     page.init({ id: 'p3', name: 'P3', width: 800, height: 600, backgroundColor: '#fff' });
     page.templateId = 'builtin-dashboard';
@@ -97,7 +97,7 @@ describe('模板引用 — toJSON 序列化', () => {
     expect(parsed.templateMode).toBe('reference');
   });
 
-  it('toJSONAsync 应包含 templateId', async () => {
+  it('toJSONAsync should include templateId', async () => {
     const page = new BasePage();
     page.init({ id: 'p4', name: 'P4', width: 800, height: 600, backgroundColor: '#fff' });
     page.templateId = 'builtin-dashboard';
@@ -108,12 +108,12 @@ describe('模板引用 — toJSON 序列化', () => {
   });
 });
 
-describe('模板引用 — fromJSON 反序列化', () => {
-  it('fromJSON 应还原 templateId/templateMode', () => {
+describe('Template reference — fromJSON deserialization', () => {
+  it('fromJSON should restore templateId/templateMode', () => {
     const page = new BasePage();
     page.fromJSON({
       id: 'page-x',
-      name: '还原测试',
+      name: 'Restore test',
       width: 1920,
       height: 1080,
       backgroundColor: '#000',
@@ -124,9 +124,9 @@ describe('模板引用 — fromJSON 反序列化', () => {
     expect(page.templateMode).toBe('reference');
   });
 
-  it('toJSON + fromJSON 往返后 templateId/templateMode 一致', () => {
+  it('templateId/templateMode stay consistent after a toJSON + fromJSON round trip', () => {
     const page = new BasePage();
-    page.init({ id: 'roundtrip', name: '往返', width: 800, height: 600, backgroundColor: '#fff' });
+    page.init({ id: 'roundtrip', name: 'Round trip', width: 800, height: 600, backgroundColor: '#fff' });
     page.templateId = 'builtin-dashboard';
     page.templateMode = 'reference';
 
@@ -143,12 +143,12 @@ describe('模板引用 — fromJSON 反序列化', () => {
   });
 });
 
-describe('模板引用 — 模拟 handleTemplateCreate 完整代码流', () => {
+describe('Template reference — simulating the full handleTemplateCreate code flow', () => {
   beforeEach(() => {
     setActivePinia(createPinia());
   });
 
-  it('✅ 从模板创建：addPage → 设 pageConfig → 设 templateId/templateMode → 复制图元', () => {
+  it('✅ Created from template: addPage → set pageConfig → set templateId/templateMode → copy graphics', () => {
     const pageStore = usePageStore();
     pageStore.pages = [];
 
@@ -200,7 +200,7 @@ describe('模板引用 — 模拟 handleTemplateCreate 完整代码流', () => {
     });
   });
 
-  it('✅ 复制模式（configMode=copy）：不设 templateId/templateMode', () => {
+  it('✅ Copy mode (configMode=copy): does not set templateId/templateMode', () => {
     const pageStore = usePageStore();
     pageStore.pages = [];
 
@@ -212,7 +212,7 @@ describe('模板引用 — 模拟 handleTemplateCreate 完整代码流', () => {
     expect(json.templateMode).toBeUndefined();
   });
 
-  it('✅ JSON.stringify 输出包含 templateId 字段（模拟 page.json 内容）', () => {
+  it('✅ JSON.stringify output includes the templateId field (simulating page.json content)', () => {
     const pageStore = usePageStore();
     pageStore.pages = [];
 
@@ -228,7 +228,7 @@ describe('模板引用 — 模拟 handleTemplateCreate 完整代码流', () => {
     expect(jsonStr).toContain('"reference"');
   });
 
-  it('✅ 多页面隔离：各自 templateId 不互相干扰', () => {
+  it('✅ Multi-page isolation: their templateIds do not interfere with each other', () => {
     const pageStore = usePageStore();
     pageStore.pages = [];
 
@@ -245,7 +245,7 @@ describe('模板引用 — 模拟 handleTemplateCreate 完整代码流', () => {
     expect(pageStore.pages[1].toJSON().templateMode).toBeUndefined();
   });
 
-  it('✅ 完整往返：创建 → toJSON(保存) → fromJSON(加载) → templateId 不丢失', () => {
+  it('✅ Full round trip: create → toJSON(save) → fromJSON(load) → templateId not lost', () => {
     const pageStore = usePageStore();
     pageStore.pages = [];
 
@@ -268,7 +268,7 @@ describe('模板引用 — 模拟 handleTemplateCreate 完整代码流', () => {
     expect(resaveJson.templateMode).toBe('reference');
   });
 
-  it('✅ collectProjectData 模拟：所有页面 toJSON 含 templateId', () => {
+  it('✅ collectProjectData simulation: all pages\' toJSON include templateId', () => {
     const pageStore = usePageStore();
     pageStore.pages = [];
 
@@ -289,7 +289,7 @@ describe('模板引用 — 模拟 handleTemplateCreate 完整代码流', () => {
     expect(pagesJson[1].templateMode).toBe('reference');
   });
 
-  it('✅ 通过 store.pages 取得的 Pinia Proxy toJSON 含 templateId', () => {
+  it('✅ Pinia Proxy toJSON obtained via store.pages includes templateId', () => {
     const pageStore = usePageStore();
     pageStore.pages = [];
 

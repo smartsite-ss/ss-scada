@@ -21,35 +21,35 @@ describe('PluginGeneratorAgent', () => {
 
   // ────── Config inference ──────
 
-  describe('配置推断', () => {
-    it('"创建一个带开关和状态灯的阀门插件" → 推断为工业分类', () => {
+  describe('Configuration inference', () => {
+    it('"Create a valve plugin with a switch and status lamp" → infers industrial category', () => {
       const result = agent.analyze('创建一个带开关和状态灯的阀门插件');
       expect(result.config.category).toBe('industrial');
       expect(result.config.label).toContain('阀门');
     });
 
-    it('"生成一个泵监控图元" → 推断为工业+canvas2d', () => {
+    it('"Generate a pump monitoring graphic" → infers industrial + canvas2d', () => {
       const result = agent.analyze('生成一个泵监控图元');
       expect(result.config.category).toBe('industrial');
       expect(result.config.renderBackend).toBe('canvas2d');
     });
 
-    it('应默认使用 Canvas 2D 渲染后端', () => {
+    it('Should default to the Canvas 2D render backend', () => {
       const result = agent.analyze('创建一个温度计插件');
       expect(result.config.renderBackend).toBe('canvas2d');
     });
 
-    it('输入包含"3D"时应推断为 three3d', () => {
+    it('Input containing "3D" should infer three3d', () => {
       const result = agent.analyze('创建一个3D管道插件');
       expect(result.config.renderBackend).toBe('three3d');
     });
 
-    it('输入包含"Vue组件"时应推断为 vue', () => {
+    it('Input containing "Vue组件" should infer vue', () => {
       const result = agent.analyze('创建一个Vue组件表单插件');
       expect(result.config.renderBackend).toBe('vue');
     });
 
-    it('输入包含"SVG"时应推断为 svg-dom', () => {
+    it('Input containing "SVG" should infer svg-dom', () => {
       const result = agent.analyze('创建一个SVG图表插件');
       expect(result.config.renderBackend).toBe('svg-dom');
     });
@@ -57,8 +57,8 @@ describe('PluginGeneratorAgent', () => {
 
   // ────── Schema inference ──────
 
-  describe('Schema 推断', () => {
-    it('"带开关" → 推断 isOn (boolean)', () => {
+  describe('Schema inference', () => {
+    it('"with switch" → infers isOn (boolean)', () => {
       const result = agent.analyze('创建带开关的阀门插件');
       const names = result.config.schema.fields.map((f) => f.name);
       expect(names).toContain('isOn');
@@ -66,14 +66,14 @@ describe('PluginGeneratorAgent', () => {
       expect(isOn!.type).toBe('boolean');
     });
 
-    it('"带状态灯" → 推断 status/statusColor (select+color)', () => {
+    it('"with status lamp" → infers status/statusColor (select+color)', () => {
       const result = agent.analyze('创建带状态灯的插件');
       const names = result.config.schema.fields.map((f) => f.name);
       expect(names).toContain('status');
       expect(names).toContain('statusColor');
     });
 
-    it('"温度/压力/流量" → 推断 minValue/maxValue/unit', () => {
+    it('"temperature/pressure/flow" → infers minValue/maxValue/unit', () => {
       const result = agent.analyze('创建温度显示仪表');
       const names = result.config.schema.fields.map((f) => f.name);
       expect(names).toContain('minValue');
@@ -81,7 +81,7 @@ describe('PluginGeneratorAgent', () => {
       expect(names).toContain('unit');
     });
 
-    it('"标签/文字" → 推断 label/fontSize/textColor', () => {
+    it('"label/text" → infers label/fontSize/textColor', () => {
       const result = agent.analyze('创建带标签文字的面板');
       const names = result.config.schema.fields.map((f) => f.name);
       expect(names).toContain('label');
@@ -89,13 +89,13 @@ describe('PluginGeneratorAgent', () => {
       expect(names).toContain('textColor');
     });
 
-    it('"管道/阀体/泵体" → 推断 bodyColor', () => {
+    it('"pipe/valve body/pump body" → infers bodyColor', () => {
       const result = agent.analyze('创建管道插件');
       const names = result.config.schema.fields.map((f) => f.name);
       expect(names).toContain('bodyColor');
     });
 
-    it('无关键词时应生成默认属性（label/textColor/bgColor）', () => {
+    it('Should generate default properties (label/textColor/bgColor) when there are no keywords', () => {
       const result = agent.analyze('创建一个自定义的通用组件');
       const names = result.config.schema.fields.map((f) => f.name);
       expect(names.length).toBeGreaterThanOrEqual(3);
@@ -107,31 +107,31 @@ describe('PluginGeneratorAgent', () => {
 
   // ────── System Prompt ──────
 
-  describe('System Prompt 构建', () => {
-    it('应包含插件配置信息', () => {
+  describe('System Prompt building', () => {
+    it('Should include plugin configuration info', () => {
       const result = agent.analyze('创建阀门插件');
       expect(result.systemPrompt).toContain('Smart-SCADA v7 插件开发专家');
     });
 
-    it('应包含渲染后端绘制指引', () => {
+    it('Should include render-backend drawing guidelines', () => {
       const result = agent.analyze('创建阀门插件');
       expect(result.systemPrompt).toContain('Canvas 2D');
     });
 
-    it('应包含属性 Schema', () => {
+    it('Should include the property schema', () => {
       const result = agent.analyze('创建带开关的阀门插件');
       expect(result.systemPrompt).toContain('interface Props');
       expect(result.systemPrompt).toContain('isOn');
     });
 
-    it('应生成 messages 数组', () => {
+    it('Should generate the messages array', () => {
       const result = agent.analyze('创建阀门插件');
       expect(result.messages).toHaveLength(2);
       expect(result.messages[0].role).toBe('system');
       expect(result.messages[1].role).toBe('user');
     });
 
-    it('buildSystemPrompt 应与 analyze 返回一致', () => {
+    it('buildSystemPrompt should be consistent with the analyze result', () => {
       const analyzeResult = agent.analyze('创建阀门插件');
       const prompt = agent.buildSystemPrompt(analyzeResult.config);
       expect(prompt).toBe(analyzeResult.systemPrompt);
@@ -140,7 +140,7 @@ describe('PluginGeneratorAgent', () => {
 
   // ────── Category inference ──────
 
-  describe('分类推断', () => {
+  describe('Category inference', () => {
     const categoryCases = [
       ['阀门', 'industrial'],
       ['泵', 'industrial'],
@@ -163,22 +163,22 @@ describe('PluginGeneratorAgent', () => {
     ] as const;
 
     for (const [keyword, expected] of categoryCases) {
-      it(`"创建${keyword}插件" → category="${expected}"`, () => {
+      it(`"Create ${keyword}plugin" → category="${expected}"`, () => {
         const result = agent.analyze(`创建${keyword}插件`);
         expect(result.config.category).toBe(expected);
       });
     }
 
-    it('无匹配关键词时应返回 "custom"', () => {
-      const result = agent.analyze('创建一个神秘的外星科技');
+    it('Should return "custom" when no keywords match', () => {
+      const result = agent.analyze('Create some mysterious alien technology');
       expect(result.config.category).toBe('custom');
     });
   });
 
   // ────── Typical scenarios ──────
 
-  describe('典型场景：P1-T05 验收标准', () => {
-    it('"创建一个带开关和状态灯的阀门插件" 应生成完整配置', () => {
+  describe('Typical scenarios: P1-T05 acceptance criteria', () => {
+    it('"Create a valve plugin with a switch and status lamp" should generate complete configuration', () => {
       const result = agent.analyze('创建一个带开关和状态灯的阀门插件');
 
       // Verify the full config structure
@@ -201,18 +201,18 @@ describe('PluginGeneratorAgent', () => {
       expect(result.systemPrompt).toContain('输出要求');
     });
 
-    it('"创建一个泵站工艺流程图片" 应推断为工业+canvas2d', () => {
-      const result = agent.analyze('创建一个泵站工艺流程图片');
+    it('"Create a pump station process flow diagram" should infer industrial + canvas2d', () => {
+      const result = agent.analyze('Create a pump station process flow diagram');
       expect(result.config.category).toBe('industrial');
       expect(result.config.renderBackend).toBe('canvas2d');
     });
 
-    it('"创建一个数据趋势图" 应推断为图表分类', () => {
+    it('"Create a data trend chart" should infer chart category', () => {
       const result = agent.analyze('创建一个数据趋势图');
       expect(result.config.category).toBe('chart');
     });
 
-    it('"创建一个登录表单组件" 应推断为表单分类+Vue后端', () => {
+    it('"Create a login form component" should infer form category + Vue backend', () => {
       const result = agent.analyze('创建一个登录表单组件');
       expect(result.config.category).toBe('form');
       expect(result.config.renderBackend).toBe('vue');

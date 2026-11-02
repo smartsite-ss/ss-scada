@@ -313,7 +313,7 @@ describe('TagImportService', () => {
     });
 
     it('TC-TIM-023: should handle service create failure', async () => {
-      const error = new Error('DB error');
+      const error = new Error('DB 错误');
       mockTagService.create!.mockRejectedValue(error);
 
       const result = await service.importJson([validRow], 'device-001', 'project-001');
@@ -321,7 +321,7 @@ describe('TagImportService', () => {
       expect(result.successCount).toBe(0);
       expect(result.failureCount).toBe(1);
       expect(result.errors).toHaveLength(1);
-      expect(result.errors[0].message).toBe('DB error');
+      expect(result.errors[0].message).toBe('DB 错误');
     });
 
     it('TC-TIM-024: should apply default values for missing fields', async () => {

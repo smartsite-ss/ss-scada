@@ -27,7 +27,7 @@ function createMockContext(overrides: {
   } as any;
 }
 
-describe('DataAccessGuard (3.6 设备权限)', () => {
+describe('DataAccessGuard (3.6 device permissions)', () => {
   let guard: DataAccessGuard;
   let reflector: jest.Mocked<Reflector>;
   let mockAuthService: any;
@@ -48,14 +48,14 @@ describe('DataAccessGuard (3.6 设备权限)', () => {
   });
 
   // ==================== Basic scenarios ====================
-  describe('基础放行场景', () => {
-    it('TC-PERM-001: 未登录用户应抛出 ForbiddenException', async () => {
+  describe('Basic pass-through scenarios', () => {
+    it('TC-PERM-001: a not-logged-in user should throw ForbiddenException', async () => {
       const ctx = createMockContext({ user: null });
 
       await expect(guard.canActivate(ctx)).rejects.toThrow(ForbiddenException);
     });
 
-    it('TC-PERM-002: admin 角色应直接放行', async () => {
+    it('TC-PERM-002: the admin role should be allowed directly', async () => {
       const ctx = createMockContext({ user: { role: 'admin', id: 'u1' } });
 
       const result = await guard.canActivate(ctx);
@@ -63,7 +63,7 @@ describe('DataAccessGuard (3.6 设备权限)', () => {
       expect(result).toBe(true);
     });
 
-    it('TC-PERM-003: 无 @DataAccess 装饰器时应放行', async () => {
+    it('TC-PERM-003: should be allowed without the @DataAccess decorator', async () => {
       reflector.getAllAndOverride.mockReturnValue(undefined);
       const ctx = createMockContext({ user: { role: 'user', id: 'u1' } });
 
@@ -72,7 +72,7 @@ describe('DataAccessGuard (3.6 设备权限)', () => {
       expect(result).toBe(true);
     });
 
-    it('TC-PERM-004: GET 请求应放行', async () => {
+    it('TC-PERM-004: GET requests should be allowed', async () => {
       reflector.getAllAndOverride.mockReturnValue(['project']);
       const ctx = createMockContext({
         user: { role: 'user', id: 'u1' },
@@ -85,7 +85,7 @@ describe('DataAccessGuard (3.6 设备权限)', () => {
       expect(result).toBe(true);
     });
 
-    it('TC-PERM-005: HEAD 请求应放行', async () => {
+    it('TC-PERM-005: HEAD requests should be allowed', async () => {
       reflector.getAllAndOverride.mockReturnValue(['project']);
       const ctx = createMockContext({
         user: { role: 'user', id: 'u1' },
@@ -100,8 +100,8 @@ describe('DataAccessGuard (3.6 设备权限)', () => {
   });
 
   // ==================== Project-level permissions ====================
-  describe('项目级资源权限', () => {
-    it('TC-PERM-010: 有项目写权限应放行', async () => {
+  describe('Project-level resource permissions', () => {
+    it('TC-PERM-010: with project write permission, should be allowed', async () => {
       reflector.getAllAndOverride.mockReturnValue(['project']);
       mockAuthService.checkProjectPermission.mockResolvedValue(true);
       const ctx = createMockContext({
@@ -119,7 +119,7 @@ describe('DataAccessGuard (3.6 设备权限)', () => {
       );
     });
 
-    it('TC-PERM-011: 无项目写权限应抛出 ForbiddenException', async () => {
+    it('TC-PERM-011: without project write permission, should throw ForbiddenException', async () => {
       reflector.getAllAndOverride.mockReturnValue(['project']);
       mockAuthService.checkProjectPermission.mockResolvedValue(false);
       const ctx = createMockContext({
@@ -132,8 +132,8 @@ describe('DataAccessGuard (3.6 设备权限)', () => {
   });
 
   // ==================== Device-level permissions ====================
-  describe('设备级资源权限', () => {
-    it('TC-PERM-020: 有设备写权限应放行', async () => {
+  describe('Device-level resource permissions', () => {
+    it('TC-PERM-020: with device write permission, should be allowed', async () => {
       reflector.getAllAndOverride.mockReturnValue(['device']);
       mockAuthService.checkDevicePermission.mockResolvedValue(true);
       const ctx = createMockContext({
@@ -152,7 +152,7 @@ describe('DataAccessGuard (3.6 设备权限)', () => {
       );
     });
 
-    it('TC-PERM-021: 无设备写权限应抛出 ForbiddenException', async () => {
+    it('TC-PERM-021: without device write permission, should throw ForbiddenException', async () => {
       reflector.getAllAndOverride.mockReturnValue(['device']);
       mockAuthService.checkDevicePermission.mockResolvedValue(false);
       const ctx = createMockContext({
@@ -163,7 +163,7 @@ describe('DataAccessGuard (3.6 设备权限)', () => {
       await expect(guard.canActivate(ctx)).rejects.toThrow(ForbiddenException);
     });
 
-    it('TC-PERM-022: 缺少 projectId 应抛出 ForbiddenException', async () => {
+    it('TC-PERM-022: missing projectId should throw ForbiddenException', async () => {
       reflector.getAllAndOverride.mockReturnValue(['device']);
       const ctx = createMockContext({
         user: { role: 'user', id: 'u1', roleId: 'role-001' },
@@ -175,8 +175,8 @@ describe('DataAccessGuard (3.6 设备权限)', () => {
   });
 
   // ==================== Group-level permissions ====================
-  describe('设备分组级资源权限', () => {
-    it('TC-PERM-030: 有分组写权限应放行', async () => {
+  describe('Device group-level resource permissions', () => {
+    it('TC-PERM-030: with group write permission, should be allowed', async () => {
       reflector.getAllAndOverride.mockReturnValue(['deviceGroup']);
       mockAuthService.checkDeviceGroupPermission.mockResolvedValue(true);
       const ctx = createMockContext({
@@ -195,7 +195,7 @@ describe('DataAccessGuard (3.6 设备权限)', () => {
       );
     });
 
-    it('TC-PERM-031: 无分组写权限应抛出 ForbiddenException', async () => {
+    it('TC-PERM-031: without group write permission, should throw ForbiddenException', async () => {
       reflector.getAllAndOverride.mockReturnValue(['deviceGroup']);
       mockAuthService.checkDeviceGroupPermission.mockResolvedValue(false);
       const ctx = createMockContext({
@@ -208,8 +208,8 @@ describe('DataAccessGuard (3.6 设备权限)', () => {
   });
 
   // ==================== Fallback scenarios ====================
-  describe('authService 不可用时的回退', () => {
-    it('TC-PERM-040: 无 authService 且无 @Roles 装饰器应放行', async () => {
+  describe('Fallback when authService is unavailable', () => {
+    it('TC-PERM-040: should be allowed with no authService and no @Roles decorator', async () => {
       guard = new DataAccessGuard(reflector, undefined as any);
       reflector.getAllAndOverride.mockReturnValue(['project']);
       reflector.get.mockReturnValue([]);
@@ -223,7 +223,7 @@ describe('DataAccessGuard (3.6 设备权限)', () => {
       expect(result).toBe(true);
     });
 
-    it('TC-PERM-041: 无 authService 且 @Roles 包含用户角色应放行', async () => {
+    it('TC-PERM-041: should be allowed with no authService and @Roles containing the user role', async () => {
       guard = new DataAccessGuard(reflector, undefined as any);
       reflector.getAllAndOverride.mockReturnValue(['project']);
       reflector.get.mockReturnValue(['user']);
@@ -237,7 +237,7 @@ describe('DataAccessGuard (3.6 设备权限)', () => {
       expect(result).toBe(true);
     });
 
-    it('TC-PERM-042: 无 authService 且 @Roles 不包含用户角色应拒绝', async () => {
+    it('TC-PERM-042: should be denied with no authService and @Roles not containing the user role', async () => {
       guard = new DataAccessGuard(reflector, undefined as any);
       reflector.getAllAndOverride.mockReturnValue(['project']);
       reflector.get.mockReturnValue(['admin']);
@@ -251,8 +251,8 @@ describe('DataAccessGuard (3.6 设备权限)', () => {
   });
 
   // ==================== body-param fallback ====================
-  describe('从 body 获取资源 ID', () => {
-    it('TC-PERM-050: params 无 projectId 但 body 有时应正常检查', async () => {
+  describe('Get the resource ID from the body', () => {
+    it('TC-PERM-050: should check normally when params lacks projectId but body has it', async () => {
       reflector.getAllAndOverride.mockReturnValue(['project']);
       mockAuthService.checkProjectPermission.mockResolvedValue(true);
       const ctx = createMockContext({

@@ -43,7 +43,7 @@ function makeTemplateData(overrides: Record<string, any> = {}) {
     author: 'system',
     tags: ['test', 'modbus'],
     industry: '工业自动化',
-    category: 'PLC控制器',
+    category: 'PLC controller',
     protocol: { type: 'modbus_tcp', config: {} },
     variables: [
       { order: 1, name: 'Var1', address: '40001', dataType: 'float32' },
@@ -92,7 +92,7 @@ describe('TemplateIndexService', () => {
     it('TC-IDX-001: should build index from directory structure', () => {
       // Create the directory structure
       writeFile(
-        path.join(TEST_BASE, '工业自动化', 'PLC控制器', 'siemens-s7-1200.json'),
+        path.join(TEST_BASE, '工业自动化', 'PLC controller', 'siemens-s7-1200.json'),
         makeTemplateData({
           id: 'tpl-s7-1200',
           name: '西门子 S7-1200',
@@ -101,7 +101,7 @@ describe('TemplateIndexService', () => {
         }),
       );
       writeFile(
-        path.join(TEST_BASE, '能源电力', '电能计量', 'three-phase-meter.json'),
+        path.join(TEST_BASE, '能源电力', 'Energy metering', 'three-phase-meter.json'),
         makeTemplateData({
           id: 'tpl-meter',
           name: '三相电表',
@@ -124,7 +124,7 @@ describe('TemplateIndexService', () => {
       // Verify categories
       const automation = index.industries[0];
       expect(automation.categories).toHaveLength(1);
-      expect(automation.categories[0].name).toBe('PLC控制器');
+      expect(automation.categories[0].name).toBe('PLC controller');
       expect(automation.categories[0].templateCount).toBe(1);
       expect(automation.templateCount).toBe(1);
 
@@ -152,7 +152,7 @@ describe('TemplateIndexService', () => {
     it('TC-IDX-003: should handle nested categories correctly', () => {
       // Multiple categories in the same industry
       writeFile(
-        path.join(TEST_BASE, '工业自动化', 'PLC控制器', 'tpl1.json'),
+        path.join(TEST_BASE, '工业自动化', 'PLC controller', 'tpl1.json'),
         makeTemplateData({
           id: 'tpl1',
           name: 'TPL1',
@@ -181,7 +181,7 @@ describe('TemplateIndexService', () => {
       // Empty category directory (no template files)
       ensureDir(path.join(TEST_BASE, '工业自动化', '空分类'));
       writeFile(
-        path.join(TEST_BASE, '工业自动化', 'PLC控制器', 'tpl.json'),
+        path.join(TEST_BASE, '工业自动化', 'PLC controller', 'tpl.json'),
         makeTemplateData({
           id: 'tpl1',
           name: 'TPL1',
@@ -194,7 +194,7 @@ describe('TemplateIndexService', () => {
       const industry = index.industries[0];
       const categories = industry.categories.map((c) => c.name);
       expect(categories).toContain('空分类');
-      expect(categories).toContain('PLC控制器');
+      expect(categories).toContain('PLC controller');
 
       const emptyCat = industry.categories.find((c) => c.name === '空分类');
       expect(emptyCat!.templateCount).toBe(0);
@@ -203,7 +203,7 @@ describe('TemplateIndexService', () => {
 
     it('TC-IDX-005: should handle template JSON parse errors gracefully', () => {
       // Create a directory containing invalid JSON
-      const dir = path.join(TEST_BASE, '工业自动化', 'PLC控制器');
+      const dir = path.join(TEST_BASE, '工业自动化', 'PLC controller');
       ensureDir(dir);
       fs.writeFileSync(path.join(dir, 'bad.json'), 'not valid json', 'utf-8');
       // Then create a valid template
@@ -229,7 +229,7 @@ describe('TemplateIndexService', () => {
     it('TC-IDX-010: should load existing index.json', () => {
       // Build one first
       writeFile(
-        path.join(TEST_BASE, '工业自动化', 'PLC控制器', 'tpl.json'),
+        path.join(TEST_BASE, '工业自动化', 'PLC controller', 'tpl.json'),
         makeTemplateData({
           id: 'tpl1',
           name: 'TPL1',
@@ -358,7 +358,7 @@ describe('TemplateIndexService', () => {
   describe('getDirectoryStructure', () => {
     it('TC-IDX-050: should return tree structure', () => {
       writeFile(
-        path.join(TEST_BASE, '工业自动化', 'PLC控制器', 'tpl.json'),
+        path.join(TEST_BASE, '工业自动化', 'PLC controller', 'tpl.json'),
         makeTemplateData({
           id: 'tpl1',
           name: 'TPL1',

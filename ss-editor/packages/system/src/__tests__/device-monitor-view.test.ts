@@ -182,21 +182,21 @@ describe('DeviceMonitorView', () => {
     mockDeviceStore.groupTree = mockGroupTree();
   });
 
-  describe('初始渲染', () => {
-    it('应正确渲染左侧设备树标题', async () => {
+  describe('Initial rendering', () => {
+    it('Should render the left device tree title correctly', async () => {
       const wrapper = await mountMonitorView();
       await flushPromises();
       expect(wrapper.find('.sidebar-title').text()).toContain('system.deviceMonitor.deviceTree');
     });
 
-    it('应显示空状态提示（未选中设备时）', async () => {
+    it('Should show the empty state hint (when no device is selected)', async () => {
       const wrapper = await mountMonitorView();
       await flushPromises();
       expect(wrapper.find('.empty-state').exists()).toBe(true);
       expect(wrapper.find('.empty-state h3').text()).toContain('system.deviceMonitor.selectDeviceHint');
     });
 
-    it('应加载项目列表并显示项目节点', async () => {
+    it('Should load the project list and show project nodes', async () => {
       const wrapper = await mountMonitorView();
       await flushPromises();
       // Project nodes should be rendered
@@ -205,7 +205,7 @@ describe('DeviceMonitorView', () => {
       expect(projectNodes[0].text()).toContain('测试项目1');
     });
 
-    it('应在挂载时自动展开第一个项目', async () => {
+    it('Should auto-expand the first project on mount', async () => {
       const wrapper = await mountMonitorView();
       await flushPromises();
       expect(mockDeviceStore.fetchGroupTree).toHaveBeenCalledWith('proj-1');
@@ -213,8 +213,8 @@ describe('DeviceMonitorView', () => {
     });
   });
 
-  describe('设备树交互', () => {
-    it('点击项目节点应展开/收起', async () => {
+  describe('Device tree interaction', () => {
+    it('Clicking a project node should expand/collapse', async () => {
       const wrapper = await mountMonitorView();
       await flushPromises();
       const projectNode = wrapper.find('.project-node');
@@ -230,7 +230,7 @@ describe('DeviceMonitorView', () => {
       expect(mockDeviceStore.fetchGroupTree).toHaveBeenCalled();
     });
 
-    it('点击刷新按钮应重新加载项目列表', async () => {
+    it('Clicking the refresh button should reload the project list', async () => {
       const wrapper = await mountMonitorView();
       await flushPromises();
       const refreshBtn = wrapper.find('.btn-refresh');
@@ -239,7 +239,7 @@ describe('DeviceMonitorView', () => {
       expect(mockProjectStore.fetchProjects).toHaveBeenCalled();
     });
 
-    it('无项目时应显示空提示', async () => {
+    it('Should show the empty hint when there are no projects', async () => {
       mockProjectStore.projects = [];
       const wrapper = await mountMonitorView();
       await flushPromises();
@@ -251,8 +251,8 @@ describe('DeviceMonitorView', () => {
     });
   });
 
-  describe('设备详情 - 基本信息', () => {
-    it('选中设备后应显示设备头部信息', async () => {
+  describe('Device detail - basic info', () => {
+    it('After selecting a device, the device header info should be shown', async () => {
       const wrapper = await mountMonitorView();
       await flushPromises();
       // Simulate selecting a device
@@ -266,7 +266,7 @@ describe('DeviceMonitorView', () => {
       expect(wrapper.find('.device-name').text()).toContain('测试设备1');
     });
 
-    it('基本信息 Tab 应显示设备信息网格', async () => {
+    it('The basic info tab should show the device info grid', async () => {
       const wrapper = await mountMonitorView();
       await flushPromises();
       const vm = wrapper.vm as any;
@@ -282,7 +282,7 @@ describe('DeviceMonitorView', () => {
       expect(infoItems.length).toBeGreaterThan(0);
     });
 
-    it('应显示通道配置（当存在 connection 时）', async () => {
+    it('Should show the channel config (when connection exists)', async () => {
       const wrapper = await mountMonitorView();
       await flushPromises();
       const vm = wrapper.vm as any;
@@ -296,7 +296,7 @@ describe('DeviceMonitorView', () => {
       expect(wrapper.find('.driver-tag').text()).toBe('modbus');
     });
 
-    it('应掩码敏感字段', async () => {
+    it('Should mask sensitive fields', async () => {
       const wrapper = await mountMonitorView();
       await flushPromises();
       const vm = wrapper.vm as any;
@@ -308,8 +308,8 @@ describe('DeviceMonitorView', () => {
     });
   });
 
-  describe('设备详情 - 实时数据', () => {
-    it('实时数据 Tab 应加载标签数据', async () => {
+  describe('Device detail - real-time data', () => {
+    it('The real-time data tab should load tag data', async () => {
       const wrapper = await mountMonitorView();
       await flushPromises();
       const vm = wrapper.vm as any;
@@ -324,7 +324,7 @@ describe('DeviceMonitorView', () => {
       expect(vm.tagDataList.length).toBe(2); // two tags
     });
 
-    it('自动刷新应定时调用 refreshRealtimeData', async () => {
+    it('Auto refresh should call refreshRealtimeData on a timer', async () => {
       const wrapper = await mountMonitorView();
       await flushPromises();
       const vm = wrapper.vm as any;
@@ -339,7 +339,7 @@ describe('DeviceMonitorView', () => {
       expect(vm.autoRefresh).toBe(false);
     });
 
-    it('WebSocket 已连接时应显示连接状态', async () => {
+    it('Should show the connection status when WebSocket is connected', async () => {
       mockWsStore.isConnected = true;
       const wrapper = await mountMonitorView();
       await flushPromises();
@@ -355,8 +355,8 @@ describe('DeviceMonitorView', () => {
     });
   });
 
-  describe('设备详情 - 报警规则', () => {
-    it('切换到报警 Tab 应加载报警规则', async () => {
+  describe('Device detail - alarm rules', () => {
+    it('Switching to the alarm tab should load alarm rules', async () => {
       const alarmRules = [
         {
           id: 'rule-1',
@@ -386,7 +386,7 @@ describe('DeviceMonitorView', () => {
       expect(vm.deviceAlarmRules[0].name).toBe('高温报警');
     });
 
-    it('无关联报警规则时应显示空提示', async () => {
+    it('Should show the empty hint when there are no related alarm rules', async () => {
       mockAlarmApi.getRules.mockResolvedValue({ data: [] });
       const wrapper = await mountMonitorView();
       await flushPromises();
@@ -401,7 +401,7 @@ describe('DeviceMonitorView', () => {
       expect(vm.deviceAlarmRules.length).toBe(0);
     });
 
-    it('应按设备标签 ID 过滤报警规则', async () => {
+    it('Should filter alarm rules by device tag ID', async () => {
       const allRules = [
         { id: 'rule-1', name: '规则1', tagId: 'tag-1', level: 'warning', condition: '>', conditionValue: '50', enabled: true, projectId: 'proj-1' },
         { id: 'rule-2', name: '规则2', tagId: 'tag-other', level: 'error', condition: '<', conditionValue: '10', enabled: false, projectId: 'proj-1' },
@@ -425,21 +425,21 @@ describe('DeviceMonitorView', () => {
   });
 
   describe('工具函数', () => {
-    it('formatTime 应正确格式化 ISO 日期', async () => {
+    it('formatTime should format ISO dates correctly', async () => {
       const wrapper = await mountMonitorView();
       const vm = wrapper.vm as any;
       const result = vm.formatTime('2026-07-17T10:00:00.000Z');
       expect(result).toMatch(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/);
     });
 
-    it('formatTime 应处理 SQLite 日期格式', async () => {
+    it('formatTime should handle SQLite date formats', async () => {
       const wrapper = await mountMonitorView();
       const vm = wrapper.vm as any;
       const result = vm.formatTime('2026-07-17 10:00:00');
       expect(result).toMatch(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/);
     });
 
-    it('formatTime 应对空值返回 "-"', async () => {
+    it('formatTime should return "-" for empty values', async () => {
       const wrapper = await mountMonitorView();
       const vm = wrapper.vm as any;
       expect(vm.formatTime(null)).toBe('-');
@@ -447,7 +447,7 @@ describe('DeviceMonitorView', () => {
       expect(vm.formatTime('')).toBe('-');
     });
 
-    it('formatPeriod 应正确格式化周期', async () => {
+    it('formatPeriod should format periods correctly', async () => {
       const wrapper = await mountMonitorView();
       const vm = wrapper.vm as any;
       expect(vm.formatPeriod(500)).toBe('500ms');
@@ -458,14 +458,14 @@ describe('DeviceMonitorView', () => {
       expect(vm.formatPeriod(null)).toBe('-');
     });
 
-    it('deviceTypeLabel 应返回类型标签', async () => {
+    it('deviceTypeLabel should return the type label', async () => {
       const wrapper = await mountMonitorView();
       const vm = wrapper.vm as any;
       expect(vm.deviceTypeLabel('modbus_tcp')).toContain('modbus_tcp');
       expect(vm.deviceTypeLabel('unknown')).toBe('unknown');
     });
 
-    it('deviceStatusLabel 应返回状态标签', async () => {
+    it('deviceStatusLabel should return the status label', async () => {
       const wrapper = await mountMonitorView();
       const vm = wrapper.vm as any;
       expect(vm.deviceStatusLabel('online')).toContain('statusOnline');
@@ -473,8 +473,8 @@ describe('DeviceMonitorView', () => {
     });
   });
 
-  describe('Tab 切换', () => {
-    it('应渲染三个 Tab 按钮', async () => {
+  describe('Tab switching', () => {
+    it('Should render three tab buttons', async () => {
       const wrapper = await mountMonitorView();
       await flushPromises();
       const vm = wrapper.vm as any;
@@ -490,14 +490,14 @@ describe('DeviceMonitorView', () => {
       expect(tabs[2].text()).toContain('system.deviceMonitor.tabAlarms');
     });
 
-    it('默认 Tab 应为 realtime', async () => {
+    it('The default tab should be realtime', async () => {
       const wrapper = await mountMonitorView();
       await flushPromises();
       const vm = wrapper.vm as any;
       expect(vm.activeTab).toBe('realtime');
     });
 
-    it('点击 Tab 应切换激活状态', async () => {
+    it('Clicking Tab should switch the active state', async () => {
       const wrapper = await mountMonitorView();
       await flushPromises();
       const vm = wrapper.vm as any;
@@ -513,8 +513,8 @@ describe('DeviceMonitorView', () => {
     });
   });
 
-  describe('WebSocket 订阅', () => {
-    it('选中设备后应订阅 WebSocket 标签', async () => {
+  describe('WebSocket subscription', () => {
+    it('After selecting a device, WebSocket tags should be subscribed', async () => {
       const wrapper = await mountMonitorView();
       await flushPromises();
       const vm = wrapper.vm as any;
@@ -528,7 +528,7 @@ describe('DeviceMonitorView', () => {
       expect(mockWsStore.subscribeTags).toHaveBeenCalledWith(['tag-1', 'tag-2']);
     });
 
-    it('切换设备应取消旧订阅并建立新订阅', async () => {
+    it('Switching devices should unsubscribe the old subscription and create a new one', async () => {
       const wrapper = await mountMonitorView();
       await flushPromises();
       const vm = wrapper.vm as any;
@@ -544,8 +544,8 @@ describe('DeviceMonitorView', () => {
     });
   });
 
-  describe('组件卸载', () => {
-    it('卸载时应停止自动刷新和取消 WS 订阅', async () => {
+  describe('Component unmount', () => {
+    it('Should stop auto refresh and cancel the WS subscription on unmount', async () => {
       const wrapper = await mountMonitorView();
       await flushPromises();
       const vm = wrapper.vm as any;

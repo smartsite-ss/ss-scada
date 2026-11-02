@@ -67,7 +67,7 @@ describe('DeviceControlService', () => {
     address: '30001',
     dataType: 'float32',
     direction: 'read',
-    description: 'Ambient temperature',
+    description: '环境温度',
     unit: '℃',
     minValue: null,
     maxValue: null,
@@ -762,7 +762,7 @@ describe('DeviceControlService', () => {
       await service.queryLogs('proj-001', undefined, {
         page: 1,
         pageSize: 20,
-        deviceName: 'Test',
+        deviceName: '测试',
       } as QueryControlLogDto);
 
       expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith('log.deviceName LIKE :deviceName', {

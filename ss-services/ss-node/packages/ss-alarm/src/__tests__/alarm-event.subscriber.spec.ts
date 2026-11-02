@@ -128,7 +128,7 @@ describe('AlarmEventSubscriber', () => {
         projectId: 'proj-001',
         condition: { severity: 'warning', type: 'limit' },
         value: 95,
-        message: 'Temperature too high',
+        message: '温度过高',
       };
 
       await eventHandler!(event);
@@ -139,7 +139,7 @@ describe('AlarmEventSubscriber', () => {
           projectId: 'proj-001',
           ruleId: null,
           level: 'warning',
-          message: 'Temperature too high',
+          message: '温度过高',
           triggerValue: '95',
           status: AlarmStatus.ACTIVE,
           // limit type -> alarmType is auto-mapped to overlimit
@@ -224,14 +224,14 @@ describe('AlarmEventSubscriber', () => {
     });
 
     it('TC-ALM-EVT-008: should handle errors gracefully', async () => {
-      mockProjectDbService.getSystemDb.mockRejectedValue(new Error('DB connection failed'));
+      mockProjectDbService.getSystemDb.mockRejectedValue(new Error('DB 连接失败'));
 
       const event = {
         tagId: 'tag-001',
         projectId: 'proj-001',
         condition: { severity: 'warning' },
         value: 95,
-        message: 'Test',
+        message: '测试',
       };
 
       // Should not throw

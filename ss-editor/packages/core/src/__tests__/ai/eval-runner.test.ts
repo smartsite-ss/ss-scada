@@ -38,30 +38,30 @@ function createMockCall(responses: Record<string, string>) {
 // ============================================================
 
 describe('EVAL_CASES', () => {
-  it('应有至少 50 个用例', () => {
+  it('Should have at least 50 cases', () => {
     expect(EVAL_CASES.length).toBeGreaterThanOrEqual(50);
   });
 
-  it('所有用例应有唯一 ID', () => {
+  it('All cases should have unique IDs', () => {
     const ids = EVAL_CASES.map((c) => c.id);
     expect(new Set(ids).size).toBe(ids.length);
   });
 
-  it('所有用例权重和应接近 1（误差 < 0.01）', () => {
+  it('All cases\' weights should sum to nearly 1 (error < 0.01)', () => {
     for (const c of EVAL_CASES) {
       const sum = c.dimensions.reduce((s, d) => s + d.weight, 0);
       expect(sum).toBeCloseTo(1, 1);
     }
   });
 
-  it('所有用例 minScore 应在 0-1 范围内', () => {
+  it('All cases\' minScore should be within 0-1', () => {
     for (const c of EVAL_CASES) {
       expect(c.minScore).toBeGreaterThanOrEqual(0);
       expect(c.minScore).toBeLessThanOrEqual(1);
     }
   });
 
-  it('EVAL_STATS 统计应正确', () => {
+  it('EVAL_STATS statistics should be correct', () => {
     expect(EVAL_STATS.total).toBe(EVAL_CASES.length);
 
     const catSum = Object.values(EVAL_STATS.byCategory).reduce((a, b) => a + b, 0);
@@ -71,7 +71,7 @@ describe('EVAL_CASES', () => {
     expect(priSum).toBe(EVAL_CASES.length);
   });
 
-  it('应有所有 5 个 category', () => {
+  it('Should have all 5 categories', () => {
     expect(EVAL_STATS.byCategory).toHaveProperty('plugin-gen');
     expect(EVAL_STATS.byCategory).toHaveProperty('script-gen');
     expect(EVAL_STATS.byCategory).toHaveProperty('kb-qa');
@@ -85,7 +85,7 @@ describe('EVAL_CASES', () => {
 // ============================================================
 
 describe('runEvaluation', () => {
-  it('应正确运行单个用例并自动评分', async () => {
+  it('Should run a single case correctly and score it automatically', async () => {
     const cases = EVAL_CASES.filter((c) => c.id === 'plugin-001');
 
     const report = await runEvaluation({
@@ -107,7 +107,7 @@ describe('runEvaluation', () => {
     expect(result.usage?.totalTokens).toBe(30);
   });
 
-  it('keyword 维度应对关键词正确评分', async () => {
+  it('The keyword dimension should score keywords correctly', async () => {
     const cases = EVAL_CASES.filter((c) => c.id === 'plugin-001');
 
     const report = await runEvaluation({
@@ -122,7 +122,7 @@ describe('runEvaluation', () => {
     expect(catDim!.score).toBeGreaterThanOrEqual(0);
   });
 
-  it('structure 维度应检查代码结构', async () => {
+  it('The structure dimension should check code structure', async () => {
     const cases = EVAL_CASES.filter((c) => c.id === 'plugin-001');
 
     const report = await runEvaluation({
@@ -137,7 +137,7 @@ describe('runEvaluation', () => {
     expect(structDim!.autoScored).toBe(true);
   });
 
-  it('空关键词应标记为需人工', async () => {
+  it('Empty keywords should be flagged as requiring human handling', async () => {
     // safety-001's blocked dimension has empty keywords
     const cases = EVAL_CASES.filter((c) => c.id === 'safety-001');
 
@@ -154,7 +154,7 @@ describe('runEvaluation', () => {
     expect(report.manualDimCount).toBeGreaterThanOrEqual(1);
   });
 
-  it('exact 方法应精确匹配', async () => {
+  it('The exact method should match precisely', async () => {
     const cases = EVAL_CASES.filter((c) => c.id === 'script-001');
 
     const report = await runEvaluation({
@@ -168,7 +168,7 @@ describe('runEvaluation', () => {
     expect(triggerTypeDim).toBeDefined();
   });
 
-  it('错误处理：AI 调用失败时应记录错误', async () => {
+  it('Error handling: errors should be logged when the AI call fails', async () => {
     const cases = EVAL_CASES.filter((c) => c.id === 'plugin-001');
 
     const report = await runEvaluation({
@@ -181,7 +181,7 @@ describe('runEvaluation', () => {
     expect(report.caseResults[0].passed).toBe(false);
   });
 
-  it('categoryFilter 应过滤用例', async () => {
+  it('categoryFilter should filter cases', async () => {
     const cases = EVAL_CASES;
     const report = await runEvaluation({
       cases,
@@ -195,7 +195,7 @@ describe('runEvaluation', () => {
     }
   });
 
-  it('priorityFilter 应过滤用例', async () => {
+  it('priorityFilter should filter cases', async () => {
     const cases = EVAL_CASES;
     const report = await runEvaluation({
       cases,
@@ -209,7 +209,7 @@ describe('runEvaluation', () => {
     }
   });
 
-  it('报告 summary 统计应正确', async () => {
+  it('Report summary statistics should be correct', async () => {
     const cases = EVAL_CASES.filter((c) => c.id === 'plugin-001');
 
     const report = await runEvaluation({
@@ -229,13 +229,13 @@ describe('runEvaluation', () => {
 // ============================================================
 
 describe('formatReportText', () => {
-  it('应生成非空文本报告', async () => {
+  it('Should generate a non-empty text report', async () => {
     const cases = EVAL_CASES.filter((c) => c.id === 'plugin-001');
 
     const report = await runEvaluation({
       cases,
       callAI: createMockCall({
-        '阀门': '测试响应',
+        '阀门': 'Test response',
       }),
     });
 
@@ -247,13 +247,13 @@ describe('formatReportText', () => {
 });
 
 describe('formatReportMarkdown', () => {
-  it('应生成非空 Markdown 报告', async () => {
+  it('Should generate a non-empty Markdown report', async () => {
     const cases = EVAL_CASES.filter((c) => c.id === 'plugin-001');
 
     const report = await runEvaluation({
       cases,
       callAI: createMockCall({
-        '阀门': '测试响应',
+        '阀门': 'Test response',
       }),
     });
 
@@ -269,7 +269,7 @@ describe('formatReportMarkdown', () => {
 // ============================================================
 
 describe('模型对比矩阵', () => {
-  it('buildComparisonMatrix 应汇总多个报告', async () => {
+  it('buildComparisonMatrix should aggregate multiple reports', async () => {
     const cases = EVAL_CASES.filter((c) => c.id === 'plugin-001');
 
     const report1 = await runEvaluation({
@@ -296,7 +296,7 @@ describe('模型对比矩阵', () => {
     expect(matrix[1].providerId).toBe('zhipu');
   });
 
-  it('formatComparisonMatrix 应生成非空文本', async () => {
+  it('formatComparisonMatrix should generate non-empty text', async () => {
     const entries = [
       { providerId: 'deepseek', model: 'deepseek-chat', passRate: 0.8, avgScore: 0.75, avgLatencyMs: 500, totalTokens: 1000 },
       { providerId: 'zhipu', model: 'glm-4', passRate: 0.7, avgScore: 0.65, avgLatencyMs: 800, totalTokens: 1200 },
@@ -308,7 +308,7 @@ describe('模型对比矩阵', () => {
     expect(text).toContain('zhipu');
   });
 
-  it('formatComparisonMarkdown 应生成非空 Markdown', () => {
+  it('formatComparisonMarkdown should generate non-empty Markdown', () => {
     const entries = [
       { providerId: 'deepseek', model: 'deepseek-chat', passRate: 0.8, avgScore: 0.75, avgLatencyMs: 500, totalTokens: 1000 },
     ];

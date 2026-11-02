@@ -48,7 +48,7 @@ export class PropertyVerifier<T extends BasePlugin<any>> {
         valueAfterSet: actualDefault,
         error: isEqual(schemaDefault, actualDefault)
           ? undefined
-          : `默认值不匹配: schema=${JSON.stringify(schemaDefault)}, actual=${JSON.stringify(actualDefault)}`,
+          : Default value mismatch: schema=JSON.stringify(schemaDefault)}, actual=${JSON.stringify(actualDefault)}`,
       });
     }
 
@@ -75,9 +75,9 @@ export class PropertyVerifier<T extends BasePlugin<any>> {
           valueAfterSet: actual,
           onPropertyChangedFired: onPropChangedFired,
           error: !isEqual(value, actual)
-            ? `写入值=${JSON.stringify(value)}, 读取值=${JSON.stringify(actual)}`
+            ? Write value=JSON.stringify(value), readValue=JSON.stringify(actual)}`
             : !onPropChangedFired
-              ? `onPropertyChanged 未触发`
+              ? `onPropertyChanged not triggered`
               : undefined,
         });
       } catch (err: any) {
@@ -85,7 +85,7 @@ export class PropertyVerifier<T extends BasePlugin<any>> {
           property: field.name,
           passed: false,
           defaultValue: field.defaultValue,
-          error: `写入失败: ${err.message}`,
+          error: Write failed: err.message}`,
         });
       }
     }

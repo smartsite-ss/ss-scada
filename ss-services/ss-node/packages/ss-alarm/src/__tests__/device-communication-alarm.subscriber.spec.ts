@@ -328,7 +328,7 @@ describe('DeviceCommunicationAlarmSubscriber', () => {
     });
 
     it('TC-ALM-COMM-012: should handle DB errors gracefully', async () => {
-      mockProjectDbService.getSystemDb.mockRejectedValue(new Error('DB connection failed'));
+      mockProjectDbService.getSystemDb.mockRejectedValue(new Error('DB 连接失败'));
 
       // Should not throw
       await eventHandler!({

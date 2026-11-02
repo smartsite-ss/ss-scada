@@ -72,7 +72,7 @@ describe('useDeviceStore', () => {
   describe('fetchDevices', () => {
     it('should populate devices from API', async () => {
       const { deviceApi } = await import('../../api/modules/device.api');
-      const devices = [mockDevice('d1', 'Device 1'), mockDevice('d2', 'Device 2')];
+      const devices = [mockDevice('d1', '设备1'), mockDevice('d2', '设备2')];
       (deviceApi.list as any).mockResolvedValueOnce({
         data: devices,
         pagination: { ...mockPagination, total: 2 },
@@ -100,7 +100,7 @@ describe('useDeviceStore', () => {
   describe('fetchDevice', () => {
     it('should set currentDevice and tags', async () => {
       const { deviceApi } = await import('../../api/modules/device.api');
-      const device = mockDevice('d1', 'Device 1', [
+      const device = mockDevice('d1', '设备1', [
         { id: 't1', name: 'Temp', address: '40001', dataType: 'float', deviceId: 'd1' },
       ]);
       (deviceApi.getById as any).mockResolvedValueOnce({ data: device });
@@ -109,7 +109,7 @@ describe('useDeviceStore', () => {
       const result = await store.fetchDevice('proj-1', 'd1');
 
       expect(result).toEqual(device);
-      expect(store.currentDevice?.deviceName).toBe('Device 1');
+      expect(store.currentDevice?.deviceName).toBe('设备1');
       expect(store.currentDeviceTags).toHaveLength(1);
       expect(store.currentDeviceTags[0].name).toBe('Temp');
     });
@@ -143,7 +143,7 @@ describe('useDeviceStore', () => {
   describe('deleteDevice', () => {
     it('should remove device from list', async () => {
       const { deviceApi } = await import('../../api/modules/device.api');
-      const device = mockDevice('d1', 'Device 1');
+      const device = mockDevice('d1', '设备1');
       (deviceApi.list as any).mockResolvedValueOnce({
         data: [device],
         pagination: { ...mockPagination, total: 1 },
@@ -159,7 +159,7 @@ describe('useDeviceStore', () => {
 
     it('should clear currentDevice if deleted', async () => {
       const { deviceApi } = await import('../../api/modules/device.api');
-      const device = mockDevice('d1', 'Device 1');
+      const device = mockDevice('d1', '设备1');
       (deviceApi.list as any).mockResolvedValueOnce({
         data: [device],
         pagination: { ...mockPagination, total: 1 },
@@ -178,7 +178,7 @@ describe('useDeviceStore', () => {
   describe('tag management', () => {
     it('should add tag to currentDeviceTags', async () => {
       const { deviceApi } = await import('../../api/modules/device.api');
-      const device = mockDevice('d1', 'Device 1');
+      const device = mockDevice('d1', '设备1');
       (deviceApi.getById as any).mockResolvedValueOnce({ data: device });
       const newTag = { id: 't1', name: 'NewTag', address: '40001', dataType: 'float', deviceId: 'd1' };
       (deviceApi.addTag as any).mockResolvedValueOnce({ data: newTag });
@@ -194,7 +194,7 @@ describe('useDeviceStore', () => {
 
     it('should delete tag from currentDeviceTags', async () => {
       const { deviceApi } = await import('../../api/modules/device.api');
-      const device = mockDevice('d1', 'Device 1', [
+      const device = mockDevice('d1', '设备1', [
         { id: 't1', name: 'Tag1', address: '40001', dataType: 'float', deviceId: 'd1' },
         { id: 't2', name: 'Tag2', address: '40002', dataType: 'int', deviceId: 'd1' },
       ]);
@@ -213,14 +213,14 @@ describe('useDeviceStore', () => {
   describe('group management', () => {
     it('should fetch groups', async () => {
       const { deviceApi } = await import('../../api/modules/device.api');
-      const groups = [{ id: 'g1', name: 'Group 1', description: '', projectId: 'proj-1', sortOrder: 0 }];
+      const groups = [{ id: 'g1', name: '分组1', description: '', projectId: 'proj-1', sortOrder: 0 }];
       (deviceApi.listGroups as any).mockResolvedValueOnce({ data: groups });
 
       const store = useDeviceStore();
       await store.fetchGroups('proj-1');
 
       expect(store.groups).toHaveLength(1);
-      expect(store.groups[0].name).toBe('Group 1');
+      expect(store.groups[0].name).toBe('分组1');
     });
 
     it('should fetch group tree', async () => {
@@ -248,7 +248,7 @@ describe('useDeviceStore', () => {
 
     it('should delete group', async () => {
       const { deviceApi } = await import('../../api/modules/device.api');
-      const groups = [{ id: 'g1', name: 'Group 1', description: '', projectId: 'proj-1', sortOrder: 0 }];
+      const groups = [{ id: 'g1', name: '分组1', description: '', projectId: 'proj-1', sortOrder: 0 }];
       (deviceApi.listGroups as any).mockResolvedValueOnce({ data: groups });
       (deviceApi.deleteGroup as any).mockResolvedValueOnce(undefined);
 
@@ -351,7 +351,7 @@ describe('useDeviceStore - multi-level group tree', () => {
 
   it('should handle group tree fetch error', async () => {
     const { deviceApi } = await import('../../api/modules/device.api');
-    (deviceApi.getGroupTree as any).mockRejectedValueOnce(new Error('Network error'));
+    (deviceApi.getGroupTree as any).mockRejectedValueOnce(new Error('网络错误'));
 
     const store = useDeviceStore();
     await store.fetchGroupTree('proj-1');
@@ -609,7 +609,7 @@ describe('useDeviceStore - group CRUD details', () => {
 
   it('should handle group delete error', async () => {
     const { deviceApi } = await import('../../api/modules/device.api');
-    const groups = [{ id: 'g1', name: 'Group 1', description: '', projectId: 'proj-1', sortOrder: 0 }];
+    const groups = [{ id: 'g1', name: '分组1', description: '', projectId: 'proj-1', sortOrder: 0 }];
     (deviceApi.listGroups as any).mockResolvedValueOnce({ data: groups });
     (deviceApi.deleteGroup as any).mockRejectedValueOnce(new Error('Delete failed'));
 

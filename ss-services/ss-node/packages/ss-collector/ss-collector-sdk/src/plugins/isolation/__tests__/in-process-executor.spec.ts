@@ -68,7 +68,7 @@ describe('InProcessExecutor', () => {
 
   // ==================== init ====================
   describe('init', () => {
-    it('应该初始化协议和适配器', async () => {
+    it('Should initialize the protocol and adapter', async () => {
       await executor.init('virtual', adapter, {});
       expect(executor.name).toBe('InProcess');
     });
@@ -76,7 +76,7 @@ describe('InProcessExecutor', () => {
 
   // ==================== connect ====================
   describe('connect', () => {
-    it('应该调用 adapter.connect 并返回 ShardRef', async () => {
+    it('Should call adapter.connect and return a ShardRef', async () => {
       await executor.init('virtual', adapter, {});
       const shard = await executor.connect(mockDevice);
 
@@ -85,7 +85,7 @@ describe('InProcessExecutor', () => {
       expect(shard.protocol).toBe('virtual');
     });
 
-    it('不同设备应有不同的 connectionId', async () => {
+    it('Different devices should have different connectionIds', async () => {
       await executor.init('virtual', adapter, {});
       const shard1 = await executor.connect(mockDevice);
       const shard2 = await executor.connect({ ...mockDevice, id: 'dev-002' });
@@ -96,7 +96,7 @@ describe('InProcessExecutor', () => {
 
   // ==================== readTag ====================
   describe('readTag', () => {
-    it('应该调用 adapter.readTag 并返回结果', async () => {
+    it('Should call adapter.readTag and return the result', async () => {
       await executor.init('virtual', adapter, {});
       const shard = await executor.connect(mockDevice);
       const result = await executor.readTag(shard, mockTag);
@@ -105,7 +105,7 @@ describe('InProcessExecutor', () => {
       expect(result).toBe(42);
     });
 
-    it('连接不存在时应该抛出错误', async () => {
+    it('Should throw an error when the connection does not exist', async () => {
       await executor.init('virtual', adapter, {});
       await expect(
         executor.readTag({ connectionId: 'nonexistent', protocol: 'virtual' }, mockTag),
@@ -115,7 +115,7 @@ describe('InProcessExecutor', () => {
 
   // ==================== writeTag ====================
   describe('writeTag', () => {
-    it('应该调用 adapter.writeTag', async () => {
+    it('Should call adapter.writeTag', async () => {
       await executor.init('virtual', adapter, {});
       const shard = await executor.connect(mockDevice);
       await executor.writeTag(shard, mockTag, 100);
@@ -123,7 +123,7 @@ describe('InProcessExecutor', () => {
       expect(adapter.writeTag).toHaveBeenCalledWith({ id: 'client-001' }, mockTag, 100);
     });
 
-    it('连接不存在时应该抛出错误', async () => {
+    it('Should throw an error when the connection does not exist', async () => {
       await executor.init('virtual', adapter, {});
       await expect(
         executor.writeTag({ connectionId: 'nonexistent', protocol: 'virtual' }, mockTag, 100),
@@ -133,7 +133,7 @@ describe('InProcessExecutor', () => {
 
   // ==================== disconnect ====================
   describe('disconnect', () => {
-    it('应该调用 adapter.disconnect 并移除连接', async () => {
+    it('Should call adapter.disconnect and remove the connection', async () => {
       await executor.init('virtual', adapter, {});
       const shard = await executor.connect(mockDevice);
       await executor.disconnect(shard);
@@ -143,7 +143,7 @@ describe('InProcessExecutor', () => {
       await expect(executor.readTag(shard, mockTag)).rejects.toThrow('Connection not found');
     });
 
-    it('断开不存在的连接不应报错', async () => {
+    it('Disconnecting a non-existent connection should not error', async () => {
       await executor.init('virtual', adapter, {});
       await expect(
         executor.disconnect({ connectionId: 'nonexistent', protocol: 'virtual' }),
@@ -153,7 +153,7 @@ describe('InProcessExecutor', () => {
 
   // ==================== getHealth ====================
   describe('getHealth', () => {
-    it('新初始化后状态应为 healthy', async () => {
+    it('After fresh initialization the status should be healthy', async () => {
       await executor.init('virtual', adapter, {});
       const health = await executor.getHealth();
 
@@ -162,7 +162,7 @@ describe('InProcessExecutor', () => {
       expect(health.restartCount).toBe(0);
     });
 
-    it('请求后应统计 requestCount 和 latency', async () => {
+    it('After a request, requestCount and latency should be counted', async () => {
       await executor.init('virtual', adapter, {});
       const shard = await executor.connect(mockDevice);
       await executor.readTag(shard, mockTag);
@@ -174,7 +174,7 @@ describe('InProcessExecutor', () => {
       expect(health.avgLatencyMs).toBeGreaterThanOrEqual(0);
     });
 
-    it('错误应统计 errorCount', async () => {
+    it('Errors should be counted in errorCount', async () => {
       await executor.init('virtual', adapter, {});
       // Use a non-existent connection
       try {
@@ -188,7 +188,7 @@ describe('InProcessExecutor', () => {
 
   // ==================== destroy ====================
   describe('destroy', () => {
-    it('应该断开所有连接', async () => {
+    it('Should disconnect all connections', async () => {
       await executor.init('virtual', adapter, {});
       await executor.connect(mockDevice);
       await executor.connect({ ...mockDevice, id: 'dev-002' });
@@ -197,7 +197,7 @@ describe('InProcessExecutor', () => {
       expect(adapter.disconnect).toHaveBeenCalledTimes(2);
     });
 
-    it('destroy 后 getHealth 状态应为 starting', async () => {
+    it('After destroy, getHealth status should be starting', async () => {
       await executor.init('virtual', adapter, {});
       await executor.destroy();
 

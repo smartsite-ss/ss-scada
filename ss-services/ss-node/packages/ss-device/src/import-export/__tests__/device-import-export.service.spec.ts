@@ -142,7 +142,9 @@ describe('DeviceImportExportService', () => {
         deviceCode: 'temp-hum-003',
       });
 
-      const csvContent = `deviceCode,deviceName,type,driver\n"temp-hum-003","温湿度003","modbus_tcp","modbus"\n"temp-hum-004","温湿度004","opcua","opcua"`;
+      const csvContent = `deviceCode,deviceName,type,driver
+"temp-hum-003","温湿度003","modbus_tcp","modbus"
+"temp-hum-004","温湿度004","opcua","opcua"`;
 
       const result = await service.importFromCsv(projectId, csvContent);
 
@@ -163,7 +165,8 @@ describe('DeviceImportExportService', () => {
 
       (deviceService.update as jest.Mock).mockResolvedValue(existingDevice);
 
-      const csvContent = `deviceCode,deviceName,type,driver\n"temp-hum-001","温湿度001更新","modbus_tcp","modbus"`;
+      const csvContent = `deviceCode,deviceName,type,driver
+"temp-hum-001","温湿度001更新","modbus_tcp","modbus"`;
 
       const result = await service.importFromCsv(projectId, csvContent);
 
@@ -193,7 +196,8 @@ describe('DeviceImportExportService', () => {
     });
 
     it('should handle missing tid', async () => {
-      const csvContent = `deviceCode,deviceName,type,driver\n,"无TID设备","modbus_tcp","modbus"`;
+      const csvContent = `deviceCode,deviceName,type,driver
+,"无TID设备","modbus_tcp","modbus"`;
 
       const result = await service.importFromCsv(projectId, csvContent);
 
@@ -211,7 +215,8 @@ describe('DeviceImportExportService', () => {
         deviceCode: 'quoted-dev',
       });
 
-      const csvContent = `deviceCode,deviceName,type,driver\n"quoted-dev","设备,含逗号","modbus_tcp","modbus"`;
+      const csvContent = `deviceCode,deviceName,type,driver
+"quoted-dev","设备,含逗号","modbus_tcp","modbus"`;
 
       const result = await service.importFromCsv(projectId, csvContent);
 
@@ -230,7 +235,8 @@ describe('DeviceImportExportService', () => {
         deviceCode: 'special-dev',
       });
 
-      const csvContent = `deviceCode,deviceName,type,driver\n"special-dev","设备""引号""测试","modbus_tcp","modbus"`;
+      const csvContent = `deviceCode,deviceName,type,driver
+"special-dev","设备""引号""测试","modbus_tcp","modbus"`;
 
       const result = await service.importFromCsv(projectId, csvContent);
 
@@ -245,7 +251,8 @@ describe('DeviceImportExportService', () => {
       (deviceService.findAll as jest.Mock).mockResolvedValueOnce({ data: [], pagination: {} });
       (deviceService.create as jest.Mock).mockRejectedValue(new Error('Database error'));
 
-      const csvContent = `deviceCode,deviceName,type,driver\n"error-dev","错误设备","modbus_tcp","modbus"`;
+      const csvContent = `deviceCode,deviceName,type,driver
+"error-dev","错误设备","modbus_tcp","modbus"`;
 
       const result = await service.importFromCsv(projectId, csvContent);
 

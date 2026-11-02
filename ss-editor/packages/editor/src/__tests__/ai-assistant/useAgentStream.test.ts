@@ -101,8 +101,8 @@ describe('useAgentStream', () => {
 
   // ────── Basic SSE parsing ──────
 
-  describe('SSE data: 行解析', () => {
-    it('应解析 data: 行并触发 onThought 回调', async () => {
+  describe('SSE data: line parsing', () => {
+    it('Should parse data: lines and trigger the onThought callback', async () => {
       const onThought = vi.fn();
       const onAnswer = vi.fn();
       const { execute } = useAgentStream({ onThought, onAnswer });
@@ -128,7 +128,7 @@ describe('useAgentStream', () => {
       );
     });
 
-    it('应跳过 : heartbeat SSE 注释行', async () => {
+    it('Should skip ": heartbeat SSE comment lines', async () => {
       const onThought = vi.fn();
       const { execute } = useAgentStream({ onThought });
 
@@ -148,7 +148,7 @@ describe('useAgentStream', () => {
       expect(onThought).toHaveBeenCalledTimes(1);
     });
 
-    it('应在收到 [DONE] 后正常结束', async () => {
+    it('Should end normally after receiving [DONE]', async () => {
       const { execute } = useAgentStream();
 
       globalThis.fetch = vi.fn().mockResolvedValue(
@@ -167,8 +167,8 @@ describe('useAgentStream', () => {
 
   // ────── event: error handling ──────
 
-  describe('event: error 处理', () => {
-    it('应解析 event: error 并触发 onError 回调', async () => {
+  describe('event: error handling', () => {
+    it('Should parse event: error and trigger the onError callback', async () => {
       const onError = vi.fn();
       const { execute } = useAgentStream({ onError });
 
@@ -194,7 +194,7 @@ describe('useAgentStream', () => {
       expect(result.content).toBe('LLM 调用超时');
     });
 
-    it('event: error 的 data 无法解析时应不影响整体', async () => {
+    it('Unparseable data of event: error should not affect the whole stream', async () => {
       const onError = vi.fn();
       const { execute } = useAgentStream({ onError });
 
@@ -219,8 +219,8 @@ describe('useAgentStream', () => {
 
   // ────── AbortError ──────
 
-  describe('AbortError 处理', () => {
-    it('用户中止时应静默处理，不触发 onError', async () => {
+  describe('AbortError handling', () => {
+    it('User aborts should be handled silently without triggering onError', async () => {
       const onError = vi.fn();
       const { execute, abort } = useAgentStream({ onError });
 
@@ -247,8 +247,8 @@ describe('useAgentStream', () => {
 
   // ────── HTTP error responses ──────
 
-  describe('HTTP 错误响应', () => {
-    it('非 200 响应应抛出错误并触发 onError', async () => {
+  describe('HTTP error responses', () => {
+    it('Non-200 responses should throw and trigger onError', async () => {
       const onError = vi.fn();
       const { execute } = useAgentStream({ onError });
 
@@ -264,7 +264,7 @@ describe('useAgentStream', () => {
       expect(result.content).toContain('500');
     });
 
-    it('401 响应应包含状态码', async () => {
+    it('401 response should include a status code', async () => {
       const onError = vi.fn();
       const { execute } = useAgentStream({ onError });
 
@@ -280,8 +280,8 @@ describe('useAgentStream', () => {
 
   // ────── Concurrency protection ──────
 
-  describe('并发保护', () => {
-    it('正在执行时再次调用 execute 应抛出错误', async () => {
+  describe('Concurrency protection', () => {
+    it('Calling execute again while running should throw an error', async () => {
       const { execute } = useAgentStream();
 
       // The first execute will block (fetch never resolves)
@@ -302,8 +302,8 @@ describe('useAgentStream', () => {
 
   // ────── No-token scenario ──────
 
-  describe('无 JWT token', () => {
-    it('无 token 时仍应发送请求（authHeaders 为空）', async () => {
+  describe('No JWT token', () => {
+    it('Should still send the request without a token (authHeaders empty)', async () => {
       localStorageMock.setItem('scada_access_token', ''); // remove the token
       const onAnswer = vi.fn();
       const { execute } = useAgentStream({ onAnswer });
@@ -333,8 +333,8 @@ describe('useAgentStream', () => {
 
   // ────── Multi-step + tool callback ──────
 
-  describe('多步骤 SSE 流', () => {
-    it('应正确处理 thought → action → observation → answer 全流程', async () => {
+  describe('Multi-step SSE stream', () => {
+    it('Should handle the full thought → action → observation → answer flow correctly', async () => {
       const onThought = vi.fn();
       const onAction = vi.fn();
       const onObservation = vi.fn();

@@ -142,7 +142,7 @@ describe('ChildProcessExecutor', () => {
   });
 
   describe('init', () => {
-    it('应该 fork 子进程并等待 ready', async () => {
+    it('Should fork a child process and wait for ready', async () => {
       const initPromise = executor.init('opcua', null, {});
       simulateReady();
       await initPromise;
@@ -150,13 +150,13 @@ describe('ChildProcessExecutor', () => {
       expect(executor.name).toBe('ChildProcess');
     });
 
-    it('子进程启动超时应抛出错误', async () => {
+    it('Child process startup timeout should throw an error', async () => {
       const initPromise = executor.init('opcua', null, { startupTimeoutMs: 100 });
       jest.advanceTimersByTime(200);
       await expect(initPromise).rejects.toThrow('startup timeout');
     });
 
-    it('应该设置 stdout/stderr 监听', async () => {
+    it('Should set up stdout/stderr listeners', async () => {
       const initPromise = executor.init('opcua', null, {});
       simulateReady();
       await initPromise;
@@ -167,7 +167,7 @@ describe('ChildProcessExecutor', () => {
   });
 
   describe('connect', () => {
-    it('应该发送 connect 消息并返回 ShardRef', async () => {
+    it('Should send the connect message and return a ShardRef', async () => {
       const initPromise = executor.init('opcua', null, {});
       simulateReady();
       await initPromise;
@@ -185,7 +185,7 @@ describe('ChildProcessExecutor', () => {
   });
 
   describe('readTag', () => {
-    it('应该发送 read_tag 消息并返回结果', async () => {
+    it('Should send the read_tag message and return the result', async () => {
       const initPromise = executor.init('opcua', null, {});
       simulateReady();
       await initPromise;
@@ -200,7 +200,7 @@ describe('ChildProcessExecutor', () => {
       expect(await readPromise).toBe(25.5);
     });
 
-    it('子进程错误应传播到调用方', async () => {
+    it('Child process errors should propagate to the caller', async () => {
       const initPromise = executor.init('opcua', null, {});
       simulateReady();
       await initPromise;
@@ -215,7 +215,7 @@ describe('ChildProcessExecutor', () => {
       await expect(readPromise).rejects.toThrow('OPC UA read error');
     });
 
-    it('请求超时应抛出错误', async () => {
+    it('Request timeout should throw an error', async () => {
       const initPromise = executor.init('opcua', null, { requestTimeoutMs: 100 });
       simulateReady();
       await initPromise;
@@ -227,7 +227,7 @@ describe('ChildProcessExecutor', () => {
   });
 
   describe('writeTag', () => {
-    it('应该发送 write_tag 消息', async () => {
+    it('Should send the write_tag message', async () => {
       const initPromise = executor.init('opcua', null, {});
       simulateReady();
       await initPromise;
@@ -244,7 +244,7 @@ describe('ChildProcessExecutor', () => {
   });
 
   describe('disconnect', () => {
-    it('应该发送 disconnect 消息', async () => {
+    it('Should send the disconnect message', async () => {
       const initPromise = executor.init('opcua', null, {});
       simulateReady();
       await initPromise;
@@ -261,7 +261,7 @@ describe('ChildProcessExecutor', () => {
   });
 
   describe('getHealth', () => {
-    it('应该返回健康状态（含 PID）', async () => {
+    it('Should return the health status (including PID)', async () => {
       const initPromise = executor.init('opcua', null, {});
       simulateReady();
       await initPromise;
@@ -285,7 +285,7 @@ describe('ChildProcessExecutor', () => {
       expect(health.restartCount).toBe(0);
     });
 
-    it('子进程无响应时返回 degraded', async () => {
+    it('Returns degraded when the child process is unresponsive', async () => {
       const initPromise = executor.init('opcua', null, { requestTimeoutMs: 100 });
       simulateReady();
       await initPromise;
@@ -298,7 +298,7 @@ describe('ChildProcessExecutor', () => {
   });
 
   describe('crash recovery', () => {
-    it('子进程崩溃时应触发 plugin.isolation.crash 事件', async () => {
+    it('Child process crash should trigger the plugin.isolation.crash event', async () => {
       const eventBus = createMockEventBus();
       executor = new ChildProcessExecutor(eventBus as any);
 
@@ -317,7 +317,7 @@ describe('ChildProcessExecutor', () => {
       );
     });
 
-    it('崩溃后应将所有 pending 请求 reject', async () => {
+    it('After a crash, all pending requests should be rejected', async () => {
       const initPromise = executor.init('opcua', null, { autoRestart: true, maxRestarts: 5 });
       simulateReady();
       await initPromise;
@@ -330,7 +330,7 @@ describe('ChildProcessExecutor', () => {
       await expect(readPromise).rejects.toThrow('Child process crashed');
     });
 
-    it('SIGTERM 信号杀死子进程也会触发崩溃事件', async () => {
+    it('Killing the child process with the SIGTERM signal also triggers the crash event', async () => {
       const eventBus = createMockEventBus();
       executor = new ChildProcessExecutor(eventBus as any);
 
@@ -345,7 +345,7 @@ describe('ChildProcessExecutor', () => {
   });
 
   describe('destroy', () => {
-    it('应该发送 shutdown 消息并 kill 子进程', async () => {
+    it('Should send the shutdown message and kill the child process', async () => {
       const initPromise = executor.init('opcua', null, {});
       simulateReady();
       await initPromise;
@@ -356,7 +356,7 @@ describe('ChildProcessExecutor', () => {
       expect(getChild().kill).toHaveBeenCalledWith('SIGTERM');
     });
 
-    it('destroy 后 getHealth 应返回 dead', async () => {
+    it('After destroy, getHealth should return dead', async () => {
       const initPromise = executor.init('opcua', null, {});
       simulateReady();
       await initPromise;

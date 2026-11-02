@@ -94,14 +94,14 @@ const basePayload = {
 };
 
 const baseDeviceStatusPayload = {
-  deviceName: '1号锅炉',
+  deviceName: 'Boiler No.1',
   status: 'offline',
   projectId: 'proj-1',
   timestamp: new Date('2026-03-15T08:30:00Z'),
 };
 
 describe('WechatSubscribeMessageChannel', () => {
-  it('TC-SUB-001 未配置（无模板/凭证/非 Mock）时跳过发送', async () => {
+  it('TC-SUB-001 skip sending when not configured (no template/credentials/non-Mock)', async () => {
     const repos = createRepos({ authorizations: [createAuthorization()] });
     const channel = createChannel(repos);
 
@@ -112,7 +112,7 @@ describe('WechatSubscribeMessageChannel', () => {
     expect(repos.authorizationRepo.find).not.toHaveBeenCalled();
   });
 
-  it('TC-SUB-002 Mock 模式下发成功并扣减配额', async () => {
+  it('TC-SUB-002 Mock mode sends successfully and deducts the quota', async () => {
     process.env.WECHAT_MOCK = 'true';
     const authorization = createAuthorization({ quotaRemaining: 2 });
     const repos = createRepos({ authorizations: [authorization] });
@@ -126,7 +126,7 @@ describe('WechatSubscribeMessageChannel', () => {
     expect(mockedHttpRequest).not.toHaveBeenCalled();
   });
 
-  it('TC-SUB-003 用户通知偏好关闭时跳过该用户', async () => {
+  it('TC-SUB-003 skip the user when the notification preference is off', async () => {
     process.env.WECHAT_MOCK = 'true';
     const authorization = createAuthorization();
     const preference = {
@@ -143,7 +143,7 @@ describe('WechatSubscribeMessageChannel', () => {
     expect(repos.authorizationRepo.save).not.toHaveBeenCalled();
   });
 
-  it('TC-SUB-004 报警级别低于偏好阈值时跳过，达到阈值时下发', async () => {
+  it('TC-SUB-004 skip when the alarm level is below the preference threshold; send when it reaches the threshold', async () => {
     process.env.WECHAT_MOCK = 'true';
     const authorization = createAuthorization({ quotaRemaining: 1 });
     const preference = {
@@ -164,7 +164,7 @@ describe('WechatSubscribeMessageChannel', () => {
     expect(authorization.quotaRemaining).toBe(0);
   });
 
-  it('TC-SUB-005 用户限频：超出每小时上限后跳过', async () => {
+  it('TC-SUB-005 user rate limit: skip after exceeding the hourly cap', async () => {
     process.env.WECHAT_MOCK = 'true';
     process.env.WECHAT_SUBSCRIBE_RATE_LIMIT_PER_HOUR = '1';
     const authorization = createAuthorization({ quotaRemaining: 5 });
@@ -179,7 +179,7 @@ describe('WechatSubscribeMessageChannel', () => {
     expect(authorization.quotaRemaining).toBe(4);
   });
 
-  it('TC-SUB-006 真实模式：取 token 后下发成功，扣减配额', async () => {
+  it('TC-SUB-006 real mode: fetch token then send successfully and deduct the quota', async () => {
     process.env.WECHAT_MP_APPID = 'wx-appid';
     process.env.WECHAT_MP_SECRET = 'wx-secret';
     process.env.WECHAT_SUBSCRIBE_TEMPLATE_ALARM = 'tpl-alarm';
@@ -212,7 +212,7 @@ describe('WechatSubscribeMessageChannel', () => {
     expect(sendBody.data.thing1.value).toBe('温度超限');
   });
 
-  it('TC-SUB-007 真实模式：43101（用户拒收）清零配额', async () => {
+  it('TC-SUB-007 real mode: 43101 (user rejected) clears the quota', async () => {
     process.env.WECHAT_MP_APPID = 'wx-appid';
     process.env.WECHAT_MP_SECRET = 'wx-secret';
     process.env.WECHAT_SUBSCRIBE_TEMPLATE_ALARM = 'tpl-alarm';
@@ -238,7 +238,7 @@ describe('WechatSubscribeMessageChannel', () => {
     expect(repos.authorizationRepo.save).toHaveBeenCalledTimes(1);
   });
 
-  it('TC-SUB-008 无可用授权（配额为 0）时跳过发送', async () => {
+  it('TC-SUB-008 skip sending when no authorization is available (quota is 0)', async () => {
     process.env.WECHAT_MOCK = 'true';
     const repos = createRepos({ authorizations: [] });
     const channel = createChannel(repos);
@@ -249,7 +249,7 @@ describe('WechatSubscribeMessageChannel', () => {
     expect(repos.preferenceRepo.find).not.toHaveBeenCalled();
   });
 
-  it('TC-SUB-009 通知跳转：携带 alarmRecordId 时跳转页附带参数（二期 10 #7）', async () => {
+  it('TC-SUB-009 notification navigation: the jump page carries parameters when alarmRecordId is present (Phase 2, item 10 #7)', async () => {
     process.env.WECHAT_MP_APPID = 'wx-appid';
     process.env.WECHAT_MP_SECRET = 'wx-secret';
     process.env.WECHAT_SUBSCRIBE_TEMPLATE_ALARM = 'tpl-alarm';
@@ -286,8 +286,8 @@ describe('WechatSubscribeMessageChannel', () => {
   });
 });
 
-describe('WechatSubscribeMessageChannel 设备状态通知（二期 10 #6）', () => {
-  it('TC-SUB-101 未配置设备状态模板（非 Mock）时跳过发送', async () => {
+describe('WechatSubscribeMessageChannel device status notification (Phase 2, item 10 #6)', () => {
+  it('TC-SUB-101 skip sending when the device status template is not configured (non-Mock)', async () => {
     const repos = createRepos({ authorizations: [createAuthorization()] });
     const channel = createChannel(repos);
 
@@ -297,7 +297,7 @@ describe('WechatSubscribeMessageChannel 设备状态通知（二期 10 #6）', (
     expect(repos.authorizationRepo.find).not.toHaveBeenCalled();
   });
 
-  it('TC-SUB-102 Mock 模式走占位模板下发成功并扣减配额', async () => {
+  it('TC-SUB-102 Mock mode sends successfully via the placeholder template and deducts the quota', async () => {
     process.env.WECHAT_MOCK = 'true';
     const authorization = createAuthorization({
       templateId: 'mock-device-status-template',
@@ -317,7 +317,7 @@ describe('WechatSubscribeMessageChannel 设备状态通知（二期 10 #6）', (
     expect(mockedHttpRequest).not.toHaveBeenCalled();
   });
 
-  it('TC-SUB-103 用户限频：设备状态通知复用每小时上限', async () => {
+  it('TC-SUB-103 user rate limit: device status notifications share the hourly cap', async () => {
     process.env.WECHAT_MOCK = 'true';
     process.env.WECHAT_SUBSCRIBE_RATE_LIMIT_PER_HOUR = '1';
     const authorization = createAuthorization({
@@ -335,7 +335,7 @@ describe('WechatSubscribeMessageChannel 设备状态通知（二期 10 #6）', (
     expect(authorization.quotaRemaining).toBe(4);
   });
 
-  it('TC-SUB-104 真实模式：配置模板后下发成功，跳转设备列表页且状态文案映射', async () => {
+  it('TC-SUB-104 real mode: sending succeeds after configuring the template, jumping to the device list page with status text mapping', async () => {
     process.env.WECHAT_MP_APPID = 'wx-appid';
     process.env.WECHAT_MP_SECRET = 'wx-secret';
     process.env.WECHAT_SUBSCRIBE_TEMPLATE_DEVICE_STATUS = 'tpl-device';
@@ -362,11 +362,11 @@ describe('WechatSubscribeMessageChannel 设备状态通知（二期 10 #6）', (
     const sendBody = JSON.parse(sendRequest.body as string);
     expect(sendBody.template_id).toBe('tpl-device');
     expect(sendBody.page).toBe('pages/device/list');
-    expect(sendBody.data.thing1.value).toBe('1号锅炉');
+    expect(sendBody.data.thing1.value).toBe('Boiler No.1');
     expect(sendBody.data.phrase2.value).toBe('离线');
   });
 
-  it('TC-SUB-105 无可用授权时跳过发送', async () => {
+  it('TC-SUB-105 skip sending when no authorization is available', async () => {
     process.env.WECHAT_MOCK = 'true';
     const repos = createRepos({ authorizations: [] });
     const channel = createChannel(repos);

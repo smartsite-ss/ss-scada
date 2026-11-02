@@ -12,7 +12,7 @@ describe('DataSourceManager', () => {
     dsManager = new MockDataSourceManager();
   });
 
-  describe('静态数据源', () => {
+  describe('Static data source', () => {
     it('should create static data source', () => {
       const id = dsManager.createSource({
         type: "static",
@@ -32,7 +32,7 @@ describe('DataSourceManager', () => {
     });
   });
 
-  describe('表达式数据源', () => {
+  describe('Expression data source', () => {
     it('should create expression data source with dependencies', () => {
       const id = dsManager.createSource({
         type: "expression",
@@ -45,7 +45,7 @@ describe('DataSourceManager', () => {
     });
   });
 
-  describe('数据源生命周期', () => {
+  describe('Data source lifecycle', () => {
     it('should subscribe to tag changes', () => {
       const callback = vi.fn();
       dsManager.subscribe("temp.sensor1", callback);
@@ -93,7 +93,7 @@ describe('DataSourceManager', () => {
     });
   });
 
-  describe('8种数据源类型', () => {
+  describe('8 data source types', () => {
     describe.each([
       ["static", { value: 42 }],
       ["expression", { expression: "1+1", dependencies: [] }],

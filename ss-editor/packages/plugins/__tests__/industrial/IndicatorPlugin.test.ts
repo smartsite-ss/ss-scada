@@ -78,7 +78,7 @@ describe('IndicatorPlugin — Property read/write consistency (Layer 2)', () => 
   });
 
   for (const field of indicatorPropertySchema.fields.filter(f => f.type === 'number')) {
-    it('${field.name} 应在边界值 [${field.min}, ${field.max}] 内正常', () => {
+    it('${field.name} should behave correctly at boundary values [${field.min}, ${field.max}]', () => {
       const results = verifier.verifyBoundaryValues(field);
       expect(results.filter(r => !r.passed)).toHaveLength(0);
     });
@@ -110,7 +110,7 @@ describe('IndicatorPlugin — Declaration-rendering mapping validation (Layer 3)
     expect(calls.length).toBeGreaterThan(0);
   });
 
-  it('所有字段在 render 源码中有引用', () => {
+  it('All fields are referenced in the render source code', () => {
     const mapper = new RenderFieldMapper(
       indicatorPropertySchema,
       './industrial/indicator/IndicatorPlugin.ts',

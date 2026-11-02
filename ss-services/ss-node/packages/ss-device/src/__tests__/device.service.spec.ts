@@ -400,8 +400,8 @@ describe('DeviceService', () => {
   describe('TC-DEV-017: get all groups for project', () => {
     it('should return groups sorted by sortOrder', async () => {
       const groups = [
-        { id: 'grp-001', name: 'A组', sortOrder: 0, projectId },
-        { id: 'grp-002', name: 'B组', sortOrder: 1, projectId },
+        { id: 'grp-001', name: '分组A', sortOrder: 0, projectId },
+        { id: 'grp-002', name: 'Group B', sortOrder: 1, projectId },
       ];
       deviceGroupRepo.find!.mockResolvedValue(groups);
 
@@ -669,7 +669,7 @@ describe('DeviceService', () => {
         {
           id: 'dev-001',
           deviceCode: 'd1',
-          deviceName: '未分组设备',
+          deviceName: '无分组设备',
           type: 'modbus_tcp',
           status: 'online',
           groupId: null,
@@ -681,7 +681,7 @@ describe('DeviceService', () => {
       // Ungrouped devices are mounted in rootDevices
       expect(result.groups).toEqual([]);
       expect(result.rootDevices).toHaveLength(1);
-      expect(result.rootDevices[0].deviceName).toBe('未分组设备');
+      expect(result.rootDevices[0].deviceName).toBe('无分组设备');
     });
   });
 

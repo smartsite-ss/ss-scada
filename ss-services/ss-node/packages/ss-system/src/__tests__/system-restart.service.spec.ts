@@ -104,13 +104,13 @@ describe('SystemRestartService', () => {
   // ==================== onModuleInit ====================
 
   describe('onModuleInit', () => {
-    it('TC-RESTART-001: 无 marker 文件时应为 no-op', async () => {
+    it('TC-RESTART-001: should be a no-op without a marker file', async () => {
       expect(fs.existsSync(markerPath)).toBe(false);
       await service.onModuleInit();
       expect(fs.existsSync(markerPath)).toBe(false);
     });
 
-    it('TC-RESTART-002: marker 状态为 restarting 时应更新为 ready', async () => {
+    it('TC-RESTART-002: should update the marker status to ready when it is restarting', async () => {
       const state: RestartState = {
         status: 'restarting',
         triggeredBy: 'admin',
@@ -129,7 +129,7 @@ describe('SystemRestartService', () => {
       expect(updated.oldPid).toBe(12345);
     });
 
-    it('TC-RESTART-003: marker 状态非 restarting 时不应更新', async () => {
+    it('TC-RESTART-003: should not update when the marker status is not restarting', async () => {
       const state: RestartState = {
         status: 'idle',
         markerPath,
@@ -143,7 +143,7 @@ describe('SystemRestartService', () => {
       expect(content.newPid).toBeUndefined();
     });
 
-    it('TC-RESTART-004: marker 文件损坏时应删除', async () => {
+    it('TC-RESTART-004: should delete the marker file when it is corrupted', async () => {
       fs.writeFileSync(markerPath, '{ invalid json content !!! }', 'utf-8');
       expect(fs.existsSync(markerPath)).toBe(true);
 
@@ -152,7 +152,7 @@ describe('SystemRestartService', () => {
       expect(fs.existsSync(markerPath)).toBe(false);
     });
 
-    it('TC-RESTART-005: marker 状态为 ready 时应保持不变', async () => {
+    it('TC-RESTART-005: should stay unchanged when the marker status is ready', async () => {
       const state: RestartState = {
         status: 'ready',
         triggeredBy: 'admin',
@@ -173,7 +173,7 @@ describe('SystemRestartService', () => {
   // ==================== triggerRestart ====================
 
   describe('triggerRestart', () => {
-    it('TC-RESTART-010: 成功触发重启应写入 marker 并 spawn 子进程', async () => {
+    it('TC-RESTART-010: a successful restart trigger should write the marker and spawn a child process', async () => {
       const username = 'admin';
       const result = await service.triggerRestart(username);
 
@@ -205,7 +205,7 @@ describe('SystemRestartService', () => {
       expect(process.exit as jest.Mock).toHaveBeenCalledWith(0);
     });
 
-    it('TC-RESTART-011: 并发触发应抛出 BadRequestException', async () => {
+    it('TC-RESTART-011: concurrent triggers should throw BadRequestException', async () => {
       // Trigger once first
       await service.triggerRestart('admin');
 
@@ -216,7 +216,7 @@ describe('SystemRestartService', () => {
       jest.advanceTimersByTime(1100);
     });
 
-    it('TC-RESTART-012: 冷却期内再次触发应抛出异常', async () => {
+    it('TC-RESTART-012: re-triggering within the cooldown should throw', async () => {
       // Manipulate private fields directly to simulate a just-triggered restart
       // Because process.exit is mocked, the process does not exit and isRestarting stays true
       // Reset isRestarting first, then set lastRestartAt to the current time
@@ -227,7 +227,7 @@ describe('SystemRestartService', () => {
       await expect(service.triggerRestart('admin')).rejects.toThrow(/重启冷却期内/);
     });
 
-    it('TC-RESTART-013: PM2 环境应抛出友好提示', async () => {
+    it('TC-RESTART-013: the PM2 environment should throw a friendly message', async () => {
       process.env.PM2_HOME = '/tmp/pm2-home';
 
       await expect(service.triggerRestart('admin')).rejects.toThrow(/PM2 环境.*pm2 restart/);
@@ -235,7 +235,7 @@ describe('SystemRestartService', () => {
       delete process.env.PM2_HOME;
     });
 
-    it('TC-RESTART-014: Docker 环境应抛出友好提示', async () => {
+    it('TC-RESTART-014: the Docker environment should throw a friendly message', async () => {
       // Mock fs.existsSync: the /.dockerenv file is detected as existing
       const realExistsSync = jest.requireActual('fs').existsSync;
       (fs.existsSync as jest.Mock).mockImplementation((p: fs.PathLike) => {
@@ -246,7 +246,7 @@ describe('SystemRestartService', () => {
       await expect(service.triggerRestart('admin')).rejects.toThrow(/Docker 环境.*docker restart/);
     });
 
-    it('TC-RESTART-015: restarter.js 不存在时应标记为 failed', async () => {
+    it('TC-RESTART-015: should be marked failed when restarter.js does not exist', async () => {
       // Mock fs.existsSync: restarter.js candidate paths return false, others normal
       const realExistsSync = jest.requireActual('fs').existsSync;
       (fs.existsSync as jest.Mock).mockImplementation((p: fs.PathLike) => {
@@ -263,7 +263,7 @@ describe('SystemRestartService', () => {
       expect(marker.errorMessage).toMatch(/Restarter script not found/);
     });
 
-    it('TC-RESTART-016: spawn 抛出异常时应标记 failed 并重置 isRestarting', async () => {
+    it('TC-RESTART-016: an exception thrown by spawn should be marked failed and reset isRestarting', async () => {
       spawnMock.mockImplementation(() => {
         throw new Error('spawn EACCES');
       });
@@ -281,7 +281,7 @@ describe('SystemRestartService', () => {
   // ==================== getRestartStatus ====================
 
   describe('getRestartStatus', () => {
-    it('TC-RESTART-020: isRestarting 为 true 时应返回 restarting 状态', async () => {
+    it('TC-RESTART-020: should return the restarting status when isRestarting is true', async () => {
       await service.triggerRestart('admin');
 
       const status = service.getRestartStatus();
@@ -292,7 +292,7 @@ describe('SystemRestartService', () => {
       jest.advanceTimersByTime(1100);
     });
 
-    it('TC-RESTART-021: 存在 marker 文件时应返回 marker 内容', () => {
+    it('TC-RESTART-021: should return the marker content when the marker file exists', () => {
       const state: RestartState = {
         status: 'ready',
         triggeredBy: 'admin',
@@ -310,13 +310,13 @@ describe('SystemRestartService', () => {
       expect(status.newPid).toBe(54321);
     });
 
-    it('TC-RESTART-022: 无 marker 文件且未在重启中应返回 idle', () => {
+    it('TC-RESTART-022: should return idle with no marker file and no restart in progress', () => {
       const status = service.getRestartStatus();
       expect(status.status).toBe('idle');
       expect(status.markerPath).toBe(markerPath);
     });
 
-    it('TC-RESTART-023: marker 文件损坏时应返回 idle', () => {
+    it('TC-RESTART-023: should return idle when the marker file is corrupted', () => {
       fs.writeFileSync(markerPath, '{ corrupted !!! }', 'utf-8');
 
       const status = service.getRestartStatus();
@@ -327,7 +327,7 @@ describe('SystemRestartService', () => {
   // ==================== clearMarker ====================
 
   describe('clearMarker', () => {
-    it('TC-RESTART-030: 存在 marker 文件时应删除', () => {
+    it('TC-RESTART-030: should delete the marker file when it exists', () => {
       fs.writeFileSync(markerPath, JSON.stringify({ status: 'ready' }), 'utf-8');
       expect(fs.existsSync(markerPath)).toBe(true);
 
@@ -336,7 +336,7 @@ describe('SystemRestartService', () => {
       expect(fs.existsSync(markerPath)).toBe(false);
     });
 
-    it('TC-RESTART-031: 不存在 marker 文件时应为 no-op', () => {
+    it('TC-RESTART-031: should be a no-op when the marker file does not exist', () => {
       expect(fs.existsSync(markerPath)).toBe(false);
       expect(() => service.clearMarker()).not.toThrow();
     });
@@ -345,19 +345,19 @@ describe('SystemRestartService', () => {
   // ==================== detectRuntimeEnvironment ====================
 
   describe('detectRuntimeEnvironment', () => {
-    it('TC-RESTART-040: 存在 PM2_HOME 时应返回 pm2', () => {
+    it('TC-RESTART-040: should return pm2 when PM2_HOME exists', () => {
       process.env.PM2_HOME = '/tmp/pm2-home';
       expect(service.detectRuntimeEnvironment()).toBe('pm2');
       delete process.env.PM2_HOME;
     });
 
-    it('TC-RESTART-041: 存在 pm_id 时应返回 pm2', () => {
+    it('TC-RESTART-041: should return pm2 when pm_id exists', () => {
       process.env.pm_id = '1';
       expect(service.detectRuntimeEnvironment()).toBe('pm2');
       delete process.env.pm_id;
     });
 
-    it('TC-RESTART-042: 存在 /.dockerenv 时应返回 docker', () => {
+    it('TC-RESTART-042: should return docker when /.dockerenv exists', () => {
       const realExistsSync = jest.requireActual('fs').existsSync;
       (fs.existsSync as jest.Mock).mockImplementation((p: fs.PathLike) => {
         if (p.toString() === '/.dockerenv') return true;
@@ -367,7 +367,7 @@ describe('SystemRestartService', () => {
       expect(service.detectRuntimeEnvironment()).toBe('docker');
     });
 
-    it('TC-RESTART-043: 无 PM2/Docker 标识时应返回 standalone', () => {
+    it('TC-RESTART-043: should return standalone with no PM2/Docker markers', () => {
       delete process.env.PM2_HOME;
       delete process.env.pm_id;
 
@@ -384,11 +384,11 @@ describe('SystemRestartService', () => {
   // ==================== isCurrentlyRestarting ====================
 
   describe('isCurrentlyRestarting', () => {
-    it('TC-RESTART-050: 初始状态应为 false', () => {
+    it('TC-RESTART-050: the initial status should be false', () => {
       expect(service.isCurrentlyRestarting()).toBe(false);
     });
 
-    it('TC-RESTART-051: 触发重启后应为 true', async () => {
+    it('TC-RESTART-051: should be true after triggering a restart', async () => {
       await service.triggerRestart('admin');
       expect(service.isCurrentlyRestarting()).toBe(true);
 
@@ -399,8 +399,8 @@ describe('SystemRestartService', () => {
 
   // ==================== Boundary and integration scenarios ====================
 
-  describe('集成场景', () => {
-    it('TC-RESTART-060: 完整重启流程 - onModuleInit 检测到重启完成状态', async () => {
+  describe('Integration scenarios', () => {
+    it('TC-RESTART-060: full restart flow - onModuleInit detects the restart-completed status', async () => {
       // 1. Simulate the previous process writing the restarting status
       const oldState: RestartState = {
         status: 'restarting',
@@ -430,7 +430,7 @@ describe('SystemRestartService', () => {
       expect(finalStatus.status).toBe('idle');
     });
 
-    it('TC-RESTART-061: failed 状态的 marker 应能被 clearMarker 清除', () => {
+    it('TC-RESTART-061: a failed-status marker should be clearable via clearMarker', () => {
       const failedState: RestartState = {
         status: 'failed',
         errorMessage: 'Restarter script not found',

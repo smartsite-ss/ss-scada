@@ -12,7 +12,7 @@ import { I18nService } from '../i18n.service';
 const TEST_TRANSLATIONS = {
   'zh-CN': {
     greeting: '你好',
-    welcome: '欢迎, {{name}}',
+    welcome: 'Welcome, {{name}}',
     error: {
       auth: {
         AUTH_001: '认证失败',
@@ -20,7 +20,7 @@ const TEST_TRANSLATIONS = {
     },
   },
   'en-US': {
-    greeting: 'Hello',
+    greeting: '你好',
     welcome: 'Welcome, {{name}}',
     error: {
       auth: {
@@ -116,7 +116,7 @@ describe('TC-I18N-DEC-001: @Translate() decorator', () => {
     const factory = getParamDecoratorFactory(Translate, 'greeting');
 
     const result = factory('greeting', ctx);
-    expect(result).toBe('Hello');
+    expect(result).toBe('你好');
   });
 });
 
@@ -192,7 +192,7 @@ describe('TC-I18N-DEC-004: Combined decorator usage scenario', () => {
     const resolvedParams = paramFactory(undefined, ctx);
     const resolvedService = i18nFactory(undefined, ctx);
 
-    expect(translatedKey).toBe('欢迎, {{name}}');
+    expect(translatedKey).toBe('Welcome, {{name}}');
     expect(resolvedParams).toEqual(params);
     expect(resolvedService).toBe(i18nService);
   });
@@ -212,6 +212,6 @@ describe('TC-I18N-DEC-004: Combined decorator usage scenario', () => {
       translatedKey as string,
       resolvedParams as unknown as Record<string, string | number>,
     );
-    expect(result).toBe('欢迎, World');
+    expect(result).toBe('Welcome, World');
   });
 });

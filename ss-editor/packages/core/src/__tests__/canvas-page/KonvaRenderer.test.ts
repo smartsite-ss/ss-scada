@@ -61,8 +61,8 @@ vi.mock('konva', () => {
   };
 });
 
-describe('KonvaRenderer 架构验证', () => {
-  it('应该Export KonvaLayerType 枚举', async () => {
+describe('KonvaRenderer architecture validation', () => {
+  it('Should export the KonvaLayerType enum', async () => {
     const { KonvaLayerType } = await import('../../canvas-page/renderer/KonvaRenderer');
     expect(KonvaLayerType).toBeDefined();
     expect(KonvaLayerType.Background).toBe('background');
@@ -71,13 +71,13 @@ describe('KonvaRenderer 架构验证', () => {
     expect(KonvaLayerType.Overlay).toBe('overlay');
   });
 
-  it('应该Export KonvaRenderer 类', async () => {
+  it('Should export the KonvaRenderer class', async () => {
     const { KonvaRenderer } = await import('../../canvas-page/renderer/KonvaRenderer');
     expect(KonvaRenderer).toBeDefined();
     expect(typeof KonvaRenderer).toBe('function');
   });
 
-  it('KonvaRenderer 应该包含多层渲染方法', async () => {
+  it('KonvaRenderer should include multi-layer rendering methods', async () => {
     const { KonvaRenderer } = await import('../../canvas-page/renderer/KonvaRenderer');
     const proto = KonvaRenderer.prototype;
     
@@ -90,8 +90,8 @@ describe('KonvaRenderer 架构验证', () => {
   });
 });
 
-describe('性能测试占位符', () => {
-  it('性能测试需在浏览器中运行', () => {
+describe('Performance test placeholder', () => {
+  it('Performance test must run in a browser', () => {
     console.log(`
 ========================================
   KonvaRenderer 性能测试

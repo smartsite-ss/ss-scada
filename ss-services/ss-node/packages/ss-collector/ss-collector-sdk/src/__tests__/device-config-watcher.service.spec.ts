@@ -173,7 +173,7 @@ describe('DeviceConfigWatcher', () => {
   });
 
   describe('onModuleInit', () => {
-    it('应当注册 5 个设备事件监听器', () => {
+    it('Should register 5 device event listeners', () => {
       watcher.onModuleInit();
       expect(eventBus.on).toHaveBeenCalledTimes(5);
       expect(eventBus.on).toHaveBeenCalledWith('device.created', expect.any(Function));
@@ -184,12 +184,12 @@ describe('DeviceConfigWatcher', () => {
     });
   });
 
-  describe('device.created 事件', () => {
+  describe('device.created event', () => {
     beforeEach(() => {
       watcher.onModuleInit();
     });
 
-    it('应当调用 ensureConnection 建立连接', async () => {
+    it('Should call ensureConnection to establish the connection', async () => {
       await eventBus.fire('device.created', {
         deviceId: 'dev-1',
         projectId: 'proj-1',
@@ -207,7 +207,7 @@ describe('DeviceConfigWatcher', () => {
       expect(watcher.getActiveDevices().has('dev-1')).toBe(true);
     });
 
-    it('当 isolationFactory 不可用时应跳过连接', async () => {
+    it('Should skip the connection when isolationFactory is unavailable', async () => {
       const watcherNoFactory = new DeviceConfigWatcher(
         eventBus as unknown as EventBusService,
         undefined,
@@ -225,7 +225,7 @@ describe('DeviceConfigWatcher', () => {
       expect(watcherNoFactory.getActiveDevices().has('dev-2')).toBe(false);
     });
 
-    it('当连接抛错时应记录错误但不抛出', async () => {
+    it('When connection throws, the error should be logged but not rethrown', async () => {
       executor.connect.mockRejectedValueOnce(new Error('connect fail'));
       await eventBus.fire('device.created', {
         deviceId: 'dev-err',
@@ -239,7 +239,7 @@ describe('DeviceConfigWatcher', () => {
     });
   });
 
-  describe('device.updated 事件', () => {
+  describe('device.updated event', () => {
     beforeEach(async () => {
       watcher.onModuleInit();
       // Create the device first
@@ -252,7 +252,7 @@ describe('DeviceConfigWatcher', () => {
       });
     });
 
-    it('connection 变更应当先断开旧连接再建立新连接', async () => {
+    it('When connection changes, the old connection should be disconnected first before establishing the new one', async () => {
       await eventBus.fire('device.updated', {
         deviceId: 'dev-1',
         projectId: 'proj-1',
@@ -270,7 +270,7 @@ describe('DeviceConfigWatcher', () => {
       });
     });
 
-    it('scanRate 变更应当调用 scheduler.updateTaskInterval', async () => {
+    it('A scanRate change should call scheduler.updateTaskInterval', async () => {
       await eventBus.fire('device.updated', {
         deviceId: 'dev-1',
         projectId: 'proj-1',
@@ -282,7 +282,7 @@ describe('DeviceConfigWatcher', () => {
       expect(scheduler.updateTaskInterval).toHaveBeenCalledWith('dev-1', 500);
     });
 
-    it('scheduler 不可用时 scanRate 变更应记录警告', async () => {
+    it('When the scheduler is unavailable, a scanRate change should log a warning', async () => {
       // Use a fresh eventBus to avoid interference from the original watcher's handlers
       const freshBus = makeMockEventBus();
       const watcherNoScheduler = new DeviceConfigWatcher(
@@ -312,7 +312,7 @@ describe('DeviceConfigWatcher', () => {
       expect(scheduler.updateTaskInterval).not.toHaveBeenCalled();
     });
 
-    it('同时变更 connection 和 scanRate 应当都处理', async () => {
+    it('Changing both connection and scanRate should handle both', async () => {
       await eventBus.fire('device.updated', {
         deviceId: 'dev-1',
         projectId: 'proj-1',
@@ -332,7 +332,7 @@ describe('DeviceConfigWatcher', () => {
       expect(scheduler.updateTaskInterval).toHaveBeenCalledWith('dev-1', 200);
     });
 
-    it('无变更字段时不应当执行任何操作', async () => {
+    it('Should do nothing when there are no changed fields', async () => {
       executor.disconnect.mockClear();
       executor.connect.mockClear();
 
@@ -347,7 +347,7 @@ describe('DeviceConfigWatcher', () => {
       expect(scheduler.updateTaskInterval).not.toHaveBeenCalled();
     });
 
-    it('tags 变更应当发射 device.tagsChanged 事件', async () => {
+    it('A tags change should emit the device.tagsChanged event', async () => {
       const tagsChangedSpy = jest.fn();
       eventBus.on('device.tagsChanged', tagsChangedSpy);
 
@@ -369,7 +369,7 @@ describe('DeviceConfigWatcher', () => {
       );
     });
 
-    it('tags 变更不应触发 disconnect 或 updateTaskInterval', async () => {
+    it('A tags change should not trigger disconnect or updateTaskInterval', async () => {
       executor.disconnect.mockClear();
       (scheduler.updateTaskInterval as jest.Mock).mockClear();
 
@@ -384,7 +384,7 @@ describe('DeviceConfigWatcher', () => {
       expect(scheduler.updateTaskInterval).not.toHaveBeenCalled();
     });
 
-    it('同时变更 tags 和 connection 应当都处理', async () => {
+    it('Changing both tags and connection should handle both', async () => {
       const tagsChangedSpy = jest.fn();
       eventBus.on('device.tagsChanged', tagsChangedSpy);
 
@@ -402,7 +402,7 @@ describe('DeviceConfigWatcher', () => {
     });
   });
 
-  describe('device.deleted 事件', () => {
+  describe('device.deleted event', () => {
     beforeEach(async () => {
       watcher.onModuleInit();
       await eventBus.fire('device.created', {
@@ -414,7 +414,7 @@ describe('DeviceConfigWatcher', () => {
       });
     });
 
-    it('应当断开连接并从活跃列表移除', async () => {
+    it('Should disconnect and remove from the active list', async () => {
       expect(watcher.getActiveDevices().has('dev-1')).toBe(true);
 
       await eventBus.fire('device.deleted', { deviceId: 'dev-1' });
@@ -423,19 +423,19 @@ describe('DeviceConfigWatcher', () => {
       expect(watcher.getActiveDevices().has('dev-1')).toBe(false);
     });
 
-    it('删除未知设备应当是安全的', async () => {
+    it('Deleting an unknown device should be safe', async () => {
       await eventBus.fire('device.deleted', { deviceId: 'unknown-dev' });
       // Should not throw an error
       expect(watcher.getActiveDevices().has('unknown-dev')).toBe(false);
     });
   });
 
-  describe('device.enabled / device.disabled 事件', () => {
+  describe('device.enabled / device.disabled events', () => {
     beforeEach(() => {
       watcher.onModuleInit();
     });
 
-    it('device.enabled 应当等同于 device.created', async () => {
+    it('device.enabled should be equivalent to device.created', async () => {
       await eventBus.fire('device.enabled', {
         deviceId: 'dev-1',
         projectId: 'proj-1',
@@ -446,7 +446,7 @@ describe('DeviceConfigWatcher', () => {
       expect(watcher.getActiveDevices().has('dev-1')).toBe(true);
     });
 
-    it('device.disabled 应当等同于 device.deleted', async () => {
+    it('device.disabled should be equivalent to device.deleted', async () => {
       // enable first
       await eventBus.fire('device.enabled', {
         deviceId: 'dev-1',
@@ -464,7 +464,7 @@ describe('DeviceConfigWatcher', () => {
   });
 
   describe('ensureConnection', () => {
-    it('应当调用 isolationFactory.getExecutor 并建立连接', async () => {
+    it('Should call isolationFactory.getExecutor and establish the connection', async () => {
       watcher.onModuleInit();
       await watcher.ensureConnection('dev-x', 'modbus_tcp', { host: '1.2.3.4' });
       expect(executor.connect).toHaveBeenCalledWith({
@@ -476,7 +476,7 @@ describe('DeviceConfigWatcher', () => {
       expect(watcher.getActiveDevices().has('dev-x')).toBe(true);
     });
 
-    it('当 isolationFactory 为空时应跳过并记录警告', async () => {
+    it('Should skip and log a warning when isolationFactory is empty', async () => {
       const w = new DeviceConfigWatcher(
         eventBus as unknown as EventBusService,
         undefined,
@@ -489,7 +489,7 @@ describe('DeviceConfigWatcher', () => {
   });
 
   describe('disconnectDevice', () => {
-    it('应当调用 executor.disconnect 并清理活跃列表', async () => {
+    it('Should call executor.disconnect and clean up the active list', async () => {
       watcher.onModuleInit();
       await watcher.ensureConnection('dev-x', 'modbus_tcp', { host: '1.2.3.4' });
       expect(watcher.getActiveDevices().has('dev-x')).toBe(true);
@@ -500,11 +500,11 @@ describe('DeviceConfigWatcher', () => {
       expect(watcher.getActiveDevices().has('dev-x')).toBe(false);
     });
 
-    it('断开未知设备应当返回 false', async () => {
+    it('Disconnecting an unknown device should return false', async () => {
       await expect(watcher.disconnectDevice('unknown')).resolves.toBe(false);
     });
 
-    it('disconnect 抛错应当被吞掉但返回 true', async () => {
+    it('Errors thrown by disconnect should be swallowed but still return true', async () => {
       watcher.onModuleInit();
       await watcher.ensureConnection('dev-x', 'modbus_tcp', {});
       executor.disconnect.mockRejectedValueOnce(new Error('fail'));
@@ -514,7 +514,7 @@ describe('DeviceConfigWatcher', () => {
   });
 
   describe('getActiveDevices', () => {
-    it('应当返回活跃设备的副本', async () => {
+    it('Should return a copy of the active devices', async () => {
       watcher.onModuleInit();
       await watcher.ensureConnection('dev-1', 'modbus_tcp', {});
       await watcher.ensureConnection('dev-2', 'modbus_tcp', {});
@@ -533,7 +533,7 @@ describe('DeviceConfigWatcher', () => {
   // ==========================================================================
   // #6 Event persistence: business-effect tracking
   // ==========================================================================
-  describe('业务效果追踪（EventLogService 集成）', () => {
+  describe('Business effect tracking (EventLogService integration)', () => {
     let eventLogService: jest.Mocked<EventLogService>;
 
     beforeEach(() => {
@@ -547,7 +547,7 @@ describe('DeviceConfigWatcher', () => {
       );
     });
 
-    it('onModuleInit 应当为每个事件调用 wrapSubscriber', () => {
+    it('onModuleInit should call wrapSubscriber for every event', () => {
       watcher.onModuleInit();
       // All 5 event types should be wrapped via wrapSubscriber
       expect(eventLogService.wrapSubscriber).toHaveBeenCalledTimes(5);
@@ -568,7 +568,7 @@ describe('DeviceConfigWatcher', () => {
       );
     });
 
-    it('device.created 处理成功时 wrapSubscriber 包装的 handler 应被调用', async () => {
+    it('On successful device.created handling, the wrapSubscriber-wrapped handler should be invoked', async () => {
       watcher.onModuleInit();
       await eventBus.fire('device.created', {
         deviceId: 'dev-1',
@@ -583,7 +583,7 @@ describe('DeviceConfigWatcher', () => {
       expect(watcher.getActiveDevices().has('dev-1')).toBe(true);
     });
 
-    it('device.created 处理失败时应记录失败并捕获（避免 unhandled rejection）', async () => {
+    it('On failed device.created handling, the failure should be recorded and caught (avoiding unhandled rejection)', async () => {
       watcher.onModuleInit();
       executor.connect.mockRejectedValueOnce(new Error('connect fail'));
 

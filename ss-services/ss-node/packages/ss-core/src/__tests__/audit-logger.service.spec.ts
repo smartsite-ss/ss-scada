@@ -256,7 +256,7 @@ describe('AuditLoggerService', () => {
       expect(entry.details).toEqual({ role: 'admin', durationMs: 150 });
     });
 
-    it('第一条记录的 prevHash 应为创世哈希', async () => {
+    it('The first record\'s prevHash should be the genesis hash', async () => {
       const service = createService();
       service.logSecurityEvent({ type: 'auth.login.success', severity: 'info', userId: 'u1' });
 
@@ -264,7 +264,7 @@ describe('AuditLoggerService', () => {
       expect(entries[0].prevHash).toBe(GENESIS_HASH);
     });
 
-    it('多条记录应形成正确的哈希链', async () => {
+    it('Multiple records should form a correct hash chain', async () => {
       const service = createService();
       service.logSecurityEvent({ type: 'auth.login.success', severity: 'info', userId: 'u1' });
       service.logSecurityEvent({ type: 'auth.logout', severity: 'info', userId: 'u1' });
@@ -289,7 +289,7 @@ describe('AuditLoggerService', () => {
       }
     });
 
-    it('timestamp 应为 ISO 8601 格式', async () => {
+    it('timestamp should be in ISO 8601 format', async () => {
       const service = createService();
       service.logSecurityEvent({ type: 'auth.login.success', severity: 'info' });
 
@@ -615,7 +615,7 @@ describe('AuditLoggerService', () => {
       expect(result.brokenReason).toContain('hash 不匹配');
     });
 
-    it('断裂的 prevHash 链应被检测到', () => {
+    it('Broken prevHash chains should be detected', () => {
       const e1 = buildAuditEntry(0, GENESIS_HASH, {
         type: 'auth.login.success',
         severity: 'info',
@@ -695,7 +695,7 @@ describe('AuditLoggerService', () => {
       expect(result.brokenAtIndex).toBe(2);
     });
 
-    it('篡改 details 嵌套对象内容应被检测到', () => {
+    it('Tampering with nested details objects should be detected', () => {
       const e1 = buildAuditEntry(0, GENESIS_HASH, {
         type: 'auth.login.success',
         severity: 'info',
@@ -798,7 +798,7 @@ describe('AuditLoggerService', () => {
   // 5. hash-chain algorithm correctness
   // ═══════════════════════════════════════════════════════════════
 
-  describe('哈希链算法', () => {
+  describe('Hash chain algorithm', () => {
     it('相同输入应产生相同 hash（确定性）', () => {
       const e1 = buildAuditEntry(0, GENESIS_HASH, {
         type: 'auth.login.success',
@@ -843,7 +843,7 @@ describe('AuditLoggerService', () => {
       expect(GENESIS_HASH.length).toBe(64);
     });
 
-    it('不同 prevHash 应产生不同 hash', () => {
+    it('Different prevHash should produce different hashes', () => {
       const e1 = buildAuditEntry(0, GENESIS_HASH, {
         type: 'auth.login.success',
         severity: 'info',
@@ -858,7 +858,7 @@ describe('AuditLoggerService', () => {
       expect(e1.hash).not.toBe(e2.hash);
     });
 
-    it('不同 timestamp 应产生不同 hash', () => {
+    it('Different timestamp should produce different hashes', () => {
       const e1 = buildAuditEntry(0, GENESIS_HASH, {
         type: 'auth.login.success',
         severity: 'info',
@@ -872,7 +872,7 @@ describe('AuditLoggerService', () => {
       expect(e1.hash).not.toBe(e2.hash);
     });
 
-    it('不同 details 应产生不同 hash', () => {
+    it('Different details should produce different hashes', () => {
       const e1 = buildAuditEntry(0, GENESIS_HASH, {
         type: 'auth.login.success',
         severity: 'info',
@@ -887,7 +887,7 @@ describe('AuditLoggerService', () => {
       expect(e1.hash).not.toBe(e2.hash);
     });
 
-    it('不同 severity 应产生不同 hash', () => {
+    it('Different severity should produce different hashes', () => {
       const e1 = buildAuditEntry(0, GENESIS_HASH, {
         type: 'auth.login.success',
         severity: 'info',
@@ -900,7 +900,7 @@ describe('AuditLoggerService', () => {
       expect(e1.hash).not.toBe(e2.hash);
     });
 
-    it('不同 type 应产生不同 hash', () => {
+    it('Different type should produce different hashes', () => {
       const e1 = buildAuditEntry(0, GENESIS_HASH, {
         type: 'auth.login.success',
         severity: 'info',
@@ -1039,7 +1039,7 @@ describe('AuditLoggerService', () => {
   // 7. logSecurityEvent + verifyChain integration test
   // ═══════════════════════════════════════════════════════════════
 
-  describe('logSecurityEvent + verifyChain 集成', () => {
+  describe('logSecurityEvent + verifyChain integration', () => {
     it('logSecurityEvent 写入后 verifyChain 应验证通过', async () => {
       const service = createService();
       service.logSecurityEvent({ type: 'auth.login.success', severity: 'info', userId: 'u1' });

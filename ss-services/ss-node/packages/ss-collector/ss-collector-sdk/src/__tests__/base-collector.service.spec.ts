@@ -68,13 +68,13 @@ describe('BaseCollectorService', () => {
   // validateChannelConfig (default implementation)
   // -------------------------------------------------------------
   describe('validateChannelConfig', () => {
-    it('默认应返回 valid=true 与空错误列表', async () => {
+    it('By default should return valid=true with an empty error list', async () => {
       const result = await service.validateChannelConfig({ host: '1.2.3.4' });
       expect(result.valid).toBe(true);
       expect(result.errors).toEqual([]);
     });
 
-    it('对任意配置都应返回 valid=true（默认空实现）', async () => {
+    it('Should return valid=true for any configuration (default empty implementation)', async () => {
       const result = await service.validateChannelConfig({
         any: { nested: 'value' },
       });
@@ -86,7 +86,7 @@ describe('BaseCollectorService', () => {
   // readTag (with retry)
   // -------------------------------------------------------------
   describe('readTag', () => {
-    it('首次成功应直接返回结果不重试', async () => {
+    it('First-time success should return the result directly without retrying', async () => {
       const client = { id: 'c1' };
       const tag = makeTag();
       const expected = { tagId: 'tag-001', value: 42, timestamp: new Date() };
@@ -98,7 +98,7 @@ describe('BaseCollectorService', () => {
       expect(service.doReadTag).toHaveBeenCalledTimes(1);
     });
 
-    it('失败时按默认 maxRetries=3 重试 3 次', async () => {
+    it('On failure, retries 3 times with the default maxRetries=3', async () => {
       jest.useRealTimers();
       const client = { id: 'c1' };
       const tag = makeTag(); // maxRetries not set, defaults to 3
@@ -108,7 +108,7 @@ describe('BaseCollectorService', () => {
       expect(service.doReadTag).toHaveBeenCalledTimes(3);
     }, 15000);
 
-    it('中途成功应停止重试并返回结果', async () => {
+    it('Mid-way success should stop retrying and return the result', async () => {
       const client = { id: 'c1' };
       const tag = makeTag({ maxRetries: 3 });
       const expected = { tagId: 'tag-001', value: 99, timestamp: new Date() };
@@ -127,7 +127,7 @@ describe('BaseCollectorService', () => {
       expect(service.doReadTag).toHaveBeenCalledTimes(3);
     });
 
-    it('应使用 tag.maxRetries 覆盖默认值', async () => {
+    it('Should use tag.maxRetries to override the default', async () => {
       const client = { id: 'c1' };
       const tag = makeTag({ maxRetries: 1 });
       service.doReadTag.mockImplementation(() => Promise.reject(new Error('fail')));
@@ -136,7 +136,7 @@ describe('BaseCollectorService', () => {
       expect(service.doReadTag).toHaveBeenCalledTimes(1);
     });
 
-    it('抛出的错误应是最后一次错误', async () => {
+    it('The thrown error should be the last error', async () => {
       jest.useRealTimers();
       const client = { id: 'c1' };
       const tag = makeTag({ maxRetries: 2 });
@@ -153,7 +153,7 @@ describe('BaseCollectorService', () => {
   // writeTag (with retry)
   // -------------------------------------------------------------
   describe('writeTag', () => {
-    it('首次成功应直接返回不重试', async () => {
+    it('First-time success should return directly without retrying', async () => {
       const client = { id: 'c1' };
       const tag = makeTag();
       service.doWriteTag.mockResolvedValue(undefined);
@@ -164,7 +164,7 @@ describe('BaseCollectorService', () => {
       expect(service.doWriteTag).toHaveBeenCalledWith(client, tag, 100);
     });
 
-    it('失败时按默认 maxRetries=2 重试 2 次', async () => {
+    it('On failure, retries 2 times with the default maxRetries=2', async () => {
       jest.useRealTimers();
       const client = { id: 'c1' };
       const tag = makeTag(); // default 2 times
@@ -174,7 +174,7 @@ describe('BaseCollectorService', () => {
       expect(service.doWriteTag).toHaveBeenCalledTimes(2);
     }, 15000);
 
-    it('应使用 tag.maxRetries 覆盖默认值', async () => {
+    it('Should use tag.maxRetries to override the default', async () => {
       jest.useRealTimers();
       const client = { id: 'c1' };
       const tag = makeTag({ maxRetries: 4 });
@@ -184,7 +184,7 @@ describe('BaseCollectorService', () => {
       expect(service.doWriteTag).toHaveBeenCalledTimes(4);
     }, 15000);
 
-    it('中途成功应停止重试', async () => {
+    it('Mid-way success should stop retrying', async () => {
       const client = { id: 'c1' };
       const tag = makeTag({ maxRetries: 3 });
       service.doWriteTag.mockRejectedValueOnce(new Error('fail')).mockResolvedValueOnce(undefined);
@@ -203,7 +203,7 @@ describe('BaseCollectorService', () => {
   // disconnect
   // -------------------------------------------------------------
   describe('disconnect', () => {
-    it('应调用 doDisconnect 并清理连接状态', async () => {
+    it('Should call doDisconnect and clean up connection state', async () => {
       const client = { id: 'c1' };
       service.trackClient('dev-001', client);
       expect(service.getConnectionStatus('dev-001')).toBe(true);
@@ -216,7 +216,7 @@ describe('BaseCollectorService', () => {
       expect(service.getClientEntries().has('dev-001')).toBe(false);
     });
 
-    it('doDisconnect 抛错时应吞掉异常并仍清理状态', async () => {
+    it('Errors thrown by doDisconnect should be swallowed while state is still cleaned up', async () => {
       const client = { id: 'c1' };
       service.trackClient('dev-001', client);
       service.doDisconnect.mockImplementation(() => Promise.reject(new Error('disconnect fail')));
@@ -225,7 +225,7 @@ describe('BaseCollectorService', () => {
       expect(service.getConnectionStatus('dev-001')).toBe(false);
     });
 
-    it('未跟踪的客户端调用 disconnect 应仍调用 doDisconnect', async () => {
+    it('An untracked client calling disconnect should still call doDisconnect', async () => {
       const client = { id: 'unknown' };
       service.doDisconnect.mockResolvedValue(undefined);
       await service.disconnect(client);
@@ -237,7 +237,7 @@ describe('BaseCollectorService', () => {
   // onModuleDestroy
   // -------------------------------------------------------------
   describe('onModuleDestroy', () => {
-    it('应断开所有跟踪的客户端连接', async () => {
+    it('Should disconnect all tracked client connections', async () => {
       const c1 = { id: 'c1' };
       const c2 = { id: 'c2' };
       service.trackClient('dev-1', c1);
@@ -251,7 +251,7 @@ describe('BaseCollectorService', () => {
       expect(service.getClientEntries().size).toBe(0);
     });
 
-    it('doDisconnect 抛错时应静默忽略不影响其他连接', async () => {
+    it('Errors thrown by doDisconnect should be silently ignored without affecting other connections', async () => {
       const c1 = { id: 'c1' };
       const c2 = { id: 'c2' };
       service.trackClient('dev-1', c1);
@@ -264,7 +264,7 @@ describe('BaseCollectorService', () => {
       expect(service.getClientEntries().size).toBe(0);
     });
 
-    it('应清理所有重连定时器', async () => {
+    it('Should clean up all reconnect timers', async () => {
       const reconnectFn = jest.fn().mockResolvedValue(undefined);
       jest.useFakeTimers();
       service.startAutoReconnect('dev-1', reconnectFn, 1000);
@@ -276,7 +276,7 @@ describe('BaseCollectorService', () => {
       expect(reconnectFn).not.toHaveBeenCalled();
     });
 
-    it('无连接时应安全执行', async () => {
+    it('Should execute safely without a connection', async () => {
       await expect(service.onModuleDestroy()).resolves.toBeUndefined();
     });
   });
@@ -285,7 +285,7 @@ describe('BaseCollectorService', () => {
   // trackClient / getConnectionStatus / markDisconnected
   // -------------------------------------------------------------
   describe('trackClient & getConnectionStatus', () => {
-    it('trackClient 后应记录连接状态为 true', () => {
+    it('trackClient should record the connection status as true', () => {
       const client = { id: 'c1' };
       service.trackClient('dev-1', client);
 
@@ -296,11 +296,11 @@ describe('BaseCollectorService', () => {
       expect(entry.connectedAt).toBeInstanceOf(Date);
     });
 
-    it('getConnectionStatus 未跟踪设备应返回 false', () => {
+    it('getConnectionStatus should return false for untracked devices', () => {
       expect(service.getConnectionStatus('unknown')).toBe(false);
     });
 
-    it('markDisconnected 应将设备状态置为 false 并从 clients 移除', () => {
+    it('markDisconnected should set the device status to false and remove it from clients', () => {
       const client = { id: 'c1' };
       service.trackClient('dev-1', client);
       expect(service.getConnectionStatus('dev-1')).toBe(true);
@@ -311,7 +311,7 @@ describe('BaseCollectorService', () => {
       expect(service.getClientEntries().has('dev-1')).toBe(false);
     });
 
-    it('getClientEntries 应返回只读 Map', () => {
+    it('getClientEntries should return a read-only Map', () => {
       const entries = service.getClientEntries();
       expect(entries).toBeInstanceOf(Map);
       // Map methods are still callable, but semantically read-only
@@ -327,7 +327,7 @@ describe('BaseCollectorService', () => {
       jest.useFakeTimers();
     });
 
-    it('应在间隔到达时调用 reconnectFn，成功后停止', async () => {
+    it('Should call reconnectFn when the interval is reached, and stop after success', async () => {
       const reconnectFn = jest.fn().mockResolvedValue(undefined);
       service.startAutoReconnect('dev-1', reconnectFn, 1000);
 
@@ -346,7 +346,7 @@ describe('BaseCollectorService', () => {
       expect(reconnectFn).toHaveBeenCalledTimes(1);
     });
 
-    it('reconnectFn 成功后应停止重连', async () => {
+    it('Should stop reconnecting after reconnectFn succeeds', async () => {
       const reconnectFn = jest.fn().mockResolvedValue(undefined);
       service.startAutoReconnect('dev-1', reconnectFn, 1000);
 
@@ -360,7 +360,7 @@ describe('BaseCollectorService', () => {
       expect(reconnectFn).toHaveBeenCalledTimes(1);
     });
 
-    it('reconnectFn 失败时应继续重试不抛错', async () => {
+    it('Should keep retrying without throwing when reconnectFn fails', async () => {
       const reconnectFn = jest
         .fn()
         .mockImplementation(() => Promise.reject(new Error('connect fail')));
@@ -376,7 +376,7 @@ describe('BaseCollectorService', () => {
       expect(reconnectFn).toHaveBeenCalledTimes(2);
     });
 
-    it('stopAutoReconnect 应停止定时器', () => {
+    it('stopAutoReconnect should stop the timer', () => {
       const reconnectFn = jest.fn().mockResolvedValue(undefined);
       service.startAutoReconnect('dev-1', reconnectFn, 1000);
 
@@ -386,11 +386,11 @@ describe('BaseCollectorService', () => {
       expect(reconnectFn).not.toHaveBeenCalled();
     });
 
-    it('对未启动重连的设备 stopAutoReconnect 应安全无操作', () => {
+    it('stopAutoReconnect should be a safe no-op for devices not auto-reconnecting', () => {
       expect(() => service.stopAutoReconnect('unknown')).not.toThrow();
     });
 
-    it('重复 startAutoReconnect 应先停止旧定时器再启动新定时器', () => {
+    it('Repeated startAutoReconnect should stop the old timer before starting the new one', () => {
       const fn1 = jest.fn().mockResolvedValue(undefined);
       const fn2 = jest.fn().mockResolvedValue(undefined);
 
@@ -403,7 +403,7 @@ describe('BaseCollectorService', () => {
       expect(fn2).toHaveBeenCalledTimes(1);
     });
 
-    it('默认间隔应为 30000ms', () => {
+    it('Default interval should be 30000ms', () => {
       const reconnectFn = jest.fn().mockResolvedValue(undefined);
       service.startAutoReconnect('dev-1', reconnectFn);
 

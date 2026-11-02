@@ -111,7 +111,7 @@ describe('NaiveButtonPlugin — Declaration-rendering mapping validation (Layer 
     expect(fillCalls.length).toBeGreaterThan(0);
   });
 
-  it('所有字段在 render 源码中有引用', () => {
+  it('All fields are referenced in the render source code', () => {
     const mapper = new RenderFieldMapper(
       naiveButtonPropertySchema,
       './basic/naive-button/NaiveButtonPlugin.ts',

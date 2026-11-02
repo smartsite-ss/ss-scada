@@ -133,7 +133,7 @@ const mockTemplate = (overrides: Record<string, any> = {}) => ({
   tags: ['modbus', 'standard'],
   linkedDevices: 0,
   industry: '工业自动化',
-  category: 'PLC控制器',
+  category: 'PLC controller',
   protocolType: 'modbus_tcp',
   createdAt: '2024-01-01T00:00:00Z',
   updatedAt: '2024-01-01T00:00:00Z',
@@ -527,7 +527,7 @@ describe('TemplateListView', () => {
     });
 
     it('TC-TLV-030: should handle API failure gracefully', async () => {
-      mockTemplateStore.fetchTemplates.mockRejectedValue(new Error('Network error'));
+      mockTemplateStore.fetchTemplates.mockRejectedValue(new Error('网络错误'));
 
       const wrapper = await mountListView();
       await flushPromises();

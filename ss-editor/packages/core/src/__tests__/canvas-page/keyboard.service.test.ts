@@ -15,11 +15,11 @@ describe('KeyboardService', () => {
   });
 
   describe('Basic functionality', () => {
-    it('应该能初始化 KeyboardService', () => {
+    it('Should be able to initialize KeyboardService', () => {
       expect(keyboardService).toBeInstanceOf(KeyboardService);
     });
 
-    it('应该能设置和获取当前上下文', () => {
+    it('Should be able to set and get the current context', () => {
       keyboardService.setContext(KeyboardContext.EDIT);
       expect(keyboardService.getContext()).toBe(KeyboardContext.EDIT);
 
@@ -27,7 +27,7 @@ describe('KeyboardService', () => {
       expect(keyboardService.getContext()).toBe(KeyboardContext.PREVIEW);
     });
 
-    it('应该能检查按键修饰符是否匹配', () => {
+    it('Should be able to check whether key modifiers match', () => {
       const event = {
         ctrlKey: true,
         shiftKey: true,
@@ -40,8 +40,8 @@ describe('KeyboardService', () => {
     });
   });
 
-  describe('按键注册和处理', () => {
-    it('应该能注册单个按键', () => {
+  describe('Key registration and handling', () => {
+    it('Should be able to register a single key', () => {
       const handler = vi.fn();
       const id = keyboardService.registerKey('escape', handler);
       
@@ -50,14 +50,14 @@ describe('KeyboardService', () => {
       expect(bindings.some(b => b.id === id)).toBe(true);
     });
 
-    it('应该能注册快捷键组合', () => {
+    it('Should be able to register shortcut combinations', () => {
       const handler = vi.fn();
       const id = keyboardService.registerKey('c', handler, { ctrl: true });
       
       expect(keyboardService.getBindings().some(b => b.id === id)).toBe(true);
     });
 
-    it('应该能注销按键', () => {
+    it('Should be able to unregister a key', () => {
       const handler = vi.fn();
       keyboardService.registerKey('a', handler);
       
@@ -66,16 +66,16 @@ describe('KeyboardService', () => {
       expect(keyboardService.getBindings().length).toBe(initialCount - 1);
     });
 
-    it('应该能注册并处理快捷键配置', () => {
+    it('Should be able to register and handle shortcut configurations', () => {
       const handler = vi.fn();
       const shortcut: ShortcutConfig = {
         id: 'test-shortcut',
-        name: 'Test',
+        name: '测试',
         key: 'z',
         modifiers: { ctrl: true },
         context: KeyboardContext.EDIT,
         priority: 5,
-        category: 'Test'
+        category: '测试'
       };
       
       keyboardService.registerShortcut(shortcut, handler);
@@ -84,7 +84,7 @@ describe('KeyboardService', () => {
       expect(bindings.some(b => b.id === shortcut.id)).toBe(true);
     });
 
-    it('应该能批量注册快捷键', () => {
+    it('Should be able to register shortcuts in batch', () => {
       const handler1 = vi.fn();
       const handler2 = vi.fn();
       
@@ -96,7 +96,7 @@ describe('KeyboardService', () => {
           modifiers: {},
           context: KeyboardContext.GLOBAL,
           priority: 1,
-          category: 'Test'
+          category: '测试'
         },
         {
           id: 'test2',
@@ -105,7 +105,7 @@ describe('KeyboardService', () => {
           modifiers: {},
           context: KeyboardContext.GLOBAL,
           priority: 1,
-          category: 'Test'
+          category: '测试'
         }
       ];
       
@@ -118,8 +118,8 @@ describe('KeyboardService', () => {
     });
   });
 
-  describe('编辑操作快捷键', () => {
-    it('应该能处理 Ctrl+C 复制快捷键', () => {
+  describe('Editing action shortcuts', () => {
+    it('Should handle the Ctrl+C copy shortcut', () => {
       const handler = vi.fn();
       keyboardService.registerKey('c', handler, { ctrl: true }, KeyboardContext.EDIT);
       keyboardService.setContext(KeyboardContext.EDIT);
@@ -133,7 +133,7 @@ describe('KeyboardService', () => {
       expect(match).toBeDefined();
     });
 
-    it('应该能处理 Ctrl+V 粘贴快捷键', () => {
+    it('Should handle the Ctrl+V paste shortcut', () => {
       const handler = vi.fn();
       keyboardService.registerKey('v', handler, { ctrl: true }, KeyboardContext.EDIT);
       keyboardService.setContext(KeyboardContext.EDIT);
@@ -147,7 +147,7 @@ describe('KeyboardService', () => {
       expect(match).toBeDefined();
     });
 
-    it('应该能处理 Delete 删除快捷键', () => {
+    it('Should handle the Delete shortcut', () => {
       const handler = vi.fn();
       keyboardService.registerKey('delete', handler, {}, KeyboardContext.EDIT);
       
@@ -155,7 +155,7 @@ describe('KeyboardService', () => {
       expect(bindings.some(b => b.key === 'delete')).toBe(true);
     });
 
-    it('应该能处理 Ctrl+Z 撤销快捷键', () => {
+    it('Should handle the Ctrl+Z undo shortcut', () => {
       const handler = vi.fn();
       keyboardService.registerKey('z', handler, { ctrl: true }, KeyboardContext.EDIT);
       
@@ -168,7 +168,7 @@ describe('KeyboardService', () => {
       expect(match).toBeDefined();
     });
 
-    it('应该能处理 Ctrl+Y/Ctrl+Shift+Z 重做快捷键', () => {
+    it('Should handle the Ctrl+Y/Ctrl+Shift+Z redo shortcut', () => {
       const handler = vi.fn();
       keyboardService.registerKey('y', handler, { ctrl: true }, KeyboardContext.EDIT);
       keyboardService.registerKey('z', handler, { ctrl: true, shift: true }, KeyboardContext.EDIT);
@@ -181,7 +181,7 @@ describe('KeyboardService', () => {
       expect(ctrlShiftZ).toBeDefined();
     });
 
-    it('应该能处理 Ctrl+G 组合快捷键', () => {
+    it('Should handle the Ctrl+G shortcut', () => {
       const handler = vi.fn();
       keyboardService.registerKey('g', handler, { ctrl: true }, KeyboardContext.EDIT);
       
@@ -194,7 +194,7 @@ describe('KeyboardService', () => {
       expect(match).toBeDefined();
     });
 
-    it('应该能处理 Ctrl+A 全选快捷键', () => {
+    it('Should handle the Ctrl+A select-all shortcut', () => {
       const handler = vi.fn();
       keyboardService.registerKey('a', handler, { ctrl: true }, KeyboardContext.EDIT);
       
@@ -208,8 +208,8 @@ describe('KeyboardService', () => {
     });
   });
 
-  describe('按键优先级处理', () => {
-    it('应该按优先级排序按键绑定', () => {
+  describe('Handle by key priority', () => {
+    it('Should sort key bindings by priority', () => {
       const lowPriorityHandler = vi.fn();
       const highPriorityHandler = vi.fn();
       
@@ -222,8 +222,8 @@ describe('KeyboardService', () => {
     });
   });
 
-  describe('快捷键格式化', () => {
-    it('应该能正确格式化快捷键显示文本', () => {
+  describe('Shortcut formatting', () => {
+    it('Should format the shortcut display text correctly', () => {
       const ctrlC = KeyboardService.formatShortcut('c', { ctrl: true });
       expect(ctrlC).toContain('Ctrl');
       expect(ctrlC).toContain('C');
@@ -236,27 +236,27 @@ describe('KeyboardService', () => {
       expect(arrowUp).toContain('↑');
     });
 
-    it('应该能格式化单个修饰键快捷键', () => {
+    it('Should format a single-modifier shortcut', () => {
       expect(KeyboardService.formatShortcut('c', { ctrl: true })).toBe('Ctrl+C');
       expect(KeyboardService.formatShortcut('a', { shift: true })).toBe('Shift+A');
       expect(KeyboardService.formatShortcut('x', { alt: true })).toBe('Alt+X');
       expect(KeyboardService.formatShortcut('v', { meta: true })).toBe('Meta+V');
     });
 
-    it('应该能格式化多修饰键组合快捷键', () => {
+    it('Should format multi-modifier shortcut combinations', () => {
       expect(KeyboardService.formatShortcut('x', { ctrl: true, shift: true })).toBe('Ctrl+Shift+X');
       expect(KeyboardService.formatShortcut('delete', { ctrl: true, alt: true })).toBe('Ctrl+Alt+Delete');
       expect(KeyboardService.formatShortcut('z', { ctrl: true, shift: true, alt: true })).toBe('Ctrl+Shift+Alt+Z');
       expect(KeyboardService.formatShortcut('a', { ctrl: true, shift: true, alt: true, meta: true })).toBe('Ctrl+Shift+Alt+Meta+A');
     });
 
-    it('应该能格式化单个字母键为大写', () => {
+    it('Should format a single letter key as uppercase', () => {
       expect(KeyboardService.formatShortcut('a', {})).toBe('A');
       expect(KeyboardService.formatShortcut('z', {})).toBe('Z');
       expect(KeyboardService.formatShortcut('m', {})).toBe('M');
     });
 
-    it('应该能格式化特殊功能键', () => {
+    it('Should format special function keys', () => {
       expect(KeyboardService.formatShortcut('enter', {})).toBe('Enter');
       expect(KeyboardService.formatShortcut('escape', {})).toBe('Esc');
       expect(KeyboardService.formatShortcut('space', {})).toBe('Space');
@@ -265,44 +265,44 @@ describe('KeyboardService', () => {
       expect(KeyboardService.formatShortcut('tab', {})).toBe('Tab');
     });
 
-    it('应该能格式化箭头键为符号', () => {
+    it('Should format arrow keys as symbols', () => {
       expect(KeyboardService.formatShortcut('arrowup', {})).toBe('↑');
       expect(KeyboardService.formatShortcut('arrowdown', {})).toBe('↓');
       expect(KeyboardService.formatShortcut('arrowleft', {})).toBe('←');
       expect(KeyboardService.formatShortcut('arrowright', {})).toBe('→');
     });
 
-    it('应该能格式化修饰键 + 箭头键组合', () => {
+    it('Should format modifier + arrow key combinations', () => {
       expect(KeyboardService.formatShortcut('arrowup', { shift: true })).toBe('Shift+↑');
       expect(KeyboardService.formatShortcut('arrowdown', { ctrl: true })).toBe('Ctrl+↓');
       expect(KeyboardService.formatShortcut('arrowleft', { ctrl: true, shift: true })).toBe('Ctrl+Shift+←');
     });
 
-    it('应该忽略修饰键的顺序（按 Ctrl/Shift/Alt/Meta 固定顺序输出）', () => {
+    it('Should ignore modifier key order (fixed output order Ctrl/Shift/Alt/Meta)', () => {
       expect(KeyboardService.formatShortcut('k', { shift: true, ctrl: true })).toBe('Ctrl+Shift+K');
       expect(KeyboardService.formatShortcut('k', { alt: true, ctrl: true })).toBe('Ctrl+Alt+K');
     });
 
-    it('应该能处理 key 大小写不敏感', () => {
+    it('Should handle case-insensitive keys', () => {
       expect(KeyboardService.formatShortcut('A', { ctrl: true })).toBe('Ctrl+A');
       expect(KeyboardService.formatShortcut('ESCAPE', {})).toBe('Esc');
       expect(KeyboardService.formatShortcut('ArrowUp', {})).toBe('↑');
       expect(KeyboardService.formatShortcut('Delete', {})).toBe('Delete');
     });
 
-    it('应该能处理空修饰键对象', () => {
+    it('Should handle an empty modifiers object', () => {
       expect(KeyboardService.formatShortcut('x', {})).toBe('X');
       expect(KeyboardService.formatShortcut('enter', {})).toBe('Enter');
     });
 
-    it('应该能处理 modifiers 中值为 false 的修饰键', () => {
+    it('Should handle modifier keys with false values in modifiers', () => {
       expect(KeyboardService.formatShortcut('c', { ctrl: false })).toBe('C');
       expect(KeyboardService.formatShortcut('v', { ctrl: true, shift: false, alt: false })).toBe('Ctrl+V');
     });
   });
 
-  describe('上下文感知', () => {
-    it('应该能区分不同上下文的按键', () => {
+  describe('Context awareness', () => {
+    it('Should be able to distinguish keys across contexts', () => {
       const editHandler = vi.fn();
       const previewHandler = vi.fn();
       
@@ -316,8 +316,8 @@ describe('KeyboardService', () => {
 });
 
 /* Standalone tests for shortcut configs related to editing operations */
-describe('快捷键配置完整性', () => {
-  it('应该包含所有核心编辑操作的快捷键', async () => {
+describe('Shortcut configuration completeness', () => {
+  it('Should contain shortcuts for all core editing operations', async () => {
     await import('../../canvas-page/shortcuts.config');
     
     // We need to check that the shortcut config file contains the expected shortcuts

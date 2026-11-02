@@ -9,28 +9,28 @@ describe('ConfigValidator', () => {
   // isValidHost
   // -------------------------------------------------------------
   describe('isValidHost', () => {
-    it('应接受 IPv4 地址', () => {
+    it('Should accept IPv4 addresses', () => {
       expect(ConfigValidator.isValidHost('127.0.0.1')).toBe(true);
       expect(ConfigValidator.isValidHost('192.168.1.1')).toBe(true);
       expect(ConfigValidator.isValidHost('10.0.0.1')).toBe(true);
       expect(ConfigValidator.isValidHost('255.255.255.255')).toBe(true);
     });
 
-    it('应接受 localhost', () => {
+    it('Should accept localhost', () => {
       expect(ConfigValidator.isValidHost('localhost')).toBe(true);
     });
 
-    it('应接受合法主机名', () => {
+    it('Should accept valid host names', () => {
       expect(ConfigValidator.isValidHost('example.com')).toBe(true);
       expect(ConfigValidator.isValidHost('server.local')).toBe(true);
       expect(ConfigValidator.isValidHost('host-01.internal.company.com')).toBe(true);
     });
 
-    it('应拒绝空字符串', () => {
+    it('Should reject empty strings', () => {
       expect(ConfigValidator.isValidHost('')).toBe(false);
     });
 
-    it('应拒绝格式错误的主机（结构错误）', () => {
+    it('Should reject malformed hosts (structural errors)', () => {
       // Note: the source IPV4_REGEX only checks segment count and per-segment digit count (1-3), not per-segment range
       // so 999.999.999.999 passes validation;
       // Note: HOSTNAME_REGEX accepts any number of dot-separated segments, so 1.2.3 / 1.2.3.4.5 are also valid
@@ -42,7 +42,7 @@ describe('ConfigValidator', () => {
       expect(ConfigValidator.isValidHost('host@invalid')).toBe(false); // contains special characters
     });
 
-    it('应拒绝非法主机名', () => {
+    it('Should reject invalid host names', () => {
       expect(ConfigValidator.isValidHost('-invalid')).toBe(false);
       expect(ConfigValidator.isValidHost('invalid-')).toBe(false);
     });
@@ -52,22 +52,22 @@ describe('ConfigValidator', () => {
   // isValidPort
   // -------------------------------------------------------------
   describe('isValidPort', () => {
-    it('应接受 1-65535 范围内的端口', () => {
+    it('Should accept ports within 1-65535', () => {
       expect(ConfigValidator.isValidPort(1)).toBe(true);
       expect(ConfigValidator.isValidPort(80)).toBe(true);
       expect(ConfigValidator.isValidPort(502)).toBe(true);
       expect(ConfigValidator.isValidPort(65535)).toBe(true);
     });
 
-    it('应拒绝 0', () => {
+    it('Should reject 0', () => {
       expect(ConfigValidator.isValidPort(0)).toBe(false);
     });
 
-    it('应拒绝负数', () => {
+    it('Should reject negative numbers', () => {
       expect(ConfigValidator.isValidPort(-1)).toBe(false);
     });
 
-    it('应拒绝大于 65535 的端口', () => {
+    it('Should reject ports greater than 65535', () => {
       expect(ConfigValidator.isValidPort(65536)).toBe(false);
       expect(ConfigValidator.isValidPort(100000)).toBe(false);
     });
@@ -77,21 +77,21 @@ describe('ConfigValidator', () => {
   // isInRange
   // -------------------------------------------------------------
   describe('isInRange', () => {
-    it('值在范围内应返回 true', () => {
+    it('Values in range should return true', () => {
       expect(ConfigValidator.isInRange(5, 1, 10)).toBe(true);
       expect(ConfigValidator.isInRange(1, 1, 10)).toBe(true); // boundary
       expect(ConfigValidator.isInRange(10, 1, 10)).toBe(true); // boundary
     });
 
-    it('值小于 min 应返回 false', () => {
+    it('Values less than min should return false', () => {
       expect(ConfigValidator.isInRange(0, 1, 10)).toBe(false);
     });
 
-    it('值大于 max 应返回 false', () => {
+    it('Values greater than max should return false', () => {
       expect(ConfigValidator.isInRange(11, 1, 10)).toBe(false);
     });
 
-    it('min == max == value 应返回 true', () => {
+    it('min == max == value should return true', () => {
       expect(ConfigValidator.isInRange(5, 5, 5)).toBe(true);
     });
   });
@@ -100,13 +100,13 @@ describe('ConfigValidator', () => {
   // validateHost
   // -------------------------------------------------------------
   describe('validateHost', () => {
-    it('合法主机应返回 null', () => {
+    it('Valid host should return null', () => {
       expect(ConfigValidator.validateHost('127.0.0.1')).toBeNull();
       expect(ConfigValidator.validateHost('localhost')).toBeNull();
       expect(ConfigValidator.validateHost('example.com')).toBeNull();
     });
 
-    it('非法主机应返回 FieldError', () => {
+    it('Illegal host should return FieldError', () => {
       const result = ConfigValidator.validateHost('invalid host');
       expect(result).not.toBeNull();
       expect(result!.field).toBe('host');
@@ -114,14 +114,14 @@ describe('ConfigValidator', () => {
       expect(result!.message).toContain('格式无效');
     });
 
-    it('应支持自定义 field 和 label', () => {
+    it('Should support custom field and label', () => {
       const result = ConfigValidator.validateHost('invalid', 'ipAddress', 'IP 地址');
       expect(result).not.toBeNull();
       expect(result!.field).toBe('ipAddress');
       expect(result!.message).toContain('IP 地址');
     });
 
-    it('空字符串应返回 null（跳过校验）', () => {
+    it('Empty string should return null (skip validation)', () => {
       expect(ConfigValidator.validateHost('')).toBeNull();
     });
   });
@@ -130,13 +130,13 @@ describe('ConfigValidator', () => {
   // validatePort
   // -------------------------------------------------------------
   describe('validatePort', () => {
-    it('合法端口应返回 null', () => {
+    it('Valid port should return null', () => {
       expect(ConfigValidator.validatePort(80)).toBeNull();
       expect(ConfigValidator.validatePort(502)).toBeNull();
       expect(ConfigValidator.validatePort(65535)).toBeNull();
     });
 
-    it('非法端口应返回 FieldError', () => {
+    it('Invalid port should return FieldError', () => {
       const result = ConfigValidator.validatePort(0);
       expect(result).not.toBeNull();
       expect(result!.field).toBe('port');
@@ -144,18 +144,18 @@ describe('ConfigValidator', () => {
       expect(result!.message).toContain('1-65535');
     });
 
-    it('应支持自定义 field 和 label', () => {
+    it('Should support custom field and label', () => {
       const result = ConfigValidator.validatePort(99999, 'modbusPort', 'Modbus 端口');
       expect(result).not.toBeNull();
       expect(result!.field).toBe('modbusPort');
       expect(result!.message).toContain('Modbus 端口');
     });
 
-    it('undefined 端口应返回 null（跳过校验）', () => {
+    it('An undefined port should return null (skip validation)', () => {
       expect(ConfigValidator.validatePort(undefined)).toBeNull();
     });
 
-    it('负端口应返回 FieldError', () => {
+    it('Negative port should return FieldError', () => {
       const result = ConfigValidator.validatePort(-1);
       expect(result).not.toBeNull();
       expect(result!.message).toContain('1-65535');
@@ -166,11 +166,11 @@ describe('ConfigValidator', () => {
   // validateRange
   // -------------------------------------------------------------
   describe('validateRange', () => {
-    it('值在范围内应返回 null', () => {
+    it('Values in range should return null', () => {
       expect(ConfigValidator.validateRange(5, 1, 10, 'field', '标签')).toBeNull();
     });
 
-    it('值超出范围应返回 FieldError', () => {
+    it('Values out of range should return FieldError', () => {
       const result = ConfigValidator.validateRange(11, 1, 10, 'field', '标签');
       expect(result).not.toBeNull();
       expect(result!.field).toBe('field');
@@ -178,19 +178,19 @@ describe('ConfigValidator', () => {
       expect(result!.message).toContain('1-10');
     });
 
-    it('值等于 min 应返回 null（边界）', () => {
+    it('Values equal to min should return null (boundary)', () => {
       expect(ConfigValidator.validateRange(1, 1, 10, 'f', 'l')).toBeNull();
     });
 
-    it('值等于 max 应返回 null（边界）', () => {
+    it('Values equal to max should return null (boundary)', () => {
       expect(ConfigValidator.validateRange(10, 1, 10, 'f', 'l')).toBeNull();
     });
 
-    it('undefined 值应返回 null（跳过校验）', () => {
+    it('An undefined value should return null (skip validation)', () => {
       expect(ConfigValidator.validateRange(undefined, 1, 10, 'f', 'l')).toBeNull();
     });
 
-    it('负值超出范围应返回 FieldError', () => {
+    it('Negative values out of range should return FieldError', () => {
       const result = ConfigValidator.validateRange(-1, 0, 100, 'field', '值');
       expect(result).not.toBeNull();
       expect(result!.message).toContain('0-100');
@@ -201,7 +201,7 @@ describe('ConfigValidator', () => {
   // validateUrlPrefix
   // -------------------------------------------------------------
   describe('validateUrlPrefix', () => {
-    it('URL 以指定前缀开头应返回 null', () => {
+    it('A URL starting with the specified prefix should return null', () => {
       expect(
         ConfigValidator.validateUrlPrefix(
           'mqtt://broker.example.com',
@@ -220,7 +220,7 @@ describe('ConfigValidator', () => {
       ).toBeNull();
     });
 
-    it('URL 不以指定前缀开头应返回 FieldError', () => {
+    it('A URL not starting with the specified prefix should return FieldError', () => {
       const result = ConfigValidator.validateUrlPrefix(
         'http://example.com',
         ['mqtt://', 'mqtts://'],
@@ -233,15 +233,15 @@ describe('ConfigValidator', () => {
       expect(result!.message).toContain('mqtt://');
     });
 
-    it('undefined URL 应返回 null（跳过校验）', () => {
+    it('An undefined URL should return null (skip validation)', () => {
       expect(ConfigValidator.validateUrlPrefix(undefined, ['mqtt://'], 'url', 'URL')).toBeNull();
     });
 
-    it('空字符串 URL 应返回 null（跳过校验）', () => {
+    it('Empty string URL should return null (skip validation)', () => {
       expect(ConfigValidator.validateUrlPrefix('', ['mqtt://'], 'url', 'URL')).toBeNull();
     });
 
-    it('错误信息应包含所有前缀', () => {
+    it('Error message should contain all prefixes', () => {
       const result = ConfigValidator.validateUrlPrefix(
         'invalid',
         ['mqtt://', 'mqtts://'],
@@ -258,13 +258,13 @@ describe('ConfigValidator', () => {
   // validateEnum
   // -------------------------------------------------------------
   describe('validateEnum', () => {
-    it('值在枚举中应返回 null', () => {
+    it('Values in the enum should return null', () => {
       expect(
         ConfigValidator.validateEnum('tcp', ['tcp', 'serial', 'ws'], 'transport', '传输'),
       ).toBeNull();
     });
 
-    it('值不在枚举中应返回 FieldError', () => {
+    it('Values not in the enum should return FieldError', () => {
       const result = ConfigValidator.validateEnum(
         'udp',
         ['tcp', 'serial', 'ws'],
@@ -279,11 +279,11 @@ describe('ConfigValidator', () => {
       expect(result!.message).toContain('ws');
     });
 
-    it('undefined 值应返回 null（跳过校验）', () => {
+    it('An undefined value should return null (skip validation)', () => {
       expect(ConfigValidator.validateEnum(undefined, ['a', 'b'], 'field', '标签')).toBeNull();
     });
 
-    it('数字枚举应正确校验', () => {
+    it('Numeric enums should validate correctly', () => {
       expect(ConfigValidator.validateEnum(1, [1, 2, 3], 'mode', '模式')).toBeNull();
 
       const result = ConfigValidator.validateEnum(5, [1, 2, 3], 'mode', '模式');
@@ -293,7 +293,7 @@ describe('ConfigValidator', () => {
       expect(result!.message).toContain('3');
     });
 
-    it('错误信息应使用顿号分隔', () => {
+    it('Error message should be separated by enumeration commas', () => {
       const result = ConfigValidator.validateEnum('x', ['a', 'b', 'c'], 'field', '标签');
       expect(result!.message).toContain('a、b、c');
     });

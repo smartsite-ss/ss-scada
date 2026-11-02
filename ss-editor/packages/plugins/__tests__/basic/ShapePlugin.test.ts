@@ -100,7 +100,7 @@ describe('ShapePlugin — Declaration-rendering mapping validation (Layer 3)', (
     expect(() => (plugin as any).render(dc)).not.toThrow();
   });
 
-  it('修改 fillColor 后 render 应使用新的颜色值', () => {
+  it('After changing fillColor, render should use the new color value', () => {
     const plugin = new ShapePlugin(0, 0, 100, 100);
     (plugin as any).setPluginProps({ fillColor: '#FF0000FF' });
 

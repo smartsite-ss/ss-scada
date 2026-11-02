@@ -117,18 +117,18 @@ describe('IsolationAlarmService', () => {
   });
 
   describe('constructor', () => {
-    it('应该订阅 plugin.isolation.crash 事件', () => {
+    it('Should subscribe to the plugin.isolation.crash event', () => {
       expect(eventBus.on).toHaveBeenCalledWith('plugin.isolation.crash', expect.any(Function));
     });
 
-    it('应该启动健康检查定时器', () => {
+    it('Should start the health check timer', () => {
       // Verify the timer has started (setInterval was called)
       expect(jest.getTimerCount()).toBeGreaterThan(0);
     });
   });
 
   describe('onCrash', () => {
-    it('崩溃事件应记录到 restartRecords', () => {
+    it('Crash events should be recorded in restartRecords', () => {
       const payload = createCrashPayload();
       eventBus.trigger('plugin.isolation.crash', payload);
 
@@ -138,7 +138,7 @@ describe('IsolationAlarmService', () => {
       expect(record!.mode).toBe(IsolationMode.WORKER_THREAD);
     });
 
-    it('多次崩溃应累加重启次数', () => {
+    it('Multiple crashes should accumulate the restart count', () => {
       eventBus.trigger('plugin.isolation.crash', createCrashPayload({ restartCount: 1 }));
       eventBus.trigger('plugin.isolation.crash', createCrashPayload({ restartCount: 2 }));
       eventBus.trigger('plugin.isolation.crash', createCrashPayload({ restartCount: 3 }));
@@ -147,7 +147,7 @@ describe('IsolationAlarmService', () => {
       expect(record!.restartCount).toBe(3);
     });
 
-    it('不同协议应有独立的重启记录', () => {
+    it('Different protocols should have independent restart records', () => {
       eventBus.trigger(
         'plugin.isolation.crash',
         createCrashPayload({ protocol: 'modbus_tcp', restartCount: 2 }),
@@ -163,7 +163,7 @@ describe('IsolationAlarmService', () => {
   });
 
   describe('checkHighRestart', () => {
-    it('10 分钟内重启超过 3 次应触发告警', () => {
+    it('More than 3 restarts within 10 minutes should trigger an alarm', () => {
       const now = Date.now();
       // Simulate 4 crashes, time span < 10 minutes
       eventBus.trigger(
@@ -197,7 +197,7 @@ describe('IsolationAlarmService', () => {
       );
     });
 
-    it('重启次数未超过阈值不应触发告警', () => {
+    it('Restart counts below the threshold should not trigger an alarm', () => {
       eventBus.trigger('plugin.isolation.crash', createCrashPayload({ restartCount: 2 }));
       eventBus.trigger('plugin.isolation.crash', createCrashPayload({ restartCount: 3 }));
 
@@ -209,7 +209,7 @@ describe('IsolationAlarmService', () => {
   });
 
   describe('performHealthCheck', () => {
-    it('dead 状态应触发 worker-dead 告警', async () => {
+    it('The dead status should trigger the worker-dead alarm', async () => {
       const mockGetAllHealth = jest
         .fn()
         .mockResolvedValue(new Map([['virtual', createHealthData({ status: 'dead' })]]));
@@ -242,7 +242,7 @@ describe('IsolationAlarmService', () => {
       );
     });
 
-    it('延迟超过阈值应触发 worker-high-latency 告警', async () => {
+    it('Latency over the threshold should trigger the worker-high-latency alarm', async () => {
       const mockGetAllHealth = jest
         .fn()
         .mockResolvedValue(new Map([['virtual', createHealthData({ avgLatencyMs: 15000 })]]));
@@ -272,7 +272,7 @@ describe('IsolationAlarmService', () => {
       );
     });
 
-    it('健康状态不应触发告警', async () => {
+    it('Healthy status should not trigger an alarm', async () => {
       const mockGetAllHealth = jest
         .fn()
         .mockResolvedValue(
@@ -294,7 +294,7 @@ describe('IsolationAlarmService', () => {
   });
 
   describe('getRestartRecords', () => {
-    it('应该返回所有重启记录的副本', () => {
+    it('Should return a copy of all restart records', () => {
       eventBus.trigger('plugin.isolation.crash', createCrashPayload({ protocol: 'modbus_tcp' }));
       eventBus.trigger('plugin.isolation.crash', createCrashPayload({ protocol: 'opcua' }));
 
@@ -306,7 +306,7 @@ describe('IsolationAlarmService', () => {
   });
 
   describe('onModuleDestroy', () => {
-    it('应该清理定时器和事件监听', () => {
+    it('Should clean up timers and event listeners', () => {
       service.onModuleDestroy();
 
       expect(eventBus.off).toHaveBeenCalledWith('plugin.isolation.crash');

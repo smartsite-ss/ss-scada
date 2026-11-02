@@ -272,7 +272,7 @@ describe('ScriptTemplateService', () => {
       mockRepo.findOne.mockResolvedValue(null);
 
       await expect(
-        service.instantiateTemplate('non-existent', 'Test', 'project-1'),
+        service.instantiateTemplate('non-existent', '测试', 'project-1'),
       ).rejects.toThrow(NotFoundException);
     });
   });

@@ -50,11 +50,11 @@ describe('StatusIndicatorPlugin — Schema static validation (Layer 1)', () => {
 
   it('each field should have labelKey', () => {
     for (const field of statusIndicatorPropertySchema.fields) {
-      expect(field.labelKey, '${field.name} 缺少 labelKey').toBeTruthy();
+      expect(field.labelKey, '${field.name} missing labelKey').toBeTruthy();
     }
   });
 
-  it('status 字段应有 4 个选项', () => {
+  it('The status field should have 4 options', () => {
     const statusField = statusIndicatorPropertySchema.fields.find(f => f.name === 'status');
     expect(statusField?.options).toHaveLength(4);
   });
@@ -67,7 +67,7 @@ describe('StatusIndicatorPlugin — Construction and basic functionality', () =>
     expect(plugin.type).toBe('status-indicator');
   });
 
-  it('应接受位置和大小参数', () => {
+  it('Should accept position and size arguments', () => {
     const plugin = new StatusIndicatorPlugin(50, 100, 60, 60);
     const size = plugin.getSize();
     expect(size.width).toBe(60);
@@ -81,12 +81,12 @@ describe('StatusIndicatorPlugin — Construction and basic functionality', () =>
     expect(size.height).toBe(60);
   });
 
-  it('默认状态应为 normal', () => {
+  it('Default status should be normal', () => {
     const plugin = new StatusIndicatorPlugin();
     expect(plugin.pluginProps.status).toBe('normal');
   });
 
-  it('getHtmlTemplate 应返回包含 HTML 的字符串', () => {
+  it('getHtmlTemplate should return a string containing HTML', () => {
     const plugin = new StatusIndicatorPlugin();
     const html = (plugin as any).getHtmlTemplate(plugin.pluginProps);
     expect(typeof html).toBe('string');
@@ -95,7 +95,7 @@ describe('StatusIndicatorPlugin — Construction and basic functionality', () =>
 });
 
 describe('StatusIndicatorPlugin — Property read/write consistency', () => {
-  it('setDefaultProps 应写入配置', () => {
+  it('setDefaultProps should write into the config', () => {
     const plugin = new StatusIndicatorPlugin();
     plugin.setDefaultProps({ status: 'warning', size: 30 } as any);
     expect(plugin.pluginProps.status).toBe('warning');

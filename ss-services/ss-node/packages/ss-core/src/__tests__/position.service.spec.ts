@@ -88,7 +88,7 @@ describe('PositionService', () => {
 
   describe('create', () => {
     const dto: CreatePositionDto = {
-      name: '厂长',
+      name: 'Plant director',
       code: 'manager',
       description: '厂长岗位',
       sortOrder: 0,
@@ -103,7 +103,7 @@ describe('PositionService', () => {
       expect(result.id).toBe('new-id');
       expect(positionRepo.create).toHaveBeenCalledWith(
         expect.objectContaining({
-          name: '厂长',
+          name: 'Plant director',
           code: 'manager',
           sortOrder: 0,
         }),

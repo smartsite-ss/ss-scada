@@ -82,7 +82,7 @@ describe('End-to-end complete workflow test', () => {
     });
   });
 
-  describe('数据管理流程', () => {
+  describe('Data management flow', () => {
     it('should create multiple pages', () => {
       const editor = new Editor({ name: 'Multi-page Project' });
       

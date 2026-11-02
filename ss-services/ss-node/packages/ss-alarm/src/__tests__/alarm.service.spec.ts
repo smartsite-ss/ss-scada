@@ -1005,7 +1005,7 @@ describe('AlarmService', () => {
 
   // ==================== batchAcknowledgeIdempotent (phase 2, 07 #10) ====================
   describe('batchAcknowledgeIdempotent', () => {
-    it('TC-ALM-BATCH-101: 相同 requestId 重复请求直接返回首次结果（幂等重放）', async () => {
+    it('TC-ALM-BATCH-101: repeated requests with the same requestId return the first result directly (idempotent replay)', async () => {
       const record = makeRecord({ id: 'rec-1', status: AlarmStatus.ACTIVE });
       mockRecordRepo.find.mockResolvedValue([record]);
       mockRecordRepo.save.mockImplementation(async (records: any) => records);
@@ -1030,7 +1030,7 @@ describe('AlarmService', () => {
       expect(mockRecordRepo.save).toHaveBeenCalledTimes(1);
     });
 
-    it('TC-ALM-BATCH-102: 幂等缓存超过 10 分钟 TTL 后重新执行', async () => {
+    it('TC-ALM-BATCH-102: the idempotency cache re-executes after the 10-minute TTL expires', async () => {
       const record = makeRecord({ id: 'rec-1', status: AlarmStatus.ACTIVE });
       mockRecordRepo.find.mockResolvedValue([record]);
       mockRecordRepo.save.mockImplementation(async (records: any) => records);
@@ -1055,7 +1055,7 @@ describe('AlarmService', () => {
       nowSpy.mockRestore();
     });
 
-    it('TC-ALM-BATCH-103: 部分失败分类（已确认/已清除/非法状态/不存在）不整体报错', async () => {
+    it('TC-ALM-BATCH-103: partial failure classification (acknowledged/cleared/invalid state/not found) without failing the whole batch', async () => {
       mockRecordRepo.find.mockResolvedValue([
         makeRecord({ id: 'rec-active', status: AlarmStatus.ACTIVE }),
         makeRecord({ id: 'rec-ack', status: AlarmStatus.ACKNOWLEDGED }),
@@ -1089,7 +1089,7 @@ describe('AlarmService', () => {
       ]);
     });
 
-    it('TC-ALM-BATCH-104: 重复 ID 去重后仅确认一次', async () => {
+    it('TC-ALM-BATCH-104: duplicate IDs are deduplicated and acknowledged only once', async () => {
       const record = makeRecord({ id: 'rec-1', status: AlarmStatus.ACTIVE });
       mockRecordRepo.find.mockResolvedValue([record]);
       mockRecordRepo.save.mockImplementation(async (records: any) => records);
@@ -1106,7 +1106,7 @@ describe('AlarmService', () => {
       expect(mockRecordRepo.save).toHaveBeenCalledWith([expect.objectContaining({ id: 'rec-1' })]);
     });
 
-    it('TC-ALM-BATCH-105: 不携带 requestId 时不缓存（每次执行）', async () => {
+    it('TC-ALM-BATCH-105: without requestId, no caching (executes every time)', async () => {
       const record = makeRecord({ id: 'rec-1', status: AlarmStatus.ACTIVE });
       mockRecordRepo.find.mockResolvedValue([record]);
       mockRecordRepo.save.mockImplementation(async (records: any) => records);
@@ -1118,7 +1118,7 @@ describe('AlarmService', () => {
       expect(mockRecordRepo.find).toHaveBeenCalledTimes(2);
     });
 
-    it('TC-ALM-BATCH-106: 空 ID 列表返回空结果且不写库', async () => {
+    it('TC-ALM-BATCH-106: an empty ID list returns an empty result without writing to the DB', async () => {
       mockRecordRepo.find.mockResolvedValue([]);
 
       const result = await service.batchAcknowledgeIdempotent(

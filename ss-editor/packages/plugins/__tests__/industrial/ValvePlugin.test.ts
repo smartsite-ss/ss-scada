@@ -100,7 +100,7 @@ describe('ValvePlugin — Declaration-rendering mapping validation (Layer 3)', (
     expect(() => (plugin as any).render(dc)).not.toThrow();
   });
 
-  it('修改 bodyColor 后 render 应使用新的颜色值', () => {
+  it('After changing bodyColor, render should use the new color value', () => {
     const plugin = new ValvePlugin(0, 0, 80, 80);
     (plugin as any).setPluginProps({ bodyColor: '#FF0000FF' });
 
@@ -111,7 +111,7 @@ describe('ValvePlugin — Declaration-rendering mapping validation (Layer 3)', (
     expect(fillCalls.length).toBeGreaterThan(0);
   });
 
-  it('所有字段在 render 源码中有引用', () => {
+  it('All fields are referenced in the render source code', () => {
     const mapper = new RenderFieldMapper(
       valvePropertySchema,
       './industrial/valve/ValvePlugin.ts',

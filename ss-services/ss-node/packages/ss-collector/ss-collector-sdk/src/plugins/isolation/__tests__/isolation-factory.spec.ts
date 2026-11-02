@@ -66,7 +66,7 @@ const createMockEventBus = () => ({
 // ============================================================
 describe('IsolationFactory', () => {
   describe('getExecutor', () => {
-    it('IN_PROCESS 模式应创建 InProcessExecutor', () => {
+    it('IN_PROCESS mode should create an InProcessExecutor', () => {
       const { getPlugin, getAdapter } = createMockRegistry(IsolationMode.IN_PROCESS);
       const factory = new IsolationFactory(
         {
@@ -96,7 +96,7 @@ describe('IsolationFactory', () => {
       expect(executor.name).toBe('InProcess');
     });
 
-    it('WORKER_THREAD 模式应创建 WorkerThreadExecutor', () => {
+    it('WORKER_THREAD mode should create a WorkerThreadExecutor', () => {
       const { getPlugin, getAdapter } = createMockRegistry(IsolationMode.WORKER_THREAD);
       const factory = new IsolationFactory(
         {
@@ -126,7 +126,7 @@ describe('IsolationFactory', () => {
       expect(executor.name).toBe('WorkerThread');
     });
 
-    it('CHILD_PROCESS 模式应创建 ChildProcessExecutor', () => {
+    it('CHILD_PROCESS mode should create a ChildProcessExecutor', () => {
       const { getPlugin, getAdapter } = createMockRegistry(IsolationMode.CHILD_PROCESS);
       const factory = new IsolationFactory(
         {
@@ -156,7 +156,7 @@ describe('IsolationFactory', () => {
       expect(executor.name).toBe('ChildProcess');
     });
 
-    it('同一协议多次调用应返回同一 executor', () => {
+    it('Multiple calls with the same protocol should return the same executor', () => {
       const { getPlugin, getAdapter } = createMockRegistry(IsolationMode.IN_PROCESS);
       const factory = new IsolationFactory(
         {
@@ -187,7 +187,7 @@ describe('IsolationFactory', () => {
       expect(executor1).toBe(executor2);
     });
 
-    it('无插件信息时默认使用 IN_PROCESS', () => {
+    it('Defaults to IN_PROCESS when there is no plugin info', () => {
       const getPlugin = jest.fn().mockReturnValue(undefined);
       const factory = new IsolationFactory(
         {
@@ -219,7 +219,7 @@ describe('IsolationFactory', () => {
   });
 
   describe('isIsolated', () => {
-    it('IN_PROCESS 模式返回 false', () => {
+    it('IN_PROCESS mode returns false', () => {
       const { getPlugin, getAdapter } = createMockRegistry(IsolationMode.IN_PROCESS);
       const factory = new IsolationFactory(
         {
@@ -248,7 +248,7 @@ describe('IsolationFactory', () => {
       expect(factory.isIsolated('test')).toBe(false);
     });
 
-    it('WORKER_THREAD 模式返回 true', () => {
+    it('WORKER_THREAD mode returns true', () => {
       const { getPlugin, getAdapter } = createMockRegistry(IsolationMode.WORKER_THREAD);
       const factory = new IsolationFactory(
         {
@@ -279,7 +279,7 @@ describe('IsolationFactory', () => {
   });
 
   describe('prepare', () => {
-    it('IN_PROCESS 模式无需预热', async () => {
+    it('IN_PROCESS mode needs no warm-up', async () => {
       const { getPlugin, getAdapter } = createMockRegistry(IsolationMode.IN_PROCESS);
       const factory = new IsolationFactory(
         {
@@ -309,7 +309,7 @@ describe('IsolationFactory', () => {
       expect(getAdapter).not.toHaveBeenCalled(); // prepare does not call getAdapter
     });
 
-    it('协议不存在时不应报错', async () => {
+    it('Should not error when the protocol does not exist', async () => {
       const getPlugin = jest.fn().mockReturnValue(undefined);
       const factory = new IsolationFactory(
         {
@@ -340,7 +340,7 @@ describe('IsolationFactory', () => {
   });
 
   describe('getAllHealth', () => {
-    it('应该返回所有 executor 的健康状态', async () => {
+    it('Should return the health status of all executors', async () => {
       const { getPlugin, getAdapter } = createMockRegistry(IsolationMode.IN_PROCESS);
       const factory = new IsolationFactory(
         {
@@ -375,7 +375,7 @@ describe('IsolationFactory', () => {
   });
 
   describe('onModuleDestroy', () => {
-    it('应该销毁所有 executor', async () => {
+    it('Should destroy all executors', async () => {
       const { getPlugin, getAdapter } = createMockRegistry(IsolationMode.IN_PROCESS);
       const factory = new IsolationFactory(
         {

@@ -92,7 +92,7 @@ for (const item of others) {
       expect(plugin.config.type).toBeTruthy();
     });
 
-    it('应接受位置和大小参数', () => {
+    it('Should accept position and size arguments', () => {
       const plugin = new item.PluginClass(50, 100, 400, 300);
       const pos = plugin.getPosition();
       expect(pos.x).toBe(50);

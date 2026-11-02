@@ -54,7 +54,7 @@ describe('PipeHPlugin — Schema static validation (Layer 1)', () => {
 
   it('each field should have labelKey', () => {
     for (const field of pipeHPropertySchema.fields) {
-      expect(field.labelKey, '${field.name} 缺少 labelKey').toBeTruthy();
+      expect(field.labelKey, '${field.name} missing labelKey').toBeTruthy();
     }
   });
 });
@@ -66,14 +66,14 @@ describe('PipeHPlugin — Construction and basic functionality', () => {
     expect(plugin.config.type).toBe('pipe-h');
   });
 
-  it('应接受位置和大小参数', () => {
+  it('Should accept position and size arguments', () => {
     const plugin = new PipeHPlugin(50, 100, 200, 40);
     const pos = plugin.getPosition();
     expect(pos.x).toBe(50);
     expect(pos.y).toBe(100);
   });
 
-  it('getSize 应返回正确尺寸', () => {
+  it('getSize should return the correct size', () => {
     const plugin = new PipeHPlugin(0, 0, 200, 40);
     const size = plugin.getSize();
     expect(size.width).toBe(200);
@@ -87,7 +87,7 @@ describe('PipeHPlugin — Construction and basic functionality', () => {
 });
 
 describe('PipeHPlugin — Property read/write consistency', () => {
-  it('setPluginProps 应正确写入属性', () => {
+  it('setPluginProps should write properties correctly', () => {
     const plugin = new PipeHPlugin();
     (plugin as any).setPluginProps({ pipeColor: '#FF0000FF' });
     expect(plugin.pluginProps.pipeColor).toBe('#FF0000FF');
@@ -101,7 +101,7 @@ describe('PipeHPlugin — Property read/write consistency', () => {
     expect(changed).toBe(true);
   });
 
-  it('切换 status 应正确更新', () => {
+  it('Toggling status should update correctly', () => {
     const plugin = new PipeHPlugin();
     (plugin as any).setPluginProps({ status: 'blocked' });
     expect(plugin.pluginProps.status).toBe('blocked');
@@ -109,7 +109,7 @@ describe('PipeHPlugin — Property read/write consistency', () => {
 });
 
 describe('PipeHPlugin — render method', () => {
-  it('draw 方法应可调用不抛错', () => {
+  it('The draw method should be callable without throwing', () => {
     const plugin = new PipeHPlugin();
     const mockCtx = {
       save: () => {},

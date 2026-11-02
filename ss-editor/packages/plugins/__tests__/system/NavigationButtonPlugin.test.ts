@@ -32,18 +32,18 @@ describe('NavigationButtonPlugin — Schema static validation (Layer 1)', () => 
     }
   });
 
-  it('每个 field 应有 labelKey', () => {
+  it('Every field should have labelKey', () => {
     for (const field of navigationButtonPropertySchema.fields) {
-      expect(field.labelKey, `${field.name} 缺少 labelKey`).toBeTruthy();
+      expect(field.labelKey, `${field.name} missing labelKey`).toBeTruthy();
     }
   });
 
-  it('type 字段应有 5 个选项', () => {
+  it('The type field should have 5 options', () => {
     const typeField = navigationButtonPropertySchema.fields.find(f => f.name === 'type');
     expect(typeField?.options).toHaveLength(5);
   });
 
-  it('size 字段应有 3 个选项', () => {
+  it('The size field should have 3 options', () => {
     const sizeField = navigationButtonPropertySchema.fields.find(f => f.name === 'size');
     expect(sizeField?.options).toHaveLength(3);
   });
@@ -56,33 +56,33 @@ describe('NavigationButtonPlugin — Construction and basic functionality', () =
     expect(plugin.type).toBe('navigation-button');
   });
 
-  it('应接受位置和大小参数', () => {
+  it('Should accept position and size arguments', () => {
     const plugin = new NavigationButtonPlugin(50, 100, 150, 50);
     const size = plugin.getSize();
     expect(size.width).toBe(150);
     expect(size.height).toBe(50);
   });
 
-  it('getSize 应返回正确尺寸', () => {
+  it('getSize should return the correct size', () => {
     const plugin = new NavigationButtonPlugin(0, 0, 150, 50);
     const size = plugin.getSize();
     expect(size.width).toBe(150);
     expect(size.height).toBe(50);
   });
 
-  it('默认文本应为 导航按钮', () => {
+  it('Default text should be Navigation Button', () => {
     const plugin = new NavigationButtonPlugin();
     expect(plugin.pluginProps.text).toBe('导航按钮');
   });
 
-  it('默认类型应为 primary', () => {
+  it('Default type should be primary', () => {
     const plugin = new NavigationButtonPlugin();
     expect(plugin.pluginProps.type).toBe('primary');
   });
 });
 
-describe('NavigationButtonPlugin — 属性读写一致性', () => {
-  it('setDefaultProps 应写入配置', () => {
+describe('NavigationButtonPlugin — property read/write consistency', () => {
+  it('setDefaultProps should write into the config', () => {
     const plugin = new NavigationButtonPlugin();
     plugin.setDefaultProps({ text: '测试', type: 'danger' } as any);
     expect(plugin.pluginProps.text).toBe('测试');
@@ -97,14 +97,14 @@ describe('NavigationButtonPlugin — 属性读写一致性', () => {
 });
 
 describe('NavigationButtonPlugin — features', () => {
-  it('dataBindable 应为 true（编辑态数据绑定支持）', () => {
+  it('dataBindable should be true (edit-mode data binding support)', () => {
     const meta = (NavigationButtonPlugin as any).graphicMeta;
     expect(meta).toBeDefined();
     expect(meta.features).toBeDefined();
     expect(meta.features.dataBindable).toBe(true);
   });
 
-  it('应保留其他 feature 标志位', () => {
+  it('Should keep other feature flags', () => {
     const meta = (NavigationButtonPlugin as any).graphicMeta;
     expect(meta.features.resizable).toBe(true);
     expect(meta.features.cloneable).toBe(true);

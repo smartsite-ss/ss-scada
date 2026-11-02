@@ -275,7 +275,7 @@ class SimulatedCollector {
 
 // ─── Test suite ───
 
-describe('Device → Collector → DataTag → Storage 集成测试', () => {
+describe('Device → Collector → DataTag → Storage integration tests', () => {
   let cacheService: DataPointCacheService;
   let eventBusService: EventBusService;
   let alarmDebouncer: AlarmDebouncer;
@@ -385,13 +385,13 @@ describe('Device → Collector → DataTag → Storage 集成测试', () => {
   // ========================================================================
   // TC-INT-001: Device connects via Modbus → reads tags → DataTag values updated → data stored
   // ========================================================================
-  describe('TC-INT-001: Modbus 设备连接 → 读取标签 → 数据标签更新 → 数据存储', () => {
-    it('应成功连接 Modbus 设备并读取标签值', async () => {
+  describe('TC-INT-001: Modbus device connect → read tags → data tags update → data storage', () => {
+    it('Should successfully connect a Modbus device and read tag values', async () => {
       await collector.connect(deviceConfig);
       expect(collector.isConnected()).toBe(true);
     });
 
-    it('应能读取单个标签值并存储到缓存', async () => {
+    it('Should be able to read a single tag value and store it in the cache', async () => {
       await collector.connect(deviceConfig);
 
       const tag = deviceConfig.tags[0];
@@ -419,7 +419,7 @@ describe('Device → Collector → DataTag → Storage 集成测试', () => {
       expect(cached!.quality).toBe('good');
     });
 
-    it('应能批量读取标签值并存储到缓存', async () => {
+    it('Should be able to batch-read tag values and store them in the cache', async () => {
       await collector.connect(deviceConfig);
 
       const results = await collector.readBatch(deviceConfig.tags);
@@ -446,7 +446,7 @@ describe('Device → Collector → DataTag → Storage 集成测试', () => {
       expect(cacheService.getSize().l1).toBe(4);
     });
 
-    it('应通过事件总线发布 data_point_changed 事件', async () => {
+    it('Should publish the data_point_changed event via the event bus', async () => {
       await collector.connect(deviceConfig);
 
       const results = await collector.readBatch(deviceConfig.tags);
@@ -478,7 +478,7 @@ describe('Device → Collector → DataTag → Storage 集成测试', () => {
       );
     });
 
-    it('应正确处理带变换系数的标签值', async () => {
+    it('Should handle tag values with transform coefficients correctly', async () => {
       await collector.connect(deviceConfig);
 
       const tempTag = deviceConfig.tags[0]; // scale: 0.1
@@ -493,13 +493,13 @@ describe('Device → Collector → DataTag → Storage 集成测试', () => {
   // ========================================================================
   // TC-INT-002: Device connects via MQTT → subscribes to topic → receives messages → data stored
   // ========================================================================
-  describe('TC-INT-002: MQTT 设备连接 → 订阅主题 → 接收消息 → 数据存储', () => {
-    it('应成功连接 MQTT 设备', async () => {
+  describe('TC-INT-002: MQTT device connect → subscribe topic → receive message → data storage', () => {
+    it('Should successfully connect an MQTT device', async () => {
       await collector.connect(mqttDeviceConfig);
       expect(collector.isConnected()).toBe(true);
     });
 
-    it('应能接收 MQTT 消息并存储到缓存', async () => {
+    it('Should be able to receive MQTT messages and store them in the cache', async () => {
       await collector.connect(mqttDeviceConfig);
 
       const tag = mqttDeviceConfig.tags[0];
@@ -523,7 +523,7 @@ describe('Device → Collector → DataTag → Storage 集成测试', () => {
       expect(cached!.value).toBe(25.5);
     });
 
-    it('应能接收多个 MQTT 消息并批量存储', async () => {
+    it('Should be able to receive multiple MQTT messages and batch-store them', async () => {
       await collector.connect(mqttDeviceConfig);
 
       const messages = [
@@ -551,8 +551,8 @@ describe('Device → Collector → DataTag → Storage 集成测试', () => {
   // ========================================================================
   // TC-INT-003: Multiple devices connected simultaneously → data flows independently
   // ========================================================================
-  describe('TC-INT-003: 多设备同时连接 → 数据独立流动', () => {
-    it('应支持多个不同类型的设备同时连接', async () => {
+  describe('TC-INT-003: multiple devices connected simultaneously → data flows independently', () => {
+    it('Should support multiple devices of different types connecting simultaneously', async () => {
       const collector2 = new SimulatedCollector();
 
       await collector.connect(deviceConfig);
@@ -562,7 +562,7 @@ describe('Device → Collector → DataTag → Storage 集成测试', () => {
       expect(collector2.isConnected()).toBe(true);
     });
 
-    it('多设备数据应独立存储不互相干扰', async () => {
+    it('Multi-device data should be stored independently without interference', async () => {
       const collector2 = new SimulatedCollector();
 
       await collector.connect(deviceConfig);
@@ -602,7 +602,7 @@ describe('Device → Collector → DataTag → Storage 集成测试', () => {
       expect(cacheService.getSize().l1).toBe(5);
     });
 
-    it('应能通过事件总线区分不同设备的数据变更事件', async () => {
+    it('Should be able to distinguish data change events of different devices via the event bus', async () => {
       await collector.connect(deviceConfig);
 
       const results = await collector.readBatch(deviceConfig.tags);
@@ -641,8 +641,8 @@ describe('Device → Collector → DataTag → Storage 集成测试', () => {
   // ========================================================================
   // TC-INT-004: Device disconnects → reconnect → data flow resumes
   // ========================================================================
-  describe('TC-INT-004: 设备断开 → 重连 → 数据流恢复', () => {
-    it('设备断开后无法读取数据', async () => {
+  describe('TC-INT-004: device disconnect → reconnect → data flow recovers', () => {
+    it('Cannot read data after the device disconnects', async () => {
       await collector.connect(deviceConfig);
       await collector.disconnect();
 
@@ -655,7 +655,7 @@ describe('Device → Collector → DataTag → Storage 集成测试', () => {
       expect(result.quality).toBe('good');
     });
 
-    it('设备重连后数据流恢复正常', async () => {
+    it('Data flow recovers after the device reconnects', async () => {
       // Initial connection
       await collector.connect(deviceConfig);
       const initialResult = await collector.readTag(deviceConfig.tags[0]);
@@ -674,7 +674,7 @@ describe('Device → Collector → DataTag → Storage 集成测试', () => {
       expect(reconnectedResult.quality).toBe('good');
     });
 
-    it('重连后缓存数据应正确更新', async () => {
+    it('Cached data should update correctly after reconnection', async () => {
       await collector.connect(deviceConfig);
 
       // First read
@@ -711,8 +711,8 @@ describe('Device → Collector → DataTag → Storage 集成测试', () => {
   // ========================================================================
   // TC-INT-005: Data quality degradation → alarm triggered
   // ========================================================================
-  describe('TC-INT-005: 数据质量劣化 → 告警触发', () => {
-    it('应检测到数据质量劣化并更新缓存', async () => {
+  describe('TC-INT-005: data quality degradation → alarm triggered', () => {
+    it('Should detect data quality degradation and update the cache', async () => {
       await collector.connect(deviceConfig);
 
       // Normal read
@@ -742,7 +742,7 @@ describe('Device → Collector → DataTag → Storage 集成测试', () => {
       expect(cached!.quality).toBe('bad');
     });
 
-    it('数据质量劣化时应发布 health_degraded 事件', async () => {
+    it('Should publish the health_degraded event when data quality degrades', async () => {
       await collector.connect(deviceConfig);
 
       const result = await collector.readTag(deviceConfig.tags[0]);
@@ -776,7 +776,7 @@ describe('Device → Collector → DataTag → Storage 集成测试', () => {
       );
     });
 
-    it('告警条件评估应正确检测阈值越界', async () => {
+    it('Alarm condition evaluation should detect threshold violations correctly', async () => {
       await collector.connect(deviceConfig);
 
       // Simulate excessive temperature (> 80 C)
@@ -791,7 +791,7 @@ describe('Device → Collector → DataTag → Storage 集成测试', () => {
       expect(normalCheck).toBe('trigger'); // 无消抖始终触发
     });
 
-    it('消抖机制应防止误报——短时间内多次触发不应立即告警', async () => {
+    it('The debounce mechanism should prevent false positives — multiple triggers within a short time should not alarm immediately', async () => {
       const ruleId = 'alarm-rule-001';
       const tagId = 'tag-temp-001';
 
@@ -814,8 +814,8 @@ describe('Device → Collector → DataTag → Storage 集成测试', () => {
   // ========================================================================
   // Edge cases and error paths
   // ========================================================================
-  describe('边界情况与错误路径', () => {
-    it('缓存应正确覆盖旧值', async () => {
+  describe('Edge cases and error paths', () => {
+    it('The cache should overwrite old values correctly', async () => {
       await cacheService.set({
         tagId: 'tag-test-001',
         value: 100,
@@ -837,12 +837,12 @@ describe('Device → Collector → DataTag → Storage 集成测试', () => {
       expect(cached!.value).toBe(200);
     });
 
-    it('缓存应正确处理不存在的数据', async () => {
+    it('The cache should handle non-existent data correctly', async () => {
       const cached = await cacheService.get('non-existent-tag');
       expect(cached).toBeNull();
     });
 
-    it('批量获取缓存应返回存在的条目', async () => {
+    it('Batch cache retrieval should return existing entries', async () => {
       await cacheService.set({
         tagId: 'tag-a',
         value: 10,
@@ -865,13 +865,13 @@ describe('Device → Collector → DataTag → Storage 集成测试', () => {
       expect(results.has('tag-c')).toBe(false);
     });
 
-    it('空标签列表批量读取应返回空数组', async () => {
+    it('Batch reading an empty tag list should return an empty array', async () => {
       await collector.connect(deviceConfig);
       const results = await collector.readBatch([]);
       expect(results).toEqual([]);
     });
 
-    it('事件总线应能注册和取消监听器', () => {
+    it('The event bus should be able to register and unregister listeners', () => {
       const handler = jest.fn();
       eventBusService.on('data_point_changed' as any, handler);
 

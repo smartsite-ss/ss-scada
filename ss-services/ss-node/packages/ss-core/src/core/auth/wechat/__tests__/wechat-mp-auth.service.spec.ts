@@ -87,7 +87,7 @@ describe('WechatMpAuthService', () => {
   // login
   // ============================================================
   describe('login', () => {
-    it('未绑定 → bindingRequired=true 且不下发 Token', async () => {
+    it('Unbound → bindingRequired=true and no token delivered', async () => {
       mockUserService.findByWechatMpOpenId.mockResolvedValue(null);
 
       const result = await service.login('mock-code');
@@ -99,7 +99,7 @@ describe('WechatMpAuthService', () => {
       expect(mockAuthService.generateTokensForUser).not.toHaveBeenCalled();
     });
 
-    it('已绑定且激活 → 签发 Token + 用户信息', async () => {
+    it('Bound and activated → issues Token + user info', async () => {
       const boundUser = buildBoundUser();
       mockUserService.findByWechatMpOpenId.mockResolvedValue(boundUser);
       mockUserService.findById.mockResolvedValue(boundUser);
@@ -122,14 +122,14 @@ describe('WechatMpAuthService', () => {
       });
     });
 
-    it('已绑定但账号禁用 → UnauthorizedException', async () => {
+    it('Bound but account disabled → UnauthorizedException', async () => {
       mockUserService.findByWechatMpOpenId.mockResolvedValue(buildBoundUser({ isActive: false }));
 
       await expect(service.login('mock-code')).rejects.toThrow(UnauthorizedException);
       expect(mockAuthService.generateTokensForUser).not.toHaveBeenCalled();
     });
 
-    it('授权项目：同项目多条授权取最高权限，projectName 回退 projectId', async () => {
+    it('Authorized projects: multiple grants in the same project take the highest permission; projectName falls back to projectId', async () => {
       const boundUser = buildBoundUser();
       mockUserService.findByWechatMpOpenId.mockResolvedValue(boundUser);
       mockUserService.findById.mockResolvedValue(boundUser);
@@ -161,7 +161,7 @@ describe('WechatMpAuthService', () => {
       });
     });
 
-    it('授权项目：projectinfo.json 存在时读取显示名', async () => {
+    it('Authorized projects: read the display name when projectinfo.json exists', async () => {
       const temporaryProjectsDirectory = fs.mkdtempSync(path.join(os.tmpdir(), 'ss-wx-projects-'));
       const projectDirectory = path.join(temporaryProjectsDirectory, 'demo-project');
       fs.mkdirSync(projectDirectory, { recursive: true });
@@ -193,7 +193,7 @@ describe('WechatMpAuthService', () => {
   // bind
   // ============================================================
   describe('bind', () => {
-    it('绑定成功 → 写入绑定关系并签发 Token', async () => {
+    it('Binding success → writes the binding relation and issues a Token', async () => {
       const passwordHash = await bcrypt.hash('password123', 10);
       const account = buildBoundUser({ wechatMpOpenId: null, password: passwordHash });
       mockUserService.findByWechatMpOpenId.mockResolvedValue(null);
@@ -207,7 +207,7 @@ describe('WechatMpAuthService', () => {
       expect(result.userInformation.username).toBe('operator');
     });
 
-    it('openid 已绑定其他账号 → ConflictException ACCOUNT_ALREADY_BOUND', async () => {
+    it('openid already bound to another account → ConflictException ACCOUNT_ALREADY_BOUND', async () => {
       mockUserService.findByWechatMpOpenId.mockResolvedValue(buildBoundUser());
 
       const bindPromise = service.bind('mock-code', 'operator', 'password123');
@@ -219,7 +219,7 @@ describe('WechatMpAuthService', () => {
       expect(mockUserService.bindWechatMpOpenId).not.toHaveBeenCalled();
     });
 
-    it('密码错误 → UnauthorizedException 且不写绑定关系', async () => {
+    it('Wrong password → UnauthorizedException and no binding relation written', async () => {
       const passwordHash = await bcrypt.hash('correctPassword', 10);
       mockUserService.findByWechatMpOpenId.mockResolvedValue(null);
       mockUserService.findByUsername.mockResolvedValue(buildBoundUser({ wechatMpOpenId: null, password: passwordHash }));
@@ -230,7 +230,7 @@ describe('WechatMpAuthService', () => {
       expect(mockUserService.bindWechatMpOpenId).not.toHaveBeenCalled();
     });
 
-    it('目标账号已绑定其他 openid → ConflictException（禁止换绑）', async () => {
+    it('Target account already bound to another openid → ConflictException (rebinding forbidden)', async () => {
       const passwordHash = await bcrypt.hash('password123', 10);
       mockUserService.findByWechatMpOpenId.mockResolvedValue(null);
       mockUserService.findByUsername.mockResolvedValue(
@@ -248,7 +248,7 @@ describe('WechatMpAuthService', () => {
   // unbind
   // ============================================================
   describe('unbind', () => {
-    it('解绑成功 → 清空绑定关系', async () => {
+    it('Unbind success → clears the binding relation', async () => {
       mockUserService.unbindWechatMpOpenId.mockResolvedValue(undefined);
 
       const result = await service.unbind('user-1');

@@ -10,7 +10,7 @@ import {
 import { historyTrendPropertySchema } from '../../system/history-trend/historyTrendPropertySchema';
 
 describe('historyTrendUtils - DEFAULT_TREND_COLORS', () => {
-  it('提供 8 个调色板颜色且均为 hex', () => {
+  it('Provides 8 palette colors, all hex', () => {
     expect(DEFAULT_TREND_COLORS).toHaveLength(8);
     for (const color of DEFAULT_TREND_COLORS) {
       expect(color).toMatch(/^#[0-9a-fA-F]{6}$/);
@@ -19,7 +19,7 @@ describe('historyTrendUtils - DEFAULT_TREND_COLORS', () => {
 });
 
 describe('historyTrendUtils - createDefaultSeriesStyle', () => {
-  it('主色回填到线条与区域渐变', () => {
+  it('Primary color backfilled into line and area gradients', () => {
     const style = createDefaultSeriesStyle('#4dabf7');
     expect(style.lineStyle.color).toBe('#4dabf7');
     expect(style.lineStyle.type).toBe('solid');
@@ -29,29 +29,29 @@ describe('historyTrendUtils - createDefaultSeriesStyle', () => {
     expect(style.areaStyle.colorStops[2].color).toBe('#4dabf7');
   });
 
-  it('标签默认隐藏且实心点默认 5', () => {
+  it('Tag hidden by default with solid dot defaulting to 5', () => {
     const style = createDefaultSeriesStyle('#51cf66');
     expect(style.label.show).toBe(false);
     expect(style.symbolSize).toBe(5);
   });
 });
 
-describe('historyTrendPropertySchema 静态校验', () => {
-  it('字段均有 name/type/defaultValue', () => {
+describe('historyTrendPropertySchema static validation', () => {
+  it('All fields have name/type/defaultValue', () => {
     for (const field of historyTrendPropertySchema.fields) {
-      expect(field.name, '字段缺少 name').toBeTruthy();
-      expect(field.type, `字段 ${field.name} 缺少 type`).toBeTruthy();
-      expect(field.defaultValue, `字段 ${field.name} 缺少 defaultValue`).toBeDefined();
+      expect(field.name, 'field missing name').toBeTruthy();
+      expect(field.type, `Field ${field.name} missing type`).toBeTruthy();
+      expect(field.defaultValue, `Field ${field.name} missing defaultValue`).toBeDefined();
     }
   });
 
-  it('select 字段均有 options', () => {
+  it('All select fields have options', () => {
     for (const field of historyTrendPropertySchema.fields.filter((f) => f.type === 'select')) {
-      expect(field.options?.length, `字段 ${field.name} 缺少 options`).toBeGreaterThan(0);
+      expect(field.options?.length, `Field ${field.name} missing options`).toBeGreaterThan(0);
     }
   });
 
-  it('包含默认查询方式/时间范围/showDataZoom 等关键字段', () => {
+  it('Contains default query mode/time range/showDataZoom and other key fields', () => {
     const names = historyTrendPropertySchema.fields.map((f) => f.name);
     expect(names).toContain('defaultInterpolation');
     expect(names).toContain('defaultInterval');
@@ -62,7 +62,7 @@ describe('historyTrendPropertySchema 静态校验', () => {
     expect(names).toContain('showDataZoom');
   });
 
-  it('字段名不重复', () => {
+  it('Field names do not repeat', () => {
     const names = historyTrendPropertySchema.fields.map((f) => f.name);
     expect(new Set(names).size).toBe(names.length);
   });

@@ -30,13 +30,13 @@ class TestShape extends BaseGraphic {
         project = new Project({ name: 'Test Project' });
     });
 
-    it('应该Create project', () => {
+    it('Should Create project', () => {
         expect(project.name).toBe('Test Project');
         expect(project.id).toBeDefined();
     });
 
-    it('应该管理页面', () => {
-        const page = project.createPage({ name: 'Page 1' });
+    it('Should manage pages', () => {
+        const page = project.createPage({ name: '页面1' });
         expect(page).toBeInstanceOf(BasePage);
         expect(project.pageCount).toBe(1);
     });
@@ -66,8 +66,8 @@ describe('Editor', () => {
     });
 
     it('should provide quick methods to manage pages', () => {
-        editor.createPage({ name: 'Page 1' });
-        const page2 = editor.createPage({ name: 'Page 2' });
+        editor.createPage({ name: '页面1' });
+        const page2 = editor.createPage({ name: '页面2' });
         
         expect(editor.getAllPages().length).toBe(2);
         

@@ -1003,7 +1003,7 @@ describe('ProjectService', () => {
       );
     });
 
-    it('【P0-2】应拒绝 projectId 越出项目根的 ZIP（路径穿越）', async () => {
+    it('[P0-2] Should reject a ZIP whose projectId escapes the project root (path traversal)', async () => {
       const zipBuffer = createMockZipBuffer('evil-project', {
         pid: 'pid-evil',
         tid: '../../evil',
@@ -1377,7 +1377,7 @@ describe('ProjectService', () => {
     });
 
     it('should skip project when deviceService throws error', async () => {
-      await createProject('Good', 'good');
+      await createProject('良好', 'good');
       await createProject('Bad', 'bad');
 
       mockDeviceService.getDeviceStats
@@ -1390,7 +1390,7 @@ describe('ProjectService', () => {
           error: 0,
           totalTags: 20,
         })
-        .mockRejectedValueOnce(new Error('DB connection failed'));
+        .mockRejectedValueOnce(new Error('DB 连接失败'));
 
       mockAlarmStatsService.getStatistics
         .mockResolvedValueOnce({

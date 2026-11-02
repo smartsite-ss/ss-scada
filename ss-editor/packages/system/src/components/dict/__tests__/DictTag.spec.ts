@@ -67,10 +67,10 @@ describe('DictTag', () => {
         good: '良好',
         bad: '差',
         uncertain: '不确定',
-        stale: '陈旧',
+        stale: 'Stale',
         draft: '草稿',
         published: '已发布',
-        deprecated: '已废弃',
+        deprecated: 'Deprecated',
       };
       return labelMap[value] ?? value;
     });

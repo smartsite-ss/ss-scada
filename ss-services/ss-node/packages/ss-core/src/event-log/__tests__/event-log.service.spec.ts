@@ -53,7 +53,7 @@ describe('EventLogService', () => {
   });
 
   describe('shouldPersist', () => {
-    it('应返回 true 对配置变更类事件', () => {
+    it('Should return true for config-change events', () => {
       expect(service.shouldPersist('device.created')).toBe(true);
       expect(service.shouldPersist('device.updated')).toBe(true);
       expect(service.shouldPersist('project:enabled')).toBe(true);
@@ -61,7 +61,7 @@ describe('EventLogService', () => {
       expect(service.shouldPersist('plugin.activated')).toBe(true);
     });
 
-    it('应返回 false 对高频数据事件', () => {
+    it('Should return false for high-frequency data events', () => {
       expect(service.shouldPersist('data_point_changed')).toBe(false);
       expect(service.shouldPersist('device_status_changed')).toBe(false);
       expect(service.shouldPersist('user.joined')).toBe(false);
@@ -70,14 +70,14 @@ describe('EventLogService', () => {
   });
 
   describe('onModuleInit', () => {
-    it('应注册 emit 钩子到 EventBusService', () => {
+    it('Should register the emit hook to EventBusService', () => {
       service.onModuleInit();
       expect(eventBus.registerEmitHook).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('recordEmission', () => {
-    it('应正确写入事件日志并返回 logId', async () => {
+    it('Should write event logs correctly and return logId', async () => {
       const fakeLog = { id: 'log-uuid-123' } as EventLog;
       repo.create.mockReturnValue(fakeLog);
       repo.save.mockResolvedValue(fakeLog as any);
@@ -104,7 +104,7 @@ describe('EventLogService', () => {
       );
     });
 
-    it('payload 无 userId 时 source 应为 system', async () => {
+    it('When the payload has no userId, source should be system', async () => {
       const fakeLog = { id: 'log-1' } as EventLog;
       repo.create.mockReturnValue(fakeLog);
       repo.save.mockResolvedValue(fakeLog as any);
@@ -122,15 +122,15 @@ describe('EventLogService', () => {
       );
     });
 
-    it('Repository 写入失败时返回 null 且不抛出', async () => {
-      repo.save.mockRejectedValue(new Error('DB error') as any);
+    it('Should return null and not throw when the Repository write fails', async () => {
+      repo.save.mockRejectedValue(new Error('DB 错误') as any);
 
       const logId = await service.recordEmission('device.created', { projectId: 'p1' });
 
       expect(logId).toBeNull();
     });
 
-    it('timestamp 支持 number / string / Date 三种格式', async () => {
+    it('timestamp supports number / string / Date formats', async () => {
       const fakeLog = { id: 'log-1' } as EventLog;
       repo.create.mockReturnValue(fakeLog);
       repo.save.mockResolvedValue(fakeLog as any);
@@ -163,7 +163,7 @@ describe('EventLogService', () => {
       );
     });
 
-    it('payload 超过 64KB 时应截断 tags 数组', async () => {
+    it('When the payload exceeds 64KB, the tags array should be truncated', async () => {
       const fakeLog = { id: 'log-1' } as EventLog;
       repo.create.mockReturnValue(fakeLog);
       repo.save.mockResolvedValue(fakeLog as any);
@@ -201,7 +201,7 @@ describe('EventLogService', () => {
       repo.save.mockResolvedValue(existingLog as EventLog);
     });
 
-    it('recordSubscriberStart 应添加 processing 状态的订阅者记录', async () => {
+    it('recordSubscriberStart should add a subscriber record with processing status', async () => {
       await service.recordSubscriberStart(logId, subscriberName);
 
       const savedLog = repo.save.mock.calls[0][0] as EventLog;
@@ -215,7 +215,7 @@ describe('EventLogService', () => {
       expect(savedLog.status).toBe('processing');
     });
 
-    it('recordSubscriberSuccess 应更新为 processed 状态并触发状态重算', async () => {
+    it('recordSubscriberSuccess should update to processed status and trigger status recomputation', async () => {
       // Simulate an existing processing record
       const logWithSubscriber: Partial<EventLog> = {
         id: logId,
@@ -241,7 +241,7 @@ describe('EventLogService', () => {
       );
     });
 
-    it('recordSubscriberFailure 应更新为 failed 状态并记录错误', async () => {
+    it('recordSubscriberFailure should update to failed status and record the error', async () => {
       const logWithSubscriber: Partial<EventLog> = {
         id: logId,
         eventType: 'device.created',
@@ -286,7 +286,7 @@ describe('EventLogService', () => {
       });
     };
 
-    it('所有订阅者成功时 status=processed', async () => {
+    it('status=processed when all subscribers succeed', async () => {
       setupStatefulMock({
         id: logId,
         subscribers: [
@@ -304,7 +304,7 @@ describe('EventLogService', () => {
       expect(lastSavedLog.successRatio).toBe('3/3');
     });
 
-    it('部分订阅者失败时 status=partial', async () => {
+    it('status=partial when some subscribers fail', async () => {
       setupStatefulMock({
         id: logId,
         subscribers: [
@@ -323,7 +323,7 @@ describe('EventLogService', () => {
       expect(lastSavedLog.errorMessage).toContain('B: timeout');
     });
 
-    it('所有订阅者失败时 status=failed', async () => {
+    it('status=failed when all subscribers fail', async () => {
       setupStatefulMock({
         id: logId,
         subscribers: [
@@ -343,7 +343,7 @@ describe('EventLogService', () => {
     });
   });
 
-  describe('withLogLock (并发安全)', () => {
+  describe('withLogLock (concurrency safety)', () => {
     const logId = 'log-concurrent-1';
 
     /**
@@ -365,7 +365,7 @@ describe('EventLogService', () => {
       });
     };
 
-    it('两个订阅者并发 recordSubscriberStart 不应丢失任一记录', async () => {
+    it('Two subscribers concurrently calling recordSubscriberStart should not lose either record', async () => {
       setupStatefulMock({
         id: logId,
         eventType: 'device.deleted',
@@ -387,7 +387,7 @@ describe('EventLogService', () => {
       expect(names).toContain('SubscriberB');
     });
 
-    it('三个订阅者并发 recordSubscriberSuccess 应全部记录且 status 正确', async () => {
+    it('Three subscribers concurrently calling recordSubscriberSuccess should all be recorded with correct status', async () => {
       setupStatefulMock({
         id: logId,
         eventType: 'device.created',
@@ -408,7 +408,7 @@ describe('EventLogService', () => {
       expect(finalLog!.successRatio).toBe('3/3');
     });
 
-    it('并发混合成功/失败应正确计算 partial 状态', async () => {
+    it('Concurrent mixed success/failure should compute partial status correctly', async () => {
       setupStatefulMock({
         id: logId,
         eventType: 'device.updated',
@@ -430,7 +430,7 @@ describe('EventLogService', () => {
   });
 
   describe('wrapSubscriber', () => {
-    it('成功时应自动追踪并返回业务效果', async () => {
+    it('On success should track automatically and return business effects', async () => {
       const logId = 'log-wrap-1';
       const existingLog: Partial<EventLog> = {
         id: logId,
@@ -464,7 +464,7 @@ describe('EventLogService', () => {
       expect(subscriber?.result).toEqual({ connectionId: 'conn-1' });
     });
 
-    it('失败时应记录错误并重新抛出', async () => {
+    it('On failure, the error should be logged and rethrown', async () => {
       const logId = 'log-wrap-2';
       const existingLog: Partial<EventLog> = {
         id: logId,
@@ -497,7 +497,7 @@ describe('EventLogService', () => {
       expect(failedRecord).toBeDefined();
     });
 
-    it('未找到 logId 时仍应执行 handler 但不记录追踪', async () => {
+    it('When logId is not found, the handler should still run but tracking is not recorded', async () => {
       // Do not call recordEmission, so findRecentLogId returns null
       repo.findOne.mockResolvedValue(null);
 
@@ -518,7 +518,7 @@ describe('EventLogService', () => {
   });
 
   describe('findByFilter', () => {
-    it('应支持分页查询', async () => {
+    it('Should support paginated queries', async () => {
       const queryBuilder = {
         andWhere: jest.fn().mockReturnThis(),
         orderBy: jest.fn().mockReturnThis(),
@@ -540,7 +540,7 @@ describe('EventLogService', () => {
       expect(queryBuilder.take).toHaveBeenCalledWith(20);
     });
 
-    it('应支持按状态筛选', async () => {
+    it('Should support filtering by status', async () => {
       const queryBuilder = {
         andWhere: jest.fn().mockReturnThis(),
         orderBy: jest.fn().mockReturnThis(),
@@ -560,7 +560,7 @@ describe('EventLogService', () => {
   });
 
   describe('findFailed', () => {
-    it('应查询 failed 和 partial 状态的事件', async () => {
+    it('Should query events with failed and partial status', async () => {
       const queryBuilder = {
         andWhere: jest.fn().mockReturnThis(),
         orderBy: jest.fn().mockReturnThis(),

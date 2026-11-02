@@ -83,8 +83,8 @@ describe('DataMigrationService', () => {
       const mockGlobalDs = {
         query: jest
           .fn()
-          .mockResolvedValueOnce([{ id: 'dev1', name: 'Device 1', projectId: 'test-project' }])
-          .mockResolvedValueOnce([{ id: 'dev2', name: 'Device 2', projectId: 'test-project' }]),
+          .mockResolvedValueOnce([{ id: 'dev1', name: '设备1', projectId: 'test-project' }])
+          .mockResolvedValueOnce([{ id: 'dev2', name: '设备2', projectId: 'test-project' }]),
         options: { database: '/path/to/global.db' },
       } as any;
 
@@ -158,7 +158,7 @@ describe('DataMigrationService', () => {
 
     it('should use custom whereCondition if provided', async () => {
       const mockGlobalDs = {
-        query: jest.fn().mockResolvedValue([{ id: 'd1', name: 'Device 1' }]),
+        query: jest.fn().mockResolvedValue([{ id: 'd1', name: '设备1' }]),
         options: { database: '/path/to/global.db' },
       } as any;
 

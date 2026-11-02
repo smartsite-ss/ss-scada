@@ -8,8 +8,8 @@ import { BaseGraphic } from '@scada-editor/plugin-sdk';
 
 class TestShape extends BaseGraphic {
   constructor(x: number, y: number, width: number, height: number) {
-    super('test-shape', x, y, width, height); } draw(_ctx: CanvasRenderingContext2D): void { /* empty implementation for tests */ } } /* performance benchmarks - adjust thresholds to the actual environment */ describe('性能基准测试', () => {
-  describe('图形操作性能', () => {
+    super('test-shape', x, y, width, height); } draw(_ctx: CanvasRenderingContext2D): void { /* empty implementation for tests */ } } /* performance benchmarks - adjust thresholds to the actual environment */ describe('Performance benchmarks', () => {
+  describe('Graphic operation performance', () => {
     it('should add 100 graphics fast', () => {
       const page = new BasePage();
       
@@ -71,7 +71,7 @@ class TestShape extends BaseGraphic {
     });
   });
 
-  describe('历史记录性能', () => {
+  describe('History record performance', () => {
     it('should handle incremental history efficiently', () => {
       const page = new BasePage();
       
@@ -118,7 +118,7 @@ class TestShape extends BaseGraphic {
     });
   });
 
-  describe('管理器性能', () => {
+  describe('Manager performance', () => {
     it('BasePage should handle bulk operations', () => {
       const page = new BasePage();
       

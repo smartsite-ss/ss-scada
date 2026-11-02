@@ -153,13 +153,13 @@ describe('PageSaveController', () => {
 
   describe('DELETE /projects/:id/pages/groups/:groupName', () => {
     it('TC-PAGE-CTL-003: should delete group with URL-decoded name', () => {
-      const result = { success: true, name: '分组 1' };
+      const result = { success: true, name: 'Group 1' };
       mockPageSaveService.deleteGroup.mockReturnValue(result);
 
-      const res = controller.deleteGroup('p1', encodeURIComponent('分组 1'));
+      const res = controller.deleteGroup('p1', encodeURIComponent('Group 1'));
 
       expect(res).toEqual(result);
-      expect(mockPageSaveService.deleteGroup).toHaveBeenCalledWith('p1', '分组 1');
+      expect(mockPageSaveService.deleteGroup).toHaveBeenCalledWith('p1', 'Group 1');
     });
   });
 

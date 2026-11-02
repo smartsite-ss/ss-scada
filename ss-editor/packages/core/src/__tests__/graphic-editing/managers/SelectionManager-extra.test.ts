@@ -13,7 +13,7 @@ describe('SelectionManager - edge case supplementary tests', () => {
     selectionManager = new SelectionManager();
   });
 
-  describe('select() 不存在的图元', () => {
+  describe('select() on a non-existent graphic', () => {
     it('selecting non-existent ID should have no side effects', () => {
       selectionManager.setMode(SelectionMode.SINGLE);
       const result = selectionManager.select('nonexistent-id');
@@ -21,7 +21,7 @@ describe('SelectionManager - edge case supplementary tests', () => {
       expect(result.selectedGraphicIds).toEqual(['nonexistent-id']);
     });
 
-    it('ADDITIVE 模式下选择不存在的 ID 不改变已有选择', () => {
+    it('Selecting a non-existent ID in ADDITIVE mode does not change the existing selection', () => {
       selectionManager.setMode(SelectionMode.ADDITIVE);
       selectionManager.select('existing-1');
       selectionManager.select('existing-2');
@@ -31,8 +31,8 @@ describe('SelectionManager - edge case supplementary tests', () => {
     });
   });
 
-  describe('空状态操作', () => {
-    it('空选择时 clear() 无副作用', () => {
+  describe('Empty state operations', () => {
+    it('clear() has no side effects with an empty selection', () => {
       expect(() => selectionManager.clear()).not.toThrow();
       expect(selectionManager.getSelectedGraphicIds()).toEqual([]);
     });
@@ -46,7 +46,7 @@ describe('SelectionManager - edge case supplementary tests', () => {
       expect(selectionManager.isSelected('any-id')).toBe(false);
     });
 
-    it('空选择时 getSelectedCount() 返回 0', () => {
+    it('getSelectedCount() returns 0 with an empty selection', () => {
       expect(selectionManager.getSelectedCount()).toBe(0);
     });
   });
@@ -67,7 +67,7 @@ describe('SelectionManager - edge case supplementary tests', () => {
       expect(selectionManager.isSelected('g1')).toBe(false);
     });
 
-    it('SINGLE 选中后切换 SUBTRACTIVE → select 已选中则减选', () => {
+    it('SINGLE then switching to SUBTRACTIVE → deselects if already selected', () => {
       selectionManager.setMode(SelectionMode.SINGLE);
       selectionManager.select('g1');
       expect(selectionManager.isSelected('g1')).toBe(true);
@@ -91,7 +91,7 @@ describe('SelectionManager - edge case supplementary tests', () => {
       expect(selectionManager.isSelected('g1')).toBe(true);
     });
 
-    it('BOX 模式下空数组清空选择', () => {
+    it('BOX mode: an empty array clears the selection', () => {
       selectionManager.setMode(SelectionMode.SINGLE);
       selectionManager.select('g1');
       selectionManager.setMode(SelectionMode.BOX);
@@ -101,7 +101,7 @@ describe('SelectionManager - edge case supplementary tests', () => {
   });
 
   describe('selectBatch edge cases', () => {
-    it('空操作数组不应报错', () => {
+    it('Empty operations array should not error', () => {
       expect(() => selectionManager.selectBatch([])).not.toThrow();
     });
 
@@ -121,14 +121,14 @@ describe('SelectionManager - edge case supplementary tests', () => {
       expect(selectionManager.isSelected('new-id')).toBe(true);
     });
 
-    it('toggle 已选中的 ID 应移除', () => {
+    it('toggle should remove an already-selected ID', () => {
       selectionManager.addToSelection('g1');
       selectionManager.toggleSelection('g1');
       expect(selectionManager.isSelected('g1')).toBe(false);
     });
   });
 
-  describe('撤销/重做边界条件', () => {
+  describe('Undo/redo boundary conditions', () => {
     it('canUndo returns false after clearHistory', () => {
       selectionManager.select('g1');
       selectionManager.clearHistory();
@@ -136,7 +136,7 @@ describe('SelectionManager - edge case supplementary tests', () => {
       expect(selectionManager.canRedo()).toBe(false);
     });
 
-    it('连续撤销到边界返回 null', () => {
+    it('Repeated undo to the boundary returns null', () => {
       selectionManager.select('g1');
       selectionManager.select('g2');
       selectionManager.undo();
@@ -144,7 +144,7 @@ describe('SelectionManager - edge case supplementary tests', () => {
       expect(selectionManager.undo()).toBeNull();
     });
 
-    it('连续重做到边界返回 null', () => {
+    it('Repeated redo to the boundary returns null', () => {
       selectionManager.select('g1');
       selectionManager.select('g2');
       selectionManager.undo();

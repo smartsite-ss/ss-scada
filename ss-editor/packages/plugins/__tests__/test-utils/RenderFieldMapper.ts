@@ -73,7 +73,7 @@ export class RenderFieldMapper {
     const used = reports.filter(r => r.used).length;
     const unused = reports.filter(r => !r.used);
     return [
-      `${this.schema.name}: ${total} 字段, ${used} 已使用, ${unused.length} 未使用`,
+      `${this.schema.name}: ${total fields, used used, unused.length unused,
       ...unused.map(f => `  ⚠ ${f.field}`),
     ].join('\n');
   }

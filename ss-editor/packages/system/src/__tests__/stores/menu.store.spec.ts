@@ -69,7 +69,7 @@ describe('useMenuStore', () => {
   });
 
   describe('initial state', () => {
-    it('should start with empty menu items (DB 唯一数据源)', () => {
+    it('should start with empty menu items (DB as the single data source)', () => {
       const store = useMenuStore();
       expect(store.items).toEqual([]);
     });
@@ -139,12 +139,12 @@ describe('useMenuStore', () => {
 
     it('should handle API error gracefully and keep empty array (no fallback)', async () => {
       const store = useMenuStore();
-      vi.mocked(client.get).mockRejectedValueOnce(new Error('Network error'));
+      vi.mocked(client.get).mockRejectedValueOnce(new Error('网络错误'));
 
       await store.loadMenu();
 
       expect(store.items).toEqual([]);
-      expect(store.error).toBe('Network error');
+      expect(store.error).toBe('网络错误');
       expect(store.loaded).toBe(false);
     });
 
@@ -260,37 +260,37 @@ describe('useMenuStore', () => {
   });
 
   describe('filterByMenuIds()', () => {
-    it('admin bypass: 返回全部菜单（忽略 menuIds）', () => {
+    it('admin bypass: returns all menus (ignoring menuIds)', () => {
       const store = useMenuStore();
       const result = store.filterByMenuIds(mockMenuItems, [], true);
       expect(result).toEqual(mockMenuItems);
     });
 
-    it('admin bypass: 即使 menuIds 非空也返回全部', () => {
+    it('admin bypass: returns all even when menuIds is non-empty', () => {
       const store = useMenuStore();
       const result = store.filterByMenuIds(mockMenuItems, ['device'], true);
       expect(result.length).toBe(mockMenuItems.length);
     });
 
-    it('非 admin 空 menuIds: 返回空数组', () => {
+    it('Non-admin empty menuIds: return an empty array', () => {
       const store = useMenuStore();
       const result = store.filterByMenuIds(mockMenuItems, [], false);
       expect(result).toEqual([]);
     });
 
-    it('非 admin undefined menuIds: 当作空数组处理', () => {
+    it('Non-admin undefined menuIds: treated as an empty array', () => {
       const store = useMenuStore();
       const result = store.filterByMenuIds(mockMenuItems, undefined, false);
       expect(result).toEqual([]);
     });
 
-    it('非 admin null menuIds: 当作空数组处理', () => {
+    it('Non-admin null menuIds: treated as an empty array', () => {
       const store = useMenuStore();
       const result = store.filterByMenuIds(mockMenuItems, null, false);
       expect(result).toEqual([]);
     });
 
-    it('非 admin 部分勾选: 只保留命中的项', () => {
+    it('Non-admin partial selection: keep only matched items', () => {
       const store = useMenuStore();
       const result = store.filterByMenuIds(mockMenuItems, ['device'], false);
       expect(result.length).toBe(1);
@@ -298,7 +298,7 @@ describe('useMenuStore', () => {
       expect(result[0].children).toBeUndefined();
     });
 
-    it('父菜单自身勾选 + 子菜单勾选: 保留父，子菜单按 menuIds 过滤', () => {
+    it('Parent checked itself + child checked: keep the parent, children filtered by menuIds', () => {
       const store = useMenuStore();
       const result = store.filterByMenuIds(mockMenuItems, ['system', 'system-config'], false);
       const systemItem = result.find(m => m.id === 'system');
@@ -307,7 +307,7 @@ describe('useMenuStore', () => {
       expect(systemItem!.children![0].id).toBe('system-config');
     });
 
-    it('父菜单自身未勾选但有子菜单勾选: 作为容器保留', () => {
+    it('Parent unchecked but with checked children: kept as a container', () => {
       const store = useMenuStore();
       const result = store.filterByMenuIds(mockMenuItems, ['system-config'], false);
       expect(result.length).toBe(1);
@@ -316,7 +316,7 @@ describe('useMenuStore', () => {
       expect(result[0].children![0].id).toBe('system-config');
     });
 
-    it('父菜单自身勾选但子菜单均未勾选: 保留父，children 为 undefined', () => {
+    it('Parent checked but no children checked: keep the parent, children undefined', () => {
       const store = useMenuStore();
       const result = store.filterByMenuIds(mockMenuItems, ['system'], false);
       const systemItem = result.find(m => m.id === 'system');
@@ -324,7 +324,7 @@ describe('useMenuStore', () => {
       expect(systemItem!.children).toBeUndefined();
     });
 
-    it('未勾选项被移除', () => {
+    it('Unchecked items removed', () => {
       const store = useMenuStore();
       const result = store.filterByMenuIds(mockMenuItems, ['device'], false);
       expect(result.find(m => m.id === 'alarm')).toBeUndefined();
@@ -332,12 +332,12 @@ describe('useMenuStore', () => {
       expect(result.find(m => m.id === 'public')).toBeUndefined();
     });
 
-    it('空菜单数组: 返回空数组', () => {
+    it('Empty menu array: returns an empty array', () => {
       const store = useMenuStore();
       expect(store.filterByMenuIds([], ['device'], false)).toEqual([]);
     });
 
-    it('3 层嵌套: 祖父未勾选、父未勾选、孙勾选 → 祖父与父均作为容器保留', () => {
+    it('3-level nesting: grandfather unchecked, parent unchecked, grandchild checked → both grandfather and parent kept as containers', () => {
       const store = useMenuStore();
       const threeLevelMenu: SystemMenuItem[] = [
         {

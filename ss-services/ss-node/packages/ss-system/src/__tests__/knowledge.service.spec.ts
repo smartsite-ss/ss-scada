@@ -92,7 +92,7 @@ describe('KnowledgeService', () => {
   // ==================== 1. Initialization ====================
 
   describe('onModuleInit', () => {
-    it('应创建 KB_ROOT 目录和各语言+产品子目录', () => {
+    it('Should create the KB_ROOT directory and per-language+product subdirectories', () => {
       expect(fs.existsSync(kbRoot)).toBe(true);
       // v2.0: product directories under each language
       expect(fs.existsSync(path.join(kbRoot, 'zh-CN', 'ss-data'))).toBe(true);
@@ -101,7 +101,7 @@ describe('KnowledgeService', () => {
       expect(fs.existsSync(path.join(kbRoot, 'en-US', 'ss-scada'))).toBe(true);
     });
 
-    it('应自动创建默认 manifest.json（v2.0 多产品结构）', () => {
+    it('Should auto-create the default manifest.json (v2.0 multi-product structure)', () => {
       const manifestPath = path.join(kbRoot, 'manifest.json');
       expect(fs.existsSync(manifestPath)).toBe(true);
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
@@ -118,7 +118,7 @@ describe('KnowledgeService', () => {
       expect(ssScada.modules.length).toBe(10);
     });
 
-    it('每个产品应包含全局章节模块（00-overview + 00-manual）', () => {
+    it('Every product should contain the global chapter modules (00-overview + 00-manual)', () => {
       const manifestPath = path.join(kbRoot, 'manifest.json');
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
       for (const product of manifest.products) {
@@ -133,7 +133,7 @@ describe('KnowledgeService', () => {
       }
     });
 
-    it('manifest 已存在时不覆盖', async () => {
+    it('Should not overwrite an existing manifest', async () => {
       const customManifest = {
         version: '2.0-custom',
         products: [
@@ -141,7 +141,7 @@ describe('KnowledgeService', () => {
             id: 'custom-product',
             name: 'Custom',
             order: 1,
-            modules: [{ id: 'test', name: 'Test', order: 1 }],
+            modules: [{ id: 'test', name: '测试', order: 1 }],
             routeMap: [],
           },
         ],
@@ -165,7 +165,7 @@ describe('KnowledgeService', () => {
   // ==================== 2. getProducts ====================
 
   describe('getProducts', () => {
-    it('应返回所有产品列表', async () => {
+    it('Should return the list of all products', async () => {
       const result = await service.getProducts();
       expect(result.products.length).toBe(2);
       expect(result.defaultProduct).toBe(DEFAULT_PRODUCT_ID);
@@ -174,7 +174,7 @@ describe('KnowledgeService', () => {
       expect(ids).toContain('ss-scada');
     });
 
-    it('产品应按 order 排序', async () => {
+    it('Products should be sorted by order', async () => {
       const result = await service.getProducts();
       const orders = result.products.map((p) => p.order);
       for (let i = 1; i < orders.length; i++) {
@@ -182,7 +182,7 @@ describe('KnowledgeService', () => {
       }
     });
 
-    it('应返回每个产品的模块数', async () => {
+    it('Should return the module count per product', async () => {
       const result = await service.getProducts();
       const ssData = result.products.find((p) => p.id === 'ss-data');
       expect(ssData?.moduleCount).toBe(19);
@@ -210,13 +210,13 @@ describe('KnowledgeService', () => {
       );
     });
 
-    it('应返回支持的语言列表和默认语言', async () => {
+    it('Should return the supported language list and default language', async () => {
       const result = await service.getLangs('ss-data');
       expect(result.defaultLang).toBe('zh-CN');
       expect(result.supportedLangs).toEqual(['zh-CN', 'en-US']);
     });
 
-    it('应按产品统计文章数和模块数', async () => {
+    it('Should count articles and modules per product', async () => {
       const result = await service.getLangs('ss-data');
       const zhStat = result.stats.find((s) => s.lang === 'zh-CN');
       const enStat = result.stats.find((s) => s.lang === 'en-US');
@@ -226,7 +226,7 @@ describe('KnowledgeService', () => {
       expect(enStat?.moduleCount).toBe(0);
     });
 
-    it('不传 product 时应使用默认产品', async () => {
+    it('Should use the default product when product is not passed', async () => {
       const result = await service.getLangs();
       const zhStat = result.stats.find((s) => s.lang === 'zh-CN');
       expect(zhStat?.articleCount).toBe(2);
@@ -260,7 +260,7 @@ describe('KnowledgeService', () => {
       );
     });
 
-    it('应返回指定产品的目录树', async () => {
+    it('Should return the directory tree of the specified product', async () => {
       const tree = await service.getTree('ss-data', 'zh-CN');
       expect(tree.length).toBe(1);
       const deviceNode = tree.find((n) => n.id === '03-device');
@@ -271,7 +271,7 @@ describe('KnowledgeService', () => {
       expect(deviceNode?.children?.length).toBe(2);
     });
 
-    it('不同产品的目录树应隔离', async () => {
+    it('Directory trees of different products should be isolated', async () => {
       // The ss-scada product has no content
       const scadaTree = await service.getTree('ss-scada', 'zh-CN');
       const dataTree = await service.getTree('ss-data', 'zh-CN');
@@ -281,7 +281,7 @@ describe('KnowledgeService', () => {
       expect(scadaHasContent).toBe(false);
     });
 
-    it('en-US 缺失时应 Fallback 到 zh-CN 并标记 fallback:true', async () => {
+    it('Should fall back to zh-CN and mark fallback:true when en-US is missing', async () => {
       const tree = await service.getTree('ss-data', 'en-US');
       const deviceNode = tree.find((n) => n.id === '03-device');
       expect(deviceNode).toBeDefined();
@@ -289,7 +289,7 @@ describe('KnowledgeService', () => {
       expect(deviceNode?.lang).toBe('zh-CN');
     });
 
-    it('应按 order 排序', async () => {
+    it('Should sort by order', async () => {
       const tree = await service.getTree('ss-data', 'zh-CN');
       const deviceNode = tree.find((n) => n.id === '03-device');
       const children = deviceNode?.children || [];
@@ -299,14 +299,14 @@ describe('KnowledgeService', () => {
       }
     });
 
-    it('不传参数时应使用默认产品和默认语言', async () => {
+    it('Should use the default product and default language when no arguments are passed', async () => {
       const tree = await service.getTree();
       const deviceNode = tree.find((n) => n.id === '03-device');
       expect(deviceNode?.lang).toBe('zh-CN');
       expect(deviceNode?.product).toBe(DEFAULT_PRODUCT_ID);
     });
 
-    it('全局章节节点应标记 isGlobal 和 globalType', async () => {
+    it('Global chapter nodes should be marked with isGlobal and globalType', async () => {
       // Create the 00-overview directory
       const overviewDir = path.join(kbRoot, 'zh-CN', 'ss-data', '00-overview');
       fs.mkdirSync(overviewDir, { recursive: true });
@@ -338,7 +338,7 @@ describe('KnowledgeService', () => {
       );
     });
 
-    it('应读取指定产品的文章并解析 frontmatter', async () => {
+    it('Should read the specified product\'s articles and parse frontmatter', async () => {
       const article = await service.getArticle('03-device/getting-started', 'ss-data', 'zh-CN');
       expect(article.id).toBe('03-device/getting-started');
       expect(article.title).toBe('快速入门');
@@ -349,31 +349,31 @@ describe('KnowledgeService', () => {
       expect(article.fallback).toBe(false);
     });
 
-    it('en-US 不存在时应 Fallback 到 zh-CN', async () => {
+    it('Should fall back to zh-CN when en-US does not exist', async () => {
       const article = await service.getArticle('03-device/getting-started', 'ss-data', 'en-US');
       expect(article.lang).toBe('zh-CN');
       expect(article.fallback).toBe(true);
       expect(article.requestedLang).toBe('en-US');
     });
 
-    it('不传 product 时应使用默认产品', async () => {
+    it('Should use the default product when product is not passed', async () => {
       const article = await service.getArticle('03-device/getting-started');
       expect(article.product).toBe(DEFAULT_PRODUCT_ID);
     });
 
-    it('文章不存在时应抛出 NotFoundException', async () => {
+    it('Should throw NotFoundException when the article does not exist', async () => {
       await expect(service.getArticle('non-existent/article', 'ss-data', 'zh-CN')).rejects.toThrow(
         NotFoundException,
       );
     });
 
-    it('不同产品的文章应隔离（ss-scada 无此文章）', async () => {
+    it('Articles of different products should be isolated (ss-scada has no such article)', async () => {
       await expect(
         service.getArticle('03-device/getting-started', 'ss-scada', 'zh-CN'),
       ).rejects.toThrow(NotFoundException);
     });
 
-    it('非法 lang 应回退到默认语言', async () => {
+    it('Invalid lang should fall back to the default language', async () => {
       const article = await service.getArticle('03-device/getting-started', 'ss-data', 'fr-FR');
       expect(article.lang).toBe('zh-CN');
     });
@@ -382,8 +382,8 @@ describe('KnowledgeService', () => {
   // ==================== 6. updateArticle ====================
 
   describe('updateArticle', () => {
-    it('应写入文章到指定产品目录并更新 frontmatter', async () => {
-      const content = '---\ntitle: 测试文章\n---\n# 测试内容';
+    it('Should write the article into the specified product directory and update frontmatter', async () => {
+      const content = '---\ntitle: Test article\n---\n# Test content';
       const article = await service.updateArticle(
         '03-device/test-article',
         content,
@@ -391,7 +391,7 @@ describe('KnowledgeService', () => {
         'zh-CN',
         'ss-data',
       );
-      expect(article.title).toBe('测试文章');
+      expect(article.title).toBe('Test article');
       expect(article.updatedBy).toBe('admin');
       expect(article.product).toBe('ss-data');
       // Verify the file was written into the ss-data product directory
@@ -402,20 +402,20 @@ describe('KnowledgeService', () => {
       expect(raw).toContain('product: ss-data');
     });
 
-    it('不传 product 时应写入默认产品目录', async () => {
-      const content = '# 测试';
+    it('Should write into the default product directory when product is not passed', async () => {
+      const content = '# Test';
       await service.updateArticle('03-device/test', content, 'admin', 'zh-CN');
       const filePath = path.join(kbRoot, 'zh-CN', DEFAULT_PRODUCT_ID, '03-device', 'test.md');
       expect(fs.existsSync(filePath)).toBe(true);
     });
 
-    it('应拒绝非法 lang', async () => {
+    it('Should reject invalid lang', async () => {
       await expect(
         service.updateArticle('03-device/test', '# test', 'admin', 'fr-FR', 'ss-data'),
       ).rejects.toThrow(BadRequestException);
     });
 
-    it('应支持更新已有文章', async () => {
+    it('Should support updating existing articles', async () => {
       await service.updateArticle(
         '03-device/update-test',
         '---\ntitle: 原标题\ntags: [a]\n---\n# 原内容',
@@ -448,7 +448,7 @@ describe('KnowledgeService', () => {
       );
     });
 
-    it('应精确匹配 ss-data 产品的路由', async () => {
+    it('Should exactly match the ss-data product\'s route', async () => {
       const result = await service.matchRoute('/system/devices', 'ss-data', 'zh-CN');
       expect(result).not.toBeNull();
       expect(result?.knowledgePath).toBe('03-device');
@@ -457,19 +457,19 @@ describe('KnowledgeService', () => {
       expect(result?.fallback).toBe(false);
     });
 
-    it('应支持通配符匹配', async () => {
+    it('Should support wildcard matching', async () => {
       const result = await service.matchRoute('/system/devices/dev-001', 'ss-data', 'zh-CN');
       expect(result).not.toBeNull();
       expect(result?.knowledgePath).toBe('03-device/device-detail');
     });
 
-    it('en-US 无文章时应 Fallback 到 zh-CN', async () => {
+    it('Should fall back to zh-CN when en-US has no articles', async () => {
       const result = await service.matchRoute('/system/devices', 'ss-data', 'en-US');
       expect(result?.fallback).toBe(true);
       expect(result?.lang).toBe('zh-CN');
     });
 
-    it('不同产品的路由映射应隔离', async () => {
+    it('Route mappings of different products should be isolated', async () => {
       // The ss-scada product has the /editor route
       const scadaResult = await service.matchRoute('/editor', 'ss-scada', 'zh-CN');
       expect(scadaResult).not.toBeNull();
@@ -479,7 +479,7 @@ describe('KnowledgeService', () => {
       expect(dataResult).toBeNull();
     });
 
-    it('未匹配的路由应返回 null', async () => {
+    it('Unmatched routes should return null', async () => {
       const result = await service.matchRoute('/system/unknown', 'ss-data', 'zh-CN');
       expect(result).toBeNull();
     });
@@ -511,24 +511,24 @@ describe('KnowledgeService', () => {
       );
     });
 
-    it('应仅在指定产品+语言目录内搜索', async () => {
+    it('Should search only within the specified product+language directory', async () => {
       const results = await service.search('设备', 'ss-data', 'zh-CN');
       expect(results.length).toBeGreaterThanOrEqual(1);
       expect(results.every((r) => r.lang === 'zh-CN')).toBe(true);
       expect(results.every((r) => r.product === 'ss-data')).toBe(true);
     });
 
-    it('搜索结果应包含 product 字段', async () => {
+    it('Search results should include the product field', async () => {
       const results = await service.search('设备', 'ss-data', 'zh-CN');
       expect(results[0].product).toBe('ss-data');
     });
 
-    it('ss-scada 产品搜索不应返回 ss-data 的结果', async () => {
+    it('Searching the ss-scada product should not return ss-data results', async () => {
       const results = await service.search('设备', 'ss-scada', 'zh-CN');
       expect(results.length).toBe(0);
     });
 
-    it('空查询应返回空数组', async () => {
+    it('Empty query should return an empty array', async () => {
       const results = await service.search('', 'ss-data', 'zh-CN');
       expect(results).toEqual([]);
     });
@@ -537,7 +537,7 @@ describe('KnowledgeService', () => {
   // ==================== 9. uploadImage ====================
 
   describe('uploadImage', () => {
-    it('应按语言+产品+模块目录隔离存储图片', async () => {
+    it('Should store images isolated by language+product+module directory', async () => {
       const buffer = Buffer.from('fake-image-data');
       const url = await service.uploadImage(buffer, 'test.png', '03-device', 'zh-CN', 'ss-data');
       expect(url).toBe('03-device/images/test.png');
@@ -547,7 +547,7 @@ describe('KnowledgeService', () => {
       expect(fs.readFileSync(filePath)).toEqual(buffer);
     });
 
-    it('不同产品的图片应隔离存储', async () => {
+    it('Images of different products should be stored in isolation', async () => {
       await service.uploadImage(Buffer.from('data1'), 'img.png', '03-device', 'zh-CN', 'ss-data');
       await service.uploadImage(Buffer.from('data2'), 'img.png', '01-canvas', 'zh-CN', 'ss-scada');
       const dataPath = path.join(kbRoot, 'zh-CN', 'ss-data', '03-device', 'images', 'img.png');
@@ -558,13 +558,13 @@ describe('KnowledgeService', () => {
       expect(fs.readFileSync(scadaPath).toString()).toBe('data2');
     });
 
-    it('应拒绝非法 lang', async () => {
+    it('Should reject invalid lang', async () => {
       await expect(
         service.uploadImage(Buffer.from('x'), 'test.png', '03-device', 'fr-FR', 'ss-data'),
       ).rejects.toThrow(BadRequestException);
     });
 
-    it('应对文件名做安全清理', async () => {
+    it('Should sanitize the file name', async () => {
       const url = await service.uploadImage(
         Buffer.from('data'),
         '../../etc/passwd.png',
@@ -580,13 +580,13 @@ describe('KnowledgeService', () => {
   // ==================== 10. resolveImagePath ====================
 
   describe('resolveImagePath', () => {
-    it('应解析到正确的产品+语言目录', async () => {
+    it('Should resolve to the correct product+language directory', async () => {
       const abs = await service.resolveImagePath('03-device/images/foo.png', 'zh-CN', 'ss-data');
       const expected = path.join(kbRoot, 'zh-CN', 'ss-data', '03-device', 'images', 'foo.png');
       expect(abs).toBe(expected);
     });
 
-    it('应过滤路径遍历字符（.. 被移除，路径被清理）', async () => {
+    it('Should filter path traversal characters (.. removed, path cleaned)', async () => {
       // The service is designed to filter .. segments rather than reject
       const abs = await service.resolveImagePath('../../../etc/passwd', 'zh-CN', 'ss-data');
       // .. is filtered; the result is kbRoot/zh-CN/ss-data/etc/passwd (still under the product root)
@@ -594,7 +594,7 @@ describe('KnowledgeService', () => {
       expect(abs).toBe(expected);
     });
 
-    it('应过滤嵌套路径遍历字符', async () => {
+    it('Should filter nested path traversal characters', async () => {
       const abs = await service.resolveImagePath(
         '03-device/../../../etc/passwd',
         'zh-CN',
@@ -605,13 +605,13 @@ describe('KnowledgeService', () => {
       expect(abs).toBe(expected);
     });
 
-    it('空路径应抛出 BadRequestException', async () => {
+    it('Empty path should throw BadRequestException', async () => {
       await expect(service.resolveImagePath('', 'zh-CN', 'ss-data')).rejects.toThrow(
         BadRequestException,
       );
     });
 
-    it('仅含 .. 的路径应抛出 BadRequestException', async () => {
+    it('A path containing only .. should throw BadRequestException', async () => {
       await expect(service.resolveImagePath('../..', 'zh-CN', 'ss-data')).rejects.toThrow(
         BadRequestException,
       );
@@ -620,14 +620,14 @@ describe('KnowledgeService', () => {
 
   // ==================== 11. Path-traversal protection ====================
 
-  describe('路径遍历防护', () => {
-    it('应拒绝包含 .. 的文章 ID', async () => {
+  describe('Path traversal protection', () => {
+    it('Should reject article IDs containing ..', async () => {
       await expect(service.getArticle('../../../etc/passwd', 'ss-data', 'zh-CN')).rejects.toThrow(
         BadRequestException,
       );
     });
 
-    it('应拒绝绝对路径的文章 ID', async () => {
+    it('Should reject absolute-path article IDs', async () => {
       await expect(service.getArticle('/etc/passwd', 'ss-data', 'zh-CN')).rejects.toThrow(
         BadRequestException,
       );
@@ -636,8 +636,8 @@ describe('KnowledgeService', () => {
 
   // ==================== 12. manifest cache + v1.0 compatibility ====================
 
-  describe('manifest 缓存', () => {
-    it('1 分钟内应使用缓存', async () => {
+  describe('manifest cache', () => {
+    it('Should use the cache within 1 minute', async () => {
       const modDir = path.join(kbRoot, 'zh-CN', 'ss-data', '01-permission');
       fs.mkdirSync(modDir, { recursive: true });
       fs.writeFileSync(
@@ -660,8 +660,8 @@ describe('KnowledgeService', () => {
     });
   });
 
-  describe('v1.0 manifest 兼容', () => {
-    it('应自动迁移 v1.0 manifest 到 v2.0 结构', async () => {
+  describe('v1.0 manifest compatibility', () => {
+    it('Should auto-migrate the v1.0 manifest to the v2.0 structure', async () => {
       // Write a v1.0-format manifest
       const v1Manifest = {
         version: '1.0',

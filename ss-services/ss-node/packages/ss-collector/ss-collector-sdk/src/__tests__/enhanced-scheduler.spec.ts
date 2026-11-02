@@ -62,7 +62,7 @@ describe('EnhancedScheduler', () => {
      * Verify adaptive throttling: min(scanRate, 30s)
      * High-frequency tasks are throttled by scanRate; low-frequency tasks are throttled by the 30s cap.
      */
-    it('高频任务（100ms）应按 scanRate 节流，不受 30s 上限影响', async () => {
+    it('High-frequency tasks (100ms) should be throttled by scanRate, unaffected by the 30s cap', async () => {
       const task = makeTask({ interval: 100 });
       scheduler.registerTask(task);
 
@@ -84,7 +84,7 @@ describe('EnhancedScheduler', () => {
       expect(mockEventBus.emitDeviceStatusChanged).toHaveBeenCalledTimes(2);
     });
 
-    it('低频任务（60s）应按 30s 上限节流，而非 60s', async () => {
+    it('Low-frequency tasks (60s) should be throttled at the 30s cap, not 60s', async () => {
       const task = makeTask({ interval: 60000 });
       scheduler.registerTask(task);
 
@@ -107,7 +107,7 @@ describe('EnhancedScheduler', () => {
       expect(mockEventBus.emitDeviceStatusChanged).toHaveBeenCalledTimes(2);
     });
 
-    it('中频任务（30s）应恰好按 30s 节流', () => {
+    it('Mid-frequency tasks (30s) should be throttled at exactly 30s', () => {
       const task = makeTask({ interval: 30000 });
       scheduler.registerTask(task);
 
@@ -131,7 +131,7 @@ describe('EnhancedScheduler', () => {
   });
 
   describe('lastOnlineEmitAt cleanup (unregisterTask)', () => {
-    it('注销最后一个任务时应清理 lastOnlineEmitAt 记录', () => {
+    it('Should clean up lastOnlineEmitAt records when the last task is unregistered', () => {
       const task = makeTask({ id: 'task-A', deviceId: 'device-A' });
       scheduler.registerTask(task);
 
@@ -147,7 +147,7 @@ describe('EnhancedScheduler', () => {
       expect(lastOnlineEmitAt.has('device-A')).toBe(false);
     });
 
-    it('设备还有其他任务时不应清理 lastOnlineEmitAt 记录', () => {
+    it('Should not clean up lastOnlineEmitAt records when the device has other tasks', () => {
       const taskA = makeTask({ id: 'task-A', deviceId: 'device-A', tagId: 'tag-A' });
       const taskB = makeTask({ id: 'task-B', deviceId: 'device-A', tagId: 'tag-B' });
       scheduler.registerTask(taskA);
@@ -165,7 +165,7 @@ describe('EnhancedScheduler', () => {
   });
 
   describe('updateTaskInterval', () => {
-    it('应更新指定设备所有任务的执行间隔', () => {
+    it('Should update the execution interval of all tasks of the specified device', () => {
       const task1 = makeTask({ id: 'task-1', deviceId: 'device-X', interval: 1000 });
       const task2 = makeTask({ id: 'task-2', deviceId: 'device-X', interval: 1000 });
       const task3 = makeTask({ id: 'task-3', deviceId: 'device-Y', interval: 1000 });
@@ -182,7 +182,7 @@ describe('EnhancedScheduler', () => {
       expect(tasks.get('task-3')?.interval).toBe(1000);
     });
 
-    it('无效间隔应被忽略', () => {
+    it('Invalid intervals should be ignored', () => {
       const task = makeTask({ id: 'task-1', deviceId: 'device-X', interval: 1000 });
       scheduler.registerTask(task);
 

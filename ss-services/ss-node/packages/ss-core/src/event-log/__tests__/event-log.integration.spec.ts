@@ -27,7 +27,7 @@ import { EventLog } from '../entities/event-log.entity';
  * - Uses a real EventBusService (with EventEmitter2)
  * - Uses a real EventLogService (with emit-hook registration)
  */
-describe('EventLog + EventBus 集成测试', () => {
+describe('EventLog + EventBus integration tests', () => {
   let dataSource: DataSource;
   let eventBus: EventBusService;
   let eventLogService: EventLogService;
@@ -112,7 +112,7 @@ describe('EventLog + EventBus 集成测试', () => {
     };
   };
 
-  it('完整流程：emit device.created → 记录发射 → handler 处理 → 记录业务效果', async () => {
+  it('Full flow: emit device.created → record emission → handler processes → record business effects', async () => {
     // 1. Register a wrapped subscriber that returns a business effect
     const handler = jest.fn().mockResolvedValue({
       connectionId: 'conn-integration-1',
@@ -184,7 +184,7 @@ describe('EventLog + EventBus 集成测试', () => {
     expect(failedLogs).toHaveLength(0);
   });
 
-  it('失败流程：handler 抛出错误 → 记录 failed 状态 + errorMessage', async () => {
+  it('Failure flow: handler throws → records failed status + errorMessage', async () => {
     const handler = jest
       .fn()
       .mockRejectedValue(new Error('Connection timeout 192.168.1.99:502'));
@@ -244,7 +244,7 @@ describe('EventLog + EventBus 集成测试', () => {
     ).toBe(true);
   });
 
-  it('部分失败：多个订阅者，部分成功部分失败 → status=partial', async () => {
+  it('Partial failure: multiple subscribers, some succeed some fail → status=partial', async () => {
     // Use an independent project ID to avoid interference with subscribers from earlier tests
     const projectId = 'proj-int-partial';
 
@@ -314,7 +314,7 @@ describe('EventLog + EventBus 集成测试', () => {
     expect(schedulerSub?.result).toEqual({ taskId: 'task-1', scanRate: 1000 });
   });
 
-  it('白名单外事件不入库：data_point_changed 不应写入 evt_event_log', async () => {
+  it('Events outside the whitelist are not persisted: data_point_changed should not be written to evt_event_log', async () => {
     const handler = jest.fn().mockResolvedValue(undefined);
     eventBus.on(
       'data_point_changed',
@@ -343,7 +343,7 @@ describe('EventLog + EventBus 集成测试', () => {
     expect(logs.total).toBe(0);
   });
 
-  it('未注册订阅者的事件：保持 emitted 状态', async () => {
+  it('Events with no subscribers: stay in emitted state', async () => {
     // project.beforeDelete is in the whitelist but has no subscribers
     await eventBus.emitAsync('project.beforeDelete', {
       projectId: 'proj-orphan',

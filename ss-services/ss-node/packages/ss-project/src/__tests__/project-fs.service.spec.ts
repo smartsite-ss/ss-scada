@@ -35,7 +35,7 @@ describe('ProjectFsService', () => {
   // ==================== atomicWriteJson / atomicWriteFileSync ====================
 
   describe('atomicWriteJson', () => {
-    it('应写入可解析的 JSON 文件', () => {
+    it('Should write a parseable JSON file', () => {
       const filePath = path.join(tempDir, 'data.json');
       service.atomicWriteJson(filePath, { name: 'demo', count: 3 });
 
@@ -43,7 +43,7 @@ describe('ProjectFsService', () => {
       expect(parsed).toEqual({ name: 'demo', count: 3 });
     });
 
-    it('覆盖已存在文件后内容应为新内容且不残留 .tmp 临时文件', () => {
+    it('After overwriting an existing file, content should be the new content with no .tmp leftovers', () => {
       const filePath = path.join(tempDir, 'data.json');
       service.atomicWriteJson(filePath, { version: 1 });
       service.atomicWriteJson(filePath, { version: 2 });
@@ -55,7 +55,7 @@ describe('ProjectFsService', () => {
       expect(leftovers).toEqual([]);
     });
 
-    it('应支持二进制内容（Buffer）', () => {
+    it('Should support binary content (Buffer)', () => {
       const filePath = path.join(tempDir, 'blob.bin');
       const payload = Buffer.from([0x00, 0x01, 0xfe, 0xff]);
       service.atomicWriteFileSync(filePath, payload);
@@ -63,7 +63,7 @@ describe('ProjectFsService', () => {
       expect(fs.readFileSync(filePath)).toEqual(payload);
     });
 
-    it('目标目录不存在时应自动创建', () => {
+    it('The target directory should be created automatically when it does not exist', () => {
       const filePath = path.join(tempDir, 'nested', 'dir', 'data.json');
       service.atomicWriteJson(filePath, { ok: true });
 
@@ -74,24 +74,24 @@ describe('ProjectFsService', () => {
   // ==================== assertPathWithin ====================
 
   describe('assertPathWithin', () => {
-    it('基准目录内的合法路径应通过', () => {
+    it('Valid paths inside the base directory should pass', () => {
       expect(() =>
         service.assertPathWithin(tempDir, path.join(tempDir, 'sub', 'file.json')),
       ).not.toThrow();
     });
 
-    it('应拒绝 .. 穿越路径', () => {
+    it('Should reject .. traversal paths', () => {
       const escape = path.join(tempDir, '..', 'outside.json');
       expect(() => service.assertPathWithin(tempDir, escape)).toThrow(BadRequestException);
     });
 
-    it('应拒绝基准目录之外的绝对路径', () => {
+    it('Should reject absolute paths outside the base directory', () => {
       expect(() =>
         service.assertPathWithin(tempDir, path.join(os.tmpdir(), 'totally-elsewhere.json')),
       ).toThrow(BadRequestException);
     });
 
-    it('应拒绝等于基准目录本身（relative 为空）', () => {
+    it('Should reject paths equal to the base directory itself (empty relative)', () => {
       expect(() => service.assertPathWithin(tempDir, tempDir)).toThrow(BadRequestException);
     });
   });
@@ -110,9 +110,9 @@ describe('ProjectFsService', () => {
 
     it.each([
       ['', '空值'],
-      ['a/b', '正斜杠'],
-      ['a\\b', '反斜杠'],
-      ['..', '纯穿越'],
+      ['a/b', 'Forward slash'],
+      ['a\\b', 'Backslash'],
+      ['..', 'Pure traversal'],
       ['../evil', '穿越前缀'],
       ['evil/../x', '穿越中缀'],
       ['C:evil', '盘符前缀'],
@@ -126,7 +126,7 @@ describe('ProjectFsService', () => {
   // ==================== extractZipSafely ====================
 
   describe('extractZipSafely', () => {
-    it('应完整解压正常 ZIP 的目录与文件', () => {
+    it('Should fully extract a normal ZIP\'s directories and files', () => {
       const zip = new AdmZip();
       zip.addFile('proj/projectinfo.json', Buffer.from(JSON.stringify({ pid: 'p1' }), 'utf-8'));
       zip.addFile('proj/db/system.db', Buffer.from([0x53, 0x51, 0x4c]));
@@ -144,7 +144,7 @@ describe('ProjectFsService', () => {
       ).toEqual({ id: 'page1' });
     });
 
-    it('应拒绝 Zip Slip 条目（../ 穿越）且不写出目标目录', () => {
+    it('Should reject Zip Slip entries (../ traversal) without writing to the target directory', () => {
       // Note: adm-zip's addFile sanitizes entry names (../ and leading / are cleaned),
       // so it cannot build a genuinely malicious ZIP; a duck-typed mock provides the raw dangerous entry names instead.
       const maliciousZip = {
@@ -172,7 +172,7 @@ describe('ProjectFsService', () => {
       expect(fs.existsSync(path.join(tempDir, 'evil.txt'))).toBe(false);
     });
 
-    it('应拒绝绝对路径条目', () => {
+    it('Should reject absolute-path entries', () => {
       const maliciousZip = {
         getEntries: () => [
           {

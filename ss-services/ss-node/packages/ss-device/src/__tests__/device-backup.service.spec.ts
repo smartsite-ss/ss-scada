@@ -380,7 +380,7 @@ describe('DeviceBackupService', () => {
         {
           id: 'device-001',
           deviceCode: 'dev1',
-          deviceName: 'Device 1',
+          deviceName: '设备1',
           type: 'modbus_tcp',
           status: 'offline',
           tags: [{ id: 'tag-001', name: 'tag1', address: '40001', dataType: 'float32' }],
@@ -388,7 +388,7 @@ describe('DeviceBackupService', () => {
         {
           id: 'device-002',
           deviceCode: 'dev2',
-          deviceName: 'Device 2',
+          deviceName: '设备2',
           type: 'opc_ua',
           status: 'offline',
           tags: [
@@ -440,7 +440,7 @@ describe('DeviceBackupService', () => {
           version: '1.0.0',
           type: 'device',
         },
-        devices: [{ deviceCode: 'dev1', deviceName: 'Device 1', type: 'modbus_tcp', tags: [] }],
+        devices: [{ deviceCode: 'dev1', deviceName: '设备1', type: 'modbus_tcp', tags: [] }],
       };
 
       const result = service.validateBackup(validBackup);
@@ -488,7 +488,7 @@ describe('DeviceBackupService', () => {
           projectId: 'project-001',
           type: 'device',
         },
-        devices: [{ deviceName: 'No TID', tags: [] }],
+        devices: [{ deviceName: '无TID', tags: [] }],
       };
 
       const result = service.validateBackup(backup);
@@ -506,7 +506,7 @@ describe('DeviceBackupService', () => {
           type: 'device',
         },
         devices: [
-          { deviceCode: 'dev1', deviceName: 'Device 1', type: 'modbus_tcp', tags: 'not-array' },
+          { deviceCode: 'dev1', deviceName: '设备1', type: 'modbus_tcp', tags: 'not-array' },
         ],
       };
 
@@ -524,8 +524,8 @@ describe('DeviceBackupService', () => {
           type: 'device',
         },
         devices: [
-          { deviceCode: 'dev1', deviceName: 'Device 1', type: 'modbus_tcp', tags: [] },
-          { deviceCode: 'dev2', deviceName: 'Device 2', type: 'opc_ua', tags: [] },
+          { deviceCode: 'dev1', deviceName: '设备1', type: 'modbus_tcp', tags: [] },
+          { deviceCode: 'dev2', deviceName: '设备2', type: 'opc_ua', tags: [] },
         ],
       };
 

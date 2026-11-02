@@ -324,7 +324,7 @@ describe('useGraphic', () => {
       expect(graphic.graphics.length).toBe(initialCount + 1);
     });
 
-    it('应该成功Export图形', () => {
+    it('Should successfully export graphics', () => {
       const graphic = useGraphic();
       const result = graphic.exportGraphics();
 

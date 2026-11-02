@@ -77,8 +77,8 @@ describe('PipelineMetrics Integration', () => {
     jest.useRealTimers();
   });
 
-  describe('PipelineOrchestrator → PipelineMetricsService 推送', () => {
-    it('执行成功后应推送 execution 指标到 PipelineMetricsService', async () => {
+  describe('PipelineOrchestrator → PipelineMetricsService push', () => {
+    it('After successful execution, execution metrics should be pushed to PipelineMetricsService', async () => {
       const step = makeStep('read', 1);
       orchestrator.registerStep(step);
 
@@ -91,7 +91,7 @@ describe('PipelineMetrics Integration', () => {
       expect(snapshot.pipeline_duration_ms).toBeGreaterThanOrEqual(0);
     });
 
-    it('step 执行后应推送 step duration 到 PipelineMetricsService', async () => {
+    it('After a step executes, step duration should be pushed to PipelineMetricsService', async () => {
       const step = makeStep('read', 1);
       orchestrator.registerStep(step);
 
@@ -101,7 +101,7 @@ describe('PipelineMetrics Integration', () => {
       expect(snapshot.step_duration_ms['read']).toBeGreaterThanOrEqual(0);
     });
 
-    it('step 失败时应推送 step error 到 PipelineMetricsService', async () => {
+    it('When a step fails, step error should be pushed to PipelineMetricsService', async () => {
       const failingStep = makeStep('bad-step', 1, jest.fn().mockRejectedValue(new Error('failed')));
       orchestrator.registerStep(failingStep);
 
@@ -113,7 +113,7 @@ describe('PipelineMetrics Integration', () => {
       expect(snapshot.pipeline_executions_error).toBe(1);
     });
 
-    it('多次执行应累积计数', async () => {
+    it('Multiple executions should accumulate the count', async () => {
       const step = makeStep('read', 1);
       orchestrator.registerStep(step);
 
@@ -128,7 +128,7 @@ describe('PipelineMetrics Integration', () => {
   });
 
   describe('StepTimingStats (P50/P95/P99)', () => {
-    it('应返回各步骤的 P50/P95/P99 延迟统计', async () => {
+    it('Should return per-step P50/P95/P99 latency statistics', async () => {
       jest.useFakeTimers();
 
       const step = makeDelayedStep('read', 1, 10);
@@ -151,7 +151,7 @@ describe('PipelineMetrics Integration', () => {
       expect(stats[0].p99Ms).toBeGreaterThanOrEqual(0);
     });
 
-    it('应正确统计错误率', async () => {
+    it('Should count error rates correctly', async () => {
       let callCount = 0;
       const flakyStep = makeStep('flaky', 1, (ctx) => {
         callCount++;
@@ -175,7 +175,7 @@ describe('PipelineMetrics Integration', () => {
   });
 
   describe('PipelineMetricsController', () => {
-    it('getPrometheusMetrics 应返回 Prometheus 文本格式', async () => {
+    it('getPrometheusMetrics should return Prometheus text format', async () => {
       const step = makeStep('read', 1);
       orchestrator.registerStep(step);
       await orchestrator.execute(makeContext());
@@ -186,7 +186,7 @@ describe('PipelineMetrics Integration', () => {
       expect(result).toContain('step_duration_ms');
     });
 
-    it('getJsonMetrics 应返回 JSON 格式指标', async () => {
+    it('getJsonMetrics should return JSON-format metrics', async () => {
       const step = makeStep('read', 1);
       orchestrator.registerStep(step);
       await orchestrator.execute(makeContext());
@@ -197,7 +197,7 @@ describe('PipelineMetrics Integration', () => {
       expect(result.data.pipeline_executions_total).toBe(1);
     });
 
-    it('getPercentiles 应返回 P50/P95/P99 统计', async () => {
+    it('getPercentiles should return P50/P95/P99 statistics', async () => {
       const step = makeStep('read', 1);
       orchestrator.registerStep(step);
       await orchestrator.execute(makeContext());
@@ -212,7 +212,7 @@ describe('PipelineMetrics Integration', () => {
       expect(result.data[0]).toHaveProperty('p99Ms');
     });
 
-    it('getBreakdowns 应返回耗时分解记录', async () => {
+    it('getBreakdowns should return duration breakdown records', async () => {
       const step = makeStep('read', 1);
       orchestrator.registerStep(step);
       await orchestrator.execute(makeContext());
@@ -227,8 +227,8 @@ describe('PipelineMetrics Integration', () => {
     });
   });
 
-  describe('Prometheus 格式正确性', () => {
-    it('应包含所有指标类型的 HELP 和 TYPE 声明', async () => {
+  describe('Prometheus format correctness', () => {
+    it('Should include HELP and TYPE declarations for all metric types', async () => {
       const step = makeStep('read', 1);
       orchestrator.registerStep(step);
       await orchestrator.execute(makeContext());

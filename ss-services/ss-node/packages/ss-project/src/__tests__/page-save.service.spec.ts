@@ -79,7 +79,7 @@ describe('PageSaveService', () => {
     });
 
     it('should replace spaces with hyphens', () => {
-      const result = (service as any).normalizePageName('Page 1');
+      const result = (service as any).normalizePageName('页面1');
       expect(result).toBe('Page-1');
     });
 
@@ -199,7 +199,7 @@ describe('PageSaveService', () => {
   });
 
   describe('savePage', () => {
-    it('【要求1】保存页面时应创建以 p_ 前缀命名的文件夹', () => {
+    it('[Requirement 1] Saving a page should create a folder named with the p_ prefix', () => {
       const pageData = { id: 'page1', name: 'MainPage', widgets: [] };
       const result = service.savePage(
         testProjectName,
@@ -217,7 +217,7 @@ describe('PageSaveService', () => {
       expect(fs.statSync(pageDir).isDirectory()).toBe(true);
     });
 
-    it('【要求2】保存页面时应将 page.json 保存到 p_ 前缀文件夹中', () => {
+    it('[Requirement 2] Saving a page should write page.json into the p_ prefixed folder', () => {
       const pageData = { id: 'page1', name: 'MainPage', widgets: [] };
       service.savePage(testProjectName, 'MainPage', pageData, undefined, mockPreview);
 
@@ -231,7 +231,7 @@ describe('PageSaveService', () => {
       expect(savedData.updatedAt).toBeDefined();
     });
 
-    it('【P0-1】保存 page.json 采用原子写：不残留 .tmp 临时文件，覆盖保存后内容仍完整可解析', () => {
+    it('[P0-1] Writing page.json uses atomic write: no .tmp leftover files, and content remains complete and parseable after overwrite', () => {
       const pageData = { id: 'page1', name: 'MainPage', widgets: [] };
       service.savePage(testProjectName, 'MainPage', pageData);
 
@@ -250,7 +250,7 @@ describe('PageSaveService', () => {
       expect(savedAgain.widgets).toEqual([{ type: 'label' }]);
     });
 
-    it('【要求3】保存页面时应将运行态截图 preview.png 保存到文件夹中', () => {
+    it('[Requirement 3] Saving a page should save the runtime screenshot preview.png into the folder', () => {
       const pageData = { id: 'page1', name: 'MainPage', widgets: [] };
       service.savePage(testProjectName, 'MainPage', pageData, undefined, mockPreview);
 
@@ -259,7 +259,7 @@ describe('PageSaveService', () => {
       expect(fs.readFileSync(previewPath)).toEqual(mockPreview);
     });
 
-    it('一次 savePage 调用应同时创建文件夹、保存 page.json 和 preview.png', () => {
+    it('A single savePage call should create the folder, save page.json and preview.png at once', () => {
       const pageData = { id: 'page1', name: 'MainPage', widgets: [] };
       service.savePage(testProjectName, 'MainPage', pageData, undefined, mockPreview);
 
@@ -286,7 +286,7 @@ describe('PageSaveService', () => {
       expect(files.length).toBe(2);
     });
 
-    it('应在分组内（g_ 前缀）创建 p_ 前缀文件夹并保存 page.json 和 preview.png', () => {
+    it('Should create a p_ prefixed folder inside the group (g_ prefix) and save page.json and preview.png', () => {
       service.createGroup(testProjectName, 'group1');
       const pageData = { id: 'page1', name: 'GroupPage' };
       service.savePage(testProjectName, 'GroupPage', pageData, 'group1', mockPreview);
@@ -298,7 +298,7 @@ describe('PageSaveService', () => {
       expect(fs.existsSync(path.join(pageDir, 'preview.png'))).toBe(true);
     });
 
-    it('previewBuffer 为空时只保存 page.json，不创建 preview.png', () => {
+    it('When previewBuffer is empty, only page.json is saved without creating preview.png', () => {
       const pageData = { id: 'page1' };
       service.savePage(testProjectName, 'page1', pageData);
 
@@ -308,7 +308,7 @@ describe('PageSaveService', () => {
       expect(fs.existsSync(path.join(pageDir, 'preview_small.png'))).toBe(false);
     });
 
-    it('previewSmallBuffer 提供时应在同目录下保存 preview_small.png', () => {
+    it('When previewSmallBuffer is provided, preview_small.png should be saved in the same directory', () => {
       const pageData = { id: 'page1' };
       service.savePage(
         testProjectName,
@@ -326,7 +326,7 @@ describe('PageSaveService', () => {
       expect(fs.readFileSync(path.join(pageDir, 'preview_small.png'))).toEqual(mockPreviewSmall);
     });
 
-    it('仅提供 previewSmallBuffer（无 preview）时只保存 preview_small.png', () => {
+    it('With only previewSmallBuffer (no preview), save only preview_small.png', () => {
       const pageData = { id: 'page1' };
       service.savePage(testProjectName, 'page1', pageData, undefined, undefined, mockPreviewSmall);
 
@@ -335,7 +335,7 @@ describe('PageSaveService', () => {
       expect(fs.existsSync(path.join(pageDir, 'preview_small.png'))).toBe(true);
     });
 
-    it('提供 previewSmallBuffer 时应兼容分组目录', () => {
+    it('Providing previewSmallBuffer should be compatible with group directories', () => {
       service.createGroup(testProjectName, 'group1');
       const pageData = { id: 'page1' };
       service.savePage(testProjectName, 'page1', pageData, 'group1', mockPreview, mockPreviewSmall);
@@ -344,7 +344,7 @@ describe('PageSaveService', () => {
       expect(fs.existsSync(path.join(pageDir, 'preview_small.png'))).toBe(true);
     });
 
-    it('应添加 updatedAt 时间戳', () => {
+    it('Should add the updatedAt timestamp', () => {
       const pageData = { id: 'page1' };
       service.savePage(testProjectName, 'page1', pageData, undefined, mockPreview);
 
@@ -354,15 +354,15 @@ describe('PageSaveService', () => {
       expect(new Date(savedData.updatedAt).getTime()).not.toBeNaN();
     });
 
-    it('页面名中的空格应被规范化为 -', () => {
-      const pageData = { id: '1', name: 'Page 1' };
-      service.savePage(testProjectName, 'Page 1', pageData);
+    it('Spaces in page names should be normalized to -', () => {
+      const pageData = { id: '1', name: '页面1' };
+      service.savePage(testProjectName, '页面1', pageData);
 
       const jsonPath = pagePath(p('Page-1'), 'page.json');
       expect(fs.existsSync(jsonPath)).toBe(true);
     });
 
-    it('【ID 保护】page.json 已有 id 时，savePage 应保留原始 id 不被覆盖', () => {
+    it('[ID protection] When page.json already has an id, savePage should keep the original id without overwriting', () => {
       // First save: writes id = "page-abc"
       const originalData = { id: 'page-abc', name: 'ProtectedPage', widgets: ['w1'] };
       service.savePage(testProjectName, 'ProtectedPage', originalData);
@@ -383,7 +383,7 @@ describe('PageSaveService', () => {
       expect(savedData.name).toBe('ProtectedPage');
     });
 
-    it('【ID 保护】savePage 保留 id 在分组目录中也应生效', () => {
+    it('[ID protection] savePage keeping ids also works in group directories', () => {
       service.createGroup(testProjectName, 'g1');
       const originalData = { id: 'page-xyz', name: 'GPage' };
       service.savePage(testProjectName, 'GPage', originalData, 'g1');
@@ -484,7 +484,7 @@ describe('PageSaveService', () => {
       expect(fs.readFileSync(path.join(dir, 'preview_small.png'))).toEqual(mockPreviewSmall);
     });
 
-    it('【ID 保护】saveAllPages 应保留 page.json 中已有的 id', async () => {
+    it('[ID protection] saveAllPages should keep the existing id in page.json', async () => {
       // First save: writes the real ID
       const pages1 = [{ id: 'page-uuid-001', name: 'IDPage' }];
       await service.saveAllPages(testProjectName, pages1);
@@ -503,7 +503,7 @@ describe('PageSaveService', () => {
       expect(savedData.widgets).toEqual(['new']);
     });
 
-    it('【ID 保护】saveAllPages 保留 id 在分组目录中也应生效', async () => {
+    it('[ID protection] saveAllPages keeping ids also works in group directories', async () => {
       service.createGroup(testProjectName, 'g2');
 
       const pages1 = [{ id: 'page-uuid-002', name: 'GroupIDPage' }];
@@ -1133,7 +1133,7 @@ describe('PageSaveService', () => {
       expect(result.totalPageCount).toBe(2);
     });
 
-    it('【ID 字段】outline 应返回 page.json 中的 id', () => {
+    it('[ID field] outline should return the id from page.json', () => {
       service.savePage(testProjectName, 'IDPage', { id: 'page-uuid-abc', name: 'IDPage' });
 
       const result = service.getProjectOutline(testProjectName);
@@ -1143,7 +1143,7 @@ describe('PageSaveService', () => {
       expect(result.rootPages[0].name).toBe('IDPage');
     });
 
-    it('【ID 字段】分组内页面也应返回 id', () => {
+    it('[ID field] Pages inside groups should also return id', () => {
       service.createGroup(testProjectName, 'myGroup');
       service.savePage(testProjectName, 'GIDPage', { id: 'page-uuid-xyz' }, 'myGroup');
 
@@ -1155,7 +1155,7 @@ describe('PageSaveService', () => {
       expect(result.groups[0].pages[0].name).toBe('GIDPage');
     });
 
-    it('【去重】outline 使用 id 去重，相同 id 的页面只出现一次（第一个出现位置）', () => {
+    it('[Dedup] outline dedupes by id; pages with the same id appear only once (at first occurrence)', () => {
       // Manually create two page.json files with the same id (simulating an anomaly)
       service.savePage(testProjectName, 'First', { id: 'same-uuid', name: 'First' });
       // Write the same id in another directory (simulating an anomaly)
@@ -1206,8 +1206,8 @@ describe('PageSaveService', () => {
     });
   });
 
-  describe('端到端：前缀命名规范目录结构', () => {
-    it('应生成符合 p_ / g_ 前缀规范的目录结构', () => {
+  describe('End to end: prefix naming convention directory structure', () => {
+    it('Should generate a directory structure conforming to the p_ / g_ prefix conventions', () => {
       // MainPage - save writes both page.json and preview.png
       service.savePage(
         testProjectName,
@@ -1278,7 +1278,7 @@ describe('PageSaveService', () => {
   });
 
   describe('getPreviewImagePath', () => {
-    it('应返回存在的 preview_small.png 路径（无分组）', () => {
+    it('Should return the existing preview_small.png path (no group)', () => {
       service.savePage(
         testProjectName,
         'page1',
@@ -1299,7 +1299,7 @@ describe('PageSaveService', () => {
       expect(fs.existsSync(filePath as string)).toBe(true);
     });
 
-    it('应返回分组目录下的 preview.png 路径', () => {
+    it('Should return the preview.png path under the group directory', () => {
       service.createGroup(testProjectName, 'group1');
       service.savePage(
         testProjectName,
@@ -1315,13 +1315,13 @@ describe('PageSaveService', () => {
       expect(fs.existsSync(filePath as string)).toBe(true);
     });
 
-    it('文件不存在时应返回 null', () => {
+    it('Should return null when the file does not exist', () => {
       expect(
         service.getPreviewImagePath(testProjectName, 'missing', undefined, 'preview_small'),
       ).toBeNull();
     });
 
-    it('应幂等清理 p_ 前缀', () => {
+    it('Should idempotently strip the p_ prefix', () => {
       service.savePage(
         testProjectName,
         'page3',

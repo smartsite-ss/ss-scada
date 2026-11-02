@@ -8,7 +8,7 @@ import { I18nService } from '../i18n.service';
 const TEST_TRANSLATIONS = {
   'zh-CN': {
     greeting: '你好',
-    welcome: '欢迎, {{name}}',
+    welcome: 'Welcome, {{name}}',
     goodbye: '再见, {{user}}',
     error: {
       auth: {
@@ -25,9 +25,9 @@ const TEST_TRANSLATIONS = {
     },
   },
   'en-US': {
-    greeting: 'Hello',
+    greeting: '你好',
     welcome: 'Welcome, {{name}}',
-    goodbye: 'Goodbye, {{user}}',
+    goodbye: '再见, {{user}}',
     error: {
       auth: {
         AUTH_001: 'Authentication failed',
@@ -38,7 +38,7 @@ const TEST_TRANSLATIONS = {
       count: {
         zero: 'No items',
         one: 'One item',
-        other: '{{count}} items',
+        other: '{{count}}个项目',
       },
     },
   },
@@ -70,7 +70,7 @@ describe('I18nService', () => {
     it('should translate a simple key in en-US', () => {
       service.setLanguage('en-US');
       const result = service.translate('greeting');
-      expect(result).toBe('Hello');
+      expect(result).toBe('你好');
     });
   });
 
@@ -102,8 +102,8 @@ describe('I18nService', () => {
     });
 
     it('should handle params with spaces in template', () => {
-      const result = service.translate('welcome', { name: 'Test' });
-      expect(result).toBe('欢迎, Test');
+      const result = service.translate('welcome', { name: '测试' });
+      expect(result).toBe('Welcome, Test');
     });
   });
 
@@ -129,7 +129,7 @@ describe('I18nService', () => {
       expect(service.getLanguage()).toBe('zh-CN');
 
       service.setLanguage('en-US');
-      expect(service.translate('greeting')).toBe('Hello');
+      expect(service.translate('greeting')).toBe('你好');
       expect(service.getLanguage()).toBe('en-US');
 
       service.setLanguage('zh-CN');
@@ -207,14 +207,14 @@ describe('I18nService', () => {
     it('should translate plural other form in English', () => {
       service.setLanguage('en-US');
       const result = service.translatePlural('items.count', 5);
-      expect(result).toBe('5 items');
+      expect(result).toBe('5个项目');
     });
 
     it('should fallback to "other" form when specific plural form missing', () => {
       service.setLanguage('en-US');
       // English has 'one' and 'other', so 'zero' should fallback to 'other'
       const result = service.translatePlural('items.count', 0);
-      expect(result).toBe('0 items');
+      expect(result).toBe('0个项目');
     });
   });
 
@@ -302,7 +302,7 @@ describe('I18nService', () => {
 
     it('should support params in async mode', async () => {
       const result = await service.translateAsync('welcome', { name: 'World' });
-      expect(result).toBe('欢迎, World');
+      expect(result).toBe('Welcome, World');
     });
   });
 

@@ -26,7 +26,7 @@ async function drain(stream: AsyncGenerator<string, void, unknown>): Promise<str
 }
 
 describe('parseSSEStream', () => {
-  it('正确解析标准 SSE 事件', async () => {
+  it('Parse standard SSE events correctly', async () => {
     const input = [
       'data: {"id":"1","content":"hello"}' + SEP,
       'data: {"id":"2","content":"world"}' + SEP,
@@ -37,19 +37,19 @@ describe('parseSSEStream', () => {
     expect(output).not.toContain('[DONE]');
   });
 
-  it('正确处理跨 chunk 的事件（被拆分）', async () => {
+  it('Handle events spanning chunks correctly (split)', async () => {
     const input = ['data: {"id":', '"1","content":"hello"}' + SEP, DONE];
     const output = await drain(parseSSEStream(fromChunks(input)));
     expect(output).toEqual(['{"id":"1","content":"hello"}']);
   });
 
-  it('正确处理同一 chunk 内多个事件', async () => {
+  it('Handle multiple events within the same chunk correctly', async () => {
     const input = ['data: {"a":1}' + SEP + 'data: {"b":2}' + SEP + DONE];
     const output = await drain(parseSSEStream(fromChunks(input)));
     expect(output).toEqual(['{"a":1}', '{"b":2}']);
   });
 
-  it('忽略空行和非 data: 字段（如 event:/id:）', async () => {
+  it('Ignore empty lines and non-data: fields (e.g. event:/id:)', async () => {
     const input = [
       'event: ping' + NL + 'data: {"a":1}' + NL + 'id: 12345' + SEP,
       'data: {"b":2}' + SEP + DONE,
@@ -58,24 +58,24 @@ describe('parseSSEStream', () => {
     expect(output).toEqual(['{"a":1}', '{"b":2}']);
   });
 
-  it('忽略空 data 行', async () => {
+  it('Ignore empty data lines', async () => {
     const input = ['data:' + NL + 'data: {"a":1}' + SEP + DONE];
     const output = await drain(parseSSEStream(fromChunks(input)));
     expect(output).toEqual(['{"a":1}']);
   });
 
-  it('遇到 [DONE] 立即结束流', async () => {
+  it('End the stream immediately upon encountering [DONE]', async () => {
     const input = ['data: {"a":1}' + SEP, DONE, 'data: {"should-not-appear":true}' + SEP];
     const output = await drain(parseSSEStream(fromChunks(input)));
     expect(output).toEqual(['{"a":1}']);
   });
 
-  it('空流返回空数组', async () => {
+  it('An empty stream returns an empty array', async () => {
     const output = await drain(parseSSEStream(fromChunks([])));
     expect(output).toEqual([]);
   });
 
-  it('只有分隔符的流返回空数组', async () => {
+  it('A stream with only separators returns an empty array', async () => {
     const output = await drain(parseSSEStream(fromChunks([SEP, SEP])));
     expect(output).toEqual([]);
   });

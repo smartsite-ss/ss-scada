@@ -7,7 +7,7 @@ import { GraphicFactory } from '../../../graphic-editing/graphic/factory/Graphic
 import { BaseGraphic } from '@scada-editor/plugin-sdk';
 import { Graphic } from '@scada-editor/plugin-sdk';
 
-describe('@Graphic 装饰器 - 注册功能测试', () => {
+describe('@Graphic decorator - registration tests', () => {
 
   beforeEach(() => {
     const types = GraphicFactory.getGraphicTypes();
@@ -18,7 +18,7 @@ describe('@Graphic 装饰器 - 注册功能测试', () => {
     });
   });
 
-  it('应注册图元类型到 GraphicFactory', () => {
+  it('Should register the graphic type to GraphicFactory', () => {
     class TestGraphic extends BaseGraphic {
       constructor() { super('test-decorator-1', 0, 0, 100, 100); }
       draw(): void {}
@@ -27,7 +27,7 @@ describe('@Graphic 装饰器 - 注册功能测试', () => {
     expect(GraphicFactory.hasGraphic('test-decorator-1')).toBe(true);
   });
 
-  it('应可通过工厂创建实例', () => {
+  it('Should be able to create instances via the factory', () => {
     class TestGraphic extends BaseGraphic {
       constructor(x = 0, y = 0, w = 100, h = 100) { super('test-decorator-2', x, y, w, h); }
       draw(): void {}
@@ -38,7 +38,7 @@ describe('@Graphic 装饰器 - 注册功能测试', () => {
     expect(instance.type).toBe('test-decorator-2');
   });
 
-  it('同类型二次注册应覆盖原有类型', () => {
+  it('Second registration of the same type should overwrite the original type', () => {
     class V1 extends BaseGraphic {
       label = 'v1';
       constructor() { super('test-override', 0, 0, 100, 100); }
@@ -58,7 +58,7 @@ describe('@Graphic 装饰器 - 注册功能测试', () => {
     }
   });
 
-  it('不同分类的图元互不干扰', () => {
+  it('Graphics of different categories do not interfere with each other', () => {
     class BasicG extends BaseGraphic {
       constructor() { super('test-cat-basic', 0, 0, 100, 100); }
       draw(): void {}
@@ -73,11 +73,11 @@ describe('@Graphic 装饰器 - 注册功能测试', () => {
     expect(GraphicFactory.hasGraphic('test-cat-chart')).toBe(true);
   });
 
-  it('未注册类型应无法创建', () => {
+  it('Unregistered types cannot be created', () => {
     expect(GraphicFactory.hasGraphic('test-nonexist')).toBe(false);
   });
 
-  it('getGraphicTypes 应返回所有已注册类型', () => {
+  it('getGraphicTypes should return all registered types', () => {
     class GA extends BaseGraphic {
       constructor() { super('test-types-a', 0, 0, 100, 100); }
       draw(): void {}
@@ -98,7 +98,7 @@ describe('@Graphic 装饰器 - 注册功能测试', () => {
   });
 });
 
-describe('@Graphic 装饰器函数测试', () => {
+describe('@Graphic decorator function tests', () => {
   @Graphic('test-deco-auto', '自动', 'basic')
   class AutoRegisterGraphic extends BaseGraphic {
     constructor() { super('test-deco-auto', 0, 0, 100, 100); }
@@ -111,7 +111,7 @@ describe('@Graphic 装饰器函数测试', () => {
     draw(): void {}
   }
 
-  @Graphic('test-deco-dup', '第一次', 'basic')
+  @Graphic('test-deco-dup', 'First time', 'basic')
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   class _DuplicateV1 extends BaseGraphic {
     constructor() { super('test-deco-dup', 0, 0, 100, 100); }
@@ -119,13 +119,13 @@ describe('@Graphic 装饰器函数测试', () => {
   }
   void _DuplicateV1;
 
-  @Graphic('test-deco-dup', '第二次', 'chart')
+  @Graphic('test-deco-dup', 'Second time', 'chart')
   class DuplicateV2 extends BaseGraphic {
     constructor() { super('test-deco-dup', 0, 0, 100, 100); }
     draw(): void {}
   }
 
-  @Graphic('test-deco-unreg', '注销', 'basic')
+  @Graphic('test-deco-unreg', 'Unregister', 'basic')
   class UnregisterableGraphic extends BaseGraphic {
     constructor() { super('test-deco-unreg', 0, 0, 100, 100); }
     draw(): void {}
@@ -140,11 +140,11 @@ describe('@Graphic 装饰器函数测试', () => {
     });
     GraphicFactory.registerGraphic('test-deco-auto', AutoRegisterGraphic as any, '自动', 'basic');
     GraphicFactory.registerGraphic('test-deco-use', UsableGraphic as any, '使用', 'basic');
-    GraphicFactory.registerGraphic('test-deco-dup', DuplicateV2 as any, '第二次', 'chart');
-    GraphicFactory.registerGraphic('test-deco-unreg', UnregisterableGraphic as any, '注销', 'basic');
+    GraphicFactory.registerGraphic('test-deco-dup', DuplicateV2 as any, 'Second time', 'chart');
+    GraphicFactory.registerGraphic('test-deco-unreg', UnregisterableGraphic as any, 'Unregister', 'basic');
   });
 
-  it('应自动注册图元到 GraphicFactory', () => {
+  it('Should auto-register graphics to GraphicFactory', () => {
     expect(GraphicFactory.hasGraphic('test-deco-auto')).toBe(true);
 
     const info = GraphicFactory.getGraphicInfo('test-deco-auto');
@@ -153,7 +153,7 @@ describe('@Graphic 装饰器函数测试', () => {
     expect(info!.category).toBe('basic');
   });
 
-  it('应设置静态 type 属性', () => {
+  it('Should set the static type property', () => {
     @Graphic('test-static-type', '静态类型', 'basic')
     class StaticTypeGraphic extends BaseGraphic {
       constructor() { super('test-static-type', 0, 0, 100, 100); }
@@ -162,7 +162,7 @@ describe('@Graphic 装饰器函数测试', () => {
     expect((StaticTypeGraphic as any).type).toBe('test-static-type');
   });
 
-  it('应设置静态 displayName 属性', () => {
+  it('Should set the static displayName property', () => {
     @Graphic('test-static-name', '静态名称', 'basic')
     class StaticNameGraphic extends BaseGraphic {
       constructor() { super('test-static-name', 0, 0, 100, 100); }
@@ -171,7 +171,7 @@ describe('@Graphic 装饰器函数测试', () => {
     expect((StaticNameGraphic as any).displayName).toBe('静态名称');
   });
 
-  it('应设置静态 category 属性', () => {
+  it('Should set the static category property', () => {
     @Graphic('test-static-cat', '静态分类', 'chart')
     class StaticCatGraphic extends BaseGraphic {
       constructor() { super('test-static-cat', 0, 0, 100, 100); }
@@ -180,7 +180,7 @@ describe('@Graphic 装饰器函数测试', () => {
     expect((StaticCatGraphic as any).category).toBe('chart');
   });
 
-  it('装饰器创建的图元可通过工厂正常使用', () => {
+  it('Graphics created by the decorator work normally via the factory', () => {
 
     const inst = GraphicFactory.createGraphic('test-deco-use', 50, 60, 300, 150);
     expect(inst).not.toBeNull();
@@ -195,7 +195,7 @@ describe('@Graphic 装饰器函数测试', () => {
     expect(size.height).toBe(150);
   });
 
-  it('装饰器注册的类原 name 属性不应被修改', () => {
+  it('The original name property of a decorator-registered class should not be modified', () => {
     @Graphic('test-deco-name', '名称保持', 'basic')
     class NamePreservedGraphic extends BaseGraphic {
       constructor() { super('test-deco-name', 0, 0, 100, 100); }
@@ -205,7 +205,7 @@ describe('@Graphic 装饰器函数测试', () => {
     expect(origName).toBe('NamePreservedGraphic');
   });
 
-  it('装饰器多次应用（覆盖注册）应生效', () => {
+  it('Applying the decorator multiple times (overwriting registration) should take effect', () => {
     expect(GraphicFactory.hasGraphic('test-deco-dup')).toBe(true);
 
 
@@ -213,11 +213,11 @@ describe('@Graphic 装饰器函数测试', () => {
 
     const info = GraphicFactory.getGraphicInfo('test-deco-dup');
     expect(info).not.toBeNull();
-    expect(info!.name).toBe('第二次');
+    expect(info!.name).toBe('Second time');
     expect(info!.category).toBe('chart');
   });
 
-  it('装饰器不改变类继承关系', () => {
+  it('The decorator does not change class inheritance', () => {
     @Graphic('test-deco-inherit', '继承', 'basic')
     class InheritableGraphic extends BaseGraphic {
       constructor(x = 0, y = 0, w = 100, h = 100) {
@@ -232,22 +232,22 @@ describe('@Graphic 装饰器函数测试', () => {
     expect(typeof inst.draw).toBe('function');
   });
 
-  it('装饰器注册后可注销', () => {
+  it('Decorator-registered classes can be unregistered', () => {
 
     expect(GraphicFactory.hasGraphic('test-deco-unreg')).toBe(true);
     GraphicFactory.unregisterGraphic('test-deco-unreg');
     expect(GraphicFactory.hasGraphic('test-deco-unreg')).toBe(false);
   });
 
-  it('注销未注册类型不应抛出异常', () => {
+  it('Unregistering an unregistered type should not throw', () => {
     expect(() => GraphicFactory.unregisterGraphic('test-deco-nobody')).not.toThrow();
   });
 
-  it('getGraphicInfo 对不存在类型返回 undefined', () => {
+  it('getGraphicInfo returns undefined for a non-existent type', () => {
     expect(GraphicFactory.getGraphicInfo('test-deco-ghost')).toBeUndefined();
   });
 
-  it('createGraphic 对不存在类型抛出异常', () => {
+  it('createGraphic throws for a non-existent type', () => {
     expect(() => GraphicFactory.createGraphic('test-deco-ghost')).toThrow();
   });
 });

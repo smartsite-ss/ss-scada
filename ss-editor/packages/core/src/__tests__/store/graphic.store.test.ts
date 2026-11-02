@@ -56,7 +56,7 @@ describe('graphic.store', () => {
     graphicStore = useGraphicStore();
   });
 
-  describe('useCurrentPage 工具函数', () => {
+  describe('useCurrentPage utility functions', () => {
     it('should return the current page from pageStore', () => {
       const currentPage = useCurrentPage();
       expect(currentPage).toBeDefined();
@@ -75,7 +75,7 @@ describe('graphic.store', () => {
 
   describe('store getters', () => {
     it('graphics getter should delegate to currentPage', () => {
-      const page = createPage('p1', 'Page 1');
+      const page = createPage('p1', '页面1');
       pageStore.pages = [page];
       pageStore.currentPageId = 'p1';
       addGraphics(page, 3);
@@ -83,7 +83,7 @@ describe('graphic.store', () => {
     });
 
     it('selectedGraphicId getter should delegate to currentPage', () => {
-      const page = createPage('p1', 'Page 1');
+      const page = createPage('p1', '页面1');
       pageStore.pages = [page];
       pageStore.currentPageId = 'p1';
       addGraphics(page, 3);
@@ -92,7 +92,7 @@ describe('graphic.store', () => {
     });
 
     it('selectedGraphic getter should find graphic by selectedId', () => {
-      const page = createPage('p1', 'Page 1');
+      const page = createPage('p1', '页面1');
       pageStore.pages = [page];
       pageStore.currentPageId = 'p1';
       addGraphics(page, 3);
@@ -102,7 +102,7 @@ describe('graphic.store', () => {
     });
 
     it('selectedGraphicIds getter should delegate to currentPage', () => {
-      const page = createPage('p1', 'Page 1');
+      const page = createPage('p1', '页面1');
       pageStore.pages = [page];
       pageStore.currentPageId = 'p1';
       addGraphics(page, 3);
@@ -113,7 +113,7 @@ describe('graphic.store', () => {
 
   describe('removePageGraphics', () => {
     it('should remove all graphics from page using removeGraphic', () => {
-      const page = createPage('p1', 'Page 1');
+      const page = createPage('p1', '页面1');
       pageStore.pages = [page];
       pageStore.currentPageId = 'p1';
       addGraphics(page, 5);
@@ -126,7 +126,7 @@ describe('graphic.store', () => {
 
   describe('GraphicLookupCache — sortedGraphics', () => {
     it('should return graphics sorted by zIndex', () => {
-      const page = createPage('p1', 'Page 1');
+      const page = createPage('p1', '页面1');
       pageStore.pages = [page];
       pageStore.currentPageId = 'p1';
       addGraphics(page, 3);
@@ -138,7 +138,7 @@ describe('graphic.store', () => {
     });
 
     it('should update when graphics change on page', () => {
-      const page = createPage('p1', 'Page 1');
+      const page = createPage('p1', '页面1');
       pageStore.pages = [page];
       pageStore.currentPageId = 'p1';
       addGraphics(page, 2);
@@ -178,7 +178,7 @@ describe('graphic.store', () => {
 
   describe('addGraphic via store', () => {
     it('should add graphic and select it', () => {
-      const page = createPage('p1', 'Page 1');
+      const page = createPage('p1', '页面1');
       pageStore.pages = [page];
       pageStore.currentPageId = 'p1';
 

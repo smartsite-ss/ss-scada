@@ -108,14 +108,14 @@ describe('BaseServicesView', () => {
 
   // ================ Rendering tests ================
   describe('rendering', () => {
-    it('TC-BSV-001: 应渲染页面标题和操作按钮', async () => {
+    it('TC-BSV-001: should render the page title and action buttons', async () => {
       const wrapper = await mountView();
       await flushPromises();
       expect(wrapper.find('.page-title').text()).toContain('system.baseServices.title');
       expect(wrapper.find('.header-actions').exists()).toBe(true);
     });
 
-    it('TC-BSV-002: 无服务时应显示空状态', async () => {
+    it('TC-BSV-002: should show the empty state when there are no services', async () => {
       mockBaseServicesApi.list.mockResolvedValue({ data: [] });
       const wrapper = await mountView();
       await flushPromises();
@@ -123,7 +123,7 @@ describe('BaseServicesView', () => {
       expect(wrapper.find('.empty-state').text()).toContain('system.baseServices.noServices');
     });
 
-    it('TC-BSV-003: 应渲染服务卡片列表', async () => {
+    it('TC-BSV-003: should render the service card list', async () => {
       mockBaseServicesApi.list.mockResolvedValue({
         data: [mockServiceStatus({ name: 'redis', displayName: 'Redis' })],
       });
@@ -134,7 +134,7 @@ describe('BaseServicesView', () => {
       expect(cards[0].find('.svc-name').text()).toBe('Redis');
     });
 
-    it('TC-BSV-004: 服务卡片应显示状态徽章', async () => {
+    it('TC-BSV-004: service cards should show status badges', async () => {
       mockBaseServicesApi.list.mockResolvedValue({
         data: [mockServiceStatus({ status: 'running' })],
       });
@@ -143,21 +143,21 @@ describe('BaseServicesView', () => {
       expect(wrapper.find('.status-badge').classes()).toContain('badge-running');
     });
 
-    it('TC-BSV-005: 应渲染新增服务按钮', async () => {
+    it('TC-BSV-005: should render the add-service button', async () => {
       const wrapper = await mountView();
       await flushPromises();
       const addBtn = wrapper.findAll('.sys-btn-primary').find((b) => b.text().includes('addService'));
       expect(addBtn).toBeDefined();
     });
 
-    it('TC-BSV-006: 应渲染刷新按钮', async () => {
+    it('TC-BSV-006: should render the refresh button', async () => {
       const wrapper = await mountView();
       await flushPromises();
       const refreshBtn = wrapper.findAll('.sys-btn-secondary').find((b) => b.text().includes('refresh'));
       expect(refreshBtn).toBeDefined();
     });
 
-    it('TC-BSV-007: 服务卡片应包含启停/配置/日志/编辑/删除按钮', async () => {
+    it('TC-BSV-007: service cards should include start/stop/config/logs/edit/delete buttons', async () => {
       mockBaseServicesApi.list.mockResolvedValue({
         data: [mockServiceStatus()],
       });
@@ -178,7 +178,7 @@ describe('BaseServicesView', () => {
 
   // ================ Add/Edit service modal ================
   describe('form modal', () => {
-    it('TC-BSV-010: 点击新增按钮应打开模态框', async () => {
+    it('TC-BSV-010: clicking the add button should open the modal', async () => {
       const wrapper = await mountView();
       await flushPromises();
       expect(wrapper.find('.modal-overlay').exists()).toBe(false);
@@ -188,7 +188,7 @@ describe('BaseServicesView', () => {
       expect(wrapper.find('.modal-title').text()).toContain('addService');
     });
 
-    it('TC-BSV-011: 模态框应包含所有必填字段', async () => {
+    it('TC-BSV-011: the modal should contain all required fields', async () => {
       const wrapper = await mountView();
       await flushPromises();
       const addBtn = wrapper.findAll('.sys-btn-primary').find((b) => b.text().includes('addService'));
@@ -199,7 +199,7 @@ describe('BaseServicesView', () => {
       expect(modal.findAll('.form-field').length).toBeGreaterThanOrEqual(10);
     });
 
-    it('TC-BSV-012: 必填字段为空时保存应提示错误', async () => {
+    it('TC-BSV-012: saving with empty required fields should show an error', async () => {
       const wrapper = await mountView();
       await flushPromises();
       const addBtn = wrapper.findAll('.sys-btn-primary').find((b) => b.text().includes('addService'));
@@ -211,7 +211,7 @@ describe('BaseServicesView', () => {
       expect(showError).toHaveBeenCalledWith('system.baseServices.requiredFields');
     });
 
-    it('TC-BSV-013: 填写有效数据后保存应调用 create API', async () => {
+    it('TC-BSV-013: saving with valid data should call the create API', async () => {
       const wrapper = await mountView();
       await flushPromises();
       const addBtn = wrapper.findAll('.sys-btn-primary').find((b) => b.text().includes('addService'));
@@ -234,7 +234,7 @@ describe('BaseServicesView', () => {
       expect(showSuccess).toHaveBeenCalledWith('system.baseServices.createSuccess');
     });
 
-    it('TC-BSV-014: 点击编辑按钮应加载配置并填充表单', async () => {
+    it('TC-BSV-014: clicking the edit button should load the config and fill the form', async () => {
       mockBaseServicesApi.list.mockResolvedValue({
         data: [mockServiceStatus({ name: 'redis', displayName: 'Redis' })],
       });
@@ -252,7 +252,7 @@ describe('BaseServicesView', () => {
       expect(wrapper.find('.modal-title').text()).toContain('editService');
     });
 
-    it('TC-BSV-015: 编辑模式下 name 字段应禁用', async () => {
+    it('TC-BSV-015: the name field should be disabled in edit mode', async () => {
       mockBaseServicesApi.list.mockResolvedValue({
         data: [mockServiceStatus({ name: 'redis', displayName: 'Redis' })],
       });
@@ -270,7 +270,7 @@ describe('BaseServicesView', () => {
       expect((nameInput.element as HTMLInputElement).disabled).toBe(true);
     });
 
-    it('TC-BSV-015a: 编辑模式下保存应剥离 name 字段', async () => {
+    it('TC-BSV-015a: saving in edit mode should strip the name field', async () => {
       mockBaseServicesApi.list.mockResolvedValue({
         data: [mockServiceStatus({ name: 'redis', displayName: 'Redis' })],
       });
@@ -299,7 +299,7 @@ describe('BaseServicesView', () => {
       expect(updateCall[1]).toHaveProperty('displayName', 'Redis Updated');
     });
 
-    it('TC-BSV-016: 取消按钮应关闭模态框', async () => {
+    it('TC-BSV-016: the cancel button should close the modal', async () => {
       const wrapper = await mountView();
       await flushPromises();
       const addBtn = wrapper.findAll('.sys-btn-primary').find((b) => b.text().includes('addService'));
@@ -314,7 +314,7 @@ describe('BaseServicesView', () => {
 
   // ================ Service operations ================
   describe('service actions', () => {
-    it('TC-BSV-020: 点击启动按钮应调用 start API', async () => {
+    it('TC-BSV-020: clicking the start button should call the start API', async () => {
       mockBaseServicesApi.list.mockResolvedValue({
         data: [mockServiceStatus({ name: 'redis', status: 'stopped' })],
       });
@@ -330,7 +330,7 @@ describe('BaseServicesView', () => {
       expect(showSuccess).toHaveBeenCalled();
     });
 
-    it('TC-BSV-021: 启动失败应显示错误', async () => {
+    it('TC-BSV-021: a failed start should show an error', async () => {
       mockBaseServicesApi.list.mockResolvedValue({
         data: [mockServiceStatus({ name: 'redis', status: 'stopped' })],
       });
@@ -347,7 +347,7 @@ describe('BaseServicesView', () => {
       expect(showError).toHaveBeenCalled();
     });
 
-    it('TC-BSV-022: 点击停止按钮应弹出确认框', async () => {
+    it('TC-BSV-022: clicking the stop button should show a confirmation dialog', async () => {
       mockBaseServicesApi.list.mockResolvedValue({
         data: [mockServiceStatus({ name: 'redis', status: 'running' })],
       });
@@ -362,7 +362,7 @@ describe('BaseServicesView', () => {
       expect(showConfirm).toHaveBeenCalled();
     });
 
-    it('TC-BSV-023: 确认停止后应调用 stop API', async () => {
+    it('TC-BSV-023: after confirming stop, the stop API should be called', async () => {
       mockBaseServicesApi.list.mockResolvedValue({
         data: [mockServiceStatus({ name: 'redis', status: 'running' })],
       });
@@ -377,7 +377,7 @@ describe('BaseServicesView', () => {
       expect(mockBaseServicesApi.stop).toHaveBeenCalledWith('redis');
     });
 
-    it('TC-BSV-024: 取消停止确认后不应调用 stop API', async () => {
+    it('TC-BSV-024: canceling the stop confirmation should not call the stop API', async () => {
       mockBaseServicesApi.list.mockResolvedValue({
         data: [mockServiceStatus({ name: 'redis', status: 'running' })],
       });
@@ -392,7 +392,7 @@ describe('BaseServicesView', () => {
       expect(mockBaseServicesApi.stop).not.toHaveBeenCalled();
     });
 
-    it('TC-BSV-025: 点击重启按钮应弹出确认框', async () => {
+    it('TC-BSV-025: clicking the restart button should show a confirmation dialog', async () => {
       mockBaseServicesApi.list.mockResolvedValue({
         data: [mockServiceStatus({ name: 'redis', status: 'running' })],
       });
@@ -406,7 +406,7 @@ describe('BaseServicesView', () => {
       expect(showConfirm).toHaveBeenCalled();
     });
 
-    it('TC-BSV-026: 点击删除按钮应弹出确认框', async () => {
+    it('TC-BSV-026: clicking the delete button should show a confirmation dialog', async () => {
       mockBaseServicesApi.list.mockResolvedValue({
         data: [mockServiceStatus({ name: 'redis' })],
       });
@@ -420,7 +420,7 @@ describe('BaseServicesView', () => {
       expect(showConfirm).toHaveBeenCalled();
     });
 
-    it('TC-BSV-027: 确认删除后应调用 remove API', async () => {
+    it('TC-BSV-027: after confirming delete, the remove API should be called', async () => {
       mockBaseServicesApi.list.mockResolvedValue({
         data: [mockServiceStatus({ name: 'redis' })],
       });
@@ -439,7 +439,7 @@ describe('BaseServicesView', () => {
 
   // ================ Config file modal ================
   describe('config modal', () => {
-    it('TC-BSV-030: 点击配置按钮应打开配置模态框', async () => {
+    it('TC-BSV-030: clicking the config button should open the config modal', async () => {
       mockBaseServicesApi.list.mockResolvedValue({
         data: [mockServiceStatus({ name: 'redis', displayName: 'Redis' })],
       });
@@ -455,7 +455,7 @@ describe('BaseServicesView', () => {
       expect(wrapper.find('.modal-title').text()).toContain('configTitle');
     });
 
-    it('TC-BSV-031: 保存配置应调用 saveConfig API', async () => {
+    it('TC-BSV-031: saving the config should call the saveConfig API', async () => {
       mockBaseServicesApi.list.mockResolvedValue({
         data: [mockServiceStatus({ name: 'redis', displayName: 'Redis' })],
       });
@@ -477,7 +477,7 @@ describe('BaseServicesView', () => {
 
   // ================ Log modal ================
   describe('logs modal', () => {
-    it('TC-BSV-040: 点击日志按钮应打开日志模态框', async () => {
+    it('TC-BSV-040: clicking the logs button should open the logs modal', async () => {
       mockBaseServicesApi.list.mockResolvedValue({
         data: [mockServiceStatus({ name: 'redis', displayName: 'Redis' })],
       });
@@ -493,7 +493,7 @@ describe('BaseServicesView', () => {
       expect(wrapper.find('.modal-title').text()).toContain('logsTitle');
     });
 
-    it('TC-BSV-041: 无日志时应显示空状态', async () => {
+    it('TC-BSV-041: should show the empty state when there are no logs', async () => {
       mockBaseServicesApi.list.mockResolvedValue({
         data: [mockServiceStatus({ name: 'redis' })],
       });
@@ -509,7 +509,7 @@ describe('BaseServicesView', () => {
       expect(modal.find('.empty-state').exists()).toBe(true);
     });
 
-    it('TC-BSV-042: 有日志时应渲染日志条目', async () => {
+    it('TC-BSV-042: should render log entries when logs exist', async () => {
       mockBaseServicesApi.list.mockResolvedValue({
         data: [mockServiceStatus({ name: 'redis' })],
       });
@@ -531,7 +531,7 @@ describe('BaseServicesView', () => {
       expect(modal.find('.log-content').text()).toContain('line1');
     });
 
-    it('TC-BSV-043: 清理日志应弹出确认框', async () => {
+    it('TC-BSV-043: clearing logs should show a confirmation dialog', async () => {
       mockBaseServicesApi.list.mockResolvedValue({
         data: [mockServiceStatus({ name: 'redis' })],
       });
@@ -552,7 +552,7 @@ describe('BaseServicesView', () => {
       expect(showConfirm).toHaveBeenCalled();
     });
 
-    it('TC-BSV-044: 确认清理后应调用 clearLogs API', async () => {
+    it('TC-BSV-044: after confirming cleanup, the clearLogs API should be called', async () => {
       mockBaseServicesApi.list.mockResolvedValue({
         data: [mockServiceStatus({ name: 'redis' })],
       });
@@ -577,20 +577,20 @@ describe('BaseServicesView', () => {
 
   // ================ Data loading ================
   describe('data loading', () => {
-    it('TC-BSV-050: 挂载时应调用 list API', async () => {
+    it('TC-BSV-050: the list API should be called on mount', async () => {
       await mountView();
       await flushPromises();
       expect(mockBaseServicesApi.list).toHaveBeenCalled();
     });
 
-    it('TC-BSV-051: list API 失败应显示错误', async () => {
-      mockBaseServicesApi.list.mockRejectedValue(new Error('Network error'));
+    it('TC-BSV-051: a failed list API should show an error', async () => {
+      mockBaseServicesApi.list.mockRejectedValue(new Error('网络错误'));
       await mountView();
       await flushPromises();
       expect(showError).toHaveBeenCalled();
     });
 
-    it('TC-BSV-052: 点击刷新按钮应重新加载列表', async () => {
+    it('TC-BSV-052: clicking the refresh button should reload the list', async () => {
       mockBaseServicesApi.list.mockClear();
       const wrapper = await mountView();
       await flushPromises();
@@ -606,7 +606,7 @@ describe('BaseServicesView', () => {
 
   // ================ Status display ================
   describe('status display', () => {
-    it('TC-BSV-060: running 状态应显示对应徽章样式', async () => {
+    it('TC-BSV-060: the running status should show the corresponding badge style', async () => {
       mockBaseServicesApi.list.mockResolvedValue({
         data: [mockServiceStatus({ status: 'running' })],
       });
@@ -617,7 +617,7 @@ describe('BaseServicesView', () => {
       expect(card.find('.status-badge').classes()).toContain('badge-running');
     });
 
-    it('TC-BSV-061: stopped 状态应显示对应徽章样式', async () => {
+    it('TC-BSV-061: the stopped status should show the corresponding badge style', async () => {
       mockBaseServicesApi.list.mockResolvedValue({
         data: [mockServiceStatus({ status: 'stopped' })],
       });
@@ -627,7 +627,7 @@ describe('BaseServicesView', () => {
       expect(card.classes()).toContain('status-stopped');
     });
 
-    it('TC-BSV-062: 应显示进程运行状态', async () => {
+    it('TC-BSV-062: should show the process running status', async () => {
       mockBaseServicesApi.list.mockResolvedValue({
         data: [mockServiceStatus({ processRunning: true })],
       });
@@ -638,7 +638,7 @@ describe('BaseServicesView', () => {
       expect(processRow!.find('.row-value.ok').exists()).toBe(true);
     });
 
-    it('TC-BSV-063: 应显示端口信息', async () => {
+    it('TC-BSV-063: should show port info', async () => {
       mockBaseServicesApi.list.mockResolvedValue({
         data: [mockServiceStatus({ port: 6379 })],
       });
@@ -647,7 +647,7 @@ describe('BaseServicesView', () => {
       expect(wrapper.find('.svc-port').text()).toBe(':6379');
     });
 
-    it('TC-BSV-064: 应显示文件检查结果', async () => {
+    it('TC-BSV-064: should show file check results', async () => {
       mockBaseServicesApi.list.mockResolvedValue({
         data: [mockServiceStatus({ binaryExists: true, configExists: false })],
       });
@@ -659,7 +659,7 @@ describe('BaseServicesView', () => {
       expect(checks[1].classes()).toContain('fail'); // config does not exist
     });
 
-    it('TC-BSV-065: 应显示 autoStart 标志标签', async () => {
+    it('TC-BSV-065: should show the autoStart flag label', async () => {
       mockBaseServicesApi.list.mockResolvedValue({
         data: [mockServiceStatus({ autoStart: true, processGuard: false })],
       });
@@ -671,7 +671,7 @@ describe('BaseServicesView', () => {
       expect(flagRow!.find('.flag-tag.flag-guard').exists()).toBe(false);
     });
 
-    it('TC-BSV-066: 应显示 processGuard 标志标签', async () => {
+    it('TC-BSV-066: should show the processGuard flag label', async () => {
       mockBaseServicesApi.list.mockResolvedValue({
         data: [mockServiceStatus({ autoStart: false, processGuard: true })],
       });
@@ -683,7 +683,7 @@ describe('BaseServicesView', () => {
       expect(flagRow!.find('.flag-tag.flag-auto').exists()).toBe(false);
     });
 
-    it('TC-BSV-067: autoStart 和 processGuard 都为 false 时不显示标志行', async () => {
+    it('TC-BSV-067: should not show the flag row when both autoStart and processGuard are false', async () => {
       mockBaseServicesApi.list.mockResolvedValue({
         data: [mockServiceStatus({ autoStart: false, processGuard: false })],
       });

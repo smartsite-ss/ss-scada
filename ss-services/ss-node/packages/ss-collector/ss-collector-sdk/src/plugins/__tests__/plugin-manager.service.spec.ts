@@ -214,7 +214,7 @@ describe('PluginManagerService', () => {
   // listPlugins
   // -------------------------------------------------------------
   describe('listPlugins', () => {
-    it('应将 RegisteredPlugin 转换为 PluginInfo 返回', () => {
+    it('Should convert RegisteredPlugin into PluginInfo and return it', () => {
       const plugin = makeRegisteredPlugin();
       registry.listPlugins.mockReturnValue([plugin]);
 
@@ -227,7 +227,7 @@ describe('PluginManagerService', () => {
       expect(result[0].status).toBe('registered');
     });
 
-    it('应传递 filter 参数给 registry', () => {
+    it('Should pass the filter parameter to the registry', () => {
       const plugin = makeRegisteredPlugin({ status: 'active' });
       registry.listPlugins.mockReturnValue([plugin]);
 
@@ -236,12 +236,12 @@ describe('PluginManagerService', () => {
       expect(registry.listPlugins).toHaveBeenCalledWith({ status: 'active' });
     });
 
-    it('registry 返回空数组时应返回空数组', () => {
+    it('Should return an empty array when the registry returns an empty array', () => {
       registry.listPlugins.mockReturnValue([]);
       expect(service.listPlugins()).toEqual([]);
     });
 
-    it('应将 Date 类型的 registeredAt 转换为 ISO 字符串', () => {
+    it('Should convert registeredAt of type Date into an ISO string', () => {
       const date = new Date('2026-07-15T08:30:00.000Z');
       const plugin = makeRegisteredPlugin({ registeredAt: date });
       registry.listPlugins.mockReturnValue([plugin]);
@@ -250,7 +250,7 @@ describe('PluginManagerService', () => {
       expect(result[0].registeredAt).toBe(date.toISOString());
     });
 
-    it('应将 Date 类型的 activatedAt 转换为 ISO 字符串', () => {
+    it('Should convert activatedAt of type Date into an ISO string', () => {
       const date = new Date('2026-07-15T08:30:00.000Z');
       const plugin = makeRegisteredPlugin({ activatedAt: date });
       registry.listPlugins.mockReturnValue([plugin]);
@@ -259,7 +259,7 @@ describe('PluginManagerService', () => {
       expect(result[0].activatedAt).toBe(date.toISOString());
     });
 
-    it('未激活的插件 activatedAt 应为 undefined', () => {
+    it('activatedAt should be undefined for inactive plugins', () => {
       const plugin = makeRegisteredPlugin({ activatedAt: undefined });
       registry.listPlugins.mockReturnValue([plugin]);
 
@@ -267,7 +267,7 @@ describe('PluginManagerService', () => {
       expect(result[0].activatedAt).toBeUndefined();
     });
 
-    it('未指定 isolationMode 时应默认 in_process', () => {
+    it('Should default to in_process when isolationMode is not specified', () => {
       const plugin = makeRegisteredPlugin();
       plugin.meta.isolationMode = undefined;
       registry.listPlugins.mockReturnValue([plugin]);
@@ -281,7 +281,7 @@ describe('PluginManagerService', () => {
   // getPlugin
   // -------------------------------------------------------------
   describe('getPlugin', () => {
-    it('插件存在时应返回 PluginInfo', () => {
+    it('Should return PluginInfo when the plugin exists', () => {
       const plugin = makeRegisteredPlugin();
       registry.getPlugin.mockReturnValue(plugin);
 
@@ -290,7 +290,7 @@ describe('PluginManagerService', () => {
       expect(result!.protocol).toBe('modbus_tcp');
     });
 
-    it('插件不存在时应返回 null', () => {
+    it('Should return null when the plugin does not exist', () => {
       registry.getPlugin.mockReturnValue(undefined);
       expect(service.getPlugin('unknown')).toBeNull();
     });
@@ -300,7 +300,7 @@ describe('PluginManagerService', () => {
   // activate / deactivate
   // -------------------------------------------------------------
   describe('activate', () => {
-    it('应委托 registry.activate 并返回 PluginInfo', async () => {
+    it('Should delegate to registry.activate and return PluginInfo', async () => {
       const plugin = makeRegisteredPlugin({ status: 'active' });
       registry.getPlugin.mockReturnValue(plugin);
 
@@ -313,7 +313,7 @@ describe('PluginManagerService', () => {
   });
 
   describe('deactivate', () => {
-    it('应委托 registry.deactivate 并返回 PluginInfo', async () => {
+    it('Should delegate to registry.deactivate and return PluginInfo', async () => {
       const plugin = makeRegisteredPlugin({ status: 'inactive' });
       registry.getPlugin.mockReturnValue(plugin);
 
@@ -328,7 +328,7 @@ describe('PluginManagerService', () => {
   // rediscover
   // -------------------------------------------------------------
   describe('rediscover', () => {
-    it('应调用 discovery.discoverPlugins 并返回最新插件列表', async () => {
+    it('Should call discovery.discoverPlugins and return the latest plugin list', async () => {
       const plugin = makeRegisteredPlugin();
       discovery.discoverPlugins.mockResolvedValue([]);
       registry.listPlugins.mockReturnValue([plugin]);
@@ -345,7 +345,7 @@ describe('PluginManagerService', () => {
   // hotReload / checkUpdate / rollback
   // -------------------------------------------------------------
   describe('hotReload', () => {
-    it('应委托 updater.hotReload', async () => {
+    it('Should delegate to updater.hotReload', async () => {
       const ret = await service.hotReload('modbus_tcp');
       expect(updater.hotReload).toHaveBeenCalledWith('modbus_tcp');
       expect(ret.success).toBe(true);
@@ -353,7 +353,7 @@ describe('PluginManagerService', () => {
   });
 
   describe('checkUpdate', () => {
-    it('应委托 updater.checkUpdate', async () => {
+    it('Should delegate to updater.checkUpdate', async () => {
       const ret = await service.checkUpdate('modbus_tcp');
       expect(updater.checkUpdate).toHaveBeenCalledWith('modbus_tcp');
       expect(ret.updateAvailable).toBe(false);
@@ -361,7 +361,7 @@ describe('PluginManagerService', () => {
   });
 
   describe('rollback', () => {
-    it('应委托 updater.rollback', async () => {
+    it('Should delegate to updater.rollback', async () => {
       const ret = await service.rollback('modbus_tcp');
       expect(updater.rollback).toHaveBeenCalledWith('modbus_tcp');
       expect(ret.success).toBe(true);
@@ -372,7 +372,7 @@ describe('PluginManagerService', () => {
   // getPluginStatus
   // -------------------------------------------------------------
   describe('getPluginStatus', () => {
-    it('插件存在时应返回 PluginStatus', () => {
+    it('Should return PluginStatus when the plugin exists', () => {
       const date = new Date('2026-07-15T08:30:00.000Z');
       const plugin = makeRegisteredPlugin({
         status: 'active',
@@ -391,7 +391,7 @@ describe('PluginManagerService', () => {
       expect(result.activatedAt).toBe(date.toISOString());
     });
 
-    it('插件不存在时应抛出错误', () => {
+    it('Should throw an error when the plugin does not exist', () => {
       registry.getPlugin.mockReturnValue(undefined);
       expect(() => service.getPluginStatus('unknown')).toThrow('Plugin not found: unknown');
     });
@@ -401,7 +401,7 @@ describe('PluginManagerService', () => {
   // healthCheck
   // -------------------------------------------------------------
   describe('healthCheck', () => {
-    it('应返回所有插件健康报告', async () => {
+    it('Should return health reports for all plugins', async () => {
       const activePlugin = makeRegisteredPlugin({
         status: 'active',
         meta: makePluginMeta({ protocol: 'modbus_tcp' }),
@@ -423,7 +423,7 @@ describe('PluginManagerService', () => {
       expect(result.results[0].status).toBe('healthy');
     });
 
-    it('无活跃插件时应返回空 results', async () => {
+    it('Should return empty results when there are no active plugins', async () => {
       registry.listPlugins.mockReturnValue([]);
       const result = await service.healthCheck();
       expect(result.totalPlugins).toBe(0);
@@ -436,7 +436,7 @@ describe('PluginManagerService', () => {
   // getConnectionSchema
   // -------------------------------------------------------------
   describe('getConnectionSchema', () => {
-    it('插件存在时应返回 connectionSchema', () => {
+    it('Should return connectionSchema when the plugin exists', () => {
       const schema = { type: 'object', properties: { host: { type: 'string' } } };
       const plugin = makeRegisteredPlugin({
         meta: makePluginMeta({ connectionSchema: schema }),
@@ -446,7 +446,7 @@ describe('PluginManagerService', () => {
       expect(service.getConnectionSchema('modbus_tcp')).toEqual(schema);
     });
 
-    it('插件不存在时应返回 null', () => {
+    it('Should return null when the plugin does not exist', () => {
       registry.getPlugin.mockReturnValue(undefined);
       expect(service.getConnectionSchema('unknown')).toBeNull();
     });
@@ -456,7 +456,7 @@ describe('PluginManagerService', () => {
   // validateChannelConfig
   // -------------------------------------------------------------
   describe('validateChannelConfig', () => {
-    it('应委托 adapter.validateChannelConfig', async () => {
+    it('Should delegate to adapter.validateChannelConfig', async () => {
       const validationResult: ChannelValidationResult = {
         valid: true,
         errors: [],
@@ -482,7 +482,7 @@ describe('PluginManagerService', () => {
   // getPluginActiveDevices
   // -------------------------------------------------------------
   describe('getPluginActiveDevices', () => {
-    it('activeDeviceTracker 未注入时应返回空数组', () => {
+    it('Should return an empty array when activeDeviceTracker is not injected', () => {
       const svc = new PluginManagerService(
         registry,
         discovery,
@@ -495,10 +495,10 @@ describe('PluginManagerService', () => {
       expect(svc.getPluginActiveDevices('modbus_tcp')).toEqual([]);
     });
 
-    it('应返回活跃设备信息列表', () => {
+    it('Should return the active device info list', () => {
       const deviceInfo: ActiveDeviceInfo = {
         deviceId: 'dev-1',
-        deviceName: '设备 1',
+        deviceName: '设备1',
         projectId: 'proj-1',
         projectName: '项目 1',
         status: 'online',
@@ -515,12 +515,12 @@ describe('PluginManagerService', () => {
       expect(result[0].deviceId).toBe('dev-1');
     });
 
-    it('应过滤 getActiveDeviceInfo 返回 undefined 的设备', () => {
+    it('Should filter devices for which getActiveDeviceInfo returns undefined', () => {
       activeDeviceTracker.getActiveDeviceIds.mockReturnValue(['dev-1', 'dev-2']);
       activeDeviceTracker.getActiveDeviceInfo
         .mockReturnValueOnce({
           deviceId: 'dev-1',
-          deviceName: '设备 1',
+          deviceName: '设备1',
           projectId: 'p',
           projectName: 'p',
           status: 'online',
@@ -539,7 +539,7 @@ describe('PluginManagerService', () => {
   // getAllDeviceStats
   // -------------------------------------------------------------
   describe('getAllDeviceStats', () => {
-    it('activeDeviceTracker 未注入时应返回空对象并记录警告', () => {
+    it('Should return an empty object and log a warning when activeDeviceTracker is not injected', () => {
       const svc = new PluginManagerService(
         registry,
         discovery,
@@ -553,7 +553,7 @@ describe('PluginManagerService', () => {
       expect(result).toEqual({});
     });
 
-    it('应返回所有插件的设备统计', () => {
+    it('Should return device statistics for all plugins', () => {
       const plugin1 = makeRegisteredPlugin({
         meta: makePluginMeta({ protocol: 'modbus_tcp' }),
       });
@@ -577,7 +577,7 @@ describe('PluginManagerService', () => {
   // getMonitorData
   // -------------------------------------------------------------
   describe('getMonitorData', () => {
-    it('in_process 模式应直接返回 monitor 数据', async () => {
+    it('in_process mode should return monitor data directly', async () => {
       const plugin = makeRegisteredPlugin({
         meta: makePluginMeta({ isolationMode: IsolationMode.IN_PROCESS }),
       });
@@ -589,7 +589,7 @@ describe('PluginManagerService', () => {
       expect(result.protocol).toBe('modbus_tcp');
     });
 
-    it('插件不存在时应使用默认 in_process 模式', async () => {
+    it('Should use the default in_process mode when the plugin does not exist', async () => {
       registry.getPlugin.mockReturnValue(undefined);
       monitor.getMonitorData.mockReturnValueOnce({
         protocol: 'unknown',
@@ -615,7 +615,7 @@ describe('PluginManagerService', () => {
       expect(result.protocol).toBe('unknown');
     });
 
-    it('worker_thread 模式应从 executor 获取运行时信息', async () => {
+    it('worker_thread mode should get runtime info from the executor', async () => {
       const plugin = makeRegisteredPlugin({
         meta: makePluginMeta({ isolationMode: IsolationMode.WORKER_THREAD }),
       });
@@ -636,7 +636,7 @@ describe('PluginManagerService', () => {
       expect(result.metrics.uptime).toBe(50);
     });
 
-    it('child_process 模式应从 executor 获取 PID', async () => {
+    it('child_process mode should get the PID from the executor', async () => {
       const plugin = makeRegisteredPlugin({
         meta: makePluginMeta({ isolationMode: IsolationMode.CHILD_PROCESS }),
       });
@@ -656,7 +656,7 @@ describe('PluginManagerService', () => {
       expect(result.metrics.uptime).toBe(30);
     });
 
-    it('executor 抛错时应保持 monitor 主进程数据', async () => {
+    it('Should keep the monitor main-process data when the executor throws', async () => {
       const plugin = makeRegisteredPlugin({
         meta: makePluginMeta({ isolationMode: IsolationMode.WORKER_THREAD }),
       });
@@ -675,7 +675,7 @@ describe('PluginManagerService', () => {
   // clearPluginLogs / writePluginLog
   // -------------------------------------------------------------
   describe('clearPluginLogs', () => {
-    it('应委托 monitor.clearLogs', () => {
+    it('Should delegate to monitor.clearLogs', () => {
       const result = service.clearPluginLogs('modbus_tcp');
       expect(monitor.clearLogs).toHaveBeenCalledWith('modbus_tcp');
       expect(result.cleared).toBe(true);
@@ -683,7 +683,7 @@ describe('PluginManagerService', () => {
   });
 
   describe('writePluginLog', () => {
-    it('应委托 monitor.writeLog', () => {
+    it('Should delegate to monitor.writeLog', () => {
       service.writePluginLog('modbus_tcp', 'INFO', '采集开始');
       expect(monitor.writeLog).toHaveBeenCalledWith('modbus_tcp', 'INFO', '采集开始');
     });
@@ -693,7 +693,7 @@ describe('PluginManagerService', () => {
   // getPluginConfig / updatePluginConfig / setPluginIsolationMode
   // -------------------------------------------------------------
   describe('getPluginConfig', () => {
-    it('应委托 configService.getConfig', () => {
+    it('Should delegate to configService.getConfig', () => {
       const config: PluginRuntimeConfig = { isolationMode: IsolationMode.WORKER_THREAD };
       configService.getConfig.mockReturnValue(config);
 
@@ -704,7 +704,7 @@ describe('PluginManagerService', () => {
   });
 
   describe('updatePluginConfig', () => {
-    it('应委托 configService.saveConfig 并返回合并后的配置', async () => {
+    it('Should delegate to configService.saveConfig and return the merged configuration', async () => {
       const merged: PluginRuntimeConfig = { isolationMode: IsolationMode.WORKER_THREAD };
       configService.saveConfig.mockReturnValue(merged);
 
@@ -718,7 +718,7 @@ describe('PluginManagerService', () => {
       expect(result.isolationMode).toBe('worker_thread');
     });
 
-    it('修改 isolationMode 时应同步更新 plugin.meta.isolationMode', async () => {
+    it('Changing isolationMode should sync plugin.meta.isolationMode', async () => {
       const plugin = makeRegisteredPlugin({
         meta: makePluginMeta({ isolationMode: IsolationMode.IN_PROCESS }),
       });
@@ -733,7 +733,7 @@ describe('PluginManagerService', () => {
       expect(plugin.meta.isolationMode).toBe('worker_thread');
     });
 
-    it('插件不存在时不应抛错（只不更新 meta）', async () => {
+    it('Should not throw when the plugin does not exist (only skips meta update)', async () => {
       registry.getPlugin.mockReturnValue(undefined);
       const merged: PluginRuntimeConfig = { isolationMode: IsolationMode.WORKER_THREAD };
       configService.saveConfig.mockReturnValue(merged);
@@ -745,7 +745,7 @@ describe('PluginManagerService', () => {
       expect(result.isolationMode).toBe('worker_thread');
     });
 
-    it('未修改 isolationMode 时不应更新 meta', async () => {
+    it('Should not update meta when isolationMode is unchanged', async () => {
       const plugin = makeRegisteredPlugin({
         meta: makePluginMeta({ isolationMode: IsolationMode.IN_PROCESS }),
       });
@@ -760,7 +760,7 @@ describe('PluginManagerService', () => {
   });
 
   describe('setPluginIsolationMode', () => {
-    it('应等价于调用 updatePluginConfig({ isolationMode })', async () => {
+    it('Should be equivalent to calling updatePluginConfig({ isolationMode })', async () => {
       const merged: PluginRuntimeConfig = { isolationMode: IsolationMode.CHILD_PROCESS };
       configService.saveConfig.mockReturnValue(merged);
 
@@ -776,7 +776,7 @@ describe('PluginManagerService', () => {
   // setPipelineMetricsService / listPluginsWithRuntime
   // -------------------------------------------------------------
   describe('setPipelineMetricsService', () => {
-    it('应允许后续 listPluginsWithRuntime 合并真实指标', async () => {
+    it('Should allow later listPluginsWithRuntime to merge real metrics', async () => {
       const plugin = makeRegisteredPlugin({
         status: 'active',
         meta: makePluginMeta({ isolationMode: IsolationMode.IN_PROCESS }),
@@ -806,7 +806,7 @@ describe('PluginManagerService', () => {
   });
 
   describe('listPluginsWithRuntime', () => {
-    it('无 isolationFactory 时应直接返回 listPlugins 结果', async () => {
+    it('Without isolationFactory, should return the listPlugins result directly', async () => {
       const svc = new PluginManagerService(
         registry,
         discovery,
@@ -827,7 +827,7 @@ describe('PluginManagerService', () => {
       expect(result[0].protocol).toBe('modbus_tcp');
     });
 
-    it('in_process 模式应设置主进程信息', async () => {
+    it('in_process mode should set main-process info', async () => {
       const plugin = makeRegisteredPlugin({
         status: 'active',
         meta: makePluginMeta({ isolationMode: IsolationMode.IN_PROCESS }),
@@ -840,7 +840,7 @@ describe('PluginManagerService', () => {
       expect(result[0].processName).toBe('node (main: modbus_tcp)');
     });
 
-    it('worker_thread 模式应从 executor 获取线程 ID', async () => {
+    it('worker_thread mode should get the thread ID from the executor', async () => {
       const plugin = makeRegisteredPlugin({
         status: 'active',
         meta: makePluginMeta({ isolationMode: IsolationMode.WORKER_THREAD }),
@@ -860,7 +860,7 @@ describe('PluginManagerService', () => {
       expect(result[0].processName).toBe('worker (modbus_tcp)');
     });
 
-    it('child_process 模式应从 executor 获取 PID', async () => {
+    it('child_process mode should get the PID from the executor', async () => {
       const plugin = makeRegisteredPlugin({
         status: 'active',
         meta: makePluginMeta({ isolationMode: IsolationMode.CHILD_PROCESS }),
@@ -879,7 +879,7 @@ describe('PluginManagerService', () => {
       expect(result[0].processId).toBe(1234);
     });
 
-    it('executor 抛错时应保持 in_process 默认值', async () => {
+    it('Should keep the in_process default when the executor throws', async () => {
       const plugin = makeRegisteredPlugin({
         status: 'active',
         meta: makePluginMeta({ isolationMode: IsolationMode.WORKER_THREAD }),

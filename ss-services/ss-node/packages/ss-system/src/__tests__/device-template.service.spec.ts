@@ -349,7 +349,7 @@ describe('DeviceTemplateService', () => {
       deviceType: 'modbus_tcp',
       deviceModel: 'modbus_tcp',
       industry: '工业自动化',
-      category: 'PLC控制器',
+      category: 'PLC controller',
       version: '1.0',
       status: 'draft',
       isDefault: false,
@@ -359,7 +359,7 @@ describe('DeviceTemplateService', () => {
         { order: 2, name: 'humidity', address: '40002', dataType: 'float32', scanRate: 1000 },
       ] as TemplateVariable[],
       tags: ['temperature', 'modbus'],
-      filePath: `${TEST_DIR}/工业自动化/PLC控制器/template-001.json`,
+      filePath: `${TEST_DIR}/Industrial automation/PLCController/template-001.json`,
       createdAt: '2026-01-01T00:00:00.000Z',
       updatedAt: '2026-01-02T00:00:00.000Z',
       ...overrides,
@@ -937,16 +937,16 @@ describe('DeviceTemplateService', () => {
       const template = makeLoadedTemplate({
         id: 'template-001',
         status: 'draft',
-        category: 'PLC控制器',
+        category: 'PLC controller',
       });
       mockTemplateLoader.getTemplate.mockReturnValue(template);
 
       const result = await service.update(
         'template-001',
-        makeUpdateDto({ category: '水质监测' }),
+        makeUpdateDto({ category: 'Water quality monitoring' }),
       );
 
-      expect(result.category).toBe('水质监测');
+      expect(result.category).toBe('Water quality monitoring');
     });
 
     it('TC-DTM-057: should update deviceType and version on draft template', async () => {
@@ -1550,7 +1550,7 @@ describe('DeviceTemplateService', () => {
       mockDeviceRepo.find!.mockResolvedValue(devices);
 
       // First device: tagRepo.find throws error
-      mockTagRepo.find!.mockRejectedValueOnce(new Error('DB error'));
+      mockTagRepo.find!.mockRejectedValueOnce(new Error('DB 错误'));
       // Second device: works fine
       mockTagRepo.find!.mockResolvedValueOnce([]);
       const newTag = makeTag({ id: 'tag-2', name: 'temperature', deviceId: 'device-002' });
@@ -1565,7 +1565,7 @@ describe('DeviceTemplateService', () => {
       expect(result.skipped).toBe(0);
       expect(result.errors).toHaveLength(1);
       expect(result.errors[0].deviceId).toBe('device-001');
-      expect(result.errors[0].message).toBe('DB error');
+      expect(result.errors[0].message).toBe('DB 错误');
     });
 
     it('TC-DTM-105: should handle empty devices list', async () => {

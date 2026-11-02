@@ -37,7 +37,7 @@ function createMockRepo<T>(): MockRepository<T> {
   };
 }
 
-describe('DeviceService - 事件发布', () => {
+describe('DeviceService - event publishing', () => {
   let service: DeviceService;
   let deviceRepo: MockRepository<Device>;
   let dataTagRepo: MockRepository<DataTag>;
@@ -120,8 +120,8 @@ describe('DeviceService - 事件发布', () => {
     service = module.get<DeviceService>(DeviceService);
   });
 
-  describe('create - device.created 事件', () => {
-    it('创建设备后应当发布 device.created 事件', async () => {
+  describe('create - device.created event', () => {
+    it('Creating a device should publish the device.created event', async () => {
       const dto = {
         deviceCode: 'temp-hum-001',
         deviceName: '温湿度001',
@@ -151,7 +151,7 @@ describe('DeviceService - 事件发布', () => {
       );
     });
 
-    it('创建失败（TID 冲突）时不应发布事件', async () => {
+    it('Should not publish events when creation fails (TID conflict)', async () => {
       const dto = {
         deviceCode: 'temp-hum-001',
         deviceName: '温湿度001',
@@ -167,8 +167,8 @@ describe('DeviceService - 事件发布', () => {
     });
   });
 
-  describe('update - device.updated 事件', () => {
-    it('变更 connection 后应当发布 device.updated 事件', async () => {
+  describe('update - device.updated event', () => {
+    it('Changing connection should publish the device.updated event', async () => {
       deviceRepo.findOne!.mockResolvedValue(mockDevice);
       deviceRepo.save!.mockResolvedValue({ ...mockDevice, connection: { host: '10.0.0.1' } });
 
@@ -192,7 +192,7 @@ describe('DeviceService - 事件发布', () => {
       );
     });
 
-    it('变更 scanRate 后应当发布 device.updated 事件', async () => {
+    it('Changing scanRate should publish the device.updated event', async () => {
       deviceRepo.findOne!.mockResolvedValue(mockDevice);
       deviceRepo.save!.mockResolvedValue({ ...mockDevice, scanRate: 500 });
 
@@ -209,7 +209,7 @@ describe('DeviceService - 事件发布', () => {
       );
     });
 
-    it('变更 deviceName 后应当发布 device.updated 事件', async () => {
+    it('Changing deviceName should publish the device.updated event', async () => {
       deviceRepo.findOne!.mockResolvedValue(mockDevice);
       deviceRepo.save!.mockResolvedValue({ ...mockDevice, deviceName: '新名称' });
 
@@ -225,7 +225,7 @@ describe('DeviceService - 事件发布', () => {
       );
     });
 
-    it('变更 groupId 后应当发布 device.updated 事件', async () => {
+    it('Changing groupId should publish the device.updated event', async () => {
       deviceRepo.findOne!.mockResolvedValue(mockDevice);
       deviceRepo.save!.mockResolvedValue({ ...mockDevice, groupId: 'grp-1' });
 
@@ -241,7 +241,7 @@ describe('DeviceService - 事件发布', () => {
       );
     });
 
-    it('无字段变更时不应发布事件', async () => {
+    it('Should not publish events when no fields changed', async () => {
       // Use a device without templateId, avoiding an empty DTO implicitly clearing templateId
       const deviceWithoutTemplate = { ...mockDevice, templateId: null };
       deviceRepo.findOne!.mockResolvedValue(deviceWithoutTemplate);
@@ -252,7 +252,7 @@ describe('DeviceService - 事件发布', () => {
       expect(eventBus.emit).not.toHaveBeenCalled();
     });
 
-    it('同时变更多个字段应当包含所有变更字段', async () => {
+    it('Changing multiple fields at once should include all changed fields', async () => {
       deviceRepo.findOne!.mockResolvedValue(mockDevice);
       deviceRepo.save!.mockResolvedValue({ ...mockDevice, deviceName: '新名称', scanRate: 200 });
 
@@ -271,8 +271,8 @@ describe('DeviceService - 事件发布', () => {
     });
   });
 
-  describe('remove - device.deleted 事件', () => {
-    it('删除设备后应当发布 device.deleted 事件', async () => {
+  describe('remove - device.deleted event', () => {
+    it('Deleting a device should publish the device.deleted event', async () => {
       deviceRepo.findOne!.mockResolvedValue(mockDevice);
       dataTagRepo.find!.mockResolvedValue([]);
       deviceRepo.remove!.mockResolvedValue(undefined);
@@ -290,7 +290,7 @@ describe('DeviceService - 事件发布', () => {
       );
     });
 
-    it('删除设备时应当级联删除关联标签', async () => {
+    it('Deleting a device should cascade-delete related tags', async () => {
       const tags = [{ id: 'tag-1' }, { id: 'tag-2' }];
       deviceRepo.findOne!.mockResolvedValue(mockDevice);
       dataTagRepo.find!.mockResolvedValue(tags);
@@ -302,7 +302,7 @@ describe('DeviceService - 事件发布', () => {
       expect(dataTagRepo.remove).toHaveBeenCalledWith(tags);
     });
 
-    it('删除不存在的设备应当抛出异常且不发布事件', async () => {
+    it('Deleting a non-existent device should throw and not publish events', async () => {
       deviceRepo.findOne!.mockResolvedValue(null);
 
       await expect(service.remove('unknown', projectId)).rejects.toThrow();
@@ -310,7 +310,7 @@ describe('DeviceService - 事件发布', () => {
     });
   });
 
-  describe('unbindTemplate - 解绑模板', () => {
+  describe('unbindTemplate - unbind the template', () => {
     beforeEach(() => {
       deviceRepo.findOne!.mockResolvedValue(mockDevice);
       deviceRepo.save!.mockResolvedValue({
@@ -320,7 +320,7 @@ describe('DeviceService - 事件发布', () => {
       });
     });
 
-    it('解绑模板（不删除标签）应当清空 templateId 并返回原模板ID', async () => {
+    it('Unbinding a template (without deleting tags) should clear templateId and return the original template ID', async () => {
       const result = await service.unbindTemplate('dev-001', projectId, false);
 
       expect(result.templateId).toBe('tpl-001');
@@ -332,7 +332,7 @@ describe('DeviceService - 事件发布', () => {
       expect(savedDevice.templateAppliedAt).toBeNull();
     });
 
-    it('解绑模板（删除标签）应当删除关联标签并返回删除数量', async () => {
+    it('Unbinding a template (deleting tags) should delete related tags and return the deletion count', async () => {
       const tags = [{ id: 'tag-1' }, { id: 'tag-2' }, { id: 'tag-3' }];
       dataTagRepo.find!.mockResolvedValue(tags);
 
@@ -342,7 +342,7 @@ describe('DeviceService - 事件发布', () => {
       expect(dataTagRepo.remove).toHaveBeenCalledWith(tags);
     });
 
-    it('设备未绑定模板时应当抛出 BadRequestException', async () => {
+    it('Should throw BadRequestException when the device has no bound template', async () => {
       deviceRepo.findOne!.mockResolvedValue({ ...mockDevice, templateId: null });
 
       await expect(service.unbindTemplate('dev-001', projectId, false)).rejects.toThrow(
@@ -350,7 +350,7 @@ describe('DeviceService - 事件发布', () => {
       );
     });
 
-    it('设备不存在时应当抛出异常', async () => {
+    it('Should throw when the device does not exist', async () => {
       deviceRepo.findOne!.mockResolvedValue(null);
 
       await expect(service.unbindTemplate('unknown', projectId, false)).rejects.toThrow();

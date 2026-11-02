@@ -97,7 +97,7 @@ function makeTemplate(overrides: any = {}) {
 
 const projectId = 'proj-001';
 
-describe('DeviceService - 创建/更新/标签全面测试', () => {
+describe('DeviceService - create/update/tags comprehensive tests', () => {
   let service: DeviceService;
   let deviceRepo: MockRepository<Device>;
   let dataTagRepo: MockRepository<DataTag>;
@@ -161,8 +161,8 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
   // 1. DataTag.projectId integrity (the key verification fixing SQLITE_CONSTRAINT)
   // ═══════════════════════════════════════════════════════════════════════
 
-  describe('TC-DTAG-001: create 时 DataTag 携带 projectId', () => {
-    it('设备创建应用模板时，每个 DataTag 都应包含 projectId', async () => {
+  describe('TC-DTAG-001: DataTag carries projectId on create', () => {
+    it('When creating a device with a template, every DataTag should include projectId', async () => {
       const template = makeTemplate();
       mockTemplateLoader.getTemplate.mockReturnValue(template);
       deviceRepo.findOne!.mockResolvedValue(null); // tid does not conflict
@@ -192,8 +192,8 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
     });
   });
 
-  describe('TC-DTAG-002: applyTemplate 时 DataTag 携带 projectId', () => {
-    it('模板应用创建的每个 DataTag 都应包含 projectId', async () => {
+  describe('TC-DTAG-002: DataTag carries projectId on applyTemplate', () => {
+    it('Every DataTag created by template apply should include projectId', async () => {
       const device = makeDevice();
       const template = makeTemplate();
       mockTemplateLoader.getTemplate.mockReturnValue(template);
@@ -216,8 +216,8 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
     });
   });
 
-  describe('TC-DTAG-003: syncTemplateTags 新增标签时 DataTag 携带 projectId', () => {
-    it('syncTemplateTags 创建的新标签应包含 projectId', async () => {
+  describe('TC-DTAG-003: DataTag carries projectId when syncTemplateTags adds tags', () => {
+    it('New tags created by syncTemplateTags should include projectId', async () => {
       const device = makeDevice();
       const template = makeTemplate({
         variables: [{ name: 'new_tag', address: 'HR40010', dataType: 'float', enabled: true }],
@@ -241,8 +241,8 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
     });
   });
 
-  describe('TC-DTAG-004: addTag 时 DTO 携带 projectId（从 Controller 层注入）', () => {
-    it('addTag 创建的标签应将 DTO 中的 projectId 传递给 dataTagRepo.create', async () => {
+  describe('TC-DTAG-004: DTO carries projectId on addTag (injected from the Controller layer)', () => {
+    it('addTag-created tags should pass DTO projectId to dataTagRepo.create', async () => {
       const device = makeDevice();
       deviceRepo.findOne!.mockResolvedValue(device);
       dataTagRepo.create!.mockImplementation((dto: any) => ({ id: 'tag-added', ...dto }));
@@ -268,8 +268,8 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
     });
   });
 
-  describe('TC-DTAG-005: addTags 批量创建时 DataTag 携带 projectId', () => {
-    it('addTags 批量创建的每个标签都应包含 projectId', async () => {
+  describe('TC-DTAG-005: DataTag carries projectId on addTags batch creation', () => {
+    it('Every tag created by addTags should include projectId', async () => {
       const device = makeDevice();
       deviceRepo.findOne!.mockResolvedValue(device);
       dataTagRepo.create!.mockImplementation((dto: any) => ({ id: 'tag-batch', ...dto }));
@@ -293,7 +293,7 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
   // 2. Device creation (create) - comprehensive input combinations
   // ═══════════════════════════════════════════════════════════════════════
 
-  describe('TC-CREATE-001: 设备创建 - 基础正常流程', () => {
+  describe('TC-CREATE-001: device creation - basic normal flow', () => {
     const baseDto = {
       deviceCode: 'create-basic',
       deviceName: '基础设备',
@@ -311,7 +311,7 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
       dataTagRepo.save!.mockImplementation((tags: any[]) => Promise.resolve(tags));
     });
 
-    it('应成功创建设备并返回完整实体', async () => {
+    it('Should successfully create a device and return the complete entity', async () => {
       const result = await service.create(baseDto, projectId);
 
       expect(result.id).toBe('dev-create');
@@ -320,13 +320,13 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
       expect(deviceRepo.save).toHaveBeenCalled();
     });
 
-    it('创建后设备状态应为默认值', async () => {
+    it('After creation the device status should be the default value', async () => {
       const result = await service.create(baseDto, projectId);
       // Status should not be set directly by create (set by the entity default or the collection layer)
       expect(result.deviceCode).toBe('create-basic');
     });
 
-    it('应设置 templateAppliedAt 时间戳', async () => {
+    it('Should set the templateAppliedAt timestamp', async () => {
       deviceRepo.create!.mockImplementation((dto: any) => ({
         id: 'dev-create',
         ...dto,
@@ -341,8 +341,8 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
     });
   });
 
-  describe('TC-CREATE-002: 设备创建 - TID 冲突', () => {
-    it('同项目中重复 TID 应抛出 ConflictException', async () => {
+  describe('TC-CREATE-002: device creation - TID conflict', () => {
+    it('Duplicate TID within the same project should throw ConflictException', async () => {
       deviceRepo.findOne!.mockResolvedValue(makeDevice({ deviceCode: 'dup-tid' }));
 
       await expect(
@@ -360,8 +360,8 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
     });
   });
 
-  describe('TC-CREATE-003: 设备创建 - 模板不存在', () => {
-    it('模板不存在时仍应创建设备但不创建 DataTag', async () => {
+  describe('TC-CREATE-003: device creation - template does not exist', () => {
+    it('When the template does not exist, the device should still be created but no DataTag created', async () => {
       deviceRepo.findOne!.mockResolvedValue(null);
       deviceRepo.create!.mockImplementation((dto: any) => ({ id: 'dev-no-tpl', ...dto }));
       deviceRepo.save!.mockImplementation((d: any) => Promise.resolve(d));
@@ -384,8 +384,8 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
     });
   });
 
-  describe('TC-CREATE-004: 设备创建 - 模板无变量', () => {
-    it('模板没有 variables 时不应创建 DataTag', async () => {
+  describe('TC-CREATE-004: device creation - template has no variables', () => {
+    it('Should not create DataTags when the template has no variables', async () => {
       deviceRepo.findOne!.mockResolvedValue(null);
       deviceRepo.create!.mockImplementation((dto: any) => ({ id: 'dev-empty-tpl', ...dto }));
       deviceRepo.save!.mockImplementation((d: any) => Promise.resolve(d));
@@ -406,7 +406,7 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
     });
   });
 
-  describe('TC-CREATE-005: 设备创建 - 不同驱动类型', () => {
+  describe('TC-CREATE-005: device creation - different driver types', () => {
     beforeEach(() => {
       deviceRepo.findOne!.mockResolvedValue(null);
       deviceRepo.create!.mockImplementation((dto: any) => ({ id: 'dev-driver', ...dto }));
@@ -423,11 +423,11 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
     ];
 
     drivers.forEach(({ driver, connection }) => {
-      it(`应支持 ${driver} 类型设备创建`, async () => {
+      it(`Should support ${driver} type device creation`, async () => {
         const result = await service.create(
           {
             deviceCode: `dev-${driver.replace('_', '-')}`,
-            deviceName: `${driver} 设备`,
+            deviceName: `${driver} device`,
             templateId: 'tpl-001',
             driver: driver as any,
             connection,
@@ -441,14 +441,14 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
     });
   });
 
-  describe('TC-CREATE-006: 设备创建 - 可选字段', () => {
+  describe('TC-CREATE-006: device creation - optional fields', () => {
     beforeEach(() => {
       deviceRepo.findOne!.mockResolvedValue(null);
       deviceRepo.create!.mockImplementation((dto: any) => ({ id: 'dev-opt', ...dto }));
       deviceRepo.save!.mockImplementation((d: any) => Promise.resolve(d));
     });
 
-    it('应支持设置 description', async () => {
+    it('Should support setting description', async () => {
       const result = await service.create(
         {
           deviceCode: 'desc-dev',
@@ -464,7 +464,7 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
       expect(result.description).toBe('这是一台位于三楼机房的温湿度传感器');
     });
 
-    it('应支持设置 nameAlias', async () => {
+    it('Should support setting nameAlias', async () => {
       const result = await service.create(
         {
           deviceCode: 'alias-dev',
@@ -480,7 +480,7 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
       expect(result.nameAlias).toBe('三楼机房温湿度-01');
     });
 
-    it('应支持设置 groupId', async () => {
+    it('Should support setting groupId', async () => {
       const result = await service.create(
         {
           deviceCode: 'group-dev',
@@ -496,7 +496,7 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
       expect(result.groupId).toBe('grp-001');
     });
 
-    it('应支持设置 scanRate', async () => {
+    it('Should support setting scanRate', async () => {
       const result = await service.create(
         {
           deviceCode: 'scanrate-dev',
@@ -512,7 +512,7 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
       expect(result.scanRate).toBe(500);
     });
 
-    it('应支持设置 offlinePeriod', async () => {
+    it('Should support setting offlinePeriod', async () => {
       const result = await service.create(
         {
           deviceCode: 'dataperiod-dev',
@@ -529,8 +529,8 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
     });
   });
 
-  describe('TC-CREATE-007: 设备创建 - 项目数据隔离', () => {
-    it('不同项目可以使用相同 TID', async () => {
+  describe('TC-CREATE-007: device creation - project data isolation', () => {
+    it('Different projects can use the same TID', async () => {
       deviceRepo.findOne!.mockResolvedValue(null);
       deviceRepo.create!.mockImplementation((dto: any) => ({ id: 'dev-proj', ...dto }));
       deviceRepo.save!.mockImplementation((d: any) => Promise.resolve(d));
@@ -566,8 +566,8 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
   // 3. Device update (update) - comprehensive scenarios
   // ═══════════════════════════════════════════════════════════════════════
 
-  describe('TC-UPDATE-001: 更新设备基础字段', () => {
-    it('应成功更新设备 deviceName', async () => {
+  describe('TC-UPDATE-001: update basic device fields', () => {
+    it('Should successfully update device deviceName', async () => {
       const device = makeDevice();
       deviceRepo.findOne!.mockResolvedValue(device);
       // save must sync changes back to the original mock object, simulating DB persistence
@@ -583,7 +583,7 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
       expect(result.deviceName).toBe('新名称');
     });
 
-    it('应成功更新设备 description', async () => {
+    it('Should successfully update device description', async () => {
       const device = makeDevice();
       deviceRepo.findOne!.mockResolvedValue(device);
       deviceRepo.save!.mockImplementation((d: any) => {
@@ -596,7 +596,7 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
       expect(result.description).toBe('更新后的描述');
     });
 
-    it('应成功更新设备 groupId', async () => {
+    it('Should successfully update device groupId', async () => {
       const device = makeDevice();
       deviceRepo.findOne!.mockResolvedValue(device);
       deviceRepo.save!.mockImplementation((d: any) => {
@@ -610,8 +610,8 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
     });
   });
 
-  describe('TC-UPDATE-002: 更新设备连接配置', () => {
-    it('更新 connection 应触发插件校验', async () => {
+  describe('TC-UPDATE-002: update the device connection config', () => {
+    it('Updating connection should trigger plugin validation', async () => {
       const device = makeDevice();
       const newConnection = { host: '10.0.0.1', port: 5020 };
       deviceRepo.findOne!.mockResolvedValue(device);
@@ -625,7 +625,7 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
       expect(result.connection).toEqual(newConnection);
     });
 
-    it('连接无变化时不记录为变更字段', async () => {
+    it('Unchanged connection is not recorded as a changed field', async () => {
       const device = makeDevice({ connection: { host: '192.168.1.1', port: 502 } });
       deviceRepo.findOne!.mockResolvedValue(device);
       deviceRepo.save!.mockImplementation((d: any) => {
@@ -645,8 +645,8 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
     });
   });
 
-  describe('TC-UPDATE-003: 更新设备模板（核心场景 - 触发 applyTemplate）', () => {
-    it('切换模板应触发模板应用并重新加载设备', async () => {
+  describe('TC-UPDATE-003: update the device template (core scenario - triggers applyTemplate)', () => {
+    it('Switching templates should trigger template apply and reload devices', async () => {
       // Device has no templateId, avoiding auto-apply inside findOne
       const device = makeDevice({ templateId: null });
       const newTemplate = makeTemplate({ id: 'tpl-new', name: '新模板' });
@@ -677,7 +677,7 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
       expect(mockTemplateLoader.getTemplate).toHaveBeenCalledWith('tpl-new');
     });
 
-    it('模板变更时 DataTag 应包含 projectId（回归验证）', async () => {
+    it('DataTags should include projectId when the template changes (regression verification)', async () => {
       const device = makeDevice({ templateId: null });
       const newTemplate = makeTemplate({ id: 'tpl-new' });
       const reloadedDevice = makeDevice({ templateId: 'tpl-new' });
@@ -705,7 +705,7 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
       });
     });
 
-    it('模板不变但点表为空时，应触发修复性模板重新应用', async () => {
+    it('When the template is unchanged but the point table is empty, a repair-style template re-apply should be triggered', async () => {
       const device = makeDevice({ templateId: 'tpl-001' });
       // Simulate a device with no tags
       (device as any).tags = [];
@@ -721,7 +721,7 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
       dataTagRepo.create!.mockImplementation((dto: any) => ({ id: 'tag-fix', ...dto }));
       dataTagRepo.save!.mockResolvedValue([]);
 
-      const _result = await service.update('dev-001', { deviceName: '仅改名' }, projectId);
+      const _result = await service.update('dev-001', { deviceName: 'Rename only' }, projectId);
 
       // Although the template did not change, the tag table is empty -> applyTemplate should be called
       expect(mockTemplateLoader.getTemplate).toHaveBeenCalledWith('tpl-001');
@@ -729,8 +729,8 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
     });
   });
 
-  describe('TC-UPDATE-004: 更新不存在的设备', () => {
-    it('应抛出 NotFoundException', async () => {
+  describe('TC-UPDATE-004: update a non-existent device', () => {
+    it('Should throw NotFoundException', async () => {
       deviceRepo.findOne!.mockResolvedValue(null);
 
       await expect(service.update('dev-999', { deviceName: '不存在' }, projectId)).rejects.toThrow(
@@ -739,8 +739,8 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
     });
   });
 
-  describe('TC-UPDATE-005: 更新 TID', () => {
-    it('更新为新的 TID 应成功', async () => {
+  describe('TC-UPDATE-005: update the TID', () => {
+    it('Updating to a new TID should succeed', async () => {
       const device = makeDevice();
       // 3 findOne calls:
       //   1) update's first-round findOne finds the original device
@@ -760,7 +760,7 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
       expect(result.deviceCode).toBe('new-tid');
     });
 
-    it('更新为已存在的 TID 应抛出 ConflictException', async () => {
+    it('Updating to an existing TID should throw ConflictException', async () => {
       const device = makeDevice({ deviceCode: 'old-tid' });
       const conflictDevice = makeDevice({ id: 'dev-002', deviceCode: 'conflict-tid' });
       deviceRepo
@@ -772,7 +772,7 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
       ).rejects.toThrow(ConflictException);
     });
 
-    it('更新为与自身相同的 TID 不应检查冲突', async () => {
+    it('Updating to the same TID as itself should not check for conflicts', async () => {
       const device = makeDevice({ deviceCode: 'same-tid' });
       deviceRepo.findOne!.mockResolvedValue(device);
       deviceRepo.save!.mockImplementation((d: any) => {
@@ -791,8 +791,8 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
     });
   });
 
-  describe('TC-UPDATE-006: 同时更新多个字段', () => {
-    it('应正确应用所有变更', async () => {
+  describe('TC-UPDATE-006: update multiple fields at once', () => {
+    it('Should apply all changes correctly', async () => {
       const device = makeDevice();
       deviceRepo.findOne!.mockResolvedValue(device);
       deviceRepo.save!.mockImplementation((d: any) => {
@@ -824,8 +824,8 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
   // 4. Template application (applyTemplate) - edge conditions
   // ═══════════════════════════════════════════════════════════════════════
 
-  describe('TC-APPLYTPL-001: applyTemplate 字段完整映射', () => {
-    it('应正确映射模板变量的所有字段到 DataTag', async () => {
+  describe('TC-APPLYTPL-001: applyTemplate full field mapping', () => {
+    it('Should map all fields of template variables to DataTag correctly', async () => {
       const device = makeDevice();
       const template = makeTemplate({
         variables: [
@@ -896,8 +896,8 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
     });
   });
 
-  describe('TC-APPLYTPL-002: applyTemplate 标签去重', () => {
-    it('已存在的同名标签不应重复创建', async () => {
+  describe('TC-APPLYTPL-002: applyTemplate tag deduplication', () => {
+    it('Existing same-name tags should not be created again', async () => {
       const device = makeDevice();
       const template = makeTemplate(); // temperature, humidity
       deviceRepo.findOne!.mockResolvedValue(device);
@@ -919,7 +919,7 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
       );
     });
 
-    it('所有标签已存在时应创建 0 个新标签', async () => {
+    it('Should create 0 new tags when all tags already exist', async () => {
       const device = makeDevice();
       const template = makeTemplate();
       deviceRepo.findOne!.mockResolvedValue(device);
@@ -937,8 +937,8 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
     });
   });
 
-  describe('TC-APPLYTPL-003: applyTemplate 异常条件', () => {
-    it('设备不存在时应抛出 NotFoundException', async () => {
+  describe('TC-APPLYTPL-003: applyTemplate exception conditions', () => {
+    it('Should throw NotFoundException when the device does not exist', async () => {
       deviceRepo.findOne!.mockResolvedValue(null);
 
       await expect(service.applyTemplate('dev-999', 'tpl-001', projectId)).rejects.toThrow(
@@ -946,7 +946,7 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
       );
     });
 
-    it('模板不存在时应保存 templateId 但返回空数组', async () => {
+    it('When the template does not exist, templateId should be saved but an empty array returned', async () => {
       const device = makeDevice();
       deviceRepo.findOne!.mockResolvedValue(device);
       deviceRepo.save!.mockResolvedValue(device);
@@ -961,7 +961,7 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
       );
     });
 
-    it('模板无变量时应返回空数组', async () => {
+    it('Should return an empty array when the template has no variables', async () => {
       const device = makeDevice();
       deviceRepo.findOne!.mockResolvedValue(device);
       deviceRepo.save!.mockResolvedValue(device);
@@ -973,7 +973,7 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
       expect(dataTagRepo.create).not.toHaveBeenCalled();
     });
 
-    it('templateLoaderService 不可用时应保存 templateId 但返回空数组', async () => {
+    it('Should save templateId but return an empty array when templateLoaderService is unavailable', async () => {
       // Build an instance without templateLoaderService
       const device = makeDevice();
       deviceRepo.findOne!.mockResolvedValue(device);
@@ -1005,8 +1005,8 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
     });
   });
 
-  describe('TC-APPLYTPL-004: applyTemplate 后更新设备模板元数据', () => {
-    it('应设置 templateId、templateVersion、templateAppliedAt', async () => {
+  describe('TC-APPLYTPL-004: updating device template metadata after applyTemplate', () => {
+    it('Should set templateId, templateVersion, templateAppliedAt', async () => {
       const device = makeDevice();
       const template = makeTemplate({ version: '2.0.0' });
       deviceRepo.findOne!.mockResolvedValue(device);
@@ -1037,8 +1037,8 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
   // 5. Template sync (syncTemplateTags) - add/update/delete
   // ═══════════════════════════════════════════════════════════════════════
 
-  describe('TC-SYNC-010: syncTemplateTags 新增标签', () => {
-    it('全新标签应被创建并包含 projectId', async () => {
+  describe('TC-SYNC-010: syncTemplateTags adds tags', () => {
+    it('Brand-new tags should be created and include projectId', async () => {
       const device = makeDevice();
       const template = makeTemplate({
         variables: [{ name: 'new_var', address: 'HR40010', dataType: 'float', enabled: true }],
@@ -1061,8 +1061,8 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
     });
   });
 
-  describe('TC-SYNC-011: syncTemplateTags 更新已有标签', () => {
-    it('应更新标签地址和属性', async () => {
+  describe('TC-SYNC-011: syncTemplateTags updates existing tags', () => {
+    it('Should update the tag address and properties', async () => {
       const device = makeDevice();
       const template = makeTemplate({
         variables: [
@@ -1091,8 +1091,8 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
     });
   });
 
-  describe('TC-SYNC-012: syncTemplateTags 删除多余标签', () => {
-    it('模板中已移除的标签应被删除', async () => {
+  describe('TC-SYNC-012: syncTemplateTags deletes extra tags', () => {
+    it('Tags removed from the template should be deleted', async () => {
       const device = makeDevice();
       const template = makeTemplate({
         variables: [], // empty template
@@ -1114,8 +1114,8 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
     });
   });
 
-  describe('TC-SYNC-013: syncTemplateTags 复合场景', () => {
-    it('应同时处理增/改/删', async () => {
+  describe('TC-SYNC-013: syncTemplateTags compound scenario', () => {
+    it('Should handle add/update/delete simultaneously', async () => {
       const device = makeDevice();
       const template = makeTemplate({
         variables: [
@@ -1147,8 +1147,8 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
   // 6. Tag operations (addTag / addTags / updateDataTag / removeTag)
   // ═══════════════════════════════════════════════════════════════════════
 
-  describe('TC-TAG-010: addTag 设备不存在', () => {
-    it('应抛出 NotFoundException', async () => {
+  describe('TC-TAG-010: addTag with a non-existent device', () => {
+    it('Should throw NotFoundException', async () => {
       deviceRepo.findOne!.mockResolvedValue(null);
 
       await expect(
@@ -1161,8 +1161,8 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
     });
   });
 
-  describe('TC-TAG-011: addTags 批量创建', () => {
-    it('空数组应返回空结果且不调用 create', async () => {
+  describe('TC-TAG-011: addTags batch creation', () => {
+    it('An empty array should return an empty result and not call create', async () => {
       const device = makeDevice();
       deviceRepo.findOne!.mockResolvedValue(device);
       // save([]) must explicitly return [], because jest.fn() returns undefined by default
@@ -1174,7 +1174,7 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
       expect(dataTagRepo.create).not.toHaveBeenCalled();
     });
 
-    it('应注入 deviceId 到每个标签', async () => {
+    it('Should inject deviceId into every tag', async () => {
       const device = makeDevice({ id: 'dev-special' });
       deviceRepo.findOne!.mockResolvedValue(device);
       dataTagRepo.create!.mockImplementation((dto: any) => dto);
@@ -1199,7 +1199,7 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
   });
 
   describe('TC-TAG-012: updateDataTag', () => {
-    it('标签不存在时应抛出 NotFoundException', async () => {
+    it('Should throw NotFoundException when the tag does not exist', async () => {
       const device = makeDevice();
       deviceRepo.findOne!.mockResolvedValue(device);
       dataTagRepo.findOne!.mockResolvedValue(null);
@@ -1209,7 +1209,7 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
       ).rejects.toThrow(NotFoundException);
     });
 
-    it('应成功更新标签字段', async () => {
+    it('Should successfully update tag fields', async () => {
       const device = makeDevice();
       const tag = { id: 'tag-1', name: 'old_name', deviceId: 'dev-001' };
       deviceRepo.findOne!.mockResolvedValue(device);
@@ -1228,7 +1228,7 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
   });
 
   describe('TC-TAG-013: removeTag', () => {
-    it('标签不存在时应抛出 NotFoundException', async () => {
+    it('Should throw NotFoundException when the tag does not exist', async () => {
       const device = makeDevice();
       deviceRepo.findOne!.mockResolvedValue(device);
       dataTagRepo.findOne!.mockResolvedValue(null);
@@ -1238,7 +1238,7 @@ describe('DeviceService - 创建/更新/标签全面测试', () => {
       );
     });
 
-    it('应成功删除标签', async () => {
+    it('Should successfully delete a tag', async () => {
       const device = makeDevice();
       const tag = { id: 'tag-1', name: 'to_delete', deviceId: 'dev-001' };
       deviceRepo.findOne!.mockResolvedValue(device);

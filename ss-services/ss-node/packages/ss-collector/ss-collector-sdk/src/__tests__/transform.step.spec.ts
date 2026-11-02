@@ -21,11 +21,11 @@ function makeContext(overrides: Partial<PipelineContext>): PipelineContext {
   };
 }
 
-describe('TransformStep — 数据类型语义保留', () => {
+describe('TransformStep — data type semantics preservation', () => {
   const step = new TransformStep();
 
-  describe("布尔类型（兼容点表规范 'boolean'）", () => {
-    it("dataType='boolean' 且 rawValue 为 boolean 时应保留布尔语义", async () => {
+  describe("Boolean type (compatible with point-table spec 'boolean')", () => {
+    it("dataType='boolean' with boolean rawValue should keep boolean semantics", async () => {
       const ctx = makeContext({
         rawValue: true,
         tagConfig: { dataType: 'boolean' },
@@ -35,7 +35,7 @@ describe('TransformStep — 数据类型语义保留', () => {
       expect(result.quality).toBe('good');
     });
 
-    it("dataType='bool'（历史写法）同样保留布尔语义", async () => {
+    it("dataType='bool' (legacy notation) also keeps boolean semantics", async () => {
       const ctx = makeContext({
         rawValue: false,
         tagConfig: { dataType: 'bool' },
@@ -44,7 +44,7 @@ describe('TransformStep — 数据类型语义保留', () => {
       expect(result.transformedValue).toBe(false);
     });
 
-    it("dataType='boolean' 且 rawValue 为 0/1 时应转为 boolean", async () => {
+    it("dataType='boolean' with rawValue 0/1 should convert to boolean", async () => {
       const ctx = makeContext({
         rawValue: 1,
         tagConfig: { dataType: 'boolean' },
@@ -53,7 +53,7 @@ describe('TransformStep — 数据类型语义保留', () => {
       expect(result.transformedValue).toBe(true);
     });
 
-    it("dataType='boolean' 且 rawValue 为非法值时应标记 bad 质量", async () => {
+    it("dataType='boolean' with an invalid rawValue should be marked quality bad", async () => {
       const ctx = makeContext({
         rawValue: 42,
         tagConfig: { dataType: 'boolean' },
@@ -64,8 +64,8 @@ describe('TransformStep — 数据类型语义保留', () => {
     });
   });
 
-  describe('数值类型回归保护', () => {
-    it("dataType='float32' 且 rawValue 为 boolean 时应转为 0/1 数字", async () => {
+  describe('Numeric type regression protection', () => {
+    it("dataType='float32' with boolean rawValue should convert to 0/1 numbers", async () => {
       const ctx = makeContext({
         rawValue: true,
         tagConfig: { dataType: 'float32' },
@@ -74,7 +74,7 @@ describe('TransformStep — 数据类型语义保留', () => {
       expect(result.transformedValue).toBe(1);
     });
 
-    it("dataType='string' 时数值应转为字符串保留", async () => {
+    it("dataType='string' should convert numbers to strings and keep them", async () => {
       const ctx = makeContext({
         rawValue: 'OK',
         tagConfig: { dataType: 'string' },

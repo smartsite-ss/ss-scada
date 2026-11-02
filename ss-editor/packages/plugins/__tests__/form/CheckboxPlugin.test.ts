@@ -105,7 +105,7 @@ describe('CheckboxPlugin — Construction and basic functionality', () => {
     expect(pos.y).toBe(100);
   });
 
-  it('getSize 应返回正确尺寸', () => {
+  it('getSize should return the correct size', () => {
     const plugin = new CheckboxPlugin(0, 0, 150, 40);
     const size = plugin.getSize();
     expect(size.width).toBe(150);
@@ -114,14 +114,14 @@ describe('CheckboxPlugin — Construction and basic functionality', () => {
 });
 
 describe('CheckboxPlugin — features', () => {
-  it('dataBindable 应为 true（编辑态数据绑定支持）', () => {
+  it('dataBindable should be true (edit-mode data binding support)', () => {
     const meta = (CheckboxPlugin as any).graphicMeta;
     expect(meta).toBeDefined();
     expect(meta.features).toBeDefined();
     expect(meta.features.dataBindable).toBe(true);
   });
 
-  it('应保留其他 feature 标志位', () => {
+  it('Should keep other feature flags', () => {
     const meta = (CheckboxPlugin as any).graphicMeta;
     expect(meta.features.resizable).toBe(true);
     expect(meta.features.cloneable).toBe(true);

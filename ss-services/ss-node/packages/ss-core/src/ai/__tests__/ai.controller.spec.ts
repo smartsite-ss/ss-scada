@@ -187,8 +187,8 @@ describe('AiController — agentExecute SSE', () => {
 
   // ────── SSE response headers ──────
 
-  describe('SSE 响应头', () => {
-    it('应设置 Content-Type 为 text/event-stream', async () => {
+  describe('SSE response headers', () => {
+    it('Should set Content-Type to text/event-stream', async () => {
       controller = await createController();
       const res = mockResponse();
 
@@ -197,7 +197,7 @@ describe('AiController — agentExecute SSE', () => {
       expect(res.getHeader('content-type')).toBe('text/event-stream');
     });
 
-    it('应设置 Cache-Control 为 no-cache', async () => {
+    it('Should set Cache-Control to no-cache', async () => {
       controller = await createController();
       const res = mockResponse();
 
@@ -206,7 +206,7 @@ describe('AiController — agentExecute SSE', () => {
       expect(res.getHeader('cache-control')).toBe('no-cache');
     });
 
-    it('应设置 Connection 为 keep-alive', async () => {
+    it('Should set Connection to keep-alive', async () => {
       controller = await createController();
       const res = mockResponse();
 
@@ -215,7 +215,7 @@ describe('AiController — agentExecute SSE', () => {
       expect(res.getHeader('connection')).toBe('keep-alive');
     });
 
-    it('应设置 X-Accel-Buffering 为 no', async () => {
+    it('Should set X-Accel-Buffering to no', async () => {
       controller = await createController();
       const res = mockResponse();
 
@@ -224,7 +224,7 @@ describe('AiController — agentExecute SSE', () => {
       expect(res.getHeader('x-accel-buffering')).toBe('no');
     });
 
-    it('应调用 flushHeaders', async () => {
+    it('Should call flushHeaders', async () => {
       controller = await createController();
       const res = mockResponse();
 
@@ -237,7 +237,7 @@ describe('AiController — agentExecute SSE', () => {
   // ────── heartbeat ──────
 
   describe('heartbeat', () => {
-    it('应在 flushHeaders 后立即发送 heartbeat 注释行', async () => {
+    it('Should send the heartbeat comment line immediately after flushHeaders', async () => {
       controller = await createController();
       const res = mockResponse();
 
@@ -251,8 +251,8 @@ describe('AiController — agentExecute SSE', () => {
 
   // ────── step streaming output ──────
 
-  describe('步骤流式输出', () => {
-    it('应逐步骤发送 SSE data 事件', async () => {
+  describe('Step streaming output', () => {
+    it('Should send SSE data events step by step', async () => {
       const steps = [
         { type: 'thought', content: 'thinking...', step: 1, timestamp: Date.now() },
         {
@@ -281,7 +281,7 @@ describe('AiController — agentExecute SSE', () => {
       expect(dataLines[3]).toBe('data: [DONE]\n\n');
     });
 
-    it('应发送 [DONE] 终止信号', async () => {
+    it('Should send the [DONE] termination signal', async () => {
       controller = await createController();
       const res = mockResponse();
 
@@ -291,7 +291,7 @@ describe('AiController — agentExecute SSE', () => {
       expect(lastChunk).toContain('[DONE]');
     });
 
-    it('应在流结束后调用 res.end()', async () => {
+    it('Should call res.end() after the stream ends', async () => {
       controller = await createController();
       const res = mockResponse();
 
@@ -303,8 +303,8 @@ describe('AiController — agentExecute SSE', () => {
 
   // ────── exception handling ──────
 
-  describe('异常处理', () => {
-    it('应发送 SSE error 事件而非崩溃', async () => {
+  describe('Exception handling', () => {
+    it('Should send an SSE error event instead of crashing', async () => {
       controller = await createController(mockOrchestratorThrows(new Error('LLM 调用超时')));
       const res = mockResponse();
 
@@ -316,7 +316,7 @@ describe('AiController — agentExecute SSE', () => {
       expect(allText).toContain('LLM 调用超时');
     });
 
-    it('异常后仍应调用 res.end()', async () => {
+    it('res.end() should still be called after an exception', async () => {
       controller = await createController(mockOrchestratorThrows(new Error('test error')));
       const res = mockResponse();
 
@@ -328,8 +328,8 @@ describe('AiController — agentExecute SSE', () => {
 
   // ────── empty steps ──────
 
-  describe('空步骤（无工具调用场景）', () => {
-    it('应发送 heartbeat + [DONE]', async () => {
+  describe('Empty step (no tool call scenario)', () => {
+    it('Should send heartbeat + [DONE]', async () => {
       controller = await createController(mockOrchestrator([]));
       const res = mockResponse();
 

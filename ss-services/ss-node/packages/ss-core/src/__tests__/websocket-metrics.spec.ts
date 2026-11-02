@@ -21,7 +21,7 @@ describe('WebSocketMetricsService', () => {
   });
 
   describe('recordBroadcast', () => {
-    it('应正确记录广播次数和接收者数', () => {
+    it('Should record broadcast counts and receiver counts correctly', () => {
       service.recordBroadcast('data:update', 'project:p1', 5);
       service.recordBroadcast('data:update', 'project:p1', 3);
       service.recordBroadcast('alarm:trigger', 'project:p1', 2);
@@ -33,7 +33,7 @@ describe('WebSocketMetricsService', () => {
       expect(snapshot.totalRecipients).toBe(10);
     });
 
-    it('应正确统计房间命中率', () => {
+    it('Should count room hit rates correctly', () => {
       service.recordBroadcast('data:update', 'project:p1', 5);
       service.recordBroadcast('data:update', 'project:p1', 3);
       service.recordBroadcast('data:update', 'tag:t1', 0);
@@ -51,7 +51,7 @@ describe('WebSocketMetricsService', () => {
   });
 
   describe('recordBroadcastError', () => {
-    it('应正确记录广播错误', () => {
+    it('Should record broadcast errors correctly', () => {
       service.recordBroadcastError('data:update');
       service.recordBroadcastError('data:update');
       service.recordBroadcastError('alarm:trigger');
@@ -63,7 +63,7 @@ describe('WebSocketMetricsService', () => {
   });
 
   describe('recordBridgeLatency', () => {
-    it('应正确计算平均和最大耗时', () => {
+    it('Should compute average and max durations correctly', () => {
       service.recordBridgeLatency('data_point_changed', 10);
       service.recordBridgeLatency('data_point_changed', 30);
       service.recordBridgeLatency('alarm_triggered', 50);
@@ -77,7 +77,7 @@ describe('WebSocketMetricsService', () => {
   });
 
   describe('recordOfflineCache', () => {
-    it('应正确记录离线缓存命中和未命中', () => {
+    it('Should record offline cache hits and misses correctly', () => {
       service.recordOfflineCacheHit();
       service.recordOfflineCacheHit();
       service.recordOfflineCacheMiss();
@@ -89,7 +89,7 @@ describe('WebSocketMetricsService', () => {
   });
 
   describe('getPrometheusMetrics', () => {
-    it('应包含所有已记录指标的 Prometheus 格式文本', () => {
+    it('Should include Prometheus-format text for all recorded metrics', () => {
       service.recordBroadcast('data:update', 'project:p1', 5);
       service.recordBroadcastError('alarm:trigger');
 
@@ -106,7 +106,7 @@ describe('WebSocketMetricsService', () => {
   });
 
   describe('reset', () => {
-    it('应清空所有指标', () => {
+    it('Should clear all metrics', () => {
       service.recordBroadcast('data:update', 'project:p1', 5);
       service.recordBridgeLatency('data_point_changed', 10);
       service.recordOfflineCacheHit();
@@ -122,8 +122,8 @@ describe('WebSocketMetricsService', () => {
     });
   });
 
-  describe('getSnapshot 时间信息', () => {
-    it('应包含 startedAt 和 snapshotAt', () => {
+  describe('getSnapshot time info', () => {
+    it('Should include startedAt and snapshotAt', () => {
       const snapshot = service.getSnapshot();
       expect(snapshot.startedAt).toBeGreaterThan(0);
       expect(snapshot.snapshotAt).toBeGreaterThanOrEqual(snapshot.startedAt);

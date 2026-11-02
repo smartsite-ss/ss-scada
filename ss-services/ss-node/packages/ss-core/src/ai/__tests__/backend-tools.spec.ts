@@ -392,7 +392,7 @@ function mockProjectService() {
       data: [
         {
           projectId: 'proj-001',
-          projectName: '测试工程',
+          projectName: '测试项目',
           description: '测试项目',
           createdAt: '2026-01-01T00:00:00Z',
           updatedAt: '2026-07-01T00:00:00Z',
@@ -402,7 +402,7 @@ function mockProjectService() {
     }),
     findOne: jest.fn().mockResolvedValue({
       projectId: 'proj-001',
-      projectName: '测试工程',
+      projectName: '测试项目',
       description: '测试项目',
       version: '1.0.0',
       createdAt: '2026-01-01T00:00:00Z',
@@ -411,7 +411,7 @@ function mockProjectService() {
     }),
     exportProjectZip: jest.fn().mockResolvedValue({
       filePath: '/tmp/export/proj-001.zip',
-      projectName: '测试工程',
+      projectName: '测试项目',
       fileName: 'proj-001_20260724.zip',
     }),
     importProjectZip: jest.fn().mockResolvedValue({
@@ -419,7 +419,7 @@ function mockProjectService() {
       warnings: [],
     }),
     getManageInfo: jest.fn().mockResolvedValue({
-      projectName: '测试工程',
+      projectName: '测试项目',
       projectId: 'proj-001',
       tenantId: 'proj-001',
       pageCount: 5,
@@ -939,7 +939,7 @@ function makeServices(overrides: Partial<BackendToolServices> = {}): BackendTool
 // ============================================================
 
 describe('data_query', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createDataQueryTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('data_query');
@@ -950,12 +950,12 @@ describe('data_query', () => {
     expect(tool!.params[3].required).toBe(false); // pageSize
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createDataQueryTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确查询并返回 JSON', async () => {
+  it('Should query correctly and return JSON', async () => {
     const services = makeServices();
     const tool = createDataQueryTool(services)!;
     const result = await tool.execute({
@@ -969,7 +969,7 @@ describe('data_query', () => {
     expect(parsed.total).toBe(100);
   });
 
-  it('异常时应返回错误 JSON', async () => {
+  it('Should return error JSON on exception', async () => {
     const services = makeServices();
     services.dataQueryService!.queryTimeRange = jest
       .fn()
@@ -991,14 +991,14 @@ describe('data_query', () => {
 // ============================================================
 
 describe('data_aggregate', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createDataAggregateTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('data_aggregate');
     expect(tool!.category).toBe('data');
   });
 
-  it('应拒绝无效聚合类型', async () => {
+  it('Should reject invalid aggregation types', async () => {
     const tool = createDataAggregateTool(makeServices())!;
     const result = await tool.execute({
       tagId: 't1',
@@ -1011,7 +1011,7 @@ describe('data_aggregate', () => {
     expect(parsed.error).toContain('不支持的聚合类型');
   });
 
-  it('应正确执行 avg 聚合', async () => {
+  it('Should execute the avg aggregation correctly', async () => {
     const tool = createDataAggregateTool(makeServices())!;
     const result = await tool.execute({
       tagId: 't1',
@@ -1031,7 +1031,7 @@ describe('data_aggregate', () => {
 // ============================================================
 
 describe('device_getStatus', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createDeviceStatusTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('device_getStatus');
@@ -1039,12 +1039,12 @@ describe('device_getStatus', () => {
     expect(tool!.frontend).toBe(false);
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createDeviceStatusTool({});
     expect(tool).toBeNull();
   });
 
-  it('应查询单个设备详情', async () => {
+  it('Should query a single device\'s details', async () => {
     const tool = createDeviceStatusTool(makeServices())!;
     const result = await tool.execute({ projectId: 'p1', deviceId: 'd1' });
     const parsed = JSON.parse(result);
@@ -1053,7 +1053,7 @@ describe('device_getStatus', () => {
     expect(parsed.device.deviceName).toBe('设备A');
   });
 
-  it('应返回设备统计总览', async () => {
+  it('Should return the device statistics overview', async () => {
     const tool = createDeviceStatusTool(makeServices())!;
     const result = await tool.execute({ projectId: 'p1' });
     const parsed = JSON.parse(result);
@@ -1063,7 +1063,7 @@ describe('device_getStatus', () => {
     expect(parsed.summary.offline).toBe(3);
   });
 
-  it('应按状态过滤设备', async () => {
+  it('Should filter devices by status', async () => {
     const tool = createDeviceStatusTool(makeServices())!;
     const result = await tool.execute({ projectId: 'p1', status: 'online' });
     const parsed = JSON.parse(result);
@@ -1078,19 +1078,19 @@ describe('device_getStatus', () => {
 // ============================================================
 
 describe('device_getHistory', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createDeviceHistoryTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('device_getHistory');
     expect(tool!.category).toBe('device');
   });
 
-  it('应返回 null（缺少 dataQueryService）', () => {
+  it('Should return null (missing dataQueryService)', () => {
     const tool = createDeviceHistoryTool({ deviceService: mockDeviceService() });
     expect(tool).toBeNull();
   });
 
-  it('应返回标签历史数据+统计', async () => {
+  it('Should return tag history data + statistics', async () => {
     const tool = createDeviceHistoryTool(makeServices())!;
     const result = await tool.execute({
       projectId: 'p1',
@@ -1111,19 +1111,19 @@ describe('device_getHistory', () => {
 // ============================================================
 
 describe('alarm_getHistory', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createAlarmHistoryTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('alarm_getHistory');
     expect(tool!.category).toBe('alarm');
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createAlarmHistoryTool({});
     expect(tool).toBeNull();
   });
 
-  it('应返回报警记录列表', async () => {
+  it('Should return the alarm record list', async () => {
     const tool = createAlarmHistoryTool(makeServices())!;
     const result = await tool.execute({ projectId: 'p1', limit: 10 });
     const parsed = JSON.parse(result);
@@ -1132,7 +1132,7 @@ describe('alarm_getHistory', () => {
     expect(parsed.records[0].level).toBe('ERROR');
   });
 
-  it('summary 模式应返回统计概览', async () => {
+  it('summary mode should return a statistical overview', async () => {
     const tool = createAlarmHistoryTool(makeServices())!;
     const result = await tool.execute({ projectId: 'p1', mode: 'summary' });
     const parsed = JSON.parse(result);
@@ -1141,7 +1141,7 @@ describe('alarm_getHistory', () => {
     expect(parsed.summary.active).toBe(3);
   });
 
-  it('无统计服务时 summary 回退到 records', async () => {
+  it('Without a statistics service, summary falls back to records', async () => {
     const services = makeServices();
     delete services.alarmStatisticsService;
     const tool = createAlarmHistoryTool(services)!;
@@ -1157,7 +1157,7 @@ describe('alarm_getHistory', () => {
 // ============================================================
 
 describe('knowledge_search', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createKnowledgeSearchTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('knowledge_search');
@@ -1166,12 +1166,12 @@ describe('knowledge_search', () => {
     expect(tool!.params[1].required).toBe(false); // product
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createKnowledgeSearchTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确搜索知识库', async () => {
+  it('Should search the knowledge base correctly', async () => {
     const tool = createKnowledgeSearchTool(makeServices())!;
     const result = await tool.execute({ query: 'Modbus 设备接入' });
     const parsed = JSON.parse(result);
@@ -1186,7 +1186,7 @@ describe('knowledge_search', () => {
 // ============================================================
 
 describe('system_getHealth', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createSystemHealthTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('system_getHealth');
@@ -1194,12 +1194,12 @@ describe('system_getHealth', () => {
     expect(tool!.params.length).toBe(0); // no parameters
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createSystemHealthTool({});
     expect(tool).toBeNull();
   });
 
-  it('应返回系统健康状态', async () => {
+  it('Should return the system health status', async () => {
     const tool = createSystemHealthTool(makeServices())!;
     const result = await tool.execute({});
     const parsed = JSON.parse(result);
@@ -1210,7 +1210,7 @@ describe('system_getHealth', () => {
     expect(parsed.cpu).toBe(0.5);
   });
 
-  it('异常时应返回错误 JSON', async () => {
+  it('Should return error JSON on exception', async () => {
     const services = makeServices();
     services.healthService!.getDetailed = jest.fn().mockRejectedValue(new Error('DB 连接超时'));
     const tool = createSystemHealthTool(services)!;
@@ -1226,7 +1226,7 @@ describe('system_getHealth', () => {
 // ============================================================
 
 describe('template_list', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createTemplateListTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('template_list');
@@ -1237,12 +1237,12 @@ describe('template_list', () => {
     expect(tool!.params[1].required).toBe(false); // keyword
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createTemplateListTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确查询模板列表', async () => {
+  it('Should query the template list correctly', async () => {
     const tool = createTemplateListTool(makeServices())!;
     const result = await tool.execute({ keyword: '温湿度' });
     const parsed = JSON.parse(result);
@@ -1252,7 +1252,7 @@ describe('template_list', () => {
     expect(parsed.templates[0].variableCount).toBe(2);
   });
 
-  it('异常时应返回错误 JSON', async () => {
+  it('Should return error JSON on exception', async () => {
     const services = makeServices();
     services.templateService!.findAll = jest.fn().mockRejectedValue(new Error('模板加载失败'));
     const tool = createTemplateListTool(services)!;
@@ -1268,7 +1268,7 @@ describe('template_list', () => {
 // ============================================================
 
 describe('template_detail', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createTemplateDetailTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('template_detail');
@@ -1277,12 +1277,12 @@ describe('template_detail', () => {
     expect(tool!.params[0].required).toBe(true); // templateId
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createTemplateDetailTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确返回模板详情', async () => {
+  it('Should return the template details correctly', async () => {
     const tool = createTemplateDetailTool(makeServices())!;
     const result = await tool.execute({ templateId: 'tpl-temp-hum-001' });
     const parsed = JSON.parse(result);
@@ -1294,7 +1294,7 @@ describe('template_detail', () => {
     expect(parsed.template.variables[0].deadband).toBe(0.5);
   });
 
-  it('模板不存在时应返回错误', async () => {
+  it('Should return an error when the template does not exist', async () => {
     const services = makeServices();
     services.templateService!.findById = jest
       .fn()
@@ -1312,7 +1312,7 @@ describe('template_detail', () => {
 // ============================================================
 
 describe('template_create', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createTemplateCreateTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('template_create');
@@ -1323,12 +1323,12 @@ describe('template_create', () => {
     expect(tool!.params[3].required).toBe(true); // variables
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createTemplateCreateTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确创建模板', async () => {
+  it('Should create templates correctly', async () => {
     const tool = createTemplateCreateTool(makeServices())!;
     const result = await tool.execute({
       name: '压力传感器模板',
@@ -1349,7 +1349,7 @@ describe('template_create', () => {
     expect(parsed.template.variableCount).toBe(2);
   });
 
-  it('变量为空时应返回错误', async () => {
+  it('Should return an error when variables are empty', async () => {
     const tool = createTemplateCreateTool(makeServices())!;
     const result = await tool.execute({
       name: '空模板',
@@ -1361,7 +1361,7 @@ describe('template_create', () => {
     expect(parsed.error).toContain('请至少定义一个变量');
   });
 
-  it('无 variables 参数时应返回错误', async () => {
+  it('Should return an error when the variables parameter is missing', async () => {
     const tool = createTemplateCreateTool(makeServices())!;
     const result = await tool.execute({
       name: '空模板',
@@ -1378,7 +1378,7 @@ describe('template_create', () => {
 // ============================================================
 
 describe('driver_list', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createDriverListTool({});
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('driver_list');
@@ -1387,12 +1387,12 @@ describe('driver_list', () => {
     expect(tool!.params.length).toBe(0); // no parameters
   });
 
-  it('无需 service 即可创建', () => {
+  it('Can be created without a service', () => {
     const tool = createDriverListTool({});
     expect(tool).not.toBeNull();
   });
 
-  it('应返回 6 种驱动', async () => {
+  it('Should return 6 drivers', async () => {
     const tool = createDriverListTool({})!;
     const result = await tool.execute({});
     const parsed = JSON.parse(result);
@@ -1400,7 +1400,7 @@ describe('driver_list', () => {
     expect(parsed.drivers).toHaveLength(6);
   });
 
-  it('应包含所有驱动类型', async () => {
+  it('Should include all driver types', async () => {
     const tool = createDriverListTool({})!;
     const result = await tool.execute({});
     const parsed = JSON.parse(result);
@@ -1413,7 +1413,7 @@ describe('driver_list', () => {
     expect(names).toContain('virtual');
   });
 
-  it('每个驱动应有连接配置模板', async () => {
+  it('Every driver should have a connection config template', async () => {
     const tool = createDriverListTool({})!;
     const result = await tool.execute({});
     const parsed = JSON.parse(result);
@@ -1429,7 +1429,7 @@ describe('driver_list', () => {
 // ============================================================
 
 describe('device_create', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createDeviceCreateTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('device_create');
@@ -1440,15 +1440,15 @@ describe('device_create', () => {
     expect(tool!.params[5].required).toBe(true); // connection
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createDeviceCreateTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确创建设备', async () => {
+  it('Should create devices correctly', async () => {
     const tool = createDeviceCreateTool(makeServices())!;
     const result = await tool.execute({
-      projectId: '测试工程',
+      projectId: '测试项目',
       name: '温湿度传感器',
       deviceCode: 'temp-hum-001',
       templateId: 'tpl-temp-hum-001',
@@ -1464,10 +1464,10 @@ describe('device_create', () => {
     expect(parsed.message).toContain('采集任务将在下次调度时自动注册');
   });
 
-  it('缺少 connection 时应返回错误', async () => {
+  it('Should return an error when connection is missing', async () => {
     const tool = createDeviceCreateTool(makeServices())!;
     const result = await tool.execute({
-      projectId: '测试工程',
+      projectId: '测试项目',
       name: '温湿度传感器',
       deviceCode: 'temp-hum-001',
       templateId: 'tpl-temp-hum-001',
@@ -1478,14 +1478,14 @@ describe('device_create', () => {
     expect(parsed.error).toContain('connection');
   });
 
-  it('异常时应返回错误 JSON', async () => {
+  it('Should return error JSON on exception', async () => {
     const services = makeServices();
     services.deviceCreateService!.createDevice = jest
       .fn()
       .mockRejectedValue(new Error('设备名称已存在'));
     const tool = createDeviceCreateTool(services)!;
     const result = await tool.execute({
-      projectId: '测试工程',
+      projectId: '测试项目',
       name: '温湿度传感器',
       deviceCode: 'temp-hum-001',
       templateId: 'tpl-temp-hum-001',
@@ -1503,7 +1503,7 @@ describe('device_create', () => {
 // ============================================================
 
 describe('dict_list', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createDictListTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('dict_list');
@@ -1511,12 +1511,12 @@ describe('dict_list', () => {
     expect(tool!.frontend).toBe(false);
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createDictListTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确返回字典分类列表', async () => {
+  it('Should return the dictionary category list correctly', async () => {
     const tool = createDictListTool(makeServices())!;
     const result = await tool.execute({});
     const parsed = JSON.parse(result);
@@ -1532,7 +1532,7 @@ describe('dict_list', () => {
 // ============================================================
 
 describe('dict_detail', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createDictDetailTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('dict_detail');
@@ -1540,12 +1540,12 @@ describe('dict_detail', () => {
     expect(tool!.params[0].required).toBe(true); // dictId
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createDictDetailTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确返回字典详情', async () => {
+  it('Should return the dictionary details correctly', async () => {
     const tool = createDictDetailTool(makeServices())!;
     const result = await tool.execute({ dictId: 'device-type' });
     const parsed = JSON.parse(result);
@@ -1555,7 +1555,7 @@ describe('dict_detail', () => {
     expect(parsed.dict.items[0].value).toBe('sensor');
   });
 
-  it('字典不存在时应返回错误', async () => {
+  it('Should return an error when the dictionary does not exist', async () => {
     const services = makeServices();
     services.dictService!.getDict = jest.fn().mockReturnValue(undefined);
     const tool = createDictDetailTool(services)!;
@@ -1571,33 +1571,33 @@ describe('dict_detail', () => {
 // ============================================================
 
 describe('dict_create', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createDictCreateTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('dict_create');
     expect(tool!.category).toBe('dict');
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createDictCreateTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确创建字典', async () => {
+  it('Should create dictionaries correctly', async () => {
     const tool = createDictCreateTool(makeServices())!;
     const result = await tool.execute({
       locale: 'zh-CN',
       dictId: 'test-level',
       dictName: '测试级别',
       category: '测试',
-      items: [{ value: 'L1', label: '等级1' }],
+      items: [{ value: 'L1', label: 'Level 1' }],
     });
     const parsed = JSON.parse(result);
     expect(parsed.success).toBe(true);
     expect(parsed.dict.dictId).toBe('test-level');
   });
 
-  it('缺少必填参数时应返回错误', async () => {
+  it('Should return an error when required parameters are missing', async () => {
     const tool = createDictCreateTool(makeServices())!;
     const result = await tool.execute({ dictId: 'test' });
     const parsed = JSON.parse(result);
@@ -1611,29 +1611,29 @@ describe('dict_create', () => {
 // ============================================================
 
 describe('dict_addItems', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createDictAddItemsTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('dict_addItems');
     expect(tool!.category).toBe('dict');
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createDictAddItemsTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确追加条目', async () => {
+  it('Should append entries correctly', async () => {
     const tool = createDictAddItemsTool(makeServices())!;
     const result = await tool.execute({
       dictId: 'device-type',
-      items: [{ value: 'gateway', label: '网关' }],
+      items: [{ value: 'gateway', label: 'Gateway' }],
     });
     const parsed = JSON.parse(result);
     expect(parsed.success).toBe(true);
   });
 
-  it('字典不存在时应返回错误', async () => {
+  it('Should return an error when the dictionary does not exist', async () => {
     const services = makeServices();
     services.dictService!.getDict = jest.fn().mockReturnValue(undefined);
     const tool = createDictAddItemsTool(services)!;
@@ -1652,7 +1652,7 @@ describe('dict_addItems', () => {
 // ============================================================
 
 describe('dict_search', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createDictSearchTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('dict_search');
@@ -1660,12 +1660,12 @@ describe('dict_search', () => {
     expect(tool!.params[0].required).toBe(true); // keyword
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createDictSearchTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确搜索字典条目', async () => {
+  it('Should search dictionary entries correctly', async () => {
     const tool = createDictSearchTool(makeServices())!;
     const result = await tool.execute({ keyword: '传感器' });
     const parsed = JSON.parse(result);
@@ -1679,7 +1679,7 @@ describe('dict_search', () => {
 // ============================================================
 
 describe('db_connection_list', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createDbConnectionListTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('db_connection_list');
@@ -1688,12 +1688,12 @@ describe('db_connection_list', () => {
     expect(tool!.params[0].required).toBe(true); // projectId
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createDbConnectionListTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确返回连接列表', async () => {
+  it('Should return the connection list correctly', async () => {
     const tool = createDbConnectionListTool(makeServices())!;
     const result = await tool.execute({ projectId: 'proj-001' });
     const parsed = JSON.parse(result);
@@ -1702,7 +1702,7 @@ describe('db_connection_list', () => {
     expect(parsed.connections[0].name).toBe('生产数据库');
   });
 
-  it('异常时应返回错误 JSON', async () => {
+  it('Should return error JSON on exception', async () => {
     const services = makeServices();
     services.dbConnectionService!.findAll = jest.fn().mockRejectedValue(new Error('查询失败'));
     const tool = createDbConnectionListTool(services)!;
@@ -1714,7 +1714,7 @@ describe('db_connection_list', () => {
 });
 
 describe('db_connection_create', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createDbConnectionCreateTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('db_connection_create');
@@ -1724,12 +1724,12 @@ describe('db_connection_create', () => {
     expect(tool!.params[2].required).toBe(true); // dbType
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createDbConnectionCreateTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确创建连接', async () => {
+  it('Should create connections correctly', async () => {
     const tool = createDbConnectionCreateTool(makeServices())!;
     const result = await tool.execute({
       projectId: 'proj-001',
@@ -1746,7 +1746,7 @@ describe('db_connection_create', () => {
     expect(parsed.connection.id).toBe('conn-2');
   });
 
-  it('缺少必填参数时应返回错误', async () => {
+  it('Should return an error when required parameters are missing', async () => {
     const tool = createDbConnectionCreateTool(makeServices())!;
     const result = await tool.execute({ projectId: 'proj-001' });
     const parsed = JSON.parse(result);
@@ -1756,19 +1756,19 @@ describe('db_connection_create', () => {
 });
 
 describe('db_connection_test', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createDbConnectionTestTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('db_connection_test');
     expect(tool!.category).toBe('datasource');
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createDbConnectionTestTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确测试连接', async () => {
+  it('Should test the connection correctly', async () => {
     const tool = createDbConnectionTestTool(makeServices())!;
     const result = await tool.execute({ projectId: 'proj-001', connectionId: 'conn-1' });
     const parsed = JSON.parse(result);
@@ -1776,7 +1776,7 @@ describe('db_connection_test', () => {
     expect(parsed.latency).toBe(15);
   });
 
-  it('连接失败时应返回错误', async () => {
+  it('Should return an error when connection fails', async () => {
     const services = makeServices();
     services.dbConnectionService!.test = jest.fn().mockResolvedValue({
       success: false,
@@ -1792,19 +1792,19 @@ describe('db_connection_test', () => {
 });
 
 describe('db_connection_tables', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createDbConnectionTablesTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('db_connection_tables');
     expect(tool!.category).toBe('datasource');
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createDbConnectionTablesTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确返回表列表', async () => {
+  it('Should return the table list correctly', async () => {
     const tool = createDbConnectionTablesTool(makeServices())!;
     const result = await tool.execute({ projectId: 'proj-001', connectionId: 'conn-1' });
     const parsed = JSON.parse(result);
@@ -1815,7 +1815,7 @@ describe('db_connection_tables', () => {
 });
 
 describe('db_connection_query', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createDbConnectionQueryTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('db_connection_query');
@@ -1823,12 +1823,12 @@ describe('db_connection_query', () => {
     expect(tool!.params[2].required).toBe(true); // sql
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createDbConnectionQueryTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确执行查询', async () => {
+  it('Should execute the query correctly', async () => {
     const tool = createDbConnectionQueryTool(makeServices())!;
     const result = await tool.execute({
       projectId: 'proj-001',
@@ -1841,7 +1841,7 @@ describe('db_connection_query', () => {
     expect(parsed.rows[0].id).toBe(1);
   });
 
-  it('应拒绝非 SELECT 语句', async () => {
+  it('Should reject non-SELECT statements', async () => {
     const tool = createDbConnectionQueryTool(makeServices())!;
     const result = await tool.execute({
       projectId: 'proj-001',
@@ -1855,7 +1855,7 @@ describe('db_connection_query', () => {
 });
 
 describe('project_list', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createProjectListTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('project_list');
@@ -1863,24 +1863,24 @@ describe('project_list', () => {
     expect(tool!.frontend).toBe(false);
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createProjectListTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确返回项目列表', async () => {
+  it('Should return the project list correctly', async () => {
     const tool = createProjectListTool(makeServices())!;
     const result = await tool.execute({ userId: 'user-001' });
     const parsed = JSON.parse(result);
     expect(parsed.success).toBe(true);
     expect(parsed.projects).toHaveLength(1);
-    expect(parsed.projects[0].name).toBe('测试工程');
+    expect(parsed.projects[0].name).toBe('测试项目');
     expect(parsed.total).toBe(1);
   });
 });
 
 describe('project_info', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createProjectInfoTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('project_info');
@@ -1888,35 +1888,35 @@ describe('project_info', () => {
     expect(tool!.params[0].required).toBe(true); // projectId
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createProjectInfoTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确返回项目详情', async () => {
+  it('Should return the project details correctly', async () => {
     const tool = createProjectInfoTool(makeServices())!;
     const result = await tool.execute({ projectId: 'proj-001', userId: 'user-001' });
     const parsed = JSON.parse(result);
     expect(parsed.success).toBe(true);
-    expect(parsed.project.name).toBe('测试工程');
+    expect(parsed.project.name).toBe('测试项目');
     expect(parsed.project.version).toBe('1.0.0');
   });
 });
 
 describe('project_export', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createProjectExportTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('project_export');
     expect(tool!.category).toBe('project');
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createProjectExportTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确导出项目', async () => {
+  it('Should export the project correctly', async () => {
     const tool = createProjectExportTool(makeServices())!;
     const result = await tool.execute({
       projectId: 'proj-001',
@@ -1931,19 +1931,19 @@ describe('project_export', () => {
 });
 
 describe('project_import', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createProjectImportTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('project_import');
     expect(tool!.category).toBe('project');
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createProjectImportTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确导入项目', async () => {
+  it('Should import the project correctly', async () => {
     const tool = createProjectImportTool(makeServices())!;
     const result = await tool.execute({
       filePath: '/tmp/proj-001.zip',
@@ -1954,7 +1954,7 @@ describe('project_import', () => {
     expect(parsed.project.name).toBe('导入工程');
   });
 
-  it('缺少 filePath 时应返回错误', async () => {
+  it('Should return an error when filePath is missing', async () => {
     const tool = createProjectImportTool(makeServices())!;
     const result = await tool.execute({ userId: 'user-001' });
     const parsed = JSON.parse(result);
@@ -1968,7 +1968,7 @@ describe('project_import', () => {
 // ============================================================
 
 describe('tag_list', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createTagListTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('tag_list');
@@ -1976,12 +1976,12 @@ describe('tag_list', () => {
     expect(tool!.params[0].required).toBe(true); // projectId
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createTagListTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确返回标签列表', async () => {
+  it('Should return the tag list correctly', async () => {
     const tool = createTagListTool(makeServices())!;
     const result = await tool.execute({ projectId: 'proj-001' });
     const parsed = JSON.parse(result);
@@ -1990,7 +1990,7 @@ describe('tag_list', () => {
     expect(parsed.total).toBe(2);
   });
 
-  it('应支持关键词搜索', async () => {
+  it('Should support keyword search', async () => {
     const tool = createTagListTool(makeServices())!;
     const result = await tool.execute({ projectId: 'proj-001', keyword: '温度' });
     const parsed = JSON.parse(result);
@@ -1999,7 +1999,7 @@ describe('tag_list', () => {
 });
 
 describe('trend_query', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const services = makeServices();
     services.dataQueryService = mockExtendedDataQueryService();
     const tool = createTrendQueryTool(services);
@@ -2008,12 +2008,12 @@ describe('trend_query', () => {
     expect(tool!.category).toBe('data');
   });
 
-  it('应返回 null（缺少 queryTrend）', () => {
+  it('Should return null (missing queryTrend)', () => {
     const tool = createTrendQueryTool({ dataQueryService: mockDataQueryService() });
     expect(tool).toBeNull();
   });
 
-  it('应正确查询趋势数据', async () => {
+  it('Should query trend data correctly', async () => {
     const services = makeServices();
     services.dataQueryService = mockExtendedDataQueryService();
     const tool = createTrendQueryTool(services)!;
@@ -2029,7 +2029,7 @@ describe('trend_query', () => {
     expect(parsed.data[0].tagId).toBe('tag-001');
   });
 
-  it('tagIds 为空时应返回错误', async () => {
+  it('Should return an error when tagIds is empty', async () => {
     const services = makeServices();
     services.dataQueryService = mockExtendedDataQueryService();
     const tool = createTrendQueryTool(services)!;
@@ -2045,7 +2045,7 @@ describe('trend_query', () => {
 });
 
 describe('trend_aggregate', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const services = makeServices();
     services.dataQueryService = mockExtendedDataQueryService();
     const tool = createTrendAggregateTool(services);
@@ -2054,12 +2054,12 @@ describe('trend_aggregate', () => {
     expect(tool!.category).toBe('data');
   });
 
-  it('应返回 null（缺少 aggregate）', () => {
+  it('Should return null (missing aggregate)', () => {
     const tool = createTrendAggregateTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确执行聚合', async () => {
+  it('Should execute the aggregation correctly', async () => {
     const services = makeServices();
     services.dataQueryService = mockExtendedDataQueryService();
     const tool = createTrendAggregateTool(services)!;
@@ -2076,7 +2076,7 @@ describe('trend_aggregate', () => {
 });
 
 describe('trend_export', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const services = makeServices();
     services.dataQueryService = mockExtendedDataQueryService();
     const tool = createTrendExportTool(services);
@@ -2085,12 +2085,12 @@ describe('trend_export', () => {
     expect(tool!.category).toBe('data');
   });
 
-  it('应返回 null（缺少 exportTrend）', () => {
+  it('Should return null (missing exportTrend)', () => {
     const tool = createTrendExportTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确导出趋势数据', async () => {
+  it('Should export trend data correctly', async () => {
     const services = makeServices();
     services.dataQueryService = mockExtendedDataQueryService();
     const tool = createTrendExportTool(services)!;
@@ -2108,43 +2108,43 @@ describe('trend_export', () => {
 });
 
 describe('project_manage_info', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createProjectManageInfoTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('project_manage_info');
     expect(tool!.category).toBe('project');
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createProjectManageInfoTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确返回项目概览', async () => {
+  it('Should return the project overview correctly', async () => {
     const tool = createProjectManageInfoTool(makeServices())!;
     const result = await tool.execute({ projectId: 'proj-001' });
     const parsed = JSON.parse(result);
     expect(parsed.success).toBe(true);
-    expect(parsed.info.projectName).toBe('测试工程');
+    expect(parsed.info.projectName).toBe('测试项目');
     expect(parsed.info.pageCount).toBe(5);
     expect(parsed.info.dbMode).toBe('isolated');
   });
 });
 
 describe('project_diagnose', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createProjectDiagnoseTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('project_diagnose');
     expect(tool!.category).toBe('project');
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createProjectDiagnoseTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确诊断项目', async () => {
+  it('Should diagnose the project correctly', async () => {
     const tool = createProjectDiagnoseTool(makeServices())!;
     const result = await tool.execute({ projectId: 'proj-001' });
     const parsed = JSON.parse(result);
@@ -2153,7 +2153,7 @@ describe('project_diagnose', () => {
     expect(parsed.issues).toHaveLength(0);
   });
 
-  it('发现问题时应返回 issues', async () => {
+  it('Should return issues when problems are found', async () => {
     const services = makeServices();
     services.projectService!.diagnose = jest.fn().mockResolvedValue({
       health: 'degraded',
@@ -2170,19 +2170,19 @@ describe('project_diagnose', () => {
 });
 
 describe('project_init_resources', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createProjectInitResourcesTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('project_init_resources');
     expect(tool!.category).toBe('project');
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createProjectInitResourcesTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确初始化资源', async () => {
+  it('Should initialize resources correctly', async () => {
     const tool = createProjectInitResourcesTool(makeServices())!;
     const result = await tool.execute({ projectId: 'proj-001' });
     const parsed = JSON.parse(result);
@@ -2192,7 +2192,7 @@ describe('project_init_resources', () => {
 });
 
 describe('system_health_detailed', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createSystemHealthDetailedTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('system_health_detailed');
@@ -2200,12 +2200,12 @@ describe('system_health_detailed', () => {
     expect(tool!.params.length).toBe(0);
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createSystemHealthDetailedTool({});
     expect(tool).toBeNull();
   });
 
-  it('应返回详细健康状态', async () => {
+  it('Should return detailed health status', async () => {
     const tool = createSystemHealthDetailedTool(makeServices())!;
     const result = await tool.execute({});
     const parsed = JSON.parse(result);
@@ -2220,7 +2220,7 @@ describe('system_health_detailed', () => {
 // ============================================================
 
 describe('report_template_list', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createReportTemplateListTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('report_template_list');
@@ -2228,12 +2228,12 @@ describe('report_template_list', () => {
     expect(tool!.params[0].required).toBe(true); // projectId
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createReportTemplateListTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确返回模板列表', async () => {
+  it('Should return the template list correctly', async () => {
     const tool = createReportTemplateListTool(makeServices())!;
     const result = await tool.execute({ projectId: 'proj-001' });
     const parsed = JSON.parse(result);
@@ -2242,19 +2242,19 @@ describe('report_template_list', () => {
 });
 
 describe('report_template_create', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createReportTemplateCreateTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('report_template_create');
     expect(tool!.category).toBe('report');
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createReportTemplateCreateTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确创建模板', async () => {
+  it('Should create templates correctly', async () => {
     const tool = createReportTemplateCreateTool(makeServices())!;
     const result = await tool.execute({
       projectId: 'proj-001',
@@ -2269,19 +2269,19 @@ describe('report_template_create', () => {
 });
 
 describe('report_schedule_create', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createReportScheduleCreateTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('report_schedule_create');
     expect(tool!.category).toBe('report');
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createReportScheduleCreateTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确创建定时导出', async () => {
+  it('Should create scheduled exports correctly', async () => {
     const tool = createReportScheduleCreateTool(makeServices())!;
     const result = await tool.execute({
       projectId: 'proj-001',
@@ -2296,19 +2296,19 @@ describe('report_schedule_create', () => {
 });
 
 describe('report_generate', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createReportGenerateTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('report_generate');
     expect(tool!.category).toBe('report');
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createReportGenerateTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确生成日报', async () => {
+  it('Should generate the daily report correctly', async () => {
     const tool = createReportGenerateTool(makeServices())!;
     const result = await tool.execute({
       projectId: 'proj-001',
@@ -2320,7 +2320,7 @@ describe('report_generate', () => {
     expect(parsed.report.type).toBe('daily');
   });
 
-  it('应正确生成月报', async () => {
+  it('Should generate the monthly report correctly', async () => {
     const tool = createReportGenerateTool(makeServices())!;
     const result = await tool.execute({
       projectId: 'proj-001',
@@ -2331,7 +2331,7 @@ describe('report_generate', () => {
     expect(parsed.success).toBe(true);
   });
 
-  it('无效的报表类型应返回错误', async () => {
+  it('Invalid report type should return an error', async () => {
     const tool = createReportGenerateTool(makeServices())!;
     const result = await tool.execute({
       projectId: 'proj-001',
@@ -2344,7 +2344,7 @@ describe('report_generate', () => {
 });
 
 describe('alarm_rule_list', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createAlarmRuleListTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('alarm_rule_list');
@@ -2352,12 +2352,12 @@ describe('alarm_rule_list', () => {
     expect(tool!.params[0].required).toBe(true); // projectId
   });
 
-  it('应返回 null（缺少 getRules）', () => {
+  it('Should return null (missing getRules)', () => {
     const tool = createAlarmRuleListTool({ alarmService: mockAlarmService() });
     expect(tool).toBeNull();
   });
 
-  it('应正确返回报警规则列表', async () => {
+  it('Should return the alarm rule list correctly', async () => {
     const services = makeServices();
     services.alarmService = mockExtendedAlarmService();
     const tool = createAlarmRuleListTool(services)!;
@@ -2371,19 +2371,19 @@ describe('alarm_rule_list', () => {
 });
 
 describe('alarm_rule_create', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createAlarmRuleCreateTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('alarm_rule_create');
     expect(tool!.category).toBe('alarm');
   });
 
-  it('应返回 null（缺少 createRule）', () => {
+  it('Should return null (missing createRule)', () => {
     const tool = createAlarmRuleCreateTool({ alarmService: mockAlarmService() });
     expect(tool).toBeNull();
   });
 
-  it('应正确创建报警规则', async () => {
+  it('Should create alarm rules correctly', async () => {
     const services = makeServices();
     services.alarmService = mockExtendedAlarmService();
     const tool = createAlarmRuleCreateTool(services)!;
@@ -2401,7 +2401,7 @@ describe('alarm_rule_create', () => {
     expect(parsed.rule.name).toBe('压力过高');
   });
 
-  it('无效的 condition 应返回错误', async () => {
+  it('Invalid condition should return an error', async () => {
     const services = makeServices();
     services.alarmService = mockExtendedAlarmService();
     const tool = createAlarmRuleCreateTool(services)!;
@@ -2420,7 +2420,7 @@ describe('alarm_rule_create', () => {
 });
 
 describe('alarm_suppression_add', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const services = makeServices();
     services.alarmService = mockExtendedAlarmService();
     const tool = createAlarmSuppressionAddTool(services);
@@ -2429,12 +2429,12 @@ describe('alarm_suppression_add', () => {
     expect(tool!.category).toBe('alarm');
   });
 
-  it('应返回 null（缺少 addSuppressionRule）', () => {
+  it('Should return null (missing addSuppressionRule)', () => {
     const tool = createAlarmSuppressionAddTool({ alarmService: mockAlarmService() });
     expect(tool).toBeNull();
   });
 
-  it('应正确添加 parent_child 抑制规则', async () => {
+  it('Should add parent_child suppression rules correctly', async () => {
     const services = makeServices();
     services.alarmService = mockExtendedAlarmService();
     const tool = createAlarmSuppressionAddTool(services)!;
@@ -2451,7 +2451,7 @@ describe('alarm_suppression_add', () => {
 });
 
 describe('datatag_configure', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createDatatagConfigureTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('datatag_configure');
@@ -2459,12 +2459,12 @@ describe('datatag_configure', () => {
     expect(tool!.params[0].required).toBe(true); // tagId
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createDatatagConfigureTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确配置单个标签', async () => {
+  it('Should configure a single tag correctly', async () => {
     const tool = createDatatagConfigureTool(makeServices())!;
     const result = await tool.execute({
       projectId: 'proj-001',
@@ -2481,19 +2481,19 @@ describe('datatag_configure', () => {
 });
 
 describe('datatag_batch_configure', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createDatatagBatchConfigureTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('datatag_batch_configure');
     expect(tool!.category).toBe('datatag');
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createDatatagBatchConfigureTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确批量配置标签', async () => {
+  it('Should configure tags in batch correctly', async () => {
     const tool = createDatatagBatchConfigureTool(makeServices())!;
     const result = await tool.execute({
       projectId: 'proj-001',
@@ -2506,7 +2506,7 @@ describe('datatag_batch_configure', () => {
     expect(parsed.updatedCount).toBe(2);
   });
 
-  it('tagIds 为空时应返回错误', async () => {
+  it('Should return an error when tagIds is empty', async () => {
     const tool = createDatatagBatchConfigureTool(makeServices())!;
     const result = await tool.execute({
       projectId: 'proj-001',
@@ -2524,7 +2524,7 @@ describe('datatag_batch_configure', () => {
 // ============================================================
 
 describe('script_api_list', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createScriptApiListTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('script_api_list');
@@ -2532,12 +2532,12 @@ describe('script_api_list', () => {
     expect(tool!.params.length).toBe(0);
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createScriptApiListTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确返回 API 列表', async () => {
+  it('Should return the API list correctly', async () => {
     const tool = createScriptApiListTool(makeServices())!;
     const result = await tool.execute({});
     const parsed = JSON.parse(result);
@@ -2548,7 +2548,7 @@ describe('script_api_list', () => {
 });
 
 describe('script_validate', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createScriptValidateTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('script_validate');
@@ -2556,12 +2556,12 @@ describe('script_validate', () => {
     expect(tool!.params[0].required).toBe(true); // code
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createScriptValidateTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确校验合法脚本', async () => {
+  it('Should validate legal scripts correctly', async () => {
     const tool = createScriptValidateTool(makeServices())!;
     const result = await tool.execute({ code: 'const x = 1;' });
     const parsed = JSON.parse(result);
@@ -2569,7 +2569,7 @@ describe('script_validate', () => {
     expect(parsed.valid).toBe(true);
   });
 
-  it('应检测语法错误', async () => {
+  it('Should detect syntax errors', async () => {
     const tool = createScriptValidateTool(makeServices())!;
     const result = await tool.execute({ code: 'const x = ;' });
     const parsed = JSON.parse(result);
@@ -2580,7 +2580,7 @@ describe('script_validate', () => {
 });
 
 describe('script_dry_run', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createScriptDryRunTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('script_dry_run');
@@ -2588,12 +2588,12 @@ describe('script_dry_run', () => {
     expect(tool!.params[0].required).toBe(true); // code
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createScriptDryRunTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确试运行脚本', async () => {
+  it('Should dry-run scripts correctly', async () => {
     const tool = createScriptDryRunTool(makeServices())!;
     const result = await tool.execute({ code: 'return 42;', projectId: 'proj-001' });
     const parsed = JSON.parse(result);
@@ -2603,7 +2603,7 @@ describe('script_dry_run', () => {
 });
 
 describe('script_create', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createScriptCreateTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('script_create');
@@ -2614,12 +2614,12 @@ describe('script_create', () => {
     expect(tool!.params[3].required).toBe(true); // triggerType
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createScriptCreateTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确创建脚本', async () => {
+  it('Should create scripts correctly', async () => {
     const tool = createScriptCreateTool(makeServices())!;
     const result = await tool.execute({
       projectId: 'proj-001',
@@ -2632,7 +2632,7 @@ describe('script_create', () => {
     expect(parsed.script.name).toBe('自动阀门控制');
   });
 
-  it('无效的 triggerType 应返回错误', async () => {
+  it('Invalid triggerType should return an error', async () => {
     const tool = createScriptCreateTool(makeServices())!;
     const result = await tool.execute({
       projectId: 'proj-001',
@@ -2647,7 +2647,7 @@ describe('script_create', () => {
 });
 
 describe('script_execute', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createScriptExecuteTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('script_execute');
@@ -2656,12 +2656,12 @@ describe('script_execute', () => {
     expect(tool!.params[1].required).toBe(true); // scriptId
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createScriptExecuteTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确执行脚本', async () => {
+  it('Should execute the script correctly', async () => {
     const tool = createScriptExecuteTool(makeServices())!;
     const result = await tool.execute({
       projectId: 'proj-001',
@@ -2673,7 +2673,7 @@ describe('script_execute', () => {
     expect(parsed.logs).toHaveLength(2);
   });
 
-  it('执行失败时应返回错误', async () => {
+  it('Should return an error when execution fails', async () => {
     const services = makeServices();
     services.scriptService!.executeScript = jest.fn().mockResolvedValue({
       success: false,
@@ -2693,7 +2693,7 @@ describe('script_execute', () => {
 // ============================================================
 
 describe('alarm_acknowledge', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createAlarmAcknowledgeTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('alarm_acknowledge');
@@ -2702,12 +2702,12 @@ describe('alarm_acknowledge', () => {
     expect(tool!.params[0].required).toBe(true); // projectId
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createAlarmAcknowledgeTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确确认单条报警', async () => {
+  it('Should acknowledge a single alarm correctly', async () => {
     const tool = createAlarmAcknowledgeTool(makeServices())!;
     const result = await tool.execute({ projectId: 'proj-001', recordId: 'rec-001' });
     const parsed = JSON.parse(result);
@@ -2715,7 +2715,7 @@ describe('alarm_acknowledge', () => {
     expect(parsed.recordId).toBe('rec-001');
   });
 
-  it('应正确批量确认报警', async () => {
+  it('Should acknowledge alarms in batch correctly', async () => {
     const tool = createAlarmAcknowledgeTool(makeServices())!;
     const result = await tool.execute({
       projectId: 'proj-001',
@@ -2726,7 +2726,7 @@ describe('alarm_acknowledge', () => {
     expect(parsed.acknowledged).toBe(2);
   });
 
-  it('缺少 recordId 和 recordIds 时应返回错误', async () => {
+  it('Should return an error when both recordId and recordIds are missing', async () => {
     const tool = createAlarmAcknowledgeTool(makeServices())!;
     const result = await tool.execute({ projectId: 'proj-001' });
     const parsed = JSON.parse(result);
@@ -2734,7 +2734,7 @@ describe('alarm_acknowledge', () => {
     expect(parsed.error).toContain('recordId');
   });
 
-  it('异常时应返回错误 JSON', async () => {
+  it('Should return error JSON on exception', async () => {
     const services = makeServices();
     services.alarmOpsService!.acknowledge = jest.fn().mockRejectedValue(new Error('DB 错误'));
     const tool = createAlarmAcknowledgeTool(services)!;
@@ -2746,19 +2746,19 @@ describe('alarm_acknowledge', () => {
 });
 
 describe('alarm_clear', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createAlarmClearTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('alarm_clear');
     expect(tool!.category).toBe('alarm');
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createAlarmClearTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确清除报警', async () => {
+  it('Should clear alarms correctly', async () => {
     const tool = createAlarmClearTool(makeServices())!;
     const result = await tool.execute({ projectId: 'proj-001', recordId: 'rec-001' });
     const parsed = JSON.parse(result);
@@ -2766,7 +2766,7 @@ describe('alarm_clear', () => {
     expect(parsed.recordId).toBe('rec-001');
   });
 
-  it('异常时应返回错误 JSON', async () => {
+  it('Should return error JSON on exception', async () => {
     const services = makeServices();
     services.alarmOpsService!.clear = jest.fn().mockRejectedValue(new Error('权限不足'));
     const tool = createAlarmClearTool(services)!;
@@ -2778,19 +2778,19 @@ describe('alarm_clear', () => {
 });
 
 describe('alarm_shelve', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createAlarmShelveTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('alarm_shelve');
     expect(tool!.category).toBe('alarm');
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createAlarmShelveTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确搁置报警', async () => {
+  it('Should shelve alarms correctly', async () => {
     const tool = createAlarmShelveTool(makeServices())!;
     const result = await tool.execute({
       projectId: 'proj-001',
@@ -2802,7 +2802,7 @@ describe('alarm_shelve', () => {
     expect(parsed.duration).toBe(3600);
   });
 
-  it('duration 非正数时应返回错误', async () => {
+  it('duration should return an error when not a positive number', async () => {
     const tool = createAlarmShelveTool(makeServices())!;
     const result = await tool.execute({
       projectId: 'proj-001',
@@ -2816,7 +2816,7 @@ describe('alarm_shelve', () => {
 });
 
 describe('alarm_statistics', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createAlarmStatisticsTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('alarm_statistics');
@@ -2824,12 +2824,12 @@ describe('alarm_statistics', () => {
     expect(tool!.params[0].required).toBe(true); // projectId
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createAlarmStatisticsTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确返回统计数据', async () => {
+  it('Should return statistics data correctly', async () => {
     const tool = createAlarmStatisticsTool(makeServices())!;
     const result = await tool.execute({ projectId: 'proj-001' });
     const parsed = JSON.parse(result);
@@ -2838,7 +2838,7 @@ describe('alarm_statistics', () => {
     expect(parsed.statistics.active).toBe(3);
   });
 
-  it('异常时应返回错误 JSON', async () => {
+  it('Should return error JSON on exception', async () => {
     const services = makeServices();
     services.alarmOpsService!.getStatistics = jest.fn().mockRejectedValue(new Error('查询失败'));
     const tool = createAlarmStatisticsTool(services)!;
@@ -2849,19 +2849,19 @@ describe('alarm_statistics', () => {
 });
 
 describe('alarm_escalation_list', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createAlarmEscalationListTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('alarm_escalation_list');
     expect(tool!.category).toBe('alarm');
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createAlarmEscalationListTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确返回升级规则列表', async () => {
+  it('Should return the upgrade rule list correctly', async () => {
     const tool = createAlarmEscalationListTool(makeServices())!;
     const result = await tool.execute({ projectId: 'proj-001' });
     const parsed = JSON.parse(result);
@@ -2871,19 +2871,19 @@ describe('alarm_escalation_list', () => {
 });
 
 describe('alarm_suppression_list', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createAlarmSuppressionListTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('alarm_suppression_list');
     expect(tool!.category).toBe('alarm');
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createAlarmSuppressionListTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确返回抑制规则列表', async () => {
+  it('Should return the suppression rule list correctly', async () => {
     const tool = createAlarmSuppressionListTool(makeServices())!;
     const result = await tool.execute({ projectId: 'proj-001' });
     const parsed = JSON.parse(result);
@@ -2893,19 +2893,19 @@ describe('alarm_suppression_list', () => {
 });
 
 describe('alarm_rule_toggle', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createAlarmRuleToggleTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('alarm_rule_toggle');
     expect(tool!.category).toBe('alarm');
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createAlarmRuleToggleTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确禁用报警规则', async () => {
+  it('Should disable alarm rules correctly', async () => {
     const tool = createAlarmRuleToggleTool(makeServices())!;
     const result = await tool.execute({
       projectId: 'proj-001',
@@ -2917,7 +2917,7 @@ describe('alarm_rule_toggle', () => {
     expect(parsed.enabled).toBe(false);
   });
 
-  it('异常时应返回错误 JSON', async () => {
+  it('Should return error JSON on exception', async () => {
     const services = makeServices();
     services.alarmOpsService!.toggleRule = jest.fn().mockRejectedValue(new Error('规则不存在'));
     const tool = createAlarmRuleToggleTool(services)!;
@@ -2936,7 +2936,7 @@ describe('alarm_rule_toggle', () => {
 // ============================================================
 
 describe('device_list', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createDeviceListTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('device_list');
@@ -2944,12 +2944,12 @@ describe('device_list', () => {
     expect(tool!.params[0].required).toBe(true); // projectId
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createDeviceListTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确返回设备列表', async () => {
+  it('Should return the device list correctly', async () => {
     const tool = createDeviceListTool(makeServices())!;
     const result = await tool.execute({ projectId: 'proj-001' });
     const parsed = JSON.parse(result);
@@ -2958,7 +2958,7 @@ describe('device_list', () => {
     expect(parsed.total).toBe(1);
   });
 
-  it('异常时应返回错误 JSON', async () => {
+  it('Should return error JSON on exception', async () => {
     const services = makeServices();
     services.deviceService!.findAll = jest.fn().mockRejectedValue(new Error('项目不存在'));
     const tool = createDeviceListTool(services)!;
@@ -2969,19 +2969,19 @@ describe('device_list', () => {
 });
 
 describe('device_update', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createDeviceUpdateTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('device_update');
     expect(tool!.category).toBe('device');
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createDeviceUpdateTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确更新设备', async () => {
+  it('Should update devices correctly', async () => {
     const tool = createDeviceUpdateTool(makeServices())!;
     const result = await tool.execute({
       projectId: 'proj-001',
@@ -2993,7 +2993,7 @@ describe('device_update', () => {
     expect(parsed.device.scanRate).toBe(2000);
   });
 
-  it('异常时应返回错误 JSON', async () => {
+  it('Should return error JSON on exception', async () => {
     const services = makeServices();
     services.deviceOpsService!.update = jest.fn().mockRejectedValue(new Error('设备不存在'));
     const tool = createDeviceUpdateTool(services)!;
@@ -3004,19 +3004,19 @@ describe('device_update', () => {
 });
 
 describe('device_delete', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createDeviceDeleteTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('device_delete');
     expect(tool!.category).toBe('device');
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createDeviceDeleteTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确删除设备', async () => {
+  it('Should delete devices correctly', async () => {
     const tool = createDeviceDeleteTool(makeServices())!;
     const result = await tool.execute({ projectId: 'proj-001', deviceId: 'd1' });
     const parsed = JSON.parse(result);
@@ -3024,7 +3024,7 @@ describe('device_delete', () => {
     expect(parsed.deleted).toBe(true);
   });
 
-  it('异常时应返回错误 JSON', async () => {
+  it('Should return error JSON on exception', async () => {
     const services = makeServices();
     services.deviceOpsService!.remove = jest.fn().mockRejectedValue(new Error('设备不存在'));
     const tool = createDeviceDeleteTool(services)!;
@@ -3035,19 +3035,19 @@ describe('device_delete', () => {
 });
 
 describe('device_group_manage', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createDeviceGroupManageTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('device_group_manage');
     expect(tool!.category).toBe('device');
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createDeviceGroupManageTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确执行 list 操作', async () => {
+  it('Should execute the list operation correctly', async () => {
     const tool = createDeviceGroupManageTool(makeServices())!;
     const result = await tool.execute({ projectId: 'proj-001', action: 'list' });
     const parsed = JSON.parse(result);
@@ -3055,7 +3055,7 @@ describe('device_group_manage', () => {
     expect(parsed.total).toBe(1);
   });
 
-  it('应正确执行 create 操作', async () => {
+  it('Should execute the create operation correctly', async () => {
     const tool = createDeviceGroupManageTool(makeServices())!;
     const result = await tool.execute({
       projectId: 'proj-001',
@@ -3067,7 +3067,7 @@ describe('device_group_manage', () => {
     expect(parsed.group.name).toBe('新分组');
   });
 
-  it('update 缺少 groupId 时应返回错误', async () => {
+  it('update should return an error when groupId is missing', async () => {
     const tool = createDeviceGroupManageTool(makeServices())!;
     const result = await tool.execute({ projectId: 'proj-001', action: 'update' });
     const parsed = JSON.parse(result);
@@ -3075,7 +3075,7 @@ describe('device_group_manage', () => {
     expect(parsed.error).toContain('groupId');
   });
 
-  it('不支持的操作应返回错误', async () => {
+  it('Unsupported operation should return an error', async () => {
     const tool = createDeviceGroupManageTool(makeServices())!;
     const result = await tool.execute({ projectId: 'proj-001', action: 'unknown' });
     const parsed = JSON.parse(result);
@@ -3084,19 +3084,19 @@ describe('device_group_manage', () => {
 });
 
 describe('device_diagnostic', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createDeviceDiagnosticTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('device_diagnostic');
     expect(tool!.category).toBe('device');
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createDeviceDiagnosticTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确执行 ping 诊断', async () => {
+  it('Should run the ping diagnostics correctly', async () => {
     const tool = createDeviceDiagnosticTool(makeServices())!;
     const result = await tool.execute({
       projectId: 'proj-001',
@@ -3110,7 +3110,7 @@ describe('device_diagnostic', () => {
     expect(parsed.action).toBe('ping');
   });
 
-  it('ping 缺少 host/port 时应返回错误', async () => {
+  it('ping should return an error when host/port is missing', async () => {
     const tool = createDeviceDiagnosticTool(makeServices())!;
     const result = await tool.execute({
       projectId: 'proj-001',
@@ -3121,7 +3121,7 @@ describe('device_diagnostic', () => {
     expect(parsed.success).toBe(false);
   });
 
-  it('应正确执行 read-tag 诊断', async () => {
+  it('Should run the read-tag diagnostics correctly', async () => {
     const tool = createDeviceDiagnosticTool(makeServices())!;
     const result = await tool.execute({
       projectId: 'proj-001',
@@ -3135,19 +3135,19 @@ describe('device_diagnostic', () => {
 });
 
 describe('device_write_tag', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createDeviceWriteTagTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('device_write_tag');
     expect(tool!.category).toBe('device');
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createDeviceWriteTagTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确写入标签值', async () => {
+  it('Should write tag values correctly', async () => {
     const tool = createDeviceWriteTagTool(makeServices())!;
     const result = await tool.execute({
       projectId: 'proj-001',
@@ -3160,7 +3160,7 @@ describe('device_write_tag', () => {
     expect(parsed.tagId).toBe('t1');
   });
 
-  it('异常时应返回错误 JSON', async () => {
+  it('Should return error JSON on exception', async () => {
     const services = makeServices();
     services.deviceOpsService!.writeTagValue = jest.fn().mockRejectedValue(new Error('设备离线'));
     const tool = createDeviceWriteTagTool(services)!;
@@ -3181,7 +3181,7 @@ describe('device_write_tag', () => {
 // ============================================================
 
 describe('user_manage', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createUserManageTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('user_manage');
@@ -3189,12 +3189,12 @@ describe('user_manage', () => {
     expect(tool!.params[0].required).toBe(true); // action
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createUserManageTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确执行 list 操作', async () => {
+  it('Should execute the list operation correctly', async () => {
     const tool = createUserManageTool(makeServices())!;
     const result = await tool.execute({ action: 'list' });
     const parsed = JSON.parse(result);
@@ -3202,7 +3202,7 @@ describe('user_manage', () => {
     expect(parsed.total).toBe(2);
   });
 
-  it('应正确执行 create 操作', async () => {
+  it('Should execute the create operation correctly', async () => {
     const tool = createUserManageTool(makeServices())!;
     const result = await tool.execute({
       action: 'create',
@@ -3214,7 +3214,7 @@ describe('user_manage', () => {
     expect(parsed.user.username).toBe('newuser');
   });
 
-  it('create 缺少 username/password 时应返回错误', async () => {
+  it('create should return an error when username/password is missing', async () => {
     const tool = createUserManageTool(makeServices())!;
     const result = await tool.execute({ action: 'create', username: 'newuser' });
     const parsed = JSON.parse(result);
@@ -3222,7 +3222,7 @@ describe('user_manage', () => {
     expect(parsed.error).toContain('password');
   });
 
-  it('应正确执行 reset-password 操作', async () => {
+  it('Should execute the reset-password operation correctly', async () => {
     const tool = createUserManageTool(makeServices())!;
     const result = await tool.execute({ action: 'reset-password', userId: 'u2' });
     const parsed = JSON.parse(result);
@@ -3230,7 +3230,7 @@ describe('user_manage', () => {
     expect(parsed.tempPassword).toBeDefined();
   });
 
-  it('不支持的操作应返回错误', async () => {
+  it('Unsupported operation should return an error', async () => {
     const tool = createUserManageTool(makeServices())!;
     const result = await tool.execute({ action: 'unknown' });
     const parsed = JSON.parse(result);
@@ -3239,19 +3239,19 @@ describe('user_manage', () => {
 });
 
 describe('role_manage', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createRoleManageTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('role_manage');
     expect(tool!.category).toBe('permission');
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createRoleManageTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确执行 list 操作', async () => {
+  it('Should execute the list operation correctly', async () => {
     const tool = createRoleManageTool(makeServices())!;
     const result = await tool.execute({ action: 'list' });
     const parsed = JSON.parse(result);
@@ -3259,7 +3259,7 @@ describe('role_manage', () => {
     expect(parsed.total).toBe(2);
   });
 
-  it('应正确执行 detail 操作', async () => {
+  it('Should execute the detail operation correctly', async () => {
     const tool = createRoleManageTool(makeServices())!;
     const result = await tool.execute({ action: 'detail', roleId: 'r1' });
     const parsed = JSON.parse(result);
@@ -3267,7 +3267,7 @@ describe('role_manage', () => {
     expect(parsed.role.name).toBe('管理员');
   });
 
-  it('detail 缺少 roleId 时应返回错误', async () => {
+  it('detail should return an error when roleId is missing', async () => {
     const tool = createRoleManageTool(makeServices())!;
     const result = await tool.execute({ action: 'detail' });
     const parsed = JSON.parse(result);
@@ -3276,19 +3276,19 @@ describe('role_manage', () => {
 });
 
 describe('menu_manage', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createMenuManageTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('menu_manage');
     expect(tool!.category).toBe('permission');
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createMenuManageTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确执行 get-tree 操作', async () => {
+  it('Should execute the get-tree operation correctly', async () => {
     const tool = createMenuManageTool(makeServices())!;
     const result = await tool.execute({ action: 'get-tree' });
     const parsed = JSON.parse(result);
@@ -3296,7 +3296,7 @@ describe('menu_manage', () => {
     expect(parsed.total).toBe(1);
   });
 
-  it('应正确执行 get-buttons 操作', async () => {
+  it('Should execute the get-buttons operation correctly', async () => {
     const tool = createMenuManageTool(makeServices())!;
     const result = await tool.execute({ action: 'get-buttons' });
     const parsed = JSON.parse(result);
@@ -3304,7 +3304,7 @@ describe('menu_manage', () => {
     expect(parsed.buttons).toHaveLength(1);
   });
 
-  it('delete-item 缺少 menuId 时应返回错误', async () => {
+  it('delete-item should return an error when menuId is missing', async () => {
     const tool = createMenuManageTool(makeServices())!;
     const result = await tool.execute({ action: 'delete-item' });
     const parsed = JSON.parse(result);
@@ -3313,19 +3313,19 @@ describe('menu_manage', () => {
 });
 
 describe('session_manage', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createSessionManageTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('session_manage');
     expect(tool!.category).toBe('permission');
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createSessionManageTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确执行 list 操作', async () => {
+  it('Should execute the list operation correctly', async () => {
     const tool = createSessionManageTool(makeServices())!;
     const result = await tool.execute({ action: 'list', userId: 'admin' });
     const parsed = JSON.parse(result);
@@ -3333,14 +3333,14 @@ describe('session_manage', () => {
     expect(parsed.count).toBe(1);
   });
 
-  it('应正确执行 force-logout 操作', async () => {
+  it('Should execute the force-logout operation correctly', async () => {
     const tool = createSessionManageTool(makeServices())!;
     const result = await tool.execute({ action: 'force-logout', sessionId: 's1' });
     const parsed = JSON.parse(result);
     expect(parsed.success).toBe(true);
   });
 
-  it('force-logout 缺少 sessionId 时应返回错误', async () => {
+  it('force-logout should return an error when sessionId is missing', async () => {
     const tool = createSessionManageTool(makeServices())!;
     const result = await tool.execute({ action: 'force-logout' });
     const parsed = JSON.parse(result);
@@ -3349,26 +3349,26 @@ describe('session_manage', () => {
 });
 
 describe('audit_log_query', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createAuditLogQueryTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('audit_log_query');
     expect(tool!.category).toBe('permission');
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createAuditLogQueryTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确执行 query 操作', async () => {
+  it('Should execute the query operation correctly', async () => {
     const tool = createAuditLogQueryTool(makeServices())!;
     const result = await tool.execute({ action: 'query', userId: 'admin' });
     const parsed = JSON.parse(result);
     expect(parsed.success).toBe(true);
   });
 
-  it('应正确执行 stats 操作', async () => {
+  it('Should execute the stats operation correctly', async () => {
     const tool = createAuditLogQueryTool(makeServices())!;
     const result = await tool.execute({ action: 'stats' });
     const parsed = JSON.parse(result);
@@ -3376,7 +3376,7 @@ describe('audit_log_query', () => {
     expect(parsed.stats.total).toBe(100);
   });
 
-  it('应正确执行 cleanup 操作', async () => {
+  it('Should execute the cleanup operation correctly', async () => {
     const tool = createAuditLogQueryTool(makeServices())!;
     const result = await tool.execute({ action: 'cleanup' });
     const parsed = JSON.parse(result);
@@ -3390,19 +3390,19 @@ describe('audit_log_query', () => {
 // ============================================================
 
 describe('plugin_manage', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createPluginManageTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('plugin_manage');
     expect(tool!.category).toBe('collector');
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createPluginManageTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确执行 list 操作', async () => {
+  it('Should execute the list operation correctly', async () => {
     const tool = createPluginManageTool(makeServices())!;
     const result = await tool.execute({ action: 'list' });
     const parsed = JSON.parse(result);
@@ -3410,14 +3410,14 @@ describe('plugin_manage', () => {
     expect(parsed.total).toBe(2);
   });
 
-  it('应正确执行 activate 操作', async () => {
+  it('Should execute the activate operation correctly', async () => {
     const tool = createPluginManageTool(makeServices())!;
     const result = await tool.execute({ action: 'activate', protocol: 'opcua' });
     const parsed = JSON.parse(result);
     expect(parsed.success).toBe(true);
   });
 
-  it('activate 缺少 protocol 时应返回错误', async () => {
+  it('activate should return an error when protocol is missing', async () => {
     const tool = createPluginManageTool(makeServices())!;
     const result = await tool.execute({ action: 'activate' });
     const parsed = JSON.parse(result);
@@ -3426,19 +3426,19 @@ describe('plugin_manage', () => {
 });
 
 describe('pipeline_diagnose', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createPipelineDiagnoseTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('pipeline_diagnose');
     expect(tool!.category).toBe('collector');
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createPipelineDiagnoseTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确执行 metrics 操作', async () => {
+  it('Should execute the metrics operation correctly', async () => {
     const tool = createPipelineDiagnoseTool(makeServices())!;
     const result = await tool.execute({ action: 'metrics' });
     const parsed = JSON.parse(result);
@@ -3446,7 +3446,7 @@ describe('pipeline_diagnose', () => {
     expect(parsed.metrics.totalRuns).toBe(100);
   });
 
-  it('应正确执行 diagnostic 操作', async () => {
+  it('Should execute the diagnostic operation correctly', async () => {
     const tool = createPipelineDiagnoseTool(makeServices())!;
     const result = await tool.execute({ action: 'diagnostic' });
     const parsed = JSON.parse(result);
@@ -3454,7 +3454,7 @@ describe('pipeline_diagnose', () => {
     expect(parsed.diagnostic).toBeDefined();
   });
 
-  it('不支持的操作应返回错误', async () => {
+  it('Unsupported operation should return an error', async () => {
     const tool = createPipelineDiagnoseTool(makeServices())!;
     const result = await tool.execute({ action: 'unknown' });
     const parsed = JSON.parse(result);
@@ -3463,19 +3463,19 @@ describe('pipeline_diagnose', () => {
 });
 
 describe('offline_cache_manage', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createOfflineCacheManageTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('offline_cache_manage');
     expect(tool!.category).toBe('collector');
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createOfflineCacheManageTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确执行 stats 操作', async () => {
+  it('Should execute the stats operation correctly', async () => {
     const tool = createOfflineCacheManageTool(makeServices())!;
     const result = await tool.execute({ action: 'stats' });
     const parsed = JSON.parse(result);
@@ -3483,7 +3483,7 @@ describe('offline_cache_manage', () => {
     expect(parsed.stats.buffered).toBe(10);
   });
 
-  it('应正确执行 flush 操作', async () => {
+  it('Should execute the flush operation correctly', async () => {
     const tool = createOfflineCacheManageTool(makeServices())!;
     const result = await tool.execute({ action: 'flush' });
     const parsed = JSON.parse(result);
@@ -3491,7 +3491,7 @@ describe('offline_cache_manage', () => {
     expect(parsed.flushed).toBe(2);
   });
 
-  it('应正确执行 clear 操作', async () => {
+  it('Should execute the clear operation correctly', async () => {
     const tool = createOfflineCacheManageTool(makeServices())!;
     const result = await tool.execute({ action: 'clear' });
     const parsed = JSON.parse(result);
@@ -3501,40 +3501,40 @@ describe('offline_cache_manage', () => {
 });
 
 describe('collector_diagnostic', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createCollectorDiagnosticTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('collector_diagnostic');
     expect(tool!.category).toBe('collector');
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createCollectorDiagnosticTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确执行 device 诊断', async () => {
+  it('Should run the device diagnostics correctly', async () => {
     const tool = createCollectorDiagnosticTool(makeServices())!;
     const result = await tool.execute({ action: 'device', deviceId: 'd1' });
     const parsed = JSON.parse(result);
     expect(parsed.success).toBe(true);
   });
 
-  it('device 诊断缺少 deviceId 时应返回错误', async () => {
+  it('device diagnostics should return an error when deviceId is missing', async () => {
     const tool = createCollectorDiagnosticTool(makeServices())!;
     const result = await tool.execute({ action: 'device' });
     const parsed = JSON.parse(result);
     expect(parsed.success).toBe(false);
   });
 
-  it('应正确执行 tag 诊断', async () => {
+  it('Should run the tag diagnostics correctly', async () => {
     const tool = createCollectorDiagnosticTool(makeServices())!;
     const result = await tool.execute({ action: 'tag', tagId: 't1' });
     const parsed = JSON.parse(result);
     expect(parsed.success).toBe(true);
   });
 
-  it('应正确执行 full 诊断', async () => {
+  it('Should run the full diagnostics correctly', async () => {
     const tool = createCollectorDiagnosticTool(makeServices())!;
     const result = await tool.execute({ action: 'full' });
     const parsed = JSON.parse(result);
@@ -3543,19 +3543,19 @@ describe('collector_diagnostic', () => {
 });
 
 describe('base_service_manage', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createBaseServiceManageTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('base_service_manage');
     expect(tool!.category).toBe('ops');
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createBaseServiceManageTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确执行 list 操作', async () => {
+  it('Should execute the list operation correctly', async () => {
     const tool = createBaseServiceManageTool(makeServices())!;
     const result = await tool.execute({ action: 'list' });
     const parsed = JSON.parse(result);
@@ -3563,14 +3563,14 @@ describe('base_service_manage', () => {
     expect(parsed.total).toBe(2);
   });
 
-  it('应正确执行 restart 操作', async () => {
+  it('Should execute the restart operation correctly', async () => {
     const tool = createBaseServiceManageTool(makeServices())!;
     const result = await tool.execute({ action: 'restart', name: 'redis' });
     const parsed = JSON.parse(result);
     expect(parsed.success).toBe(true);
   });
 
-  it('restart 缺少 name 时应返回错误', async () => {
+  it('restart should return an error when name is missing', async () => {
     const tool = createBaseServiceManageTool(makeServices())!;
     const result = await tool.execute({ action: 'restart' });
     const parsed = JSON.parse(result);
@@ -3579,19 +3579,19 @@ describe('base_service_manage', () => {
 });
 
 describe('influxdb_admin', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createInfluxdbAdminTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('influxdb_admin');
     expect(tool!.category).toBe('ops');
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createInfluxdbAdminTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确执行 setup-status 操作', async () => {
+  it('Should execute the setup-status operation correctly', async () => {
     const tool = createInfluxdbAdminTool(makeServices())!;
     const result = await tool.execute({ action: 'setup-status' });
     const parsed = JSON.parse(result);
@@ -3599,7 +3599,7 @@ describe('influxdb_admin', () => {
     expect(parsed.setupStatus.initialized).toBe(true);
   });
 
-  it('应正确执行 buckets 操作', async () => {
+  it('Should execute the buckets operation correctly', async () => {
     const tool = createInfluxdbAdminTool(makeServices())!;
     const result = await tool.execute({ action: 'buckets' });
     const parsed = JSON.parse(result);
@@ -3607,7 +3607,7 @@ describe('influxdb_admin', () => {
     expect(parsed.total).toBe(1);
   });
 
-  it('不支持的操作应返回错误', async () => {
+  it('Unsupported operation should return an error', async () => {
     const tool = createInfluxdbAdminTool(makeServices())!;
     const result = await tool.execute({ action: 'unknown' });
     const parsed = JSON.parse(result);
@@ -3616,19 +3616,19 @@ describe('influxdb_admin', () => {
 });
 
 describe('system_config_manage', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createSystemConfigManageTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('system_config_manage');
     expect(tool!.category).toBe('ops');
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createSystemConfigManageTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确执行 list 操作', async () => {
+  it('Should execute the list operation correctly', async () => {
     const tool = createSystemConfigManageTool(makeServices())!;
     const result = await tool.execute({ action: 'list' });
     const parsed = JSON.parse(result);
@@ -3636,7 +3636,7 @@ describe('system_config_manage', () => {
     expect(parsed.total).toBe(1);
   });
 
-  it('应正确执行 get 操作', async () => {
+  it('Should execute the get operation correctly', async () => {
     const tool = createSystemConfigManageTool(makeServices())!;
     const result = await tool.execute({ action: 'get', key: 'PORT' });
     const parsed = JSON.parse(result);
@@ -3644,7 +3644,7 @@ describe('system_config_manage', () => {
     expect(parsed.value).toBe('4000');
   });
 
-  it('get 缺少 key 时应返回错误', async () => {
+  it('get should return an error when key is missing', async () => {
     const tool = createSystemConfigManageTool(makeServices())!;
     const result = await tool.execute({ action: 'get' });
     const parsed = JSON.parse(result);
@@ -3657,19 +3657,19 @@ describe('system_config_manage', () => {
 // ============================================================
 
 describe('data_export', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createDataExportTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('data_export');
     expect(tool!.category).toBe('data');
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createDataExportTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确执行 tag-csv 导出', async () => {
+  it('Should execute the tag-csv export correctly', async () => {
     const tool = createDataExportTool(makeServices())!;
     const result = await tool.execute({
       action: 'tag-csv',
@@ -3682,7 +3682,7 @@ describe('data_export', () => {
     expect(parsed.format).toBe('csv');
   });
 
-  it('tag-csv 缺少 tagId 时应返回错误', async () => {
+  it('tag-csv should return an error when tagId is missing', async () => {
     const tool = createDataExportTool(makeServices())!;
     const result = await tool.execute({
       action: 'tag-csv',
@@ -3693,7 +3693,7 @@ describe('data_export', () => {
     expect(parsed.success).toBe(false);
   });
 
-  it('应正确执行 batch-json 导出', async () => {
+  it('Should execute the batch-json export correctly', async () => {
     const tool = createDataExportTool(makeServices())!;
     const result = await tool.execute({
       action: 'batch-json',
@@ -3708,7 +3708,7 @@ describe('data_export', () => {
 });
 
 describe('database_status', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createDatabaseStatusTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('database_status');
@@ -3716,12 +3716,12 @@ describe('database_status', () => {
     expect(tool!.params).toHaveLength(0);
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createDatabaseStatusTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确返回数据库状态', async () => {
+  it('Should return the database status correctly', async () => {
     const tool = createDatabaseStatusTool(makeServices())!;
     const result = await tool.execute({});
     const parsed = JSON.parse(result);
@@ -3729,7 +3729,7 @@ describe('database_status', () => {
     expect(parsed.status.system).toBeDefined();
   });
 
-  it('异常时应返回错误 JSON', async () => {
+  it('Should return error JSON on exception', async () => {
     const services = makeServices();
     services.databaseService!.getAllDatabasesStatus = jest
       .fn()
@@ -3742,19 +3742,19 @@ describe('database_status', () => {
 });
 
 describe('database_maintain', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createDatabaseMaintainTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('database_maintain');
     expect(tool!.category).toBe('ops');
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createDatabaseMaintainTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确执行 system 完整性检查', async () => {
+  it('Should run the system integrity check correctly', async () => {
     const tool = createDatabaseMaintainTool(makeServices())!;
     const result = await tool.execute({ action: 'integrity-check', scope: 'system' });
     const parsed = JSON.parse(result);
@@ -3762,14 +3762,14 @@ describe('database_maintain', () => {
     expect(parsed.scope).toBe('system');
   });
 
-  it('应正确执行 system VACUUM', async () => {
+  it('Should run system VACUUM correctly', async () => {
     const tool = createDatabaseMaintainTool(makeServices())!;
     const result = await tool.execute({ action: 'vacuum', scope: 'system' });
     const parsed = JSON.parse(result);
     expect(parsed.success).toBe(true);
   });
 
-  it('project 完整性检查缺少 projectName 时应返回错误', async () => {
+  it('project integrity check should return an error when projectName is missing', async () => {
     const tool = createDatabaseMaintainTool(makeServices())!;
     const result = await tool.execute({ action: 'integrity-check', scope: 'project' });
     const parsed = JSON.parse(result);
@@ -3777,7 +3777,7 @@ describe('database_maintain', () => {
     expect(parsed.error).toContain('projectName');
   });
 
-  it('不支持的操作应返回错误', async () => {
+  it('Unsupported operation should return an error', async () => {
     const tool = createDatabaseMaintainTool(makeServices())!;
     const result = await tool.execute({ action: 'unknown', scope: 'system' });
     const parsed = JSON.parse(result);
@@ -3786,19 +3786,19 @@ describe('database_maintain', () => {
 });
 
 describe('backup_manage', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createBackupManageTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('backup_manage');
     expect(tool!.category).toBe('ops');
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createBackupManageTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确执行 list 操作', async () => {
+  it('Should execute the list operation correctly', async () => {
     const tool = createBackupManageTool(makeServices())!;
     const result = await tool.execute({ action: 'list' });
     const parsed = JSON.parse(result);
@@ -3806,21 +3806,21 @@ describe('backup_manage', () => {
     expect(parsed.total).toBe(1);
   });
 
-  it('应正确执行 create-system 操作', async () => {
+  it('Should execute the create-system operation correctly', async () => {
     const tool = createBackupManageTool(makeServices())!;
     const result = await tool.execute({ action: 'create-system' });
     const parsed = JSON.parse(result);
     expect(parsed.success).toBe(true);
   });
 
-  it('create-project 缺少 projectName 时应返回错误', async () => {
+  it('create-project should return an error when projectName is missing', async () => {
     const tool = createBackupManageTool(makeServices())!;
     const result = await tool.execute({ action: 'create-project' });
     const parsed = JSON.parse(result);
     expect(parsed.success).toBe(false);
   });
 
-  it('delete 缺少 filename 时应返回错误', async () => {
+  it('delete should return an error when filename is missing', async () => {
     const tool = createBackupManageTool(makeServices())!;
     const result = await tool.execute({ action: 'delete' });
     const parsed = JSON.parse(result);
@@ -3829,19 +3829,19 @@ describe('backup_manage', () => {
 });
 
 describe('backup_log_query', () => {
-  it('应有正确的 schema', () => {
+  it('Should have the correct schema', () => {
     const tool = createBackupLogQueryTool(makeServices());
     expect(tool).not.toBeNull();
     expect(tool!.name).toBe('backup_log_query');
     expect(tool!.category).toBe('ops');
   });
 
-  it('应返回 null（缺少 service）', () => {
+  it('Should return null (missing service)', () => {
     const tool = createBackupLogQueryTool({});
     expect(tool).toBeNull();
   });
 
-  it('应正确执行 logs 操作', async () => {
+  it('Should execute the logs operation correctly', async () => {
     const tool = createBackupLogQueryTool(makeServices())!;
     const result = await tool.execute({ action: 'logs' });
     const parsed = JSON.parse(result);
@@ -3849,7 +3849,7 @@ describe('backup_log_query', () => {
     expect(parsed.total).toBe(1);
   });
 
-  it('cleanup 缺少 dbType 时应返回错误', async () => {
+  it('cleanup should return an error when dbType is missing', async () => {
     const tool = createBackupLogQueryTool(makeServices())!;
     const result = await tool.execute({ action: 'cleanup', days: 30 });
     const parsed = JSON.parse(result);
@@ -3857,7 +3857,7 @@ describe('backup_log_query', () => {
     expect(parsed.error).toContain('dbType');
   });
 
-  it('cleanup 缺少 days 时应返回错误', async () => {
+  it('cleanup should return an error when days is missing', async () => {
     const tool = createBackupLogQueryTool(makeServices())!;
     const result = await tool.execute({ action: 'cleanup', dbType: 'system' });
     const parsed = JSON.parse(result);
@@ -3865,7 +3865,7 @@ describe('backup_log_query', () => {
     expect(parsed.error).toContain('days');
   });
 
-  it('应正确执行 cleanup 操作', async () => {
+  it('Should execute the cleanup operation correctly', async () => {
     const tool = createBackupLogQueryTool(makeServices())!;
     const result = await tool.execute({ action: 'cleanup', dbType: 'system', days: 30 });
     const parsed = JSON.parse(result);
@@ -3879,28 +3879,28 @@ describe('backup_log_query', () => {
 // ============================================================
 
 describe('createAllBackendTools', () => {
-  it('应创建 78 个工具（全部 78 组工厂）', () => {
+  it('Should create 78 tools (all 78 factory groups)', () => {
     const tools = createAllBackendTools(makeServices());
     expect(tools.length).toBe(78);
   });
 
-  it('所有工具名称应唯一', () => {
+  it('All tool names should be unique', () => {
     const tools = createAllBackendTools(makeServices());
     const names = tools.map((t) => t.name);
     expect(new Set(names).size).toBe(names.length);
   });
 
-  it('所有工具 frontend 应为 false', () => {
+  it('All tools should have frontend=false', () => {
     const tools = createAllBackendTools(makeServices());
     expect(tools.every((t) => t.frontend === false)).toBe(true);
   });
 
-  it('所有工具应有 execute 函数', () => {
+  it('All tools should have an execute function', () => {
     const tools = createAllBackendTools(makeServices());
     expect(tools.every((t) => typeof t.execute === 'function')).toBe(true);
   });
 
-  it('缺少 service 时仅创建可用工具', () => {
+  it('With no service, only available tools are created', () => {
     // only deviceService and dataQueryService are provided
     const tools = createAllBackendTools({
       deviceService: mockDeviceService(),
@@ -3917,7 +3917,7 @@ describe('createAllBackendTools', () => {
     expect(names).toContain('driver_list');
   });
 
-  it('空 services 应仅返回 driver_list（无依赖工具）', () => {
+  it('Empty services should return only driver_list (no dependent tools)', () => {
     const tools = createAllBackendTools({});
     expect(tools.length).toBe(1);
     expect(tools[0].name).toBe('driver_list');

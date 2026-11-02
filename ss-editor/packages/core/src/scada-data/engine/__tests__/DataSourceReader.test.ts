@@ -24,51 +24,51 @@ function emptyWsStore(): WsStoreLike {
 // ── extractTagIds ────────────────────────────────────────────────────
 
 describe('extractTagIds', () => {
-  it('从 ds.properties.tagIds 提取', () => {
+  it('Extract from ds.properties.tagIds', () => {
     const ds = { properties: { tagIds: ['a', 'b'] } };
     expect(extractTagIds(ds)).toEqual(['a', 'b']);
   });
 
-  it('从 ds.config.tagIds 提取（兜底 ds.properties 不存在）', () => {
+  it('Extract from ds.config.tagIds (fallback when ds.properties does not exist)', () => {
     const ds = { config: { tagIds: ['c', 'd'] } };
     expect(extractTagIds(ds)).toEqual(['c', 'd']);
   });
 
-  it('ds.properties 为空对象时 props 不兜底到 ds.config（仅 falsy 时兜底）', () => {
+  it('When ds.properties is an empty object, props should not fall back to ds.config (fallback only when falsy)', () => {
     const ds = { properties: {}, config: { tagIds: ['x'] } };
     // properties as {} is truthy, so it does not fall back to config.tagIds
     expect(extractTagIds(ds)).toEqual([]);
   });
 
-  it('从 ds.tags 提取（兜底 properties 和 config 都无 tagIds）', () => {
+  it('Extract from ds.tags (fallback when neither properties nor config has tagIds)', () => {
     const ds = { properties: {}, config: {}, tags: ['e', 'f'] };
     expect(extractTagIds(ds)).toEqual(['e', 'f']);
   });
 
-  it('从 ds.properties.tags 提取（兜底 properties.tagIds 不存在）', () => {
+  it('Extract from ds.properties.tags (fallback when properties.tagIds does not exist)', () => {
     const ds = { properties: { tags: ['g'] } };
     expect(extractTagIds(ds)).toEqual(['g']);
   });
 
-  it('所有路径都为空时返回 []', () => {
+  it('Returns [] when all paths are empty', () => {
     const ds = {};
     expect(extractTagIds(ds)).toEqual([]);
   });
 
-  it('tagIds 不是数组时返回 []', () => {
+  it('Returns [] when tagIds is not an array', () => {
     const ds = { properties: { tagIds: 'not-an-array' } };
     expect(extractTagIds(ds)).toEqual([]);
   });
 
-  it('ds 为 null 时安全返回 []', () => {
+  it('Should safely return [] when ds is null', () => {
     expect(extractTagIds(null as unknown as Record<string, unknown>)).toEqual([]);
   });
 
-  it('ds 为 undefined 时安全返回 []', () => {
+  it('Should safely return [] when ds is undefined', () => {
     expect(extractTagIds(undefined as unknown as Record<string, unknown>)).toEqual([]);
   });
 
-  it('重复的 tagId 不去重（由调用方决定）', () => {
+  it('Duplicate tagIds are not deduped (caller decides)', () => {
     const ds = { tags: ['a', 'a', 'b'] };
     expect(extractTagIds(ds)).toEqual(['a', 'a', 'b']);
   });
@@ -77,7 +77,7 @@ describe('extractTagIds', () => {
 // ── readTagSnapshot ──────────────────────────────────────────────────
 
 describe('readTagSnapshot', () => {
-  it('wsStore 中有数据时返回正确快照', () => {
+  it('Returns the correct snapshot when wsStore has data', () => {
     const store = makeWsStore({
       'tag-1': { value: 123.4, quality: 'good', timestamp: 1700000000000 },
     });
@@ -91,7 +91,7 @@ describe('readTagSnapshot', () => {
     });
   });
 
-  it('wsStore 中无对应 tag 时返回 undefined 字段', () => {
+  it('Returns undefined fields when wsStore has no matching tag', () => {
     const store = emptyWsStore();
     const snap = readTagSnapshot('tag-unknown', '未知', store);
     expect(snap).toEqual({
@@ -103,13 +103,13 @@ describe('readTagSnapshot', () => {
     });
   });
 
-  it('tagName 为空时用 tagId 兜底', () => {
+  it('When tagName is empty, falls back to tagId', () => {
     const store = emptyWsStore();
     const snap = readTagSnapshot('tag-x', '', store);
     expect(snap.tagName).toBe('tag-x');
   });
 
-  it('wsEntry 缺少 quality 时返回 undefined', () => {
+  it('Returns undefined when wsEntry lacks quality', () => {
     const store = makeWsStore({
       'tag-2': { value: 0 },
     });
@@ -117,7 +117,7 @@ describe('readTagSnapshot', () => {
     expect(snap.quality).toBeUndefined();
   });
 
-  it('wsEntry 缺少 timestamp 时返回 undefined', () => {
+  it('Returns undefined when wsEntry lacks timestamp', () => {
     const store = makeWsStore({
       'tag-3': { value: 'on' },
     });
@@ -125,7 +125,7 @@ describe('readTagSnapshot', () => {
     expect(snap.lastUpdate).toBeUndefined();
   });
 
-  it('wsEntry value 为 null 时正常传递', () => {
+  it('A wsEntry value of null passes through normally', () => {
     const store = makeWsStore({
       'tag-4': { value: null, quality: 'bad', timestamp: 1000 },
     });
@@ -134,7 +134,7 @@ describe('readTagSnapshot', () => {
     expect(snap.quality).toBe('bad');
   });
 
-  it('wsEntry value 为 0 时正常传递（非 undefined）', () => {
+  it('A wsEntry value of 0 passes through normally (not undefined)', () => {
     const store = makeWsStore({
       'tag-5': { value: 0, quality: 'good', timestamp: 2000 },
     });
@@ -146,7 +146,7 @@ describe('readTagSnapshot', () => {
 // ── readTagSnapshots ─────────────────────────────────────────────────
 
 describe('readTagSnapshots', () => {
-  it('批量读取多个标签', () => {
+  it('Batch read multiple tags', () => {
     const store = makeWsStore({
       'a': { value: 1, quality: 'good', timestamp: 100 },
       'b': { value: 2, quality: 'bad', timestamp: 200 },
@@ -157,7 +157,7 @@ describe('readTagSnapshots', () => {
     expect(snaps[1].currentValue).toBe(2);
   });
 
-  it('部分标签在 wsStore 中不存在时正常返回', () => {
+  it('Returns normally when some tags do not exist in wsStore', () => {
     const store = makeWsStore({
       'a': { value: 1 },
     });
@@ -167,13 +167,13 @@ describe('readTagSnapshots', () => {
     expect(snaps[1].currentValue).toBeUndefined();
   });
 
-  it('空数组输入返回空数组', () => {
+  it('Empty array input returns an empty array', () => {
     const store = makeWsStore({});
     const snaps = readTagSnapshots([], [], store);
     expect(snaps).toEqual([]);
   });
 
-  it('tagNames 长度不足时用 tagId 兜底', () => {
+  it('When tagNames is too short, falls back to tagId', () => {
     const store = makeWsStore({
       'tag-1': { value: 42 },
       'tag-2': { value: 99 },
@@ -188,7 +188,7 @@ describe('readTagSnapshots', () => {
 
 describe('buildSourceSummary', () => {
   // — tag/device types —
-  it('tag 类型：单标签汇总值', () => {
+  it('tag type: single-tag summary value', () => {
     const store = makeWsStore({
       'tag1': { value: 42.5, quality: 'good', timestamp: 1700000000000 },
     });
@@ -205,7 +205,7 @@ describe('buildSourceSummary', () => {
     });
   });
 
-  it('tag 类型：多标签值用逗号分隔', () => {
+  it('tag type: multi-tag values joined by commas', () => {
     const store = makeWsStore({
       't1': { value: 1, quality: 'good', timestamp: 100 },
       't2': { value: 2, quality: 'good', timestamp: 200 },
@@ -220,7 +220,7 @@ describe('buildSourceSummary', () => {
     expect(summary.lastValue).toBe('1, 2, 3');
   });
 
-  it('tag 类型：wsStore 中无数据时显示 —', () => {
+  it('tag type: shows — when wsStore has no data', () => {
     const store = emptyWsStore();
     const summary = buildSourceSummary(
       { type: 'tag' },
@@ -233,7 +233,7 @@ describe('buildSourceSummary', () => {
     expect(summary.quality).toBeNull();
   });
 
-  it('device 类型：与 tag 类型行为一致', () => {
+  it('device type: behaves the same as the tag type', () => {
     const store = makeWsStore({
       'd1': { value: 100, quality: 'good', timestamp: 500 },
     });
@@ -247,7 +247,7 @@ describe('buildSourceSummary', () => {
   });
 
   // — static type —
-  it('static 类型：key:value 格式', () => {
+  it('static type: key:value format', () => {
     const store = makeWsStore({
       's1': { value: 'hello', quality: 'good', timestamp: 100 },
     });
@@ -260,7 +260,7 @@ describe('buildSourceSummary', () => {
     expect(summary.lastValue).toBe('keyA: hello');
   });
 
-  it('static 类型：无数据时 key: —', () => {
+  it('static type: key: — when there is no data', () => {
     const store = emptyWsStore();
     const summary = buildSourceSummary(
       { type: 'static' },
@@ -272,7 +272,7 @@ describe('buildSourceSummary', () => {
   });
 
   // — api type —
-  it('api 类型：显示 URL', () => {
+  it('api type: displays the URL', () => {
     const store = emptyWsStore();
     const summary = buildSourceSummary(
       { type: 'api', url: 'https://example.com/api/data' },
@@ -283,7 +283,7 @@ describe('buildSourceSummary', () => {
     expect(summary.lastValue).toBe('https://example.com/api/data');
   });
 
-  it('api 类型：URL 超长时截断', () => {
+  it('api type: truncates overly long URLs', () => {
     const store = emptyWsStore();
     const longUrl = 'https://example.com/very/long/path/that/exceeds/forty/characters';
     const summary = buildSourceSummary(
@@ -296,7 +296,7 @@ describe('buildSourceSummary', () => {
     expect(summary.lastValue).toMatch(/\.\.\.$/);
   });
 
-  it('api 类型：url 从 properties 中获取', () => {
+  it('api type: url comes from properties', () => {
     const store = emptyWsStore();
     const summary = buildSourceSummary(
       { type: 'api', properties: { url: 'https://props.url.com' } },
@@ -308,7 +308,7 @@ describe('buildSourceSummary', () => {
   });
 
   // — Edge cases —
-  it('tagIds 为空时返回 null', () => {
+  it('Returns null when tagIds is empty', () => {
     const store = makeWsStore({
       'tag1': { value: 42 },
     });
@@ -321,7 +321,7 @@ describe('buildSourceSummary', () => {
     expect(summary).toEqual({ lastValue: null, updatedAt: null, quality: null });
   });
 
-  it('tag 类型：长列表截断（超过 maxLen=60）', () => {
+  it('tag type: long list truncation (exceeding maxLen=60)', () => {
     const store = makeWsStore({
       't1': { value: 'very-long-value-that-takes-many-characters-together' },
       't2': { value: 'another-long-value-here' },
@@ -337,7 +337,7 @@ describe('buildSourceSummary', () => {
   });
 
   // — updatedAt takes the newest —
-  it('updatedAt 取所有标签中最新的 timestamp', () => {
+  it('updatedAt takes the latest timestamp across all tags', () => {
     const store = makeWsStore({
       'old': { value: 1, quality: 'good', timestamp: 1000 },
       'mid': { value: 2, quality: 'good', timestamp: 2000 },
@@ -353,7 +353,7 @@ describe('buildSourceSummary', () => {
   });
 
   // — quality takes the worst —
-  it('quality 取最差的（bad 优先于 good）', () => {
+  it('quality takes the worst (bad takes priority over good)', () => {
     const store = makeWsStore({
       'g1': { value: 1, quality: 'good', timestamp: 100 },
       'g2': { value: 2, quality: 'bad', timestamp: 200 },
@@ -367,7 +367,7 @@ describe('buildSourceSummary', () => {
     expect(summary.quality).toBe('bad');
   });
 
-  it('全部 good 时 quality 为 good', () => {
+  it('When all are good, quality is good', () => {
     const store = makeWsStore({
       'a': { value: 1, quality: 'good' },
       'b': { value: 2, quality: 'good' },
@@ -381,7 +381,7 @@ describe('buildSourceSummary', () => {
     expect(summary.quality).toBe('good');
   });
 
-  it('全部无 quality 时返回 null', () => {
+  it('Returns null when all have no quality', () => {
     const store = makeWsStore({
       'a': { value: 1 },
       'b': { value: 2 },
@@ -395,7 +395,7 @@ describe('buildSourceSummary', () => {
     expect(summary.quality).toBeNull();
   });
 
-  it('部分标签有质量、部分无时取有值的', () => {
+  it('When some tags have quality and some do not, take the ones with values', () => {
     const store = makeWsStore({
       'a': { value: 1, quality: 'good' },
       'b': { value: 2 },
@@ -410,7 +410,7 @@ describe('buildSourceSummary', () => {
   });
 
   // — Unknown type —
-  it('未知 type（既不是 tag/device/static/api）时 lastValue 为 null', () => {
+  it('Unknown type (neither tag/device/static/api) → lastValue is null', () => {
     const store = makeWsStore({
       'x': { value: 99 },
     });
@@ -427,8 +427,8 @@ describe('buildSourceSummary', () => {
 
 // ── End-to-end: simulate the linkage of each function after wsStore data arrives ──────────────────────────
 
-describe('DataSourceReader — 端到端流程', () => {
-  it('wsStore 空 → 填充数据 → readTagSnapshot 读取', () => {
+describe('DataSourceReader — end-to-end flow', () => {
+  it('Empty wsStore → populate data → readTagSnapshot reads', () => {
     const store = emptyWsStore();
 
     // Phase 1: no data
@@ -441,7 +441,7 @@ describe('DataSourceReader — 端到端流程', () => {
     expect(snap2.currentValue).toBe(25.5);
   });
 
-  it('buildSourceSummary 正确反映 wsStore 数据变更', () => {
+  it('buildSourceSummary correctly reflects wsStore data changes', () => {
     const store = emptyWsStore();
 
     // Initially no data

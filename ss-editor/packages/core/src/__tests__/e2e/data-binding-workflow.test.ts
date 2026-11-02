@@ -274,7 +274,7 @@ describe('E2E: Data Binding Workflow', () => {
       expect(flow.dataSource.dataField).toBe('flowRate');
     });
 
-    it('数据模拟应能加载场景', () => {
+    it('Simulation should be able to load a scenario', () => {
       const scenario = {
         id: 'sim-001',
         name: 'Temperature Rise',
@@ -296,7 +296,7 @@ describe('E2E: Data Binding Workflow', () => {
       expect(simulationStore.status).toBe('idle');
     });
 
-    it('数据模拟应能启动和暂停', () => {
+    it('Simulation should be able to start and pause', () => {
       const scenario = {
         id: 'sim-002',
         name: 'Basic Sim',
@@ -317,7 +317,7 @@ describe('E2E: Data Binding Workflow', () => {
       expect(simulationStore.status).toBe('paused');
     });
 
-    it('数据模拟应能停止并重置', () => {
+    it('Simulation should be able to stop and reset', () => {
       const scenario = {
         id: 'sim-003',
         name: 'Stop Test',
@@ -342,7 +342,7 @@ describe('E2E: Data Binding Workflow', () => {
       expect(simulationStore.status).toBe('idle');
     });
 
-    it('数据模拟应能逐步执行', () => {
+    it('Simulation should be able to step through', () => {
       const scenario = {
         id: 'sim-004',
         name: 'Step Test',
@@ -353,7 +353,7 @@ describe('E2E: Data Binding Workflow', () => {
           { tagId: 'tag-1', value: 2, delay: 0 }, ], createdAt: Date.now(), updatedAt: Date.now(), }; simulationStore.loadScenario(scenario as any); simulationStore.start(); simulationStore.nextStep(); expect(simulationStore.currentStep).toBe(1); simulationStore.nextStep(); expect(simulationStore.currentStep).toBe(2); /* should stop after the last step */ simulationStore.nextStep(); expect(simulationStore.status).toBe('idle');
     });
 
-    it('数据模拟循环模式应在最后一步后回到第一步', () => {
+    it('Simulation loop mode should return to the first step after the last step', () => {
       const scenario = {
         id: 'sim-loop',
         name: 'Loop Test',
@@ -377,7 +377,7 @@ describe('E2E: Data Binding Workflow', () => {
       expect(simulationStore.isRunning).toBe(true);
     });
 
-    it('应能跳转到指定步骤', () => {
+    it('Should be able to jump to a specified step', () => {
       const scenario = {
         id: 'sim-goto',
         name: 'Goto Test',
@@ -393,7 +393,7 @@ describe('E2E: Data Binding Workflow', () => {
       expect(simulationStore.currentStep).toBe(5);
     });
 
-    it('应能设置模拟速度', () => {
+    it('Should be able to set the simulation speed', () => {
       simulationStore.setSpeed(2.0);
       expect(simulationStore.speed).toBe(2.0);
 
@@ -401,7 +401,7 @@ describe('E2E: Data Binding Workflow', () => {
       expect(simulationStore.speed).toBe(0.1); // minimum value 0.1
     });
 
-    it('应能清除模拟场景', () => {
+    it('Should be able to clear the simulation scenario', () => {
       const scenario = {
         id: 'sim-clear',
         name: 'Clear Test',
@@ -760,7 +760,7 @@ describe('E2E: Data Binding Workflow', () => {
       }).not.toThrow();
     });
 
-    it('空场景不应有进度', () => {
+    it('An empty scenario should have no progress', () => {
       const scenario = {
         id: 'empty-sim',
         name: 'Empty',
@@ -779,7 +779,7 @@ describe('E2E: Data Binding Workflow', () => {
       expect(simulationStore.hasActiveScenario).toBe(false);
     });
 
-    it('无场景时不应启动模拟', () => {
+    it('Should not start simulation without a scenario', () => {
       simulationStore.start();
       expect(simulationStore.isRunning).toBe(false);
     });

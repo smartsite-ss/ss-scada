@@ -21,13 +21,13 @@ describe('CodeValidator', () => {
 
   // ────── Basic syntax ──────
 
-  describe('基础语法校验', () => {
-    it('应接受合法的 JavaScript', () => {
+  describe('Basic syntax validation', () => {
+    it('Should accept valid JavaScript', () => {
       const result = validator.validate('const x = 1;');
       expect(result.valid).toBe(true);
     });
 
-    it('应接受合法的函数体', () => {
+    it('Should accept a valid function body', () => {
       const code = `
         const value = api.readTag('temperature');
         if (value > 80) {
@@ -38,14 +38,14 @@ describe('CodeValidator', () => {
       expect(result.valid).toBe(true);
     });
 
-    it('应检测花括号不匹配', () => {
+    it('Should detect curly brace mismatches', () => {
       const code = 'function foo() { const x = 1;';
       const result = validator.validate(code);
       expect(result.valid).toBe(false);
       expect(result.errors.some((e) => e.message.includes('花括号'))).toBe(true);
     });
 
-    it('应检测多余的闭合括号', () => {
+    it('Should detect extra closing brackets', () => {
       const code = 'const x = (1 + 2));';
       // The Function constructor catches syntax errors first
       const result = validator.validate(code);
@@ -55,15 +55,15 @@ describe('CodeValidator', () => {
 
   // ────── Function constructor validation ──────
 
-  describe('Function 构造函数校验', () => {
-    it('应拒绝包含语法错误的代码', () => {
+  describe('Function constructor validation', () => {
+    it('Should reject code containing syntax errors', () => {
       const code = 'const x = ;';
       const result = validator.validate(code);
       expect(result.valid).toBe(false);
       expect(result.errors.some((e) => e.message.includes('语法错误'))).toBe(true);
     });
 
-    it('应拒绝未声明的变量引用（严格模式）', () => {
+    it('Should reject references to undeclared variables (strict mode)', () => {
       // Note: the Function constructor does not check undeclared variable references
       // That is a runtime error, outside the scope of syntax validation
       const code = 'x = 1;'; // no 'use strict', so no error is reported
@@ -72,7 +72,7 @@ describe('CodeValidator', () => {
       expect(result.errors.filter((e) => e.type === 'syntax')).toHaveLength(0);
     });
 
-    it('应拒绝包含重复声明错误的代码', () => {
+    it('Should reject code containing duplicate declaration errors', () => {
       const code = 'const x = 1; const x = 2;';  // duplicate declaration
       const result = validator.validate(code);
       expect(result.valid).toBe(false);
@@ -81,39 +81,39 @@ describe('CodeValidator', () => {
 
   // ────── Security blacklist ──────
 
-  describe('安全黑名单检查（沙箱模式）', () => {
-    it('应拒绝使用 window', () => {
+  describe('Safety blacklist check (sandbox mode)', () => {
+    it('Should reject the use of window', () => {
       const code = 'window.location.href = "http://evil.com";';
       const result = validator.validate(code, 'javascript', { sandboxMode: true });
       expect(result.valid).toBe(false);
       expect(result.errors.some((e) => e.message.includes('window'))).toBe(true);
     });
 
-    it('应拒绝使用 document', () => {
+    it('Should reject the use of document', () => {
       const code = 'document.getElementById("root");';
       const result = validator.validate(code, 'javascript', { sandboxMode: true });
       expect(result.valid).toBe(false);
     });
 
-    it('应拒绝使用 eval()', () => {
+    it('Should reject the use of eval()', () => {
       const code = 'eval("alert(1)");';
       const result = validator.validate(code, 'javascript', { sandboxMode: true });
       expect(result.valid).toBe(false);
     });
 
-    it('应拒绝使用 localStorage', () => {
+    it('Should reject the use of localStorage', () => {
       const code = 'localStorage.setItem("key", "value");';
       const result = validator.validate(code, 'javascript', { sandboxMode: true });
       expect(result.valid).toBe(false);
     });
 
-    it('应拒绝使用 __proto__', () => {
+    it('Should reject the use of __proto__', () => {
       const code = 'obj.__proto__.hack = true;';
       const result = validator.validate(code, 'javascript', { sandboxMode: true });
       expect(result.valid).toBe(false);
     });
 
-    it('非沙箱模式应跳过安全检查', () => {
+    it('Non-sandbox mode should skip safety checks', () => {
       const code = 'window.alert("test");';
       const result = validator.validate(code, 'javascript', { sandboxMode: false });
       // Only syntax is checked, not security; note window.alert may also not be a syntax error
@@ -123,29 +123,29 @@ describe('CodeValidator', () => {
 
   // ────── Edge cases ──────
 
-  describe('边界情况', () => {
-    it('应正确处理空代码', () => {
+  describe('Edge cases', () => {
+    it('Should handle empty code correctly', () => {
       const result = validator.validate('');
       // The Function constructor also accepts empty code
       expect(result.valid).toBe(true);
     });
 
-    it('应正确处理模板字符串中包含括号', () => {
+    it('Should handle parentheses inside template strings correctly', () => {
       const code = 'const msg = `括号 { 和 ( 在字符串中`;';
       const result = validator.validate(code);
       expect(result.valid).toBe(true);
     });
 
-    it('应正确处理注释中的不安全词', () => {
+    it('Should handle unsafe words inside comments correctly', () => {
       const code = `
-        // 这里提到了 window 但只是注释
+        // window is mentioned here but it is only a comment
         const x = 1;
       `;
       const result = validator.validate(code, 'javascript', { sandboxMode: true });
       expect(result.valid).toBe(true);
     });
 
-    it('isValid 快捷方法应正确返回布尔值', () => {
+    it('The isValid shortcut should return booleans correctly', () => {
       expect(validator.isValid('const x = 1;')).toBe(true);
       expect(validator.isValid('const x =;')).toBe(false);
     });
@@ -153,20 +153,20 @@ describe('CodeValidator', () => {
 
   // ────── Convenience functions ──────
 
-  describe('便捷函数', () => {
-    it('validateCode 应与 CodeValidator.validate 行为一致', () => {
+  describe('Convenience functions', () => {
+    it('validateCode should behave the same as CodeValidator.validate', () => {
       const r1 = validator.validate('const x = 1;');
       const r2 = validateCode('const x = 1;');
       expect(r1.valid).toBe(r2.valid);
     });
 
-    it('validateCodeForDisplay 应返回格式化字符串', () => {
+    it('validateCodeForDisplay should return a formatted string', () => {
       const result = validateCodeForDisplay('const x = 1;');
       expect(result.valid).toBe(true);
       expect(result.summary).toBe('校验通过');
     });
 
-    it('validateCodeForDisplay 应返回错误摘要', () => {
+    it('validateCodeForDisplay should return an error summary', () => {
       const result = validateCodeForDisplay('const x = ;');
       expect(result.valid).toBe(false);
       expect(result.summary).toBeTruthy();
@@ -175,8 +175,8 @@ describe('CodeValidator', () => {
 
   // ────── Typical script scenarios ──────
 
-  describe('典型 ScriptAPI 脚本校验', () => {
-    it('应接受 dataChange 触发脚本（温度告警）', () => {
+  describe('Typical ScriptAPI script validation', () => {
+    it('Should accept a dataChange-triggered script (temperature alarm)', () => {
       const code = `
         const currentValue = api.readTag('temperature');
         if (currentValue > 80) {
@@ -187,7 +187,7 @@ describe('CodeValidator', () => {
       expect(result.valid).toBe(true);
     });
 
-    it('应接受 timer 触发脚本（周期性检查）', () => {
+    it('Should accept a timer-triggered script (periodic checks)', () => {
       const code = `
         const value = api.readTag('pressure');
         api.log('info', '当前压力: ' + value);
@@ -196,7 +196,7 @@ describe('CodeValidator', () => {
       expect(result.valid).toBe(true);
     });
 
-    it('应接受 event 触发脚本（图元操作）', () => {
+    it('Should accept an event-triggered script (graphic operations)', () => {
       const code = `
         api.showGraphic('alarm-popup');
         api.notify('按钮已点击', 'info');
@@ -205,7 +205,7 @@ describe('CodeValidator', () => {
       expect(result.valid).toBe(true);
     });
 
-    it('应拒绝使用了禁止的 setInterval（全局函数）的脚本', () => {
+    it('Should reject scripts using the forbidden setInterval (global function)', () => {
       const code = `
         setInterval(() => {
           api.readTag('temperature');

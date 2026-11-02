@@ -196,14 +196,14 @@ describe('DictionaryLoaderService - CRUD', () => {
 
       service.updateTable('zh-CN', 'basic-data', 'protocolType', {
         dictName: 'Updated Protocol Types',
-        description: 'Updated description',
+        description: '更新后的描述',
       });
 
       expect(fs.writeFileSync).toHaveBeenCalledTimes(1);
       const writeArg = (fs.writeFileSync as jest.Mock).mock.calls[0][1];
       const parsed = JSON.parse(writeArg);
       expect(parsed.dictName).toBe('Updated Protocol Types');
-      expect(parsed.description).toBe('Updated description');
+      expect(parsed.description).toBe('更新后的描述');
       expect(parsed.dictId).toBe('protocolType');
       expect(parsed.items).toHaveLength(2);
       expect(parsed.version).toBe('1.0');
@@ -345,7 +345,7 @@ describe('DictionaryLoaderService - CRUD', () => {
     });
 
     it('TC-DICT-FN-001: deviceType → device-type.json', () => {
-      service.updateTable('zh-CN', 'basic-data', 'deviceType', { dictName: 'Test' });
+      service.updateTable('zh-CN', 'basic-data', 'deviceType', { dictName: '测试' });
 
       expect(fs.writeFileSync).toHaveBeenCalledWith(
         expect.stringContaining('device-type.json'),
@@ -355,7 +355,7 @@ describe('DictionaryLoaderService - CRUD', () => {
     });
 
     it('TC-DICT-FN-002: deviceTypes → device-types.json', () => {
-      service.updateTable('zh-CN', 'basic-data', 'deviceTypes', { dictName: 'Test' });
+      service.updateTable('zh-CN', 'basic-data', 'deviceTypes', { dictName: '测试' });
 
       expect(fs.writeFileSync).toHaveBeenCalledWith(
         expect.stringContaining('device-types.json'),
@@ -365,7 +365,7 @@ describe('DictionaryLoaderService - CRUD', () => {
     });
 
     it('TC-DICT-FN-003: simpleword → simpleword.json (no camelCase)', () => {
-      service.updateTable('zh-CN', 'basic-data', 'simpleword', { dictName: 'Test' });
+      service.updateTable('zh-CN', 'basic-data', 'simpleword', { dictName: '测试' });
 
       expect(fs.writeFileSync).toHaveBeenCalledWith(
         expect.stringContaining('simpleword.json'),
@@ -375,7 +375,7 @@ describe('DictionaryLoaderService - CRUD', () => {
     });
 
     it('TC-DICT-FN-004: ABC → abc.json (all uppercase)', () => {
-      service.updateTable('zh-CN', 'basic-data', 'ABC', { dictName: 'Test' });
+      service.updateTable('zh-CN', 'basic-data', 'ABC', { dictName: '测试' });
 
       expect(fs.writeFileSync).toHaveBeenCalledWith(
         expect.stringContaining('abc.json'),
@@ -385,7 +385,7 @@ describe('DictionaryLoaderService - CRUD', () => {
     });
 
     it('TC-DICT-FN-005: myCustomDictName → my-custom-dict-name.json', () => {
-      service.updateTable('zh-CN', 'basic-data', 'myCustomDictName', { dictName: 'Test' });
+      service.updateTable('zh-CN', 'basic-data', 'myCustomDictName', { dictName: '测试' });
 
       expect(fs.writeFileSync).toHaveBeenCalledWith(
         expect.stringContaining('my-custom-dict-name.json'),
@@ -395,7 +395,7 @@ describe('DictionaryLoaderService - CRUD', () => {
     });
 
     it('TC-DICT-FN-006: deviceType with en-US locale', () => {
-      service.updateTable('en-US', 'basic-data', 'deviceType', { dictName: 'Test' });
+      service.updateTable('en-US', 'basic-data', 'deviceType', { dictName: '测试' });
 
       expect(fs.writeFileSync).toHaveBeenCalledWith(
         expect.stringContaining('device-type.json'),

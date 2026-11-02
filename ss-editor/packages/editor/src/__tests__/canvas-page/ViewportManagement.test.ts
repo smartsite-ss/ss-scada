@@ -240,7 +240,7 @@ describe('useTransform - Smart Viewport management system', () => {
       expect(mockPageStore.currentPage.scale).toBeGreaterThan(100);
     });
 
-    it('非Ctrl滚轮不应该触发缩放', () => {
+    it('Wheel without Ctrl should not trigger zoom', () => {
       const drawCanvas = vi.fn();
       
       const mockEvent = {

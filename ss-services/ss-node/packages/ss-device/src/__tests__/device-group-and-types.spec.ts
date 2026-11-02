@@ -108,7 +108,7 @@ function makeMockGroup(overrides: Partial<DeviceGroup> = {}): DeviceGroup {
   };
 }
 
-describe('DeviceService - 设备分组与多项目设备管理', () => {
+describe('DeviceService - device grouping and multi-project device management', () => {
   let service: DeviceService;
   let deviceRepo: MockRepository<Device>;
   let dataTagRepo: MockRepository<DataTag>;
@@ -166,9 +166,9 @@ describe('DeviceService - 设备分组与多项目设备管理', () => {
   // ============================================================
   // I. Group management
   // ============================================================
-  describe('分组管理', () => {
-    describe('TC-GROUP-001: 创建分组', () => {
-      it('应成功创建平级分组', async () => {
+  describe('Group management', () => {
+    describe('TC-GROUP-001: create a group', () => {
+      it('Should successfully create a sibling group', async () => {
         const dto = { name: '一楼设备', projectId };
         const group = makeMockGroup({ id: 'grp-001', name: '一楼设备' });
         deviceGroupRepo.create = jest.fn().mockReturnValue(group);
@@ -182,7 +182,7 @@ describe('DeviceService - 设备分组与多项目设备管理', () => {
         expect(result.name).toBe('一楼设备');
       });
 
-      it('应成功创建带描述的分组', async () => {
+      it('Should successfully create a group with a description', async () => {
         const dto = { name: '二楼设备', description: '二楼所有设备', projectId };
         const group = makeMockGroup({
           id: 'grp-002',
@@ -199,9 +199,9 @@ describe('DeviceService - 设备分组与多项目设备管理', () => {
       });
     });
 
-    describe('TC-GROUP-002: 创建多级分组（父分组+子分组）', () => {
-      it('应成功创建带父分组的子分组', async () => {
-        const _parentGroup = makeMockGroup({ id: 'grp-parent', name: '厂区A' });
+    describe('TC-GROUP-002: create multi-level groups (parent group + child group)', () => {
+      it('Should successfully create a child group with a parent group', async () => {
+        const _parentGroup = makeMockGroup({ id: 'grp-parent', name: 'Factory area A' });
         const childGroup = makeMockGroup({
           id: 'grp-child',
           name: '车间1',
@@ -221,39 +221,39 @@ describe('DeviceService - 设备分组与多项目设备管理', () => {
         expect(result.parentId).toBe('grp-parent');
       });
 
-      it('应支持三级分组树', async () => {
+      it('Should support three-level group trees', async () => {
         // Plant -> workshop -> production line
-        const _l1 = makeMockGroup({ id: 'grp-l1', name: '厂区A' });
+        const _l1 = makeMockGroup({ id: 'grp-l1', name: 'Factory area A' });
         const _l2 = makeMockGroup({ id: 'grp-l2', name: '车间1', parentId: 'grp-l1' });
-        const l3 = makeMockGroup({ id: 'grp-l3', name: '产线A', parentId: 'grp-l2' });
+        const l3 = makeMockGroup({ id: 'grp-l3', name: 'Production line A', parentId: 'grp-l2' });
 
         deviceGroupRepo.create = jest.fn().mockReturnValue(l3);
         deviceGroupRepo.save = jest.fn().mockResolvedValue(l3);
 
-        const result = await service.createGroup({ name: '产线A', parentId: 'grp-l2' }, projectId);
+        const result = await service.createGroup({ name: 'Production line A', parentId: 'grp-l2' }, projectId);
 
         expect(result.parentId).toBe('grp-l2');
-        expect(result.name).toBe('产线A');
+        expect(result.name).toBe('Production line A');
       });
     });
 
-    describe('TC-GROUP-003: 查询所有分组', () => {
-      it('应按 sortOrder 排序返回所有分组', async () => {
+    describe('TC-GROUP-003: query all groups', () => {
+      it('Should return all groups sorted by sortOrder', async () => {
         const groups = [
-          makeMockGroup({ id: 'grp-1', name: 'A组', sortOrder: 0 }),
-          makeMockGroup({ id: 'grp-2', name: 'B组', sortOrder: 1 }),
-          makeMockGroup({ id: 'grp-3', name: 'C组', sortOrder: 2 }),
+          makeMockGroup({ id: 'grp-1', name: '分组A', sortOrder: 0 }),
+          makeMockGroup({ id: 'grp-2', name: 'Group B', sortOrder: 1 }),
+          makeMockGroup({ id: 'grp-3', name: 'Group C', sortOrder: 2 }),
         ];
         deviceGroupRepo.find = jest.fn().mockResolvedValue(groups);
 
         const result = await service.findAllGroups(projectId);
 
         expect(result).toHaveLength(3);
-        expect(result[0].name).toBe('A组');
-        expect(result[2].name).toBe('C组');
+        expect(result[0].name).toBe('分组A');
+        expect(result[2].name).toBe('Group C');
       });
 
-      it('不同项目返回不同分组', async () => {
+      it('Different projects return different groups', async () => {
         const groups1 = [makeMockGroup({ id: 'grp-1', name: '项目一分组', projectId: 'proj-001' })];
         const groups2 = [makeMockGroup({ id: 'grp-2', name: '项目二分组', projectId: 'proj-002' })];
 
@@ -270,8 +270,8 @@ describe('DeviceService - 设备分组与多项目设备管理', () => {
       });
     });
 
-    describe('TC-GROUP-004: 查询单个分组', () => {
-      it('应返回分组及其子分组', async () => {
+    describe('TC-GROUP-004: query a single group', () => {
+      it('Should return the group and its subgroups', async () => {
         const child = makeMockGroup({ id: 'grp-child', name: '子分组' });
         const parent = makeMockGroup({ id: 'grp-parent', name: '父分组', children: [child] });
         deviceGroupRepo.findOne = jest.fn().mockResolvedValue(parent);
@@ -282,15 +282,15 @@ describe('DeviceService - 设备分组与多项目设备管理', () => {
         expect(result.children).toHaveLength(1);
       });
 
-      it('不存在的分组应抛出 NotFoundException', async () => {
+      it('Non-existent group should throw NotFoundException', async () => {
         deviceGroupRepo.findOne = jest.fn().mockResolvedValue(null);
 
         await expect(service.findOneGroup('grp-999', projectId)).rejects.toThrow(NotFoundException);
       });
     });
 
-    describe('TC-GROUP-005: 更新分组', () => {
-      it('应成功更新分组名称', async () => {
+    describe('TC-GROUP-005: update a group', () => {
+      it('Should successfully update the group name', async () => {
         const group = makeMockGroup({ id: 'grp-001', name: '旧名称' });
         deviceGroupRepo.findOne = jest.fn().mockResolvedValue(group);
         deviceGroupRepo.save = jest.fn().mockResolvedValue({ ...group, name: '新名称' });
@@ -300,7 +300,7 @@ describe('DeviceService - 设备分组与多项目设备管理', () => {
         expect(result.name).toBe('新名称');
       });
 
-      it('应成功更新分组排序', async () => {
+      it('Should successfully update group order', async () => {
         const group = makeMockGroup({ id: 'grp-001', name: '分组', sortOrder: 0 });
         deviceGroupRepo.findOne = jest.fn().mockResolvedValue(group);
         deviceGroupRepo.save = jest.fn().mockResolvedValue({ ...group, sortOrder: 99 });
@@ -310,7 +310,7 @@ describe('DeviceService - 设备分组与多项目设备管理', () => {
         expect(result.sortOrder).toBe(99);
       });
 
-      it('应支持移动分组到新的父分组', async () => {
+      it('Should support moving a group to a new parent group', async () => {
         const group = makeMockGroup({ id: 'grp-002', name: '子分组', parentId: 'grp-001' });
         deviceGroupRepo.findOne = jest.fn().mockResolvedValue(group);
         deviceGroupRepo.save = jest.fn().mockResolvedValue({ ...group, parentId: 'grp-003' });
@@ -321,8 +321,8 @@ describe('DeviceService - 设备分组与多项目设备管理', () => {
       });
     });
 
-    describe('TC-GROUP-006: 删除分组（子分组上移）', () => {
-      it('应删除分组并将子分组上移到祖父级', async () => {
+    describe('TC-GROUP-006: delete a group (subgroups move up)', () => {
+      it('Should delete the group and move subgroups up to the grandparent', async () => {
         const child = makeMockGroup({ id: 'grp-child', name: '子分组', parentId: 'grp-parent' });
         const parent = makeMockGroup({
           id: 'grp-parent',
@@ -342,7 +342,7 @@ describe('DeviceService - 设备分组与多项目设备管理', () => {
         );
       });
 
-      it('没有子分组时直接删除', async () => {
+      it('Delete directly when there are no subgroups', async () => {
         const group = makeMockGroup({ id: 'grp-001', name: '独立分组', children: [] });
         deviceGroupRepo.findOne = jest.fn().mockResolvedValue(group);
         deviceGroupRepo.remove = jest.fn().mockResolvedValue(group);
@@ -353,8 +353,8 @@ describe('DeviceService - 设备分组与多项目设备管理', () => {
       });
     });
 
-    describe('TC-GROUP-007: 分组树结构', () => {
-      it('应返回正确的项目-分组-设备三级树', async () => {
+    describe('TC-GROUP-007: group tree structure', () => {
+      it('Should return the correct project-group-device three-level tree', async () => {
         deviceGroupRepo.find = jest.fn().mockResolvedValue([]);
         deviceRepo.find = jest.fn().mockResolvedValue([]);
 
@@ -365,7 +365,7 @@ describe('DeviceService - 设备分组与多项目设备管理', () => {
         expect(result.groups).toEqual([]);
       });
 
-      it('应构建多层分组树', async () => {
+      it('Should build a multi-level group tree', async () => {
         const root = makeMockGroup({ id: 'g-root', name: '根分组', parentId: null, children: [] });
         const child = makeMockGroup({
           id: 'g-child',
@@ -389,9 +389,9 @@ describe('DeviceService - 设备分组与多项目设备管理', () => {
   // ============================================================
   // II. Different device types/templates/driver plugins
   // ============================================================
-  describe('不同类型/模板/插件设备', () => {
-    describe('TC-DEVTYPE-001: Modbus TCP 设备', () => {
-      it('应创建 modbus_tcp 类型设备', async () => {
+  describe('Devices of different types/templates/plugins', () => {
+    describe('TC-DEVTYPE-001: Modbus TCP device', () => {
+      it('Should create a modbus_tcp type device', async () => {
         const dto = makeCreateDeviceDto({
           deviceCode: 'modbus-tcp-001',
           deviceName: 'ModbusTCP设备',
@@ -415,8 +415,8 @@ describe('DeviceService - 设备分组与多项目设备管理', () => {
       });
     });
 
-    describe('TC-DEVTYPE-002: Modbus RTU 设备', () => {
-      it('应创建 modbus_rtu 类型设备', async () => {
+    describe('TC-DEVTYPE-002: Modbus RTU device', () => {
+      it('Should create a modbus_rtu type device', async () => {
         const dto = makeCreateDeviceDto({
           deviceCode: 'modbus-rtu-001',
           deviceName: 'ModbusRTU设备',
@@ -440,8 +440,8 @@ describe('DeviceService - 设备分组与多项目设备管理', () => {
       });
     });
 
-    describe('TC-DEVTYPE-003: OPC UA 设备', () => {
-      it('应创建 opc_ua 类型设备', async () => {
+    describe('TC-DEVTYPE-003: OPC UA device', () => {
+      it('Should create an opc_ua type device', async () => {
         const dto = makeCreateDeviceDto({
           deviceCode: 'opcua-001',
           deviceName: 'OPCUA设备',
@@ -465,8 +465,8 @@ describe('DeviceService - 设备分组与多项目设备管理', () => {
       });
     });
 
-    describe('TC-DEVTYPE-004: MQTT 设备', () => {
-      it('应创建 mqtt 类型设备', async () => {
+    describe('TC-DEVTYPE-004: MQTT device', () => {
+      it('Should create an mqtt type device', async () => {
         const dto = makeCreateDeviceDto({
           deviceCode: 'mqtt-001',
           deviceName: 'MQTT设备',
@@ -490,8 +490,8 @@ describe('DeviceService - 设备分组与多项目设备管理', () => {
       });
     });
 
-    describe('TC-DEVTYPE-005: Siemens S7 设备', () => {
-      it('应创建 siemens_s7 类型设备', async () => {
+    describe('TC-DEVTYPE-005: Siemens S7 device', () => {
+      it('Should create a siemens_s7 type device', async () => {
         const dto = makeCreateDeviceDto({
           deviceCode: 's7-001',
           deviceName: 'S7设备',
@@ -515,8 +515,8 @@ describe('DeviceService - 设备分组与多项目设备管理', () => {
       });
     });
 
-    describe('TC-DEVTYPE-006: Virtual 虚拟设备', () => {
-      it('应创建 virtual 类型虚拟设备', async () => {
+    describe('TC-DEVTYPE-006: Virtual device', () => {
+      it('Should create a virtual type device', async () => {
         const dto = makeCreateDeviceDto({
           deviceCode: 'virtual-001',
           deviceName: '虚拟设备',
@@ -540,8 +540,8 @@ describe('DeviceService - 设备分组与多项目设备管理', () => {
       });
     });
 
-    describe('TC-DEVTYPE-007: 不同模板ID的设备', () => {
-      it('应创建关联 templateId 的设备', async () => {
+    describe('TC-DEVTYPE-007: devices with different template IDs', () => {
+      it('Should create a device associated with templateId', async () => {
         const dto = makeCreateDeviceDto({
           deviceCode: 'tpl-dev-001',
           deviceName: '模板设备',
@@ -564,7 +564,7 @@ describe('DeviceService - 设备分组与多项目设备管理', () => {
         expect(result.templateVersion).toBe('2.0.0');
       });
 
-      it('不同设备可使用不同模板', async () => {
+      it('Different devices can use different templates', async () => {
         const device1 = makeMockDevice({
           id: 'dev-100',
           deviceCode: 'tpl-a-001',
@@ -608,9 +608,9 @@ describe('DeviceService - 设备分组与多项目设备管理', () => {
   // ============================================================
   // III. Group-device association
   // ============================================================
-  describe('分组与设备关联', () => {
-    describe('TC-LINK-001: 创建设备时指定分组', () => {
-      it('应创建设备并关联到指定分组', async () => {
+  describe('Group and device association', () => {
+    describe('TC-LINK-001: specify a group when creating a device', () => {
+      it('Should create a device and associate it with the specified group', async () => {
         const dto = makeCreateDeviceDto({
           deviceCode: 'grouped-dev',
           deviceName: '分组设备',
@@ -628,8 +628,8 @@ describe('DeviceService - 设备分组与多项目设备管理', () => {
       });
     });
 
-    describe('TC-LINK-002: 设备查询支持按分组过滤', () => {
-      it('findAll 应支持 groupId 过滤', async () => {
+    describe('TC-LINK-002: device query supports filtering by group', () => {
+      it('findAll should support groupId filtering', async () => {
         const devices = [makeMockDevice({ id: 'd-1', groupId: 'grp-001' })];
         deviceRepo.findAndCount = jest.fn().mockResolvedValue([devices, 1]);
 
@@ -642,11 +642,11 @@ describe('DeviceService - 设备分组与多项目设备管理', () => {
       });
     });
 
-    describe('TC-LINK-003: 分组树中显示设备', () => {
-      it('getGroupTree 应在分组节点下挂载设备', async () => {
+    describe('TC-LINK-003: show devices in the group tree', () => {
+      it('getGroupTree should mount devices under group nodes', async () => {
         const group = makeMockGroup({
           id: 'grp-001',
-          name: '生产区',
+          name: 'Production area',
           parentId: null,
           children: [],
         });
@@ -684,9 +684,9 @@ describe('DeviceService - 设备分组与多项目设备管理', () => {
   // ============================================================
   // IV. Multi-project device management
   // ============================================================
-  describe('多项目设备管理', () => {
-    describe('TC-PROJ-001: 不同项目创建不同设备', () => {
-      it('项目A和设备与项目B的设备应隔离', async () => {
+  describe('Multi-project device management', () => {
+    describe('TC-PROJ-001: different projects create different devices', () => {
+      it('Project A devices and project B devices should be isolated', async () => {
         const deviceA = makeMockDevice({
           id: 'dev-a',
           deviceCode: 'proj-a-dev',
@@ -716,8 +716,8 @@ describe('DeviceService - 设备分组与多项目设备管理', () => {
       });
     });
 
-    describe('TC-PROJ-002: 同一tid在不同项目可重复', () => {
-      it('不同项目可以使用相同的 tid', async () => {
+    describe('TC-PROJ-002: the same tid can be reused across different projects', () => {
+      it('Different projects can use the same tid', async () => {
         // The tid does not exist in project A
         deviceRepo.findOne = jest
           .fn()
@@ -745,8 +745,8 @@ describe('DeviceService - 设备分组与多项目设备管理', () => {
       });
     });
 
-    describe('TC-PROJ-003: 同一tid在同一项目不可重复', () => {
-      it('同一项目内重复 tid 应抛出 ConflictException', async () => {
+    describe('TC-PROJ-003: the same tid cannot repeat within one project', () => {
+      it('Duplicate tid within the same project should throw ConflictException', async () => {
         const existing = makeMockDevice({ id: 'dev-001', deviceCode: 'dup-tid', projectId });
         deviceRepo.findOne = jest.fn().mockResolvedValue(existing);
 
@@ -759,8 +759,8 @@ describe('DeviceService - 设备分组与多项目设备管理', () => {
       });
     });
 
-    describe('TC-PROJ-004: 项目级设备列表查询', () => {
-      it('findAll 应只返回指定项目的设备', async () => {
+    describe('TC-PROJ-004: project-level device list query', () => {
+      it('findAll should return only the specified project\'s devices', async () => {
         const projADevices = [
           makeMockDevice({
             id: 'a-1',
@@ -784,8 +784,8 @@ describe('DeviceService - 设备分组与多项目设备管理', () => {
   // ============================================================
   // V. Device scan-period config
   // ============================================================
-  describe('设备扫描周期', () => {
-    it('应支持自定义 scanRate', async () => {
+  describe('Device scan period', () => {
+    it('Should support custom scanRate', async () => {
       const dto = makeCreateDeviceDto({
         deviceCode: 'scan-rate-dev',
         deviceName: '高频率设备',

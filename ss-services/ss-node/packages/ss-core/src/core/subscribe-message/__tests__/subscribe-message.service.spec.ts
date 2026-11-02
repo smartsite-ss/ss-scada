@@ -53,7 +53,7 @@ function createService(options: {
 }
 
 describe('SubscribeMessageService', () => {
-  it('TC-SVC-001 getSubscribeConfig 透传通道模板配置', () => {
+  it('TC-SVC-001 getSubscribeConfig passes through the channel template config', () => {
     const { service, channel } = createService({
       templateId: 'tpl-x',
       deviceStatusTemplateId: 'tpl-device',
@@ -69,7 +69,7 @@ describe('SubscribeMessageService', () => {
     expect(channel.getDeviceStatusTemplateId).toHaveBeenCalled();
   });
 
-  it('TC-SVC-002 授权上报 accept（无历史记录）创建记录并累加配额', async () => {
+  it('TC-SVC-002 authorization report accept (no history) creates a record and accumulates the quota', async () => {
     const { service, authorizationRepo } = createService({
       user: { id: 'user-1', wechatMpOpenId: 'openid-1' },
     });
@@ -90,7 +90,7 @@ describe('SubscribeMessageService', () => {
     expect(authorizationRepo.save).toHaveBeenCalledTimes(1);
   });
 
-  it('TC-SVC-003 授权上报 accept（已有配额 2）累加为 3', async () => {
+  it('TC-SVC-003 authorization report accept (existing quota 2) accumulates to 3', async () => {
     const existing = {
       id: 'auth-1',
       userId: 'user-1',
@@ -112,7 +112,7 @@ describe('SubscribeMessageService', () => {
     expect(result.quotaRemaining).toBe(3);
   });
 
-  it('TC-SVC-004 授权上报 ban（设置中关闭）清零配额', async () => {
+  it('TC-SVC-004 authorization report ban (turned off in settings) clears the quota', async () => {
     const existing = {
       id: 'auth-1',
       userId: 'user-1',
@@ -135,7 +135,7 @@ describe('SubscribeMessageService', () => {
     expect(existing.authorizationStatus).toBe('ban');
   });
 
-  it('TC-SVC-005 用户未绑定小程序微信身份时拒绝上报', async () => {
+  it('TC-SVC-005 reject the report when the user is not bound to the mini-program WeChat identity', async () => {
     const { service } = createService({ user: { id: 'user-1', wechatMpOpenId: null } });
 
     await expect(
@@ -143,7 +143,7 @@ describe('SubscribeMessageService', () => {
     ).rejects.toThrow(NotFoundException);
   });
 
-  it('TC-SVC-006 无效上报参数抛 BadRequest', async () => {
+  it('TC-SVC-006 invalid report parameters throw BadRequest', async () => {
     const { service } = createService({ user: { id: 'user-1', wechatMpOpenId: 'openid-1' } });
 
     await expect(
@@ -154,13 +154,13 @@ describe('SubscribeMessageService', () => {
     ).rejects.toThrow(BadRequestException);
   });
 
-  it('TC-SVC-007 配额查询：无授权记录返回 0', async () => {
+  it('TC-SVC-007 quota query: returns 0 with no authorization record', async () => {
     const { service } = createService({});
 
     await expect(service.getQuota('user-1', 'tpl-alarm')).resolves.toEqual({ quotaRemaining: 0 });
   });
 
-  it('TC-SVC-008 偏好查询：无记录返回默认值（开启 + info）', async () => {
+  it('TC-SVC-008 preference query: returns defaults (enabled + info) with no record', async () => {
     const { service, preferenceRepo } = createService({});
 
     const preference = await service.getPreferences('user-1');
@@ -171,7 +171,7 @@ describe('SubscribeMessageService', () => {
     expect(preferenceRepo.save).not.toHaveBeenCalled();
   });
 
-  it('TC-SVC-009 偏好更新：新建记录并写入字段', async () => {
+  it('TC-SVC-009 preference update: creates a record and writes the fields', async () => {
     const { service, preferenceRepo } = createService({});
 
     const updated = await service.updatePreferences('user-1', {
@@ -184,7 +184,7 @@ describe('SubscribeMessageService', () => {
     expect(preferenceRepo.save).toHaveBeenCalledTimes(1);
   });
 
-  it('TC-SVC-010 偏好更新：无效级别抛 BadRequest', async () => {
+  it('TC-SVC-010 preference update: an invalid level throws BadRequest', async () => {
     const { service } = createService({});
 
     await expect(

@@ -138,7 +138,7 @@ describe('WorkerThreadExecutor', () => {
   });
 
   describe('init', () => {
-    it('应该创建 Worker 并等待 ready', async () => {
+    it('Should create a Worker and wait for ready', async () => {
       const initPromise = executor.init('virtual', null, {});
       simulateReady();
       await initPromise;
@@ -146,7 +146,7 @@ describe('WorkerThreadExecutor', () => {
       expect(executor.name).toBe('WorkerThread');
     });
 
-    it('Worker 启动超时应抛出错误', async () => {
+    it('A Worker startup timeout should throw an error', async () => {
       const initPromise = executor.init('virtual', null, { startupTimeoutMs: 100 });
       jest.advanceTimersByTime(200);
       await expect(initPromise).rejects.toThrow('startup timeout');
@@ -154,7 +154,7 @@ describe('WorkerThreadExecutor', () => {
   });
 
   describe('connect', () => {
-    it('应该发送 connect 消息并返回 ShardRef', async () => {
+    it('Should send the connect message and return a ShardRef', async () => {
       const initPromise = executor.init('virtual', null, {});
       simulateReady();
       await initPromise;
@@ -172,7 +172,7 @@ describe('WorkerThreadExecutor', () => {
   });
 
   describe('readTag', () => {
-    it('应该发送 read_tag 消息并返回结果', async () => {
+    it('Should send the read_tag message and return the result', async () => {
       const initPromise = executor.init('virtual', null, {});
       simulateReady();
       await initPromise;
@@ -187,7 +187,7 @@ describe('WorkerThreadExecutor', () => {
       expect(await readPromise).toBe(42);
     });
 
-    it('Worker 错误应传播到调用方', async () => {
+    it('Worker errors should propagate to the caller', async () => {
       const initPromise = executor.init('virtual', null, {});
       simulateReady();
       await initPromise;
@@ -202,7 +202,7 @@ describe('WorkerThreadExecutor', () => {
       await expect(readPromise).rejects.toThrow('Read failed');
     });
 
-    it('请求超时应抛出错误', async () => {
+    it('Request timeout should throw an error', async () => {
       const initPromise = executor.init('virtual', null, { requestTimeoutMs: 100 });
       simulateReady();
       await initPromise;
@@ -214,7 +214,7 @@ describe('WorkerThreadExecutor', () => {
   });
 
   describe('writeTag', () => {
-    it('应该发送 write_tag 消息', async () => {
+    it('Should send the write_tag message', async () => {
       const initPromise = executor.init('virtual', null, {});
       simulateReady();
       await initPromise;
@@ -231,7 +231,7 @@ describe('WorkerThreadExecutor', () => {
   });
 
   describe('disconnect', () => {
-    it('应该发送 disconnect 消息', async () => {
+    it('Should send the disconnect message', async () => {
       const initPromise = executor.init('virtual', null, {});
       simulateReady();
       await initPromise;
@@ -248,7 +248,7 @@ describe('WorkerThreadExecutor', () => {
   });
 
   describe('getHealth', () => {
-    it('应该返回健康状态', async () => {
+    it('Should return the health status', async () => {
       const initPromise = executor.init('virtual', null, {});
       simulateReady();
       await initPromise;
@@ -272,7 +272,7 @@ describe('WorkerThreadExecutor', () => {
       expect(health.restartCount).toBe(0);
     });
 
-    it('Worker 无响应时返回 degraded', async () => {
+    it('Returns degraded when the Worker is unresponsive', async () => {
       const initPromise = executor.init('virtual', null, { requestTimeoutMs: 100 });
       simulateReady();
       await initPromise;
@@ -285,7 +285,7 @@ describe('WorkerThreadExecutor', () => {
   });
 
   describe('crash recovery', () => {
-    it('Worker 崩溃时应触发 plugin.isolation.crash 事件', async () => {
+    it('A Worker crash should trigger the plugin.isolation.crash event', async () => {
       const eventBus = createMockEventBus();
       executor = new WorkerThreadExecutor(eventBus as any);
 
@@ -304,7 +304,7 @@ describe('WorkerThreadExecutor', () => {
       );
     });
 
-    it('崩溃后应将所有 pending 请求 reject', async () => {
+    it('After a crash, all pending requests should be rejected', async () => {
       const initPromise = executor.init('virtual', null, { autoRestart: true, maxRestarts: 5 });
       simulateReady();
       await initPromise;
@@ -317,7 +317,7 @@ describe('WorkerThreadExecutor', () => {
       await expect(readPromise).rejects.toThrow('Worker crashed');
     });
 
-    it('超过最大重启次数不应再重启', async () => {
+    it('Should not restart again after exceeding the max restart count', async () => {
       const initPromise = executor.init('virtual', null, { autoRestart: true, maxRestarts: 0 });
       simulateReady();
       await initPromise;
@@ -332,7 +332,7 @@ describe('WorkerThreadExecutor', () => {
   });
 
   describe('destroy', () => {
-    it('应该发送 shutdown 消息并 terminate Worker', async () => {
+    it('Should send the shutdown message and terminate the Worker', async () => {
       const initPromise = executor.init('virtual', null, {});
       simulateReady();
       await initPromise;
@@ -343,7 +343,7 @@ describe('WorkerThreadExecutor', () => {
       expect(getWorker().terminate).toHaveBeenCalled();
     });
 
-    it('destroy 后 getHealth 应返回 dead', async () => {
+    it('After destroy, getHealth should return dead', async () => {
       const initPromise = executor.init('virtual', null, {});
       simulateReady();
       await initPromise;

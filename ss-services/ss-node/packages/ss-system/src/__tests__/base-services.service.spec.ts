@@ -154,7 +154,7 @@ describe('BaseServicesService', () => {
   // ==================== CRUD ====================
 
   describe('create', () => {
-    it('成功创建新服务', async () => {
+    it('Successfully create a new service', async () => {
       const dto: CreateBaseServiceDto = {
         name: 'nginx',
         displayName: 'Nginx Web Server',
@@ -174,7 +174,7 @@ describe('BaseServicesService', () => {
       expect(mockRepo.save).toHaveBeenCalled();
     });
 
-    it('名称重复时抛出 ConflictException', async () => {
+    it('Duplicate names throw ConflictException', async () => {
       const dto: CreateBaseServiceDto = {
         name: 'redis',
         displayName: 'Redis',
@@ -184,19 +184,19 @@ describe('BaseServicesService', () => {
       await expect(service.create(dto)).rejects.toBeInstanceOf(ConflictException);
     });
 
-    it('未提供 enabled 时默认为 true', async () => {
+    it('Defaults to true when enabled is not provided', async () => {
       const created = await service.create({ name: 'svc1', displayName: 'S1' });
       expect(created.enabled).toBe(true);
     });
 
-    it('未提供 port 时默认为 0', async () => {
+    it('Defaults to 0 when port is not provided', async () => {
       const created = await service.create({ name: 'svc2', displayName: 'S2' });
       expect(created.port).toBe(0);
     });
   });
 
   describe('findAll', () => {
-    it('返回所有服务并按 sortOrder 排序', async () => {
+    it('Return all services sorted by sortOrder', async () => {
       await service.create({ name: 'b', displayName: 'B', sortOrder: 2 });
       await service.create({ name: 'a', displayName: 'A', sortOrder: 1 });
       const list = await service.findAll();
@@ -208,19 +208,19 @@ describe('BaseServicesService', () => {
   });
 
   describe('findByName', () => {
-    it('返回存在的服务', async () => {
+    it('Return the existing service', async () => {
       await service.create({ name: 'mysql', displayName: 'MySQL' });
       const svc = await service.findByName('mysql');
       expect(svc.name).toBe('mysql');
     });
 
-    it('不存在时抛出 NotFoundException', async () => {
+    it('Throws NotFoundException when not found', async () => {
       await expect(service.findByName('not-exist')).rejects.toBeInstanceOf(NotFoundException);
     });
   });
 
   describe('update', () => {
-    it('成功更新服务字段', async () => {
+    it('Successfully update service fields', async () => {
       await service.create({ name: 'redis', displayName: 'Redis', port: 6379 });
       const dto: UpdateBaseServiceDto = { displayName: 'Redis 缓存', port: 6380 };
       const updated = await service.update('redis', dto);
@@ -228,13 +228,13 @@ describe('BaseServicesService', () => {
       expect(updated.port).toBe(6380);
     });
 
-    it('更新不存在的服务抛出 NotFoundException', async () => {
+    it('Updating a non-existent service throws NotFoundException', async () => {
       await expect(service.update('ghost', { displayName: 'X' })).rejects.toBeInstanceOf(
         NotFoundException,
       );
     });
 
-    it('更新 processGuard 字段', async () => {
+    it('Update processGuard fields', async () => {
       await service.create({ name: 'guard-test', displayName: 'GuardTest' });
       const updated = await service.update('guard-test', { processGuard: true });
       expect(updated.processGuard).toBe(true);
@@ -269,12 +269,12 @@ describe('BaseServicesService', () => {
       });
     });
 
-    it('create 保存 processGuard 默认值 false', async () => {
+    it('create saves processGuard default false', async () => {
       const svc = await service.create({ name: 'new-svc', displayName: 'NewSvc' });
       expect(svc.processGuard).toBe(false);
     });
 
-    it('create 保存 processGuard=true', async () => {
+    it('create saves processGuard=true', async () => {
       const svc = await service.create({
         name: 'guarded',
         displayName: 'Guarded',
@@ -283,7 +283,7 @@ describe('BaseServicesService', () => {
       expect(svc.processGuard).toBe(true);
     });
 
-    it('getAllStatus 返回 autoStart 和 processGuard', async () => {
+    it('getAllStatus returns autoStart and processGuard', async () => {
       const statuses = await service.getAllStatus();
       const redis = statuses.find((s) => s.name === 'redis');
       expect(redis).toBeDefined();
@@ -291,7 +291,7 @@ describe('BaseServicesService', () => {
       expect(redis!.processGuard).toBe(true);
     });
 
-    it('checkAndGuardProcesses 仅检查 processGuard=true 的服务', async () => {
+    it('checkAndGuardProcesses only checks services with processGuard=true', async () => {
       // Mock a successfully started spawn process
       mockedChildProcess.spawn.mockReturnValue({
         pid: 9999,
@@ -309,13 +309,13 @@ describe('BaseServicesService', () => {
   });
 
   describe('remove', () => {
-    it('删除存在的服务', async () => {
+    it('Delete an existing service', async () => {
       await service.create({ name: 'todelete', displayName: 'ToDelete' });
       await service.remove('todelete');
       await expect(service.findByName('todelete')).rejects.toBeInstanceOf(NotFoundException);
     });
 
-    it('删除不存在服务抛出 NotFoundException', async () => {
+    it('Deleting a non-existent service throws NotFoundException', async () => {
       await expect(service.remove('nope')).rejects.toBeInstanceOf(NotFoundException);
     });
   });
@@ -323,7 +323,7 @@ describe('BaseServicesService', () => {
   // ==================== Status query ====================
 
   describe('getAllStatus', () => {
-    it('返回每个服务状态对象', async () => {
+    it('Return a status object per service', async () => {
       await service.create({
         name: 's1',
         displayName: 'S1',
@@ -339,7 +339,7 @@ describe('BaseServicesService', () => {
       expect(s1!.binaryExists).toBe(false); // mockedFs.existsSync defaults to false
     });
 
-    it('禁用的服务返回 unknown 状态', async () => {
+    it('Disabled services return unknown status', async () => {
       await service.create({ name: 'disabled', displayName: 'D', enabled: false });
       const statuses = await service.getAllStatus();
       const d = statuses.find((s) => s.name === 'disabled');
@@ -349,7 +349,7 @@ describe('BaseServicesService', () => {
   });
 
   describe('getStatus', () => {
-    it('文件存在时返回 binaryExists/configExists = true', async () => {
+    it('When files exist, returns binaryExists/configExists = true', async () => {
       await service.create({
         name: 'redis',
         displayName: 'Redis',
@@ -374,7 +374,7 @@ describe('BaseServicesService', () => {
       expect(st.logDirExists).toBe(true);
     });
 
-    it('不存在服务抛出 NotFoundException', async () => {
+    it('Non-existent service throws NotFoundException', async () => {
       await expect(service.getStatus('ghost')).rejects.toBeInstanceOf(NotFoundException);
     });
   });
@@ -382,12 +382,12 @@ describe('BaseServicesService', () => {
   // ==================== Configuration files ====================
 
   describe('getConfig', () => {
-    it('未配置 configPath 抛出 BadRequestException', async () => {
+    it('Throws BadRequestException when configPath is not configured', async () => {
       await service.create({ name: 'nocfg', displayName: 'NoCfg' });
       await expect(service.getConfig('nocfg')).rejects.toBeInstanceOf(BadRequestException);
     });
 
-    it('文件不存在时返回空内容', async () => {
+    it('Returns empty content when the file does not exist', async () => {
       await service.create({ name: 'redis', displayName: 'Redis', configPath: 'C:/redis.conf' });
       mockedFs.existsSync.mockReturnValue(false);
       const result = await service.getConfig('redis');
@@ -395,7 +395,7 @@ describe('BaseServicesService', () => {
       expect(result.size).toBe(0);
     });
 
-    it('读取配置文件内容', async () => {
+    it('Read the config file content', async () => {
       await service.create({ name: 'redis', displayName: 'Redis', configPath: 'C:/redis.conf' });
       mockedFs.existsSync.mockReturnValue(true);
       mockedFs.statSync.mockReturnValue({ size: 100, mtime: new Date() } as any);
@@ -405,7 +405,7 @@ describe('BaseServicesService', () => {
       expect(result.size).toBe(100);
     });
 
-    it('文件过大抛出 BadRequestException', async () => {
+    it('File too large throws BadRequestException', async () => {
       await service.create({ name: 'big', displayName: 'Big', configPath: 'C:/big.conf' });
       mockedFs.existsSync.mockReturnValue(true);
       mockedFs.statSync.mockReturnValue({ size: 20 * 1024 * 1024, mtime: new Date() } as any);
@@ -414,7 +414,7 @@ describe('BaseServicesService', () => {
   });
 
   describe('saveConfig', () => {
-    it('保存配置文件并返回 success', async () => {
+    it('Save the config file and return success', async () => {
       await service.create({ name: 'redis', displayName: 'Redis', configPath: 'C:/redis.conf' });
       mockedFs.existsSync.mockReturnValue(true);
       const result = await service.saveConfig('redis', 'new content');
@@ -423,12 +423,12 @@ describe('BaseServicesService', () => {
       expect(mockedFs.renameSync).toHaveBeenCalled();
     });
 
-    it('未配置 configPath 抛出 BadRequestException', async () => {
+    it('Throws BadRequestException when configPath is not configured', async () => {
       await service.create({ name: 'nocfg', displayName: 'NoCfg' });
       await expect(service.saveConfig('nocfg', 'x')).rejects.toBeInstanceOf(BadRequestException);
     });
 
-    it('内容过大抛出 BadRequestException', async () => {
+    it('Content too large throws BadRequestException', async () => {
       await service.create({ name: 'big', displayName: 'Big', configPath: 'C:/big.conf' });
       const big = 'a'.repeat(2 * 1024 * 1024);
       await expect(service.saveConfig('big', big)).rejects.toBeInstanceOf(BadRequestException);
@@ -438,20 +438,20 @@ describe('BaseServicesService', () => {
   // ==================== Logs ====================
 
   describe('getLogs', () => {
-    it('未配置 logDir 返回空数组', async () => {
+    it('Returns an empty array when logDir is not configured', async () => {
       await service.create({ name: 'nolog', displayName: 'NoLog' });
       const logs = await service.getLogs('nolog');
       expect(logs).toEqual([]);
     });
 
-    it('logDir 不存在返回空数组', async () => {
+    it('Returns an empty array when logDir does not exist', async () => {
       await service.create({ name: 'redis', displayName: 'R', logDir: 'C:/redis/logs' });
       mockedFs.existsSync.mockReturnValue(false);
       const logs = await service.getLogs('redis');
       expect(logs).toEqual([]);
     });
 
-    it('返回日志条目并按 mtime 排序', async () => {
+    it('Return log entries sorted by mtime', async () => {
       await service.create({ name: 'redis', displayName: 'R', logDir: 'C:/redis/logs' });
       mockedFs.existsSync.mockReturnValue(true);
       mockedFs.readdirSync.mockReturnValue(['a.log', 'b.log'] as any);
@@ -472,7 +472,7 @@ describe('BaseServicesService', () => {
   });
 
   describe('clearLogs', () => {
-    it('清理日志文件', async () => {
+    it('Clean up log files', async () => {
       await service.create({ name: 'redis', displayName: 'R', logDir: 'C:/redis/logs' });
       mockedFs.existsSync.mockReturnValue(true);
       mockedFs.readdirSync.mockReturnValue(['a.log', 'b.log', 'c.txt'] as any);
@@ -484,7 +484,7 @@ describe('BaseServicesService', () => {
       expect(mockedFs.truncateSync).toHaveBeenCalledTimes(2);
     });
 
-    it('未配置 logDir 返回空数组', async () => {
+    it('Returns an empty array when logDir is not configured', async () => {
       await service.create({ name: 'nolog', displayName: 'NoLog' });
       const result = await service.clearLogs('nolog');
       expect(result.cleared).toEqual([]);
@@ -494,11 +494,11 @@ describe('BaseServicesService', () => {
   // ==================== Start/stop operations ====================
 
   describe('start', () => {
-    it('服务不存在抛出 NotFoundException', async () => {
+    it('Non-existent service throws NotFoundException', async () => {
       await expect(service.start('ghost')).rejects.toBeInstanceOf(NotFoundException);
     });
 
-    it('未配置启动脚本和 binaryPath 抛出 BadRequestException', async () => {
+    it('Throws BadRequestException when neither a start script nor binaryPath is configured', async () => {
       await service.create({ name: 'empty', displayName: 'Empty' });
       // Make both the process and port checks return false, avoiding false positives
       mockedChildProcess.exec.mockImplementation(
@@ -509,7 +509,7 @@ describe('BaseServicesService', () => {
       await expect(service.start('empty')).rejects.toBeInstanceOf(BadRequestException);
     });
 
-    it('配置 binaryPath 但文件不存在抛出 BadRequestException', async () => {
+    it('Configured binaryPath with a non-existent file throws BadRequestException', async () => {
       await service.create({
         name: 'redis',
         displayName: 'Redis',
@@ -525,7 +525,7 @@ describe('BaseServicesService', () => {
       await expect(service.start('redis')).rejects.toBeInstanceOf(BadRequestException);
     });
 
-    it('进程已在运行抛出 ConflictException', async () => {
+    it('Process already running throws ConflictException', async () => {
       await service.create({
         name: 'redis',
         displayName: 'Redis',
@@ -541,7 +541,7 @@ describe('BaseServicesService', () => {
       await expect(service.start('redis')).rejects.toBeInstanceOf(ConflictException);
     });
 
-    it('端口被占用抛出 ConflictException', async () => {
+    it('Port already in use throws ConflictException', async () => {
       // This case would need the net module mocked to simulate an occupied port,
       // but net is bound when the service module loads and cannot be swapped at runtime.
       // The same ConflictException branch is already covered by the "process already running" test.
@@ -564,11 +564,11 @@ describe('BaseServicesService', () => {
   });
 
   describe('stop', () => {
-    it('服务不存在抛出 NotFoundException', async () => {
+    it('Non-existent service throws NotFoundException', async () => {
       await expect(service.stop('ghost')).rejects.toBeInstanceOf(NotFoundException);
     });
 
-    it('使用 stopScript 停止成功', async () => {
+    it('stopScript stops successfully', async () => {
       await service.create({
         name: 'redis',
         displayName: 'Redis',
@@ -594,7 +594,7 @@ describe('BaseServicesService', () => {
       expect(result.action).toBe('stop');
     });
 
-    it('未运行服务返回 success 并提示未在运行', async () => {
+    it('A non-running service returns success with a not-running hint', async () => {
       await service.create({ name: 'idle', displayName: 'Idle' });
       // taskkill failed, tasklist found nothing, PID not recorded
       mockedChildProcess.exec.mockImplementation(
@@ -610,11 +610,11 @@ describe('BaseServicesService', () => {
   });
 
   describe('restart', () => {
-    it('服务不存在抛出 NotFoundException', async () => {
+    it('Non-existent service throws NotFoundException', async () => {
       await expect(service.restart('ghost')).rejects.toBeInstanceOf(NotFoundException);
     });
 
-    it('调用 stop 后调用 start', async () => {
+    it('Call start after calling stop', async () => {
       await service.create({
         name: 'redis',
         displayName: 'Redis',
@@ -637,7 +637,7 @@ describe('BaseServicesService', () => {
   // ==================== onModuleInit / syncDefaultServices ====================
 
   describe('syncDefaultServices', () => {
-    it('数据库为空时初始化默认服务', async () => {
+    it('Initialize default services when the database is empty', async () => {
       const result = await service.findAll();
       expect(result.length).toBe(0);
       await service.syncDefaultServices();
@@ -648,7 +648,7 @@ describe('BaseServicesService', () => {
       expect(names).toContain('influxdb');
     });
 
-    it('数据库非空时不再重复初始化（不重复插入）', async () => {
+    it('When the database is non-empty, do not re-initialize (no duplicate inserts)', async () => {
       await service.syncDefaultServices();
       const countAfterFirst = (await service.findAll()).length;
       await service.syncDefaultServices();
@@ -656,7 +656,7 @@ describe('BaseServicesService', () => {
       expect(countAfterSecond).toBe(countAfterFirst);
     });
 
-    it('非空表时同步已有服务字段（路径更新）', async () => {
+    it('With a non-empty table, sync existing service fields (path updates)', async () => {
       // First write an old record with an incomplete path
       await service.create({
         name: 'redis',
@@ -680,7 +680,7 @@ describe('BaseServicesService', () => {
       expect(updated.name).toBe('redis');
     });
 
-    it('非空表时插入缺失的默认服务', async () => {
+    it('With a non-empty table, insert missing default services', async () => {
       // Only redis is created; influxdb is missing
       await service.create({
         name: 'redis',
@@ -699,7 +699,7 @@ describe('BaseServicesService', () => {
       expect(influx!.displayName).toBe('InfluxDB');
     });
 
-    it('非空表时保留用户配置的 enabled/autoStart', async () => {
+    it('With a non-empty table, keep user-configured enabled/autoStart', async () => {
       await service.create({
         name: 'redis',
         displayName: 'Redis',
@@ -718,7 +718,7 @@ describe('BaseServicesService', () => {
   });
 
   describe('resolveServicePaths (via syncDefaultServices)', () => {
-    it('环境变量 REDIS_BINARY_PATH 优先于默认路径', async () => {
+    it('Env var REDIS_BINARY_PATH takes priority over the default path', async () => {
       mockConfigService.get.mockImplementation((key: string) => {
         const map: Record<string, string | undefined> = {
           BASE_SERVICES_DIR: tempDir,
@@ -751,7 +751,7 @@ describe('BaseServicesService', () => {
       expect(path.normalize(redis.logDir)).toBe(path.normalize('C:/custom/redis/logs'));
     });
 
-    it('未设置环境变量时使用 BASE_SERVICES_DIR 默认路径', async () => {
+    it('Uses the BASE_SERVICES_DIR default path when the env var is not set', async () => {
       mockConfigService.get.mockImplementation((key: string) => {
         const map: Record<string, string | undefined> = {
           BASE_SERVICES_DIR: 'C:/base',
@@ -788,7 +788,7 @@ describe('BaseServicesService', () => {
       expect(path.normalize(influxdb.logDir)).toContain(expectedInfluxDir);
     });
 
-    it('环境变量 INFLUXDB_BINARY_PATH 优先于默认路径', async () => {
+    it('Env var INFLUXDB_BINARY_PATH takes priority over the default path', async () => {
       mockConfigService.get.mockImplementation((key: string) => {
         const map: Record<string, string | undefined> = {
           BASE_SERVICES_DIR: tempDir,
@@ -821,7 +821,7 @@ describe('BaseServicesService', () => {
       expect(path.normalize(influxdb.logDir)).toBe(path.normalize('C:/custom/influxdb/logs'));
     });
 
-    it('TC-BS-ENV-004: BASE_SERVICES_DIR 为相对路径时解析为绝对路径存入 DB', async () => {
+    it('TC-BS-ENV-004: a relative BASE_SERVICES_DIR is resolved to an absolute path and stored in the DB', async () => {
       // Simulate the real .env.ss config: BASE_SERVICES_DIR=${RUN_DIR}/base_services, RUN_DIR=../../ss-run/ss
       // This is the user-reported bug scenario: after a relative path is stored in the DB, fs.existsSync resolves it against process.cwd() and fails
       mockConfigService.get.mockImplementation((key: string) => {
@@ -866,7 +866,7 @@ describe('BaseServicesService', () => {
       expect(influxdb.binaryPath).toContain(path.normalize('influxdb2-2.7.8/influxd.exe'));
     });
 
-    it('TC-BS-ENV-005: 环境变量为相对路径时也解析为绝对路径', async () => {
+    it('TC-BS-ENV-005: relative env-var paths are also resolved to absolute paths', async () => {
       // Simulate env vars where the user configured a relative path in .env (rare but should be supported)
       mockConfigService.get.mockImplementation((key: string) => {
         const map: Record<string, string | undefined> = {
@@ -903,7 +903,7 @@ describe('BaseServicesService', () => {
   });
 
   describe('onModuleInit', () => {
-    it('onModuleInit 调用 syncDefaultServices + autoStartServices', async () => {
+    it('onModuleInit calls syncDefaultServices + autoStartServices', async () => {
       // The repository is empty
       const result = await service.findAll();
       expect(result.length).toBe(0);

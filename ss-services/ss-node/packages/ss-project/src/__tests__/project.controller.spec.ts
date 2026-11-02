@@ -174,7 +174,7 @@ describe('ProjectController', () => {
 
     it('should return paginated list', async () => {
       const paginatedResult = {
-        data: [{ pid: 'pid-001', name: 'Test' }],
+        data: [{ pid: 'pid-001', name: '测试' }],
         pagination: { page: 1, pageSize: 20, total: 1, totalPages: 1 },
       };
       mockProjectService.findAll.mockResolvedValue(paginatedResult);
@@ -220,7 +220,7 @@ describe('ProjectController', () => {
     const mockReq = { user: { id: 'user-001' } };
 
     it('should return project by id', async () => {
-      const project = { pid: 'pid-001', tid: 'test-project', name: 'Test' };
+      const project = { pid: 'pid-001', tid: 'test-project', name: '测试' };
       mockProjectService.findOne.mockResolvedValue(project);
 
       const result = await controller.findOne('test-project', mockReq);
@@ -241,7 +241,7 @@ describe('ProjectController', () => {
     const mockReq = { user: { id: 'user-001' } };
 
     it('should update project fields', async () => {
-      const updated = { pid: 'pid-001', tid: 'test-project', name: 'Test', description: 'updated' };
+      const updated = { pid: 'pid-001', tid: 'test-project', name: '测试', description: 'updated' };
       mockProjectService.update.mockResolvedValue(updated);
 
       const result = await controller.update('test-project', { description: 'updated' }, mockReq);
@@ -286,7 +286,7 @@ describe('ProjectController', () => {
   describe('POST /projects/:id/diagnose', () => {
     it('should diagnose project integrity', async () => {
       const diagnoseResult = {
-        projectName: 'Test',
+        projectName: '测试',
         pid: 'pid-001',
         tid: 'test-project',
         resources: {},

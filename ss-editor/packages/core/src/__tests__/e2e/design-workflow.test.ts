@@ -470,7 +470,7 @@ describe('E2E: Design Workflow', () => {
       expect(pageStore.pages.length).toBe(pageCountBefore - 1);
     });
 
-    it('只有一个页面时不应删除', () => {
+    it('Should not delete when there is only one page', () => {
       // Ensure there is only one page
       const pageCountBefore = pageStore.pages.length;
       pageStore.removePage(pageStore.currentPageId!);
@@ -530,11 +530,11 @@ describe('E2E: Design Workflow', () => {
       expect(integrityPage!.graphics.length).toBe(2);
     });
 
-    it('Import空数据不应报错', () => {
+    it('Import with empty data should not error', () => {
       expect(() => pageStore.importPages([])).not.toThrow();
     });
 
-    it('Import无效 JSON 应能正确处理', () => {
+    it('Import with invalid JSON should be handled correctly', () => {
       try {
         pageStore.importPages([{ invalid: true }]);
       } catch (e) {
@@ -556,7 +556,7 @@ describe('E2E: Design Workflow', () => {
 
     it('should set page icon', () => {
       pageStore.addPage('Icon Page');
-      pageStore.setPageIcon(pageStore.currentPageId!, 'icon-home'); /* setting the icon should not throw */ }); it('应能获取页面模式', () => {
+      pageStore.setPageIcon(pageStore.currentPageId!, 'icon-home'); /* setting the icon should not throw */ }); it('Should be able to get the page mode', () => {
       expect(pageStore.currentPageMode).toBe('edit');
       pageStore.setPageMode('preview');
       expect(pageStore.currentPageMode).toBe('preview');
