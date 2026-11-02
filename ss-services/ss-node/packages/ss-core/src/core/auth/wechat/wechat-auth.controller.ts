@@ -165,10 +165,26 @@ export class WechatAuthController {
     res.send(this.buildCallbackHtml('授权成功，正在登录...', true, ''));
   }
 
+  /**
+   * Validate a redirect target (defense-in-depth for CVE-2024-29041-style open redirect):
+   * only allow same-origin relative paths starting with exactly one '/';
+   * reject protocol-relative ('//evil.com'), backslash bypass ('/\evil.com'),
+   * scheme URLs ('javascript:', 'data:', 'https://evil.com') and HTML/JS-breaking characters.
+   */
+  private isSafeRedirectUrl(url: string): boolean {
+    if (!url || typeof url !== 'string') {
+      return false;
+    }
+    if (!url.startsWith('/') || url.startsWith('//') || url.startsWith('/\\')) {
+      return false;
+    }
+    return !/[\r\n\t"'<>\\]/.test(url);
+  }
+
   /** Build the callback-result HTML page */
   private buildCallbackHtml(message: string, success: boolean, redirectUrl: string): string {
-    const redirectJs = redirectUrl
-      ? `<script>setTimeout(function(){ window.location.href = '${redirectUrl}'; }, 1500);</script>`
+    const redirectJs = this.isSafeRedirectUrl(redirectUrl)
+      ? `<script>setTimeout(function(){ window.location.href = ${JSON.stringify(redirectUrl)}; }, 1500);</script>`
       : '';
     return `<!DOCTYPE html>
 <html lang="zh-CN">
