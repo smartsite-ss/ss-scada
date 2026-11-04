@@ -84,6 +84,11 @@ export class IsolationFactory implements OnModuleDestroy {
       this.logger.error(
         `Failed to prepare executor for [${protocol}]: ${(err as Error).message} — will fallback to in-process`,
       );
+      // Tear down the half-started executor (kills a spawned child/worker) so it
+      // does not leak outside of the executors map
+      try {
+        await this.executors.get(protocol)?.destroy();
+      } catch {}
       this.executors.delete(protocol);
     }
   }

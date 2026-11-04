@@ -42,6 +42,10 @@ export class WorkerThreadExecutor implements IIsolationExecutor, OnModuleDestroy
   private restartCount = 0;
   private startedAt = 0;
   private stats = { requestCount: 0, errorCount: 0, totalLatencyMs: 0 };
+  /** Set once destroy() is called; suppresses crash events and auto-restart afterwards */
+  private destroyed = false;
+  /** Pending auto-restart timer, cleared on destroy to avoid orphan worker respawn */
+  private restartTimer: NodeJS.Timeout | undefined;
 
   constructor(@Optional() private readonly eventBus?: EventBusService) {}
 
@@ -52,6 +56,8 @@ export class WorkerThreadExecutor implements IIsolationExecutor, OnModuleDestroy
   ): Promise<void> {
     this.protocol = protocol;
     this.config = { ...DEFAULT_ISOLATION_CONFIG, ...config };
+    // Re-init revives the executor (restart flow reuses the same instance)
+    this.destroyed = false;
 
     await this.startWorker();
   }
@@ -71,7 +77,19 @@ export class WorkerThreadExecutor implements IIsolationExecutor, OnModuleDestroy
       if (code !== 0) this.handleCrash(new Error(`Worker exited with code ${code}`));
     });
 
-    await this.waitForReady();
+    try {
+      await this.waitForReady();
+    } catch (err) {
+      // Startup failed: tear down the half-started worker so it does not leak
+      try {
+        (this.worker as any)?.removeAllListeners?.();
+      } catch {}
+      try {
+        await this.worker?.terminate?.();
+      } catch {}
+      this.worker = null;
+      throw err;
+    }
     this.startedAt = Date.now();
     this.logger.log(`Worker [${this.protocol}] started (mode=worker_thread)`);
   }
@@ -115,11 +133,26 @@ export class WorkerThreadExecutor implements IIsolationExecutor, OnModuleDestroy
   }
 
   async destroy(): Promise<void> {
-    try {
-      this.worker?.postMessage({ type: 'shutdown' });
-    } catch {}
-    await this.worker?.terminate();
+    this.destroyed = true;
+    if (this.restartTimer) {
+      clearTimeout(this.restartTimer);
+      this.restartTimer = undefined;
+    }
+    const worker = this.worker;
     this.worker = null;
+    try {
+      worker?.postMessage({ type: 'shutdown' });
+    } catch {}
+    try {
+      await worker?.terminate?.();
+    } catch {}
+    try {
+      (worker as any)?.removeAllListeners?.();
+    } catch {}
+    // Release pending request timers so they never fire after teardown
+    for (const [, p] of this.pending) {
+      clearTimeout(p.timer);
+    }
     this.pending.clear();
   }
 
@@ -175,6 +208,10 @@ export class WorkerThreadExecutor implements IIsolationExecutor, OnModuleDestroy
   }
 
   private handleCrash(err: Error): void {
+    // Intentional teardown (destroy) must not be treated as a crash: no crash
+    // event, no auto-restart — otherwise each stop/start cycle would leak
+    // orphan worker threads respawned by a dead executor.
+    if (this.destroyed) return;
     this.logger.error(`Worker [${this.protocol}] crashed: ${err.message}`);
 
     for (const [, p] of this.pending) {
@@ -193,7 +230,7 @@ export class WorkerThreadExecutor implements IIsolationExecutor, OnModuleDestroy
 
     if (this.config.autoRestart && this.restartCount < this.config.maxRestarts) {
       this.restartCount++;
-      setTimeout(() => this.startWorker(), 3000);
+      this.restartTimer = setTimeout(() => this.startWorker(), 3000);
     }
   }
 

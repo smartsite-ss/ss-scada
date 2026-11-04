@@ -50,6 +50,10 @@ export class ChildProcessExecutor implements IIsolationExecutor, OnModuleDestroy
   private stats = { requestCount: 0, errorCount: 0, totalLatencyMs: 0 };
   /** Fatal error during the child-process startup phase (for waitForReady to reject immediately) */
   private _fatalError: Error | null = null;
+  /** Set once destroy() is called; suppresses crash events and auto-restart afterwards */
+  private destroyed = false;
+  /** Pending auto-restart timer, cleared on destroy to avoid orphan process respawn */
+  private restartTimer: NodeJS.Timeout | undefined;
 
   constructor(
     @Optional() private readonly eventBus?: EventBusService,
@@ -122,6 +126,8 @@ export class ChildProcessExecutor implements IIsolationExecutor, OnModuleDestroy
   ): Promise<void> {
     this.protocol = protocol;
     this.config = { ...DEFAULT_ISOLATION_CONFIG, ...config };
+    // Re-init revives the executor (restart flow reuses the same instance)
+    this.destroyed = false;
 
     await this.startChild();
   }
@@ -154,11 +160,22 @@ export class ChildProcessExecutor implements IIsolationExecutor, OnModuleDestroy
       if (code !== 0 || signal) this.handleCrash(code, signal);
     });
 
-    await this.waitForReady();
+    try {
+      await this.waitForReady();
+    } catch (err) {
+      // Startup failed: tear down the half-started child so it does not leak
+      try {
+        (this.child as any)?.removeAllListeners?.();
+      } catch {}
+      try {
+        this.child?.kill('SIGKILL');
+      } catch {}
+      this.child = null;
+      throw err;
+    }
     this.startedAt = Date.now();
     this.writeLog('INFO', `Child process started (PID: ${this.child.pid}, mode=child_process)`);
   }
-
   async connect(device: IDeviceContext): Promise<ShardRef> {
     const result = await this.sendRequest('connect', { device });
     return { connectionId: result.connectionId, protocol: result.protocol || this.protocol };
@@ -197,14 +214,25 @@ export class ChildProcessExecutor implements IIsolationExecutor, OnModuleDestroy
   }
 
   async destroy(): Promise<void> {
-    try {
-      this.child?.send({ type: 'shutdown' });
-    } catch {}
-    this.child?.kill('SIGTERM');
-    setTimeout(() => {
-      if (!this.child?.killed) this.child?.kill('SIGKILL');
-    }, 5000);
+    this.destroyed = true;
+    if (this.restartTimer) {
+      clearTimeout(this.restartTimer);
+      this.restartTimer = undefined;
+    }
+    const child = this.child;
     this.child = null;
+    try {
+      child?.send({ type: 'shutdown' });
+    } catch {}
+    child?.kill('SIGTERM');
+    // SIGKILL fallback uses the captured reference (this.child is already null)
+    setTimeout(() => {
+      if (child && !child.killed) child.kill('SIGKILL');
+    }, 5000);
+    // Release pending request timers so they never fire after teardown
+    for (const [, p] of this.pending) {
+      clearTimeout(p.timer);
+    }
     this.pending.clear();
   }
 
@@ -262,6 +290,10 @@ export class ChildProcessExecutor implements IIsolationExecutor, OnModuleDestroy
   }
 
   private handleCrash(code: number | null, signal: string | null): void {
+    // Intentional teardown (destroy) must not be treated as a crash: no crash
+    // event, no auto-restart — otherwise each stop/start cycle would leak
+    // orphan collector processes restarted by a dead executor.
+    if (this.destroyed) return;
     this.writeLog('ERROR', `Child process exited: code=${code}, signal=${signal}`);
 
     for (const [, p] of this.pending) {
@@ -280,7 +312,7 @@ export class ChildProcessExecutor implements IIsolationExecutor, OnModuleDestroy
 
     if (this.config.autoRestart && this.restartCount < this.config.maxRestarts) {
       this.restartCount++;
-      setTimeout(() => this.startChild(), 3000);
+      this.restartTimer = setTimeout(() => this.startChild(), 3000);
     }
   }
 
