@@ -105,3 +105,6 @@ tmp-check-db.js
 docs-e/**
 temp/**
 scripts/**
+
+# Local-only scripts (not uploaded to remotes)
+bin/push-remote.bat
