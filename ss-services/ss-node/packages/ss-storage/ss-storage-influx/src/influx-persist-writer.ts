@@ -91,13 +91,14 @@ export class InfluxPersistWriter implements IPersistWriter, OnModuleInit {
   }
 
   /**
-   * Construct InfluxDB fields, preserving the original type semantics of value.
+   * Construct InfluxDB fields.
    *
-   * InfluxDB supports boolean/float/integer/unsigned/string field types,
-   * inferred automatically from the value's JS type:
-   * - JS boolean → InfluxDB boolean
-   * - JS number → InfluxDB float
-   * - JS string → InfluxDB string
+   * The `value` field is always written as a float: InfluxDB enforces a single
+   * field type per measurement, and the historical data in `tag_values.value`
+   * is float. Boolean tag values (digital/switch points) are therefore coerced
+   * to 1/0 — writing them as InfluxDB boolean causes an HTTP 422 field-type
+   * conflict ("already exists as type float"), which trips the write breaker
+   * and silently drops all points during the backoff window.
    *
    * quality is always stored as a string.
    */
@@ -105,6 +106,8 @@ export class InfluxPersistWriter implements IPersistWriter, OnModuleInit {
     const fields: Record<string, any> = { quality: point.quality };
     if (point.value === null || point.value === undefined) {
       fields.value = 0; // InfluxDB does not support null field values; fall back to 0
+    } else if (typeof point.value === 'boolean') {
+      fields.value = point.value ? 1 : 0; // coerce to float, matches the existing field type
     } else {
       fields.value = point.value;
     }

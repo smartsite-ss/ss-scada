@@ -84,7 +84,9 @@ export class AlarmEventSubscriber implements OnModuleInit, OnModuleDestroy {
               id: rule.id,
               name: rule.name,
               alarmType: rule.alarmType,
-              notifyChannels: rule.notifyChannels ?? [],
+              // notify_channels is a TEXT column storing a JSON array string;
+              // parse it so downstream consumers receive a real string[]
+              notifyChannels: this.parseNotifyChannels(rule.notifyChannels),
             }
           : null,
       });
@@ -162,6 +164,22 @@ export class AlarmEventSubscriber implements OnModuleInit, OnModuleDestroy {
       );
     } catch (error: any) {
       this.logger.error(`Failed to persist alarm record: ${error.message}`);
+    }
+  }
+
+  /**
+   * Parse the notify_channels TEXT column (a JSON array string, e.g. '["sound","popup"]')
+   * into a real string[]. Tolerates arrays, null, malformed JSON and legacy plain text.
+   */
+  private parseNotifyChannels(value?: string | string[]): string[] {
+    if (Array.isArray(value)) return value;
+    if (typeof value !== 'string' || value.length === 0) return [];
+    try {
+      const parsed = JSON.parse(value);
+      return Array.isArray(parsed) ? parsed.map(String) : [];
+    } catch {
+      // Legacy plain-text channel name (not JSON) — treat as a single channel
+      return [value];
     }
   }
 }

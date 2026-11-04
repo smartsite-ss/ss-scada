@@ -84,11 +84,26 @@ export class AlarmNotificationSubscriber implements OnModuleInit, OnModuleDestro
    * WeChat subscription messages are opt-in channels (recipients are decided by user authorization and not part of rule-level channel config),
    * so they are always merged in when globally enabled, avoiding being filtered out by the rule notifyChannels intersection.
    */
-  private resolveChannels(ruleChannels?: string[]): string[] {
+  private resolveChannels(ruleChannels?: string[] | string): string[] {
     const enabled = this.notificationService!.getEnabledChannels();
     if (enabled.length === 0) return [];
-    if (!ruleChannels || ruleChannels.length === 0) return enabled;
-    const resolved = ruleChannels.filter((c) => enabled.includes(c));
+
+    // Defensive normalization: notify_channels is persisted as a JSON array
+    // string in a TEXT column; some event producers may pass the raw string.
+    let channels: string[] = [];
+    if (Array.isArray(ruleChannels)) {
+      channels = ruleChannels;
+    } else if (typeof ruleChannels === 'string' && ruleChannels.length > 0) {
+      try {
+        const parsed = JSON.parse(ruleChannels);
+        channels = Array.isArray(parsed) ? parsed.map(String) : [];
+      } catch {
+        channels = [ruleChannels];
+      }
+    }
+
+    if (channels.length === 0) return enabled;
+    const resolved = channels.filter((c) => enabled.includes(c));
     if (enabled.includes('wechatSubscribe') && !resolved.includes('wechatSubscribe')) {
       resolved.push('wechatSubscribe');
     }
