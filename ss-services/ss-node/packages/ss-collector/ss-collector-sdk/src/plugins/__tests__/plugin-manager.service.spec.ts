@@ -151,6 +151,8 @@ function makeMockIsolationFactory() {
     getExecutor: jest.fn().mockReturnValue({
       getHealth: jest.fn().mockResolvedValue({ status: 'healthy' }),
     }),
+    prepare: jest.fn().mockResolvedValue(undefined),
+    destroyExecutor: jest.fn().mockResolvedValue(undefined),
   } as unknown as jest.Mocked<IsolationFactory>;
 }
 
@@ -321,6 +323,74 @@ describe('PluginManagerService', () => {
 
       expect(registry.deactivate).toHaveBeenCalledWith('modbus_tcp');
       expect(result.status).toBe('inactive');
+    });
+  });
+
+  // -------------------------------------------------------------
+  // Executor lifecycle (collection process start/stop)
+  // -------------------------------------------------------------
+  describe('executor lifecycle', () => {
+    it('activate should pre-warm the isolation executor (start the collection process)', async () => {
+      const plugin = makeRegisteredPlugin({ status: 'active' });
+      registry.getPlugin.mockReturnValue(plugin);
+
+      await service.activate('modbus_tcp');
+
+      expect(isolationFactory.prepare).toHaveBeenCalledWith('modbus_tcp');
+    });
+
+    it('activate should not throw when the executor pre-warm fails', async () => {
+      const plugin = makeRegisteredPlugin({ status: 'active' });
+      registry.getPlugin.mockReturnValue(plugin);
+      isolationFactory.prepare.mockRejectedValue(new Error('spawn failed'));
+
+      const result = await service.activate('modbus_tcp');
+
+      expect(result.protocol).toBe('modbus_tcp');
+    });
+
+    it('deactivate should destroy the isolation executor (stop the collection process)', async () => {
+      const plugin = makeRegisteredPlugin({ status: 'inactive' });
+      registry.getPlugin.mockReturnValue(plugin);
+
+      await service.deactivate('modbus_tcp');
+
+      expect(isolationFactory.destroyExecutor).toHaveBeenCalledWith('modbus_tcp');
+      // Executor teardown happens after the registry deactivation
+      expect(isolationFactory.destroyExecutor.mock.invocationCallOrder[0]).toBeGreaterThan(
+        registry.deactivate.mock.invocationCallOrder[0],
+      );
+    });
+
+    it('deactivate should not throw when destroying the executor fails', async () => {
+      const plugin = makeRegisteredPlugin({ status: 'inactive' });
+      registry.getPlugin.mockReturnValue(plugin);
+      isolationFactory.destroyExecutor.mockRejectedValue(new Error('kill failed'));
+
+      const result = await service.deactivate('modbus_tcp');
+
+      expect(result.protocol).toBe('modbus_tcp');
+    });
+
+    it('activate/deactivate should work without an injected isolationFactory', async () => {
+      const svc = new PluginManagerService(
+        registry,
+        discovery,
+        updater,
+        monitor,
+        configService,
+        undefined, // no isolationFactory
+        undefined,
+      );
+      const active = makeRegisteredPlugin({ status: 'active' });
+      const inactive = makeRegisteredPlugin({ status: 'inactive' });
+      registry.getPlugin.mockReturnValueOnce(active).mockReturnValueOnce(inactive);
+
+      const activated = await svc.activate('modbus_tcp');
+      const deactivated = await svc.deactivate('modbus_tcp');
+
+      expect(activated.status).toBe('active');
+      expect(deactivated.status).toBe('inactive');
     });
   });
 

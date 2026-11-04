@@ -132,4 +132,6 @@ export interface PluginMonitorData {
 /** Plugin runtime configuration (persisted to the JSON file under PLUGIN_CONFIG_DIR) */
 export interface PluginRuntimeConfig {
   isolationMode?: string;
+  /** Persisted activation state (restored on backend restart) */
+  activated?: boolean;
 }

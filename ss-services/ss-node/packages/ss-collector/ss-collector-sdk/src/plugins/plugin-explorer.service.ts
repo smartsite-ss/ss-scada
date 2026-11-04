@@ -80,7 +80,11 @@ export class PluginExplorerService implements OnModuleInit {
 
       // Decide whether to auto-activate, priority:
       // 1. persisted config activated=true  -> restore previous activation state
-      // 2. enabledByDefault=true       -> default-enabled as declared by the decorator
+      // 2. persisted config activated=false -> user deactivated it explicitly; the
+      //    enabledByDefault flag must NOT override the persisted choice (bugfix:
+      //    deactivated plugins used to auto-activate again after a restart)
+      // 3. enabledByDefault=true            -> default-enabled as declared by the decorator
+      //    (only when the plugin has never been toggled, i.e. no persisted state)
       const persistedActivated = this.configService.getActivated(meta.protocol);
       if (persistedActivated === true) {
         this.logger.log(
@@ -88,14 +92,20 @@ export class PluginExplorerService implements OnModuleInit {
         );
         await this.registry.activate(meta.protocol);
         this.logger.log(`Plugin "${meta.protocol}": activation restored`);
+      } else if (persistedActivated === false) {
+        this.logger.log(
+          `Plugin "${meta.protocol}": persisted activated=false, staying deactivated (overrides enabledByDefault=${meta.enabledByDefault})`,
+        );
       } else if (meta.enabledByDefault) {
         this.logger.log(`Plugin "${meta.protocol}": enabledByDefault=true, auto-activating...`);
         await this.registry.activate(meta.protocol);
         this.logger.log(`Plugin "${meta.protocol}": auto-activated successfully`);
       }
 
-      // Pre-warm Worker/child process according to isolation mode
-      if (this.isolationFactory) {
+      // Pre-warm the Worker/child process according to isolation mode.
+      // Only active plugins get a warm process; deactivated plugins must not spawn
+      // a collector process (the executor is created lazily on activation instead).
+      if (this.isolationFactory && this.registry.getPlugin(meta.protocol)?.status === 'active') {
         await this.isolationFactory.prepare(meta.protocol);
       }
     } catch (error) {

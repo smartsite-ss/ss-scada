@@ -160,13 +160,22 @@ export class PluginEventAdapter {
   }
 
   /**
-   * Handle plugin-deactivation events: mark all devices of that protocol as offline
+   * Handle plugin-deactivation events: stop the scheduled collection tasks of all
+   * devices of that protocol and mark the devices offline
    */
   private handlePluginDeactivated(protocol: string): void {
     const deviceIds = this.deviceStateManager.getDeviceIdsByProtocol(protocol);
     this.logger.log(
-      `Plugin deactivated: ${protocol} — marking ${deviceIds.length} devices offline`,
+      `Plugin deactivated: ${protocol} — stopping tasks and marking ${deviceIds.length} devices offline`,
     );
+
+    // Stop the scheduled collection tasks of these devices (unregister from the
+    // scheduler and clean the device→task map), so the EnhancedScheduler no longer
+    // fires reads for a deactivated plugin. Devices are reloaded and re-registered
+    // by handlePluginActivated() when the plugin is activated again.
+    if (deviceIds.length > 0) {
+      this.taskRegistrationService.stopProjectTasks(deviceIds);
+    }
 
     for (const deviceId of deviceIds) {
       this.deviceStateManager.setOffline(deviceId, 'Plugin deactivated');

@@ -171,11 +171,36 @@ export class PluginManagerService {
 
   async activate(protocol: string): Promise<PluginInfo> {
     await this.registry.activate(protocol);
+    // Pre-warm the isolation executor so the collection process (worker/child
+    // process) is started immediately; in_process mode is a no-op.
+    if (this.isolationFactory) {
+      try {
+        await this.isolationFactory.prepare(protocol);
+      } catch (err) {
+        this.logger.warn(
+          `Failed to pre-warm executor for "${protocol}": ${(err as Error).message}`,
+        );
+      }
+    }
     return this.getPlugin(protocol)!;
   }
 
   async deactivate(protocol: string): Promise<PluginInfo> {
     await this.registry.deactivate(protocol);
+    // Destroy the isolation executor so the collection process is really stopped:
+    // worker threads are terminated and child processes are killed (SIGTERM → SIGKILL).
+    // In in_process mode there is no separate process; the scheduled tasks of the
+    // plugin's devices are stopped by the plugin.deactivated event handler
+    // (PluginEventAdapter → TaskRegistrationService.stopProjectTasks).
+    if (this.isolationFactory) {
+      try {
+        await this.isolationFactory.destroyExecutor(protocol);
+      } catch (err) {
+        this.logger.warn(
+          `Failed to destroy executor for "${protocol}": ${(err as Error).message}`,
+        );
+      }
+    }
     return this.getPlugin(protocol)!;
   }
 
