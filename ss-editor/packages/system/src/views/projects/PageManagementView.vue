@@ -550,7 +550,8 @@ onMounted(async () => {
 <style scoped>
 .page-management {
   padding: 24px;
-  max-width: 1400px;
+  /* Fill the whole display area; .page-grid auto-fills columns by viewport width */
+  width: auto;
 }
 
 /* ── 页头（紧凑型：标题 + 项目选择 + 统计） ── */

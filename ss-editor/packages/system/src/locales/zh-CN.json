@@ -627,6 +627,9 @@
     },
     "devices": {
       "title": "设备管理",
+      "viewMode": "显示方式",
+      "cardView": "卡片显示",
+      "listView": "列表显示",
       "groups": "设备分组",
       "refresh": "刷新",
       "loading": "加载中...",

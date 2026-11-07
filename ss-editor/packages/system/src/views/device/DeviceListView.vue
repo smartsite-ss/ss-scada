@@ -204,6 +204,101 @@
           </div>
         </div>
         <div class="header-actions">
+          <div
+            class="view-switch"
+            role="group"
+            :aria-label="$t('system.devices.viewMode')"
+          >
+            <button
+              class="view-switch-btn"
+              :class="{ active: viewMode === 'card' }"
+              :aria-pressed="viewMode === 'card'"
+              :title="$t('system.devices.cardView')"
+              @click="setViewMode('card')"
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              ><rect
+                x="3"
+                y="3"
+                width="7"
+                height="7"
+                rx="1"
+              /><rect
+                x="14"
+                y="3"
+                width="7"
+                height="7"
+                rx="1"
+              /><rect
+                x="3"
+                y="14"
+                width="7"
+                height="7"
+                rx="1"
+              /><rect
+                x="14"
+                y="14"
+                width="7"
+                height="7"
+                rx="1"
+              /></svg>
+              <span>{{ $t('system.devices.cardView') }}</span>
+            </button>
+            <button
+              class="view-switch-btn"
+              :class="{ active: viewMode === 'list' }"
+              :aria-pressed="viewMode === 'list'"
+              :title="$t('system.devices.listView')"
+              @click="setViewMode('list')"
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              ><line
+                x1="8"
+                y1="6"
+                x2="21"
+                y2="6"
+              /><line
+                x1="8"
+                y1="12"
+                x2="21"
+                y2="12"
+              /><line
+                x1="8"
+                y1="18"
+                x2="21"
+                y2="18"
+              /><line
+                x1="3"
+                y1="6"
+                x2="3.01"
+                y2="6"
+              /><line
+                x1="3"
+                y1="12"
+                x2="3.01"
+                y2="12"
+              /><line
+                x1="3"
+                y1="18"
+                x2="3.01"
+                y2="18"
+              /></svg>
+              <span>{{ $t('system.devices.listView') }}</span>
+            </button>
+          </div>
           <button
             class="btn btn-primary"
             :disabled="!projectId"
@@ -292,8 +387,192 @@
         </button>
       </div>
 
+      <template v-else>
+        <div
+          v-if="viewMode === 'card'"
+          class="device-cards"
+        >
+          <div class="device-card-grid">
+            <div
+              v-for="device in devices"
+              :key="device.id"
+              class="device-card"
+            >
+              <div class="device-card-head">
+                <div class="device-card-title">
+                  <span class="device-card-name">{{ device.deviceName }}</span>
+                  <code class="device-code">{{ deviceDeviceCode(device) }}</code>
+                </div>
+                <span
+                  class="status-badge"
+                  :class="'status-' + device.status"
+                  :title="device.status === 'error' ? $t('system.devices.dblclickForErrorDetail') : ''"
+                  @dblclick="device.status === 'error' && showErrorDetail(device)"
+                >
+                  {{ deviceStatusLabel(device.status) }}
+                </span>
+              </div>
+
+              <div class="device-card-badges">
+                <span class="type-badge">{{ driverLabel(device.driver) }}</span>
+                <span class="type-badge">{{ deviceTypeLabel(device.type) }}</span>
+                <span
+                  v-if="device.templateId"
+                  class="template-badge"
+                  :title="getTemplateName(device.templateId)"
+                >{{ getTemplateName(device.templateId) }}</span>
+                <span
+                  v-else
+                  class="template-empty"
+                >{{ $t('system.devices.noTemplate') }}</span>
+              </div>
+
+              <div class="device-card-meta">
+                <div class="meta-row">
+                  <span class="meta-label">{{ $t('system.devices.groups') }}</span>
+                  <span class="meta-value">{{ groupName(device.groupId) }}</span>
+                </div>
+                <div class="meta-row">
+                  <span class="meta-label">{{ $t('system.devices.collectPeriod') }}</span>
+                  <span class="meta-value">{{ formatPeriod(device.scanRate) }}</span>
+                </div>
+                <div class="meta-row">
+                  <span class="meta-label">{{ $t('system.devices.lastOnline') }}</span>
+                  <span class="meta-value">{{ formatTime(device.lastOnlineAt) }}</span>
+                </div>
+                <div class="meta-row">
+                  <span class="meta-label">{{ $t('system.devices.lastData') }}</span>
+                  <span class="meta-value">{{ formatTime(device.lastDataAt) }}</span>
+                </div>
+              </div>
+
+              <div class="device-card-actions">
+                <button
+                  class="btn-icon"
+                  :title="$t('system.devices.viewData')"
+                  @click="openDataPanel(device)"
+                >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ><path d="M3 3v18h18" /><path d="M7 14l4-4 4 4 5-5" /></svg>
+                </button>
+                <button
+                  class="btn-icon"
+                  :title="$t('system.devices.moveToGroup')"
+                  @click="openMoveDialog(device)"
+                >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ><polyline points="15 18 9 12 15 6" /></svg>
+                </button>
+                <button
+                  class="btn-icon"
+                  :title="$t('common.edit')"
+                  @click="editDevice(device)"
+                >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  ><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
+                </button>
+                <button
+                  v-if="device.templateId"
+                  class="btn-icon"
+                  :title="$t('system.devices.syncTemplate')"
+                  :disabled="syncingDeviceIds.has(device.id)"
+                  @click="handleSyncTemplate(device)"
+                >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    :class="{ spinning: syncingDeviceIds.has(device.id) }"
+                  ><polyline points="23 4 23 10 17 10" /><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" /></svg>
+                </button>
+                <button
+                  class="btn-icon btn-icon-danger"
+                  :title="$t('common.delete')"
+                  @click="confirmDelete(device)"
+                >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  ><polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div
+            v-if="totalPages > 1"
+            class="card-pagination"
+          >
+            <button
+              class="btn btn-secondary card-page-btn"
+              :disabled="currentPage <= 1"
+              :title="$t('system.devices.prevPage')"
+              @click="goToCardPage(currentPage - 1)"
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ><polyline points="15 18 9 12 15 6" /></svg>
+            </button>
+            <span class="card-page-info">{{ currentPage }} / {{ totalPages }} · {{ $t('system.devices.deviceCount', { count: total }) }}</span>
+            <button
+              class="btn btn-secondary card-page-btn"
+              :disabled="currentPage >= totalPages"
+              :title="$t('system.devices.nextPage')"
+              @click="goToCardPage(currentPage + 1)"
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ><polyline points="9 18 15 12 9 6" /></svg>
+            </button>
+          </div>
+        </div>
+      </template>
+
       <SmartTable
-        v-else
+        v-show="viewMode === 'list' && hasDeviceData"
         table-id="device-list"
         :data="devices"
         :columns="deviceColumns"
@@ -868,6 +1147,23 @@ const showDeleteDialog = ref(false);
 const deletingDevice = ref<Device | null>(null);
 const submitting = ref(false);
 const syncingDeviceIds = ref(new Set<string>());
+
+// Device list display mode: cards by default, table view stays available via the toolbar switch
+type DeviceViewMode = 'card' | 'list';
+const viewMode = ref<DeviceViewMode>('card');
+
+function setViewMode(mode: DeviceViewMode) {
+  viewMode.value = mode;
+}
+
+const totalPages = computed(() => Math.max(1, Math.ceil(total.value / pageSize.value)));
+const hasDeviceData = computed(() => !!projectId.value && devices.value.length > 0);
+
+function goToCardPage(page: number) {
+  if (page < 1 || page > totalPages.value || page === currentPage.value) return;
+  currentPage.value = page;
+  fetchData();
+}
 
 // 分组对话框
 const showGroupDialog = ref(false);
@@ -2337,5 +2633,173 @@ onActivated(() => {
 
 .diagnostics-value.circuit-closed {
   color: var(--status-online);
+}
+
+/* ===== View mode switch ===== */
+.view-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.view-switch-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 28px;
+  padding: 0 10px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.15s, background 0.15s;
+}
+
+.view-switch-btn:hover {
+  color: var(--text);
+  background: var(--border-light);
+}
+
+.view-switch-btn.active {
+  color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 15%, transparent);
+  font-weight: 500;
+}
+
+/* ===== Card view ===== */
+.device-cards {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  margin: 0 24px 16px;
+}
+
+.device-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  align-content: start;
+}
+
+.device-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+
+.device-card:hover {
+  border-color: var(--primary);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--text) 10%, transparent);
+  transform: translateY(-1px);
+}
+
+.device-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.device-card-title {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.device-card-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.device-card-head .status-badge {
+  flex-shrink: 0;
+  cursor: default;
+}
+
+.device-card-badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.device-card-badges .template-badge {
+  max-width: 140px;
+}
+
+.device-card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.meta-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.meta-label {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.meta-value {
+  color: var(--text-secondary);
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.device-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.card-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 20px 0 4px;
+}
+
+.card-page-btn {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  justify-content: center;
+}
+
+.card-page-info {
+  font-size: 13px;
+  color: var(--text-secondary);
+  white-space: nowrap;
 }
 </style>

@@ -631,6 +631,9 @@
     },
     "devices": {
       "title": "Device Management",
+      "viewMode": "View Mode",
+      "cardView": "Card View",
+      "listView": "List View",
       "groups": "Device Groups",
       "refresh": "Refresh",
       "loading": "Loading...",
