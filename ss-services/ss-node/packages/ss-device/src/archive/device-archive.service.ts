@@ -58,6 +58,8 @@ export interface IDataQueryService {
     endTime: Date;
     page?: number;
     pageSize?: number;
+    /** Project id — selects the per-project InfluxDB bucket */
+    projectId?: string;
   }): Promise<{ data: HistoricalDataRecord[]; total: number }>;
 }
 

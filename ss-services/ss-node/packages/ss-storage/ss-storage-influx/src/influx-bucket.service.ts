@@ -2,8 +2,17 @@
 // https://smartsite.top/
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
-import { Injectable, Logger, OnModuleInit, OnModuleDestroy, Optional } from '@nestjs/common';
-import { EventBusService, EventLogService } from '@ss-node/ss-core';
+import * as fs from 'fs';
+import * as path from 'path';
+import {
+  Injectable,
+  Logger,
+  OnModuleInit,
+  OnModuleDestroy,
+  OnApplicationBootstrap,
+  Optional,
+} from '@nestjs/common';
+import { EventBusService, EventLogService, PathResolverService } from '@ss-node/ss-core';
 
 /**
  * InfluxDB bucket management service
@@ -16,7 +25,7 @@ import { EventBusService, EventLogService } from '@ss-node/ss-core';
  * - CODE-04: periodic health check so influxAvailable flips back to true after InfluxDB recovers
  */
 @Injectable()
-export class InfluxBucketService implements OnModuleInit, OnModuleDestroy {
+export class InfluxBucketService implements OnModuleInit, OnApplicationBootstrap, OnModuleDestroy {
   private readonly logger = new Logger(InfluxBucketService.name);
 
   /** Cache of known-existing buckets, avoiding repeated HTTP checks */
@@ -41,6 +50,7 @@ export class InfluxBucketService implements OnModuleInit, OnModuleDestroy {
   constructor(
     private readonly eventBus: EventBusService,
     @Optional() private readonly eventLogService?: EventLogService,
+    @Optional() private readonly pathResolver?: PathResolverService,
   ) {}
 
   onModuleInit(): void {
@@ -72,6 +82,103 @@ export class InfluxBucketService implements OnModuleInit, OnModuleDestroy {
     // CODE-04: start the periodic health check so influxAvailable can flip back to true after InfluxDB recovers
     // (the original implementation never called markAvailable() automatically, so one failure permanently fell back to the default bucket)
     this.startHealthCheck();
+  }
+
+  /**
+   * Provision one bucket per existing project at startup.
+   *
+   * Runs in the background on purpose: bucket HTTP calls must never delay or block
+   * application startup. Creation is idempotent — existing buckets are detected and
+   * reused, only missing ones are created.
+   */
+  onApplicationBootstrap(): void {
+    void this.ensureBucketsForAllProjects().catch((err: Error) => {
+      this.logger.warn(`Startup bucket provisioning failed: ${err.message}`);
+    });
+  }
+
+  /**
+   * Ensure a bucket exists for every project directory.
+   *
+   * @returns summary counters for logging/testing
+   */
+  async ensureBucketsForAllProjects(): Promise<{
+    total: number;
+    ready: number;
+    failed: number;
+  }> {
+    const summary = { total: 0, ready: 0, failed: 0 };
+
+    if (!(process.env.INFLUXDB_TOKEN || '')) {
+      this.logger.warn(
+        'INFLUXDB_TOKEN not configured — skipping project bucket provisioning at startup',
+      );
+      return summary;
+    }
+
+    const projectIds = this.listProjectIds();
+    summary.total = projectIds.length;
+    if (projectIds.length === 0) {
+      this.logger.debug('No project directories found — nothing to provision');
+      return summary;
+    }
+
+    for (const projectId of projectIds) {
+      // Stop hammering a dead backend: the health check will restore availability later
+      if (!this.influxAvailable) {
+        summary.failed += 1;
+        continue;
+      }
+      const ready = await this.ensureBucket(projectId);
+      if (ready) summary.ready += 1;
+      else summary.failed += 1;
+    }
+
+    this.logger.log(
+      `Startup bucket provisioning: ${summary.ready}/${summary.total} project bucket(s) ready` +
+        (summary.failed > 0 ? `, ${summary.failed} failed` : ''),
+    );
+    return summary;
+  }
+
+  /**
+   * Enumerate project ids by scanning PROJECTS_DIR for directories that contain
+   * projectinfo.json (same marker used by ss-project's scanProjects).
+   */
+  private listProjectIds(): string[] {
+    const configuredRaw = process.env.PROJECTS_DIR || './data/projects';
+    // PROJECTS_DIR may reference other vars (e.g. ${DATA_DIR}/projects); expand defensively
+    // in case the value reached process.env unexpanded
+    const configured = configuredRaw.replace(
+      /\$\{(\w+)\}/g,
+      (_match: string, name: string) => process.env[name] || '',
+    );
+    let projectsDir: string;
+    try {
+      projectsDir = this.pathResolver ? this.pathResolver.resolve(configured) : path.resolve(configured);
+    } catch {
+      projectsDir = path.resolve(configured);
+    }
+
+    if (!fs.existsSync(projectsDir)) {
+      this.logger.debug(`Projects directory not found: ${projectsDir}`);
+      return [];
+    }
+
+    try {
+      return fs
+        .readdirSync(projectsDir, { withFileTypes: true })
+        .filter(
+          (entry) =>
+            entry.isDirectory() &&
+            !entry.name.startsWith('.') &&
+            fs.existsSync(path.join(projectsDir, entry.name, 'projectinfo.json')),
+        )
+        .map((entry) => entry.name);
+    } catch (err) {
+      this.logger.warn(`Failed to scan projects directory: ${(err as Error).message}`);
+      return [];
+    }
   }
 
   onModuleDestroy(): void {

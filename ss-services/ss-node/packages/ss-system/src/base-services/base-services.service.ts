@@ -1273,9 +1273,17 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
     }
 
     const username = options?.username || process.env.INFLUXDB_INIT_USERNAME || 'admin';
-    const password = options?.password || process.env.INFLUXDB_INIT_PASSWORD || 'admin';
+    const password = options?.password || process.env.INFLUXDB_INIT_PASSWORD || 'SsAdmin@2026';
     const org = options?.org || process.env.INFLUXDB_ORG || 'ss-org';
     const bucket = options?.bucket || process.env.INFLUXDB_BUCKET || 'ss_node_data';
+
+    // InfluxDB rejects setup unless the password is 8-72 characters long
+    if (password.length < 8 || password.length > 72) {
+      return {
+        success: false,
+        message: `InfluxDB setup 失败: 密码长度必须为 8-72 个字符（当前 ${password.length}），请通过 INFLUXDB_INIT_PASSWORD 配置合法密码`,
+      };
+    }
 
     try {
       const response = await fetch(`${url}/api/v2/setup`, {
@@ -1312,6 +1320,10 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
         this.logger.log(
           `InfluxDB setup completed: org="${resultOrg}", bucket="${resultBucket}", token=${generatedToken.slice(0, 8)}...`,
         );
+
+        // Make the fresh token effective immediately so bucket creation and writes
+        // work without restarting the backend
+        process.env.INFLUXDB_TOKEN = generatedToken;
 
         // Try writing the token into the .env file (if writable)
         const envWritten = this.writeInfluxTokenToEnv(generatedToken);

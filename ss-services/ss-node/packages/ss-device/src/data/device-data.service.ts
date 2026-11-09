@@ -6,6 +6,7 @@ import { Injectable, Logger, Inject, Optional } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { In } from 'typeorm';
 import { LatestValueRedisService, type LatestValueEntry } from '@ss-node/ss-core';
+import { DATA_QUERY_SERVICE, IDataQueryService } from '../archive/device-archive.service';
 
 export interface TagValueEntry {
   value: any;
@@ -65,6 +66,9 @@ export class DeviceDataService {
     private readonly deviceRepo: any,
     @Optional()
     private readonly latestValueRedisService?: LatestValueRedisService,
+    @Optional()
+    @Inject(DATA_QUERY_SERVICE)
+    private readonly dataQueryService?: IDataQueryService,
   ) {}
 
   /**
@@ -159,10 +163,40 @@ export class DeviceDataService {
     tagId: string,
     range: { start: Date; end: Date },
     _options?: { interval?: number; aggregation?: 'avg' | 'min' | 'max' },
+    projectId?: string,
   ): Promise<DataPoint[]> {
-    this.logger.log(`getTagHistory: ${tagId} [${range.start} - ${range.end}]`);
-    // TODO: Integrate with InfluxDB for real time-series data
-    return [];
+    this.logger.log(
+      `getTagHistory: ${tagId} [${range.start} - ${range.end}] project=${projectId || 'default'}`,
+    );
+
+    if (!this.dataQueryService) {
+      this.logger.warn('getTagHistory: DataQueryService unavailable — returning empty history');
+      return [];
+    }
+
+    try {
+      // projectId selects the per-project InfluxDB bucket ({base}_{projectId});
+      // without it the query would fall back to the "default" bucket and find nothing
+      const result = await this.dataQueryService.queryTimeRange({
+        tagId,
+        startTime: range.start,
+        endTime: range.end,
+        page: 1,
+        pageSize: 1000,
+        projectId,
+      });
+
+      return result.data.map((row) => ({
+        value: row.numericValue ?? 0,
+        quality: 'good',
+        timestamp: row.timestamp,
+      }));
+    } catch (error) {
+      this.logger.warn(
+        `getTagHistory failed for ${tagId}: ${error instanceof Error ? error.message : error}`,
+      );
+      return [];
+    }
   }
 
   /** Export a project data snapshot (device list from DB, tag latest values from Redis) */

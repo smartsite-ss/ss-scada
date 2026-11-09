@@ -360,12 +360,14 @@ export class DeviceController {
   @Roles(UserRole.ADMIN, UserRole.USER, UserRole.VIEWER)
   @ApiOperation({ summary: '获取设备历史数据' })
   getHistory(
+    @Param('projectId') projectId: string,
     @Param('deviceId') deviceId: string,
     @Query('tagId') tagId: string,
     @Query('start') start: Date,
     @Query('end') end: Date,
   ) {
-    return this.deviceDataService.getTagHistory(tagId, { start, end });
+    // projectId resolves the per-project InfluxDB bucket
+    return this.deviceDataService.getTagHistory(tagId, { start, end }, undefined, projectId);
   }
 
   @Post(':deviceId/data/write')
