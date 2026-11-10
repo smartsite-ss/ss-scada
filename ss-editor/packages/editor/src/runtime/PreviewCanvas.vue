@@ -592,6 +592,8 @@ const zoomValue = ref(100);
 const panX = ref(0);
 const panY = ref(0);
 const computedFitMode = ref<FitMode>('auto');
+// User-configured fit mode before auto resolution (used for menu check state and badge)
+const pageFitMode = ref<FitMode>('auto');
 // 实际生效的适配模式（auto 已解析为具体模式；用于控件区徽标显示，优化方案 C2）
 const resolvedFitMode = ref<FitMode>('contain');
 
@@ -601,7 +603,7 @@ const translate = (key: string): string =>
   (i18n.global as unknown as { t: (key: string) => string }).t(key);
 const fitModeLabel = computed(() => {
   const label = translate(`zoomManager.fitModes.${resolvedFitMode.value}.label`);
-  return computedFitMode.value === 'auto' ? `auto → ${label}` : label;
+  return pageFitMode.value === 'auto' ? `auto → ${label}` : label;
 });
 const fitModeDescription = computed(() =>
   translate(`zoomManager.fitModes.${resolvedFitMode.value}.description`)
@@ -648,7 +650,7 @@ const applyZoom = (newScalePercent: number) => {
 // 本地临时覆盖的显示模式（不持久化到页面，仅当前预览会话有效）
 const localFitMode = ref<FitMode | null>(null);
 // 当前显示模式选中态（本地覆盖优先）：右键菜单勾选与调试面板高亮共用，保证两处一致（运行态显示模式统一）
-const currentFitModeSelection = computed<FitMode>(() => localFitMode.value || computedFitMode.value);
+const currentFitModeSelection = computed<FitMode>(() => localFitMode.value || pageFitMode.value);
 const isDragging = ref(false);
 const hasDragged = ref(false);
 const startX = ref(0);
@@ -1469,11 +1471,18 @@ const applyAutoFit = (targetWidth?: number, targetHeight?: number) => {
   const pageHeight = targetHeight ?? currentPage.height;
   const isDeviceSimulation = targetWidth !== undefined && targetHeight !== undefined;
 
-  // 优先使用本地临时模式，其次页面属性，最后组件属性，默认auto；
-  // 设备模拟强制 contain：内容在容器内等比居中显示设备比例区域（优化方案 P1-1）
-  const currentFitMode = isDeviceSimulation
+  // Priority: local override > page property > component prop > auto.
+  // Device simulation is forced to contain (P1-1).
+  const configuredFitMode: FitMode = isDeviceSimulation
     ? 'contain'
     : (localFitMode.value || currentPage.fitMode || props.fitMode || 'auto');
+  pageFitMode.value = configuredFitMode;
+
+  // Runtime display: "auto" resolves to stretch so the page always fills the
+  // container and never produces scrollbars (auto previously resolved to
+  // fitWidth/fitHeight, which left a horizontal/vertical scrollbar).
+  const currentFitMode: FitMode =
+    configuredFitMode === 'auto' && !isDeviceSimulation ? 'stretch' : configuredFitMode;
   computedFitMode.value = currentFitMode;
 
   // 默认路径：画布填满容器，不产生溢出/滚动条（控件态扩展分支见下方）
