@@ -168,7 +168,7 @@ Smart Site 采用 **开源版 + 商业版** 双轨模式：
 
 ![界面截图 1](docs/screenshots/screenshot-01.png)
 
-**02 · 画布属性与背景设置** —— 画布尺寸、背景图片 / 背景色、渲染模式（Canvas 原生渲染 / DOM 渲染）、视口选择与窗口联动；深色沉淀池工艺画面与实时数值。
+**02 · 图元属性与样式设置** —— 选中图元后右侧 COMPONENT PROPERTIES 面板（Style / Data / Interaction）：位置 / 尺寸 / 旋转 / 缩放与 z-index、图元类型、描边与填充色、文本字号 / 字重 / 对齐等；画面为 1 号机组风烟系统，风机 / 烟道 / 电机等图元绑定实时值（6/24）。
 
 ![界面截图 2](docs/screenshots/screenshot-02.png)
 
@@ -180,7 +180,7 @@ Smart Site 采用 **开源版 + 商业版** 双轨模式：
 
 ![界面截图 4](docs/screenshots/screenshot-04.png)
 
-**05 · 火电厂风烟系统画面** —— 风机、烟道、电机等工业图元，绑定电流 / 温度 / 压力等实时数据。
+**05 · 画布属性与背景设置** —— 右侧 CANVAS PROPERTIES（Properties / Timers / JSON）：画布尺寸（宽 1904 × 高 874）、布局模板、背景图片上传 / 背景色、应用类型（Application Color）、渲染模式（Canvas 原生渲染 / DOM 渲染）、框选方式（DOM 选择框）与运行时视口适配；画面为 5 号机组发变组接线图。
 
 ![界面截图 5](docs/screenshots/screenshot-05.png)
 
