@@ -217,9 +217,28 @@ const BUILD_ENV = { NODE_OPTIONS: `--max-old-space-size=${BUILD_HEAP.mb}` };
  * - withServices ⇒ BASE_SERVICES_DIR=./base_services（服务随包，RUN_DIR 必须为包根）
  */
 const INTERNAL_PATHS = opt.withData || opt.withServices;
-/** 生成 .env 时使用的路径取值 */
-const ENV_DATA_DIR = opt.withData ? './data' : '../data';
-const ENV_RUN_DIR = INTERNAL_PATHS ? '.' : '..';
+
+/**
+ * 相对路径（正斜杠，"." 表示当前目录）
+ */
+function toPosixRelative(fromDir, toPath) {
+  const rel = path.relative(fromDir, toPath).replace(/\\/g, '/');
+  return rel === '' ? '.' : rel;
+}
+
+/**
+ * 生成 .env 时使用的路径取值。
+ *
+ * ⚠️ 必须按「目标目录 → ss-run/ss」的真实层级反算，不能写死 '../data'：
+ * 默认目标为 ss-run/ss-win/04-win-node（比 ss-run/ss/<pkg> 深一层），写死会让包
+ * 静默连到 ss-run/ss-win/data 下的空库（现象：登录恒 401、项目列表为空、
+ * setup/status 返回 initialized:false），且 start.bat 仍打印 "Data dir: ..\data"。
+ */
+const DATA_DIR_ABS = path.join(RUN_SS, 'data');
+const ENV_DATA_DIR = opt.withData ? './data' : toPosixRelative(opt.target, DATA_DIR_ABS);
+const ENV_RUN_DIR = INTERNAL_PATHS ? '.' : toPosixRelative(opt.target, RUN_SS);
+/** 基础服务根目录（复用形态下同样需要反算） */
+const ENV_BASE_SERVICES_DIR = INTERNAL_PATHS ? './base_services' : toPosixRelative(opt.target, path.join(RUN_SS, 'base_services'));
 
 function printHelp() {
   console.log(`
@@ -275,7 +294,15 @@ function printHelp() {
 
 // ─────────────────────────── 模块装配 ───────────────────────────
 const cfg = require('./publish-smart-site/config.cjs');
-const ctx = { fs, path, cp, os, ...cfg, opt, BUILD_HEAP, BUILD_ENV, INTERNAL_PATHS, ENV_DATA_DIR, ENV_RUN_DIR };
+// ⚠️ T / TOTAL 必须在装配前放进 ctx：各模块在工厂调用时就解构了它们的值，
+// 装配后再赋值只会改到 ctx，模块内捕获的仍是 undefined（曾导致步骤标题
+// 全部显示为 [1/undefined]）。
+const T = opt.target;
+const TOTAL = 11;
+const ctx = {
+  fs, path, cp, os, ...cfg, opt, T, TOTAL, BUILD_HEAP, BUILD_ENV, INTERNAL_PATHS,
+  ENV_DATA_DIR, ENV_RUN_DIR, ENV_BASE_SERVICES_DIR,
+};
 Object.assign(ctx, require('./publish-smart-site/util.cjs')(ctx));
 const deps = require('./publish-smart-site/deps.cjs')(ctx);
 Object.assign(ctx, deps);
@@ -307,10 +334,6 @@ const {
 } = ctx;
 
 // ─────────────────────────── 主流程 ───────────────────────────
-const T = opt.target;
-const TOTAL = 11;
-ctx.T = T; // 供 runArtifactsStep / runDepsStep 等运行期取用
-ctx.TOTAL = TOTAL;
 
 const dataSummary = opt.withData
   ? `随包 data/（${opt.userData ? '含用户数据' : '仅代码资产'}${
@@ -471,6 +494,7 @@ const pkg = {
   internalPaths: INTERNAL_PATHS,
   dataDir: ENV_DATA_DIR,
   runDir: ENV_RUN_DIR,
+  baseServicesDir: ENV_BASE_SERVICES_DIR,
 };
 if (opt.launcher === 'exe') {
   // 方式 5：入口为薄启动器 exe；同时保留 node 形态脚本（start-node.bat）便于排障
@@ -533,7 +557,7 @@ fs.writeFileSync(
       paths: {
         dataDir: ENV_DATA_DIR,
         runDir: ENV_RUN_DIR,
-        baseServicesDir: INTERNAL_PATHS ? './base_services' : '../base_services',
+        baseServicesDir: ENV_BASE_SERVICES_DIR,
       },
       inheritedEnvKeys: inherited,
     },

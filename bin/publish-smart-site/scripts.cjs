@@ -92,7 +92,7 @@ function writeStartBat(pkg, fileName = 'start.bat') {
     `echo   Health    : http://localhost:${port}/api/v1/system/health`,
     pkg.internalPaths
       ? 'echo   Data dir  : .\\data   (bundled with this package)'
-      : 'echo   Data dir  : ..\\data   (shared, do NOT run together with :4000)',
+      : `echo   Data dir  : ${String(pkg.dataDir).replace(/\//g, '\\')}   (shared, do NOT run together with :4000)`,
     pkg.withServices
       ? 'echo   Services  : bundled (redis :6379 / influxdb :8086)'
       : `echo   Services  : external / tier=${pkg.tier}`,

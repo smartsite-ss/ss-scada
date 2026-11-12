@@ -4,7 +4,7 @@
 'use strict';
 
 module.exports = function make(ctx) {
-  const { ROOT, fs, path, opt, TOTAL, C, step, info, parseEnvFile, REF_ENV, ENV_DATA_DIR, ENV_RUN_DIR, INTERNAL_PATHS, randomSecret, isWeakSecret,
+  const { ROOT, fs, path, opt, TOTAL, C, step, info, parseEnvFile, REF_ENV, ENV_DATA_DIR, ENV_RUN_DIR, ENV_BASE_SERVICES_DIR, INTERNAL_PATHS, randomSecret, isWeakSecret,
     run 
   } = ctx;
 
@@ -19,7 +19,7 @@ step(
   TOTAL,
   INTERNAL_PATHS
     ? '生成运行时配置 .env（★ 自包含：路径指向包内 ./data 与 ./base_services）'
-    : '生成运行时配置 .env（复用 ../data 与 ../base_services）',
+    : `生成运行时配置 .env（复用 ${ENV_DATA_DIR} 与 ${ENV_BASE_SERVICES_DIR}）`,
 );
 const ref = parseEnvFile(REF_ENV);
 const builtAt = new Date().toISOString();
@@ -58,8 +58,8 @@ set(
 set('BACKUP_DIR', '${RUN_DIR}/data/_bak');
 set(
   'BASE_SERVICES_DIR',
-  '${RUN_DIR}/base_services',
-  INTERNAL_PATHS ? '基础服务根目录（★ 包内 ./base_services）' : '基础服务根目录（复用现有 redis/influxdb）',
+  ENV_BASE_SERVICES_DIR,
+  INTERNAL_PATHS ? '基础服务根目录（★ 包内 ./base_services）' : '基础服务根目录（复用现有 redis/influxdb，路径按包层级反算）',
 );
 set(
   'INFLUXDB_DATA_DIR',
@@ -232,7 +232,7 @@ const envLines = [
   '#     跨文件加载时 dotenv-expand 无法展开，会导致模板/字典/插件配置加载为空。',
   INTERNAL_PATHS
     ? '#  ✅ 自包含形态：DATA_DIR=./data、RUN_DIR=.、BASE_SERVICES_DIR=./base_services —— 整个目录可整体搬移。'
-    : '#  ⚠️ 复用形态：DATA_DIR=../data、BASE_SERVICES_DIR=../base_services。',
+    : `#  ⚠️ 复用形态：DATA_DIR=${ENV_DATA_DIR}、BASE_SERVICES_DIR=${ENV_BASE_SERVICES_DIR}（按包目录层级反算）。`,
   INTERNAL_PATHS
     ? '#     双击 start.bat 一键启动（start.bat 会拉起包内 redis/influxd 后再启动后端）。'
     : '#     因此不要与其它实例（如 4000 端口的服务）同时运行并写同一套数据。',

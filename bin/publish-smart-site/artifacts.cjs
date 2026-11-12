@@ -32,6 +32,13 @@ if (opt.web) {
   }
   mirror(WEB_DIST_SRC, path.join(T, 'web'));
   info(`web ← ${path.relative(ROOT, WEB_DIST_SRC)}`);
+  // 剔除开发态 importmap：apps/web/public/import-map.json 是 Vite dev server 的 @fs
+  // 映射（含打包机绝对路径），生产 importmap 已由 shared-deps 插件内联进 index.html。
+  const devImportMap = path.join(T, 'web', 'import-map.json');
+  if (fs.existsSync(devImportMap)) {
+    fs.rmSync(devImportMap, { force: true });
+    info('已剔除 web/import-map.json（开发态 @fs 映射，生产用内联 importmap）');
+  }
   if (fs.existsSync(PLUGINS_DIST_SRC)) {
     // ⚠️ purge:false —— 叠加而非镜像：web/dist/plugins 里还带 capability.json / plugin-overrides.json
     // （AI 页面生成与 MCP component_* 的能力快照），/MIR 会把它们删掉。
@@ -40,8 +47,8 @@ if (opt.web) {
     const capabilityJson = path.join(T, 'web', 'plugins', 'capability.json');
     if (!fs.existsSync(capabilityJson)) {
       info(
-        C.warn(
-          '! web/plugins/capability.json 缺失：AI 页面生成器的组件能力快照未随包（检查 apps/web/dist/plugins）',
+        C.dim(
+          '· web/plugins/capability.json 不存在：本产品线未生成该快照（AI 页面生成器组件能力表）；如需 AI 生成页面再补生成步骤',
         ),
       );
     }

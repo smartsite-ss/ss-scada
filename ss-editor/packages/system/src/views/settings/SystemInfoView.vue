@@ -204,7 +204,17 @@ import type { SystemInfo } from '../../types/api';
 
 const appVersion = __APP_VERSION__;
 const appBuildTime = __BUILD_TIME__;
-const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
+/**
+ * API base for the docs link.
+ *
+ * When VITE_API_BASE_URL is empty the build is same-origin (single-package release:
+ * backend also serves this SPA), so fall back to the current origin instead of a
+ * hard-coded http://localhost:4000 -- which would point every deployed instance at
+ * the visitor's own machine.
+ */
+const apiUrl =
+  import.meta.env.VITE_API_BASE_URL ||
+  (typeof window !== 'undefined' ? window.location.origin : '');
 const swaggerUrl = `${apiUrl}/api/docs`;
 
 const sysInfo = ref<SystemInfo | null>(null);

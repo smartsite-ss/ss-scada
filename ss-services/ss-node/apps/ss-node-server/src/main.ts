@@ -20,6 +20,7 @@ import compression from 'compression';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import { GlobalExceptionFilter } from './filters/global-exception.filter';
+import { acquireInstanceLock } from './utils/single-instance-guard';
 import {
   TransformInterceptor,
   getLogConfig,
@@ -154,6 +155,11 @@ async function bootstrap() {
   if (!process.env.SS_NODE_ROOT) {
     process.env.SS_NODE_ROOT = projectRoot;
   }
+
+  // Two backends sharing one DATA_DIR corrupt the SQLite files (duplicated
+  // sqlite_master entries -> "malformed database schema"). Claim the directory before
+  // NestFactory.create so a second instance fails fast with a clear message.
+  acquireInstanceLock(process.env.DATA_DIR || 'data', projectRoot);
 
   // Resolve unified logging config: LOG_DIR / LOG_MAX_SIZE / LOG_MAX_FILES / LOG_LEVEL
   // getLogConfig resolves LOG_DIR relative path based on SS_NODE_ROOT, consistent with PathResolverService
@@ -486,17 +492,40 @@ async function bootstrap() {
       };
       /** API / WebSocket / docs prefixes: always hand back to Nest, so SPA fallback won't swallow them */
       const NEST_OWNED_PREFIX = /^\/(?:api\/|socket\.io\/?|docs\/?)/;
+      /**
+       * Asset-like requests must answer 404 on miss -- never fall back to index.html.
+       *
+       * Why: a missing /plugins/<cat>/<type>/<ver>/index.mjs used to return index.html with
+       * HTTP 200, so the browser's dynamic import() reported "Unexpected token '<'" (or a
+       * generic module load failure) instead of a clean 404, hiding packaging defects
+       * (plugin manifest declaring artifacts that were never built) behind cryptic errors.
+       */
+      const ASSET_PREFIX = /^\/(?:assets|plugins|static|downloads)\//;
+      const ASSET_FILE_EXT =
+        /\.(?:m?js|css|map|json|png|jpe?g|gif|svg|webp|ico|woff2?|ttf|otf|eot|wasm|txt|xml|html?)$/i;
+      const serveNotFound = (res: ServerResponse): void => {
+        const body = Buffer.from('Not Found');
+        res.writeHead(404, {
+          'Content-Type': 'text/plain; charset=utf-8',
+          'Content-Length': String(body.length),
+          'Cache-Control': 'no-store',
+        });
+        res.end(body);
+      };
       httpServerForSpa.removeAllListeners('request');
       httpServerForSpa.on('request', (req: IncomingMessage, res: ServerResponse) => {
         const url = req.url || '/';
+        const pathname = url.split('?')[0];
         const isStaticCandidate =
           (req.method === 'GET' || req.method === 'HEAD') && !NEST_OWNED_PREFIX.test(url);
         if (!isStaticCandidate) return nestRequestHandler(req, res);
-        // gzip is provided by compression (equivalent to Nginx gzip); static miss falls back to index.html
+        const isAssetRequest = ASSET_PREFIX.test(pathname) || ASSET_FILE_EXT.test(pathname);
+        // gzip is provided by compression (equivalent to Nginx gzip); index.html fallback only for SPA routes
         compress(req as unknown as Request, res as unknown as Response, () =>
           serveStatic(req as unknown as Request, res as unknown as Response, () => {
             if (res.writableEnded) return;
             if (res.headersSent) return void res.end();
+            if (isAssetRequest) return serveNotFound(res);
             serveIndexHtml(req, res);
           }),
         );
@@ -550,4 +579,12 @@ async function bootstrap() {
   }
 }
 
-bootstrap();
+bootstrap().catch((error: unknown) => {
+  // Startup failures (port in use, data dir owned by another instance, invalid
+  // configuration) must terminate the process: without this the event loop stayed
+  // alive with timers/schedulers, producing a "zombie" instance that logs but never
+  // serves HTTP.
+  const message = error instanceof Error ? error.message : String(error);
+  console.error('\n[FATAL] 服务启动失败：\n' + message + '\n');
+  process.exit(1);
+});

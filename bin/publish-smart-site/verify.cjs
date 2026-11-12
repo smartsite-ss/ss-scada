@@ -68,10 +68,114 @@ for (const name of opt.dataExclude) {
   );
 }
 if (!opt.withData && !fs.existsSync(path.join(T, 'data'))) {
-  info(C.dim('· data/ 不存在属预期：本包复用 ../data（ss-run/ss/data）'));
+  info(C.dim('· data/ 不存在属预期：本包复用 ss-run/ss/data'));
 }
 if (opt.withData && !opt.userData && !fs.existsSync(path.join(T, 'data', 'db', 'ss-node.db'))) {
   info(C.dim('· 未含全局库 db/ss-node.db（--no-user-data）：目标机首次启动自动建库 + 迁移'));
+}
+
+// ── 复用形态：.env 的 DATA_DIR 必须真的落在现有数据目录上 ──
+// 历史事故：DATA_DIR 写死 '../data'，而默认目标 ss-run/ss-win/04-win-node 比
+// ss-run/ss/<pkg> 深一层 ⇒ 包用 ss-run/ss-win/data 下的空库启动（登录恒 401）。
+if (!opt.withData) {
+  const dataDirResolved = path.resolve(T, ctx.ENV_DATA_DIR);
+  const dbResolved = path.join(dataDirResolved, 'db', 'ss-node.db');
+  const dirOk = fs.existsSync(dataDirResolved);
+  const dbOk = fs.existsSync(dbResolved);
+  if (!dirOk) bad++;
+  info(
+    `${dirOk ? C.ok('✓') : C.err('✗')} ${'DATA_DIR'.padEnd(34)} ${ctx.ENV_DATA_DIR} → ${dataDirResolved}`,
+  );
+  info(
+    `${dbOk ? C.ok('✓') : C.warn('!')} ${'DATA_DIR/db/ss-node.db'.padEnd(34)} ${
+      dbOk ? '全局库存在' : '全局库不存在（目标机首次启动会建空库：无账号、无项目）'
+    }`,
+  );
+}
+
+// ── 目录插件清单与产物必须一致 ──
+// 历史事故：build:plugins 部分失败后旧清单仍留在 public/plugins 下，运行时按清单
+// 动态 import 一批不存在的 .mjs（SPA fallback 还会把 index.html 当模块返回）。
+const pluginsRoot = path.join(T, 'web', 'plugins');
+if (fs.existsSync(pluginsRoot)) {
+  const missing = [];
+  const categories = fs
+    .readdirSync(pluginsRoot, { withFileTypes: true })
+    .filter((d) => d.isDirectory())
+    .map((d) => d.name);
+  for (const category of categories) {
+    const manifestPath = path.join(pluginsRoot, category, 'plugin-manifest.json');
+    if (!fs.existsSync(manifestPath)) continue;
+    let manifest = null;
+    try {
+      manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+    } catch (_e) {
+      continue;
+    }
+    for (const entry of manifest.entries || []) {
+      if (!entry || !entry.url) continue;
+      const rel = String(entry.url).replace(/^\/plugins\//, '').replace(/^\//, '');
+      const filePath = path.join(pluginsRoot, rel.replace(/\//g, path.sep));
+      if (!fs.existsSync(filePath)) missing.push(`${category}/${entry.type}`);
+    }
+  }
+  if (missing.length) {
+    bad++;
+    info(
+      C.err(
+        `✗ ${'web/plugins 清单'.padEnd(34)} ${missing.length} 个条目缺产物（前 5：${missing.slice(0, 5).join(', ')}）`,
+      ),
+    );
+    info(C.warn('  处理：重新执行 pnpm build:plugins 后再打包（或修好该分类的插件依赖）。'));
+  } else {
+    info(C.ok(`✓ ${'web/plugins 清单'.padEnd(34)} 清单与产物一致`));
+  }
+
+  // 源目录插件数 vs 清单条目数：防止 build:plugins 部分失败后被"静默瘦身"
+  //（结果数组错位、某分类整体失败等情况，清单看起来自洽但组件凭空消失）。
+  const categoriesJson = path.join(ROOT, 'ss-editor', 'packages', 'plugins', 'categories.json');
+  if (fs.existsSync(categoriesJson)) {
+    let directoryCategories = [];
+    try {
+      directoryCategories = JSON.parse(fs.readFileSync(categoriesJson, 'utf8'))
+        .filter((c) => c.deployMode === 'directory')
+        .map((c) => c.id);
+    } catch (_e) {
+      directoryCategories = [];
+    }
+    for (const category of directoryCategories) {
+      const sourceCategoryDir = path.join(ROOT, 'ss-editor', 'packages', 'plugins', category);
+      if (!fs.existsSync(sourceCategoryDir)) continue;
+      const sourceCount = fs
+        .readdirSync(sourceCategoryDir, { withFileTypes: true })
+        .filter((d) => d.isDirectory() && fs.existsSync(path.join(sourceCategoryDir, d.name, 'index.ts')))
+        .length;
+      const manifestPath = path.join(pluginsRoot, category, 'plugin-manifest.json');
+      let shippedCount = null;
+      if (fs.existsSync(manifestPath)) {
+        try {
+          shippedCount = (JSON.parse(fs.readFileSync(manifestPath, 'utf8')).entries || []).length;
+        } catch (_e) {
+          shippedCount = null;
+        }
+      }
+      const countOk = shippedCount === sourceCount;
+      if (!countOk) bad++;
+      info(
+        `${countOk ? C.ok('✓') : C.err('✗')} ${('plugins/' + category).padEnd(34)} 源 ${sourceCount} 个 / 清单 ${
+          shippedCount === null ? '缺失' : shippedCount
+        } 个`,
+      );
+    }
+  }
+}
+
+// ── 开发态 importmap 不得随包 ──
+// apps/web/public/import-map.json 是 Vite dev server 的 @fs 映射（含打包机绝对路径），
+// 生产用 index.html 内联的 importmap，此文件随包既泄漏路径又可能误导排障。
+if (fs.existsSync(path.join(T, 'web', 'import-map.json'))) {
+  bad++;
+  info(C.err(`✗ ${'web/import-map.json'.padEnd(34)} 开发态 @fs 映射不应随包`));
 }
 
 // 模块图门禁：真正加载一次后端模块图，确保依赖完整。

@@ -35,7 +35,7 @@ function writeReadme(pkg, builtAt, inherited) {
       ? `| \`data/\` | **随包**数据目录（\`DATA_DIR=./data\`）：${dataDirNames.join(' / ')}${
           pkg.dataExclude && pkg.dataExclude.length ? `　（**不含** ${pkg.dataExclude.join(' / ')}）` : ''
         } |`
-      : '| `data/` | 不含（`DATA_DIR=../data`，复用包外数据目录） |',
+      : `| \`data/\` | 不含（\`DATA_DIR=${pkg.dataDir}\`，复用包外数据目录） |`,
     pkg.withServices
       ? '| `base_services/` | **随包**基础服务：`redis/`（redis-server.exe）与 `influxdb2-2.7.8/`（influxd.exe） |'
       : '| `base_services/` | 不含（需外部 Redis/InfluxDB，或使用 Lite 档） |',
@@ -69,9 +69,9 @@ function writeReadme(pkg, builtAt, inherited) {
     : [
         '| 变量 | 值 | 实际位置 |',
         '|------|-----|---------|',
-        '| `DATA_DIR` | `../data` | `ss-run/ss/data`（复用） |',
-        '| `RUN_DIR` | `..` | `ss-run/ss` |',
-        '| `BASE_SERVICES_DIR` | `../base_services` | `ss-run/ss/base_services`（Redis / InfluxDB，复用） |',
+        `| \`DATA_DIR\` | \`${pkg.dataDir}\` | \`ss-run/ss/data\`（复用；相对**包根**解析） |`,
+        `| \`RUN_DIR\` | \`${pkg.runDir}\` | \`ss-run/ss\` |`,
+        `| \`BASE_SERVICES_DIR\` | \`${pkg.baseServicesDir}\` | \`ss-run/ss/base_services\`（Redis / InfluxDB，复用） |`,
       ].join('\n');
 
   const startSteps = pkg.withServices
@@ -103,7 +103,7 @@ function writeReadme(pkg, builtAt, inherited) {
       ].join('\n')
     : [
         '1. `stop.bat`',
-        '2. 备份 `../data/db`、`../data/projects`、`../data/plugin-configs`、`../data/graphic-plugins`',
+        `2. 备份 \`${pkg.dataDir}/db\`、\`${pkg.dataDir}/projects\`、\`${pkg.dataDir}/plugin-configs\`、\`${pkg.dataDir}/graphic-plugins\``,
         '3. 重新执行 `bin\\publish-smart-site.bat`（**不覆盖** data/base_services）',
         '4. `start.bat`，用 `status.bat` 验证',
       ].join('\n');

@@ -14,6 +14,7 @@
   "dependencies": {
     "@scada-editor/core": "workspace:*",
     "@scada-editor/shared": "workspace:*",
+    "@scada-editor/system": "workspace:*",
     "konva": "^9.2.0",
     "pinia": "^2.1.6",
     "uuid": "^13.0.0",

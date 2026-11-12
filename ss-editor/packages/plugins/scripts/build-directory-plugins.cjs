@@ -3,6 +3,7 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 const { exec } = require("child_process");
+const { pathToFileURL } = require("url");
 const {
   readdirSync,
   writeFileSync,
@@ -139,12 +140,42 @@ var _viteBuild = null;
 var _vuePluginFn = null;
 var _fallbackLogged = false;
 
+// pnpm does not hoist `vite` to the workspace root, so resolution must start from the
+// packages that actually declare it (apps/web, packages/system). With only
+// [EDITOR_ROOT, PLUGINS_ROOT] the resolve always threw, `_viteBuild` became false and
+// every plugin fell back to spawning `npx vite build` (one process per plugin: ~5s
+// each, plus error messages replaced by Vite's CJS-deprecation warning).
+const VITE_RESOLVE_BASES = [
+  EDITOR_ROOT,
+  join(EDITOR_ROOT, "apps", "web"),
+  join(EDITOR_ROOT, "packages", "system"),
+  PLUGINS_ROOT,
+];
+
+function resolveFirstMatch(packageName) {
+  for (var b = 0; b < VITE_RESOLVE_BASES.length; b++) {
+    try {
+      return require.resolve(packageName, { paths: [VITE_RESOLVE_BASES[b]] });
+    } catch (e) {
+      /* try next base */
+    }
+  }
+  return null;
+}
+
 async function getViteBuild() {
   if (_viteBuild !== null) return _viteBuild;
   try {
-    const vitePath = require.resolve("vite", { paths: [EDITOR_ROOT, PLUGINS_ROOT] });
-    const vite = await import(String(vitePath));
-    _viteBuild = vite.build;
+    const vitePath = resolveFirstMatch("vite");
+    if (!vitePath) throw new Error("vite not resolvable");
+    // On Windows a bare absolute path ("F:\\...") is parsed as a URL scheme by
+    // dynamic import and throws ERR_UNSUPPORTED_ESM_URL_SCHEME -- it must be a file URL.
+    const viteImport = await import(pathToFileURL(vitePath).href);
+    // Vite's entry is CJS here, so its API may sit on the namespace default.
+    _viteBuild =
+      viteImport.build ||
+      (viteImport.default && viteImport.default.build) ||
+      false;
   } catch (e) {
     _viteBuild = false;
   }
@@ -154,8 +185,15 @@ async function getViteBuild() {
 async function getVuePlugin() {
   if (_vuePluginFn !== null) return _vuePluginFn;
   try {
-    const vuePluginPath = require.resolve("@vitejs/plugin-vue", { paths: [EDITOR_ROOT, PLUGINS_ROOT] });
-    _vuePluginFn = (await import(String(vuePluginPath))).default;
+    const vuePluginPath = resolveFirstMatch("@vitejs/plugin-vue");
+    if (!vuePluginPath) throw new Error("@vitejs/plugin-vue not resolvable");
+    const vuePluginImport = await import(pathToFileURL(vuePluginPath).href);
+    // CJS interop: the factory is either the namespace default or nested under it.
+    const vuePluginCandidate =
+      vuePluginImport.default && vuePluginImport.default.default
+        ? vuePluginImport.default.default
+        : vuePluginImport.default;
+    _vuePluginFn = typeof vuePluginCandidate === "function" ? vuePluginCandidate : false;
   } catch (e) {
     _vuePluginFn = false;
   }
@@ -166,7 +204,26 @@ function execAsync(cmd, options) {
   return new Promise(function (resolve, reject) {
     exec(cmd, options, function (error, stdout, stderr) {
       if (error) {
-        var err = new Error(stderr || error.message);
+        // stderr of a vite CLI run is mostly warnings (CJS deprecation, chunk sizes);
+        // using it verbatim as the error message hid the real rollup failure. Keep the
+        // actionable lines instead.
+        var stderrText = String(stderr || "");
+        var meaningful = stderrText
+          .split(/\r?\n/)
+          .map(function (line) {
+            return line.replace(/\u001b\[[0-9;]*m/g, "").trim();
+          })
+          .filter(function (line) {
+            return (
+              line &&
+              !/CJS build of Vite's Node API is deprecated/i.test(line) &&
+              !/^For more info/i.test(line) &&
+              !/^https?:\/\//i.test(line)
+            );
+          })
+          .slice(-12)
+          .join("\n");
+        var err = new Error(meaningful || stderrText || error.message);
         err.stderr = stderr;
         err.stdout = stdout;
         reject(err);
@@ -338,7 +395,12 @@ async function runWithConcurrency(tasks, limit) {
   return new Promise(function (resolveAll) {
     function runNext() {
       while (running < limit && nextIndex < tasks.length) {
-        var i = nextIndex++;
+        // `const i` (per-iteration binding) is REQUIRED here: with `var`, every
+        // callback below closes over the same mutated index, so results of the
+        // early tasks were written into the wrong slot and got lost -- the build
+        // reported "93 success" while all 98 plugins had actually built, and the
+        // generated registry/manifest silently dropped 5 entries.
+        const i = nextIndex++;
         running++;
         tasks[i]()
           .then(function (result) {
@@ -365,7 +427,7 @@ function generateRegistryJson(results) {
 
   for (var i = 0; i < results.length; i++) {
     var result = results[i];
-    if (!result.success) continue;
+    if (!result || !result.success) continue;
 
     const pluginDir = join(PLUGINS_ROOT, result.category, result.type);
     const packagePath = join(pluginDir, "package.json");
@@ -434,10 +496,36 @@ function generateCategoryManifests(results, categories) {
   for (var i = 0; i < categories.length; i++) {
     var category = categories[i];
     const categoryResults = results.filter(function (r) {
-      return r.category === category && r.success;
+      return r && r.category === category && r.success;
     });
 
-    if (categoryResults.length === 0) continue;
+    if (categoryResults.length === 0) {
+      // Zero-success category: still write an EMPTY manifest so it overwrites the
+      // stale one produced by generate-directory-configs.cjs (which lists every
+      // plugin regardless of build result). Otherwise the published package ships a
+      // manifest declaring artifacts that do not exist => runtime dynamic import()
+      // failures for every entry in that category.
+      const emptyCatDir = join(OUTPUT_DIR, category);
+      if (!existsSync(emptyCatDir)) mkdirSync(emptyCatDir, { recursive: true });
+      writeFileSync(
+        join(emptyCatDir, 'plugin-manifest.json'),
+        JSON.stringify(
+          {
+            name: 'scada-editor-plugins-' + category,
+            version: '1.0.0',
+            generatedAt: new Date().toISOString(),
+            entries: [],
+          },
+          null,
+          2,
+        ),
+      );
+      log(
+        'Category manifest: ' + category + ' (0 built -> empty manifest written to avoid stale entries)',
+        'error',
+      );
+      continue;
+    }
 
     const entries = [];
     for (var j = 0; j < categoryResults.length; j++) {
