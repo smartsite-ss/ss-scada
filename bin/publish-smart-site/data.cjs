@@ -16,12 +16,45 @@ module.exports = function make(ctx) {
     DATA_EXCLUDE_DIRS,
     DATA_USER_DIRS,
     DATA_EXCLUDE_FILES,
+    wildcardToRegExp,
+    A05_EXCLUDE_DIR_PATTERNS,
+    A05_EXCLUDE_FILE_PATTERNS,
     BASE_SERVICE_ITEMS,
     BASE_SERVICE_EXCLUDE_DIRS,
     BASE_SERVICE_EXCLUDE_FILES,
     run } = ctx;
 
   // ─────────────────────────── 实现 ───────────────────────────
+
+/**
+ * A05 剪枝：删除包内 data/ 中命中复刻证据模式的目录/文件（任意层级，按名称匹配）。
+ * 与 /XD /XF 互补——robocopy 对中文 glob / 嵌套路径语义不稳定，这里做确定性兜底。
+ * 只作用于发布包副本，源数据 ss-run/ss/data 不动。
+ */
+function pruneRiskPaths(rootDir) {
+  const dirMatchers = A05_EXCLUDE_DIR_PATTERNS.map(wildcardToRegExp);
+  const fileMatchers = A05_EXCLUDE_FILE_PATTERNS.map(wildcardToRegExp);
+  let removedDirs = 0;
+  let removedFiles = 0;
+  const walk = (dir) => {
+    let entries;
+    try { entries = fs.readdirSync(dir, { withFileTypes: true }); } catch { return; }
+    for (const e of entries) {
+      const full = path.join(dir, e.name);
+      if (e.isDirectory()) {
+        if (dirMatchers.some((re) => re.test(e.name))) {
+          if (rmDirWithRetry(full, 2)) removedDirs++;
+          continue;
+        }
+        walk(full);
+      } else if (e.isFile() && fileMatchers.some((re) => re.test(e.name))) {
+        try { fs.unlinkSync(full); removedFiles++; } catch { /* 交由合规扫描兜底 */ }
+      }
+    }
+  };
+  walk(rootDir);
+  info(C.dim(`A05 剪枝：移除 ${removedDirs} 个目录 / ${removedFiles} 个文件（复刻证据路径）`));
+}
 
 /**
  * 把 ss-run/ss/data 复制进包（--with-data）。
@@ -54,6 +87,7 @@ function copyDataDir(dst) {
   }
   const t0 = Date.now();
   mirror(src, dst, { excludeDirs, excludeFiles: DATA_EXCLUDE_FILES });
+  pruneRiskPaths(dst); // A05：确定性剪枝（任意层级按名称匹配，不依赖 robocopy glob）
   info(
     `data ← ${path.relative(ROOT, src)}（${opt.userData ? '含用户数据 db/ projects/ 等' : '仅代码资产'}，` +
       `耗时 ${((Date.now() - t0) / 1000).toFixed(1)}s）`,
@@ -345,6 +379,7 @@ function copyNodeRuntime(dst) {
 
   return {
     copyDataDir,
+    pruneRiskPaths,
     purgeDataDatabases,
     resetAdminPassword,
     copyBaseServices,

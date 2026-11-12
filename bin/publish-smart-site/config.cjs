@@ -52,6 +52,20 @@ const DATA_EXCLUDE_DIRS = [
 const DATA_USER_DIRS = ['db', 'projects', 'plugin-configs', 'graphic-plugins'];
 /** 运行期文件：WAL / 日志 / RDB 不进包（WAL 帧由目标机重建，避免跨机 SQLite 状态错乱） */
 const DATA_EXCLUDE_FILES = ['*.db-wal', '*.db-shm', '*.db-journal', '*.log', 'dump.rdb'];
+
+// ───────── A05 合规硬排除（v7《组态画面复刻风险清单与处置台账》§3）─────────
+// 复刻证据路径/文件一律不进发布包；按「名称」匹配，任意层级生效（不依赖 robocopy /XD 的路径语义）。
+// 复制后由 data.cjs 的 pruneRiskPaths 确定性剪枝，compliance.cjs 二次扫描兜底（命中即阻断发布）。
+const A05_EXCLUDE_DIR_PATTERNS = [
+  '*复刻*', '*1to1*', '*高清对照*', '_replica-tmp', '_import-staging',
+  '_replica-archive', '参考图', '*参考图*',
+];
+// 注意：不使用泛 `*replica*` —— pageclone/canvas-replication.md、lib-replicate.cjs 等
+// 属于 v7 台账 A10「英文术语待决策」的技术契约文件，整包剪掉会破坏 KB 能力文档。
+const A05_EXCLUDE_FILE_PATTERNS = [
+  'page.backup-*', 'page-copy-tmp.json', 'page.copy.json',
+  '*复刻*', '*1to1*', '*高清对照*', '*参考图*',
+];
 /** 随包基础服务：influxdb3 / TDengine / nanomq 体积大且可选 ⇒ 默认不带 */
 const BASE_SERVICE_ITEMS = ['redis', 'influxdb2-2.7.8', 'nanomq'];
 const BASE_SERVICE_EXCLUDE_DIRS = ['logs', 'data'];
@@ -63,5 +77,6 @@ module.exports = {
   LAUNCHER_SOURCE, LAUNCHER_BUILD_SCRIPT, SERVER_DIST_SRC, WEB_DIST_SRC, PLUGINS_DIST_SRC,
   PROD_DEPS_SRC, REF_ENV, I18N_SOURCES,
   DATA_EXCLUDE_DIRS, DATA_USER_DIRS, DATA_EXCLUDE_FILES,
+  A05_EXCLUDE_DIR_PATTERNS, A05_EXCLUDE_FILE_PATTERNS,
   BASE_SERVICE_ITEMS, BASE_SERVICE_EXCLUDE_DIRS, BASE_SERVICE_EXCLUDE_FILES,
 };

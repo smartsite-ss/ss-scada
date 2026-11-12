@@ -105,6 +105,7 @@ tmp-check-db.js
 docs-e/**
 temp/**
 scripts/**
+ss-run/_replica-archive/**
 
 # Local-only scripts (not uploaded to remotes)
 bin/push-remote.bat
