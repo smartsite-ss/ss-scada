@@ -286,6 +286,7 @@ const envMod = require('./publish-smart-site/env-config.cjs')(ctx);
 Object.assign(ctx, require('./publish-smart-site/scripts.cjs')(ctx));
 Object.assign(ctx, require('./publish-smart-site/docs.cjs')(ctx));
 const verifyMod = require('./publish-smart-site/verify.cjs')(ctx);
+const complianceMod = require('./publish-smart-site/compliance.cjs')(ctx);
 Object.assign(ctx, require('./publish-smart-site/selftest.cjs')(ctx));
 Object.assign(ctx, require('./publish-smart-site/zip.cjs')(ctx));
 const {
@@ -550,6 +551,10 @@ info(
 
 // ── [9] 校验与摘要（verify.cjs）──
 let bad = verifyMod.runVerifyStep();
+
+// ── A14 发布前合规卡点：复刻证据 / 第三方权利标识命中即阻断 zip ──
+// （A05 剪枝是预防，本扫描是验收；只读，失败时 fail() 退出进程）
+complianceMod.enforceCompliance(path.join(T, 'data'));
 
 // ── [10] 自测试（--self-test）─────────────────────────────────
 let selfTestResult = null;
