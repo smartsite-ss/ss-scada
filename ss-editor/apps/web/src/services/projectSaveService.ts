@@ -197,7 +197,7 @@ export function createProjectSaveService(projectId: string): ISaveService {
       try {
         JSON.stringify(pagesToSave);
       } catch (serializeErr) {
-        console.error('[projectSaveService] save: pages 序列化失败', serializeErr);
+        console.error('[projectSaveService] save: failed to serialize pages', serializeErr);
         throw new Error(`页面数据序列化失败: ${(serializeErr as Error).message}`);
       }
 

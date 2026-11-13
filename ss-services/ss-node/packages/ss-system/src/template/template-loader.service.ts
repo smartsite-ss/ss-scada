@@ -73,7 +73,7 @@ export class TemplateLoaderService implements OnModuleInit {
     }
 
     this.logger.log(
-      `多语言模板库加载完成: ${this.supportedLocales.length} 种语言 [${this.supportedLocales.join(', ')}]`,
+      `Multilingual template library loaded: ${this.supportedLocales.length} locales [${this.supportedLocales.join(', ')}]`,
     );
   }
 
@@ -82,7 +82,7 @@ export class TemplateLoaderService implements OnModuleInit {
     const localePath = path.join(this.templatesBasePath, locale);
 
     if (!fs.existsSync(localePath)) {
-      this.logger.warn(`语言目录不存在: ${localePath}，降级使用 zh-CN`);
+      this.logger.warn(`Locale directory does not exist: ${localePath}, falling back to zh-CN`);
       return;
     }
 
@@ -107,12 +107,12 @@ export class TemplateLoaderService implements OnModuleInit {
                 loadedCount++;
               }
             } catch (err: any) {
-              this.logger.warn(`[${locale}] 模板加载失败: ${relativePath} - ${err.message}`);
+              this.logger.warn(`[${locale}] Failed to load template: ${relativePath} - ${err.message}`);
             }
           }
         }
       }
-      this.logger.log(`[${locale}] 模板加载完成: ${loadedCount} 个`);
+      this.logger.log(`[${locale}] Templates loaded: ${loadedCount}`);
     }
 
     this.localeCaches.set(locale, cache);
@@ -122,12 +122,12 @@ export class TemplateLoaderService implements OnModuleInit {
   private loadLocaleIndex(localePath: string, locale: string): TemplateTreeIndex {
     const indexPath = path.join(localePath, 'index.json');
     if (!fs.existsSync(indexPath)) {
-      this.logger.warn(`[${locale}] index.json 不存在: ${indexPath}`);
+      this.logger.warn(`[${locale}] index.json missing: ${indexPath}`);
       // Fallback: use zh-CN's index
       if (locale !== 'zh-CN') {
         const zhIndex = this.localeIndexes.get('zh-CN');
         if (zhIndex) {
-          this.logger.warn(`[${locale}] 降级使用 zh-CN 索引`);
+          this.logger.warn(`[${locale}] Falling back to zh-CN index`);
           return zhIndex;
         }
       }
@@ -255,7 +255,7 @@ export class TemplateLoaderService implements OnModuleInit {
     category: string,
   ): LoadedTemplate | null {
     if (!fs.existsSync(filePath)) {
-      this.logger.warn(`模板文件不存在: ${filePath}`);
+      this.logger.warn(`Template file does not exist: ${filePath}`);
       return null;
     }
 
@@ -271,7 +271,7 @@ export class TemplateLoaderService implements OnModuleInit {
         v.guid = varGuid;
         hasGeneratedGuid = true;
         this.logger.log(
-          `模板变量缺少 guid，自动生成: ${v.name || `[index=${index}]`} → ${varGuid}`,
+          `Template variable missing guid, generated automatically: ${v.name || `[index=${index}]`} → ${varGuid}`,
         );
       }
       return {
@@ -325,7 +325,7 @@ export class TemplateLoaderService implements OnModuleInit {
       const tmpPath = filePath + '.tmp-' + crypto.randomBytes(4).toString('hex');
       fs.writeFileSync(tmpPath, JSON.stringify(json, null, 2), 'utf-8');
       fs.renameSync(tmpPath, filePath);
-      this.logger.log(`模板文件已补全 guid 并写回: ${filePath}`);
+      this.logger.log(`Template file guids backfilled and written: ${filePath}`);
     }
 
     return {

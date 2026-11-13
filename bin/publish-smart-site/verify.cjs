@@ -14,7 +14,7 @@ module.exports = function make(ctx) {
   function runVerifyStep() {
     const { T, pkg, builtAt, inherited } = ctx;
 // ── [9] 校验与摘要 ────────────────────────────────────────────
-step(9, TOTAL, '校验产物');
+step(9, TOTAL, 'Verifying artifacts');
 const checks = [
   ['dist/main.js', '后端入口'],
   ['node_modules', '生产依赖'],
@@ -58,20 +58,20 @@ for (const [rel, desc] of checks) {
   info(`${ok ? C.ok('✓') : C.err('✗')} ${rel.padEnd(34)} ${desc}`);
 }
 const webPluginsOk = fs.existsSync(path.join(T, 'web', 'plugins'));
-info(`${webPluginsOk ? C.ok('✓') : C.warn('!')} ${'web/plugins'.padEnd(34)} 图元插件产物`);
+info(`${webPluginsOk ? C.ok('✓') : C.warn('!')} ${'web/plugins'.padEnd(34)} plugin artifacts`);
 // --data-exclude 断言：指定排除的目录必须**不在**包内
 for (const name of opt.dataExclude) {
   const leaked = fs.existsSync(path.join(T, 'data', name));
   if (leaked) bad++;
   info(
-    `${leaked ? C.err('✗') : C.ok('✓')} ${('data/' + name + ' (excluded)').padEnd(34)} 应排除`,
+    `${leaked ? C.err('✗') : C.ok('✓')} ${('data/' + name + ' (excluded)').padEnd(34)} should be excluded`,
   );
 }
 if (!opt.withData && !fs.existsSync(path.join(T, 'data'))) {
-  info(C.dim('· data/ 不存在属预期：本包复用 ss-run/ss/data'));
+  info(C.dim('- data/ absence is expected: this package reuses ss-run/ss/data'));
 }
 if (opt.withData && !opt.userData && !fs.existsSync(path.join(T, 'data', 'db', 'ss-node.db'))) {
-  info(C.dim('· 未含全局库 db/ss-node.db（--no-user-data）：目标机首次启动自动建库 + 迁移'));
+  info(C.dim('- Global DB db/ss-node.db not included (--no-user-data): target creates it and runs migrations on first start'));
 }
 
 // ── 复用形态：.env 的 DATA_DIR 必须真的落在现有数据目录上 ──
@@ -88,7 +88,7 @@ if (!opt.withData) {
   );
   info(
     `${dbOk ? C.ok('✓') : C.warn('!')} ${'DATA_DIR/db/ss-node.db'.padEnd(34)} ${
-      dbOk ? '全局库存在' : '全局库不存在（目标机首次启动会建空库：无账号、无项目）'
+      dbOk ? 'Global DB present' : 'Global DB missing (target creates an empty DB on first start: no accounts, no projects)'
     }`,
   );
 }
@@ -123,12 +123,12 @@ if (fs.existsSync(pluginsRoot)) {
     bad++;
     info(
       C.err(
-        `✗ ${'web/plugins 清单'.padEnd(34)} ${missing.length} 个条目缺产物（前 5：${missing.slice(0, 5).join(', ')}）`,
+        `✗ ${'web/plugins manifest'.padEnd(34)} ${missing.length} entries missing artifacts (first 5: ${missing.slice(0, 5).join(', ')})`,
       ),
     );
-    info(C.warn('  处理：重新执行 pnpm build:plugins 后再打包（或修好该分类的插件依赖）。'));
+    info(C.warn('  Action: re-run pnpm build:plugins before packaging (or fix the plugin dependencies for that category).'));
   } else {
-    info(C.ok(`✓ ${'web/plugins 清单'.padEnd(34)} 清单与产物一致`));
+    info(C.ok(`✓ ${'web/plugins manifest'.padEnd(34)} manifest matches artifacts`));
   }
 
   // 源目录插件数 vs 清单条目数：防止 build:plugins 部分失败后被"静默瘦身"
@@ -162,9 +162,9 @@ if (fs.existsSync(pluginsRoot)) {
       const countOk = shippedCount === sourceCount;
       if (!countOk) bad++;
       info(
-        `${countOk ? C.ok('✓') : C.err('✗')} ${('plugins/' + category).padEnd(34)} 源 ${sourceCount} 个 / 清单 ${
-          shippedCount === null ? '缺失' : shippedCount
-        } 个`,
+        `${countOk ? C.ok('✓') : C.err('✗')} ${('plugins/' + category).padEnd(34)} source ${sourceCount} / manifest ${
+          shippedCount === null ? 'missing' : shippedCount
+        } entries`,
       );
     }
   }
@@ -175,13 +175,13 @@ if (fs.existsSync(pluginsRoot)) {
 // 生产用 index.html 内联的 importmap，此文件随包既泄漏路径又可能误导排障。
 if (fs.existsSync(path.join(T, 'web', 'import-map.json'))) {
   bad++;
-  info(C.err(`✗ ${'web/import-map.json'.padEnd(34)} 开发态 @fs 映射不应随包`));
+  info(C.err(`✗ ${'web/import-map.json'.padEnd(34)} dev @fs mapping must not be bundled`));
 }
 
 // 模块图门禁：真正加载一次后端模块图，确保依赖完整。
 // 比“列目录”更能证明「能启动」——可捕获 MODULE_NOT_FOUND（依赖缺口）类事故。
 if (fs.existsSync(path.join(T, 'dist', 'main.js')) && fs.existsSync(path.join(T, 'node_modules'))) {
-  info('模块图门禁：加载 dist/app.module.js（子进程，不污染本进程环境）...');
+  info('Module graph gate: loading dist/app.module.js (child process, does not pollute this process environment)...');
   const gate = cp.spawnSync(
     process.execPath,
     ['-e', "require('./dist/app.module.js'); console.log('[gate] module graph OK');"],
@@ -192,12 +192,12 @@ if (fs.existsSync(path.join(T, 'dist', 'main.js')) && fs.existsSync(path.join(T,
     },
   );
   if (gate.status === 0) {
-    info(C.ok('✓ 模块图可加载（依赖完整）'));
+    info(C.ok('✓ Module graph loadable (dependencies complete)'));
   } else {
-    info(C.err('✗ 模块图校验失败：依赖不完整（见上方 MODULE_NOT_FOUND）'));
+    info(C.err('✗ Module graph check failed: incomplete dependencies (see MODULE_NOT_FOUND above)'));
     info(
       C.warn(
-        '  处理：不要用 --no-install-missing 重新打包；或先在工作区执行 pnpm build 生成全部 dist。',
+        '  Action: do not repackage with --no-install-missing; or run pnpm build in the workspace first to generate all dist artifacts.',
       ),
     );
     bad++;

@@ -60,7 +60,7 @@ export class ToolExecutor {
    */
   register(tool: ToolDefinition): void {
     if (toolRegistry.has(tool.name)) {
-      console.warn(`[ToolExecutor] 工具 ${tool.name} 已注册，将被覆盖`);
+      console.warn(`[ToolExecutor] Tool ${tool.name} is already registered and will be overwritten`);
     }
     toolRegistry.set(tool.name, tool);
   }

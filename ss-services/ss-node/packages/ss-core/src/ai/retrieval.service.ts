@@ -56,7 +56,7 @@ export class RetrievalService {
     const mergedConfig = { ...DEFAULT_RETRIEVAL_CONFIG, ...config };
 
     if (this.vectorStore.size() === 0) {
-      this.logger.warn('向量存储为空，返回空结果');
+      this.logger.warn('Vector store is empty, returning empty result');
       return [];
     }
 

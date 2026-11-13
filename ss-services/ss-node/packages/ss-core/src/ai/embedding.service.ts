@@ -72,7 +72,7 @@ export class EmbeddingService {
 
       throw new Error('嵌入响应格式错误');
     } catch (err) {
-      this.logger.error(`嵌入失败: ${(err as Error).message}`);
+      this.logger.error(`Embedding failed: ${(err as Error).message}`);
       throw err;
     }
   }

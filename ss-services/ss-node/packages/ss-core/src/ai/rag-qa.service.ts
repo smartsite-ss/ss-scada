@@ -95,12 +95,12 @@ export class RAGQAService {
         totalChunks += chunks.length;
       } catch (err) {
         errors++;
-        this.logger.error(`索引失败: ${item.path} — ${(err as Error).message}`);
+        this.logger.error(`Indexing failed: ${item.path} - ${(err as Error).message}`);
       }
     }
 
     this.indexed = true;
-    this.logger.log(`索引完成: ${totalChunks} 块，${errors} 错误`);
+    this.logger.log(`Indexing complete: ${totalChunks} chunks, ${errors} errors`);
     return { chunks: totalChunks, errors };
   }
 
@@ -202,7 +202,7 @@ export class RAGQAService {
   reset(): void {
     this.vectorStore.clear();
     this.indexed = false;
-    this.logger.log('索引已重置');
+    this.logger.log('Index reset');
   }
 
   // ============================================================

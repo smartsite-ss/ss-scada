@@ -152,7 +152,7 @@ export class DeviceControlService {
       try {
         await adapter.disconnect(client);
       } catch {
-        this.logger.warn(`断开设备连接时发生异常`);
+        this.logger.warn(`Error while disconnecting device`);
       }
 
       const latencyMs = Date.now() - startTime;
@@ -167,7 +167,7 @@ export class DeviceControlService {
           params.projectId,
         );
       } catch (err) {
-        this.logger.warn(`更新最新值缓存失败: ${(err as Error).message}`);
+        this.logger.warn(`Failed to update latest-value cache: ${(err as Error).message}`);
       }
 
       // 10. Record the operation audit log
@@ -203,7 +203,7 @@ export class DeviceControlService {
       }
 
       this.logger.log(
-        `反控写入成功: device=${params.deviceId}, tag=${params.tagId}, value=${params.value}, latency=${latencyMs}ms`,
+        `Control write succeeded: device=${params.deviceId}, tag=${params.tagId}, value=${params.value}, latency=${latencyMs}ms`,
       );
 
       return {
@@ -216,7 +216,7 @@ export class DeviceControlService {
       const latencyMs = Date.now() - startTime;
       const errMsg = (error as Error).message;
       this.logger.error(
-        `反控写入失败: device=${params.deviceId}, tag=${params.tagId}, error=${errMsg}`,
+        `Control write failed: device=${params.deviceId}, tag=${params.tagId}, error=${errMsg}`,
       );
       return {
         success: false,
@@ -261,7 +261,7 @@ export class DeviceControlService {
       const repo = ds.getRepository(DataTag);
       return repo.findOne({ where: { id: tagId } });
     } catch (err) {
-      this.logger.error(`获取标签失败: ${(err as Error).message}`);
+      this.logger.error(`Failed to get tag: ${(err as Error).message}`);
       return null;
     }
   }
@@ -306,7 +306,7 @@ export class DeviceControlService {
       });
       await repo.save(log);
     } catch (err) {
-      this.logger.error(`审计日志写入失败: ${(err as Error).message}`);
+      this.logger.error(`Failed to write audit log: ${(err as Error).message}`);
     }
   }
 
@@ -376,7 +376,7 @@ export class DeviceControlService {
         },
       };
     } catch (err) {
-      this.logger.error(`查询操作日志失败: ${(err as Error).message}`);
+      this.logger.error(`Failed to query operation logs: ${(err as Error).message}`);
       throw err;
     }
   }

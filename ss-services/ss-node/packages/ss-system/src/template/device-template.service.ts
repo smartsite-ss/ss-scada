@@ -253,7 +253,7 @@ export class DeviceTemplateService {
 
     fs.writeFileSync(tmpPath, JSON.stringify(jsonData, null, 2), 'utf-8');
     fs.renameSync(tmpPath, filePath);
-    this.logger.log(`模板 JSON 文件已写入: ${filePath}`);
+    this.logger.log(`Template JSON file written: ${filePath}`);
   }
 
   /**
@@ -263,7 +263,7 @@ export class DeviceTemplateService {
     const loaded = this.templateLoader.getTemplate(id);
     if (loaded?.filePath && fs.existsSync(loaded.filePath)) {
       fs.unlinkSync(loaded.filePath);
-      this.logger.log(`模板 JSON 文件已删除: ${loaded.filePath}`);
+      this.logger.log(`Template JSON file deleted: ${loaded.filePath}`);
     }
   }
 
@@ -632,7 +632,7 @@ export class DeviceTemplateService {
       }
     }
     if (devices.length === 0) {
-      this.logger.log('存量迁移：没有需要迁移的设备');
+      this.logger.log('Legacy migration: no devices to migrate');
       return { totalDevices: 0, totalTags: 0, matched: 0, skipped: 0, errors: [] };
     }
 
@@ -675,7 +675,7 @@ export class DeviceTemplateService {
         for (const dup of duplicates) {
           variablesByName.delete(dup);
           this.logger.warn(
-            `模板 ${template.id}: 变量 "${dup}" 存在重名，跳过 name→GUID 匹配`,
+            `Template ${template.id}: duplicate variable "${dup}", skipping name→GUID matching`,
           );
         }
 
@@ -697,7 +697,7 @@ export class DeviceTemplateService {
             matched++;
           } else {
             this.logger.debug(
-              `标签 "${tag.name}"(设备 ${device.deviceName}) 在模板变量中未找到同名匹配，跳过`,
+              `Tag "${tag.name}" (device ${device.deviceName}) has no matching template variable, skipping`,
             );
           }
         }
@@ -712,8 +712,8 @@ export class DeviceTemplateService {
 
     const logMsg = dryRun ? '[DRY RUN] ' : '';
     this.logger.log(
-      `${logMsg}存量迁移完成: ${devices.length} 设备, ${totalTags} 标签, ` +
-        `匹配 ${matched}, 跳过 ${skipped} 设备, 错误 ${errors.length}`,
+      `${logMsg}Legacy migration complete: ${devices.length} devices, ${totalTags} tags, ` +
+        `matched ${matched}, skipped ${skipped} devices, errors ${errors.length}`,
     );
 
     return { totalDevices: devices.length, totalTags, matched, skipped, errors };

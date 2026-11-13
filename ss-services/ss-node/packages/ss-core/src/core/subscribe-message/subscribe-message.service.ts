@@ -102,7 +102,7 @@ export class SubscribeMessageService {
     await this.authorizationRepo.save(authorization);
 
     this.logger.log(
-      `订阅授权上报：userId=${userId} template=${dto.templateId} result=${dto.result} quota=${authorization.quotaRemaining}`,
+      `Subscription authorization reported: userId=${userId} template=${dto.templateId} result=${dto.result} quota=${authorization.quotaRemaining}`,
     );
     return { quotaRemaining: authorization.quotaRemaining };
   }

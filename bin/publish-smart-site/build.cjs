@@ -11,21 +11,21 @@ module.exports = function make(ctx) {
 
   function runBuildStep() {
 // ── [1] 构建 ──────────────────────────────────────────────────
-step(1, TOTAL, '构建（后端 / 前端）');
+step(1, TOTAL, 'Building (backend / frontend)');
 let tempWebEnv = null;
 if (opt.build) {
   info(
-    `构建堆上限：${BUILD_HEAP.mb} MB（可用物理内存 ${BUILD_HEAP.freeMb} MB / 共 ${BUILD_HEAP.totalMb} MB；来源：${BUILD_HEAP.source}）`,
+    `Build heap limit: ${BUILD_HEAP.mb} MB (free physical memory ${BUILD_HEAP.freeMb} MB / total ${BUILD_HEAP.totalMb} MB; source: ${BUILD_HEAP.source})`,
   );
   if (BUILD_HEAP.freeMb < 6144) {
     info(
       C.warn(
-        `⚠️ 可用物理内存偏低（${BUILD_HEAP.freeMb} MB）：前端构建易 OOM。建议关掉其它占用内存的程序，或先用 --no-build 复用现有 dist，或用 --build-heap=<MB> 显式指定。`,
+        `⚠️ Low free physical memory (${BUILD_HEAP.freeMb} MB): the frontend build may OOM. Close other memory-heavy programs, use --no-build to reuse existing dist, or set --build-heap=<MB> explicitly.`,
       ),
     );
   }
   if (opt.server) {
-    info('后端：pnpm build（ss-services/ss-node → apps/ss-node-server/dist）');
+    info('Backend: pnpm build (ss-services/ss-node -> apps/ss-node-server/dist)');
     run('pnpm', ['build'], SS_NODE, BUILD_ENV);
   }
   if (opt.web) {
@@ -44,14 +44,14 @@ if (opt.build) {
       ].join('\r\n'),
       'utf8',
     );
-    info(C.warn(`临时写入 ${path.relative(ROOT, envLocal)}（VITE_API_BASE_URL 置空 → 同源）`));
+    info(C.warn(`Temporarily writing ${path.relative(ROOT, envLocal)} (VITE_API_BASE_URL cleared -> same origin)`));
     try {
       // ss-scada 适配：目录插件的独立 ESM 产物（dist-plugins）依赖 importmap 单例机制，
       // 而本仓多个插件直接 import @scada-editor/system（v7 插件不这么做，且 system/shared
       // 尚无 importmap 单例产物）⇒ build:plugins 必然失败。应用内打包的插件（build:web
       // 经 vite-plugin-bundled-plugins 编译进主包）才是单包发布的运行主体，故此处降级为
       // 尽力而为：失败仅告警，不阻断发布（独立插件热更新发布流程为已知待办）。
-      info('前端：pnpm build:plugins（图元插件独立产物；尽力而为，失败不阻断）');
+      info('Frontend: pnpm build:plugins (standalone plugin artifacts; best effort, failures do not block)');
       const r = cp.spawnSync('cmd', ['/d', '/s', '/c', 'pnpm build:plugins'], {
         cwd: SS_EDITOR,
         stdio: 'inherit',
@@ -60,23 +60,23 @@ if (opt.build) {
       if (r.status !== 0) {
         info(
           C.warn(
-            '! build:plugins 失败（已跳过）：dist-plugins 独立插件产物缺失。' +
-              '发布包仍含应用内打包的全部插件（build:web），仅独立热更新发布流程受影响。',
+            '! build:plugins failed (skipped): dist-plugins standalone plugin artifacts missing. ' +
+              'The package still contains all in-app plugins (build:web); only the standalone hot-update flow is affected.',
           ),
         );
       }
-      info(`前端：pnpm build:web:${opt.mode}（Vite mode=production|scada|data）`);
+      info(`Frontend: pnpm build:web:${opt.mode} (Vite mode=production|scada|data)`);
       const webCmd = opt.mode === 'full' ? 'build:web' : `build:web:${opt.mode}`;
       run('pnpm', [webCmd], SS_EDITOR, BUILD_ENV);
     } finally {
       if (tempWebEnv && fs.existsSync(tempWebEnv)) {
         fs.rmSync(tempWebEnv, { force: true });
-        info(C.dim('已删除临时 .env.production.local'));
+        info(C.dim('Removed temporary .env.production.local'));
       }
     }
   }
 } else {
-  info(C.dim('跳过构建，使用现有 dist 产物'));
+  info(C.dim('Skipping build, using existing dist artifacts'));
 }
 
   }

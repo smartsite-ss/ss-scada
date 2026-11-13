@@ -518,7 +518,7 @@ export class Phase2FeaturesService {
           });
         }
       } catch (err) {
-        this.logger.warn(`RAG 检索失败: ${(err as Error).message}`);
+        this.logger.warn(`RAG retrieval failed: ${(err as Error).message}`);
       }
     }
 

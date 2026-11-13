@@ -87,7 +87,7 @@ export class PreviewTicketService {
       expiresAtTimestamp: Date.now() + PREVIEW_TICKET_TTL_MS,
     });
     this.logger.debug(
-      `[预览票据] 已签发 | userId="${userId}" | pendingTicketCount=${this.previewTicketStore.size}`,
+      `[PreviewTicket] Issued | userId="${userId}" | pendingTicketCount=${this.previewTicketStore.size}`,
     );
     return previewTicket;
   }
@@ -101,16 +101,16 @@ export class PreviewTicketService {
     const ticketEntry = this.previewTicketStore.get(previewTicket);
     this.previewTicketStore.delete(previewTicket);
     if (!ticketEntry || Date.now() > ticketEntry.expiresAtTimestamp) {
-      this.logger.warn('[预览票据] 兑换失败：票据不存在或已过期');
+      this.logger.warn('[PreviewTicket] Exchange failed: ticket not found or expired');
       throw new UnauthorizedException('预览票据无效或已过期');
     }
     const user = await this.userService.findById(ticketEntry.userId);
     if (!user) {
-      this.logger.warn(`[预览票据] 兑换失败：用户不存在 | userId="${ticketEntry.userId}"`);
+      this.logger.warn(`[PreviewTicket] Exchange failed: user not found | userId="${ticketEntry.userId}"`);
       throw new UnauthorizedException('预览票据无效或已过期');
     }
     this.logger.log(
-      `[预览票据] 兑换成功 | userId="${user.id}" username="${user.username}" | pendingTicketCount=${this.previewTicketStore.size}`,
+      `[PreviewTicket] Exchange succeeded | userId="${user.id}" username="${user.username}" | pendingTicketCount=${this.previewTicketStore.size}`,
     );
     return this.authService.generateTokensForUser({
       id: user.id,

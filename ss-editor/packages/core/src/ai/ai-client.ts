@@ -343,7 +343,7 @@ export async function* streamChat(
           yield chunk;
         } catch {
           // Skip unparseable lines
-          console.warn('[AI] SSE 解析失败，跳过:', dataLine.slice(0, 200));
+          console.warn('[AI] Failed to parse SSE, skipping:', dataLine.slice(0, 200));
         }
       }
     }

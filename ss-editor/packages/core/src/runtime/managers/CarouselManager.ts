@@ -48,18 +48,18 @@ export class CarouselManager {
 
   /** Start the carousel */
   start(): void {
-    console.log('[CarouselManager] start() 调用:', {
+    console.log('[CarouselManager] start() called:', {
       carouselPagesCount: this.state.carouselPages.length,
       isRunning: this.state.isRunning,
       interval: this.config.interval,
     });
 
     if (this.state.carouselPages.length === 0) {
-      console.warn('[CarouselManager] start: 没有可轮播的页面，跳过');
+      console.warn('[CarouselManager] start: no pages to carousel, skipping');
       return;
     }
     if (this.state.isRunning) {
-      console.log('[CarouselManager] start: 已在运行中，跳过');
+      console.log('[CarouselManager] start: already running, skipping');
       return;
     }
 
@@ -69,7 +69,7 @@ export class CarouselManager {
     this.lastSwitchTime = Date.now();
     this.scheduleNext();
     this.startProgressTracker();
-    console.log('[CarouselManager] 轮播已启动:', { interval: this.config.interval, nextSwitch: `${this.config.interval / 1000}s 后` });
+    console.log('[CarouselManager] Carousel started:', { interval: this.config.interval, nextSwitch: `in ${this.config.interval / 1000}s` });
   }
 
   /** Stop the carousel */
@@ -132,8 +132,8 @@ export class CarouselManager {
       this.state.currentIndex = next;
     }
 
-    console.log('[CarouselManager] next: 切换到页面索引', this.state.currentIndex,
-      '页面:', this.state.carouselPages[this.state.currentIndex]?.name);
+    console.log('[CarouselManager] next: switching to page index', this.state.currentIndex,
+      'page:', this.state.carouselPages[this.state.currentIndex]?.name);
     this.performSwitch();
   }
 

@@ -36,7 +36,7 @@ export function useGraphic() {
       try {
         action(id);
       } catch (error) {
-        console.error('[useGraphic] 批量操作失败:', error);
+        console.error('[useGraphic] Batch operation failed:', error);
       }
     });
   };

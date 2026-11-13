@@ -70,16 +70,16 @@ export class LLMProxyService implements OnModuleInit, OnModuleDestroy {
     // AI_ENABLED remains in env vars as a startup-level Feature Flag
     this.enabled = this.configService.get<string>('AI_ENABLED') === 'true';
     if (!this.enabled) {
-      this.logger.warn('AI 功能未启用（AI_ENABLED != true），LLMProxyService 处于禁用状态');
+      this.logger.warn('AI features disabled (AI_ENABLED != true); LLMProxyService is inactive');
       return;
     }
 
     // Async init: load config from database
     this.initializeProvidersAsync().catch((err) => {
-      this.logger.error(`Provider 异步初始化失败: ${err.message}`);
+      this.logger.error(`Provider async init failed: ${err.message}`);
     });
     this.startHealthCheck();
-    this.logger.log(`LLMProxyService 已启用，已注册 ${this.providers.size} 个 Provider 实例`);
+    this.logger.log(`LLMProxyService enabled with ${this.providers.size} Provider instances`);
   }
 
   /**
@@ -88,11 +88,11 @@ export class LLMProxyService implements OnModuleInit, OnModuleDestroy {
    */
   async reloadProviders(): Promise<void> {
     if (!this.providerConfigService) {
-      this.logger.warn('AiProviderConfigService 未注入，无法从数据库重载配置');
+      this.logger.warn('AiProviderConfigService not injected; cannot reload config from database');
       return;
     }
     await this.initializeProvidersAsync();
-    this.logger.log('AI Provider 配置已从数据库重新加载');
+    this.logger.log('AI Provider config reloaded from database');
   }
 
   /**
@@ -106,7 +106,7 @@ export class LLMProxyService implements OnModuleInit, OnModuleDestroy {
    */
   private async initializeProvidersAsync(): Promise<void> {
     if (!this.providerConfigService) {
-      this.logger.warn('AiProviderConfigService 未注入，无法从数据库加载配置');
+      this.logger.warn('AiProviderConfigService not injected; cannot load config from database');
       return;
     }
 
@@ -117,19 +117,19 @@ export class LLMProxyService implements OnModuleInit, OnModuleDestroy {
       const dbConfigs = await this.providerConfigService.getEnabledProviderConfigs();
       if (dbConfigs.length === 0) {
         this.logger.warn(
-          '数据库中无已启用的 AI Provider 配置。请在系统设置 → AI 模型配置中添加供应商并填入 API Key',
+          'No enabled AI Provider config in the database. Add a provider and API Key under System Settings -> AI Model Config',
         );
         return;
       }
 
-      this.logger.log(`从数据库加载 ${dbConfigs.length} 个已启用的 AI Provider 配置`);
+      this.logger.log(`Loaded ${dbConfigs.length} enabled AI Provider configs from database`);
       let embeddingProvider: string | null = null;
 
       for (const cfg of dbConfigs) {
         const provider = this.providers.get(cfg.providerId);
         if (provider) {
           provider.initialize(cfg);
-          this.logger.log(`Provider ${cfg.providerId} 已从数据库配置初始化`);
+          this.logger.log(`Provider ${cfg.providerId} initialized from database config`);
 
           // First embedding-capable provider is the embedding route
           if (!embeddingProvider) {
@@ -140,7 +140,7 @@ export class LLMProxyService implements OnModuleInit, OnModuleDestroy {
           }
         } else {
           this.logger.warn(
-            `数据库中有 Provider ${cfg.providerId} 配置，但无对应实现实例（可能未在 PROVIDER_PRESETS 中注册）`,
+            `Provider ${cfg.providerId} has a database config but no implementation instance (possibly not registered in PROVIDER_PRESETS)`,
           );
         }
       }
@@ -148,7 +148,7 @@ export class LLMProxyService implements OnModuleInit, OnModuleDestroy {
       // Auto-infer routing strategy
       this.inferRouting(dbConfigs, embeddingProvider);
     } catch (err) {
-      this.logger.error(`从数据库读取 Provider 配置失败: ${(err as Error).message}`);
+      this.logger.error(`Failed to read Provider config from database: ${(err as Error).message}`);
     }
   }
 
@@ -175,7 +175,7 @@ export class LLMProxyService implements OnModuleInit, OnModuleDestroy {
       embedding: embedding as LLMProviderId,
     };
 
-    this.logger.log(`路由策略已自动推断: ${JSON.stringify(this.routing)}`);
+    this.logger.log(`Routing strategy auto-detected: ${JSON.stringify(this.routing)}`);
   }
 
   onModuleDestroy(): void {
@@ -222,7 +222,7 @@ export class LLMProxyService implements OnModuleInit, OnModuleDestroy {
       const provider = this.providers.get(pid);
       if (!provider || !provider.isReady()) {
         const reason = pid === req.providerId ? '用户指定但未配置 API Key' : '不可用';
-        this.logger.warn(`Provider ${pid} ${reason}，尝试下一个`);
+        this.logger.warn(`Provider ${pid} ${reason}, trying next`);
         continue;
       }
       try {
@@ -239,7 +239,7 @@ export class LLMProxyService implements OnModuleInit, OnModuleDestroy {
         return response;
       } catch (err) {
         lastErr = err;
-        this.logger.warn(`Provider ${pid} 生成失败：${(err as Error).message}，尝试降级`);
+        this.logger.warn(`Provider ${pid} generation failed: ${(err as Error).message}, falling back`);
       }
     }
     throw new Error(
@@ -288,7 +288,7 @@ export class LLMProxyService implements OnModuleInit, OnModuleDestroy {
       const provider = this.providers.get(pid);
       if (!provider || !provider.isReady()) {
         const reason = pid === req.providerId ? '用户指定但未配置 API Key' : '不可用';
-        this.logger.warn(`Provider ${pid} ${reason}，尝试下一个`);
+        this.logger.warn(`Provider ${pid} ${reason}, trying next`);
         continue;
       }
       try {
@@ -309,7 +309,7 @@ export class LLMProxyService implements OnModuleInit, OnModuleDestroy {
         return;
       } catch (err) {
         lastErr = err;
-        this.logger.warn(`Provider ${pid} 流式失败：${(err as Error).message}，尝试降级`);
+        this.logger.warn(`Provider ${pid} streaming failed: ${(err as Error).message}, falling back`);
       }
     }
     throw new Error(
@@ -396,7 +396,7 @@ export class LLMProxyService implements OnModuleInit, OnModuleDestroy {
   private startHealthCheck(): void {
     this.healthTimer = setInterval(() => {
       this.getHealth().catch((err) => {
-        this.logger.error(`健康检查失败：${err.message}`);
+        this.logger.error(`Health check failed: ${err.message}`);
       });
     }, HEALTH_CHECK_INTERVAL_MS);
     // Check once immediately after startup

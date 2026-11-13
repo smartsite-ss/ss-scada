@@ -34,8 +34,8 @@ export class WebSocketMetricsController {
     const snapshot = this.metricsService.getSnapshot();
     if (snapshot.totalBroadcasts === 0) {
       this.logger.warn(
-        'getJsonMetrics: totalBroadcasts=0 — WebSocket 从未广播过消息。' +
-          '可能原因: 1) 无采集任务运行 2) EventBus 事件未触发 3) DataPushBridge 未初始化。',
+        'getJsonMetrics: totalBroadcasts=0 - WebSocket has never broadcast a message. ' +
+          'Possible causes: 1) no collection task running 2) no EventBus events 3) DataPushBridge not initialized.',
       );
     }
     return snapshot;

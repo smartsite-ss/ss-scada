@@ -190,7 +190,7 @@ describe('CodeValidator', () => {
     it('Should accept a timer-triggered script (periodic checks)', () => {
       const code = `
         const value = api.readTag('pressure');
-        api.log('info', '当前压力: ' + value);
+        api.log('info', 'Current pressure: ' + value);
       `;
       const result = validator.validate(code);
       expect(result.valid).toBe(true);

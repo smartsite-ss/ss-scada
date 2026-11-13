@@ -58,12 +58,12 @@ export class CollaborationService {
         };
 
         this.socket.onerror = (error) => {
-          console.error('协作服务器连接错误:', error);
+          console.error('Collaboration server connection error:', error);
           this.isConnected = false;
           resolve(false);
         };
       } catch (error) {
-        console.error('连接协作服务器失败:', error);
+        console.error('Failed to connect to collaboration server:', error);
         resolve(false);
       }
     });
@@ -125,7 +125,7 @@ export class CollaborationService {
           break;
       }
     } catch (error) {
-      console.error('处理协作消息失败:', error);
+      console.error('Failed to handle collaboration message:', error);
     }
   }
 
@@ -168,7 +168,7 @@ export class CollaborationService {
         try {
           callback(data);
         } catch (error) {
-          console.error('触发事件回调失败:', error);
+          console.error('Failed to trigger event callback:', error);
         }
       });
     }

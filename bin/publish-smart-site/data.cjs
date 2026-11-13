@@ -53,7 +53,7 @@ function pruneRiskPaths(rootDir) {
     }
   };
   walk(rootDir);
-  info(C.dim(`A05 剪枝：移除 ${removedDirs} 个目录 / ${removedFiles} 个文件（复刻证据路径）`));
+  info(C.dim(`A05 pruning: removed ${removedDirs} dirs / ${removedFiles} files (replica evidence paths)`));
 }
 
 /**
@@ -64,7 +64,7 @@ function pruneRiskPaths(rootDir) {
  */
 function copyDataDir(dst) {
   const src = path.join(RUN_SS, 'data');
-  if (!fs.existsSync(src)) fail(`数据目录不存在: ${src}`);
+  if (!fs.existsSync(src)) fail(`Data directory does not exist: ${src}`);
   const excludeDirs = [...DATA_EXCLUDE_DIRS];
   if (!opt.userData) excludeDirs.push(...DATA_USER_DIRS);
   // --data-exclude=<a,b>：额外排除（典型用法：images,images-lg,projects 瘦身交付）
@@ -72,16 +72,16 @@ function copyDataDir(dst) {
     if (!excludeDirs.includes(name)) excludeDirs.push(name);
     const probe = path.join(src, name);
     if (!fs.existsSync(probe)) {
-      info(C.warn(`--data-exclude 指定的 ${name}/ 在源数据目录中不存在（拼写检查）`));
+      info(C.warn(`--data-exclude ${name}/ not found in source data directory (check spelling)`));
     }
   }
   if (fs.existsSync(dst)) {
     // 先清空再镜像：避免上次打包的残留（尤其是 --no-user-data / --data-exclude 时的旧目录；
     // ⚠️ robocopy /MIR 不会删除被 /XD 排除掉的旧目录，所以这一步不能省）
-    info(C.dim('清空目标 data/ 后重新复制（避免上次打包残留）'));
+    info(C.dim('Clearing target data/ before copying (avoid leftovers from previous packaging)'));
     if (!rmDirWithRetry(dst)) {
       fail(
-        `无法清空目标数据目录（被占用或权限不足）：${dst}\n  处理：先停掉正在使用该目录的进程（stop.bat / 任务管理器），或改用 --clean 重新打包。`,
+        `Cannot clear target data directory (in use or insufficient permissions): ${dst}\n  Action: stop the process using it (stop.bat / Task Manager), or repackage with --clean.`,
       );
     }
   }
@@ -89,18 +89,18 @@ function copyDataDir(dst) {
   mirror(src, dst, { excludeDirs, excludeFiles: DATA_EXCLUDE_FILES });
   pruneRiskPaths(dst); // A05：确定性剪枝（任意层级按名称匹配，不依赖 robocopy glob）
   info(
-    `data ← ${path.relative(ROOT, src)}（${opt.userData ? '含用户数据 db/ projects/ 等' : '仅代码资产'}，` +
-      `耗时 ${((Date.now() - t0) / 1000).toFixed(1)}s）`,
+    `data ← ${path.relative(ROOT, src)} (${opt.userData ? 'including user data db/ projects/ etc.' : 'code assets only'}, ` +
+      `elapsed ${((Date.now() - t0) / 1000).toFixed(1)}s)`,
   );
-  info(C.dim(`排除目录：${excludeDirs.join(' / ')}；排除文件：${DATA_EXCLUDE_FILES.join(' / ')}`));
+  info(C.dim(`Excluded dirs: ${excludeDirs.join(' / ')}; excluded files: ${DATA_EXCLUDE_FILES.join(' / ')}`));
   const seedDb = path.join(dst, 'db', 'ss-node.db');
   if (fs.existsSync(seedDb)) {
-    info(C.ok('✓ 含全局库 data/db/ss-node.db（现网数据）'));
+    info(C.ok('✓ Global DB data/db/ss-node.db included (live data)'));
   } else {
-    info(C.warn('! 未含 data/db/ss-node.db ⇒ 目标机首次启动将自动建库并执行迁移'));
+    info(C.warn('! data/db/ss-node.db not included => target will create the DB and run migrations on first start'));
   }
   if (!fs.existsSync(path.join(dst, 'init'))) {
-    info(C.warn('! 未找到 data/init（SQL 初始化脚本）⇒ 项目库初始化可能失败，请检查数据源'));
+    info(C.warn('! data/init (SQL init scripts) missing => project DB init may fail, check the data source'));
   }
 }
 
@@ -185,17 +185,17 @@ function purgeDataDatabases(pkgDataDir) {
     'alm_alarm_records',
   ];
   if (!fs.existsSync(pkgDataDir)) {
-    info(C.warn('! 跳过数据库瘦身：包内 data/ 不存在'));
+    info(C.warn('! Skipping database purge: in-package data/ missing'));
     return;
   }
   const modPaths = resolveModulePaths(['sqlite3']);
   if (!modPaths) {
-    info(C.warn('! 跳过数据库瘦身：找不到 sqlite3 模块（检查 ss-services/ss-node 依赖安装）'));
+    info(C.warn('! Skipping database purge: sqlite3 module not found (check ss-services/ss-node dependency install)'));
     return;
   }
   const dbFiles = collectDbFiles(pkgDataDir);
   if (!dbFiles.length) {
-    info(C.dim('数据库瘦身：未发现 .db 文件，跳过'));
+    info(C.dim('Database purge: no .db files found, skipping'));
     return;
   }
   const childScript = [
@@ -249,14 +249,14 @@ function purgeDataDatabases(pkgDataDir) {
     { encoding: 'utf8', maxBuffer: 32 * 1024 * 1024 },
   );
   if (r.status !== 0) {
-    info(C.warn(`! 数据库瘦身失败（exit ${r.status}）：${(r.stderr || r.stdout || '').trim().slice(0, 500)}`));
+    info(C.warn(`! Database purge failed (exit ${r.status}): ${(r.stderr || r.stdout || '').trim().slice(0, 500)}`));
     return;
   }
   let results;
   try {
     results = JSON.parse(r.stdout);
   } catch {
-    info(C.warn(`! 数据库瘦身输出无法解析：${(r.stdout || '').slice(0, 300)}`));
+    info(C.warn(`! Cannot parse database purge output: ${(r.stdout || '').slice(0, 300)}`));
     return;
   }
   const mb = (n) => (n / 1048576).toFixed(2);
@@ -273,13 +273,13 @@ function purgeDataDatabases(pkgDataDir) {
     totalAfter += item.after;
     totalDeleted += item.deleted;
     info(
-      `  ✓ ${rel}：清空 ${item.purged} 表 / 删 ${item.deleted} 行 / ` +
+      `  ✓ ${rel}: purged ${item.purged} tables / deleted ${item.deleted} rows / ` +
         `${mb(item.before)} MB → ${mb(item.after)} MB`,
     );
   }
   if (totalBefore > 0) {
     info(
-      C.ok(`数据库瘦身完成：共删 ${totalDeleted} 行，${mb(totalBefore)} MB → ${mb(totalAfter)} MB`),
+      C.ok(`Database purge complete: ${totalDeleted} rows deleted, ${mb(totalBefore)} MB -> ${mb(totalAfter)} MB`),
     );
   }
 }
@@ -296,11 +296,11 @@ function resetAdminPassword(pkgDataDir, resetAdminSpec) {
   const [username, password] = String(resetAdminSpec).split(':');
   const dbFile = path.join(pkgDataDir, 'db', 'ss-node.db');
   if (!fs.existsSync(dbFile)) {
-    info(C.warn('! 跳过 --reset-admin：包内不存在 data/db/ss-node.db（--no-user-data 包首启走 setup 向导建管理员）'));
+    info(C.warn('! Skipping --reset-admin: in-package data/db/ss-node.db missing (a --no-user-data package creates the admin via the setup wizard on first start)'));
     return;
   }
   const modPaths = resolveModulePaths(['bcryptjs', 'sqlite3']);
-  if (!modPaths) fail('--reset-admin 失败：找不到 bcryptjs/sqlite3 模块（检查 ss-services/ss-node 依赖安装）');
+  if (!modPaths) fail('--reset-admin failed: bcryptjs/sqlite3 modules not found (check ss-services/ss-node dependency install)');
   const childScript = [
     'const [dbFile,username,password,bcryptPath,sqlite3Path]=process.argv.slice(1);',
     'const bcrypt=require(bcryptPath);',
@@ -323,7 +323,7 @@ function resetAdminPassword(pkgDataDir, resetAdminSpec) {
     { encoding: 'utf8' },
   );
   if (r.status !== 0) {
-    fail(`--reset-admin 失败（exit ${r.status}）：${(r.stderr || r.stdout || '').trim()}`);
+    fail(`--reset-admin failed (exit ${r.status}): ${(r.stderr || r.stdout || '').trim()}`);
   }
   info(r.stdout.trim());
 }
@@ -337,16 +337,16 @@ function resetAdminPassword(pkgDataDir, resetAdminSpec) {
  */
 function copyBaseServices(dstRoot) {
   const srcRoot = path.join(RUN_SS, 'base_services');
-  if (!fs.existsSync(srcRoot)) fail(`基础服务目录不存在: ${srcRoot}`);
+  if (!fs.existsSync(srcRoot)) fail(`Base services directory does not exist: ${srcRoot}`);
   for (const name of BASE_SERVICE_ITEMS) {
     const src = path.join(srcRoot, name);
     if (!fs.existsSync(src)) {
-      info(C.warn(`未找到 ${path.relative(ROOT, src)}，跳过`));
+      info(C.warn(`${path.relative(ROOT, src)} not found, skipping`));
       continue;
     }
     const dst = path.join(dstRoot, name);
     if (fs.existsSync(dst) && !rmDirWithRetry(dst)) {
-      fail(`无法清空 ${dst}（被占用或权限不足）：请先停止该基础服务（任务管理器里结束 redis-server.exe / influxd.exe）`);
+      fail(`Cannot clear ${dst} (in use or insufficient permissions): stop the base service first (end redis-server.exe / influxd.exe in Task Manager)`);
     }
     mirror(src, dst, {
       excludeDirs: BASE_SERVICE_EXCLUDE_DIRS,
@@ -367,13 +367,13 @@ function copyBaseServices(dstRoot) {
  */
 function copyNodeRuntime(dst) {
   const src = process.execPath;
-  if (!fs.existsSync(src)) fail(`未找到 node 可执行文件: ${src}`);
+  if (!fs.existsSync(src)) fail(`node executable not found: ${src}`);
   if (fs.existsSync(dst)) fs.rmSync(dst, { recursive: true, force: true });
   ensureDir(dst);
   fs.copyFileSync(src, path.join(dst, 'node.exe'));
   const sizeMb = (fs.statSync(src).size / 1048576).toFixed(1);
   info(`node ← ${src}（${process.version}, ${sizeMb} MB）`);
-  info(C.dim('start.bat / service-run.bat 会自动优先使用 node\\node.exe（目标机免装 Node）'));
+  info(C.dim('start.bat / service-run.bat prefer node\\node.exe automatically (no Node install needed on target)'));
 }
 
 

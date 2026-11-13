@@ -30,9 +30,9 @@ export class PipelineMetricsController {
     // Diagnostic log: if a metric is 0, hint at the possible cause
     if (snapshot.pipeline_executions_total === 0) {
       this.logger.warn(
-        `getJsonMetrics: pipeline_executions_total=0 — Pipeline 从未执行过。` +
-          `可能原因: 1) 无设备/标签注册采集任务 2) orchestrator 未注入 scheduler 3) 采集器未启动。` +
-          `请访问 /api/v1/pipeline/metrics/diagnostic 查看诊断信息。`,
+        `getJsonMetrics: pipeline_executions_total=0 - Pipeline has never run. ` +
+          `Possible causes: 1) no device/tag collection tasks registered 2) scheduler not injected into orchestrator 3) collector not started. ` +
+          `See /api/v1/pipeline/metrics/diagnostic for diagnostics.`,
       );
     }
     return {

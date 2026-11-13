@@ -111,14 +111,14 @@ export const useTemplateStore = defineStore('canvas-page-template', {
         if (systemResult) {
           this.systemTemplates = systemResult;
         } else {
-          console.warn('[TemplateStore] 系统模板 API 不可用，使用本地数据降级');
+          console.warn('[TemplateStore] System template API unavailable, falling back to local data');
           this.systemTemplates = [...BUILTIN_TEMPLATES];
           this.loadUserTemplatesFromLocalStorage();
         }
 
         this.projectTemplates = projectResult || [];
-        console.log('[TemplateStore] loadTemplates 完成 →', {
-          projectId: projectId || '(未传)',
+        console.log('[TemplateStore] loadTemplates done →', {
+          projectId: projectId || '(not set)',
           currentProjectId,
           systemCount: this.systemTemplates.length,
           projectCount: this.projectTemplates.length,
@@ -137,7 +137,7 @@ export const useTemplateStore = defineStore('canvas-page-template', {
         const result = await this.fetchFromApi(API_BASE);
         this.systemTemplates = result;
       } catch {
-        console.warn('[TemplateStore] 系统模板 API 不可用');
+        console.warn('[TemplateStore] System template API unavailable');
         this.systemTemplates = [...BUILTIN_TEMPLATES];
         this.loadUserTemplatesFromLocalStorage();
       } finally {
@@ -155,7 +155,7 @@ export const useTemplateStore = defineStore('canvas-page-template', {
           }
         }
       } catch (error) {
-        console.warn('[TemplateStore] 加载用户模板失败:', error);
+        console.warn('[TemplateStore] Failed to load user templates:', error);
       }
     },
 
@@ -164,7 +164,7 @@ export const useTemplateStore = defineStore('canvas-page-template', {
         const userTemplates = this.systemTemplates.filter(t => t.source === 'user');
         localStorage.setItem(LS_KEY, JSON.stringify(userTemplates));
       } catch (error) {
-        console.warn('[TemplateStore] 保存用户模板失败:', error);
+        console.warn('[TemplateStore] Failed to save user template:', error);
       }
     },
 
@@ -237,7 +237,7 @@ export const useTemplateStore = defineStore('canvas-page-template', {
         }
         throw new Error('API 返回异常');
       } catch (error) {
-        console.warn('[TemplateStore] API 保存失败，降级到 localStorage:', error);
+        console.warn('[TemplateStore] API save failed, falling back to localStorage:', error);
         this.systemTemplates.unshift(template);
         this.persistUserTemplatesToLocalStorage();
         return template;
@@ -277,7 +277,7 @@ export const useTemplateStore = defineStore('canvas-page-template', {
         }
         return null;
       } catch (error) {
-        console.warn('[TemplateStore] 提升模板失败:', error);
+        console.warn('[TemplateStore] Failed to promote template:', error);
         return null;
       }
     },
@@ -306,7 +306,7 @@ export const useTemplateStore = defineStore('canvas-page-template', {
         }
         throw new Error('API 返回异常');
       } catch (error) {
-        console.warn('[TemplateStore] API 更新失败，降级到 localStorage:', error);
+        console.warn('[TemplateStore] API update failed, falling back to localStorage:', error);
         const target = isProject ? this.projectTemplates : this.systemTemplates;
         const template = target.find(t => t.id === templateId);
         if (!template) return false;
@@ -338,7 +338,7 @@ export const useTemplateStore = defineStore('canvas-page-template', {
         }
         return true;
       } catch (error) {
-        console.warn('[TemplateStore] API 删除失败，降级到 localStorage:', error);
+        console.warn('[TemplateStore] API delete failed, falling back to localStorage:', error);
         if (isProject) {
           this.projectTemplates = this.projectTemplates.filter(t => t.id !== templateId);
         } else {
@@ -377,7 +377,7 @@ export const useTemplateStore = defineStore('canvas-page-template', {
         try { raw = JSON.parse(json); } catch { return null; }
 
         if (!raw.name || !raw.pageConfig || !Array.isArray(raw.graphics)) {
-          console.warn('[TemplateStore] 导入的模板数据格式无效');
+          console.warn('[TemplateStore] Imported template data has invalid format');
           return null;
         }
 
@@ -415,7 +415,7 @@ export const useTemplateStore = defineStore('canvas-page-template', {
         this.persistUserTemplatesToLocalStorage();
         return template;
       } catch (error) {
-        console.warn('[TemplateStore] 导入模板失败:', error);
+        console.warn('[TemplateStore] Failed to import template:', error);
         return null;
       }
     },

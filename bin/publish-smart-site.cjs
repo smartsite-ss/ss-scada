@@ -149,31 +149,31 @@ for (const a of argv) {
     opt.resetAdmin = spec;
   } else if (a === '--no-db-clean') opt.dbClean = false;
   else {
-    console.error(`[ERROR] 未知参数: ${a}（用 --help 查看用法）`);
+    console.error(`[ERROR] Unknown option: ${a} (use --help for usage)`);
     process.exit(1);
   }
 }
 if (!['full', 'scada', 'data'].includes(opt.mode)) {
-  console.error(`[ERROR] --mode 只支持 full | scada | data，收到: ${opt.mode}`);
+  console.error(`[ERROR] --mode accepts only full | scada | data, got: ${opt.mode}`);
   process.exit(1);
 }
 if (!['lite', 'standard'].includes(opt.tier)) {
-  console.error(`[ERROR] --tier 只支持 lite | standard，收到: ${opt.tier}`);
+  console.error(`[ERROR] --tier accepts only lite | standard, got: ${opt.tier}`);
   process.exit(1);
 }
 if (opt.tier === 'lite' && opt.withServices) {
   console.error(
-    '[ERROR] --tier=lite 与 --with-services 冲突：Lite 档不使用 Redis/InfluxDB，请去掉 --with-services',
+    '[ERROR] --tier=lite conflicts with --with-services: Lite does not use Redis/InfluxDB, remove --with-services',
   );
   process.exit(1);
 }
 if (!['node', 'exe'].includes(opt.launcher)) {
-  console.error(`[ERROR] --launcher 只支持 node | exe，收到: ${opt.launcher}`);
+  console.error(`[ERROR] --launcher accepts only node | exe, got: ${opt.launcher}`);
   process.exit(1);
 }
 if (opt.launcher === 'exe' && !opt.withNode) {
   console.error(
-    '[ERROR] --exe 需要 --with-node：薄启动器 exe 自己不内嵌 Node 运行时，必须随包带 node\\node.exe',
+    '[ERROR] --exe requires --with-node: the thin launcher exe does not embed a Node runtime, node\\node.exe must be bundled',
   );
   process.exit(1);
 }
@@ -242,52 +242,52 @@ const ENV_BASE_SERVICES_DIR = INTERNAL_PATHS ? './base_services' : toPosixRelati
 
 function printHelp() {
   console.log(`
-单包发布打包器（S1 单进程，无 Nginx）
+Smart Site single-package publisher (S1 single process, no Nginx)
 
-用法：
-  node bin/publish-smart-site.cjs [选项]
+Usage:
+  node bin/publish-smart-site.cjs [options]
 
-选项：
-  --port=<n>        运行时端口（默认 4200，避免与现有 4000 实例冲突）
-  --mode=<m>        产品模式 full|scada|data（默认 full）
-  --standalone      ★ 自包含交付包 = --with-data + --with-services（可直接拷到目标机一键启动）
-  --with-data       把 data/ 打进包（DATA_DIR=./data；含资产与用户数据，排除运行期目录与 WAL）
-  --no-user-data    --with-data 时排除用户数据（db/ projects/ plugin-configs/ graphic-plugins/），
-                    适合"首次安装"式交付（目标机启动时自动建库 + 迁移）
-  --with-services   把 base_services/{redis,influxdb2-2.7.8} 打进包并创建 rtdb/influxdb2
+Options:
+  --port=<n>        Runtime port (default 4200, avoids conflict with the existing :4000 instance)
+  --mode=<m>        Product mode full|scada|data (default full)
+  --standalone      Self-contained package = --with-data + --with-services (copy the folder to the target machine and start with one click)
+  --with-data       Bundle data/ (DATA_DIR=./data; includes assets and user data, excludes runtime dirs and WAL)
+  --no-user-data    With --with-data, exclude user data (db/ projects/ plugin-configs/ graphic-plugins/),
+                    suitable for "first install" delivery (target creates the DB and runs migrations on first start)
+  --with-services   Bundle base_services/{redis,influxdb2-2.7.8} and create rtdb/influxdb2
   --data-exclude=<a,b>
-                    --with-data 时额外排除 data/ 下的子目录（瘦身交付）。
-                    典型：--data-exclude=images,images-lg,projects
-  --with-node       随包带 node.exe（node\\node.exe）⇒ 目标机免装 Node，且规避原生模块 ABI 不一致
-  --exe             ★ 方式 5：生成薄启动器 SmartSite.exe（winexe，无控制台窗口，双击即启）。
-                    与 --with-node 必须同用（启动器不内嵌 Node 运行时）；start.bat 改为调用它。
-                    方案见 docs/00-全局/发布/后台发布成exe方案.md（方案 A：后台零改造）
-  --launcher=<x>    启动器形态 node|exe（默认 node；--exe 等价于 --launcher=exe）
-  --service         生成 install-service.bat / uninstall-service.bat（NSSM 优先，schtasks 兜底）
-  --zip             打包完成后压缩为 <包名>.zip 并生成 <包名>.zip.sha256
-  --self-test       自测试：把产物复制到同级暂存目录真实启动一次（Lite 覆盖，不触碰外部
-                    Redis/InfluxDB），探测 /api/v1/health、/、SPA 深路由后清理，
-                    结果写入 VERSION.json 的 selfTest 字段（失败则整包判失败、不压缩）
-  --tier=<t>        基础服务档位 lite|standard（默认 standard）；lite ⇒ REDIS_HOST 置空 +
-                    HISTORICAL_DATA_BACKEND=sqlite（免 Redis/InfluxDB）
-  --build-heap=<MB> 构建期 V8 堆上限（默认按可用物理内存自动推算，范围 5120~12288）。
-                    前端生产构建（尤其 @scada-editor/system）在默认 ~4GB 堆下必 OOM
-                    （exit 134）；但堆上限超过可用物理内存同样会异常终止，故需恰到好处
-  --no-build        跳过前后端构建，直接使用现有 dist 产物
-  --no-web          不更新前端（仅后端）
-  --no-server       不更新后端（仅前端）
-  --no-deps         不更新 node_modules（重跑改配置时用，秒级）
+                    With --with-data, additionally exclude subdirectories under data/ (slim delivery).
+                    Typical: --data-exclude=images,images-lg,projects
+  --with-node       Bundle node.exe (node\\node.exe) => no Node install needed on target, avoids native module ABI mismatch
+  --exe             Mode 5: build thin launcher SmartSite.exe (winexe, no console window, double-click to start).
+                    Must be used with --with-node (launcher does not embed Node); start.bat will call it.
+                    See the Windows exe release design doc under docs/ (option A: zero backend changes)
+  --launcher=<x>    Launcher form node|exe (default node; --exe equals --launcher=exe)
+  --service         Generate install-service.bat / uninstall-service.bat (NSSM preferred, schtasks fallback)
+  --zip             Compress to <package>.zip and generate <package>.zip.sha256 after packaging
+  --self-test       Self test: copy artifacts to a sibling staging dir and start once (Lite overrides,
+                    external Redis/InfluxDB untouched), probe /api/v1/health, /, SPA deep route, then clean up,
+                    write the result to VERSION.json#selfTest (failure fails the whole package, no zip)
+  --tier=<t>        Base service tier lite|standard (default standard); lite => REDIS_HOST empty +
+                    HISTORICAL_DATA_BACKEND=sqlite (no Redis/InfluxDB)
+  --build-heap=<MB> V8 heap limit for builds (default derived from free physical memory, 5120~12288).
+                    The frontend production build (esp. @scada-editor/system) OOMs under the default ~4GB heap
+                    (exit 134); but a limit above free physical memory also aborts, so tune it carefully
+  --no-build        Skip frontend/backend builds, reuse existing dist artifacts
+  --no-web          Do not update frontend (backend only)
+  --no-server       Do not update backend (frontend only)
+  --no-deps         Do not update node_modules (fast re-run when changing config only)
   --no-install-missing
-                    不自动补齐「基线缺少的三方依赖」（默认自动补齐；需网络）
-  --clean           打包前清空目标目录
-  --link-deps       生产依赖用目录联接（mklink /J）而非复制（秒级，但不自包含）
-  --target=<dir>    目标目录（默认 ss-run/ss-win/04-win-node；--exe 时默认 05-win-exe）
-  -h, --help        显示本帮助
+                    Do not auto-install third-party deps missing from the baseline (default: auto; needs network)
+  --clean           Clear the target directory before packaging
+  --link-deps       Use directory junctions (mklink /J) for production deps instead of copying (fast, not self-contained)
+  --target=<dir>    Target directory (default ss-run/ss-win/04-win-node; 05-win-exe for --exe)
+  -h, --help        Show this help
 
-示例（Windows 单机交付包）：
+Examples (Windows single-machine delivery):
   node bin/publish-smart-site.cjs --standalone --port=8080 --tier=standard
-  node bin/publish-smart-site.cjs --standalone --port=8080 --with-node --exe   # 方式 5：exe 启动
-  node bin/publish-smart-site.cjs --with-data --no-user-data --tier=lite   # 不带用户数据的 Lite 档
+  node bin/publish-smart-site.cjs --standalone --port=8080 --with-node --exe   # Mode 5: exe launcher
+  node bin/publish-smart-site.cjs --with-data --no-user-data --tier=lite   # Lite tier without user data
 `);
 }
 
@@ -346,62 +346,62 @@ const svcSummary = opt.withServices
 
 console.log('');
 console.log('='.repeat(78));
-console.log(C.bold('  Smart Site 单包发布（S1 单进程，无 Nginx）'));
+console.log(C.bold('  Smart Site single-package publisher (S1 single process, no Nginx)'));
 console.log('='.repeat(78));
-console.log(`  目标目录   : ${T}`);
-console.log(`  产品模式   : ${opt.mode}`);
-console.log(`  运行端口   : ${opt.port}`);
-console.log(`  形态       : ${INTERNAL_PATHS ? C.bold('自包含（路径指向包内）') : '复用本机 ss-run'}`);
-console.log(`  数据/服务  : ${dataSummary} + ${svcSummary}（档位 ${opt.tier}）`);
+console.log(`  Target dir : ${T}`);
+console.log(`  Mode       : ${opt.mode}`);
+console.log(`  Port       : ${opt.port}`);
+console.log(`  Form       : ${INTERNAL_PATHS ? C.bold('Self-contained (paths point inside the package)') : 'Reuse local ss-run'}`);
+console.log(`  Data/Svc   : ${dataSummary} + ${svcSummary} (tier ${opt.tier})`);
 console.log(
-  `  附加产物   : ${
+  `  Extra      : ${
     [
-      opt.withNode ? `随包 node（${process.version}）` : null,
-      opt.service ? 'Windows 服务脚本' : null,
-      opt.selfTest ? '自测试' : null,
+      opt.withNode ? `Bundled node (${process.version})` : null,
+      opt.service ? 'Windows service scripts' : null,
+      opt.selfTest ? 'Self test' : null,
       opt.zip ? 'zip + sha256' : null,
     ]
       .filter(Boolean)
-      .join(' / ') || '无'
+      .join(' / ') || 'none'
   }`,
 );
 console.log(
-  `  构建       : ${opt.build ? `是（堆上限 ${BUILD_HEAP.mb} MB；可用物理内存 ${BUILD_HEAP.freeMb} MB，${BUILD_HEAP.source}）` : '否（--no-build）'}`,
+  `  Build      : ${opt.build ? `yes (heap limit ${BUILD_HEAP.mb} MB; free physical memory ${BUILD_HEAP.freeMb} MB, ${BUILD_HEAP.source})` : 'no (--no-build)'}`,
 );
-console.log(`  前端/后端  : ${opt.web ? '更新' : '跳过'} / ${opt.server ? '更新' : '跳过'}`);
+console.log(`  Web/API    : ${opt.web ? 'update' : 'skip'} / ${opt.server ? 'update' : 'skip'}`);
 console.log(
-  `  依赖       : ${
-    !opt.deps ? '跳过（--no-deps）' : opt.linkDeps ? '目录联接（--link-deps）' : '复制基线'
-  }${opt.deps && !opt.linkDeps && opt.installMissing ? ' + 自动补齐缺口' : ''}`,
+  `  Deps       : ${
+    !opt.deps ? 'skip (--no-deps)' : opt.linkDeps ? 'junction (--link-deps)' : 'copy baseline'
+  }${opt.deps && !opt.linkDeps && opt.installMissing ? ' + auto-install missing' : ''}`,
 );
 console.log('='.repeat(78));
 
 if (opt.withData && !opt.withServices && opt.tier === 'standard') {
   console.log(
     C.warn(
-      '  提示：--with-data 但未带 base_services（--with-services）⇒ 目标机需自备 Redis/InfluxDB，' +
-        '或改用 --tier=lite（零外部服务）。',
+      '  Note: --with-data without base_services (--with-services) => target must provide Redis/InfluxDB, ' +
+        'or use --tier=lite (no external services).',
     ),
   );
 }
 if (opt.withServices && !opt.withData) {
   console.log(
-    C.warn('  提示：--with-services 但未带 data ⇒ 数据目录仍指向 ../data（需与包同级放置）。'),
+    C.warn('  Note: --with-services without data => DATA_DIR still points to ../data (must sit next to the package).'),
   );
 }
 if (opt.withData && opt.userData) {
   console.log(
-    C.warn('  提示：本次打包包含用户数据（db/、projects/、plugin-configs/、graphic-plugins/），注意保密与体积。'),
+    C.warn('  Note: this package contains user data (db/, projects/, plugin-configs/, graphic-plugins/); mind confidentiality and size.'),
   );
 }
 if (opt.dataExclude.length && !opt.withData) {
-  console.log(C.warn('  提示：--data-exclude 仅在 --with-data 时生效（本次未随包 data/）。'));
+  console.log(C.warn('  Note: --data-exclude only applies with --with-data (data/ not bundled this time).'));
 }
 
 if (opt.clean && fs.existsSync(T)) {
-  step(1, TOTAL, `清空目标目录（--clean）`);
+  step(1, TOTAL, `Clearing target directory (--clean)`);
   fs.rmSync(T, { recursive: true, force: true });
-  info(C.ok('已清空'));
+  info(C.ok('Cleared'));
 }
 ensureDir(T);
 
@@ -415,15 +415,15 @@ if (fs.existsSync(isolationDir)) {
   const s = fs.statSync(isolationDir);
   if (s.isDirectory()) {
     fs.rmSync(isolationDir, { recursive: true, force: true });
-    info(C.dim('已清理运行期产物 .ss-collector-isolation/'));
+    info(C.dim('Removed runtime artifact .ss-collector-isolation/'));
   }
 }
 const strayDataDir = path.join(T, 'data');
 if (!opt.withData && fs.existsSync(strayDataDir) && !/^\.\.[\\/]/.test(String(process.env.DATA_DIR || ''))) {
   info(
     C.warn(
-      '检测到包内 data/ 目录：这是运行期按 cwd 相对路径产生的残留，' +
-        '本包 .env 的 DATA_DIR 指向 ../data（复用现有数据），请确认其未被误用后手动删除。',
+      'Detected an in-package data/ directory: this is a runtime leftover created by cwd-relative paths. ' +
+        'This package .env points DATA_DIR to ../data (reusing existing data); verify it is unused and delete it manually.',
     ),
   );
 }
@@ -436,16 +436,16 @@ buildMod.runBuildStep();
 artifactsMod.runArtifactsStep();
 
 // ── [4] 数据目录 / 基础服务 / 随包 Node（自包含，一键启动）──────
-step(4, TOTAL, '打包数据目录 / 基础服务 / 随包 Node（--with-data / --with-services / --with-node）');
+step(4, TOTAL, 'Bundling data dir / base services / bundled Node (--with-data / --with-services / --with-node)');
 if (opt.withData) {
   copyDataDir(path.join(T, 'data'));
   // 数据库瘦身：清空事件/日志/报警记录表并 VACUUM 收缩（对包内副本操作，不影响 ss-run 源库）
   if (opt.dbClean) purgeDataDatabases(path.join(T, 'data'));
-  else info(C.dim('跳过数据库瘦身（--no-db-clean）'));
+  else info(C.dim('Skipping database purge (--no-db-clean)'));
   // 重置包内全局库默认账号密码（--reset-admin，默认 admin:admin；每次打包都生效）
   if (opt.resetAdmin) resetAdminPassword(path.join(T, 'data'), opt.resetAdmin);
 } else {
-  info(C.dim('跳过 data/（未指定 --with-data：本包 .env 的 DATA_DIR 指向 ../data）'));
+  info(C.dim('Skipping data/ (--with-data not set: .env points DATA_DIR to ../data)'));
 }
 if (opt.withServices) {
   copyBaseServices(path.join(T, 'base_services'));
@@ -453,14 +453,14 @@ if (opt.withServices) {
   // ⇒ 包内即 <pkg>/rtdb/influxdb2（与 .env 的 INFLUXDB_DATA_DIR=${RUN_DIR}/rtdb/influxdb2 一致）
   ensureDir(path.join(T, 'rtdb', 'influxdb2'));
   ensureDir(path.join(T, 'rtdb', 'influxdb3'));
-  info('已创建 rtdb/influxdb2 与 rtdb/influxdb3（时序数据落点，升级不覆盖）');
+  info('Created rtdb/influxdb2 and rtdb/influxdb3 (time-series data locations, not overwritten on upgrade)');
 } else {
-  info(C.dim('跳过 base_services/（未指定 --with-services：需目标机自备或走 --tier=lite）'));
+  info(C.dim('Skipping base_services/ (--with-services not set: target must provide them or use --tier=lite)'));
 }
 if (opt.withNode) {
   copyNodeRuntime(path.join(T, 'node'));
 } else {
-  info(C.dim('跳过 node/（未指定 --with-node：目标机需自备 Node，且大版本须与打包机一致）'));
+  info(C.dim('Skipping node/ (--with-node not set: target needs its own Node with a matching major version)'));
 }
 
 
@@ -477,7 +477,7 @@ ctx.builtAt = builtAt;
 ctx.inherited = inherited;
 
 // ── [8] 生成启停脚本与版本信息 ────────────────────────────────
-step(8, TOTAL, '生成启停脚本 / README / VERSION.json');
+step(8, TOTAL, 'Generating start/stop scripts / README / VERSION.json');
 /** 生成器共享上下文：把"形态"一次性算好，避免各生成器重复判断 */
 const pkg = {
   dir: T,
@@ -583,9 +583,9 @@ complianceMod.enforceCompliance(path.join(T, 'data'));
 // ── [10] 自测试（--self-test）─────────────────────────────────
 let selfTestResult = null;
 if (opt.selfTest) {
-  step(10, TOTAL, '自测试（--self-test：暂存副本真实启动 → 探活 → 清理）');
+  step(10, TOTAL, 'Self test (--self-test: start staged copy -> probe health -> clean up)');
   if (bad) {
-    info(C.warn('存在校验未通过项，跳过自测试'));
+    info(C.warn('Verification failures present, skipping self test'));
   } else {
     selfTestResult = selfTestPackage(pkg);
     if (!selfTestResult.pass) bad++;
@@ -595,79 +595,79 @@ if (opt.selfTest) {
       const vj = JSON.parse(fs.readFileSync(versionFile, 'utf8'));
       vj.selfTest = selfTestResult;
       fs.writeFileSync(versionFile, JSON.stringify(vj, null, 2) + '\n', 'utf8');
-      info('自测试结果已写入 VERSION.json#selfTest');
+      info('Self test result written to VERSION.json#selfTest');
     } catch (e) {
-      info(C.warn(`写入 VERSION.json 失败（忽略）: ${e.message}`));
+      info(C.warn(`Failed to write VERSION.json (ignored): ${e.message}`));
     }
   }
 } else {
-  step(10, TOTAL, '自测试（未指定 --self-test，跳过）');
-  info(C.dim('建议：加 --self-test 让打包器真实起一次服务并探活（约 1-2 分钟）'));
+  step(10, TOTAL, 'Self test (--self-test not set, skipping)');
+  info(C.dim('Hint: add --self-test to actually start the service once and probe health (about 1-2 minutes)'));
 }
 
 // ── [11] 压缩分发（--zip）─────────────────────────────────────
 if (opt.zip) {
-  step(11, TOTAL, '压缩打包（--zip：zip + sha256）');
+  step(11, TOTAL, 'Compressing (--zip: zip + sha256)');
   if (bad) {
-    info(C.warn('存在校验未通过项，跳过压缩（请先修复上面的 ✗ 项）'));
+    info(C.warn('Verification failures present, skipping compression (fix the ✗ items above first)'));
   } else {
     zipPackage(T);
   }
 } else {
-  step(11, TOTAL, '压缩分发（未指定 --zip，跳过）');
-  info(C.dim(`如需分发压缩包：加 --zip 参数重新打包（或自行压缩 ${T}）`));
+  step(11, TOTAL, 'Compression (--zip not set, skipping)');
+  info(C.dim(`To distribute a zip: repackage with --zip (or compress ${T} yourself)`));
 }
 
 console.log('');
 console.log('='.repeat(78));
 if (bad) {
-  console.log(C.err(`  完成，但有 ${bad} 项校验未通过，请检查上面的 ✗ 项。`));
+  console.log(C.err(`  Done, but ${bad} check(s) failed; see the ✗ items above.`));
 } else {
-  console.log(C.ok('  打包完成。'));
+  console.log(C.ok('  Packaging complete.'));
 }
 console.log('='.repeat(78));
-console.log(`  产物目录 : ${T}`);
-console.log(`  启动     : ${path.join(T, 'start.bat')}`);
-console.log(`  自检     : ${path.join(T, 'self-test.bat')}`);
-console.log(`  访问地址 : http://localhost:${opt.port}/`);
-console.log(`  健康检查 : http://localhost:${opt.port}/api/v1/system/health`);
+console.log(`  Output dir : ${T}`);
+console.log(`  Start      : ${path.join(T, 'start.bat')}`);
+console.log(`  Self test  : ${path.join(T, 'self-test.bat')}`);
+console.log(`  URL        : http://localhost:${opt.port}/`);
+console.log(`  Health     : http://localhost:${opt.port}/api/v1/system/health`);
 if (selfTestResult) {
   console.log(
-    `  打包期自测: ${
+    `  Build self-test: ${
       selfTestResult.pass
-        ? C.ok(`通过（health=200, ${selfTestResult.checks.healthWaitSeconds}s）`)
+        ? C.ok(`passed (health=200, ${selfTestResult.checks.healthWaitSeconds}s)`)
         : selfTestResult.skipped
-          ? C.warn(`跳过（${selfTestResult.skipped}）`)
-          : C.err('失败（见 VERSION.json#selfTest）')
+          ? C.warn(`skipped (${selfTestResult.skipped})`)
+          : C.err('failed (see VERSION.json#selfTest)')
     }`,
   );
 }
 console.log('');
-console.log(C.warn('  提示：'));
+console.log(C.warn('  Notes:'));
 if (INTERNAL_PATHS) {
-  console.log('   1) 自包含形态：整目录可直接拷到目标机，双击 start.bat 一键启动');
-  console.log(`      （${pkg.withData ? 'data/ 随包' : 'data/ 指向 ../data'}；${pkg.withServices ? 'base_services/ 随包，start.bat 会先拉起 redis/influxd' : 'base_services/ 未随包'}）。`);
-  console.log(`   2) 档位 ${pkg.tier}：${pkg.tier === 'lite' ? 'REDIS_HOST 留空 + HISTORICAL_DATA_BACKEND=sqlite（零外部服务）' : '需 Redis :6379 / InfluxDB :8086（已在包内）'}。`);
+  console.log('   1) Self-contained: copy the whole folder to the target machine and double-click start.bat');
+  console.log(`      (${pkg.withData ? 'data/ bundled' : 'data/ points to ../data'}; ${pkg.withServices ? 'base_services/ bundled, start.bat starts redis/influxd first' : 'base_services/ not bundled'}).`);
+  console.log(`   2) Tier ${pkg.tier}: ${pkg.tier === 'lite' ? 'REDIS_HOST empty + HISTORICAL_DATA_BACKEND=sqlite (no external services)' : 'needs Redis :6379 / InfluxDB :8086 (bundled)'}.`);
   if (pkg.withData && pkg.userData) {
     const excluded = pkg.dataExclude && pkg.dataExclude.length ? `（已排除 ${pkg.dataExclude.join('/')}）` : '';
-    console.log(`   3) ⚠️ 本包包含现网用户数据（db/、plugin-configs/、graphic-plugins/ 等）${excluded}，分发前注意保密；`);
+    console.log(`   3) ⚠️ This package contains live user data (db/, plugin-configs/, graphic-plugins/, etc.) ${excluded}; mind confidentiality before distribution;`);
     if (pkg.dataExclude.includes('projects')) {
-      console.log('      注意：已排除 data/projects ⇒ 全局库中仍留有项目记录，打开项目会因缺 system.db 报错；');
-      console.log('      如需"空数据交付"，请改用 --with-data --no-user-data（连 db/ 一起排除）。');
+      console.log('      Note: data/projects excluded => project records remain in the global DB; opening one fails due to missing system.db;');
+      console.log('      For an "empty data" delivery use --with-data --no-user-data (excludes db/ as well).');
     } else {
-      console.log('      如只需"首次安装"式交付，请加 --no-user-data 重新打包。');
+      console.log('      For a "first install" delivery, repackage with --no-user-data.');
     }
   } else {
-    console.log('   3) 目标机首次启动会自动建库并执行 TypeORM 迁移（管理员账号需按引导初始化）。');
+    console.log('   3) First start on the target creates the DB and runs TypeORM migrations (initialize the admin account via the setup guide).');
   }
 } else {
-  console.log('   1) 运行前请确保基础服务已就绪（复用 ss-run/ss/base_services）：');
-  console.log('      Redis :6379 / InfluxDB :8086；未启动时可改 .env 为 Lite 档：');
-  console.log('        REDIS_HOST=            （留空 → Redis 相关全 no-op）');
-  console.log('        HISTORICAL_DATA_BACKEND=sqlite   （历史数据落 SQLite）');
-  console.log('   2) 本包与 4000 端口的实例共用同一 data 目录，请勿同时运行。');
-  console.log('   3) 修改端口/档位只需编辑 .env 后重启，无需重新打包。');
-  console.log('   4) 需要"一键启动"的自包含交付包：加 --standalone（= --with-data --with-services）。');
+  console.log('   1) Ensure base services are ready before running (reusing ss-run/ss/base_services):');
+  console.log('      Redis :6379 / InfluxDB :8086; if not running, switch .env to the Lite tier:');
+  console.log('        REDIS_HOST=            (empty => all Redis features no-op)');
+  console.log('        HISTORICAL_DATA_BACKEND=sqlite   (historical data in SQLite)');
+  console.log('   2) This package shares the same data dir as the :4000 instance; do not run both at once.');
+  console.log('   3) To change port/tier, edit .env and restart; no repackaging needed.');
+  console.log('   4) For a self-contained "one-click start" package, add --standalone (= --with-data --with-services).');
 }
 console.log('');
 

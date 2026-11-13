@@ -180,7 +180,7 @@ export class EventCleanupService implements OnModuleDestroy {
 
     if (deletedRows > 0) {
       this.logger.log(
-        `[${tableName}] 清理完成: ${deletedRows} 行 (保留 ${policy.retentionDays} 天，截止 ${cutoffISO})`,
+        `[${tableName}] Cleanup complete: ${deletedRows} rows (retention ${policy.retentionDays} days, cutoff ${cutoffISO})`,
       );
     }
 

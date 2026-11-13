@@ -759,10 +759,10 @@ watch(
             dialogSubscribedTagIds.value = allTagIds
           }
         } catch (err) {
-          console.error('[DataSourceConfigDialog] wsStore 初始化失败:', err);
+          console.error('[DataSourceConfigDialog] wsStore init failed:', err);
         }
       } else {
-        console.warn('[DataSourceConfigDialog] projectId 为空，跳过 WebSocket 连接');
+        console.warn('[DataSourceConfigDialog] projectId is empty, skipping WebSocket connection');
       }
     } else {
       // On close, release the tag-subscription reference count held by this dialog

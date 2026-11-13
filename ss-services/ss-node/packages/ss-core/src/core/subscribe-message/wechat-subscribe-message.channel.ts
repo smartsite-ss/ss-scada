@@ -120,7 +120,7 @@ export class WechatSubscribeMessageChannel {
 
     if (!this.isConfigured()) {
       this.logger.warn(
-        '订阅消息通道未完整配置（模板 ID / 小程序凭证缺失），报警订阅消息将跳过发送',
+        'Subscription message channel is not fully configured (template ID / mini-program credentials missing); alarm subscription messages will be skipped',
       );
     }
   }
@@ -147,7 +147,7 @@ export class WechatSubscribeMessageChannel {
    */
   async notifySubscribedUsers(payload: SubscribeMessagePayload): Promise<boolean> {
     if (!this.isConfigured()) {
-      this.logger.warn('[SUBSCRIBE] 模板未配置，跳过报警订阅消息发送');
+      this.logger.warn('[SUBSCRIBE] Template not configured, skipping alarm subscription message');
       return false;
     }
 
@@ -159,7 +159,7 @@ export class WechatSubscribeMessageChannel {
       },
     });
     if (authorizations.length === 0) {
-      this.logger.debug('[SUBSCRIBE] 无可用订阅授权（配额为 0 或未授权），跳过发送');
+      this.logger.debug('[SUBSCRIBE] No available subscription authorization (quota 0 or not authorized), skipping send');
       return false;
     }
 
@@ -181,7 +181,7 @@ export class WechatSubscribeMessageChannel {
         }
       }
       if (this.isRateLimited(authorization.mpOpenId)) {
-        this.logger.warn(`[SUBSCRIBE] 用户限频跳过：openid=${authorization.mpOpenId.slice(0, 6)}...`);
+        this.logger.warn(`[SUBSCRIBE] User rate-limited, skipped: openid=${authorization.mpOpenId.slice(0, 6)}...`);
         continue;
       }
       const sent = await this.sendToOpenId(
@@ -195,7 +195,7 @@ export class WechatSubscribeMessageChannel {
       }
     }
 
-    this.logger.log(`[SUBSCRIBE] 报警订阅消息下发完成：成功 ${sentCount}/${authorizations.length}`);
+    this.logger.log(`[SUBSCRIBE] Alarm subscription messages delivered: ${sentCount}/${authorizations.length} succeeded`);
     return sentCount > 0;
   }
 
@@ -206,7 +206,7 @@ export class WechatSubscribeMessageChannel {
    */
   async notifyDeviceStatus(payload: DeviceStatusSubscribePayload): Promise<boolean> {
     if (!this.isDeviceStatusConfigured()) {
-      this.logger.warn('[SUBSCRIBE] 设备状态模板未配置，跳过设备状态订阅消息发送');
+      this.logger.warn('[SUBSCRIBE] Device status template not configured, skipping device status subscription message');
       return false;
     }
 
@@ -219,14 +219,14 @@ export class WechatSubscribeMessageChannel {
       },
     });
     if (authorizations.length === 0) {
-      this.logger.debug('[SUBSCRIBE] 设备状态模板无可用订阅授权，跳过发送');
+      this.logger.debug('[SUBSCRIBE] No available subscription authorization for the device status template, skipping send');
       return false;
     }
 
     let sentCount = 0;
     for (const authorization of authorizations) {
       if (this.isRateLimited(authorization.mpOpenId)) {
-        this.logger.warn(`[SUBSCRIBE] 用户限频跳过：openid=${authorization.mpOpenId.slice(0, 6)}...`);
+        this.logger.warn(`[SUBSCRIBE] User rate-limited, skipped: openid=${authorization.mpOpenId.slice(0, 6)}...`);
         continue;
       }
       const sent = await this.sendToOpenId(
@@ -241,7 +241,7 @@ export class WechatSubscribeMessageChannel {
     }
 
     this.logger.log(
-      `[SUBSCRIBE] 设备状态订阅消息下发完成：成功 ${sentCount}/${authorizations.length} | ${payload.deviceName} → ${payload.status}`,
+      `[SUBSCRIBE] Device status subscription messages delivered: ${sentCount}/${authorizations.length} succeeded | ${payload.deviceName} → ${payload.status}`,
     );
     return sentCount > 0;
   }
@@ -286,7 +286,7 @@ export class WechatSubscribeMessageChannel {
   ): Promise<boolean> {
     if (this.isMock) {
       this.logger.log(
-        `[Mock] 订阅消息下发：openid=${authorization.mpOpenId} | template=${templateId}`,
+        `[Mock] Subscription message delivered: openid=${authorization.mpOpenId} | template=${templateId}`,
       );
       authorization.quotaRemaining = Math.max(0, authorization.quotaRemaining - 1);
       await this.authorizationRepo.save(authorization);
@@ -323,12 +323,12 @@ export class WechatSubscribeMessageChannel {
         await this.authorizationRepo.save(authorization);
       }
       this.logger.warn(
-        `[SUBSCRIBE] 下发失败：[${data.errcode}] ${data.errmsg} | openid=${authorization.mpOpenId.slice(0, 6)}...`,
+        `[SUBSCRIBE] Delivery failed: [${data.errcode}] ${data.errmsg} | openid=${authorization.mpOpenId.slice(0, 6)}...`,
       );
       return false;
     } catch (error) {
       // Send failure degrades to a log, not blocking the main alarm flow
-      this.logger.error(`[SUBSCRIBE] 下发异常：${(error as Error).message}`);
+      this.logger.error(`[SUBSCRIBE] Delivery error: ${(error as Error).message}`);
       return false;
     }
   }
@@ -419,7 +419,7 @@ export class WechatSubscribeMessageChannel {
       const parsed = JSON.parse(rawMapping) as Partial<TemplateFieldMapping>;
       return { ...DEFAULT_FIELD_MAPPING, ...parsed };
     } catch {
-      this.logger.warn('WECHAT_SUBSCRIBE_TEMPLATE_FIELDS JSON 解析失败，使用默认字段映射');
+      this.logger.warn('Failed to parse WECHAT_SUBSCRIBE_TEMPLATE_FIELDS JSON, using default field mapping');
       return DEFAULT_FIELD_MAPPING;
     }
   }
@@ -434,7 +434,7 @@ export class WechatSubscribeMessageChannel {
       const parsed = JSON.parse(rawMapping) as Partial<DeviceStatusTemplateFieldMapping>;
       return { ...DEFAULT_DEVICE_STATUS_FIELD_MAPPING, ...parsed };
     } catch {
-      this.logger.warn('WECHAT_SUBSCRIBE_TEMPLATE_DEVICE_FIELDS JSON 解析失败，使用默认字段映射');
+      this.logger.warn('Failed to parse WECHAT_SUBSCRIBE_TEMPLATE_DEVICE_FIELDS JSON, using default field mapping');
       return DEFAULT_DEVICE_STATUS_FIELD_MAPPING;
     }
   }

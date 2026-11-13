@@ -809,7 +809,7 @@ async function handleRemovePage(pageId: string) {
   // Also delete the server-side page file
   if (projectId.value) {
     pageApi.deletePage(projectId.value, pageName, groupName).catch(err => {
-      console.warn('[PagePanel] 删除页面文件失败:', err);
+      console.warn('[PagePanel] Failed to delete page file:', err);
     });
   }
 }
@@ -1041,7 +1041,7 @@ async function handleContextDelete() {
   // Also delete the server-side page file
   if (projectId.value) {
     pageApi.deletePage(projectId.value, pageName, groupName).catch(err => {
-      console.warn('[PagePanel] 删除页面文件失败:', err);
+      console.warn('[PagePanel] Failed to delete page file:', err);
     });
   }
   closeContextMenu();

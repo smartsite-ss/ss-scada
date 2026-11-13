@@ -97,7 +97,7 @@ export class AiProviderConfigService {
       config: JSON.stringify(dto.config || {}),
     });
     const saved = await this.repo.save(entity);
-    this.logger.log(`AI Provider 创建: ${dto.name} (${dto.providerId})`);
+    this.logger.log(`AI Provider created: ${dto.name} (${dto.providerId})`);
     return this.toView(saved);
   }
 
@@ -119,7 +119,7 @@ export class AiProviderConfigService {
     if (dto.config !== undefined) entity.config = JSON.stringify(dto.config);
 
     const saved = await this.repo.save(entity);
-    this.logger.log(`AI Provider 更新: ${saved.name} (${saved.providerId})`);
+    this.logger.log(`AI Provider updated: ${saved.name} (${saved.providerId})`);
     return this.toView(saved);
   }
 
@@ -130,7 +130,7 @@ export class AiProviderConfigService {
       throw new BadRequestException(`AI Provider 不存在: ${id}`);
     }
     await this.repo.delete({ id });
-    this.logger.log(`AI Provider 删除: ${entity.name} (${entity.providerId})`);
+    this.logger.log(`AI Provider deleted: ${entity.name} (${entity.providerId})`);
   }
 
   /** Toggle enabled/disabled */
@@ -141,7 +141,7 @@ export class AiProviderConfigService {
     }
     entity.enabled = enabled ? 1 : 0;
     const saved = await this.repo.save(entity);
-    this.logger.log(`AI Provider ${enabled ? '启用' : '禁用'}: ${saved.name}`);
+    this.logger.log(`AI Provider ${enabled ? 'enabled' : 'disabled'}: ${saved.name}`);
     return this.toView(saved);
   }
 
@@ -242,11 +242,11 @@ export class AiProviderConfigService {
       if (toInsert.length > 0) {
         await this.repo.save(toInsert);
         this.logger.log(
-          `已种入 ${toInsert.length} 个预置 AI Provider 配置（默认禁用，需填入 API Key 后启用）`,
+          `Seeded ${toInsert.length} preset AI Provider configs (disabled by default; add an API Key to enable)`,
         );
       }
     } catch (err) {
-      this.logger.error(`种入预置 Provider 配置失败: ${(err as Error).message}`);
+      this.logger.error(`Failed to seed preset Provider configs: ${(err as Error).message}`);
     }
   }
 
@@ -271,7 +271,7 @@ export class AiProviderConfigService {
       existing.apiKey = this.encrypt(apiKey);
       existing.enabled = 1;
       const saved = await this.repo.save(existing);
-      this.logger.log(`AI Provider 从预置更新: ${preset.name} (${providerId})`);
+      this.logger.log(`AI Provider updated from preset: ${preset.name} (${providerId})`);
       return this.toView(saved);
     }
 
@@ -299,7 +299,7 @@ export class AiProviderConfigService {
       }),
     });
     const saved = await this.repo.save(entity);
-    this.logger.log(`AI Provider 从预置创建: ${preset.name} (${providerId})`);
+    this.logger.log(`AI Provider created from preset: ${preset.name} (${providerId})`);
     return this.toView(saved);
   }
 
@@ -359,7 +359,7 @@ export class AiProviderConfigService {
       const authTag = cipher.getAuthTag();
       return `${SENSITIVE_PREFIX}${iv.toString('hex')}:${authTag.toString('hex')}:${encrypted}`;
     } catch (error) {
-      this.logger.error(`加密失败: ${(error as Error).message}`);
+      this.logger.error(`Encryption failed: ${(error as Error).message}`);
       return value;
     }
   }
@@ -379,7 +379,7 @@ export class AiProviderConfigService {
       decrypted += decipher.final('utf-8');
       return decrypted;
     } catch (error) {
-      this.logger.error(`解密失败: ${(error as Error).message}`);
+      this.logger.error(`Decryption failed: ${(error as Error).message}`);
       return encryptedValue;
     }
   }

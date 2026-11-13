@@ -32,9 +32,9 @@ export class WechatStateService {
     @Optional() @Inject(REDIS_CLIENT_DEFAULT) private readonly redis: Redis | null,
   ) {
     if (this.redis) {
-      this.logger.log('扫码 state 存储使用 Redis（持久化 + 自动过期）');
+      this.logger.log('QR login state stored in Redis (persistent + auto-expiry)');
     } else {
-      this.logger.warn('扫码 state 存储使用内存 Map（Redis 不可用，重启后 state 丢失）');
+      this.logger.warn('QR login state stored in an in-memory Map (Redis unavailable, state lost on restart)');
     }
   }
 

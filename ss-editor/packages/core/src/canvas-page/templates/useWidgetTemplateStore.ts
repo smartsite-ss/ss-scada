@@ -88,7 +88,7 @@ export const useWidgetTemplateStore = defineStore('widgetTemplate', () => {
       builtinTemplates.value = all.filter((t) => t.source === 'builtin');
       userTemplates.value = all.filter((t) => t.source === 'user');
     } catch (err) {
-      console.error('[WidgetTemplateStore] 加载组件模板失败', err);
+      console.error('[WidgetTemplateStore] Failed to load widget templates', err);
     } finally {
       isLoading.value = false;
     }
@@ -105,7 +105,7 @@ export const useWidgetTemplateStore = defineStore('widgetTemplate', () => {
       }));
       userTemplates.value = [...userTemplates.value, ...proj];
     } catch (err) {
-      console.error('[WidgetTemplateStore] 加载项目组件模板失败', err);
+      console.error('[WidgetTemplateStore] Failed to load project widget templates', err);
     }
   }
 
@@ -114,7 +114,7 @@ export const useWidgetTemplateStore = defineStore('widgetTemplate', () => {
       const res = await apiFetch<ReadResult>(`${API_BASE}/${templateId}`);
       return res.data;
     } catch (err) {
-      console.error('[WidgetTemplateStore] 读取组件模板失败', err);
+      console.error('[WidgetTemplateStore] Failed to read widget template', err);
       return null;
     }
   }
@@ -131,7 +131,7 @@ export const useWidgetTemplateStore = defineStore('widgetTemplate', () => {
       await loadTemplates();
       return res.data;
     } catch (err) {
-      console.error('[WidgetTemplateStore] 创建组件模板失败', err);
+      console.error('[WidgetTemplateStore] Failed to create widget template', err);
       return null;
     }
   }
@@ -149,7 +149,7 @@ export const useWidgetTemplateStore = defineStore('widgetTemplate', () => {
       await loadTemplates();
       return true;
     } catch (err) {
-      console.error('[WidgetTemplateStore] 更新组件模板失败', err);
+      console.error('[WidgetTemplateStore] Failed to update widget template', err);
       return false;
     }
   }
@@ -166,7 +166,7 @@ export const useWidgetTemplateStore = defineStore('widgetTemplate', () => {
       await loadTemplates();
       return true;
     } catch (err) {
-      console.error('[WidgetTemplateStore] 删除组件模板失败', err);
+      console.error('[WidgetTemplateStore] Failed to delete widget template', err);
       return false;
     }
   }

@@ -121,7 +121,7 @@ export class WechatAuthController {
       if (tokenResult) {
         this.setAuthCookies(res, tokenResult.accessToken, tokenResult.refreshToken);
         this.logger.log(
-          `[扫码登录成功] userId=${tokenResult.user.id} username=${tokenResult.user.username} Cookie已设置`,
+          `[QRLoginSuccess] userId=${tokenResult.user.id} username=${tokenResult.user.username} cookies set`,
         );
         return {
           ...statusResp,
@@ -157,7 +157,7 @@ export class WechatAuthController {
     await this.wechatAuthService.handleCallback(code, state);
 
     this.logger.log(
-      `[微信回调处理完成] state=${state.slice(0, 16)}... 已标记 confirmed，等待前端轮询下发 Token`,
+      `[WeChatCallbackDone] state=${state.slice(0, 16)}... marked confirmed, waiting for frontend polling to deliver tokens`,
     );
 
     // Return a simple page (shown inside the iframe, not actually visible to the user)

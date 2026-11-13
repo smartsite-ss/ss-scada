@@ -76,7 +76,7 @@ export class AuditLoggerService {
     });
 
     this.logger.log(
-      `审计日志通道已初始化 | prevHash=${this.prevHash.slice(0, 16)}... | logDir=${path.join(config.logDir, 'audit')}`,
+      `Audit log channel initialized | prevHash=${this.prevHash.slice(0, 16)}... | logDir=${path.join(config.logDir, 'audit')}`,
     );
   }
 
@@ -90,7 +90,7 @@ export class AuditLoggerService {
       // 0. Validate required fields, preventing incomplete entries from breaking the hash chain
       if (!event.type || !event.severity) {
         this.logger.warn(
-          `审计事件缺少必填字段，已跳过 | type="${event.type}" severity="${event.severity}"`,
+          `Audit event missing required fields, skipped | type="${event.type}" severity="${event.severity}"`,
         );
         return;
       }
@@ -123,7 +123,7 @@ export class AuditLoggerService {
     } catch (err) {
       // Audit-log write failures must not affect the business flow; only log the error
       this.logger.error(
-        `审计日志写入失败 | type="${event.type}" error="${(err as Error).message}"`,
+        `Failed to write audit log | type="${event.type}" error="${(err as Error).message}"`,
       );
     }
   }
@@ -423,7 +423,7 @@ export class AuditLoggerService {
     } catch (err) {
       // On restore failure, use the genesis hash (breaks the day's chain, but better than being unable to write)
       console.warn(
-        `[AuditLogger] 恢复 prevHash 失败，使用创世哈希: ${(err as Error).message}`,
+        `[AuditLogger] Failed to restore prevHash, using genesis hash: ${(err as Error).message}`,
       );
       return AuditLoggerService.GENESIS_HASH;
     }

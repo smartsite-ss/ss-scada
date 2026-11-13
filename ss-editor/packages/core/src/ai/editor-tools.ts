@@ -397,7 +397,7 @@ const editorTools: EditorToolDef[] = [
  */
 export function registerEditorTools(): void {
   toolExecutor.registerAll(editorTools);
-  console.log(`[EditorTools] 已注册 ${editorTools.length} 个编辑器 MCP 工具`);
+  console.log(`[EditorTools] Registered ${editorTools.length} editor MCP tools`);
 }
 
 /** Get the editor tool list (for system prompt generation) */

@@ -85,7 +85,7 @@ export default defineComponent({
               const fn = new Function('"use strict";' + action.script);
               fn();
             } catch (err: any) {
-              console.error('[NaiveButton] 自定义脚本执行失败:', err.message);
+              console.error('[NaiveButton] Custom script execution failed:', err.message);
             }
           }
           break;

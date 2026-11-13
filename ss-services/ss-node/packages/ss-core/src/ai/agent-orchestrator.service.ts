@@ -162,7 +162,7 @@ export class AgentOrchestratorService {
       }
       this.pendingSessions.delete(req.sessionId);
       this.logger.log(
-        `[Agent] 续执行 session=${req.sessionId} tool=${req.toolResultPayload.toolName}`,
+        `[Agent] Continue session=${req.sessionId} tool=${req.toolResultPayload.toolName}`,
       );
 
       // append the tool result to the conversation history (use the original tool_call_id to match assistant message tool_calls[].id)
@@ -179,7 +179,7 @@ export class AgentOrchestratorService {
 
     // ── First-execution mode ──
     this.logger.log(
-      `[Agent] 首次执行 intent=${req.intent || 'chat'} input="${req.userInput.substring(0, 80)}" tools=${this.tools.size}`,
+      `[Agent] First run intent=${req.intent || 'chat'} input="${req.userInput.substring(0, 80)}" tools=${this.tools.size}`,
     );
 
     // check the Feature Flag
@@ -212,7 +212,7 @@ export class AgentOrchestratorService {
       this.tools.set(tool.name, tool);
       count++;
     }
-    this.logger.log(`注入 ${count} 个后端工具`);
+    this.logger.log(`Injected ${count} backend tools`);
   }
 
   /**
@@ -248,7 +248,7 @@ export class AgentOrchestratorService {
 
     try {
       for (let iter = startIter; iter < maxIter; iter++) {
-        this.logger.log(`[Agent] ReAct 第 ${step} 步 (iter=${iter}/${maxIter})`);
+        this.logger.log(`[Agent] ReAct step ${step} (iter=${iter}/${maxIter})`);
 
         yield this.makeStep({
           type: 'thought',
@@ -269,7 +269,7 @@ export class AgentOrchestratorService {
         // check tool calls
         if (response.toolCalls && response.toolCalls.length > 0) {
           const toolNames = response.toolCalls.map((t) => t.function.name).join(', ');
-          this.logger.log(`[Agent] LLM 请求调用工具: [${toolNames}]`);
+          this.logger.log(`[Agent] LLM requested tools: [${toolNames}]`);
 
           // check whether it contains a frontend tool
           const hasFrontendTool = response.toolCalls.some((tc) => {
@@ -365,7 +365,7 @@ export class AgentOrchestratorService {
                 const toolResult = await tool.execute(toolParams);
                 const elapsed = Date.now() - t0;
                 this.logger.log(
-                  `[Agent] 工具 ${toolName} 完成 (${elapsed}ms, result=${toolResult.length} chars)`,
+                  `[Agent] Tool ${toolName} finished (${elapsed}ms, result=${toolResult.length} chars)`,
                 );
                 yield this.makeStep({
                   type: 'observation',
@@ -390,7 +390,7 @@ export class AgentOrchestratorService {
               }
             } else {
               this.logger.warn(
-                `[Agent] 工具 "${toolName}" 未注册，可用: [${Array.from(this.tools.keys()).join(', ')}]`,
+                `[Agent] Tool "${toolName}" is not registered, available: [${Array.from(this.tools.keys()).join(', ')}]`,
               );
               const notFoundMsg = `工具 "${toolName}" 不可用`;
               yield this.makeStep({
@@ -407,7 +407,7 @@ export class AgentOrchestratorService {
           }
         } else {
           // no tool calls -> final answer
-          this.logger.log(`[Agent] 最终回答 (${(response.content || '').length} chars)`);
+          this.logger.log(`[Agent] Final answer (${(response.content || '').length} chars)`);
           yield this.makeStep({
             type: 'answer',
             content: response.content || '(无响应)',
@@ -429,7 +429,7 @@ export class AgentOrchestratorService {
         content: `Agent 执行异常: ${(err as Error).message}`,
         step,
       });
-      this.logger.error(`Agent 执行异常: ${(err as Error).message}`);
+      this.logger.error(`Agent execution error: ${(err as Error).message}`);
     }
   }
 
@@ -452,7 +452,7 @@ export class AgentOrchestratorService {
     for (const [id, session] of this.pendingSessions) {
       if (now - session.createdAt > SESSION_TIMEOUT_MS) {
         this.pendingSessions.delete(id);
-        this.logger.warn(`清理过期会话: ${id}`);
+        this.logger.warn(`Removing expired session: ${id}`);
       }
     }
   }

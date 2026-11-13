@@ -279,7 +279,7 @@ async function instantiateFull(
         count++;
       }
     } catch (err) {
-      console.warn('[WidgetTemplatePanel] 图元实例化失败:', g.type, err);
+      console.warn('[WidgetTemplatePanel] Failed to instantiate graphic:', g.type, err);
     }
   }
   if (count > 0) {

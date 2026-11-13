@@ -567,7 +567,7 @@ export class BasePage implements IPage {
       }
       this.markDirty();
     } catch (error) {
-      console.error('批量删除失败:', error);
+      console.error('Batch delete failed:', error);
     }
   }
 

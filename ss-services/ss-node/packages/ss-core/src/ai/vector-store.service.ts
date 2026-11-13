@@ -64,7 +64,7 @@ export class VectorStoreService {
     for (let i = 0; i < chunks.length; i++) {
       this.entries.push({ chunk: chunks[i], vector: vectors[i] });
     }
-    this.logger.log(`已添加 ${chunks.length} 个向量块，总计 ${this.entries.length}`);
+    this.logger.log(`Added ${chunks.length} vector chunks, total ${this.entries.length}`);
   }
 
   /**

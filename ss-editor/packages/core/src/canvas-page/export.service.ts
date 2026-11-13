@@ -22,7 +22,7 @@ export class ExportService {
       const dataURL = canvas.toDataURL('image/png');
       this.downloadFile(dataURL, filename);
     } catch (error) {
-      console.error('导出 PNG 失败:', error);
+      console.error('Failed to export PNG:', error);
       throw error;
     }
   }
@@ -42,7 +42,7 @@ export class ExportService {
       const dataURL = canvas.toDataURL('image/jpeg', quality);
       this.downloadFile(dataURL, filename);
     } catch (error) {
-      console.error('导出 JPEG 失败:', error);
+      console.error('Failed to export JPEG:', error);
       throw error;
     }
   }
@@ -58,7 +58,7 @@ export class ExportService {
       const dataURL = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgContent)}`;
       this.downloadFile(dataURL, filename);
     } catch (error) {
-      console.error('导出 SVG 失败:', error);
+      console.error('Failed to export SVG:', error);
       throw error;
     }
   }
@@ -76,7 +76,7 @@ export class ExportService {
       this.downloadFile(url, filename);
       URL.revokeObjectURL(url);
     } catch (error) {
-      console.error('导出 JSON 失败:', error);
+      console.error('Failed to export JSON:', error);
       throw error;
     }
   }

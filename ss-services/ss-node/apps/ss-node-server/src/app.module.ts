@@ -834,7 +834,7 @@ const dataModules: any[] = [
         } as any);
         orchestrator.injectBackendTools(tools);
         Logger.log(
-          `P2-T01: 已注册 ${tools.length} 个后端 MCP 工具（数据查询/设备/报警/知识库/健康检查/模板/设备创建/字典/外部数据库/项目管理/趋势/诊断/报表/标签/脚本/报警处理/设备运维/用户权限/采集器运维/数据治理与备份）`,
+          `P2-T01: Registered ${tools.length} backend MCP tools (data query / devices / alarms / knowledge base / health check / templates / device creation / dictionaries / external databases / project management / trends / diagnostics / reports / tags / scripts / alarm handling / device ops / user permissions / collector ops / data governance & backup)`,
           'BackendTools',
         );
       },
@@ -901,7 +901,7 @@ export class AppModule implements NestModule, OnModuleInit {
   onModuleInit() {
     // Base services (shared + business modules) initialized
     // Use console.log to stay consistent with the startup-phase logs in main.ts
-    console.log(`[Startup] ✅ 基础服务（共享模块/业务模块）初始化完成`);
+    console.log(`[Startup] ✅ Base services (shared/business modules) initialized`);
   }
 
   configure(consumer: MiddlewareConsumer) {

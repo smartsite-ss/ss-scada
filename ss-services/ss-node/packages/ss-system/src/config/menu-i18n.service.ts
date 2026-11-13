@@ -47,7 +47,7 @@ export class MenuI18nService implements OnModuleInit {
     const dataDir = configService.get<string>('DATA_DIR') || '../../ss-run/ss/data';
     const projectRoot = this.pathResolver.getProjectRoot();
     this.menuBasePath = path.resolve(projectRoot, dataDir, 'menu');
-    this.logger.log(`菜单国际化数据目录: ${this.menuBasePath}`);
+    this.logger.log(`Menu i18n data directory: ${this.menuBasePath}`);
   }
 
   async onModuleInit() {
@@ -61,7 +61,7 @@ export class MenuI18nService implements OnModuleInit {
     this.cache.clear();
 
     if (!fs.existsSync(this.menuBasePath)) {
-      this.logger.warn(`菜单国际化目录不存在: ${this.menuBasePath}，将自动创建`);
+      this.logger.warn(`Menu i18n directory does not exist: ${this.menuBasePath}, creating it`);
       fs.mkdirSync(this.menuBasePath, { recursive: true });
       return;
     }
@@ -74,7 +74,7 @@ export class MenuI18nService implements OnModuleInit {
       .sort();
 
     if (this.supportedLocales.length === 0) {
-      this.logger.warn(`未找到语言目录 (zh-CN, en-US 等): ${this.menuBasePath}`);
+      this.logger.warn(`No locale directories found (zh-CN, en-US, etc.): ${this.menuBasePath}`);
       return;
     }
 
@@ -83,7 +83,7 @@ export class MenuI18nService implements OnModuleInit {
     }
 
     this.logger.log(
-      `菜单国际化数据加载完成: 支持 ${this.supportedLocales.length} 种语言 [${this.supportedLocales.join(', ')}]`,
+      `Menu i18n data loaded: ${this.supportedLocales.length} locales [${this.supportedLocales.join(', ')}]`,
     );
   }
 
@@ -94,7 +94,7 @@ export class MenuI18nService implements OnModuleInit {
     const localePath = path.join(this.menuBasePath, locale);
 
     if (!fs.existsSync(localePath)) {
-      this.logger.warn(`语言目录不存在: ${localePath}`);
+      this.logger.warn(`Locale directory does not exist: ${localePath}`);
       return;
     }
 
@@ -116,15 +116,15 @@ export class MenuI18nService implements OnModuleInit {
         if (table.menuId && table.menuName && Array.isArray(table.items)) {
           localeCache.set(table.menuId, table);
         } else {
-          this.logger.warn(`菜单国际化文件格式无效: ${filePath}`);
+          this.logger.warn(`Invalid menu i18n file format: ${filePath}`);
         }
       } catch (e: any) {
-        this.logger.error(`加载菜单国际化文件失败: ${filePath}`, e.message);
+        this.logger.error(`Failed to load menu i18n file: ${filePath}`, e.message);
       }
     }
 
     this.cache.set(locale, localeCache);
-    this.logger.log(`语言 ${locale} 菜单数据加载完成: ${localeCache.size} 个菜单`);
+    this.logger.log(`Locale ${locale} menu data loaded: ${localeCache.size} menus`);
   }
 
   /**
@@ -212,7 +212,7 @@ export class MenuI18nService implements OnModuleInit {
     }
 
     fs.writeFileSync(filePath, JSON.stringify(merged, null, 2), 'utf-8');
-    this.logger.log(`更新菜单国际化数据: ${locale}/${menuId}`);
+    this.logger.log(`Updating menu i18n data: ${locale}/${menuId}`);
 
     // Reload the current language's cache
     this.reloadLocale(locale);
@@ -248,7 +248,7 @@ export class MenuI18nService implements OnModuleInit {
     }
 
     fs.writeFileSync(filePath, JSON.stringify(merged, null, 2), 'utf-8');
-    this.logger.log(`更新菜单条目: ${locale}/${menuId} (${items.length} 条)`);
+    this.logger.log(`Updating menu items: ${locale}/${menuId} (${items.length} items)`);
 
     // Reload the current language's cache
     this.reloadLocale(locale);
@@ -315,10 +315,10 @@ export class MenuI18nService implements OnModuleInit {
       }
 
       fs.writeFileSync(localeFilePath, JSON.stringify(localeData, null, 2), 'utf-8');
-      this.logger.log(`同步 ${synced} 个菜单名称到 ${localeFilePath}`);
+      this.logger.log(`Synced ${synced} menu name(s) to ${localeFilePath}`);
     } catch (e: any) {
-      errors.push(`同步失败: ${e.message}`);
-      this.logger.error(`同步菜单国际化到 locale 文件失败: ${e.message}`);
+      errors.push(`Sync failed: ${e.message}`);
+      this.logger.error(`Failed to sync menu i18n to locale file: ${e.message}`);
     }
 
     return { synced, errors };

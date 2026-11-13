@@ -28,7 +28,7 @@ export function emitWidgetTemplateDrop(payload: WidgetTemplateDropPayload): void
     try {
       h(payload);
     } catch (err) {
-      console.error('[WidgetTemplateDropBus] handler 执行失败', err);
+      console.error('[WidgetTemplateDropBus] handler failed', err);
     }
   });
 }

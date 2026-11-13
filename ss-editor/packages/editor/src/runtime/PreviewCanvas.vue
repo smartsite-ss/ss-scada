@@ -362,7 +362,7 @@ function runCanvasDiagnostics(): CanvasDiagnosticResult {
         testDrawSuccess = true;
       }
     } catch (e) {
-      console.warn('[Diagnostic] 测试绘制失败:', e);
+      console.warn('[Diagnostic] Test draw failed:', e);
     }
   }
 
@@ -414,7 +414,7 @@ const loadBackgroundImage = async (src: string): Promise<HTMLImageElement | null
   // Validate path validity: ignore obviously invalid paths (truncated base64, double-encoded dirty data, etc.)
   if (!isValidImagePath(resolvedSrc)) {
     bgImageExhausted.add(resolvedSrc);
-    console.warn('[PreviewCanvas] 背景图片路径无效，已跳过:', resolvedSrc);
+    console.warn('[PreviewCanvas] Invalid background image path, skipped:', resolvedSrc);
     return null;
   }
 
@@ -437,10 +437,10 @@ const loadBackgroundImage = async (src: string): Promise<HTMLImageElement | null
   } catch (err) {
     const count = (bgImageRetryCount.get(resolvedSrc) || 0) + 1;
     bgImageRetryCount.set(resolvedSrc, count);
-    console.error(`[PreviewCanvas] 背景图片加载失败(第${count}次):`, resolvedSrc, err);
+    console.error(`[PreviewCanvas] Failed to load background image (attempt ${count}):`, resolvedSrc, err);
     if (count >= BG_IMAGE_MAX_RETRIES) {
       bgImageExhausted.add(resolvedSrc);
-      console.warn(`[PreviewCanvas] 背景图片加载失败 ${count} 次，停止重试: ${resolvedSrc}`);
+      console.warn(`[PreviewCanvas] Background image failed to load ${count} times, stopping retries: ${resolvedSrc}`);
     }
     return null;
   }
@@ -842,7 +842,7 @@ function openDataPanel() {
         refreshDataPanel(false);
       });
     } else {
-      console.warn('[PreviewCanvas] openDataPanel: 无法获取 projectId');
+      console.warn('[PreviewCanvas] openDataPanel: cannot resolve projectId');
       refreshDataPanel(false);
     }
   } else {
@@ -1080,7 +1080,7 @@ async function refreshPage(): Promise<void> {
         }
       }
     } catch (err) {
-      console.warn('[PreviewCanvas] refreshPage: 从后端 API 重新加载页面失败:', err);
+      console.warn('[PreviewCanvas] refreshPage: failed to reload page from backend API:', err);
     }
   }
 
@@ -1100,7 +1100,7 @@ async function refreshPage(): Promise<void> {
           }
       }
     } catch (err) {
-      console.warn('[PreviewCanvas] refreshPage: 从 SaveService 重新加载页面数据失败，将使用当前缓存数据刷新:', err);
+      console.warn('[PreviewCanvas] refreshPage: failed to reload page data from SaveService, refreshing from cached data:', err);
     }
   }
 
@@ -1147,7 +1147,7 @@ async function handlePageSwitch(targetPageId: string, oldPageId?: string): Promi
     existingPage = pageStore.pages.find(p => p.name === targetPageId);
     if (existingPage) {
       resolvedId = existingPage.id;
-      console.log('[PreviewCanvas] handlePageSwitch: 名称→ID 解析:', { name: targetPageId, id: resolvedId });
+      console.log('[PreviewCanvas] handlePageSwitch: name→ID resolution:', { name: targetPageId, id: resolvedId });
     }
   }
 
@@ -1156,9 +1156,9 @@ async function handlePageSwitch(targetPageId: string, oldPageId?: string): Promi
   const pageHasGraphics = existingPage ? getSafeGraphics(existingPage).length > 0 : false;
   if (!existingPage || !pageHasGraphics) {
     if (!existingPage) {
-      console.log('[PreviewCanvas] handlePageSwitch: 页面不在 store 中，尝试从数据源加载:', targetPageId);
+      console.log('[PreviewCanvas] handlePageSwitch: page not in store, trying data source:', targetPageId);
     } else {
-      console.log('[PreviewCanvas] handlePageSwitch: 页面在 store 中但无图元，需要从后端重新加载:', targetPageId);
+      console.log('[PreviewCanvas] handlePageSwitch: page in store but has no graphics, reloading from backend:', targetPageId);
     }
     let pageData: any = null;
 
@@ -1167,9 +1167,9 @@ async function handlePageSwitch(targetPageId: string, oldPageId?: string): Promi
       try {
         const projectData = await saveServiceManager.load();
         pageData = projectData?.pages?.find((p: any) => p.id === targetPageId || p.name === targetPageId);
-        console.log('[PreviewCanvas] handlePageSwitch: SaveService 查找结果:', { found: !!pageData });
+        console.log('[PreviewCanvas] handlePageSwitch: SaveService lookup result:', { found: !!pageData });
       } catch (error) {
-        console.warn('[PreviewCanvas] handlePageSwitch: SaveService 加载失败:', error);
+        console.warn('[PreviewCanvas] handlePageSwitch: SaveService load failed:', error);
       }
     }
 
@@ -1177,16 +1177,16 @@ async function handlePageSwitch(targetPageId: string, oldPageId?: string): Promi
     if (!pageData) {
       try {
         const allPages = await loadAllPagesData();
-        console.log('[PreviewCanvas] handlePageSwitch: IndexedDB 页面列表:',
+        console.log('[PreviewCanvas] handlePageSwitch: IndexedDB page list:',
           allPages.map((p: any) => ({ id: p.data?.id, name: p.data?.name })));
         const pageEntry = allPages.find((p: any) =>
           p.data?.id === targetPageId || p.data?.name === targetPageId);
         pageData = pageEntry?.data;
-        console.log('[PreviewCanvas] handlePageSwitch: IndexedDB 查找结果:', {
+        console.log('[PreviewCanvas] handlePageSwitch: IndexedDB lookup result:', {
           targetId: targetPageId, found: !!pageData,
         });
       } catch (error) {
-        console.warn('[PreviewCanvas] handlePageSwitch: IndexedDB 加载失败:', error);
+        console.warn('[PreviewCanvas] handlePageSwitch: IndexedDB load failed:', error);
       }
     }
 
@@ -1201,13 +1201,13 @@ async function handlePageSwitch(targetPageId: string, oldPageId?: string): Promi
           const result = (response as any)?.data || response;
           pageData = result?.data || result;
         } catch (error) {
-          console.warn('[PreviewCanvas] handlePageSwitch: 后端 API 加载失败:', error);
+          console.warn('[PreviewCanvas] handlePageSwitch: backend API load failed:', error);
         }
       }
     }
 
     if (!pageData) {
-      console.warn('[PreviewCanvas] handlePageSwitch: 无法加载目标页面:', targetPageId);
+      console.warn('[PreviewCanvas] handlePageSwitch: cannot load target page:', targetPageId);
       return;
     }
 
@@ -1216,7 +1216,7 @@ async function handlePageSwitch(targetPageId: string, oldPageId?: string): Promi
     if (existingPage) {
       // Page already in store but no graphics → refresh data in place
       (existingPage as BasePage).fromJSON(pageData);
-      console.log('[PreviewCanvas] handlePageSwitch: 页面数据已刷新:', { id: resolvedId, name: pageData.name });
+      console.log('[PreviewCanvas] handlePageSwitch: page data refreshed:', { id: resolvedId, name: pageData.name });
     } else {
       // Page not in store → create and add
       const targetPage = new BasePage();
@@ -1229,7 +1229,7 @@ async function handlePageSwitch(targetPageId: string, oldPageId?: string): Promi
       });
       targetPage.fromJSON(pageData);
       pageStore.pages = [...pageStore.pages, targetPage];
-      console.log('[PreviewCanvas] handlePageSwitch: 页面已加载并添加到 store:', { id: resolvedId, name: pageData.name });
+      console.log('[PreviewCanvas] handlePageSwitch: page loaded and added to store:', { id: resolvedId, name: pageData.name });
     }
   }
 
@@ -1552,7 +1552,7 @@ const applyAutoFit = (targetWidth?: number, targetHeight?: number) => {
         // When exceeding MAX_BITMAP_SIZE, keep container size and center (optimization P1-3)
         if (scaledHeight > canvasHeight.value) {
           if (scaledHeight > VIEWPORT.MAX_BITMAP_SIZE) {
-            console.warn(`[PreviewCanvas] fitWidth 扩展位图高度 ${Math.round(scaledHeight)}px 超过上限 ${VIEWPORT.MAX_BITMAP_SIZE}px，已保持容器尺寸并居中显示`);
+            console.warn(`[PreviewCanvas] fitWidth expanded bitmap height ${Math.round(scaledHeight)}px exceeds limit ${VIEWPORT.MAX_BITMAP_SIZE}px; keeping container size and centering`);
             panYOffset = (canvasHeight.value - scaledHeight) / 2;
           } else {
             canvasHeight.value = scaledHeight;
@@ -1570,7 +1570,7 @@ const applyAutoFit = (targetWidth?: number, targetHeight?: number) => {
         // When exceeding MAX_BITMAP_SIZE, keep container size and center (optimization P1-3)
         if (scaledWidth > canvasWidth.value) {
           if (scaledWidth > VIEWPORT.MAX_BITMAP_SIZE) {
-            console.warn(`[PreviewCanvas] fitHeight 扩展位图宽度 ${Math.round(scaledWidth)}px 超过上限 ${VIEWPORT.MAX_BITMAP_SIZE}px，已保持容器尺寸并居中显示`);
+            console.warn(`[PreviewCanvas] fitHeight expanded bitmap width ${Math.round(scaledWidth)}px exceeds limit ${VIEWPORT.MAX_BITMAP_SIZE}px; keeping container size and centering`);
             panXOffset = (canvasWidth.value - scaledWidth) / 2;
           } else {
             canvasWidth.value = scaledWidth;
@@ -1631,7 +1631,7 @@ let zeroSizeRetryCount = 0;
 let zeroSizeRetryTimer: ReturnType<typeof setTimeout> | null = null;
 const scheduleZeroSizeRetry = () => {
   if (zeroSizeRetryCount >= VIEWPORT.PREVIEW_INIT_MAX_RETRIES) {
-    console.warn('[PreviewCanvas] 容器尺寸持续为 0，已放弃适配重试');
+    console.warn('[PreviewCanvas] Container size stays 0, giving up on fit retries');
     return;
   }
   const delay = VIEWPORT.PREVIEW_INIT_RETRY_DELAYS[zeroSizeRetryCount % VIEWPORT.PREVIEW_INIT_RETRY_DELAYS.length];
@@ -1819,7 +1819,7 @@ function handleCarouselConfigSave(config: CarouselConfig): void {
  * Initialize the carousel manager
  */
 function initCarousel(): void {
-  console.log('[PreviewCanvas] initCarousel 开始:', {
+  console.log('[PreviewCanvas] initCarousel start:', {
     enabled: carouselConfig.value.enabled,
     autoStart: carouselConfig.value.autoStart,
     interval: carouselConfig.value.interval,
@@ -1841,7 +1841,7 @@ function initCarousel(): void {
   carouselManager.value.buildCarouselPages(pages);
   carouselState.value = { ...carouselManager.value.getState() } as CarouselState;
 
-  console.log('[PreviewCanvas] initCarousel 页面列表:', {
+  console.log('[PreviewCanvas] initCarousel page list:', {
     carouselPages: carouselState.value.carouselPages,
     count: carouselState.value.carouselPages.length,
   });
@@ -1856,10 +1856,10 @@ function initCarousel(): void {
 
   // Auto-start carousel (requires page count > 1 and autoStart=true)
   if (carouselConfig.value.autoStart && carouselState.value.carouselPages.length > 1) {
-    console.log('[PreviewCanvas] initCarousel: autoStart=true, 启动轮播');
+    console.log('[PreviewCanvas] initCarousel: autoStart=true, starting carousel');
     carouselManager.value.start();
   } else {
-    console.log('[PreviewCanvas] initCarousel: 未自动启动', {
+    console.log('[PreviewCanvas] initCarousel: not auto-started', {
       autoStart: carouselConfig.value.autoStart,
       pageCount: carouselState.value.carouselPages.length,
     });

@@ -822,7 +822,7 @@ async function fetchCategories() {
       expandedCategories.value[categories.value[0].category] = true;
     }
   } catch (e: any) {
-    if (import.meta.env.DEV) console.error('加载字典失败:', e);
+    if (import.meta.env.DEV) console.error('Failed to load dictionaries:', e);
     error.value = e?.response?.data?.message || e?.message || t('system.dict.loadError');
   } finally {
     loading.value = false;
@@ -836,7 +836,7 @@ async function reloadDicts() {
     await dictApi.reload();
     await fetchCategories();
   } catch (e: any) {
-    if (import.meta.env.DEV) console.error('重载字典失败:', e);
+    if (import.meta.env.DEV) console.error('Failed to reload dictionaries:', e);
     error.value = e?.response?.data?.message || e?.message || t('system.dict.reloadError');
   } finally {
     loading.value = false;

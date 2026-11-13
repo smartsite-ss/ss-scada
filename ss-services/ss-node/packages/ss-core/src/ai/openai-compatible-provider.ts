@@ -139,7 +139,7 @@ export class OpenAICompatibleProvider implements ILLMProvider {
     }
     this.config = config;
     this.logger.log(
-      `Provider 已初始化: apiBase=${config.apiBase}, model=${config.defaultModel}` +
+      `Provider initialized: apiBase=${config.apiBase}, model=${config.defaultModel}` +
         (config.codegenModel ? `, codegen=${config.codegenModel}` : '') +
         (config.liteModel ? `, lite=${config.liteModel}` : '') +
         (config.embeddingModel ? `, embedding=${config.embeddingModel}` : ''),
@@ -225,7 +225,7 @@ export class OpenAICompatibleProvider implements ILLMProvider {
         try {
           chunk = JSON.parse(data);
         } catch {
-          this.logger.warn(`流式响应解析失败，跳过：${data.slice(0, 200)}`);
+          this.logger.warn(`Failed to parse streaming response, skipping: ${data.slice(0, 200)}`);
           continue;
         }
         const choice = chunk.choices[0];
@@ -379,17 +379,17 @@ export class OpenAICompatibleProvider implements ILLMProvider {
       } catch (err) {
         lastErr = err;
         if (err instanceof HttpTimeoutError) {
-          this.logger.warn(`请求超时（第 ${attempt}/${max} 次重试）`);
+          this.logger.warn(`Request timeout (retry ${attempt}/${max})`);
         } else if (err instanceof HttpError) {
           // 4xx client errors are not retried
           if (err.statusCode >= 400 && err.statusCode < 500) {
             throw err;
           }
           this.logger.warn(
-            `${err.statusCode}（第 ${attempt}/${max} 次重试）：${err.body.slice(0, 200)}`,
+            `${err.statusCode} (retry ${attempt}/${max}): ${err.body.slice(0, 200)}`,
           );
         } else {
-          this.logger.warn(`请求异常（第 ${attempt}/${max} 次重试）：${(err as Error).message}`);
+          this.logger.warn(`Request error (retry ${attempt}/${max}): ${(err as Error).message}`);
         }
         if (attempt < max) {
           await sleep(500 * attempt);

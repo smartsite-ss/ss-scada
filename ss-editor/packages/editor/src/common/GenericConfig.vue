@@ -127,12 +127,12 @@ const { t } = useI18n();
 /** Get pageStore directly in setup (Pinia inject is available in the setup context) */
 const pageStore = (() => {
   try { return usePageStore(); } catch (err) {
-    console.warn('[GenericConfig] usePageStore() 调用失败:', err);
+    console.warn('[GenericConfig] usePageStore() failed:', err);
     return null;
   }
 })();
 
-console.debug('[GenericConfig] pageStore 初始化状态:', {
+console.debug('[GenericConfig] pageStore init state:', {
   hasPageStore: !!pageStore,
   pageCount: pageStore ? (pageStore as any).pages?.length : 0,
   pages: pageStore ? (pageStore as any).pages?.map((p: any) => p.name) : [],
@@ -164,7 +164,7 @@ const propsPath = computed<string>(() => {
 const resolvedProviderOptions = computed(() => {
   const map: Record<string, { value: any; label: string }[]> = {};
   if (!template.value) {
-    console.debug('[GenericConfig] template 为空，无法解析 provider options');
+    console.debug('[GenericConfig] template is empty, cannot resolve provider options');
     return map;
   }
   for (const field of template.value.fields) {
@@ -178,21 +178,21 @@ const resolvedProviderOptions = computed(() => {
             value: p.name,
             label: p.name,
           }));
-          console.debug(`[GenericConfig] optionsProvider "${provider}" → ${map[field.name].length} 个选项:`, map[field.name].map(o => o.label));
+          console.debug(`[GenericConfig] optionsProvider "${provider}" → ${map[field.name].length} options:`, map[field.name].map(o => o.label));
         } else {
-          console.warn(`[GenericConfig] optionsProvider "${provider}" 但 pageStore 为 null，设置空选项`);
+          console.warn(`[GenericConfig] optionsProvider "${provider}" but pageStore is null, setting empty options`);
           map[field.name] = [];
         }
       } else {
-        console.debug(`[GenericConfig] 未识别的 optionsProvider key: "${provider}"，设置空选项`);
+        console.debug(`[GenericConfig] Unknown optionsProvider key: "${provider}", setting empty options`);
         map[field.name] = [];
       }
     } else if (typeof provider === 'function') {
       try {
         map[field.name] = provider();
-        console.debug(`[GenericConfig] optionsProvider 函数返回 ${map[field.name].length} 个选项`);
+        console.debug(`[GenericConfig] optionsProvider function returned ${map[field.name].length} options`);
       } catch (err) {
-        console.warn(`[GenericConfig] optionsProvider 函数调用失败:`, err);
+        console.warn(`[GenericConfig] optionsProvider function failed:`, err);
         map[field.name] = [];
       }
     }

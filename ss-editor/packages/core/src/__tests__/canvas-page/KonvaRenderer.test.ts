@@ -94,26 +94,26 @@ describe('Performance test placeholder', () => {
   it('Performance test must run in a browser', () => {
     console.log(`
 ========================================
-  KonvaRenderer 性能测试
+KonvaRenderer performance test
 ========================================
 
-请在浏览器中运行项目并执行以下测试:
+Run the project in a browser and perform the following tests:
 
-1. 打开浏览器控制台 (F12)
-2. 切换到 Konva 渲染器模式
-3. 执行以下代码:
+1. Open the browser console (F12)
+2. Switch to the Konva renderer mode
+3. Run the following code:
 
-  // 获取渲染器实例
+  // Get the renderer instance
   const renderer = window.__konvaRenderer;
   if (renderer) {
-    console.log('渲染器统计:', renderer.getStats());
-    console.log('图层数量:', renderer.getAllLayers().length);
+    console.log('Renderer stats:', renderer.getStats());
+    console.log('Layer count:', renderer.getAllLayers().length);
   }
 
-预期结果:
-- 4个图层 (background, static, dynamic, overlay)
-- batchDraw() 批量渲染
-- requestAnimationFrame 合并渲染
+Expected results:
+- 4 layers (background, static, dynamic, overlay)
+- batchDraw() batched rendering
+- requestAnimationFrame coalesced rendering
 
 ========================================
     `);

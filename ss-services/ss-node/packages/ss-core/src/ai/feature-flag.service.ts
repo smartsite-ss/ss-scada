@@ -64,7 +64,7 @@ export class FeatureFlagService {
   isEnabled(flag: AiFeatureFlag): boolean {
     const envKey = FLAG_TO_ENV[flag];
     if (!envKey) {
-      this.logger.warn(`未知的 Feature Flag: ${flag}`);
+      this.logger.warn(`Unknown feature flag: ${flag}`);
       return false;
     }
     const value = this.configService.get<string>(envKey);

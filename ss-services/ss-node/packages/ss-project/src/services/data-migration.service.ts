@@ -122,12 +122,12 @@ export class DataMigrationService {
           } catch (err) {
             errors++;
             if (errors <= 5) {
-              this.logger.warn(`[${entityName}] 插入行失败: ${(err as Error).message}`);
+              this.logger.warn(`[${entityName}] Failed to insert row: ${(err as Error).message}`);
             }
           }
         }
 
-        this.logger.log(`[${entityName}] 迁移完成: ${rowCount} 行, ${errors} 个错误`);
+        this.logger.log(`[${entityName}] Migration complete: ${rowCount} rows, ${errors} errors`);
       } catch (err) {
         const msg = `[${entityName}] 迁移失败: ${(err as Error).message}`;
         this.logger.error(msg);
@@ -141,7 +141,7 @@ export class DataMigrationService {
     const totalRows = entityResults.reduce((sum, e) => sum + e.rowCount, 0);
     const totalErrors = entityResults.reduce((sum, e) => sum + e.errors, 0);
     this.logger.log(
-      `[${projectName}] 数据迁移完成: ${totalRows} 行, ${totalErrors} 个错误, 耗时 ${durationMs}ms`,
+      `[${projectName}] Data migration complete: ${totalRows} rows, ${totalErrors} errors, elapsed ${durationMs}ms`,
     );
 
     return {
@@ -173,7 +173,7 @@ export class DataMigrationService {
     }
 
     fs.copyFileSync(dbPath, backupPath);
-    this.logger.log(`全局数据库已备份到: ${backupPath}`);
+    this.logger.log(`Global database backed up to: ${backupPath}`);
     return backupPath;
   }
 

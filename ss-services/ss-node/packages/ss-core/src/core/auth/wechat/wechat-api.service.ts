@@ -49,25 +49,25 @@ export class WechatApiService {
     if (!this.isMock) {
       if (!this.appId || !this.appSecret) {
         this.logger.error(
-          'WECHAT_APPID / WECHAT_SECRET 未配置，真实模式无法工作。如需 Mock 模式请设置 WECHAT_MOCK=true',
+          'WECHAT_APPID / WECHAT_SECRET not configured; real mode cannot work. Set WECHAT_MOCK=true for mock mode',
         );
       } else {
         this.logger.log(
-          `微信扫码登录运行于真实模式 | appId=${this.appId.slice(0, 6)}...`,
+          `WeChat QR login running in real mode | appId=${this.appId.slice(0, 6)}...`,
         );
       }
       if (!this.mpAppId || !this.mpAppSecret) {
         this.logger.error(
-          '小程序凭证未配置（WECHAT_MP_APPID / WECHAT_MP_SECRET，或回退的 WECHAT_APPID / WECHAT_SECRET），小程序登录无法工作',
+          'Mini-program credentials not configured (WECHAT_MP_APPID / WECHAT_MP_SECRET, or fallback WECHAT_APPID / WECHAT_SECRET); mini-program login cannot work',
         );
       } else {
         this.logger.log(
-          `微信小程序登录运行于真实模式 | mpAppId=${this.mpAppId.slice(0, 6)}...`,
+          `WeChat mini-program login running in real mode | mpAppId=${this.mpAppId.slice(0, 6)}...`,
         );
       }
     } else {
       this.logger.warn(
-        `⚠️ 微信登录运行于 Mock 模式（扫码 + 小程序） | defaultOpenId=${this.mockDefaultOpenId} | 生产环境禁止使用`,
+        `⚠️ WeChat login running in Mock mode (QR + mini-program) | defaultOpenId=${this.mockDefaultOpenId} | forbidden in production`,
       );
     }
   }
@@ -128,7 +128,7 @@ export class WechatApiService {
     } catch (err) {
       if (err instanceof BadRequestException) throw err;
       if (err instanceof HttpError) {
-        this.logger.error(`微信 getAccessToken HTTP 错误：${err.statusCode} ${err.body.slice(0, 200)}`);
+        this.logger.error(`WeChat getAccessToken HTTP error: ${err.statusCode} ${err.body.slice(0, 200)}`);
         throw new BadRequestException(`微信 API 调用失败：HTTP ${err.statusCode}`);
       }
       throw new BadRequestException(`微信 API 调用异常：${(err as Error).message}`);
@@ -187,7 +187,7 @@ export class WechatApiService {
     } catch (err) {
       if (err instanceof BadRequestException) throw err;
       if (err instanceof HttpError) {
-        this.logger.error(`微信 code2session HTTP 错误：${err.statusCode} ${err.body.slice(0, 200)}`);
+        this.logger.error(`WeChat code2session HTTP error: ${err.statusCode} ${err.body.slice(0, 200)}`);
         throw new BadRequestException(`微信 API 调用失败：HTTP ${err.statusCode}`);
       }
       throw new BadRequestException(`微信 API 调用异常：${(err as Error).message}`);
@@ -225,7 +225,7 @@ export class WechatApiService {
     } catch (err) {
       if (err instanceof BadRequestException) throw err;
       if (err instanceof HttpError) {
-        this.logger.error(`微信 getUserInfo HTTP 错误：${err.statusCode} ${err.body.slice(0, 200)}`);
+        this.logger.error(`WeChat getUserInfo HTTP error: ${err.statusCode} ${err.body.slice(0, 200)}`);
         throw new BadRequestException(`微信 API 调用失败：HTTP ${err.statusCode}`);
       }
       throw new BadRequestException(`微信 API 调用异常：${(err as Error).message}`);

@@ -41,7 +41,7 @@ try {
     const require = createRequire(import.meta.url);
     sqlite3 = require('sqlite3');
   } catch {
-    console.error('[FATAL] 无法加载 sqlite3 模块。请确保 ss-core 已安装依赖（pnpm install）。');
+    console.error('[FATAL] Cannot load sqlite3 module. Ensure ss-core dependencies are installed (pnpm install).');
     process.exit(1);
   }
 }
@@ -155,14 +155,14 @@ function fixTag(dbPath, tag, kind) {
 
 async function main() {
   if (!fs.existsSync(PROJECTS_DIR)) {
-    console.error(`[FATAL] 项目数据目录不存在: ${PROJECTS_DIR}`);
+    console.error(`[FATAL] Project data directory does not exist: ${PROJECTS_DIR}`);
     process.exit(1);
   }
 
   const entries = fs.readdirSync(PROJECTS_DIR, { withFileTypes: true })
     .filter((e) => e.isDirectory() && !e.name.startsWith('_trash') && !e.name.startsWith('.'));
-  console.log(`[INFO] 发现 ${entries.length} 个项目目录，开始扫描...`);
-  console.log(`[INFO] 模式: ${isFixMode ? 'FIX（交互式修复）' : 'DRY-RUN（只读报告）'}\n`);
+  console.log(`[INFO] Found ${entries.length} project directories, scanning...`);
+  console.log(`[INFO] Mode: ${isFixMode ? 'FIX (interactive)' : 'DRY-RUN (read-only report)'}\n`);
 
   let totalPlaceholder = 0;
   let totalOrphan = 0;
@@ -175,19 +175,19 @@ async function main() {
     reports.push(result);
 
     if (result.skipped || result.error) {
-      console.log(`[${projectId}] 跳过: ${result.skipped || result.error}`);
+      console.log(`[${projectId}] Skipped: ${result.skipped || result.error}`);
       continue;
     }
     const ph = result.placeholder.length;
     const orph = result.orphans.length;
     totalPlaceholder += ph;
     totalOrphan += orph;
-    console.log(`[${projectId}] 占位 default-device: ${ph} 条 / 孤儿: ${orph} 条`);
+    console.log(`[${projectId}] Placeholder default-device: ${ph} tags / orphaned: ${orph} tags`);
     for (const t of result.placeholder) {
-      console.log(`    [占位] id=${t.id} name="${t.name}" deviceId=${t.deviceId}`);
+      console.log(`    [Placeholder] id=${t.id} name="${t.name}" deviceId=${t.deviceId}`);
     }
     for (const t of result.orphans) {
-      console.log(`    [孤儿] id=${t.id} name="${t.name}" deviceId=${t.deviceId}`);
+      console.log(`    [Orphan] id=${t.id} name="${t.name}" deviceId=${t.deviceId}`);
     }
 
     // --fix 模式：逐条交互
@@ -203,13 +203,13 @@ async function main() {
     }
   }
 
-  console.log(`\n[汇总] 占位 default-device 标签: ${totalPlaceholder} 条`);
-  console.log(`[汇总] 孤儿标签（deviceId 不在设备表）: ${totalOrphan} 条`);
+  console.log(`\n[Summary] Placeholder default-device tags: ${totalPlaceholder}`);
+  console.log(`[Summary] Orphaned tags (deviceId not in device table): ${totalOrphan}`);
   if (!isFixMode && (totalPlaceholder > 0 || totalOrphan > 0)) {
-    console.log('[建议] 重新运行 `node scripts/audit-default-device-tags.mjs --fix` 交互式修复，或人工核查后批量 UPDATE。');
+    console.log('[Hint] Re-run `node scripts/audit-default-device-tags.mjs --fix` for interactive repair, or verify manually and batch UPDATE.');
   }
   if (isFixMode) {
-    console.log('[完成] 修复流程结束，可重新运行本脚本（不带 --fix）复核。');
+    console.log('[Done] Repair finished; re-run this script (without --fix) to verify.');
   }
 }
 

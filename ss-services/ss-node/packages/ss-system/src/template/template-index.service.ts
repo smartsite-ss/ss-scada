@@ -83,7 +83,7 @@ export class TemplateIndexService {
   ) {
     const templatesDir = configService.get<string>('TEMPLATES_DIR') || '../../data/templates';
     this.templatesBasePath = this.resolvePath(templatesDir);
-    this.logger.log(`设备模板目录: ${this.templatesBasePath}`);
+    this.logger.log(`Device template directory: ${this.templatesBasePath}`);
   }
 
   /**
@@ -112,7 +112,7 @@ export class TemplateIndexService {
    */
   rebuildIndex(): TemplateTreeIndex {
     if (!fs.existsSync(this.templatesBasePath)) {
-      this.logger.warn(`模板目录不存在: ${this.templatesBasePath}`);
+      this.logger.warn(`Template directory does not exist: ${this.templatesBasePath}`);
       return this.createEmptyIndex();
     }
 
@@ -130,7 +130,7 @@ export class TemplateIndexService {
         const localeIndexPath = path.join(localePath, 'index.json');
         this.writeIndexFile(localeIndexPath, localeIndex);
         this.logger.log(
-          `[${entry.name}] index.json 重建完成: ${localeIndex.totalTemplates} 个模板, ${localeIndex.totalIndustries} 个行业`,
+          `[${entry.name}] index.json rebuilt: ${localeIndex.totalTemplates} templates, ${localeIndex.totalIndustries} industries`,
         );
       }
     }
@@ -173,7 +173,7 @@ export class TemplateIndexService {
       const content = fs.readFileSync(indexPath, 'utf-8');
       return JSON.parse(content) as TemplateTreeIndex;
     } catch (err: any) {
-      this.logger.error(`读取 index.json 失败: ${err.message}`);
+      this.logger.error(`Failed to read index.json: ${err.message}`);
       return null;
     }
   }
@@ -300,7 +300,7 @@ export class TemplateIndexService {
           updatedAt: json.metadata?.updatedAt || json.updatedAt || stat.mtime.toISOString(),
         });
       } catch (err: any) {
-        this.logger.warn(`解析模板文件失败: ${filePath} - ${err.message}`);
+        this.logger.warn(`Failed to parse template file: ${filePath} - ${err.message}`);
       }
     }
 
@@ -435,7 +435,7 @@ export class TemplateIndexService {
 
         fs.writeFileSync(filePath, JSON.stringify(json, null, 2), 'utf-8');
       } catch (err: any) {
-        this.logger.warn(`更新模板文件元数据失败: ${filePath} - ${err.message}`);
+        this.logger.warn(`Failed to update template file metadata: ${filePath} - ${err.message}`);
       }
     }
   }

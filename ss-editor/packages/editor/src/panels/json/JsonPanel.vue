@@ -94,7 +94,7 @@ const handleGenerateTestGraphics = () => {
     })
     
   } else {
-    console.error('❌ 没有找到当前页面')
+    console.error('❌ Current page not found')
   }
 }
 </script>

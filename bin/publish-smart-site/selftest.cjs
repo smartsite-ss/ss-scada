@@ -32,7 +32,7 @@ function selfTestPackage(pkg) {
   const result = { runAt: startedAt, mode: 'lite-staged', port, pass: false, checks: {} };
 
   if (portListeningSync(port)) {
-    info(C.warn(`端口 ${port} 已被占用 ⇒ 跳过自测试（避免与在跑实例冲突）`));
+    info(C.warn(`Port ${port} already in use => skipping self test (avoid conflict with a running instance)`));
     result.skipped = `port ${port} already listening`;
     return result;
   }
@@ -40,15 +40,15 @@ function selfTestPackage(pkg) {
   const staging = path.join(path.dirname(pkg.dir), `_selftest_${path.basename(pkg.dir)}`);
   try {
     if (fs.existsSync(staging)) rmDirWithRetry(staging);
-    info(`暂存副本：${path.relative(ROOT, staging)}（排除 base_services / rtdb）`);
+    info(`Staged copy: ${path.relative(ROOT, staging)} (excluding base_services / rtdb)`);
     mirror(pkg.dir, staging, { excludeDirs: ['base_services', 'rtdb'] });
 
     const nodeExe = pkg.withNode ? path.join(staging, 'node', 'node.exe') : process.execPath;
-    if (!fs.existsSync(nodeExe)) fail(`自测试：找不到 node 可执行文件 ${nodeExe}`);
+    if (!fs.existsSync(nodeExe)) fail(`Self test: node executable not found ${nodeExe}`);
     const logFile = path.join(staging, 'selftest-stdout.log');
     const out = fs.openSync(logFile, 'w');
 
-    info('启动：node dist/main.js（Lite 覆盖：REDIS_HOST= + HISTORICAL_DATA_BACKEND=sqlite）');
+    info('Starting: node dist/main.js (Lite overrides: REDIS_HOST= + HISTORICAL_DATA_BACKEND=sqlite)');
     const child = cp.spawn(nodeExe, [path.join(staging, 'dist', 'main.js')], {
       cwd: staging,
       env: {
@@ -96,18 +96,18 @@ function selfTestPackage(pkg) {
     if (result.pass) {
       info(
         C.ok(
-          `✓ 自测试通过：health=200（${waited}s）· 首页=${result.checks.index} · SPA 深路由=${result.checks.spaDeepRoute}`,
+          `✓ Self test passed: health=200 (${waited}s) - index=${result.checks.index} - SPA deep route=${result.checks.spaDeepRoute}`,
         ),
       );
     } else {
-      info(C.err(`✗ 自测试失败：${JSON.stringify(result.checks)}`));
-      info(`  启动日志（尾部 30 行，${path.relative(ROOT, logFile)}）：`);
+      info(C.err(`✗ Self test failed: ${JSON.stringify(result.checks)}`));
+      info(`  Startup log (last 30 lines, ${path.relative(ROOT, logFile)}):`);
       const tail = fs.readFileSync(logFile, 'utf8').split(/\r?\n/).slice(-30);
       for (const line of tail) if (line.trim()) info(`    ${line}`);
     }
   } finally {
     if (fs.existsSync(staging)) {
-      if (rmDirWithRetry(staging)) info(C.dim('暂存副本已清理'));
+      if (rmDirWithRetry(staging)) info(C.dim('Staged copy cleaned up'));
     }
   }
   result.finishedAt = new Date().toISOString();

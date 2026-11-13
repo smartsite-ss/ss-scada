@@ -58,13 +58,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       ? new Date(payload.exp * 1000).toISOString()
       : 'N/A';
     this.logger.debug(
-      `[JWT验证] Token 有效 | userId="${payload.sub}" username="${payload.username}" role="${payload.role}" | exp=${expStr}`,
+      `[JWTVerify] Token valid | userId="${payload.sub}" username="${payload.username}" role="${payload.role}" | exp=${expStr}`,
     );
 
     const user = await this.userService.findById(payload.sub);
     if (!user) {
       this.logger.warn(
-        `[JWT验证] 用户不存在 | userId="${payload.sub}" username="${payload.username}"`,
+        `[JWTVerify] User not found | userId="${payload.sub}" username="${payload.username}"`,
       );
       throw new UnauthorizedException(this.i18nService.tSync('auth.login.failed_not_found'));
     }

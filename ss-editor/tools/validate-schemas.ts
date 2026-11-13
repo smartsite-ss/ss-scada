@@ -106,7 +106,7 @@ async function main() {
   const cwd = process.cwd();
   const schemaFiles = await glob('packages/plugins/**/*PropertySchema.ts', { cwd });
 
-  console.log(`发现 ${schemaFiles.length} 个 schema 文件\n`);
+  console.log(`Found ${schemaFiles.length} schema files\n`);
 
   const validator = new SchemaValidator();
   let totalErrors = 0;
@@ -115,7 +115,7 @@ async function main() {
   for (const file of schemaFiles) {
     const fullPath = path.resolve(cwd, file);
     if (!fs.existsSync(fullPath)) {
-      console.log(`  ⚠ ${file} — 文件不存在`);
+      console.log(`  ⚠ ${file} - file not found`);
       continue;
     }
 
@@ -126,7 +126,7 @@ async function main() {
       const schema = mod[schemaKey];
 
       if (!schema || !schema.fields) {
-        console.log(`  ⚠ ${file} — 未找到有效 schema 导出`);
+        console.log(`  ⚠ ${file} - no valid schema export found`);
         continue;
       }
 
@@ -151,12 +151,12 @@ async function main() {
         }
       }
     } catch (err: any) {
-      console.log(`  ❌ ${file} — 加载失败: ${err.message}`);
+      console.log(`  ❌ ${file} - load failed: ${err.message}`);
       totalErrors++;
     }
   }
 
-  console.log(`\n结果: ${totalErrors} 个错误, ${totalWarnings} 个警告`);
+  console.log(`\nResult: ${totalErrors} errors, ${totalWarnings} warnings`);
   process.exit(totalErrors > 0 ? 1 : 0);
 }
 

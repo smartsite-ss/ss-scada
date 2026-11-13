@@ -178,8 +178,8 @@ export class DeviceCollectorBootstrap
     this.eventBus.on('template.devices-synced', async (event: TemplateDevicesSyncedEvent) => {
       const { deviceIds, projectId, protocol, summary } = event;
       this.logger.log(
-        `模板同步完成: ${deviceIds.length} 设备需重载点表` +
-          (summary ? ` (新增${summary.added} 修改${summary.updated} 删除${summary.removed})` : ''),
+        `Template sync completed: ${deviceIds.length} device(s) need point-table reload` +
+          (summary ? ` (added ${summary.added} / updated ${summary.updated} / removed ${summary.removed})` : ''),
       );
 
       const ds = await this.projectDbService.getSystemDb(projectId);
@@ -202,13 +202,13 @@ export class DeviceCollectorBootstrap
                 tagRepo,
               );
             } catch (err: any) {
-              this.logger.error(`设备 ${deviceId} 点表重载失败: ${err.message}`);
+              this.logger.error(`Failed to reload point table for device ${deviceId}: ${err.message}`);
             }
           }),
         );
       }
 
-      this.logger.log(`模板同步点表重载完成: ${deviceIds.length} 设备`);
+      this.logger.log(`Template sync point-table reload completed: ${deviceIds.length} device(s)`);
     });
 
     // Subscribe to project enable-state change events (dynamic start/stop of collection)

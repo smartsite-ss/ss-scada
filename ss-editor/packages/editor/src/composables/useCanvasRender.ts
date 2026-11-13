@@ -89,7 +89,7 @@ export function useCanvasRender(
       bgImageRetryCount.set(resolvedSrc, count);
       if (count >= BG_IMAGE_MAX_RETRIES) {
         bgImageExhausted.add(resolvedSrc);
-        console.warn(`[useCanvasRender] 背景图片加载失败 ${count} 次，停止重试: ${resolvedSrc}`);
+        console.warn(`[useCanvasRender] Background image failed to load ${count} times, stopping retries: ${resolvedSrc}`);
       }
       return null;
     }

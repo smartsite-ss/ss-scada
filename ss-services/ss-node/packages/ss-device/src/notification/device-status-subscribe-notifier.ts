@@ -58,7 +58,7 @@ export class DeviceStatusSubscribeNotifier implements OnModuleInit, OnModuleDest
     }
     if (!this.subscribeChannel) {
       this.logger.warn(
-        'WechatSubscribeMessageChannel 不可用，跳过设备状态订阅消息订阅',
+        'WechatSubscribeMessageChannel unavailable, skipping device status subscription messages',
       );
       return;
     }
@@ -93,7 +93,7 @@ export class DeviceStatusSubscribeNotifier implements OnModuleInit, OnModuleDest
     } catch (error) {
       // Notification failure degrades to a log, not blocking the device state machine's main flow
       this.logger.warn(
-        `设备状态订阅消息发送失败：deviceId=${event.deviceId} ${(error as Error).message}`,
+        `Device status subscription message failed: deviceId=${event.deviceId} ${(error as Error).message}`,
       );
     }
   }

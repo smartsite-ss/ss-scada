@@ -93,12 +93,12 @@ export class TtsNotificationChannel implements INotificationChannel {
     payload?: NotificationPayload,
   ): Promise<boolean> {
     if (!this.configService) {
-      this.logger.warn('SystemConfigService 不可用，语音通道未启用');
+      this.logger.warn('SystemConfigService unavailable, voice channel disabled');
       return false;
     }
 
     if (!phones.length) {
-      this.logger.warn('未提供被叫号码，跳过语音拨打');
+      this.logger.warn('No callee number provided, skipping voice call');
       return false;
     }
 
@@ -109,7 +109,7 @@ export class TtsNotificationChannel implements INotificationChannel {
       const calledNumber = await this.configService.get('TTS_CALLED_NUMBER');
 
       if (!apiKey || !apiSecret) {
-        this.logger.warn('语音通道未配置 API 密钥，跳过拨打');
+        this.logger.warn('Voice channel has no API key configured, skipping call');
         return false;
       }
 
@@ -125,11 +125,11 @@ export class TtsNotificationChannel implements INotificationChannel {
           });
 
         default:
-          this.logger.warn(`未知的语音提供商: ${provider}（支持: aliyun）`);
+          this.logger.warn(`Unknown voice provider: ${provider} (supported: aliyun)`);
           return false;
       }
     } catch (error) {
-      this.logger.error(`语音拨打失败: ${(error as Error).message}`);
+      this.logger.error(`Voice call failed: ${(error as Error).message}`);
       return false;
     }
   }
@@ -189,15 +189,15 @@ export class TtsNotificationChannel implements INotificationChannel {
         const data = (await response.json()) as { Code?: string; Message?: string };
 
         if (data.Code === 'OK') {
-          this.logger.log(`[TTS-阿里云] 语音拨打成功 -> ${phone}`);
+          this.logger.log(`[TTS-Aliyun] Voice call placed -> ${phone}`);
         } else {
           this.logger.error(
-            `[TTS-阿里云] 拨打失败: ${data.Code || 'Unknown'} - ${data.Message || ''} -> ${phone}`,
+            `[TTS-Aliyun] Call failed: ${data.Code || 'Unknown'} - ${data.Message || ''} -> ${phone}`,
           );
           allSuccess = false;
         }
       } catch (error) {
-        this.logger.error(`[TTS-阿里云] 拨打异常: ${(error as Error).message} -> ${phone}`);
+        this.logger.error(`[TTS-Aliyun] Call error: ${(error as Error).message} -> ${phone}`);
         allSuccess = false;
       }
     }

@@ -118,7 +118,7 @@ async function refreshAccessToken(): Promise<boolean> {
   }
   for (let attempt = 1; attempt <= 3; attempt++) {
     try {
-      console.log(`[Auth] 刷新 Token 请求 | attempt=${attempt}/3 mode=${bearerRefreshToken ? 'bearer' : 'cookie'}`);
+      console.log(`[Auth] Refresh token request | attempt=${attempt}/3 mode=${bearerRefreshToken ? 'bearer' : 'cookie'}`);
       const response = await axios.post(
         '/api/v1/auth/refresh',
         bearerRefreshToken ? { refreshToken: bearerRefreshToken } : {},
@@ -134,11 +134,11 @@ async function refreshAccessToken(): Promise<boolean> {
           persistRefreshToken(data.refreshToken);
         }
       }
-      console.log(`[Auth] Token 刷新成功 | attempt=${attempt}/3`);
+      console.log(`[Auth] Token refreshed | attempt=${attempt}/3`);
       return true;
     } catch (err) {
       const status = (err as any)?.response?.status;
-      console.warn(`[Auth] Token 刷新失败 | attempt=${attempt}/3 status=${status} error="${(err as Error)?.message || 'unknown'}"`);
+      console.warn(`[Auth] Token refresh failed | attempt=${attempt}/3 status=${status} error="${(err as Error)?.message || 'unknown'}"`);
       if (attempt < 3) {
         await new Promise((r) => setTimeout(r, 1000 * attempt));
       }
@@ -151,7 +151,7 @@ async function refreshAccessToken(): Promise<boolean> {
  * Clear the auth state and redirect to the login page (silent, no error shown)
  */
 function logoutAndRedirect(): void {
-  console.warn('[Auth] 认证失效，跳转登录页');
+  console.warn('[Auth] Authentication expired, redirecting to login');
   clearTokens();
   persistRefreshToken(null);
   // Use replace to avoid returning to the 401 page when navigating back
@@ -173,21 +173,21 @@ client.interceptors.response.use(
 
     // 401 handling
     if (error.response?.status === 401) {
-      console.warn(`[Auth] 401 未授权 | ${requestMethod.toUpperCase()} ${requestUrl} | _retry=${!!originalRequest._retry}`);
+      console.warn(`[Auth] 401 Unauthorized | ${requestMethod.toUpperCase()} ${requestUrl} | _retry=${!!originalRequest._retry}`);
 
       // A retried request after refresh getting 401 again → silently go to login
       if (originalRequest._retry) {
-        console.warn(`[Auth] 重试后仍 401，放弃 → 跳转登录 | ${requestMethod.toUpperCase()} ${requestUrl}`);
+        console.warn(`[Auth] Still 401 after retry, giving up -> redirecting to login | ${requestMethod.toUpperCase()} ${requestUrl}`);
         logoutAndRedirect();
         return Promise.reject(error);
       }
 
       // S-C03: try refreshing the token via Cookie
       if (isRefreshing) {
-        console.debug(`[Auth] 已有刷新进行中，排队等待 | ${requestMethod.toUpperCase()} ${requestUrl}`);
+        console.debug(`[Auth] Refresh already in progress, queuing | ${requestMethod.toUpperCase()} ${requestUrl}`);
         return new Promise<AxiosResponse>((resolve) => {
           addRefreshSubscriber(() => {
-            console.debug(`[Auth] 刷新完成，重试排队请求 | ${requestMethod.toUpperCase()} ${requestUrl}`);
+            console.debug(`[Auth] Refresh complete, retrying queued request | ${requestMethod.toUpperCase()} ${requestUrl}`);
             resolve(client(originalRequest));
           });
         });
@@ -195,13 +195,13 @@ client.interceptors.response.use(
 
       originalRequest._retry = true;
       isRefreshing = true;
-      console.log(`[Auth] 开始刷新 Token | 触发请求=${requestMethod.toUpperCase()} ${requestUrl}`);
+      console.log(`[Auth] Starting token refresh | trigger=${requestMethod.toUpperCase()} ${requestUrl}`);
 
       try {
         const success = await refreshAccessToken();
 
         if (success) {
-          console.log(`[Auth] Token 刷新成功，重试原请求 | ${requestMethod.toUpperCase()} ${requestUrl}`);
+          console.log(`[Auth] Token refreshed, retrying original request | ${requestMethod.toUpperCase()} ${requestUrl}`);
           onTokenRefreshed('cookie-refreshed');
           return client(originalRequest);
         }
@@ -210,7 +210,7 @@ client.interceptors.response.use(
       }
 
       // Refresh failed → silently go to login
-      console.warn(`[Auth] Token 刷新失败 → 跳转登录 | ${requestMethod.toUpperCase()} ${requestUrl}`);
+      console.warn(`[Auth] Token refresh failed -> redirecting to login | ${requestMethod.toUpperCase()} ${requestUrl}`);
       logoutAndRedirect();
     }
 

@@ -58,7 +58,7 @@ export class WechatMpAuthController {
       userAgent: req.headers['user-agent'],
     });
     this.logger.log(
-      `[POST /auth/wechat/login] 小程序登录响应 | bindingRequired=${result.bindingRequired} authenticated=${result.tokenPair !== null}`,
+      `[POST /auth/wechat/login] Mini-program login response | bindingRequired=${result.bindingRequired} authenticated=${result.tokenPair !== null}`,
     );
     return result;
   }
@@ -88,7 +88,7 @@ export class WechatMpAuthController {
       userAgent: req.headers['user-agent'],
     });
     this.logger.log(
-      `[POST /auth/wechat/login-password] 账密登录响应 | userId="${result.userInformation.userId}" username="${result.userInformation.username}"`,
+      `[POST /auth/wechat/login-password] Password login response | userId="${result.userInformation.userId}" username="${result.userInformation.username}"`,
     );
     return result;
   }

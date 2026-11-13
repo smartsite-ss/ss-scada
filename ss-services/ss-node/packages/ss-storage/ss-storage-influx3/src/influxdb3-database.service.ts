@@ -193,7 +193,7 @@ export class Influxdb3DatabaseService implements OnModuleInit, OnModuleDestroy {
         // 409 = already exists, idempotent success
         this.logger.log(
           `InfluxDB 3 database "${databaseName}" ensured (HTTP ${response.status}, ` +
-            `retention: ${retentionPeriod || 'server-default'}, 注意：v3 保留期建库后不可修改)`,
+            `retention: ${retentionPeriod || 'server-default'}, note: v3 retention cannot be changed after database creation)`,
         );
         return true;
       }

@@ -194,7 +194,7 @@ export function usePropertyEditor(
   function copyGraphicId() {
     if (config.value) {
       navigator.clipboard.writeText(config.value.id).catch(err => {
-        console.error('复制失败:', err);
+        console.error('Copy failed:', err);
       });
     }
   }

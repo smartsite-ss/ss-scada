@@ -383,7 +383,7 @@ export class AuthorizationService {
         `SELECT id, role_id, project_id, group_id, permission FROM sys_device_group_authorizations`,
       );
       if (groupAuths.length === 0) {
-        this.logger.log('分组授权迁移：无待迁移数据');
+        this.logger.log('Group authorization migration: nothing to migrate');
         return;
       }
 
@@ -414,20 +414,20 @@ export class AuthorizationService {
 
       if (migrated > 0) {
         this.logger.log(
-          `分组授权→设备授权迁移完成：${groupAuths.length} 条分组授权展开为 ${migrated} 条设备授权`,
+          `Group-to-device authorization migration complete: ${groupAuths.length} group authorizations expanded into ${migrated} device authorizations`,
         );
       } else {
         this.logger.log(
-          `分组授权→设备授权迁移完成：${groupAuths.length} 条分组授权，已全部展开（无新增）`,
+          `Group-to-device authorization migration complete: ${groupAuths.length} group authorizations, all already expanded (no additions)`,
         );
       }
     } catch (error: any) {
       // Silently skip when the table does not exist (not yet created on first startup)
       if (error.message?.includes('no such table')) {
-        this.logger.log('分组授权迁移：sys_device_group_authorizations 表不存在，跳过');
+        this.logger.log('Group authorization migration: sys_device_group_authorizations table missing, skipping');
         return;
       }
-      this.logger.warn(`分组授权迁移失败：${error.message}`);
+      this.logger.warn(`Group authorization migration failed: ${error.message}`);
     }
   }
 

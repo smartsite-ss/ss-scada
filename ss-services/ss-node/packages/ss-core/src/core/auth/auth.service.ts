@@ -70,13 +70,13 @@ export class AuthService {
   async login(loginDto: LoginDto, auditCtx?: AuditContext) {
     const startTime = Date.now();
     this.logger.log(
-      `[登录] 收到登录请求 | username="${loginDto.username}"`,
+      `[Login] Login request | username="${loginDto.username}"`,
     );
 
     const user = await this.userService.findByUsername(loginDto.username);
     if (!user) {
       this.logger.warn(
-        `[登录] 用户不存在 | username="${loginDto.username}" | 耗时=${Date.now() - startTime}ms`,
+        `[Login] User not found | username="${loginDto.username}" | elapsed=${Date.now() - startTime}ms`,
       );
       this.auditLogger.logSecurityEvent({
         type: 'auth.login.failed',
@@ -92,7 +92,7 @@ export class AuthService {
     }
 
     this.logger.debug(
-      `[登录] 用户查询成功 | userId="${user.id}" username="${user.username}" role="${user.role}" | 耗时=${Date.now() - startTime}ms`,
+      `[Login] User lookup succeeded | userId="${user.id}" username="${user.username}" role="${user.role}" | elapsed=${Date.now() - startTime}ms`,
     );
 
     // Check whether the account is locked
@@ -102,7 +102,7 @@ export class AuthService {
     if (!isValid) {
       const attempt = this.loginAttempts.get(user.id);
       this.logger.warn(
-        `[登录] 密码验证失败 | userId="${user.id}" username="${user.username}" | 失败次数=${attempt?.count || 1}/${this.MAX_LOGIN_ATTEMPTS} | 耗时=${Date.now() - startTime}ms`,
+        `[Login] Password verification failed | userId="${user.id}" username="${user.username}" | attempts=${attempt?.count || 1}/${this.MAX_LOGIN_ATTEMPTS} | elapsed=${Date.now() - startTime}ms`,
       );
       this.recordFailedLoginAttempt(user.id);
       this.auditLogger.logSecurityEvent({
@@ -131,7 +131,7 @@ export class AuthService {
     const tokens = this.generateTokens(result);
 
     this.logger.log(
-      `[登录] 登录成功 | userId="${user.id}" username="${user.username}" role="${user.role}" | accessToken=${this.maskToken(tokens.accessToken)} refreshToken=${this.maskToken(tokens.refreshToken)} | 总耗时=${Date.now() - startTime}ms`,
+      `[Login] Login succeeded | userId="${user.id}" username="${user.username}" role="${user.role}" | accessToken=${this.maskToken(tokens.accessToken)} refreshToken=${this.maskToken(tokens.refreshToken)} | totalElapsed=${Date.now() - startTime}ms`,
     );
     this.auditLogger.logSecurityEvent({
       type: 'auth.login.success',
@@ -170,12 +170,12 @@ export class AuthService {
   async refreshToken(token: string, auditCtx?: AuditContext) {
     const startTime = Date.now();
     const maskedToken = this.maskToken(token);
-    this.logger.log(`[刷新Token] 收到刷新请求 | refreshToken=${maskedToken}`);
+    this.logger.log(`[RefreshToken] Refresh request | refreshToken=${maskedToken}`);
 
     // First check whether it has been explicitly revoked (logout / changePassword)
     if (this.revokedTokens.has(token)) {
       this.logger.warn(
-        `[刷新Token] Token 已被撤销（logout/changePassword） | token=${maskedToken} | 耗时=${Date.now() - startTime}ms`,
+        `[RefreshToken] Token revoked (logout/changePassword) | token=${maskedToken} | elapsed=${Date.now() - startTime}ms`,
       );
       this.auditLogger.logSecurityEvent({
         type: 'auth.refresh.failed',
@@ -197,12 +197,12 @@ export class AuthService {
     const cached = this.refreshTokenStore.get(token);
     if (cached) {
       this.logger.debug(
-        `[刷新Token] Map 命中（正常路径） | userId="${cached.userId}" username="${cached.username}" | token=${maskedToken}`,
+        `[RefreshToken] Map hit (normal path) | userId="${cached.userId}" username="${cached.username}" | token=${maskedToken}`,
       );
       this.refreshTokenStore.delete(token); // one-time use
       const tokens = this.generateTokens(cached);
       this.logger.log(
-        `[刷新Token] 刷新成功（Map路径） | userId="${cached.userId}" username="${cached.username}" | newAccessToken=${this.maskToken(tokens.accessToken)} newRefreshToken=${this.maskToken(tokens.refreshToken)} | 耗时=${Date.now() - startTime}ms`,
+        `[RefreshToken] Refresh succeeded (Map path) | userId="${cached.userId}" username="${cached.username}" | newAccessToken=${this.maskToken(tokens.accessToken)} newRefreshToken=${this.maskToken(tokens.refreshToken)} | elapsed=${Date.now() - startTime}ms`,
       );
       this.auditLogger.logSecurityEvent({
         type: 'auth.refresh.success',
@@ -218,13 +218,13 @@ export class AuthService {
 
     // Path 2: Map miss (service restart cleared the in-memory Map) -> fall back to JWT signature verification
     this.logger.debug(
-      `[刷新Token] Map 未命中，降级为 JWT 签名验证 | token=${maskedToken}`,
+      `[RefreshToken] Map miss, falling back to JWT signature verification | token=${maskedToken}`,
     );
     try {
       const jwtPayload = this.jwtService.verify<{ sub: string }>(token);
       if (!jwtPayload || !jwtPayload.sub) {
         this.logger.warn(
-          `[刷新Token] JWT payload 无效（缺少 sub） | token=${maskedToken} | 耗时=${Date.now() - startTime}ms`,
+          `[RefreshToken] Invalid JWT payload (missing sub) | token=${maskedToken} | elapsed=${Date.now() - startTime}ms`,
         );
         throw new Error('Invalid refresh token payload');
       }
@@ -232,7 +232,7 @@ export class AuthService {
       const user = await this.userService.findById(jwtPayload.sub);
       if (!user) {
         this.logger.warn(
-          `[刷新Token] 用户不存在 | userId="${jwtPayload.sub}" | token=${maskedToken} | 耗时=${Date.now() - startTime}ms`,
+          `[RefreshToken] User not found | userId="${jwtPayload.sub}" | token=${maskedToken} | elapsed=${Date.now() - startTime}ms`,
         );
         throw new UnauthorizedException(this.i18nService.tSync('auth.login.failed_not_found'));
       }
@@ -243,7 +243,7 @@ export class AuthService {
         role: user.role,
       });
       this.logger.log(
-        `[刷新Token] 刷新成功（JWT降级路径） | userId="${user.id}" username="${user.username}" | newAccessToken=${this.maskToken(tokens.accessToken)} newRefreshToken=${this.maskToken(tokens.refreshToken)} | 耗时=${Date.now() - startTime}ms`,
+        `[RefreshToken] Refresh succeeded (JWT fallback path) | userId="${user.id}" username="${user.username}" | newAccessToken=${this.maskToken(tokens.accessToken)} newRefreshToken=${this.maskToken(tokens.refreshToken)} | elapsed=${Date.now() - startTime}ms`,
       );
       this.auditLogger.logSecurityEvent({
         type: 'auth.refresh.success',
@@ -259,7 +259,7 @@ export class AuthService {
       // Distinguish already-thrown HttpException from JWT verification failure
       if (err instanceof UnauthorizedException) throw err;
       this.logger.warn(
-        `[刷新Token] JWT 验证失败 | token=${maskedToken} error="${(err as Error).message}" | 耗时=${Date.now() - startTime}ms`,
+        `[RefreshToken] JWT verification failed | token=${maskedToken} error="${(err as Error).message}" | elapsed=${Date.now() - startTime}ms`,
       );
       this.auditLogger.logSecurityEvent({
         type: 'auth.refresh.failed',
@@ -281,14 +281,14 @@ export class AuthService {
 
   async logout(token: string, auditCtx?: AuditContext): Promise<void> {
     const maskedToken = this.maskToken(token);
-    this.logger.log(`[登出] 收到登出请求 | refreshToken=${maskedToken}`);
+    this.logger.log(`[Logout] Logout request | refreshToken=${maskedToken}`);
 
     const cached = this.refreshTokenStore.get(token);
     this.refreshTokenStore.delete(token);
     this.revokedTokens.add(token); // mark revoked, preventing reuse via the JWT fallback path
 
     this.logger.log(
-      `[登出] Token 已撤销 | userId="${cached?.userId || 'unknown'}" username="${cached?.username || 'unknown'}" | token=${maskedToken} | revokedTotal=${this.revokedTokens.size}`,
+      `[Logout] Token revoked | userId="${cached?.userId || 'unknown'}" username="${cached?.username || 'unknown'}" | token=${maskedToken} | revokedTotal=${this.revokedTokens.size}`,
     );
     this.auditLogger.logSecurityEvent({
       type: 'auth.logout',
@@ -303,11 +303,11 @@ export class AuthService {
 
   async changePassword(userId: string, changePasswordDto: ChangePasswordDto, auditCtx?: AuditContext) {
     const { oldPassword, newPassword, confirmPassword } = changePasswordDto;
-    this.logger.log(`[修改密码] 收到修改密码请求 | userId="${userId}"`);
+    this.logger.log(`[ChangePassword] Change password request | userId="${userId}"`);
 
     // Verify the two passwords match
     if (newPassword !== confirmPassword) {
-      this.logger.warn(`[修改密码] 两次密码不一致 | userId="${userId}"`);
+      this.logger.warn(`[ChangePassword] Passwords do not match | userId="${userId}"`);
       this.auditLogger.logSecurityEvent({
         type: 'auth.password.failed',
         severity: 'warning',
@@ -322,7 +322,7 @@ export class AuthService {
     // Verify password strength
     const strengthCheck = validatePasswordStrength(newPassword);
     if (!strengthCheck.valid) {
-      this.logger.warn(`[修改密码] 密码强度不足 | userId="${userId}" reason="${strengthCheck.message}"`);
+      this.logger.warn(`[ChangePassword] Password too weak | userId="${userId}" reason="${strengthCheck.message}"`);
       this.auditLogger.logSecurityEvent({
         type: 'auth.password.failed',
         severity: 'warning',
@@ -341,7 +341,7 @@ export class AuthService {
     this.revokeAllUserTokens(userId);
 
     this.logger.log(
-      `[修改密码] 密码修改成功，已撤销所有旧 Token | userId="${userId}" | revokedTotal=${this.revokedTokens.size}`,
+      `[ChangePassword] Password changed, all old tokens revoked | userId="${userId}" | revokedTotal=${this.revokedTokens.size}`,
     );
     this.auditLogger.logSecurityEvent({
       type: 'auth.password.changed',
@@ -453,7 +453,7 @@ export class AuthService {
     });
 
     this.logger.debug(
-      `[生成Token] userId="${userId}" username="${payload.username}" role="${payload.role}" | accessToken=${this.maskToken(accessToken)} expiresIn=${this.ACCESS_TOKEN_EXPIRES} | refreshToken=${this.maskToken(refreshToken)} expiresIn=${this.REFRESH_TOKEN_EXPIRES} | storeSize=${this.refreshTokenStore.size}`,
+      `[GenerateToken] userId="${userId}" username="${payload.username}" role="${payload.role}" | accessToken=${this.maskToken(accessToken)} expiresIn=${this.ACCESS_TOKEN_EXPIRES} | refreshToken=${this.maskToken(refreshToken)} expiresIn=${this.REFRESH_TOKEN_EXPIRES} | storeSize=${this.refreshTokenStore.size}`,
     );
 
     return { accessToken, refreshToken };

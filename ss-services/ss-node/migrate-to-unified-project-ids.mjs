@@ -39,7 +39,7 @@ try {
   try {
     sqlite3 = require('sqlite3');
   } catch {
-    console.warn('[WARN] 无法加载 sqlite3 模块，将跳过 system.db 更新');
+    console.warn('[WARN] Cannot load sqlite3 module, skipping system.db update');
   }
 }
 
@@ -155,7 +155,7 @@ async function migrate() {
   logLines.push('');
 
   if (!fs.existsSync(PROJECTS_DIR)) {
-    console.error(`项目目录不存在: ${PROJECTS_DIR}`);
+    console.error(`Projects directory does not exist: ${PROJECTS_DIR}`);
     process.exit(1);
   }
 
@@ -299,7 +299,7 @@ async function migrate() {
 
   // 输出到控制台
   console.log(logContent);
-  console.log(`\n日志已写入: ${LOG_FILE}`);
+  console.log(`\nLog written to: ${LOG_FILE}`);
 }
 
 migrate();

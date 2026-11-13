@@ -34,7 +34,7 @@ export function useProjectSave(
       await saveServiceManager.save(projectData);
       lastSavedTime.value = saveServiceManager.getLastSavedTime();
     } catch (error) {
-      console.error('[useProjectSave] 保存失败', error);
+      console.error('[useProjectSave] Save failed', error);
       throw error;
     }
   };
@@ -49,7 +49,7 @@ export function useProjectSave(
       }
       return projectData;
     } catch (error) {
-      console.error('[useProjectSave] 恢复失败', error);
+      console.error('[useProjectSave] Restore failed', error);
       return null;
     }
   };
@@ -65,7 +65,7 @@ export function useProjectSave(
       clearTimeout(autoSaveTimer.value);
     }
     autoSaveTimer.value = window.setTimeout(() => {
-      _autoSaveCallback!().catch(err => console.error('[useProjectSave] 自动保存失败', err));
+      _autoSaveCallback!().catch(err => console.error('[useProjectSave] Auto-save failed', err));
       autoSaveTimer.value = null;
     }, autoSaveIntervalMs.value);
   };
@@ -87,7 +87,7 @@ export function useProjectSave(
       await saveServiceManager.delete();
       lastSavedTime.value = null;
     } catch (error) {
-      console.error('[useProjectSave] 清除失败', error);
+      console.error('[useProjectSave] Clear failed', error);
       throw error;
     }
   };

@@ -54,7 +54,7 @@ export class DictionaryLoaderService implements OnModuleInit {
   ) {
     const dictsDir = configService.get<string>('DICTS_DIR') || '../../data/dicts';
     this.dictsBasePath = this.resolvePath(dictsDir);
-    this.logger.log(`数据字典目录: ${this.dictsBasePath}`);
+    this.logger.log(`Dictionary data directory: ${this.dictsBasePath}`);
   }
 
   /**
@@ -84,7 +84,7 @@ export class DictionaryLoaderService implements OnModuleInit {
     this.categoryCache.clear();
 
     if (!fs.existsSync(this.dictsBasePath)) {
-      this.logger.warn(`字典目录不存在: ${this.dictsBasePath}`);
+      this.logger.warn(`Dictionary directory does not exist: ${this.dictsBasePath}`);
       return;
     }
 
@@ -97,7 +97,7 @@ export class DictionaryLoaderService implements OnModuleInit {
       .sort();
 
     if (this.supportedLocales.length === 0) {
-      this.logger.warn(`未找到语言目录 (zh-CN, en-US 等): ${this.dictsBasePath}`);
+      this.logger.warn(`No locale directories found (zh-CN, en-US, etc.): ${this.dictsBasePath}`);
       return;
     }
 
@@ -106,7 +106,7 @@ export class DictionaryLoaderService implements OnModuleInit {
     }
 
     this.logger.log(
-      `数据字典加载完成: 支持 ${this.supportedLocales.length} 种语言 [${this.supportedLocales.join(', ')}]`,
+      `Dictionary data loaded: ${this.supportedLocales.length} locales [${this.supportedLocales.join(', ')}]`,
     );
   }
 
@@ -117,7 +117,7 @@ export class DictionaryLoaderService implements OnModuleInit {
     const localePath = path.join(this.dictsBasePath, locale);
 
     if (!fs.existsSync(localePath)) {
-      this.logger.warn(`语言目录不存在: ${localePath}`);
+      this.logger.warn(`Locale directory does not exist: ${localePath}`);
       return;
     }
 
@@ -152,10 +152,10 @@ export class DictionaryLoaderService implements OnModuleInit {
             localeCache.set(table.dictId, table);
             tables.push(table);
           } else {
-            this.logger.warn(`字典文件格式无效: ${filePath}`);
+            this.logger.warn(`Invalid dictionary file format: ${filePath}`);
           }
         } catch (e: any) {
-          this.logger.error(`加载字典文件失败: ${filePath}`, e.message);
+          this.logger.error(`Failed to load dictionary file: ${filePath}`, e.message);
         }
       }
 
@@ -168,7 +168,7 @@ export class DictionaryLoaderService implements OnModuleInit {
     this.categoryCache.set(locale, localeCategories);
 
     this.logger.log(
-      `语言 ${locale} 加载完成: ${localeCache.size} 个字典表, ${categoryDirs.length} 个分类`,
+      `Locale ${locale} loaded: ${localeCache.size} dictionary tables, ${categoryDirs.length} categories`,
     );
   }
 
@@ -269,11 +269,11 @@ export class DictionaryLoaderService implements OnModuleInit {
             }
             // Also update categoryCache
             this.updateCategoryCache(locale, category, table);
-            this.logger.log(`从磁盘加载单个字典: ${locale}/${category}/${file}`);
+            this.logger.log(`Loading single dictionary from disk: ${locale}/${category}/${file}`);
             return table;
           }
         } catch (e: any) {
-          this.logger.warn(`扫描单个字典文件失败: ${filePath}`, e.message);
+          this.logger.warn(`Failed to scan single dictionary file: ${filePath}`, e.message);
         }
       }
     }
@@ -333,7 +333,7 @@ export class DictionaryLoaderService implements OnModuleInit {
     if (!categories.find((c) => c.category === categoryName)) {
       categories.push({ category: categoryName, tables: [] });
     }
-    this.logger.log(`创建分类: ${locale}/${categoryName}`);
+    this.logger.log(`Creating category: ${locale}/${categoryName}`);
   }
 
   /**
@@ -358,7 +358,7 @@ export class DictionaryLoaderService implements OnModuleInit {
         cat.tables.forEach((t) => (t.category = newName));
       }
     }
-    this.logger.log(`重命名分类: ${locale}/${oldName} → ${newName}`);
+    this.logger.log(`Renaming category: ${locale}/${oldName} → ${newName}`);
   }
 
   /**
@@ -378,7 +378,7 @@ export class DictionaryLoaderService implements OnModuleInit {
         categories.splice(idx, 1);
       }
     }
-    this.logger.log(`删除分类: ${locale}/${categoryName}`);
+    this.logger.log(`Deleting category: ${locale}/${categoryName}`);
   }
 
   /**
@@ -395,7 +395,7 @@ export class DictionaryLoaderService implements OnModuleInit {
       fs.mkdirSync(dir, { recursive: true });
     }
     fs.writeFileSync(filePath, JSON.stringify(table, null, 2), 'utf-8');
-    this.logger.log(`创建字典表: ${locale}/${category}/${table.dictId}`);
+    this.logger.log(`Creating dictionary table: ${locale}/${category}/${table.dictId}`);
   }
 
   /**
@@ -411,7 +411,7 @@ export class DictionaryLoaderService implements OnModuleInit {
     const existing = JSON.parse(content) as DictTable;
     const merged = { ...existing, ...table, dictId }; // keep dictId unchanged
     fs.writeFileSync(filePath, JSON.stringify(merged, null, 2), 'utf-8');
-    this.logger.log(`更新字典表: ${locale}/${category}/${dictId}`);
+    this.logger.log(`Updating dictionary table: ${locale}/${category}/${dictId}`);
   }
 
   /**
@@ -423,7 +423,7 @@ export class DictionaryLoaderService implements OnModuleInit {
       throw new Error(`字典表 "${dictId}" 不存在`);
     }
     fs.unlinkSync(filePath);
-    this.logger.log(`删除字典表: ${locale}/${category}/${dictId}`);
+    this.logger.log(`Deleting dictionary table: ${locale}/${category}/${dictId}`);
   }
 
   /**
@@ -449,6 +449,6 @@ export class DictionaryLoaderService implements OnModuleInit {
     }
     const filePath = this.getTablePath(locale, category, dictId);
     fs.writeFileSync(filePath, JSON.stringify(table, null, 2), 'utf-8');
-    this.logger.log(`导入字典表: ${locale}/${category}/${dictId}`);
+    this.logger.log(`Importing dictionary table: ${locale}/${category}/${dictId}`);
   }
 }

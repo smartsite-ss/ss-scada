@@ -151,7 +151,7 @@ export class TagExcelParserService {
       tags.push(tag);
     }
 
-    this.logger.log(`Excel 解析完成: 共 ${tags.length} 个标签`);
+    this.logger.log(`Excel parsing complete: ${tags.length} tags`);
     return tags;
   }
 

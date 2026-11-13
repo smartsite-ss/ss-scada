@@ -127,7 +127,7 @@ export class VirtualProtocolAdapter extends BaseCollectorService {
       simulators: new Map(),
     };
     this.trackClient(deviceId, client);
-    this.logger.log(`虚拟设备 ${deviceId} 连接成功`);
+    this.logger.log(`Virtual device ${deviceId} connected`);
     return client;
   }
 

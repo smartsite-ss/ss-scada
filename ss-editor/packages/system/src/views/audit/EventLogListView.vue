@@ -616,7 +616,7 @@ async function loadData(p: number) {
     logs.value = data.items || [];
     total.value = data.total || 0;
   } catch (err) {
-    console.error('[EventLogListView] 加载事件日志失败:', err);
+    console.error('[EventLogListView] Failed to load event logs:', err);
     logs.value = [];
     total.value = 0;
   } finally {
@@ -637,7 +637,7 @@ async function handleClear() {
     selectedLog.value = null;
     await loadData(1);
   } catch (err) {
-    console.error('[EventLogListView] 清空事件日志失败:', err);
+    console.error('[EventLogListView] Failed to clear event logs:', err);
     showError(t('system.eventLogs.clearFailed'));
   }
 }

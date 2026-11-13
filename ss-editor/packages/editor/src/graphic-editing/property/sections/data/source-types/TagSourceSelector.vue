@@ -191,7 +191,7 @@ async function loadActualTags() {
   try {
     await deviceStore.fetchDevices(projectId, 1, 100);
   } catch (err: any) {
-    console.error('[TagSourceSelector] 加载设备失败:', err?.response?.status, err?.response?.data?.message || err?.message);
+    console.error('[TagSourceSelector] Failed to load devices:', err?.response?.status, err?.response?.data?.message || err?.message);
     loading.value = false;
     return;
   }
@@ -234,7 +234,7 @@ function subscribeSelectedTags() {
   if (selectedTagIds.value.length === 0) return;
   const projectId = projectStore.currentProject?.projectId || getProjectIdFromPath();
   if (!projectId || projectId === 'default-project') {
-    console.warn('[TagSourceSelector] projectId 无效，跳过订阅');
+    console.warn('[TagSourceSelector] Invalid projectId, skipping subscription');
     return;
   }
   // If wsStore is not connected or connected to another project, connect

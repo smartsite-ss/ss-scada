@@ -84,7 +84,7 @@ function scanWorkspacePackages() {
  */
 function ensureProdDepsBaseline() {
   if (fs.existsSync(PROD_DEPS_SRC)) return;
-  info(C.warn(`生产依赖基线不存在，开始自举：${path.relative(ROOT, PROD_DEPS_SRC)}`));
+  info(C.warn(`Production dependency baseline missing, bootstrapping: ${path.relative(ROOT, PROD_DEPS_SRC)}`));
 
   const stage = path.join(RUN_SS, 'services', `.stage-baseline-${Date.now()}`);
   const stageModules = path.join(stage, 'node_modules');
@@ -117,7 +117,7 @@ function ensureProdDepsBaseline() {
 
     // 3) 平面化生产安装（跳过原生构建，绑定稍后从工作区复制）
     run('pnpm', ['install', '--frozen-lockfile', '--prod', '--ignore-scripts', '--config.node-linker=hoisted'], stage);
-    if (!fs.existsSync(stageModules)) fail('基线自举：pnpm install 未产出 node_modules');
+    if (!fs.existsSync(stageModules)) fail('Baseline bootstrap: pnpm install produced no node_modules');
 
     // 4) 复制已编译的 sqlite3 绑定（工作区 .pnpm 中现成可用；hoisted 布局无 .pnpm，需按版本散填）
     const pnpmStore = path.join(SS_NODE, 'node_modules', '.pnpm');
@@ -152,12 +152,12 @@ function ensureProdDepsBaseline() {
             )
           : null;
         if (!bindingSrc || !fs.existsSync(bindingSrc)) {
-          info(C.warn(`  ! 未找到 sqlite3@${version} 的已编译绑定（${path.relative(ROOT, dir)}），运行期将回退 bindings 查找`));
+          info(C.warn(`  ! Compiled binding for sqlite3@${version} not found (${path.relative(ROOT, dir)}); runtime will fall back to bindings lookup`));
           continue;
         }
         ensureDir(path.join(dir, 'build', 'Release'));
         fs.copyFileSync(bindingSrc, path.join(dir, 'build', 'Release', 'node_sqlite3.node'));
-        info(`  sqlite3@${version} 绑定 ← ${path.relative(ROOT, bindingSrc)}`);
+        info(`  sqlite3@${version} binding ← ${path.relative(ROOT, bindingSrc)}`);
       }
     }
 
@@ -165,13 +165,13 @@ function ensureProdDepsBaseline() {
     ensureDir(path.dirname(PROD_DEPS_SRC));
     if (fs.existsSync(PROD_DEPS_SRC)) fs.rmSync(PROD_DEPS_SRC, { recursive: true, force: true });
     fs.renameSync(stageModules, PROD_DEPS_SRC);
-    info(C.ok(`生产依赖基线已就绪：${path.relative(ROOT, PROD_DEPS_SRC)}`));
+    info(C.ok(`Production dependency baseline ready: ${path.relative(ROOT, PROD_DEPS_SRC)}`));
   } finally {
     if (fs.existsSync(stage)) {
       try {
         fs.rmSync(stage, { recursive: true, force: true });
       } catch {
-        info(C.warn(`暂存目录清理失败（可手动删除）: ${stage}`));
+        info(C.warn(`Failed to clean staging directory (can be removed manually): ${stage}`));
       }
     }
   }
@@ -200,26 +200,26 @@ function collectRequiredDeps(workspacePkgs) {
     const { T, TOTAL } = ctx;
 
 // ── [5] 生产依赖 ──────────────────────────────────────────────
-step(5, TOTAL, '准备生产依赖 node_modules');
+step(5, TOTAL, 'Preparing production dependencies node_modules');
 ensureProdDepsBaseline();
 const targetModules = path.join(T, 'node_modules');
 if (opt.server && opt.deps) {
   if (opt.linkDeps) {
     if (fs.existsSync(targetModules)) fs.rmSync(targetModules, { recursive: true, force: true });
-    if (process.platform !== 'win32') fail('--link-deps 仅支持 Windows（mklink /J）');
+    if (process.platform !== 'win32') fail('--link-deps is Windows only (mklink /J)');
     const r = cp.spawnSync('cmd', ['/c', 'mklink', '/J', targetModules, PROD_DEPS_SRC], {
       stdio: 'inherit',
     });
-    if (r.status !== 0) fail('创建目录联接失败');
-    info(`node_modules 联接 → ${path.relative(ROOT, PROD_DEPS_SRC)}`);
+    if (r.status !== 0) fail('Failed to create directory junction');
+    info(`node_modules junction -> ${path.relative(ROOT, PROD_DEPS_SRC)}`);
   } else {
-    if (!fs.existsSync(PROD_DEPS_SRC)) fail(`生产依赖基线不存在: ${PROD_DEPS_SRC}`);
-    info(`复制第三方依赖基线 ← ${path.relative(ROOT, PROD_DEPS_SRC)}（可能耗时 1-3 分钟）`);
+    if (!fs.existsSync(PROD_DEPS_SRC)) fail(`Production dependency baseline does not exist: ${PROD_DEPS_SRC}`);
+    info(`Copying third-party dependency baseline ← ${path.relative(ROOT, PROD_DEPS_SRC)} (may take 1-3 minutes)`);
     mirror(PROD_DEPS_SRC, targetModules);
   }
 
   // ── [6] 用工作区最新 dist 覆盖 @ss-node/* ──────────────────
-  step(6, TOTAL, '覆盖工作区包 @ss-node/*（避免用到过期的已发布包）');
+  step(6, TOTAL, 'Overlaying workspace packages @ss-node/* (avoid stale published packages)');
   const pkgs = scanWorkspacePackages();
   const isJunction = opt.linkDeps;
   let overlaid = 0;
@@ -239,12 +239,12 @@ if (opt.server && opt.deps) {
   if (isJunction) {
     info(
       C.warn(
-        `--link-deps 模式：跳过 ${pkgs.length} 个 @ss-node/* 的覆盖（避免污染基线目录）。` +
-          `若基线中的工作区包较旧，请改用默认复制模式。`,
+        `--link-deps mode: skipping overlay of ${pkgs.length} @ss-node/* packages (avoid polluting the baseline directory). ` +
+          `If workspace packages in the baseline are outdated, use the default copy mode instead.`,
       ),
     );
   } else {
-    info(C.ok(`已覆盖 ${overlaid} 个工作区包（含新增包，如 ss-collector-calc）`));
+    info(C.ok(`Overlaid ${overlaid} workspace packages (including new ones such as ss-collector-calc)`));
   }
   // ── [6b] 补齐三方依赖缺口：复用的基线可能缺少「新版代码新增」的依赖 ──
   // 典型：@ss-node/ss-core 新版引入 @modelcontextprotocol/sdk，而旧基线没有 ⇒
@@ -261,15 +261,15 @@ if (opt.server && opt.deps) {
       }
     }
     if (!missing.length) {
-      info(C.ok('三方依赖无缺口'));
+      info(C.ok('No missing third-party dependencies'));
     } else if (!opt.installMissing) {
       info(
         C.warn(
-          `检测到 ${missing.length} 个缺失依赖，但 --no-install-missing 已禁用自动补齐：${missing.join(', ')}`,
+          `Found ${missing.length} missing dependencies, but auto-install is disabled by --no-install-missing: ${missing.join(', ')}`,
         ),
       );
     } else {
-      info(`检测到 ${missing.length} 个缺失依赖，开始补齐：${missing.join(', ')}`);
+      info(`Found ${missing.length} missing dependencies, installing: ${missing.join(', ')}`);
       const staging = path.join(ROOT, 'temp', 'smart-site-deps');
       fs.rmSync(staging, { recursive: true, force: true });
       ensureDir(staging);
@@ -309,13 +309,13 @@ if (opt.server && opt.deps) {
       };
       merge(path.join(staging, 'node_modules'), targetModules);
       fs.rmSync(staging, { recursive: true, force: true });
-      info(C.ok(`已补齐 ${copied} 个依赖包目录`));
+      info(C.ok(`Installed ${copied} dependency package directories`));
     }
   }
 } else {
-  info(C.dim(opt.server ? '跳过依赖（--no-deps）' : '跳过（--no-server）'));
-  step(6, TOTAL, '跳过工作区包覆盖');
-  info(C.dim('依赖未更新'));
+  info(C.dim(opt.server ? 'Skipping dependencies (--no-deps)' : 'Skipped (--no-server)'));
+  step(6, TOTAL, 'Skipping workspace package overlay');
+  info(C.dim('Dependencies not updated'));
 }
 
 

@@ -253,7 +253,7 @@ export class WidgetTemplateService {
       const raw = fs.readFileSync(filePath, 'utf-8');
       return JSON.parse(raw) as T;
     } catch (err) {
-      this.logger.warn(`读取 JSON 失败: ${filePath} - ${(err as Error).message}`);
+      this.logger.warn(`Failed to read JSON: ${filePath} - ${(err as Error).message}`);
       return null;
     }
   }
@@ -280,9 +280,9 @@ export class WidgetTemplateService {
           );
         }
       }
-      this.logger.log(`已确保 ${BUILTIN_WIDGET_TEMPLATES.length} 个内置组件模板存在`);
+      this.logger.log(`Ensured ${BUILTIN_WIDGET_TEMPLATES.length} built-in widget templates exist`);
     } catch (err) {
-      this.logger.error(`种子组件模板失败: ${(err as Error).message}`);
+      this.logger.error(`Failed to seed widget templates: ${(err as Error).message}`);
     }
   }
 
@@ -335,7 +335,7 @@ export class WidgetTemplateService {
       metas.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
       return { success: true, data: metas, source: 'fs' };
     } catch (err) {
-      this.logger.error(`列出组件模板失败: ${(err as Error).message}`);
+      this.logger.error(`Failed to list widget templates: ${(err as Error).message}`);
       return { success: true, data: [], source: 'fallback' };
     }
   }

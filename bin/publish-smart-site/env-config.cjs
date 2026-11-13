@@ -18,8 +18,8 @@ step(
   7,
   TOTAL,
   INTERNAL_PATHS
-    ? '生成运行时配置 .env（★ 自包含：路径指向包内 ./data 与 ./base_services）'
-    : `生成运行时配置 .env（复用 ${ENV_DATA_DIR} 与 ${ENV_BASE_SERVICES_DIR}）`,
+    ? 'Generating runtime config .env (★ self-contained: paths point to in-package ./data and ./base_services)'
+    : `Generating runtime config .env (reusing ${ENV_DATA_DIR} and ${ENV_BASE_SERVICES_DIR})`,
 );
 const ref = parseEnvFile(REF_ENV);
 const builtAt = new Date().toISOString();
@@ -206,7 +206,7 @@ for (const k of INHERIT_KEYS) {
   inheritedLabel.push(`${k}${existed ? '' : '（新增）'}`);
 }
 if (inheritedSkipped.length) {
-  for (const s of inheritedSkipped) info(C.warn(`继承跳过：${s}`));
+  for (const s of inheritedSkipped) info(C.warn(`Inheritance skipped: ${s}`));
 }
 
 // ── 守卫：JWT_SECRET 必须「安全字符集 + ≥32 字符」 ──
@@ -215,7 +215,7 @@ const jwtItem = items.find((it) => it.key === 'JWT_SECRET');
 if (jwtItem && !/^[A-Za-z0-9_-]{32,}$/.test(String(jwtItem.value))) {
   info(
     C.warn(
-      `JWT_SECRET 不合规（长度 ${String(jwtItem.value).length} 或含 $ / # 等 .env 特殊字符），已重新生成安全密钥`,
+      `JWT_SECRET is invalid (length ${String(jwtItem.value).length} or contains .env special chars like $ / #); regenerated a secure secret`,
     ),
   );
   jwtItem.value = randomSecret(48);
@@ -257,7 +257,7 @@ if (inherited.length) {
 }
 envLines.push('');
 fs.writeFileSync(path.join(T, '.env'), envLines.join('\r\n'), 'utf8');
-info(`.env 已生成（含 ${items.length} 项，继承 ${inherited.length} 项）`);
+info(`.env generated (${items.length} items, ${inherited.length} inherited)`);
 
     return { builtAt, inherited, inheritedLabel, inheritedSkipped };
   }

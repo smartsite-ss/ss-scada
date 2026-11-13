@@ -78,7 +78,7 @@ export class WechatAuthService {
     const mock = this.wechatApi.isMockMode();
 
     this.logger.log(
-      `[生成二维码] state=${state} mock=${mock} ip=${clientMeta.ip || 'unknown'}`,
+      `[GenerateQRCode] state=${state} mock=${mock} ip=${clientMeta.ip || 'unknown'}`,
     );
 
     return {
@@ -175,7 +175,7 @@ export class WechatAuthService {
 
     if (action === 'cancel') {
       await this.stateService.update(state, { status: 'cancelled' });
-      this.logger.log(`[Mock 扫码] state=${state} 用户取消`);
+      this.logger.log(`[Mock QRScan] state=${state} user cancelled`);
       return;
     }
 
@@ -246,7 +246,7 @@ export class WechatAuthService {
         },
       });
       this.logger.log(
-        `[创建新用户] userId=${user.id} username=${user.username} wechatOpenId=${profile.wechatOpenId}`,
+        `[CreateUser] userId=${user.id} username=${user.username} wechatOpenId=${profile.wechatOpenId}`,
       );
     } else {
       // Existing user: refresh nickname/avatar/unionId
@@ -256,7 +256,7 @@ export class WechatAuthService {
         unionId: profile.wechatUnionId,
       });
       this.logger.log(
-        `[复用已有用户] userId=${user.id} username=${user.username} wechatOpenId=${profile.wechatOpenId}`,
+        `[ReuseUser] userId=${user.id} username=${user.username} wechatOpenId=${profile.wechatOpenId}`,
       );
     }
 
@@ -315,7 +315,7 @@ export class WechatAuthService {
     await this.stateService.delete(state);
 
     this.logger.log(
-      `[下发 Token] userId=${user.id} username=${user.username} state=${state} 已删除`,
+      `[DeliverToken] userId=${user.id} username=${user.username} state=${state} removed`,
     );
 
     return {

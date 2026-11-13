@@ -350,7 +350,7 @@ const loadCarouselConfig = async (projectId: string) => {
       };
     }
   } catch (err) {
-    console.warn('[PreviewView] 加载轮播配置失败，使用默认配置:', err);
+    console.warn('[PreviewView] Failed to load carousel config, using defaults:', err);
   }
 };
 
@@ -364,7 +364,7 @@ const handleCarouselConfigChanged = async (config: CarouselConfig) => {
   try {
     await projectApi.update(projectId, { config: { carousel: config } });
   } catch (err) {
-    console.warn('[PreviewView] 保存轮播配置失败:', err);
+    console.warn('[PreviewView] Failed to save carousel config:', err);
   }
 };
 
@@ -388,7 +388,7 @@ const exchangePreviewTicket = async (previewTicket: string) => {
       body: JSON.stringify({ previewTicket }),
     });
     if (!response.ok) {
-      console.warn('[PreviewView] 预览票据兑换失败，回退既有会话:', response.status);
+      console.warn('[PreviewView] Failed to exchange preview ticket, falling back to existing session:', response.status);
       return;
     }
     const data = await response.json();
@@ -400,7 +400,7 @@ const exchangePreviewTicket = async (previewTicket: string) => {
       setRefreshToken(tokenPair.refreshToken);
     }
   } catch (error) {
-    console.warn('[PreviewView] 预览票据兑换请求异常，回退既有会话:', error);
+    console.warn('[PreviewView] Preview ticket exchange request failed, falling back to existing session:', error);
   } finally {
     const cleanedUrl = new URL(window.location.href);
     cleanedUrl.searchParams.delete('ticket');

@@ -98,12 +98,12 @@ export class SmsNotificationChannel implements INotificationChannel {
     payload?: NotificationPayload,
   ): Promise<boolean> {
     if (!this.configService) {
-      this.logger.warn('SystemConfigService 不可用，短信通道未启用');
+      this.logger.warn('SystemConfigService unavailable, SMS channel disabled');
       return false;
     }
 
     if (!phones.length) {
-      this.logger.warn('未提供手机号，跳过短信发送');
+      this.logger.warn('No phone numbers provided, skipping SMS send');
       return false;
     }
 
@@ -115,7 +115,7 @@ export class SmsNotificationChannel implements INotificationChannel {
       const templateCode = await this.configService.get('SMS_TEMPLATE_CODE');
 
       if (!apiKey || !apiSecret) {
-        this.logger.warn('短信通道未配置 API 密钥，跳过发送');
+        this.logger.warn('SMS channel has no API key configured, skipping send');
         return false;
       }
 
@@ -145,11 +145,11 @@ export class SmsNotificationChannel implements INotificationChannel {
           });
 
         default:
-          this.logger.warn(`未知的短信提供商: ${provider}（支持: aliyun, tencent）`);
+          this.logger.warn(`Unknown SMS provider: ${provider} (supported: aliyun, tencent)`);
           return false;
       }
     } catch (error) {
-      this.logger.error(`短信发送失败: ${(error as Error).message}`);
+      this.logger.error(`SMS send failed: ${(error as Error).message}`);
       return false;
     }
   }
@@ -204,11 +204,11 @@ export class SmsNotificationChannel implements INotificationChannel {
     const data = (await response.json()) as { Code?: string; Message?: string };
 
     if (data.Code === 'OK') {
-      this.logger.log(`[SMS-阿里云] 短信发送成功 -> ${params.phoneNumbers}`);
+      this.logger.log(`[SMS-Aliyun] SMS sent -> ${params.phoneNumbers}`);
       return true;
     }
 
-    this.logger.error(`[SMS-阿里云] 发送失败: ${data.Code || 'Unknown'} - ${data.Message || ''}`);
+    this.logger.error(`[SMS-Aliyun] Send failed: ${data.Code || 'Unknown'} - ${data.Message || ''}`);
     return false;
   }
 
@@ -283,11 +283,11 @@ export class SmsNotificationChannel implements INotificationChannel {
     });
 
     if (result.success) {
-      this.logger.log(`[SMS-腾讯云] 短信发送成功 -> ${params.phoneNumbers}`);
+      this.logger.log(`[SMS-TencentCloud] SMS sent -> ${params.phoneNumbers}`);
       return true;
     }
 
-    this.logger.error(`[SMS-腾讯云] 发送失败: ${result.error}`);
+    this.logger.error(`[SMS-TencentCloud] Send failed: ${result.error}`);
     return false;
   }
 

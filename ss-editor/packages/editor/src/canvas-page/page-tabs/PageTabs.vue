@@ -533,7 +533,7 @@ async function handleRemove(id: string, name: string) {
   // Also delete the server-side page file
   if (props.projectId) {
     pageApi.deletePage(props.projectId, pageName, groupName).catch(err => {
-      console.warn('[PageTabs] 删除页面文件失败:', err);
+      console.warn('[PageTabs] Failed to delete page file:', err);
     });
   }
 }

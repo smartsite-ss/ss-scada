@@ -141,7 +141,7 @@ export class PromptVersionService {
     await this.versionRepo.update(versionId, { status: 'active' });
     await this.promptRepo.update(version.promptId, { activeVersionId: versionId });
 
-    this.logger.log(`Prompt ${version.promptId} 版本已发布: ${version.version}`);
+    this.logger.log(`Prompt ${version.promptId} version published: ${version.version}`);
   }
 
   /** Archive a version (active -> archived) */
@@ -171,7 +171,7 @@ export class PromptVersionService {
     await this.versionRepo.update(versionId, { status: 'active' });
     await this.promptRepo.update(target.promptId, { activeVersionId: versionId });
 
-    this.logger.log(`Prompt ${target.promptId} 已回滚到版本: ${target.version}`);
+    this.logger.log(`Prompt ${target.promptId} rolled back to version: ${target.version}`);
   }
 
   // ============================================================

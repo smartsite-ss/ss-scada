@@ -252,7 +252,7 @@ export class CostMonitorService {
 
     if (budget.shouldWarn) {
       this.logger.warn(
-        `AI 预算使用率 ${Math.round(budget.usageRate * 100)}%（${budget.currentSpent}/${budget.budgetLimit} USD）`,
+        `AI budget usage ${Math.round(budget.usageRate * 100)}% (${budget.currentSpent}/${budget.budgetLimit} USD)`,
       );
     }
 

@@ -94,14 +94,14 @@ function validateJwtSecret(): void {
   ];
 
   if (!secret) {
-    console.error('[FATAL] JWT_SECRET 未设置。请在 .env 文件中配置一个至少 32 字符的随机密钥。');
+    console.error('[FATAL] JWT_SECRET is not set. Configure a random secret of at least 32 characters in .env.');
     process.exit(1);
   }
 
   if (secret.length < 32) {
     console.error(
-      `FATAL: JWT_SECRET 长度不足（当前 ${secret.length} 字符，要求至少 32 字符）。` +
-        '请使用 `openssl rand -base64 48` 生成安全密钥。',
+      `FATAL: JWT_SECRET is too short (current ${secret.length} chars, at least 32 required). ` +
+        'Generate a secure secret with `openssl rand -base64 48`.',
     );
     process.exit(1);
   }
@@ -114,21 +114,21 @@ function validateJwtSecret(): void {
 
   if (isProduction && isWeakSecret) {
     console.error(
-      'FATAL: 生产环境禁止使用代码库默认或占位 JWT_SECRET。' +
-        '请在 .env 中配置随机生成的安全密钥（openssl rand -base64 48）。' +
-        '检测到：' +
-        (isDefaultSecret ? '已知默认值；' : '含占位特征词；'),
+      'FATAL: Production forbids the repository default or a placeholder JWT_SECRET. ' +
+        'Configure a randomly generated secret in .env (openssl rand -base64 48). ' +
+        'Detected: ' +
+        (isDefaultSecret ? 'known default value; ' : 'contains placeholder keywords; '),
     );
     process.exit(1);
   }
 
   if (isWeakSecret) {
     console.warn(
-      '[Startup] ⚠️ JWT_SECRET 使用代码库默认值或占位特征，仅适用于开发环境。' +
-        '生产部署请更换为随机生成的安全密钥。',
+      '[Startup] ⚠️ JWT_SECRET uses the repository default or a placeholder, development only. ' +
+        'Replace it with a randomly generated secret for production deployment.',
     );
   } else {
-    console.log('[Startup] ✅ JWT_SECRET 校验通过');
+    console.log('[Startup] ✅ JWT_SECRET validation passed');
   }
 }
 
@@ -220,16 +220,16 @@ async function bootstrap() {
     const executed = await dataSource.runMigrations();
     if (executed.length > 0) {
       console.log(
-        `[${STARTUP_TAG}] ✅ 执行了 ${executed.length} 个 migration: ${executed
+        `[${STARTUP_TAG}] ✅ Executed ${executed.length} migrations: ${executed
           .map((m) => m.name)
           .join(', ')}`,
       );
     } else {
-      console.log(`[${STARTUP_TAG}] ✅ 数据库 migration 已是最新`);
+      console.log(`[${STARTUP_TAG}] ✅ Database migrations are up to date`);
     }
   } catch (err) {
     console.error(
-      `[${STARTUP_TAG}] ❌ 数据库 migration 失败: ${err instanceof Error ? err.message : err}`,
+      `[${STARTUP_TAG}] ❌ Database migration failed: ${err instanceof Error ? err.message : err}`,
     );
     // Do not abort startup: dev falls back to synchronize; in production investigate then retry
   }
@@ -437,8 +437,8 @@ async function bootstrap() {
     endPhase3();
   } else {
     console.warn(
-      '[Startup] ⚠️ 生产环境未配置 SWAGGER_USER/SWAGGER_PASSWORD，API 文档已禁用。\n' +
-        '  如需启用，请在 .env.pro 中配置 SWAGGER_USER 和 SWAGGER_PASSWORD。',
+      '[Startup] ⚠️ SWAGGER_USER/SWAGGER_PASSWORD not configured in production; API docs disabled.\n' +
+        '  To enable, set SWAGGER_USER and SWAGGER_PASSWORD in .env.pro.',
     );
     endPhase3();
   }
@@ -463,7 +463,7 @@ async function bootstrap() {
       ((req: unknown, res: unknown) => void) | undefined;
     if (typeof nestRequestHandler !== 'function') {
       Logger.warn(
-        `WEB_DIST_DIR 已配置但未能取得 HTTP request 处理器，跳过 SPA 托管（前端需由 Nginx 提供）`,
+        `WEB_DIST_DIR is set but the HTTP request handler is unavailable; skipping SPA hosting (frontend must be served by Nginx)`,
         'Bootstrap',
       );
     } else {
@@ -585,6 +585,6 @@ bootstrap().catch((error: unknown) => {
   // alive with timers/schedulers, producing a "zombie" instance that logs but never
   // serves HTTP.
   const message = error instanceof Error ? error.message : String(error);
-  console.error('\n[FATAL] 服务启动失败：\n' + message + '\n');
+  console.error('\n[FATAL] Service startup failed:\n' + message + '\n');
   process.exit(1);
 });

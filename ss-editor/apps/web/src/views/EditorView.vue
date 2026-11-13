@@ -643,7 +643,7 @@ onMounted(async () => {
   // Initialize the project context so that components within the editor can obtain project information through projectStore.currentProject.
   if (projectId && projectId !== 'default-project') {
     projectStore.fetchProject(projectId).catch(() => {
-      console.warn('[EditorView] 获取项目信息失败，projectId:', projectId);
+      console.warn('[EditorView] Failed to fetch project info, projectId:', projectId);
     });
   }
 
@@ -910,7 +910,7 @@ const saveProject = async () => {
 
     MessageService.showSaveSuccess(t('editor.saveSuccess'));
   } catch (error) {
-    console.error('[EditorView] 保存失败', error);
+    console.error('[EditorView] Save failed', error);
     MessageService.showSaveError(t('editor.saveFailedRetry'));
   }
 };
@@ -963,7 +963,7 @@ async function handlePageMoved({ pageId: _pageId, pageName, fromGroupName, toGro
 
 // Save Manually (Ctrl+S / Menu Click)
 const manualSave = () => {
-  saveProject().catch(err => console.error('[EditorView] 手动保存失败', err));
+  saveProject().catch(err => console.error('[EditorView] Manual save failed', err));
 };
 
 // Save Project (Ctrl+Shift+S): Saves all loaded (non-_lazy) pages
@@ -985,7 +985,7 @@ const saveAllPages = async () => {
 
     MessageService.showSaveSuccess(t('editor.saveAllSuccess'));
   } catch (error) {
-    console.error('[EditorView] 工程保存失败', error);
+    console.error('[EditorView] Project save failed', error);
     MessageService.showSaveError(t('editor.saveAllFailed'));
   }
 };
@@ -1351,7 +1351,7 @@ async function loadTemplateForEditing(templateId: string): Promise<void> {
     }
 
     if (!tpl) {
-      console.warn('[EditorView] 模板不存在:', templateId);
+      console.warn('[EditorView] Template not found:', templateId);
       MessageService.showWarning('模板不存在');
       return;
     }
@@ -1375,14 +1375,14 @@ async function loadTemplateForEditing(templateId: string): Promise<void> {
             page.addGraphic(graphic);
           }
         } catch (e) {
-          console.warn('[EditorView] 模板图元创建失败:', g.type, e);
+          console.warn('[EditorView] Failed to create template graphic:', g.type, e);
         }
       }
     }
 
     MessageService.showSuccess(`正在编辑模板：${tpl.name}`);
   } catch (error) {
-    console.error('[EditorView] 加载模板失败:', error);
+    console.error('[EditorView] Failed to load template:', error);
   }
 }
 
@@ -1452,7 +1452,7 @@ const restoreProject = async (): Promise<boolean> => {
 
     return true;
   } catch (error) {
-    console.error('[EditorView] 恢复项目失败', error);
+    console.error('[EditorView] Failed to restore project', error);
     return false;
   } finally {
     // Regardless of success or failure, close the loading overlay to prevent the canvas from being permanently obstructed.

@@ -17,14 +17,14 @@ function zipPackage(dir) {
   const zipPath = path.join(parent, `${base}.zip`);
   if (fs.existsSync(zipPath)) fs.rmSync(zipPath, { force: true });
   const t0 = Date.now();
-  info(`压缩中：${base}/ → ${path.basename(zipPath)}（大包可能耗时数分钟）`);
+  info(`Compressing: ${base}/ -> ${path.basename(zipPath)} (large packages may take several minutes)`);
   const tar = cp.spawnSync('tar', ['-a', '-c', '-f', zipPath, '-C', parent, base], {
     stdio: 'inherit',
     windowsHide: true,
   });
   let ok = tar.status === 0 && fs.existsSync(zipPath);
   if (!ok) {
-    info(C.warn('tar.exe 压缩失败，回退 PowerShell Compress-Archive（更慢）'));
+    info(C.warn('tar.exe compression failed, falling back to PowerShell Compress-Archive (slower)'));
     const ps = `Compress-Archive -Path '${dir}' -DestinationPath '${zipPath}' -Force`;
     const r = cp.spawnSync('powershell', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-Command', ps], {
       stdio: 'inherit',
@@ -33,16 +33,16 @@ function zipPackage(dir) {
     ok = r.status === 0 && fs.existsSync(zipPath);
   }
   if (!ok) {
-    info(C.err('✗ 压缩失败（未生成 sha256）'));
+    info(C.err('✗ Compression failed (no sha256 generated)'));
     return;
   }
   const sizeMb = (fs.statSync(zipPath).size / 1048576).toFixed(1);
   const hash = sha256FileSync(zipPath);
   fs.writeFileSync(`${zipPath}.sha256`, `${hash}  ${path.basename(zipPath)}\r\n`, 'utf8');
-  info(C.ok(`✓ ${path.basename(zipPath)}  ${sizeMb} MB  用时 ${((Date.now() - t0) / 60000).toFixed(1)} min`));
+  info(C.ok(`✓ ${path.basename(zipPath)}  ${sizeMb} MB  in ${((Date.now() - t0) / 60000).toFixed(1)} min`));
   info(`sha256 = ${hash}`);
-  info(`校验文件：${path.relative(ROOT, `${zipPath}.sha256`)}`);
-  info(C.dim(`目标机校验：certutil -hashfile ${path.basename(zipPath)} SHA256`));
+  info(`Checksum file: ${path.relative(ROOT, `${zipPath}.sha256`)}`);
+  info(C.dim(`Verify on target: certutil -hashfile ${path.basename(zipPath)} SHA256`));
 }
 
 

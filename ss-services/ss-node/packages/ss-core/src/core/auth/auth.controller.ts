@@ -114,7 +114,7 @@ export class AuthController {
     });
 
     this.logger.debug(
-      `[Cookie] 已设置认证 Cookie | accessToken: httpOnly=true secure=${cookieSecure} sameSite=strict maxAge=15min path=/ | refreshToken: httpOnly=true secure=${cookieSecure} sameSite=strict maxAge=7d path=/api/v1/auth`,
+      `[Cookie] Auth cookies set | accessToken: httpOnly=true secure=${cookieSecure} sameSite=strict maxAge=15min path=/ | refreshToken: httpOnly=true secure=${cookieSecure} sameSite=strict maxAge=7d path=/api/v1/auth`,
     );
   }
 
@@ -166,7 +166,7 @@ export class AuthController {
   ) {
     const clientIp = this.getClientIp(req);
     this.logger.log(
-      `[POST /auth/login] 收到登录请求 | username="${loginDto.username}" ip=${clientIp} userAgent="${req.headers['user-agent']?.slice(0, 50) || 'unknown'}"`,
+      `[POST /auth/login] Login request | username="${loginDto.username}" ip=${clientIp} userAgent="${req.headers['user-agent']?.slice(0, 50) || 'unknown'}"`,
     );
 
     const result = await this.authService.login(loginDto, {
@@ -177,7 +177,7 @@ export class AuthController {
     // Non-browser clients (desktop Tauri / mini-program): cookies unavailable, switched to response-body token delivery (Bearer mode)
     if (this.isBearerTokenClient(req)) {
       this.logger.log(
-        `[POST /auth/login] 登录响应（桌面端/小程序 Bearer 模式） | userId="${result.user.id}" username="${result.user.username}" role="${result.user.role}"`,
+        `[POST /auth/login] Login response (desktop/mini-program Bearer mode) | userId="${result.user.id}" username="${result.user.username}" role="${result.user.role}"`,
       );
       return {
         user: result.user,
@@ -190,7 +190,7 @@ export class AuthController {
     this.setAuthCookies(res, result.accessToken, result.refreshToken);
 
     this.logger.log(
-      `[POST /auth/login] 登录响应 | userId="${result.user.id}" username="${result.user.username}" role="${result.user.role}" | Cookie已设置 | 响应体仅含user信息`,
+      `[POST /auth/login] Login response | userId="${result.user.id}" username="${result.user.username}" role="${result.user.role}" | cookies set | body contains user info only`,
     );
     return { user: result.user };
   }
@@ -227,21 +227,21 @@ export class AuthController {
   ) {
     const clientIp = this.getClientIp(req);
     const authSources = this.describeAuthSources(req);
-    this.logger.log(`[POST /auth/refresh] 收到刷新请求 | ip=${clientIp} | ${authSources}`);
+    this.logger.log(`[POST /auth/refresh] Refresh request | ip=${clientIp} | ${authSources}`);
 
     // S-C03: prefer reading refreshToken from Cookie, also accept body param (Swagger debugging / Bearer clients)
     const refreshTokenFromBody = body?.refreshToken;
     const refreshToken = req.cookies?.refreshToken || refreshTokenFromBody;
     if (!refreshToken) {
       this.logger.warn(
-        `[POST /auth/refresh] 无 refreshToken | 来源: cookie=${!!req.cookies?.refreshToken} body=${!!refreshTokenFromBody} | ip=${clientIp}`,
+        `[POST /auth/refresh] No refreshToken | source: cookie=${!!req.cookies?.refreshToken} body=${!!refreshTokenFromBody} | ip=${clientIp}`,
       );
       return { message: '无 refresh token' };
     }
 
     // Mark the refreshToken source (Cookie or Body) for troubleshooting cookie transmission issues
     const tokenSource = req.cookies?.refreshToken ? 'cookie' : 'body';
-    this.logger.debug(`[POST /auth/refresh] refreshToken 来源=${tokenSource} | ip=${clientIp}`);
+    this.logger.debug(`[POST /auth/refresh] refreshToken source=${tokenSource} | ip=${clientIp}`);
 
     const result = await this.authService.refreshToken(refreshToken, {
       ip: clientIp,
@@ -254,7 +254,7 @@ export class AuthController {
     // so providing refreshToken in body is treated as Bearer mode, avoiding frontend session-recovery failure due to missing token in response.
     if (this.isBearerTokenClient(req) || !!refreshTokenFromBody) {
       this.logger.log(
-        `[POST /auth/refresh] 刷新成功（Bearer 模式：桌面端/小程序/H5） | ip=${clientIp}`,
+        `[POST /auth/refresh] Refresh succeeded (Bearer mode: desktop/mini-program/H5) | ip=${clientIp}`,
       );
       return {
         message: '令牌已刷新',
@@ -265,7 +265,7 @@ export class AuthController {
 
     this.setAuthCookies(res, result.accessToken, result.refreshToken);
 
-    this.logger.log(`[POST /auth/refresh] 刷新成功 | Cookie已更新 | ip=${clientIp}`);
+    this.logger.log(`[POST /auth/refresh] Refresh succeeded | cookies updated | ip=${clientIp}`);
     return { message: '令牌已刷新' };
   }
 
@@ -279,7 +279,7 @@ export class AuthController {
   ) {
     const clientIp = this.getClientIp(req);
     this.logger.log(
-      `[POST /auth/logout] 收到登出请求 | ip=${clientIp} | ${this.describeAuthSources(req)}`,
+      `[POST /auth/logout] Logout request | ip=${clientIp} | ${this.describeAuthSources(req)}`,
     );
 
     const refreshToken = req.cookies?.refreshToken || body?.refreshToken;
@@ -289,11 +289,11 @@ export class AuthController {
         userAgent: req.headers['user-agent'],
       });
     } else {
-      this.logger.debug(`[POST /auth/logout] 无 refreshToken，仅清除 Cookie | ip=${clientIp}`);
+      this.logger.debug(`[POST /auth/logout] No refreshToken, clearing cookies only | ip=${clientIp}`);
     }
     this.clearAuthCookies(res);
 
-    this.logger.log(`[POST /auth/logout] 登出完成 | Cookie已清除 | ip=${clientIp}`);
+    this.logger.log(`[POST /auth/logout] Logout complete | cookies cleared | ip=${clientIp}`);
     return { message: '已退出登录' };
   }
 

@@ -74,7 +74,7 @@ export class WechatMpAuthService {
 
     const boundUser = await this.userService.findByWechatMpOpenId(session.openid);
     if (!boundUser) {
-      this.logger.log(`[小程序登录] openid 未绑定系统账号，需引导账密绑定 | openid=${openidMasked}`);
+      this.logger.log(`[MiniProgramLogin] openid not bound to a system account, password binding required | openid=${openidMasked}`);
       this.auditLogger.logSecurityEvent({
         type: 'auth.wechat_mp.login.binding_required',
         severity: 'info',
@@ -91,7 +91,7 @@ export class WechatMpAuthService {
     }
 
     if (!boundUser.isActive) {
-      this.logger.warn(`[小程序登录] 账号已禁用，拒绝登录 | userId="${boundUser.id}" username="${boundUser.username}"`);
+      this.logger.warn(`[MiniProgramLogin] Account disabled, login denied | userId="${boundUser.id}" username="${boundUser.username}"`);
       this.auditLogger.logSecurityEvent({
         type: 'auth.wechat_mp.login.failed',
         severity: 'warning',
@@ -114,7 +114,7 @@ export class WechatMpAuthService {
     const authorizedProjects = await this.listAuthorizedProjects(userWithRole);
 
     this.logger.log(
-      `[小程序登录] 登录成功 | userId="${userWithRole.id}" username="${userWithRole.username}" | authorizedProjectCount=${authorizedProjects.length}`,
+      `[MiniProgramLogin] Login succeeded | userId="${userWithRole.id}" username="${userWithRole.username}" | authorizedProjectCount=${authorizedProjects.length}`,
     );
     this.auditLogger.logSecurityEvent({
       type: 'auth.wechat_mp.login.success',
@@ -152,7 +152,7 @@ export class WechatMpAuthService {
     const existingBoundUser = await this.userService.findByWechatMpOpenId(session.openid);
     if (existingBoundUser) {
       this.logger.warn(
-        `[小程序绑定] 该微信已绑定其他账号，拒绝重复绑定 | openid=${openidMasked} boundUserId="${existingBoundUser.id}"`,
+        `[MiniProgramBind] WeChat account already bound to another user, duplicate binding denied | openid=${openidMasked} boundUserId="${existingBoundUser.id}"`,
       );
       this.auditLogger.logSecurityEvent({
         type: 'auth.wechat_mp.bind.failed',
@@ -171,7 +171,7 @@ export class WechatMpAuthService {
     const account = await this.userService.findByUsername(username);
     const passwordValid = account ? await bcrypt.compare(password, account.password) : false;
     if (!account || !passwordValid) {
-      this.logger.warn(`[小程序绑定] 账号或密码错误 | username="${username}"`);
+      this.logger.warn(`[MiniProgramBind] Invalid username or password | username="${username}"`);
       this.auditLogger.logSecurityEvent({
         type: 'auth.wechat_mp.bind.failed',
         severity: 'warning',
@@ -186,7 +186,7 @@ export class WechatMpAuthService {
       throw new UnauthorizedException('账号已被禁用，请联系管理员');
     }
     if (account.wechatMpOpenId && account.wechatMpOpenId !== session.openid) {
-      this.logger.warn(`[小程序绑定] 目标账号已绑定其他微信，拒绝换绑 | userId="${account.id}"`);
+      this.logger.warn(`[MiniProgramBind] Target account already bound to another WeChat, rebinding denied | userId="${account.id}"`);
       this.auditLogger.logSecurityEvent({
         type: 'auth.wechat_mp.bind.failed',
         severity: 'warning',
@@ -213,7 +213,7 @@ export class WechatMpAuthService {
     const authorizedProjects = await this.listAuthorizedProjects(userWithRole);
 
     this.logger.log(
-      `[小程序绑定] 绑定成功并已登录 | userId="${userWithRole.id}" username="${userWithRole.username}" | openid=${openidMasked}`,
+      `[MiniProgramBind] Bound and logged in | userId="${userWithRole.id}" username="${userWithRole.username}" | openid=${openidMasked}`,
     );
     this.auditLogger.logSecurityEvent({
       type: 'auth.wechat_mp.bind.success',
@@ -246,7 +246,7 @@ export class WechatMpAuthService {
     const account = await this.userService.findByUsername(username);
     const passwordValid = account ? await bcrypt.compare(password, account.password) : false;
     if (!account || !passwordValid) {
-      this.logger.warn(`[小程序账密登录] 账号或密码错误 | username="${username}"`);
+      this.logger.warn(`[MiniProgramPasswordLogin] Invalid username or password | username="${username}"`);
       this.auditLogger.logSecurityEvent({
         type: 'auth.wechat_mp.password_login.failed',
         severity: 'warning',
@@ -270,7 +270,7 @@ export class WechatMpAuthService {
     const authorizedProjects = await this.listAuthorizedProjects(userWithRole);
 
     this.logger.log(
-      `[小程序账密登录] 登录成功 | userId="${userWithRole.id}" username="${userWithRole.username}" | authorizedProjectCount=${authorizedProjects.length}`,
+      `[MiniProgramPasswordLogin] Login succeeded | userId="${userWithRole.id}" username="${userWithRole.username}" | authorizedProjectCount=${authorizedProjects.length}`,
     );
     this.auditLogger.logSecurityEvent({
       type: 'auth.wechat_mp.password_login.success',
@@ -292,7 +292,7 @@ export class WechatMpAuthService {
   /** Unbind the current logged-in user's mini-program WeChat (via JWT auth, userId injected by Controller) */
   async unbind(userId: string, auditContext?: AuditContext): Promise<{ message: string }> {
     await this.userService.unbindWechatMpOpenId(userId);
-    this.logger.log(`[小程序解绑] 解绑成功 | userId="${userId}"`);
+    this.logger.log(`[MiniProgramUnbind] Unbound successfully | userId="${userId}"`);
     this.auditLogger.logSecurityEvent({
       type: 'auth.wechat_mp.unbind',
       severity: 'info',
@@ -362,7 +362,7 @@ export class WechatMpAuthService {
       };
       return raw.projectName || raw.name || projectId;
     } catch (error) {
-      this.logger.warn(`[小程序登录] 读取 projectinfo.json 失败，回退 projectId | projectId="${projectId}" error="${(error as Error).message}"`);
+      this.logger.warn(`[MiniProgramLogin] Failed to read projectinfo.json, falling back to projectId | projectId="${projectId}" error="${(error as Error).message}"`);
       return projectId;
     }
   }

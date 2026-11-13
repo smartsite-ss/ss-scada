@@ -274,7 +274,7 @@ export class AiController {
           errorMessage: (err as Error).message,
           latencyMs: Date.now() - startedAt,
         })
-        .catch((e) => this.logger.warn(`用量日志记录失败: ${e.message}`));
+        .catch((e) => this.logger.warn(`Failed to log usage: ${e.message}`));
       throw err;
     }
 
@@ -300,7 +300,7 @@ export class AiController {
         success: true,
         latencyMs: response.latencyMs,
       })
-      .catch((e) => this.logger.warn(`用量日志记录失败: ${e.message}`));
+      .catch((e) => this.logger.warn(`Failed to log usage: ${e.message}`));
 
     // 9. attach conversationId to the response
     return { ...response, conversationId };
@@ -449,7 +449,7 @@ export class AiController {
           content: accumulatedContent,
           tokens: finalUsage?.totalTokens || 0,
         })
-        .catch((e) => this.logger.warn(`持久化 assistant 消息失败: ${e.message}`));
+        .catch((e) => this.logger.warn(`Failed to persist assistant message: ${e.message}`));
     }
 
     this.costMonitorService
@@ -466,7 +466,7 @@ export class AiController {
         errorMessage,
         latencyMs: Date.now() - startedAt,
       })
-      .catch((e) => this.logger.warn(`用量日志记录失败: ${e.message}`));
+      .catch((e) => this.logger.warn(`Failed to log usage: ${e.message}`));
   }
 
   @Post('embed')
@@ -713,7 +713,7 @@ export class AiController {
           role: 'assistant',
           content: assistantContent,
         })
-        .catch((e) => this.logger.warn(`Agent 模式持久化 assistant 消息失败: ${e.message}`));
+        .catch((e) => this.logger.warn(`Failed to persist assistant message in Agent mode: ${e.message}`));
     }
 
     // 5. async-record usage log (Agent mode calls the LLM multiple times internally; token usage cannot be aggregated precisely, temporarily recorded as 0)
@@ -732,7 +732,7 @@ export class AiController {
           errorMessage,
           latencyMs: Date.now() - startedAt,
         })
-        .catch((e) => this.logger.warn(`Agent 用量日志记录失败: ${e.message}`));
+        .catch((e) => this.logger.warn(`Failed to log Agent usage: ${e.message}`));
     }
   }
 

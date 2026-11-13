@@ -14,7 +14,7 @@ export class BindingEngine {
 
   attach(graphic: IGraphic, depth: number = 0): void {
     if (depth > 10) {
-      console.warn(`[BindingEngine] 检测到循环绑定，图元: ${graphic.id}`);
+      console.warn(`[BindingEngine] Circular binding detected, graphic: ${graphic.id}`);
       return;
     }
 

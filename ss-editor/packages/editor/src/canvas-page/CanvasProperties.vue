@@ -251,7 +251,7 @@ async function loadBgImageWithAuth(src: string): Promise<string> {
     if (!response.ok) {
       // 404 means the image resource does not exist; clear it directly and stop retrying
       if (response.status === 404) {
-        console.debug('[CanvasProperties] 背景图片资源不存在(404)，清空:', resolvedSrc);
+        console.debug('[CanvasProperties] Background image asset missing (404), cleared:', resolvedSrc);
         return '';
       }
       throw new Error(`Failed to load background image (${response.status})`);
@@ -259,7 +259,7 @@ async function loadBgImageWithAuth(src: string): Promise<string> {
     const blob = await response.blob();
     return URL.createObjectURL(blob);
   } catch (err) {
-    console.warn('[CanvasProperties] 背景图片认证加载失败，回退到直连 URL:', err);
+    console.warn('[CanvasProperties] Authenticated background image load failed, falling back to direct URL:', err);
     return resolvedSrc;
   }
 }

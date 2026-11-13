@@ -72,7 +72,7 @@ function writeStartBat(pkg, fileName = 'start.bat') {
     for (const f of ['init-influxdb.bat', 'init-influxdb.cjs']) {
       const src = path.join(tplDir, f);
       if (fs.existsSync(src)) fs.copyFileSync(src, path.join(pkg.dir, f));
-      else info(C.warn(`! 缺少模板 ${f}，InfluxDB 初始化脚本未生成`));
+      else info(C.warn(`! Template ${f} missing, InfluxDB init script not generated`));
     }
     lines.push(
       '',
@@ -173,11 +173,11 @@ function writeStartBatExeLauncher(pkg) {
  */
 function writeLauncherExe(pkg) {
   if (!fs.existsSync(LAUNCHER_BUILD_SCRIPT)) {
-    console.error(`[ERROR] 薄启动器编译脚本缺失：${LAUNCHER_BUILD_SCRIPT}`);
+    console.error(`[ERROR] Thin launcher build script missing: ${LAUNCHER_BUILD_SCRIPT}`);
     process.exit(1);
   }
   if (!fs.existsSync(LAUNCHER_SOURCE)) {
-    console.error(`[ERROR] 薄启动器源码缺失：${LAUNCHER_SOURCE}`);
+    console.error(`[ERROR] Thin launcher source missing: ${LAUNCHER_SOURCE}`);
     process.exit(1);
   }
 
@@ -188,10 +188,10 @@ function writeLauncherExe(pkg) {
     { stdio: 'inherit', cwd: ROOT },
   );
   if (r.status !== 0 || !fs.existsSync(outputPath)) {
-    console.error('[ERROR] 薄启动器编译失败（见上方 csc 输出）');
+    console.error('[ERROR] Thin launcher compilation failed (see csc output above)');
     process.exit(1);
   }
-  info(`SmartSite.exe 已生成（薄启动器，${(fs.statSync(outputPath).size / 1024).toFixed(1)} KB）`);
+  info(`SmartSite.exe generated (thin launcher, ${(fs.statSync(outputPath).size / 1024).toFixed(1)} KB)`);
 }
 
 /**

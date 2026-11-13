@@ -35,7 +35,7 @@ function fail(msg) {
  *   例如把 dist-plugins 叠加进 web/dist 自带的 web/plugins，避免 /MIR 误删 capability.json）。
  */
 function mirror(src, dst, { excludeDirs = [], excludeFiles = [], purge = true } = {}) {
-  if (!fs.existsSync(src)) fail(`源目录不存在: ${src}`);
+  if (!fs.existsSync(src)) fail(`Source directory does not exist: ${src}`);
   fs.mkdirSync(dst, { recursive: true });
 
   if (process.platform === 'win32') {
@@ -61,7 +61,7 @@ function mirror(src, dst, { excludeDirs = [], excludeFiles = [], purge = true } 
     const r = cp.spawnSync('robocopy', args, { stdio: 'inherit', windowsHide: true });
     // robocopy 退出码 0-7 均为成功
     if (r.status === null || r.status > 7) {
-      info(C.warn(`robocopy 退出码 ${r.status}，回退 fs.cpSync（带排除过滤）`));
+      info(C.warn(`robocopy exit code ${r.status}, falling back to fs.cpSync (with exclusions)`));
       cpSyncFiltered(src, dst, { excludeDirs, excludeFiles });
     }
     return;
@@ -117,18 +117,18 @@ function run(cmd, args, cwd, env) {
     if (r.status === 134 || r.status === 3221225477 || r.status === -1073740791) {
       console.error('');
       console.error(
-        C.err(`[ERROR] 命令异常终止（退出码 ${r.status}，通常为 V8 堆内存不足）: ${cmd} ${args.join(' ')}`),
+        C.err(`[ERROR] Command terminated abnormally (exit ${r.status}, usually V8 heap OOM): ${cmd} ${args.join(' ')}`),
       );
       console.error(
         C.warn(
-          `  处理：① 关闭占用内存的程序后重试；② --build-heap=<MB> 指定更大的堆（须小于可用物理内存，当前可用 ${Math.floor(
+          `  Fix: (1) close memory-heavy programs and retry; (2) set a larger heap with --build-heap=<MB> (must be below free physical memory, currently ${Math.floor(
             os.freemem() / 1048576,
-          )} MB）；③ 加 --no-build 复用现有 dist 跳过构建。`,
+          )} MB free); (3) add --no-build to reuse existing dist and skip the build.`,
         ),
       );
       process.exit(1);
     }
-    fail(`命令失败（退出码 ${r.status}）: ${cmd} ${args.join(' ')}`);
+    fail(`Command failed (exit ${r.status}): ${cmd} ${args.join(' ')}`);
   }
 }
 
@@ -241,7 +241,7 @@ function rmDirWithRetry(dir, attempts = 10) {
       return true;
     } catch (e) {
       if (i === attempts) {
-        info(C.warn(`rmSync 清理失败（${e.code}），尝试 PowerShell .NET 强制删除：${dir}`));
+        info(C.warn(`rmSync cleanup failed (${e.code}), trying PowerShell .NET forced delete: ${dir}`));
         break;
       }
       sleepSync(800);
@@ -259,10 +259,10 @@ function rmDirWithRetry(dir, attempts = 10) {
     { stdio: 'ignore', windowsHide: true, timeout: 120000 },
   );
   if (r.status === 0 && !fs.existsSync(dir)) {
-    info(C.ok('PowerShell .NET 删除成功'));
+    info(C.ok('PowerShell .NET delete succeeded'));
     return true;
   }
-  info(C.warn(`清理目录失败（被占用或权限不足）：${dir} —— 可手动删除`));
+  info(C.warn(`Failed to clean directory (in use or insufficient permissions): ${dir} - can be removed manually`));
   return false;
 }
 

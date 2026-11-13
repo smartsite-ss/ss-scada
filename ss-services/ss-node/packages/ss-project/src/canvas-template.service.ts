@@ -201,17 +201,17 @@ export class CanvasTemplateService implements OnModuleInit {
 
     const existingFiles = fs.readdirSync(dir).filter(f => f.endsWith('.json'));
     if (existingFiles.length > 0) {
-      this.logger.log(`模板目录已有 ${existingFiles.length} 个文件，跳过 seed`);
+      this.logger.log(`Template directory already has ${existingFiles.length} files, skipping seed`);
       return;
     }
 
-    this.logger.log(`模板目录为空，开始 seed ${BUILTIN_SEED.length} 套内置模板...`);
+    this.logger.log(`Template directory is empty, seeding ${BUILTIN_SEED.length} built-in templates...`);
     for (const template of BUILTIN_SEED) {
       const filePath = this.getTemplateFilePath(template.id);
       fs.writeFileSync(filePath, JSON.stringify(template, null, 2), 'utf-8');
-      this.logger.log(`  ✓ 已写入: ${template.id}.json`);
+      this.logger.log(`  ✓ Written: ${template.id}.json`);
     }
-    this.logger.log('内置模板 seed 完成');
+    this.logger.log('Built-in template seed complete');
   }
 
   // ─── CRUD ───
@@ -237,7 +237,7 @@ export class CanvasTemplateService implements OnModuleInit {
 
         templates.push(template);
       } catch (error) {
-        this.logger.warn(`跳过无效模板文件: ${file}`, (error as Error).message);
+        this.logger.warn(`Skipping invalid template file: ${file}`, (error as Error).message);
       }
     }
 
@@ -256,7 +256,7 @@ export class CanvasTemplateService implements OnModuleInit {
       data.id = data.id || templateId;
       return { success: true, data };
     } catch (error) {
-      this.logger.error(`读取模板失败: ${templateId}`, (error as Error).message);
+      this.logger.error(`Failed to read template: ${templateId}`, (error as Error).message);
       return { success: false, data: null };
     }
   }
@@ -280,7 +280,7 @@ export class CanvasTemplateService implements OnModuleInit {
     }
 
     fs.writeFileSync(filePath, JSON.stringify(template, null, 2), 'utf-8');
-    this.logger.log(`已创建模板: ${template.id} (${projectId ? '项目级' : '系统级'})`);
+    this.logger.log(`Template created: ${template.id} (${projectId ? 'project-level' : 'system-level'})`);
     return { success: true, data: template };
   }
 
@@ -304,7 +304,7 @@ export class CanvasTemplateService implements OnModuleInit {
 
     const filePath = this.getTemplateFilePath(templateId, projectId);
     fs.writeFileSync(filePath, JSON.stringify(merged, null, 2), 'utf-8');
-    this.logger.log(`已更新模板: ${templateId}`);
+    this.logger.log(`Template updated: ${templateId}`);
     return { success: true, data: merged };
   }
 
@@ -320,7 +320,7 @@ export class CanvasTemplateService implements OnModuleInit {
 
     const filePath = this.getTemplateFilePath(templateId, projectId);
     fs.unlinkSync(filePath);
-    this.logger.log(`已删除模板: ${templateId}`);
+    this.logger.log(`Template deleted: ${templateId}`);
     return { success: true, id: templateId };
   }
 
@@ -359,7 +359,7 @@ export class CanvasTemplateService implements OnModuleInit {
     };
 
     fs.writeFileSync(targetFile, JSON.stringify(systemTemplate, null, 2), 'utf-8');
-    this.logger.log(`已提升模板: ${templateId} (项目级) → ${systemId} (系统级)`);
+    this.logger.log(`Template promoted: ${templateId} (project-level) → ${systemId} (system-level)`);
     return { success: true, data: systemTemplate };
   }
 

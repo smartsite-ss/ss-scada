@@ -36,11 +36,11 @@ export class PluginDevServer {
     this.app.use(express.json());
     this.setupRoutes();
     this.app.listen(this.port, () => {
-      console.log(`[DevServer] 插件开发服务器已启动 → http://localhost:${this.port}`);
+      console.log(`[DevServer] Plugin dev server started -> http://localhost:${this.port}`);
       console.log(
-        `[DevServer] 调试端点: POST /debug/connect | /debug/read | /debug/write | /debug/disconnect`,
+        `[DevServer] Debug endpoints: POST /debug/connect | /debug/read | /debug/write | /debug/disconnect`,
       );
-      console.log(`[DevServer] 压力测试: POST /debug/stress-test`);
+      console.log(`[DevServer] Stress test: POST /debug/stress-test`);
     });
   }
 

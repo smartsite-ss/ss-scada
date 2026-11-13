@@ -80,18 +80,18 @@ module.exports = function make(ctx) {
     const hits = scanCompliance(dataDir);
     const elapsed = ((Date.now() - t0) / 1000).toFixed(1);
     if (!hits.length) {
-      info(C.ok(`✓ A14 合规扫描通过：无复刻证据 / 第三方权利标识（${elapsed}s）`));
+      info(C.ok(`✓ A14 compliance scan passed: no replica evidence / third-party rights marks (${elapsed}s)`));
       return { pass: true, count: 0 };
     }
-    info(C.warn(`! A14 合规扫描命中 ${hits.length} 处（${elapsed}s）：`));
+    info(C.warn(`! A14 compliance scan found ${hits.length} hit(s) (${elapsed}s):`));
     for (const h of hits.slice(0, 15)) {
       info(C.warn(`    ${h.file}${h.line ? ':' + h.line : ''} → ${h.keyword}`));
     }
-    if (hits.length > 15) info(C.dim(`    ... 另有 ${hits.length - 15} 处`));
+    if (hits.length > 15) info(C.dim(`    ... and ${hits.length - 15} more`));
     fail(
-      `发布被阻断（A14）：包内 ${path.basename(dataDir)}/ 仍有 ${hits.length} 处复刻证据 / 第三方权利标识。\n` +
-      '  处置：清理运行时 ss-run/ss/data 中的复刻页面与权利标识（v7 台账 A01–A03/A08-b），\n' +
-      '  或检查 A05 剪枝是否生效；修复后重新发布。',
+      `Release blocked (A14): ${path.basename(dataDir)}/ still contains ${hits.length} replica evidence / third-party rights marks in the package.\n` +
+      '  Action: remove replica pages and rights marks from runtime ss-run/ss/data (v7 ledger A01-A03/A08-b),\n' +
+      '  or check whether A05 pruning worked; republish after fixing.',
     );
     return { pass: false, count: hits.length };
   }

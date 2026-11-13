@@ -22,7 +22,7 @@ class TestShape extends BaseGraphic {
       const endTime = performance.now();
       const duration = endTime - startTime;
       
-      console.log('添加 100 个图形耗时: ${duration.toFixed(2)}ms');
+      console.log('Adding 100 graphics took: ${duration.toFixed(2)}ms');
       
       expect(duration).toBeLessThan(500); // adjusted to a more reasonable threshold
       expect(page.graphics.length).toBe(100);
@@ -44,7 +44,7 @@ class TestShape extends BaseGraphic {
       const endTime = performance.now();
       const duration = endTime - startTime;
       
-      console.log('删除 100 个图形耗时: ${duration.toFixed(2)}ms');
+      console.log('Deleting 100 graphics took: ${duration.toFixed(2)}ms');
       
       expect(duration).toBeLessThan(300); // adjusted to a more reasonable threshold
     });
@@ -65,7 +65,7 @@ class TestShape extends BaseGraphic {
       const endTime = performance.now();
       const duration = endTime - startTime;
       
-      console.log('更新 100 次属性耗时: ${duration.toFixed(2)}ms');
+      console.log('Updating 100 properties took: ${duration.toFixed(2)}ms');
       
       expect(duration).toBeLessThan(300); // adjusted to a more reasonable threshold
     });
@@ -88,7 +88,7 @@ class TestShape extends BaseGraphic {
       const endTime = performance.now();
       const duration = endTime - startTime;
       
-      console.log('添加 100 个和删除 100 个（增量历史）: ${duration.toFixed(2)}ms');
+      console.log('Adding and deleting 100 (incremental history): ${duration.toFixed(2)}ms');
       
       expect(duration).toBeLessThan(1000); // adjusted to a more reasonable threshold
     });
@@ -112,7 +112,7 @@ class TestShape extends BaseGraphic {
       const endTime = performance.now();
       const duration = endTime - startTime;
       
-      console.log('执行 50 次 undo 和 50 次 redo: ${duration.toFixed(2)}ms');
+      console.log('Running 50 undo and 50 redo: ${duration.toFixed(2)}ms');
       
       expect(duration).toBeLessThan(500); // adjusted to a more reasonable threshold
     });
@@ -131,7 +131,7 @@ class TestShape extends BaseGraphic {
       const endTime = performance.now();
       const duration = endTime - startTime;
       
-      console.log('BasePage 添加 100 个图形: ${duration.toFixed(2)}ms');
+      console.log('BasePage adding 100 graphics: ${duration.toFixed(2)}ms');
       
       expect(duration).toBeLessThan(500); // adjusted to a more reasonable threshold
     });

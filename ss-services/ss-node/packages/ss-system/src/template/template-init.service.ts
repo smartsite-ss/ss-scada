@@ -18,7 +18,7 @@ export class TemplateInitService implements OnModuleInit {
   ) {}
 
   async onModuleInit(): Promise<void> {
-    this.logger.log('模板初始化服务启动（JSON 文件模式）');
+    this.logger.log('Template init service started (JSON file mode)');
     await this.ensureTemplatesDirectory();
   }
 
@@ -28,7 +28,7 @@ export class TemplateInitService implements OnModuleInit {
   private async ensureTemplatesDirectory(): Promise<void> {
     const basePath = this.indexService?.getBasePath();
     if (basePath) {
-      this.logger.log(`模板目录: ${basePath}`);
+      this.logger.log(`Template directory: ${basePath}`);
     }
 
     // The multi-language template library is managed centrally by TemplateLoaderService.loadAllLocales(),
@@ -37,7 +37,7 @@ export class TemplateInitService implements OnModuleInit {
       // loadAllLocales is already called in TemplateLoaderService's onModuleInit
       const stats = this.templateLoader.getCacheStats();
       this.logger.log(
-        `模板库加载完成: ${stats.count} 个模板, ${stats.industries.length} 个行业, ${stats.deviceTypes.length} 种设备类型`,
+        `Template library loaded: ${stats.count} templates, ${stats.industries.length} industries, ${stats.deviceTypes.length} device types`,
       );
     }
   }

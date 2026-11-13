@@ -139,7 +139,7 @@ export class LLMSafetyGuardService {
 
     // Override Token pass-through
     if (overrideToken && this.validateOverrideToken(overrideToken)) {
-      this.logger.warn('管理员通过 Override Token 放行输入过滤（审计记录）');
+      this.logger.warn('Admin bypassed input filtering via Override Token (audit record)');
       return { passed: true, content: input };
     }
 
@@ -273,7 +273,7 @@ export class LLMSafetyGuardService {
       this.circuitOpen = false;
       this.violationCount = 0;
       this.violationWindowStart = now;
-      this.logger.warn('熔断器已恢复（冷却结束）');
+      this.logger.warn('Circuit breaker recovered (cooldown finished)');
     }
 
     // Reset window
@@ -290,15 +290,15 @@ export class LLMSafetyGuardService {
    */
   private recordViolation(reason: string): void {
     this.violationCount++;
-    this.logger.warn(`安全违规 #${this.violationCount}: ${reason}`);
+    this.logger.warn(`Safety violation #${this.violationCount}: ${reason}`);
 
     if (this.violationCount >= this.config.circuitBreakerThreshold && !this.circuitOpen) {
       this.circuitOpen = true;
       this.circuitOpenedAt = Date.now();
       this.logger.error(
-        `熔断器触发！阈值 ${this.config.circuitBreakerThreshold} 次/` +
-          `${this.config.circuitBreakerWindowMs}ms，将在 ` +
-          `${this.config.circuitBreakerCooldownMs}ms 后恢复`,
+        `Circuit breaker tripped! Threshold ${this.config.circuitBreakerThreshold} violations/` +
+          `${this.config.circuitBreakerWindowMs}ms, will recover in ` +
+          `${this.config.circuitBreakerCooldownMs}ms`,
       );
     }
   }

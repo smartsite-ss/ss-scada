@@ -220,10 +220,10 @@ describe('StructuredLogger - Phase 1 Optimized', () => {
         consoleOutput: true,
       });
 
-      filterLogger.debug('Debug msg'); // 不应输出
-      filterLogger.log('Info msg'); // 不应输出
-      filterLogger.warn('Warning msg'); // 应输出
-      filterLogger.error('Error msg'); // 应输出
+      filterLogger.debug('Debug msg'); // should not be logged
+      filterLogger.log('Info msg'); // should not be logged
+      filterLogger.warn('Warning msg'); // should be logged
+      filterLogger.error('Error msg'); // should be logged
 
       expect(consoleSpy.debug).not.toHaveBeenCalled();
       expect(consoleSpy.log).not.toHaveBeenCalled(); // info被过滤
@@ -356,7 +356,7 @@ describe('StructuredLogger - Phase 1 Optimized', () => {
       // Attach timing info via metadata (use log instead of debug to avoid level filtering)
       logger.setContext('operationName', 'database.query');
       logger.setContext('durationMs', durationMs);
-      logger.log('Operation completed'); // 改用log确保输出
+      logger.log('Operation completed'); // use log to ensure output
 
       expect(consoleSpy.log).toHaveBeenCalled();
       const output = consoleSpy.log.mock.calls[consoleSpy.log.mock.calls.length - 1][0];

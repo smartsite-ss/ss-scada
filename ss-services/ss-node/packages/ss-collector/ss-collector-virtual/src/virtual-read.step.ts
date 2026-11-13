@@ -38,7 +38,7 @@ export class VirtualReadStep implements PipelineStep {
         message: error instanceof Error ? error.message : String(error),
       });
       this.logger.warn(
-        `VirtualRead 生成失败: tagId=${ctx.tagId}, error=${error instanceof Error ? error.message : String(error)}`,
+        `VirtualRead generation failed: tagId=${ctx.tagId}, error=${error instanceof Error ? error.message : String(error)}`,
       );
     }
 

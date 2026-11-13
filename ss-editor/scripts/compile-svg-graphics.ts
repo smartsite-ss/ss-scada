@@ -1157,9 +1157,9 @@ function main(): void {
   const outIndex = args.indexOf('--out');
   const outDir = outIndex >= 0 && args[outIndex + 1] ? path.resolve(args[outIndex + 1]) : DEFAULT_OUT_DIR;
 
-  console.log(`[compile-svg-graphics] 扫描插件目录：${PLUGINS_ROOT}`);
+  console.log(`[compile-svg-graphics] Scanning plugin dir: ${PLUGINS_ROOT}`);
   const files = findGraphicFiles();
-  console.log(`[compile-svg-graphics] 发现 ${files.length} 个 *Graphic.vue`);
+  console.log(`[compile-svg-graphics] Found ${files.length} *Graphic.vue`);
 
   const start = Date.now();
   const results: FileResult[] = [];
@@ -1199,22 +1199,22 @@ function main(): void {
       fs.writeFileSync(path.join(outDir, `${r.type}.json`), json, 'utf-8');
       written += 1;
     }
-    console.log(`[compile-svg-graphics] 已写出 ${written} 个指令 JSON → ${outDir}`);
+    console.log(`[compile-svg-graphics] Wrote ${written} directive JSON -> ${outDir}`);
   }
 
   const report = buildReport(results, Date.now() - start);
   fs.writeFileSync(path.join(outDir, 'compile-report.md'), report, 'utf-8');
-  console.log(`[compile-svg-graphics] 审计报告 → ${path.join(outDir, 'compile-report.md')}`);
+  console.log(`[compile-svg-graphics] Audit report -> ${path.join(outDir, 'compile-report.md')}`);
 
   const compiled = results.filter(r => r.status === 'compiled').length;
   const degraded = results.filter(r => r.status === 'degraded').length;
   const skipped = results.filter(r => r.status === 'skipped').length;
-  console.log(`[compile-svg-graphics] 结果：完整 ${compiled} / 降级 ${degraded} / 跳过 ${skipped}（合计 ${results.length}）`);
+  console.log(`[compile-svg-graphics] Result: complete ${compiled} / degraded ${degraded} / skipped ${skipped} (total ${results.length})`);
   if (typeWarnings.length > 0) {
-    console.warn(`[compile-svg-graphics] type 交叉核对警告 ${typeWarnings.length} 条（详见报告外控制台）`);
+    console.warn(`[compile-svg-graphics] type cross-check warnings: ${typeWarnings.length} (see report output)`);
     for (const w of typeWarnings) console.warn(`  ⚠ ${w}`);
   }
-  if (auditOnly) console.log('[compile-svg-graphics] --audit-only：未写出指令 JSON');
+  if (auditOnly) console.log('[compile-svg-graphics] --audit-only: no directive JSON written');
 }
 
 main();

@@ -259,7 +259,7 @@ export class AlarmService {
       this.pruneExpiredIdempotencyEntries();
       const cached = this.batchAcknowledgeIdempotencyCache.get(idempotencyKey);
       if (cached && cached.expireAt > Date.now()) {
-        this.logger.debug(`[BATCH-ACK] 幂等命中：requestId=${requestId}，返回首次结果`);
+        this.logger.debug(`[BATCH-ACK] Idempotent hit: requestId=${requestId}, returning the first result`);
         return cached.result;
       }
     }

@@ -216,7 +216,7 @@ export class TdengineDatabaseService implements OnModuleInit, OnModuleDestroy {
       this.knownDatabases.add(databaseName);
       this.logger.log(
         `TDengine database "${databaseName}" + stable "${SUPER_TABLE_NAME}" ensured ` +
-          `(keep: ${keepDays || 'server-default'}，注意：KEEP 建库时设定后语义固定)`,
+          `(keep: ${keepDays || 'server-default'}, note: KEEP semantics are fixed once set at database creation)`,
       );
       return true;
     } catch (error) {

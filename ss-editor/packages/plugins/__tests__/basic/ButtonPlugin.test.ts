@@ -118,7 +118,7 @@ describe('ButtonPlugin — Declaration-rendering mapping validation (Layer 3)', 
     );
     const unusedFields = mapper.getUnusedFields();
     if (unusedFields.length > 0) {
-      console.warn('未在 render 中使用的字段:', unusedFields);
+      console.warn('Fields not used in render:', unusedFields);
     }
   });
 });

@@ -12,23 +12,23 @@ module.exports = function make(ctx) {
   function runArtifactsStep() {
     const { T } = ctx;
 // ── [2] 后端产物 ──────────────────────────────────────────────
-step(2, TOTAL, '复制后端产物（dist / i18n）');
+step(2, TOTAL, 'Copying backend artifacts (dist / i18n)');
 if (opt.server) {
   mirror(SERVER_DIST_SRC, path.join(T, 'dist'));
   info(`dist ← ${path.relative(ROOT, SERVER_DIST_SRC)}`);
   const i18nSrc = I18N_SOURCES.find((p) => fs.existsSync(p));
-  if (!i18nSrc) fail('未找到 i18n 资源（packages/ss-sdk/src/i18n 或已部署的 i18n/）');
+  if (!i18nSrc) fail('i18n assets not found (packages/ss-sdk/src/i18n or deployed i18n/)');
   mirror(i18nSrc, path.join(T, 'i18n'));
   info(`i18n ← ${path.relative(ROOT, i18nSrc)}`);
 } else {
-  info(C.dim('跳过（--no-server）'));
+  info(C.dim('Skipped (--no-server)'));
 }
 
 // ── [3] 前端产物 ──────────────────────────────────────────────
-step(3, TOTAL, '复制前端产物（web / web/plugins）');
+step(3, TOTAL, 'Copying frontend artifacts (web / web/plugins)');
 if (opt.web) {
   if (!fs.existsSync(path.join(WEB_DIST_SRC, 'index.html'))) {
-    fail(`前端产物不存在: ${WEB_DIST_SRC}\\index.html（先构建，或去掉 --no-build）`);
+    fail(`Frontend artifact missing: ${WEB_DIST_SRC}\\index.html (build first, or drop --no-build)`);
   }
   mirror(WEB_DIST_SRC, path.join(T, 'web'));
   info(`web ← ${path.relative(ROOT, WEB_DIST_SRC)}`);
@@ -37,26 +37,26 @@ if (opt.web) {
   const devImportMap = path.join(T, 'web', 'import-map.json');
   if (fs.existsSync(devImportMap)) {
     fs.rmSync(devImportMap, { force: true });
-    info('已剔除 web/import-map.json（开发态 @fs 映射，生产用内联 importmap）');
+    info('Removed web/import-map.json (dev @fs mapping; production uses an inline importmap)');
   }
   if (fs.existsSync(PLUGINS_DIST_SRC)) {
     // ⚠️ purge:false —— 叠加而非镜像：web/dist/plugins 里还带 capability.json / plugin-overrides.json
     // （AI 页面生成与 MCP component_* 的能力快照），/MIR 会把它们删掉。
     mirror(PLUGINS_DIST_SRC, path.join(T, 'web', 'plugins'), { purge: false });
-    info(`web/plugins ← ${path.relative(ROOT, PLUGINS_DIST_SRC)}（叠加模式，保留 capability.json）`);
+    info(`web/plugins ← ${path.relative(ROOT, PLUGINS_DIST_SRC)} (overlay mode, capability.json preserved)`);
     const capabilityJson = path.join(T, 'web', 'plugins', 'capability.json');
     if (!fs.existsSync(capabilityJson)) {
       info(
         C.dim(
-          '· web/plugins/capability.json 不存在：本产品线未生成该快照（AI 页面生成器组件能力表）；如需 AI 生成页面再补生成步骤',
+          '- web/plugins/capability.json missing: this product line does not generate the snapshot (AI page generator component capability table); add a generation step if AI page generation is needed',
         ),
       );
     }
   } else {
-    info(C.warn(`未找到 ${path.relative(ROOT, PLUGINS_DIST_SRC)}，跳过图元插件产物`));
+    info(C.warn(`${path.relative(ROOT, PLUGINS_DIST_SRC)} not found, skipping plugin artifacts`));
   }
 } else {
-  info(C.dim('跳过（--no-web）'));
+  info(C.dim('Skipped (--no-web)'));
 }
 
   }

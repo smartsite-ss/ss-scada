@@ -239,7 +239,7 @@ export class AlarmNotificationService {
 
     const phones: string[] = Array.isArray(channel.config.phones) ? channel.config.phones : [];
     if (!phones.length) {
-      this.logger.warn('[SMS] 未配置接收手机号，跳过发送');
+      this.logger.warn('[SMS] No recipient phone number configured, skipping send');
       return;
     }
 
@@ -247,11 +247,11 @@ export class AlarmNotificationService {
       const channelPayload = this.toChannelPayload(payload);
       const ok = await this.smsChannel.send(phones, channelPayload);
       if (!ok) {
-        this.logger.warn(`[SMS] 发送失败 -> ${phones.join(',')}`);
+        this.logger.warn(`[SMS] Send failed -> ${phones.join(',')}`);
       }
     } else {
       this.logger.log(
-        `[SMS] Alarm: ${payload.ruleName} | Level: ${payload.level} (通道未注入，仅记录日志)`,
+        `[SMS] Alarm: ${payload.ruleName} | Level: ${payload.level} (channel not injected, log only)`,
       );
     }
   }
@@ -265,7 +265,7 @@ export class AlarmNotificationService {
 
     const phones: string[] = Array.isArray(channel.config.phones) ? channel.config.phones : [];
     if (!phones.length) {
-      this.logger.warn('[TTS] 未配置被叫号码，跳过拨打');
+      this.logger.warn('[TTS] No callee number configured, skipping call');
       return;
     }
 
@@ -273,11 +273,11 @@ export class AlarmNotificationService {
       const channelPayload = this.toChannelPayload(payload);
       const ok = await this.ttsChannel.send(phones, channelPayload);
       if (!ok) {
-        this.logger.warn(`[TTS] 拨打失败 -> ${phones.join(',')}`);
+        this.logger.warn(`[TTS] Call failed -> ${phones.join(',')}`);
       }
     } else {
       this.logger.log(
-        `[TTS] Alarm: ${payload.ruleName} | Level: ${payload.level} (通道未注入，仅记录日志)`,
+        `[TTS] Alarm: ${payload.ruleName} | Level: ${payload.level} (channel not injected, log only)`,
       );
     }
   }
@@ -302,7 +302,7 @@ export class AlarmNotificationService {
       });
     } else {
       this.logger.log(
-        `[WECHAT_SUBSCRIBE] Alarm: ${payload.ruleName} | Level: ${payload.level} (通道未注入，仅记录日志)`,
+        `[WECHAT_SUBSCRIBE] Alarm: ${payload.ruleName} | Level: ${payload.level} (channel not injected, log only)`,
       );
     }
   }
@@ -314,19 +314,19 @@ export class AlarmNotificationService {
    */
   async sendSms(phoneNumbers: string[], alarm: AlarmRecord): Promise<void> {
     if (!phoneNumbers.length) {
-      this.logger.warn('[SMS] 未提供手机号，跳过发送');
+      this.logger.warn('[SMS] No phone numbers provided, skipping send');
       return;
     }
 
     if (!this.smsChannel) {
-      this.logger.warn('[SMS] 短信通道未注入，无法发送');
+      this.logger.warn('[SMS] SMS channel not injected, cannot send');
       return;
     }
 
     const payload = this.alarmToChannelPayload(alarm);
     const ok = await this.smsChannel.send(phoneNumbers, payload);
     if (!ok) {
-      this.logger.warn(`[SMS] 发送失败 -> ${phoneNumbers.join(',')}`);
+      this.logger.warn(`[SMS] Send failed -> ${phoneNumbers.join(',')}`);
     }
   }
 
@@ -337,19 +337,19 @@ export class AlarmNotificationService {
    */
   async sendTts(phoneNumbers: string[], alarm: AlarmRecord): Promise<void> {
     if (!phoneNumbers.length) {
-      this.logger.warn('[TTS] 未提供被叫号码，跳过拨打');
+      this.logger.warn('[TTS] No callee number provided, skipping call');
       return;
     }
 
     if (!this.ttsChannel) {
-      this.logger.warn('[TTS] 语音通道未注入，无法拨打');
+      this.logger.warn('[TTS] Voice channel not injected, cannot call');
       return;
     }
 
     const payload = this.alarmToChannelPayload(alarm);
     const ok = await this.ttsChannel.send(phoneNumbers, payload);
     if (!ok) {
-      this.logger.warn(`[TTS] 拨打失败 -> ${phoneNumbers.join(',')}`);
+      this.logger.warn(`[TTS] Call failed -> ${phoneNumbers.join(',')}`);
     }
   }
 

@@ -75,13 +75,13 @@ function showHelp(): void {
 Usage: create-plugin [options] <plugin-name>
 
 Options:
-  --name, -n       插件名称（如 "bacnet"）
-  --display, -d    显示名称（如 "BACnet/IP"）
-  --category, -c   协议分类（industrial_bus | iot | power | building | custom）
-  --transport, -t  传输层类型（tcp | serial | ws | tls | other）
-  --author, -a     作者名称
-  --output, -o     输出目录（默认为 packages/ss-collector/）
-  --help, -h       显示帮助信息
+  --name, -n       Plugin name (e.g. "bacnet")
+  --display, -d    Display name (e.g. "BACnet/IP")
+  --category, -c   Protocol category (industrial_bus | iot | power | building | custom)
+  --transport, -t  Transport type (tcp | serial | ws | tls | other)
+  --author, -a     Author name
+  --output, -o     Output directory (default packages/ss-collector/)
+  --help, -h       Show help
 
 Examples:
   pnpm create @ss-node/collector-plugin my-bacnet

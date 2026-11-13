@@ -71,7 +71,7 @@ export class PreviewTicketController {
     const tokenPair = await this.previewTicketService.consumePreviewTicket(
       previewTicketExchangeDto.previewTicket,
     );
-    this.logger.log('[预览票据] 兑换完成 | 响应体返回 Bearer Token 对（壳内 axios 注入 Authorization 头）');
+    this.logger.log('[PreviewTicket] Exchange complete | response returns a Bearer token pair (axios in the shell injects the Authorization header)');
     return tokenPair;
   }
 }

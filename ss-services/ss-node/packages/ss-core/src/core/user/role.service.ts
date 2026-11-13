@@ -100,7 +100,7 @@ export class RoleService {
   async migrateSystemRoleMenuIds(): Promise<void> {
     const allMenuIds = await this.queryAllMenuIds();
     if (allMenuIds.length === 0) {
-      this.logger.warn('sys_menus 表为空，跳过角色 menuIds 迁移（下次启动再补）');
+      this.logger.warn('sys_menus table is empty, skipping role menuIds migration (will retry on next start)');
       return;
     }
 
@@ -115,7 +115,7 @@ export class RoleService {
       if (!role.menuIds || role.menuIds.length === 0) {
         role.menuIds = [...allMenuIds];
         await this.roleRepository.save(role);
-        this.logger.log(`已为角色 ${role.code} 填充默认 menuIds（${allMenuIds.length} 项）`);
+        this.logger.log(`Filled default menuIds for role ${role.code} (${allMenuIds.length} items)`);
       }
     }
   }
@@ -143,12 +143,12 @@ export class RoleService {
         await this.roleRepository.save(role);
         synced++;
         this.logger.log(
-          `已为角色 ${role.code} 补充 ${missing.length} 个默认权限：${missing.join(', ')}`,
+          `Added ${missing.length} default permissions to role ${role.code}: ${missing.join(', ')}`,
         );
       }
     }
     if (synced > 0) {
-      this.logger.log(`系统角色权限迁移完成，共更新 ${synced} 个角色`);
+      this.logger.log(`System role permission migration complete, ${synced} roles updated`);
     }
   }
 
@@ -163,7 +163,7 @@ export class RoleService {
       );
       return rows.map((r) => r.id);
     } catch (err) {
-      this.logger.warn(`查询 sys_menus 失败：${(err as Error).message}`);
+      this.logger.warn(`Failed to query sys_menus: ${(err as Error).message}`);
       return [];
     }
   }
