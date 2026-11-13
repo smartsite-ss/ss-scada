@@ -1,4 +1,4 @@
-// 全局类型声明
+// Global type declarations
 
 declare interface Window {
   $message: {
@@ -10,7 +10,7 @@ declare interface Window {
   $t: (key: string) => string
 }
 
-// 为 process 全局对象添加类型声明
+// Augment the global process object
 declare namespace NodeJS {
   interface ProcessEnv {
     NODE_ENV: string
@@ -19,7 +19,7 @@ declare namespace NodeJS {
   }
 }
 
-// 为 import.meta.env 添加类型声明
+// Augment import.meta.env
 declare interface ImportMetaEnv {
   VITE_HTTP_PROXY: string
   VITE_PRO_PATH: string
@@ -27,7 +27,7 @@ declare interface ImportMetaEnv {
   DEV: boolean
 }
 
-// 为 axios 实例添加类型声明
+// Augment the axios instance
 declare module 'axios' {
   export interface AxiosInstance {
     <T = any>(config: AxiosRequestConfig): Promise<T>
