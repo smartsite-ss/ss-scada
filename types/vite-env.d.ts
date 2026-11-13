@@ -1,13 +1,13 @@
 /// <reference types="vite/client" />
 /*
 export interface ImportMetaEnv {
-  // 标题
+  // Title
   VITE_GLOB_APP_TITLE: string;
-  // 端口
+  // Port
   VITE_DEV_PORT: string;
-  // 开发地址
+  // Dev server address
   VITE_DEV_PATH: string
-  // 生产地址
+  // Production address
   VITE_PRO_PATH: string
 }
 
@@ -16,87 +16,87 @@ export default ImportMetaEnv
 */
 
 /**
- *后台服务的环境类型
- * - dev: 后台开发环境
- * - test: 后台测试环境
- * - prod: 后台生产环境
+ * Backend service environment type
+ * - dev: backend development environment
+ * - test: backend test environment
+ * - prod: backend production environment
  */
  export type ServiceEnvType = 'dev' | 'test' | 'prod';
 
- /** 后台服务的环境配置 */
+ /** Backend service environment config */
  export interface ServiceEnvConfig {
-   /** 请求地址 */
+   /** Request URL */
    url: string;
  }
  
  export interface ServiceEnvConfigWithProxyPattern extends ServiceEnvConfig {
    /**
-    * 匹配路径的正则字符串
-    * - 用于拦截地址转发代理(任意以 /开头 + 字符串, 单个/不起作用)
-    * - 和后端请求地址的前缀无关
-    * - 有多个后端请求实例时，需要创建不同的值
+    * Regex string used to match paths
+    * - Intercepts and forwards requests via proxy (any string starting with /; a lone / has no effect)
+    * - Unrelated to the backend request URL prefix
+    * - Use distinct values when there are multiple backend request instances
     */
    proxyPattern: '/proxy-pattern';
  }
  
  export interface ImportMetaEnv {
-   // 标题
+   // Title
    VITE_GLOB_APP_TITLE: string;
-   // 端口
+   // Port
    VITE_DEV_PORT: string;
-   // 开发地址
+   // Dev server address
    VITE_DEV_PATH: string
-   // 生产地址
+   // Production address
    VITE_PRO_PATH: string
- 
-   /** 项目基本地址 */
+
+   /** Project base URL */
    readonly VITE_BASE_URL: string;
-   /** 项目名称 */
+   /** Project name */
    readonly VITE_APP_NAME: string;
-   /** 项目标题 */
+   /** Project title */
    readonly VITE_APP_TITLE: string;
-   /** 项目描述 */
+   /** Project description */
    readonly VITE_APP_DESC: string;
    /**
-    * 权限路由模式:
-    * - static - 前端声明的静态
-    * - dynamic - 后端返回的动态
+    * Permission route mode:
+    * - static - static routes declared on the frontend
+    * - dynamic - dynamic routes returned by the backend
     */
    readonly VITE_AUTH_ROUTE_MODE: 'static' | 'dynamic';
- 
-   /** iconify图标作为组件的前缀 */
+
+   /** Prefix for iconify icons used as components */
    readonly VITE_ICON_PREFFIX: string;
    /**
-    * 本地SVG图标作为组件的前缀, 请注意一定要包含 VITE_ICON_PREFFIX
-    * - 格式 {VITE_ICON_PREFFIX}-{本地图标集合名称}
-    * - 例如：icon-local
+    * Prefix for local SVG icons used as components; must include VITE_ICON_PREFFIX
+    * - Format: {VITE_ICON_PREFFIX}-{local icon collection name}
+    * - Example: icon-local
     */
    readonly VITE_ICON_LOCAL_PREFFIX: string;
-   /** 后端服务的环境类型 */
+   /** Backend service environment type */
    readonly VITE_SERVICE_ENV?: ServiceEnvType;
-   /** 开启请求代理 */
+   /** Enable request proxy */
    readonly VITE_HTTP_PROXY?: 'Y' | 'N';
-   /** 是否开启打包文件大小结果分析 */
+   /** Enable bundle size analysis */
    readonly VITE_VISUALIZER?: 'Y' | 'N';
-   /** 是否开启打包压缩 */
+   /** Enable build compression */
    readonly VITE_COMPRESS?: 'Y' | 'N';
-   /** 压缩算法类型 */
+   /** Compression algorithm type */
    readonly VITE_COMPRESS_TYPE?: 'gzip' | 'brotliCompress' | 'deflate' | 'deflateRaw';
-   /** 是否应用pwa */
+   /** Enable PWA */
    readonly VITE_PWA?: 'Y' | 'N';
    /**
-    * 是否开启生产模式下的mock
-    * @description 生产模式下会拦截XHR，导致无法获取response，不使用mock请求时设置为N
+    * Enable mock in production mode
+    * @description In production mode XHR is intercepted and responses cannot be read; set to N when mock requests are not used
     */
    readonly VITE_PROD_MOCK?: 'Y' | 'N';
-   /** hash路由模式 */
+   /** Hash route mode */
    readonly VITE_HASH_ROUTE?: 'Y' | 'N';
-   /** 是否应用自动生成路由的插件 */
+   /** Enable the auto-generated routes plugin */
    readonly VITE_SOYBEAN_ROUTE_PLUGIN?: 'Y' | 'N';
-   /** 是否是部署的vercel */
+   /** Whether deployed on Vercel */
    readonly VITE_VERCEL?: 'Y' | 'N';
  }
- 
+
  export  interface ImportMeta {
    readonly env: ImportMetaEnv;
  }

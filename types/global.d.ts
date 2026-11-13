@@ -1,19 +1,19 @@
 
-// 需要引用typescript库，否则会报错 $message 在 Window 上不存在类型定义
+// The TypeScript lib must be referenced; otherwise $message has no type definition on Window
 
 
 interface Window {
   $loading: any
   $message: any
   $dialog: any
-  // 语言
+  // Locale / translation
   $t: any
   $vue: any
-  // 键盘按键记录
+  // Keyboard key state
   $KeyboardActive?: { [T: string]: boolean }
   onKeySpacePressHold?: Function
 
-  // 编辑 JSON 的存储对象
+  // Storage object for editing JSON
   opener: any
 }
 
