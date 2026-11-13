@@ -1,6 +1,6 @@
 <template>
   <div>
-    <!-- 分组渲染 -->
+    <!-- Group rendering -->
     <div
       v-if="item.type === 'group'"
       class="layer-group"
@@ -55,7 +55,7 @@
           v-for="childId in (item.data.children || [])"
           :key="childId"
         >
-          <!-- 检查是子分组还是图元 -->
+          <!-- Check whether it is a subgroup or a graphic -->
           <template v-if="isGroupId(childId)">
             <LayerItem
               :item="{ type: 'group', id: childId, data: getGroupById(childId) }"
@@ -86,7 +86,7 @@
             />
           </template>
           
-          <!-- 图元渲染 -->
+          <!-- Graphic rendering -->
           <template v-else>
             <div
               class="layer-item layer-item-in-group"
@@ -161,7 +161,7 @@
       </div>
     </div>
     
-    <!-- 图元渲染 -->
+    <!-- Graphic rendering -->
     <div
       v-else
       class="layer-item"
@@ -271,7 +271,7 @@ const emit = defineEmits<{
   contextmenu: [event: MouseEvent, graphic: any];
 }>();
 
-// 计算子项数量（包括嵌套分组）
+// Compute the number of child items (including nested groups)
 const childrenCount = computed(() => {
   if (props.item.type !== 'group') return 0;
   
@@ -288,7 +288,7 @@ const childrenCount = computed(() => {
   return count;
 });
 
-// 递归计算分组包含的图元数量
+// Recursively compute the number of graphics a group contains
 const countGroupChildren = (groupId: string): number => {
   const group = props.groupManager.getGroup(groupId);
   if (!group) return 0;
@@ -306,17 +306,17 @@ const countGroupChildren = (groupId: string): number => {
   return count;
 };
 
-// 检查是否是分组ID
+// Check whether it is a group ID
 const isGroupId = (id: string): boolean => {
   return props.groupManager.isGroup(id);
 };
 
-// 获取分组数据
+// Fetch group data
 const getGroupById = (id: string): any => {
   return props.groupManager.getGroup(id);
 };
 
-// 事件处理
+// Event handling
 const handleToggleExpand = () => {
   emit('toggleExpand', props.item.id);
 };

@@ -126,7 +126,7 @@
         :height="h"
       />
 
-      <!-- 外边框 -->
+      <!-- Outer border -->
       <rect
         x="4"
         y="4"
@@ -144,7 +144,7 @@
           repeatCount="indefinite"
         />
       </rect>
-      <!-- 内边框 -->
+      <!-- Inner border -->
       <rect
         x="10"
         y="10"
@@ -155,7 +155,7 @@
         stroke-width="1.5"
         stroke-opacity="0.7"
       />
-      <!-- 金线边框 -->
+      <!-- Gold-line border -->
       <rect
         x="7"
         y="7"
@@ -167,7 +167,7 @@
         stroke-opacity="0.5"
       />
 
-      <!-- 顶部边框线 -->
+      <!-- Top border line -->
       <line
         x1="52"
         y1="4"
@@ -176,7 +176,7 @@
         :stroke="`url(#mr-teal-h)`"
         stroke-width="1"
       />
-      <!-- 底部边框线 -->
+      <!-- Bottom border line -->
       <line
         x1="52"
         :y1="h - 4"
@@ -185,7 +185,7 @@
         :stroke="`url(#mr-teal-h)`"
         stroke-width="1"
       />
-      <!-- 左侧边框线 -->
+      <!-- Left border line -->
       <line
         x1="4"
         y1="52"
@@ -194,7 +194,7 @@
         :stroke="`url(#mr-teal-v)`"
         stroke-width="1"
       />
-      <!-- 右侧边框线 -->
+      <!-- Right border line -->
       <line
         :x1="w - 4"
         y1="52"
@@ -204,7 +204,7 @@
         stroke-width="1"
       />
 
-      <!-- ========== 钻石格栅沿边 ========== -->
+      <!-- ========== Diamond grid edge ========== -->
       <g opacity="0.7">
         <g
           v-for="i in topDiamondCount"
@@ -280,12 +280,12 @@
         </g>
       </g>
 
-      <!-- ========== 拱形边饰 ========== -->
+      <!-- ========== Arched border trim ========== -->
       <g
         v-if="showArches"
         filter="url(#mr-glow)"
       >
-        <!-- 顶部拱形 -->
+        <!-- Top arch -->
         <g
           v-for="i in archCount"
           :key="'ta'+i"
@@ -311,7 +311,7 @@
             stroke-width="0.7"
             stroke-opacity="0.5"
           />
-          <!-- 拱内小圆点 -->
+          <!-- Small dot inside the arch -->
           <circle
             :cx="52 + (i-0.5) * archStep"
             cy="5"
@@ -328,7 +328,7 @@
             />
           </circle>
         </g>
-        <!-- 底部拱形 -->
+        <!-- Bottom arch -->
         <g
           v-for="i in archCount"
           :key="'ba'+i"
@@ -372,7 +372,7 @@
         </g>
       </g>
 
-      <!-- 左右两侧小拱 -->
+      <!-- Small arches on both sides -->
       <g
         v-if="showArches"
         filter="url(#mr-glow)"
@@ -417,7 +417,7 @@
         </g>
       </g>
 
-      <!-- 角饰星纹 左上 -->
+      <!-- Corner trim star pattern top-left -->
       <g
         v-if="showStars"
         transform="translate(36, 36)"
@@ -431,27 +431,27 @@
             :dur="`${30 / animationSpeed}s`"
             repeatCount="indefinite"
           />
-          <!-- 外层正方形 -->
+          <!-- Outer square -->
           <polygon
             points="0,-25 25,0 0,25 -25,0"
             fill="none"
             :stroke="colors[0]"
             stroke-width="2"
           />
-          <!-- 内层旋转正方形 -->
+          <!-- Inner rotating square -->
           <polygon
             points="0,-17 12,-12 17,0 12,12 0,17 -12,12 -17,0 -12,-12"
             fill="none"
             :stroke="colors[2]"
             stroke-width="1.2"
           />
-          <!-- 中心填充 -->
+          <!-- Center fill -->
           <polygon
             points="0,-17 12,-12 17,0 12,12 0,17 -12,12 -17,0 -12,-12"
             :fill="colors[3]"
             fill-opacity="0.15"
           />
-          <!-- 中心点 -->
+          <!-- Center point -->
           <circle
             cx="0"
             cy="0"
@@ -466,7 +466,7 @@
               repeatCount="indefinite"
             />
           </circle>
-          <!-- 星纹小点缀 -->
+          <!-- Star-pattern accent -->
           <circle
             cx="0"
             cy="-25"
@@ -498,7 +498,7 @@
         </g>
       </g>
 
-      <!-- 角饰星纹 右上 -->
+      <!-- Corner trim star pattern top-right -->
       <g
         v-if="showStars"
         :transform="`translate(${w - 36}, 36)`"
@@ -576,7 +576,7 @@
         </g>
       </g>
 
-      <!-- 角饰星纹 左下 -->
+      <!-- Corner trim star pattern bottom-left -->
       <g
         v-if="showStars"
         :transform="`translate(36, ${h - 36})`"
@@ -654,7 +654,7 @@
         </g>
       </g>
 
-      <!-- 角饰星纹 右下 -->
+      <!-- Corner trim star pattern bottom-right -->
       <g
         v-if="showStars"
         :transform="`translate(${w - 36}, ${h - 36})`"

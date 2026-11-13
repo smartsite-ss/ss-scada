@@ -71,7 +71,7 @@ const menuTree = ref<SystemMenuItem[]>([]);
 const allButtons = ref<SystemMenuButton[]>([]);
 const expandedMenus = reactive<Record<string, boolean>>({});
 
-/** 菜单 → 按钮映射 */
+/** Menu → button mapping */
 const buttonsByMenu = computed(() => {
   const map: Record<string, SystemMenuButton[]> = {};
   for (const btn of allButtons.value) {
@@ -134,7 +134,7 @@ async function loadData() {
     ]);
     menuTree.value = menus || [];
     allButtons.value = buttons || [];
-    // 默认展开有按钮的菜单
+    // Expand menus with buttons by default
     for (const menu of menus || []) {
       if ((buttonsByMenu.value[menu.id] || []).length > 0) {
         expandedMenus[menu.id] = true;

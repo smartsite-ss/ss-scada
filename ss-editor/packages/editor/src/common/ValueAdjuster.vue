@@ -53,30 +53,30 @@ const emit = defineEmits<{
   'update:modelValue': [value: number];
 }>();
 
-// 确保值是整数
+// Ensure the value is an integer
 const ensureInteger = (value: number): number => {
   return props.integer ? Math.round(value) : value;
 };
 
 const localValue = ref(ensureInteger(props.modelValue));
 
-// 监听外部值变化
+// Watch external value changes
 watch(() => props.modelValue, (newValue) => {
   localValue.value = ensureInteger(newValue);
 });
 
-// 更新值
+// Update value
 const updateValue = () => {
   const newValue = ensureInteger(localValue.value);
   localValue.value = newValue;
   emit('update:modelValue', newValue);
 };
 
-// 调整值
+// Adjust value
 const adjustValue = (delta: number) => {
   let newValue = localValue.value + delta;
   
-  // 应用最小值和最大值限制
+  // Apply min and max limits
   if (props.min !== undefined) {
     newValue = Math.max(props.min, newValue);
   }

@@ -95,7 +95,7 @@ const props = withDefaults(defineProps<Props>(), {
   placeholder: ''
 });
 
-// 使用国际化计算默认文本
+// Compute default text using internationalization
 const computedTitle = computed(() => props.title || t('messageBox.title'));
 const computedConfirmText = computed(() => props.confirmText || t('messageBox.confirm'));
 const computedCancelText = computed(() => props.cancelText || t('messageBox.cancel'));

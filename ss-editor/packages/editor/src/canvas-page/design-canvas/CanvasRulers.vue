@@ -1,6 +1,6 @@
 <template>
   <div class="canvas-ruler-container">
-    <!-- 标尺交汇处 -->
+    <!-- Ruler intersection -->
     <div
       v-if="showRuler"
       class="ruler-intersection"
@@ -14,7 +14,7 @@
       </button>
     </div>
 
-    <!-- 垂直标尺 -->
+    <!-- Vertical ruler -->
     <VerticalRuler
       v-if="showRuler"
       :canvas-width="canvasWidth"
@@ -27,7 +27,7 @@
     />
 
     <div class="canvas-content-container">
-      <!-- 水平标尺 -->
+      <!-- Horizontal ruler -->
       <HorizontalRuler
         v-if="showRuler"
         :canvas-width="canvasWidth"

@@ -6,7 +6,7 @@
       </h1>
     </div>
 
-    <!-- 工具栏：报表类型 / 日期 / 生成 / 导出 -->
+    <!-- Toolbar: report type / date / generate / export -->
     <div class="toolbar">
       <div class="toolbar-field">
         <label class="field-label">{{ t('system.reports.reportType') }}</label>
@@ -25,7 +25,7 @@
         </select>
       </div>
 
-      <!-- 日报：日期选择 -->
+      <!-- Daily report: date selection -->
       <div
         v-if="reportType === 'daily'"
         class="toolbar-field"
@@ -38,7 +38,7 @@
         >
       </div>
 
-      <!-- 月报：月份选择 -->
+      <!-- Monthly report: month selection -->
       <div
         v-else-if="reportType === 'monthly'"
         class="toolbar-field"
@@ -51,7 +51,7 @@
         >
       </div>
 
-      <!-- 自定义/告警/趋势：日期范围 -->
+      <!-- Custom/alarm/trend: date range -->
       <template v-else>
         <div class="toolbar-field">
           <label class="field-label">{{ t('system.reports.dateRange') }}</label>
@@ -119,7 +119,7 @@
       size="small"
     />
     <template v-else-if="currentReport">
-      <!-- 报表元信息 -->
+      <!-- Report meta info -->
       <div class="report-meta">
         <span class="meta-item">
           <span class="meta-label">{{ t('system.reports.reportId') }}:</span>
@@ -131,7 +131,7 @@
         </span>
       </div>
 
-      <!-- 摘要卡片 -->
+      <!-- Summary card -->
       <div
         v-if="summary"
         class="summary-grid"
@@ -178,7 +178,7 @@
         </div>
       </div>
 
-      <!-- 图表区域 -->
+      <!-- Chart area -->
       <div
         v-if="charts.length > 0"
         class="section-title"
@@ -205,7 +205,7 @@
         </div>
       </div>
 
-      <!-- 指标项表格 -->
+      <!-- Metric item table -->
       <div
         v-if="items.length > 0"
         class="section-title"
@@ -247,7 +247,7 @@
       </div>
     </template>
 
-    <!-- 空状态 -->
+    <!-- Empty state -->
     <div
       v-else
       class="empty-state"
@@ -294,7 +294,7 @@ use([
 const { t } = useI18n();
 const projectStore = useProjectStore();
 
-// ==================== 状态 ====================
+// ==================== Status ====================
 
 const reportType = ref<ReportType>('daily');
 const dateValue = ref<string>(formatDate(Date.now()));
@@ -310,7 +310,7 @@ const generating = ref(false);
 const exporting = ref(false);
 const currentReport = ref<Report | null>(null);
 
-// ==================== 计算属性 ====================
+// ==================== Computed properties ====================
 
 const reportTypeOptions = computed(() => [
   { label: t('system.reports.typeDaily'), value: 'daily' as ReportType },
@@ -341,16 +341,16 @@ const canGenerate = computed(() => {
   return !!dateRange.value.start && !!dateRange.value.end;
 });
 
-// ==================== 工具方法 ====================
+// ==================== Utility methods ====================
 
-/** 读取 CSS 变量值（用于 echarts 颜色） */
+/** Read a CSS variable value (used for echarts colors) */
 function cssVar(name: string): string {
   const styles = getComputedStyle(document.documentElement);
   const value = styles.getPropertyValue(name).trim();
   return value || '';
 }
 
-/** 获取当前主题下的 echarts 颜色配置 */
+/** Get the echarts color configuration for the current theme */
 function chartColors() {
   return {
     text: cssVar('--text'),
@@ -372,7 +372,7 @@ function chartColors() {
   };
 }
 
-/** 格式化日期为 yyyy-MM-dd */
+/** Format the date as yyyy-MM-dd */
 function formatDate(ts: number | string | Date): string {
   const d = ts instanceof Date ? ts : new Date(ts);
   const y = d.getFullYear();
@@ -381,7 +381,7 @@ function formatDate(ts: number | string | Date): string {
   return `${y}-${m}-${day}`;
 }
 
-/** 格式化月份为 yyyy-MM */
+/** Format the month as yyyy-MM */
 function formatMonth(ts: number | string | Date): string {
   const d = ts instanceof Date ? ts : new Date(ts);
   const y = d.getFullYear();
@@ -389,7 +389,7 @@ function formatMonth(ts: number | string | Date): string {
   return `${y}-${m}`;
 }
 
-/** 格式化日期时间 */
+/** Format date and time */
 function formatDateTime(ts: string): string {
   try {
     const d = new Date(ts);
@@ -404,27 +404,27 @@ function formatDateTime(ts: string): string {
   }
 }
 
-/** 格式化百分比 */
+/** Format a percentage */
 function formatPercent(value: number | undefined): string {
   if (value == null) return '-';
   return `${Math.round(value * 100) / 100}`;
 }
 
-/** 趋势标签 */
+/** Trend tag */
 function trendLabel(trend: ReportItem['trend']): string {
   if (trend === 'up') return t('system.reports.trendUp');
   if (trend === 'down') return t('system.reports.trendDown');
   return t('system.reports.trendStable');
 }
 
-/** 趋势标签类型 */
+/** Trend tag type */
 function trendTagType(trend: ReportItem['trend']): 'success' | 'error' | 'default' {
   if (trend === 'up') return 'success';
   if (trend === 'down') return 'error';
   return 'default';
 }
 
-/** 构建 echarts 图表配置 */
+/** Build the echarts chart configuration */
 function buildChartOption(chart: ReportChart) {
   const colors = chartColors();
   const baseAxis = {
@@ -472,7 +472,7 @@ function buildChartOption(chart: ReportChart) {
     };
   }
 
-  // 默认 line
+  // Default line
   return {
     tooltip: { trigger: 'axis' },
     legend: {
@@ -495,19 +495,19 @@ function buildChartOption(chart: ReportChart) {
   };
 }
 
-// ==================== 业务方法 ====================
+// ==================== Business methods ====================
 
 function handleReportTypeChange() {
   currentReport.value = null;
 }
 
-/** 获取当前项目 ID */
+/** Get the current project ID */
 function getProjectId(): string | null {
   const project = projectStore.projects[0] ?? projectStore.currentProject;
   return project?.projectId ?? null;
 }
 
-/** 生成报表 */
+/** Generate the report */
 async function handleGenerate() {
   const projectId = getProjectId();
   if (!projectId) {
@@ -543,8 +543,8 @@ async function handleGenerate() {
       });
     }
 
-    // res 可能是 { data: Report }（HTTP 包装）或 Report（直返），
-    // 类型不充分重叠，需先转 unknown 再转 Report
+    // res may be { data: Report } (HTTP wrapper) or Report (direct return),
+    // Types do not overlap enough; cast via unknown first, then to Report
     const report = (res as { data: Report }).data ?? (res as unknown as Report);
     currentReport.value = report;
     showSuccess(t('system.reports.generateSuccess'));
@@ -558,7 +558,7 @@ async function handleGenerate() {
   }
 }
 
-/** 导出报表 */
+/** Export report */
 async function handleExport() {
   if (!currentReport.value) return;
   const projectId = getProjectId();
@@ -574,7 +574,7 @@ async function handleExport() {
     const result = (res as { data: unknown }).data ?? res;
     const exportResult = result as { fileUrl?: string; fileName?: string };
 
-    // 尝试触发文件下载
+    // Try to trigger file download
     if (exportResult.fileUrl) {
       try {
         const link = document.createElement('a');
@@ -585,7 +585,7 @@ async function handleExport() {
         link.click();
         document.body.removeChild(link);
       } catch {
-        /* 下载失败仅忽略，仍提示成功 */
+        /* On download failure, just ignore it but still report success */
       }
     }
     showSuccess(t('system.reports.exportSuccess'));
@@ -599,7 +599,7 @@ async function handleExport() {
   }
 }
 
-// ==================== 生命周期 ====================
+// ==================== Lifecycle ====================
 
 onMounted(async () => {
   if (!projectStore.projects.length) {
@@ -655,7 +655,7 @@ onMounted(async () => {
   margin-left: auto;
 }
 
-/* 原生表单控件 */
+/* Native form control */
 .form-select,
 .form-input {
   width: 180px;
@@ -692,7 +692,7 @@ onMounted(async () => {
   cursor: not-allowed;
 }
 
-/* 日期范围 */
+/* Date range */
 .date-range {
   display: flex;
   align-items: center;
@@ -704,7 +704,7 @@ onMounted(async () => {
   font-size: 12px;
 }
 
-/* 按钮 */
+/* Button */
 .btn {
   height: 32px;
   padding: 0 16px;
@@ -741,7 +741,7 @@ onMounted(async () => {
   color: var(--primary);
 }
 
-/* 标签 */
+/* Tag */
 .tag {
   display: inline-block;
   padding: 2px 10px;
@@ -765,7 +765,7 @@ onMounted(async () => {
   color: var(--text-secondary);
 }
 
-/* 加载状态 */
+/* Loading state */
 .loading-state {
   padding: 60px 0;
   text-align: center;

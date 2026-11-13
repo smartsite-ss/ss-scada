@@ -8,7 +8,7 @@
       class="settings-modal"
       @click.stop
     >
-      <!-- 头部 -->
+      <!-- Header -->
       <div class="settings-modal-header">
         <div class="settings-title">
           <span class="title-icon">⚙️</span>
@@ -22,7 +22,7 @@
         </button>
       </div>
       
-      <!-- 标签页 -->
+      <!-- Tab page -->
       <div class="settings-tabs">
         <button 
           v-for="tab in tabs" 
@@ -36,7 +36,7 @@
         </button>
       </div>
       
-      <!-- 内容区域 -->
+      <!-- Content area -->
       <div class="settings-content">
         <InterfaceTab v-if="activeTab === 'interface'" />
         <CanvasTab v-if="activeTab === 'canvas'" />
@@ -46,7 +46,7 @@
         <ConfigTab v-if="activeTab === 'config'" />
       </div>
       
-      <!-- 底部按钮 -->
+      <!-- Bottom buttons -->
       <div class="settings-footer">
         <button
           class="footer-button secondary"
@@ -106,48 +106,48 @@ const tabs = [
 
 const activeTab = ref('interface');
 
-// 点击遮罩关闭
+// Click mask to close
 const handleOverlayClick = (event: MouseEvent) => {
   if ((event.target as HTMLElement).classList.contains('settings-modal-overlay')) {
     handleClose();
   }
 };
 
-// 关闭
+// Close
 const handleClose = () => {
   emit('close');
 };
 
-// 取消
+// Cancel
 const handleCancel = () => {
   handleClose();
 };
 
-// 确定
+// Confirmed
 const handleConfirm = () => {
   eventBus.emit('settings-confirm', null);
   handleClose();
 };
 
-// 重置为默认
+// Reset to default
 const handleReset = () => {
   if (window.confirm(t('settings.confirmResetSettings'))) {
     configStore.resetConfig();
   }
 };
 
-// 监听ESC键关闭
+// Watch ESC key to close
 const handleKeydown = (event: KeyboardEvent) => {
   if (event.key === 'Escape' && props.visible) {
     handleClose();
   }
 };
 
-// 事件监听
+// Event listening
 watch(() => props.visible, (newVal) => {
   if (newVal) {
     document.addEventListener('keydown', handleKeydown);
-    activeTab.value = 'interface'; // 重置到第一个标签
+    activeTab.value = 'interface'; // Reset to the first tab
   } else {
     document.removeEventListener('keydown', handleKeydown);
   }
@@ -338,7 +338,7 @@ watch(() => props.visible, (newVal) => {
   background-color: var(--surface);
 }
 
-/* 滚动条样式 */
+/* Scrollbar style */
 .settings-content::-webkit-scrollbar {
   width: 6px;
 }

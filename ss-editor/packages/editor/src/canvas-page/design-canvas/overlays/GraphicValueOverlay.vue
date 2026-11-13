@@ -41,7 +41,7 @@ const props = defineProps({
 const pageStore = usePageStore();
 const wsStore = useWsStore();
 
-/** 从 pageStore 读取开关状态（DataPanel checkbox 控制） */
+/** Read toggle state from pageStore (controlled by DataPanel checkbox) */
 const showValueOverlay = computed(() => (pageStore as any).showValueOverlay === true);
 
 const QUALITY_LABELS: Record<string, string> = {
@@ -64,12 +64,12 @@ interface OverlayItem {
 }
 
 /**
- * 遍历画布上图元，筛选有数据绑定的图元，从 wsStore.tagValues 读取实时值，
- * 构建浮层显示项。computed 依赖 wsStore.tagValues（shallowRef Map），
- * tagValues 变化时自动重新计算。
+ * Traverse graphics on the canvas, filter those with data bindings, read live values from wsStore.tagValues,
+ * and build overlay display items. computed depends on wsStore.tagValues (shallowRef Map),
+ * and recalculates automatically when tagValues changes.
  */
 const overlayItems = computed<OverlayItem[]>(() => {
-  // 触发 wsStore.tagValues 响应式追踪
+  // Trigger reactivity tracking of wsStore.tagValues
   void wsStore.tagValues;
   const result: OverlayItem[] = [];
   const bindingManager = BindingManager.getInstance();
@@ -81,7 +81,7 @@ const overlayItems = computed<OverlayItem[]>(() => {
     const geometry = graphic.config?.geometry;
     if (!geometry) continue;
 
-    // 取第一个绑定的 tag 值作为主显示值
+    // Use the first bound tag's value as the primary display value
     const firstBinding = bindings[0];
     const tagEntry = wsStore.tagValues.get(firstBinding.tagId);
     const value = tagEntry?.value;

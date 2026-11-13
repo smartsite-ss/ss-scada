@@ -60,7 +60,7 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'itemClick']);
 
-// 计算菜单样式
+// Compute menu style
 const menuStyle = computed(() => {
   return {
     left: `${props.x}px`,
@@ -68,14 +68,14 @@ const menuStyle = computed(() => {
   };
 });
 
-// 处理菜单项点击（跳过分隔线）
+// Handle menu item click (skip dividers)
 const handleItemClick = (item: MenuItem) => {
   if (typeof item.id === 'string' && item.id.startsWith('divider')) return;
   emit('itemClick', item);
   emit('close');
 };
 
-// 处理点击外部关闭菜单
+// Handle click-outside menu close
 const handleClickOutside = (e: MouseEvent) => {
   const contextMenu = document.querySelector('.context-menu');
   if (contextMenu && !contextMenu.contains(e.target as Node)) {
@@ -83,12 +83,12 @@ const handleClickOutside = (e: MouseEvent) => {
   }
 };
 
-// 挂载事件监听器
+// Mount event listeners
 onMounted(() => {
   document.addEventListener('click', handleClickOutside);
 });
 
-// 卸载事件监听器
+// Remove event listeners
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside);
 });

@@ -192,10 +192,10 @@ const device = computed(() => deviceStore.currentDevice);
 const deviceTags = computed(() => deviceStore.currentDeviceTags);
 const loading = computed(() => deviceStore.loading);
 
-/** 合并 HTTPS 初始值 + WebSocket 实时更新 */
+/** Merge HTTPS initial values + WebSocket live updates */
 const latestValues = computed(() => {
-  const http = deviceStore.latestValues; // HTTP 初始快照
-  const ws = wsStore.tagValues;          // WebSocket 实时值
+  const http = deviceStore.latestValues; // HTTP initial snapshot
+  const ws = wsStore.tagValues;          // WebSocket live value
   const merged: Record<string, any> = { ...http };
   for (const [tagId, entry] of ws.entries()) {
     if (entry.value !== undefined && entry.value !== null) {
@@ -209,7 +209,7 @@ const deviceDeviceCode = computed(() => (device.value as any)?.deviceCode || dev
 const deviceNameAlias = computed(() => (device.value as any)?.nameAlias || '');
 const deviceTemplateId = computed(() => (device.value as any)?.templateId || '');
 
-// 模板 ID -> 名称映射
+// Template ID → name mapping
 const templateNameMap = ref<Map<string, string>>(new Map());
 
 async function loadTemplateNames() {
@@ -223,7 +223,7 @@ async function loadTemplateNames() {
     }
     templateNameMap.value = map;
   } catch {
-    // 静默失败
+    // Fail silently
   }
 }
 
@@ -284,13 +284,13 @@ function formatDate(d?: string): string {
 }
 
 onMounted(async () => {
-  // 加载模板名称映射（用于设备详情"模板"信息展示）
+  // Load template-name mapping (for device detail "模板" info display)
   loadTemplateNames();
   if (projectId && deviceId) {
     await deviceStore.fetchDevice(projectId, deviceId);
     await deviceStore.fetchLatestValues(projectId, deviceId);
 
-    // WebSocket 实时订阅
+    // WebSocket live subscription
     try {
       await wsStore.connect(projectId);
       const tagIds = deviceTags.value.map((t: any) => t.id);
@@ -308,7 +308,7 @@ onUnmounted(() => {
   }
 });
 
-// keep-alive 缓存：离开页面时退订 WS，返回时重新订阅
+// keep-alive cache: unsubscribe WS when leaving the page, re-subscribe on return
 onDeactivated(() => {
   const tagIds = deviceTags.value.map((t: any) => t.id);
   if (tagIds.length > 0) {

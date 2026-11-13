@@ -21,7 +21,7 @@
       </div>
     </div>
 
-    <!-- 标签页导航 -->
+    <!-- Tab navigation -->
     <div class="tab-nav">
       <button
         class="tab-btn"
@@ -69,7 +69,7 @@
       </button>
     </div>
 
-    <!-- 外观与布局 -->
+    <!-- Appearance and layout -->
     <div
       v-if="activeTab === 'appearance'"
       class="tab-content"
@@ -281,7 +281,7 @@
           </div>
         </div>
 
-        <!-- 调试工具 -->
+        <!-- Debug tools -->
         <div class="settings-card full-width">
           <div class="card-header">
             <svg
@@ -372,7 +372,7 @@
       </div>
     </div>
 
-    <!-- 系统配置 Tab -->
+    <!-- System config tab -->
     <div
       v-if="activeTab === 'config'"
       class="tab-content"
@@ -387,7 +387,7 @@
         v-else
         class="config-panels"
       >
-        <!-- 统计卡片 -->
+        <!-- Statistics card -->
         <div class="overview-grid">
           <div class="stat-card">
             <div class="stat-label">
@@ -426,7 +426,7 @@
           </div>
         </div>
 
-        <!-- 待重启配置区域 -->
+        <!-- Pending-restart config area -->
         <div
           ref="pendingRestartRef"
           class="section-card"
@@ -471,7 +471,7 @@
           </div>
         </div>
 
-        <!-- 搜索和筛选 -->
+        <!-- Search and filter -->
         <div class="section-card">
           <div class="filter-bar">
             <input
@@ -534,7 +534,7 @@
           </div>
         </div>
 
-        <!-- 配置列表（按分类分组） -->
+        <!-- Config list (grouped by category) -->
         <div
           v-if="filteredGroups.length === 0"
           class="empty-state"
@@ -653,7 +653,7 @@
       </div>
     </div>
 
-    <!-- 编辑配置弹窗 -->
+    <!-- Edit-config dialog -->
     <div
       v-if="editModalVisible"
       class="modal-overlay"
@@ -802,7 +802,7 @@ const configStore = useConfigStore();
 const route = useRoute();
 const router = useRouter();
 
-// ===== Tab（支持 query 参数 ?tab=config） =====
+// ===== Tab (supports query param ?tab=config) =====
 const activeTab = ref<'appearance' | 'config'>(
   (route.query.tab === 'config' ? 'config' : 'appearance') as 'appearance' | 'config',
 );
@@ -810,11 +810,11 @@ const activeTab = ref<'appearance' | 'config'>(
 function switchTab(tab: 'appearance' | 'config') {
   activeTab.value = tab;
   if (tab === 'config') loadConfigs();
-  // 更新 URL query 参数
+  // Update the URL query params
   router.replace({ query: tab === 'config' ? { tab: 'config' } : {} });
 }
 
-// ===== 外观 =====
+// ===== Appearance =====
 const selectedTheme = ref<string>(currentThemeName.value);
 const headerHeight = ref(configStore.ui?.headerHeight ?? 60);
 const sidebarWidth = ref(configStore.ui?.sidebarWidth ?? 200);
@@ -845,7 +845,7 @@ function handleAiAssistantToggle(event: Event) {
   configStore.updateUIConfig({ aiAssistantVisible: target.checked });
 }
 
-// ===== 系统配置 =====
+// ===== System config =====
 const configLoading = ref(false);
 const saving = ref(false);
 const restarting = ref(false);
@@ -865,7 +865,7 @@ const editingItem = ref<ConfigItemView | null>(null);
 
 let statusPollTimer: ReturnType<typeof setInterval> | null = null;
 
-// 计算属性
+// Computed properties
 const categories = computed<ConfigCategory[]>(() => {
   const set = new Set<ConfigCategory>();
   allConfigs.value.forEach((c) => set.add(c.category));
@@ -908,18 +908,18 @@ const stats = computed(() => {
   };
 });
 
-// 数据加载
+// Data loading
 async function loadConfigs(force = false) {
   if (!force && allConfigs.value.length > 0) return;
   configLoading.value = true;
   try {
-    // 使用 allSettled 避免一个接口失败导致另一个数据也无法展示
+    // Use allSettled to avoid one failed interface blocking the other data from displaying
     const [configsResult, pendingResult] = await Promise.allSettled([
       systemApi.getAllWithMeta(),
       systemApi.getRestartRequired(),
     ]);
 
-    // 处理配置数据
+    // Handle config data
     if (configsResult.status === 'fulfilled') {
       const configsRes = configsResult.value;
       const rawData = (configsRes as any)?.data ?? configsRes;
@@ -935,7 +935,7 @@ async function loadConfigs(force = false) {
       }
     }
 
-    // 处理待重启配置
+    // Handle pending-restart config
     if (pendingResult.status === 'fulfilled') {
       const pendingData = (pendingResult.value as any)?.data ?? pendingResult.value;
       pendingRestartKeys.value = pendingData?.keys ?? [];
@@ -957,11 +957,11 @@ async function loadRestartStatus() {
       startStatusPolling();
     }
   } catch {
-    // 静默处理
+    // Handle silently
   }
 }
 
-// 编辑配置
+// Edit config
 function openEditModal(item: ConfigItemView) {
   editingItem.value = item;
   editValue.value = item.value === '***' ? '' : (item.value || '');
@@ -1000,7 +1000,7 @@ async function handleSave() {
   }
 }
 
-// 待重启管理
+// Pending-restart management
 async function handleClearPendingRestart() {
   const confirmed = await showConfirm(t('system.systemConfig.pendingRestart.clearConfirm'));
   if (!confirmed) return;
@@ -1019,7 +1019,7 @@ async function handleClearPendingRestart() {
   }
 }
 
-// 系统重启
+// System restart
 async function handleRestart() {
   const confirmed = await showConfirm(
     t('system.systemConfig.restartConfirm'),
@@ -1057,7 +1057,7 @@ function startStatusPolling() {
         showError(restartState.value?.errorMessage || t('system.systemConfig.restartFailed'));
       }
     } catch {
-      // 轮询失败时继续
+      // Continue on poll failure
     }
   }, 2000);
 }
@@ -1069,7 +1069,7 @@ function stopStatusPolling() {
   }
 }
 
-// 工具函数
+// Utility functions
 function toggleReveal(key: string) {
   if (revealedKeys.has(key)) {
     revealedKeys.delete(key);
@@ -1082,7 +1082,7 @@ function scrollToPendingRestart() {
   pendingRestartRef.value?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-// ===== 调试工具：清空浏览器缓存 =====
+// ===== Debug tool: clear browser cache =====
 const clearingCache = ref(false);
 
 async function handleClearCache() {
@@ -1094,25 +1094,25 @@ async function handleClearCache() {
 
   clearingCache.value = true;
   try {
-    // 1. 清空 localStorage
+    // 1. Clear localStorage
     localStorage.clear();
-    // 2. 清空 sessionStorage
+    // 2. Clear sessionStorage
     sessionStorage.clear();
-    // 3. 清空 Cookies（逐个置过期）
+    // 3. Clear Cookies (expire each one)
     document.cookie.split(';').forEach((c) => {
       const eq = c.indexOf('=');
       const name = eq > -1 ? c.substring(0, eq).trim() : c.trim();
       if (!name) return;
-      // 覆盖根路径与各级可能的 path，确保清除
+      // Cover the root path and all possible nested paths to ensure removal
       document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
       document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=${location.hostname}`;
     });
-    // 4. 清空 Cache Storage API（Service Worker 缓存）
+    // 4. Clear the Cache Storage API (Service Worker cache)
     if ('caches' in window) {
       const keys = await caches.keys();
       await Promise.all(keys.map((k) => caches.delete(k)));
     }
-    // 5. 清空 IndexedDB（如果有）
+    // 5. Clear IndexedDB (if any)
     if (indexedDB.databases) {
       const dbs = await indexedDB.databases();
       await Promise.all(
@@ -1128,7 +1128,7 @@ async function handleClearCache() {
     }
 
     showSuccess(t('system.settings.clearCacheSuccess'));
-    // 延迟刷新，让用户看到提示
+    // Delay refresh so the user sees the hint
     setTimeout(() => {
       window.location.reload();
     }, 600);
@@ -1139,10 +1139,10 @@ async function handleClearCache() {
   }
 }
 
-// 生命周期
+// Lifecycle
 onMounted(() => {
   selectedTheme.value = currentThemeName.value;
-  // 如果通过 ?tab=config 进入，则加载配置
+  // If entered via ?tab=config, load config
   if (route.query.tab === 'config') {
     activeTab.value = 'config';
     loadConfigs();
@@ -1204,7 +1204,7 @@ onUnmounted(() => {
   border-color: var(--primary);
 }
 
-/* ===== Tab 导航 ===== */
+/* ===== Tab navigation ===== */
 .tab-nav {
   display: flex;
   gap: 2px;
@@ -1242,7 +1242,7 @@ onUnmounted(() => {
   min-height: 300px;
 }
 
-/* ===== 外观布局 ===== */
+/* ===== Appearance layout ===== */
 .settings-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1507,14 +1507,14 @@ onUnmounted(() => {
   transform: translateX(20px);
 }
 
-/* ===== 系统配置 ===== */
+/* ===== System config ===== */
 .config-panels {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-/* 统计卡片 */
+/* Statistics card */
 .overview-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -1557,7 +1557,7 @@ onUnmounted(() => {
   line-height: 1.2;
 }
 
-/* 通用卡片 */
+/* Generic card */
 .section-card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -1604,7 +1604,7 @@ onUnmounted(() => {
   font-weight: 500;
 }
 
-/* 筛选栏 */
+/* Filter bar */
 .filter-bar {
   display: flex;
   gap: 10px;
@@ -1644,7 +1644,7 @@ onUnmounted(() => {
   border-color: var(--primary);
 }
 
-/* 表格 */
+/* Table */
 .table-wrapper {
   overflow-x: auto;
 }
@@ -1737,7 +1737,7 @@ onUnmounted(() => {
   text-decoration: underline;
 }
 
-/* 来源标识 */
+/* Source identifier */
 .source-badge {
   display: inline-block;
   padding: 2px 7px;
@@ -1766,7 +1766,7 @@ onUnmounted(() => {
   color: var(--status-error);
 }
 
-/* 配置标识 */
+/* Config marker */
 .badge-group {
   display: flex;
   gap: 4px;
@@ -1807,7 +1807,7 @@ onUnmounted(() => {
   color: var(--text-secondary);
 }
 
-/* 待重启标签 */
+/* Pending-restart tab */
 .pending-list {
   padding: 12px 16px;
   display: flex;
@@ -1832,7 +1832,7 @@ onUnmounted(() => {
   font-size: 13px;
 }
 
-/* 弹窗 */
+/* Dialog */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -1967,7 +1967,7 @@ onUnmounted(() => {
   color: var(--status-error);
 }
 
-/* 通用按钮 */
+/* Generic button */
 .btn {
   display: inline-flex;
   align-items: center;

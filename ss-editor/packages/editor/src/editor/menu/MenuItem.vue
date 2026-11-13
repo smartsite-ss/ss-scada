@@ -73,63 +73,63 @@ interface Props {
 const props = defineProps<Props>();
 const emit = defineEmits(['menu-item-click', 'menu-activate']);
 
-// 下拉菜单状态
+// Dropdown menu state
 const showDropdown = ref(false);
-// 二级菜单状态
+// Submenu state
 const showSubmenu = ref(false);
 
-// 是否有子菜单
+// Whether there is a submenu
 const hasChildren = computed(() => {
   return props.item.children && props.item.children.length > 0;
 });
 
-// 是否激活
+// Whether active
 const isActive = computed(() => {
   return props.activeId === props.item.id;
 });
 
-// 获取图标组件
+// Get the icon component
 const iconComponent = computed(() => {
   return props.item.icon;
 });
 
-// 判断图标是否为 VNode 函数（SVG 图标）
+// Determine whether an icon is a VNode function (SVG icon)
 const isVNodeIcon = computed(() => {
   return typeof props.item.icon === 'function';
 });
 
-// 处理菜单项点击
+// Handle menu item click
 const handleClick = () => {
   emit('menu-activate', props.item.id);
   emit('menu-item-click', props.item);
 };
 
-// 切换下拉菜单
+// Switch dropdown menu
 const toggleDropdown = () => {
   showDropdown.value = !showDropdown.value;
   showSubmenu.value = false;
   emit('menu-activate', props.item.id);
 };
 
-// 切换二级菜单
+// Switch submenu
 const toggleSubmenu = () => {
   showSubmenu.value = !showSubmenu.value;
   showDropdown.value = false;
   emit('menu-activate', props.item.id);
 };
 
-// 处理子菜单项点击
+// Handle submenu item click
 const handleMenuItemClick = (menuItem: MenuItemType) => {
   emit('menu-item-click', menuItem);
 };
 
-// 关闭子菜单
+// Close the submenu
 const closeSubmenu = () => {
   showDropdown.value = false;
   showSubmenu.value = false;
 };
 
-// 暴露关闭子菜单的方法
+// Expose the method to close submenus
 defineExpose({
   closeSubmenu
 });

@@ -41,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-// ChartIcon 组件
+// ChartIcon component
 </script>
 
 <style scoped>

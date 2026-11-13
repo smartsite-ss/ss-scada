@@ -3,7 +3,7 @@
     <div class="bind-section">
       <div class="section-title">{{ labels?.title ?? $t('tagBinding.title') }}</div>
 
-      <!-- flat：单变量平铺字段 -->
+      <!-- flat: single-variable flattened fields -->
       <div
         v-if="mode === 'flat'"
         class="bind-row"
@@ -26,7 +26,7 @@
         </button>
       </div>
 
-      <!-- single / multiple：tags 数组 -->
+      <!-- single / multiple: tags array -->
       <template v-else>
         <div
           v-if="tags.length === 0"

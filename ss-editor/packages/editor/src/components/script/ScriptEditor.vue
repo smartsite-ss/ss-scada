@@ -4,7 +4,7 @@
     :style="{ height: normalizedHeight }"
     @keydown="handleKeydown"
   >
-    <!-- 工具栏 -->
+    <!-- Toolbar -->
     <ScriptToolbar
       v-if="showToolbar"
       :mode="mode"
@@ -16,18 +16,18 @@
       @toggle-knowledge="showKnowledgePanel = !showKnowledgePanel"
     />
 
-    <!-- 主编辑区域：编辑器 + 调试面板（左右结构） -->
+    <!-- Main editing area: editor + debug panel (left-right layout) -->
     <div
       class="script-editor-body"
       :class="{ 'has-toolbar': showToolbar }"
     >
-      <!-- 编辑器容器 -->
+      <!-- Editor container -->
       <div
         ref="editorContainerRef"
         class="editor-container"
       />
 
-      <!-- API 参考面板 -->
+      <!-- API reference panel -->
       <ScriptApiPanel
         v-if="showApiPanel"
         :mode="mode"
@@ -35,14 +35,14 @@
         @insert="insertSnippet"
       />
 
-      <!-- 知识库面板 -->
+      <!-- Knowledge-base panel -->
       <ScriptKnowledgePanel
         v-if="showKnowledgePanel"
         class="knowledge-side-panel"
         @insert-snippet="insertSnippet"
       />
 
-      <!-- 调试面板（右侧） -->
+      <!-- Debug panel (right) -->
       <ScriptDebugPanel
         v-if="debugPanelVisible"
         class="debug-side-panel"
@@ -56,7 +56,7 @@
       />
     </div>
 
-    <!-- 占位符覆盖 -->
+    <!-- Placeholder override -->
     <div
       v-if="placeholder && !modelValue"
       class="editor-placeholder"
@@ -105,7 +105,7 @@ const normalizedHeight = computed(() => {
   return props.height;
 });
 
-// Composable 实例
+// Composable instance
 const valueRef = ref(props.modelValue);
 watch(() => props.modelValue, (v) => { valueRef.value = v; });
 
@@ -131,7 +131,7 @@ const testResult = computed(() => debug.testResult.value);
 let completionDisposer: any = null;
 
 onMounted(() => {
-  // 延迟注册，等待 Monaco 就绪
+  // Defer registration until Monaco is ready
   setTimeout(() => {
     if (monacoRef.value) {
       completionDisposer = completion.register();
@@ -145,7 +145,7 @@ onUnmounted(() => {
   completionDisposer?.dispose?.();
 });
 
-// ═══ 对外暴露方法 ═══
+// ═══ Exposed methods ═══
 
 function getValue(): string {
   return editorRef.value?.getValue() ?? valueRef.value;
@@ -162,22 +162,22 @@ function formatCode(): void {
 }
 
 /**
- * 安全延迟执行编辑器操作。
- * 使用 setTimeout 延迟，确保浏览器完全处理完 click 事件后再操作编辑器。
- * 注意：不使用 requestAnimationFrame，因为原生 select 下拉关闭期间 rAF 可能被阻塞。
+ * Safely defer editor operations.
+ * Uses setTimeout delay to ensure the browser fully processes the click event before operating the editor.
+ * Note: requestAnimationFrame is not used because rAF may be blocked while the native select dropdown is closing.
  */
 function deferEditorOp(fn: () => void, delayMs: number = 100) {
   setTimeout(fn, delayMs);
 }
 
 function insertSnippet(snippet: string): void {
-  // 直接操作 Monaco 底层文本模型（ITextModel），完全绕过编辑管线。
-  // executeEdits / trigger('type') / setPosition 都走的是编辑器管线，
-  // 涉及：语法重解析 → 视图重排 → 滚动计算 → 装饰器更新 → 撤销栈 → Marker 更新
-  // 这些步骤在当前组件 + lint + completion 的叠加下会导致主线程阻塞。
+  // Operate Monaco's underlying text model (ITextModel) directly, fully bypassing the editor pipeline.
+  // executeEdits / trigger('type') / setPosition all go through the editor pipeline,
+  // Involves: syntax re-parse → view reflow → scroll calculation → decorator update → undo stack → Marker update
+  // These steps, combined with the current component + lint + completion, cause the main thread to block.
   //
-  // model.applyEdits() 仅触发模型变更和 onDidChangeModelContent，
-  // 不触发视图更新、不移动光标。撤销行为由 applyEdits 自身管理。
+  // model.applyEdits() only triggers model changes and onDidChangeModelContent,
+  // Does not trigger view update or move the cursor. Undo behavior is managed by applyEdits itself.
   const editor = editorRef.value;
   if (!editor) return;
 
@@ -196,7 +196,7 @@ function insertSnippet(snippet: string): void {
   };
 
   if (existingCode.length > 0) {
-    // 已有代码：在最后一行末尾补 ";" 后换行插入新代码
+    // Existing code: append ";" at the end of the last line, then insert the new code on a new line
     const lastLine = model.getLineCount();
     const lastColumn = model.getLineMaxColumn(lastLine);
     const lastLineContent = model.getLineContent(lastLine).trimEnd();
@@ -210,7 +210,7 @@ function insertSnippet(snippet: string): void {
       endColumn: lastColumn,
     };
   } else {
-    // 空编辑器：直接插入
+    // Empty editor: insert directly
     textToInsert = snippetWithSemicolon;
     insertRange = {
       startLineNumber: 1,
@@ -260,14 +260,14 @@ async function testRun(mockData?: Record<string, any>): Promise<TestRunResult> {
 }
 
 function handleTestRun(testData: Record<string, any>): void {
-  // 延迟执行测试运行，避免在 click 事件处理中同步操作 Monaco Editor 导致浏览器卡死
+  // Defer test execution to avoid synchronously operating Monaco Editor in the click handler and freezing the browser
   deferEditorOp(() => {
     testRun(testData);
   });
 }
 
 /**
- * Ctrl+S 保存脚本 — 阻止浏览器默认的"保存网页"对话框
+ * Ctrl+S saves the script — prevents the browser's default "保存网页" dialog
  */
 function handleKeydown(event: KeyboardEvent): void {
   const isCtrlS = (event.ctrlKey || event.metaKey) && event.key === 's';
@@ -278,7 +278,7 @@ function handleKeydown(event: KeyboardEvent): void {
 }
 
 function handleSave(): void {
-  // 延迟执行保存，避免在 click 事件处理中同步调用 getValue() 导致浏览器卡死
+  // Defer save execution to avoid synchronously calling getValue() in the click handler and freezing the browser
   deferEditorOp(() => {
     const value = getValue();
     emit('save', value);
@@ -353,7 +353,7 @@ defineExpose<ScriptEditorExpose>({
   transition: width 0.15s;
 }
 
-/* ── 响应式侧面板 ── */
+/* ── Responsive side panel ── */
 @media (max-width: 1200px) {
   .api-side-panel {
     width: 180px;

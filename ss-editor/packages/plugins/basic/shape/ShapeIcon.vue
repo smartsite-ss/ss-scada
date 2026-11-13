@@ -32,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-// ShapeIcon 组件
+// ShapeIcon component
 </script>
 
 <style scoped>

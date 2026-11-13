@@ -3,14 +3,14 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 系统重启脚本（独立运行）
+ * System restart script (standalone)
  *
- * 作为 detached 子进程运行：
- * 1. 等待旧进程退出（最长 10 秒）
- * 2. 超时则强制 kill
- * 3. 执行 bin/start.bat 或 bin/start.sh 启动新服务
+ * Runs as a detached child process:
+ * 1. Wait for the old process to exit (up to 10 seconds)
+ * 2. Force kill on timeout
+ * 3. Run bin/start.bat or bin/start.sh to start the new service
  *
- * 使用方式：node restarter.js <oldPid>
+ * Usage: node restarter.js <oldPid>
  */
 
 const { spawn } = require('child_process');
@@ -54,7 +54,7 @@ function waitForExit(pid, callback) {
       } catch (e) {
         console.warn(`[restarter] Force kill failed: ${e.message}`);
       }
-      // 等待 500ms 让进程完全退出
+      // Wait 500ms to let the process fully exit
       setTimeout(callback, 500);
       return;
     }
@@ -97,10 +97,10 @@ function startNewProcess() {
   }
 }
 
-// 入口
+// Entry point
 waitForExit(oldPid, startNewProcess);
 
-// 防止意外退出
+// Prevent accidental exit
 process.on('SIGTERM', () => {
   console.log('[restarter] Received SIGTERM, ignoring (waiting for oldPid exit)');
 });

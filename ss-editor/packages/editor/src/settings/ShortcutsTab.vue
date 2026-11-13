@@ -1,6 +1,6 @@
 <template>
   <div class="shortcuts-tab">
-    <!-- 说明 -->
+    <!-- Note -->
     <div class="setting-group">
       <div class="group-title">
         <span class="group-icon">⌨️</span>
@@ -8,7 +8,7 @@
       </div>
     </div>
 
-    <!-- 选择类快捷键 -->
+    <!-- Selection-class shortcuts -->
     <div class="setting-group">
       <div class="group-title">
         <span class="group-icon">🎯</span>
@@ -29,7 +29,7 @@
       </div>
     </div>
 
-    <!-- 编辑类快捷键 -->
+    <!-- Edit-class shortcuts -->
     <div class="setting-group">
       <div class="group-title">
         <span class="group-icon">✂️</span>
@@ -78,7 +78,7 @@
       </div>
     </div>
 
-    <!-- 移动类快捷键 -->
+    <!-- Move-class shortcuts -->
     <div class="setting-group">
       <div class="group-title">
         <span class="group-icon">🖱️</span>
@@ -119,7 +119,7 @@
       </div>
     </div>
 
-    <!-- 层级类快捷键 -->
+    <!-- Hierarchy-level shortcuts -->
     <div class="setting-group">
       <div class="group-title">
         <span class="group-icon">📊</span>
@@ -144,7 +144,7 @@
       </div>
     </div>
 
-    <!-- 预览类快捷键 -->
+    <!-- Preview-class shortcuts -->
     <div class="setting-group">
       <div class="group-title">
         <span class="group-icon">🔍</span>

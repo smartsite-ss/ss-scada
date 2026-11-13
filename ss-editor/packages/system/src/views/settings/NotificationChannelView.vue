@@ -60,7 +60,7 @@
       </button>
     </div>
 
-    <!-- SMS 配置 -->
+    <!-- SMS config -->
     <div
       v-show="activeTab === 'sms'"
       class="config-panel"
@@ -153,7 +153,7 @@
       </form>
     </div>
 
-    <!-- TTS 配置 -->
+    <!-- TTS config -->
     <div
       v-show="activeTab === 'tts'"
       class="config-panel"
@@ -233,7 +233,7 @@
       </form>
     </div>
 
-    <!-- 底部保存按钮 -->
+    <!-- Bottom save button -->
     <div class="save-bar">
       <button
         class="btn btn-primary"

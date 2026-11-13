@@ -15,7 +15,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <!-- 个人信息 -->
+        <!-- Personal info -->
         <fieldset class="profile-section">
           <legend class="section-title">
             {{ $t('system.layout.profileInfo') }}
@@ -78,7 +78,7 @@
           </button>
         </fieldset>
 
-        <!-- 修改密码 -->
+        <!-- Change password -->
         <fieldset class="profile-section">
           <legend class="section-title">
             {{ $t('system.layout.changePassword') }}
@@ -186,7 +186,7 @@ const roleLabel = computed(() => {
 });
 
 function close() {
-  // 重置状态
+  // Reset state
   profileError.value = '';
   profileSuccess.value = '';
   passwordError.value = '';
@@ -203,7 +203,7 @@ async function handleUpdateProfile() {
       displayName: profileForm.value.displayName || undefined,
       email: profileForm.value.email || undefined,
     });
-    // 更新 store 中的用户信息
+    // Update the user info in the store
     if (res.data) {
       authStore.user = { ...authStore.user!, ...res.data };
     }

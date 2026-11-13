@@ -84,7 +84,7 @@ const sourceConfig = computed<ChartDataSourceConfig>(
 
 const { result } = useChartSource(() => sourceConfig.value);
 
-/** 从静态/API（source）或数据库（series）结果中提取表盘数值，缺省回退 value 属性 */
+/** Extract gauge values from static/API (source) or database (series) results, falling back to the value property by default */
 function extractGaugeValue(res: ChartDataResult): number {
   const row = res.source?.[0];
   if (row && typeof row === 'object') {

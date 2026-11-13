@@ -6,26 +6,24 @@ import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import AppLayout from '../layouts/AppLayout.vue';
 import { isDebugSkipAuth, PermissionCodes } from '@scada-editor/system';
 
-// CODE-13: EditorView/PreviewView 改为动态导入，避免编辑器代码（含 three.js 用法）
-// 被打进主 bundle，使登录页首屏不再下载整个编辑器（主 index.js 从 3.3MB 显著瘦身）
+//CODE-13: EditorView/PreviewView changed to dynamic import to avoid editor code (including three.js usage)
+//Included in the main bundle, so the landing page's first screen no longer downloads the entire editor (the main index.js has been significantly reduced from 3.3MB)
 const EditorView = () => import('../views/EditorView.vue').then((m) => m.default);
 const PreviewView = () => import('../views/PreviewView.vue').then((m) => m.default);
 
 type PermissionCode = (typeof PermissionCodes)[keyof typeof PermissionCodes];
 
 /**
- * 产品模式类型
- * - full:  集成部署（ss-scada + ss-data 全部能力）
- * - scada: ss-scada 独立部署（仅组态编辑/运行）
- * - data:  ss-data 独立部署（仅数据中台/系统管理）
- */
+ * Product mode type
+ * - full:  Integrated deployment (full capabilities of ss-scada + ss-data)
+ * - scada: ss-scada standalone deployment (configuration editing/running only)
+ * - data:  ss-data independent deployment (data mid-end/system management only)*/
 type ProductMode = 'full' | 'scada' | 'data';
 
 /**
- * 校验并返回有效的产品模式
- * 避免 .env 中 VITE_PRODUCT_MODE 被设为非法字符串（如 'undefined'）
- * 导致两个路由分支均不执行，进而触发 "No match found" 告警
- */
+ * Validate and return a valid product mode
+ * Avoid setting VITE_PRODUCT_MODE in .env to an invalid string (e.g., 'undefined')
+ * This results in neither route branch being executed, which in turn triggers the "No match found" alert.*/
 function resolveProductMode(mode: unknown): ProductMode {
   if (mode === 'full' || mode === 'scada' || mode === 'data') {
     return mode;
@@ -33,26 +31,26 @@ function resolveProductMode(mode: unknown): ProductMode {
   return 'full';
 }
 
-/** 当前产品模式（构建时由 Vite 注入，默认 full 兼容现状） */
+/** Current product mode (injected by Vite at build time, defaults to full compatibility with the current state)*/
 const PRODUCT_MODE: ProductMode = resolveProductMode(import.meta.env.VITE_PRODUCT_MODE);
 
-// ──────── 路由分组（按产品模式动态组合） ────────
+//──────── Routing Groups (Dynamically Grouped by Product Mode) ────────
 
-/** 共享路由（所有模式均加载）：登录页 */
+/** Shared Route (All Modes Loaded): Login Page*/
 const sharedRoutes: RouteRecordRaw[] = [
   {
     path: '/login',
     name: 'login',
-    // CODE-15: 直接从 LoginView.vue 文件导入，绕过 @scada-editor/system barrel。
-    // 原 import('@scada-editor/system').then(m => m.LoginView) 会因 barrel 导出 40+ 视图
-    // 而将所有系统视图打进同一 chunk，导致登录页下载全量系统管理代码。
-    // 直接文件导入后，仅 LoginView 及其静态依赖（可 tree-shake）进入登录页 chunk。
+    //CODE-15: Import directly from the LoginView.vue file, bypassing the @scada-editor/system barrel.
+    //The original import('@scada-editor/system').then(m => m.LoginView) would cause the barrel to export 40+ views
+    //However, all system views are packed into the same chunk, causing the login page to download the entire system management code.
+    //After direct file import, only LoginView and its static dependencies (tree-shakeable) are included in the login page chunk.
     component: () => import('@scada-editor/system/views/LoginView.vue').then((m: any) => m.default),
     meta: { guest: true },
   },
 ];
 
-/** ss-scada 路由（full + scada 模式加载）：编辑器、预览 */
+/** ss-scada routing (full + scada mode loading): editor, preview*/
 const scadaRoutes: RouteRecordRaw[] = [
   {
     path: '/',
@@ -91,18 +89,18 @@ const scadaRoutes: RouteRecordRaw[] = [
     component: PreviewView,
   },
   {
-    // 方案B：H5 iframe 预览专用路由，复用同一 PreviewView。
-    // 后端 buildPreviewUrl 生成 ${SCADA_SHELL_BASE_URL}/preview，故路径为 /mobile-preview/preview，
-    // 与管理端 /preview 完全等价、仅路径隔离，便于 H5 直连且不影响管理端业务。
-    // PreviewView 内部已支持 ?ticket= 一次性票据兑换 Bearer（跨源 iframe 鉴权），
-    // 插件从同源 /plugins/ 加载，插件更新只需走管理端常规发布，无需重发壳。
+    //Option B: Dedicated route for H5 iframe preview, reusing the same PreviewView.
+    //The backend buildPreviewUrl generates ${SCADA_SHELL_BASE_URL}/preview, so the path is /mobile-preview/preview,
+    //Fully equivalent to the management end /preview, with only path isolation, facilitating direct H5 connection without affecting management end operations.
+    //PreviewView already supports ?ticket= one-time ticket redemption Bearer (cross-origin iframe authentication),
+    //Plugins are loaded from the same-origin /plugins/. Plugin updates only require a standard release from the admin side, without the need to reissue the shell.
     path: '/mobile-preview/preview',
     name: 'mobile-preview',
     component: PreviewView,
   },
 ];
 
-/** ss-data 路由（full + data 模式加载）：系统管理 */
+/** ss-data routing (full + data mode loading): System Management*/
 const dataRoutes: RouteRecordRaw[] = [
   {
     path: '/system',
@@ -383,7 +381,7 @@ const dataRoutes: RouteRecordRaw[] = [
   },
 ];
 
-// ──────── 根据产品模式组合最终路由表 ────────
+//──────── Final Routing Table Based on Product Model Combinations ────────
 const routes: RouteRecordRaw[] = [...sharedRoutes];
 
 if (PRODUCT_MODE === 'full' || PRODUCT_MODE === 'scada') {
@@ -391,7 +389,7 @@ if (PRODUCT_MODE === 'full' || PRODUCT_MODE === 'scada') {
 }
 
 if (PRODUCT_MODE === 'full' || PRODUCT_MODE === 'data') {
-  // data 模式下，根路径需要重定向到 /system
+  //In data mode, the root path needs to be redirected to /system
   if (PRODUCT_MODE === 'data') {
     routes.push({
       path: '/',
@@ -401,10 +399,10 @@ if (PRODUCT_MODE === 'full' || PRODUCT_MODE === 'data') {
   routes.push(...dataRoutes);
 }
 
-// ──────── 兜底路由：未匹配的路径重定向到默认首页 ────────
-// 1. 抑制 Vue Router "No match found for location with path xxx" 告警
-// 2. 提供更好的用户体验（跳转到首页）而非空白页
-// 3. 默认首页跳转到 /system
+//──────── Fallback Route: Unmatched paths are redirected to the default home page ────────
+//1. Suppress Vue Router "No match found for location with path xxx" warnings
+//2. Provide a better user experience (redirect to the homepage) instead of a blank page
+//3. The default home page redirects to /system
 routes.push({
   path: '/:catchAll(.*)*',
   redirect: '/system',
@@ -414,14 +412,14 @@ routes.push({
 console.log(`[SS-Platform] Frontend Product Mode: ${PRODUCT_MODE}`);
 
 const router = createRouter({
-  // H5 内嵌场景以 VITE_BASE=/scada-preview/ 构建，路由基路径需与部署基路径一致
+  //The H5 embedded scene is built with VITE_BASE=/scada-preview/. The route base path must be consistent with the deployment base path.
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
 });
 
-// ──────── 权限码级别路由守卫（方案B增强） ────────
+//──────── Permission Code Level Route Guard (Option B Enhancement) ────────
 
-/** 路由路径 → 权限码映射（用于细粒度权限校验） */
+/** Routing path → Permission code mapping (used for fine-grained permission verification)*/
 const ROUTE_PERMISSIONS: Record<string, PermissionCode> = {
   '/system/projects': PermissionCodes.PROJECT_VIEW,
   '/system/projects/': PermissionCodes.PROJECT_VIEW,
@@ -461,31 +459,31 @@ const ROUTE_PERMISSIONS: Record<string, PermissionCode> = {
   '/system/app-logs': PermissionCodes.SYSTEM_SETTINGS,
 };
 
-/** 检查用户是否有权限码访问指定路径 */
+/** Check if the user has an access code to access the specified path*/
 function canAccessByPermission(path: string, userPermissions: PermissionCode[]): boolean {
-  // 非 /system 路径放行
+  //Non-/system path allowed
   if (!path.startsWith('/system')) return true;
-  // 首页（/system 或 /system/）始终可访问
+  //The home page (/system or /system/) is always accessible
   if (path === '/system' || path === '/system/') return true;
-  // admin 拥有 ALL 权限
+  //Admin has ALL permissions
   if (userPermissions.includes(PermissionCodes.ALL)) return true;
 
   const requiredCode = ROUTE_PERMISSIONS[path];
   if (requiredCode) {
     return userPermissions.includes(requiredCode);
   }
-  // 详情页（如 /system/devices/:id）匹配父级路由
+  //The details page (e.g., /system/devices/:id) matches the parent route
   for (const [routePath, code] of Object.entries(ROUTE_PERMISSIONS)) {
     if (path.startsWith(routePath + '/')) {
       return userPermissions.includes(code);
     }
   }
-  // 未在映射中配置的路径默认放行
+  //Paths not configured in the mapping are allowed by default
   return true;
 }
 
 router.beforeEach(async (to, _from, next) => {
-  // 根据产品模式确定默认首页
+  //Determine the default home page based on the product model
   const defaultHome = '/system';
 
   if (isDebugSkipAuth()) {
@@ -497,24 +495,24 @@ router.beforeEach(async (to, _from, next) => {
     return;
   }
 
-  // S-C03: 不再从 localStorage 读取 token，改用 auth store 的 isAuthenticated
-  // （Token 通过 HttpOnly Cookie 管理，JS 不可读取，前端仅维护认证状态标记）
+  //S-C03: No longer read the token from localStorage; instead, use isAuthenticated from the auth store.
+  //(The token is managed through an HttpOnly cookie, which cannot be read by JavaScript. The front end only maintains the authentication status flag.)
   const { useAuthStore }: any = await import('@scada-editor/system');
   const authStore = useAuthStore();
 
-  // 访问需要认证的页面：若未恢复会话，先尝试 restore（通过 Cookie）
+  //Accessing a page that requires authentication: If the session has not been restored, try restore (via Cookie) first.
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     if (!authStore.sessionRestored) {
       await authStore.restoreSession();
     }
-    // restore 后仍未认证 → 跳转登录
+    //Still not verified after restore → Go to login
     if (!authStore.isAuthenticated) {
       next('/login');
       return;
     }
   }
 
-  // 已认证访问 guest 页面（如登录页）→ 跳转首页
+  //Authenticated access to guest page (e.g., login page) → Redirect to homepage
   if (to.meta.guest && authStore.isAuthenticated) {
     next(defaultHome);
     return;
@@ -522,7 +520,7 @@ router.beforeEach(async (to, _from, next) => {
 
   if (to.meta.requiresAuth && authStore.isAuthenticated) {
     try {
-      // 兜底：极少数情况下 token 标记存在但 user 未加载（如热重载丢失状态）
+      //Fallback: In very rare cases, the token exists but the user is not loaded (e.g., hot reload loses state).
       if (!authStore.user) {
         await authStore.restoreSession();
         if (!authStore.isAuthenticated) {
@@ -530,18 +528,18 @@ router.beforeEach(async (to, _from, next) => {
           return;
         }
       }
-      // 权限校验（仅 /system 路径）
-      // v7.2: 改用用户实际 permissions（从后端 roleEntity 加载），
-      //       不再用本地 ROLE_PERMISSIONS[role] 按角色查表（test 等自建角色不在本地表，
-      //       会被判定为无权限导致页面打不开）
+      //Permission Check (Only /system Path)
+      //v7.2: Switch to using the user's actual permissions (loaded from the backend roleEntity),
+      //No longer use the local ROLE_PERMISSIONS[role] to look up by role (self-created roles such as test are not in the local table,
+      //It will be determined that there is no permission, causing the page to fail to open.)
       if (to.path.startsWith('/system') && authStore.user) {
-        // 确保菜单已从后端加载（菜单显示按 menuIds 过滤）
+        //Ensure that the menu has been loaded from the backend (menu display is filtered by menuIds)
         const { useMenuStore }: any = await import('@scada-editor/system');
         const menuStore = useMenuStore();
         if (!menuStore.loaded) {
           await menuStore.loadMenu();
         }
-        // 权限码级别校验：使用用户实际权限码（authStore.permissions）
+        //Permission Code Level Verification: Use the user's actual permission code (authStore.permissions)
         const userPerms = (authStore.permissions || []) as PermissionCode[];
         if (!canAccessByPermission(to.path, userPerms)) {
           next('/system');
@@ -557,14 +555,14 @@ router.beforeEach(async (to, _from, next) => {
   next();
 });
 
-// ──────── 浏览器标签页标题随模块动态切换 ────────
-// - /system  → SS-DATA          （ss-data 数据中台）
-// - /editor  → SS-SCADA Editor  （ss-scada 组态编辑器）
-// - /preview → SS-SCADA Editor  （ss-scada 组态运行器，与编辑器同属 scada 子系统）
-// - /login   → SS-SCADA Editor  （默认 fallback，与 index.html 初始 <title> 一致）
-// 设计目的：用户在多标签页切换时能一眼区分当前所处子系统
+//──────── Browser tab title changes dynamically with the module ────────
+//- /system  → SS-DATA          (SS-DATA Data Mid-end)
+//- /editor  → SS-SCADA Editor  (SS-SCADA Configuration Editor)
+//- /preview → SS-SCADA Editor  (SS-SCADA Configuration Runner, part of the SCADA subsystem along with the editor)
+//- /login   → SS-SCADA Editor  (default fallback, <title> consistent with the initial  in index.html)
+//Design purpose: Users can distinguish at a glance which subsystem they are currently in when switching between multiple tabs.
 router.afterEach((to) => {
-  // to.path 仅含路径部分（query 在 to.query 中），故 /system 及 /system/xxx 均可命中
+  //to.path only contains the path part (query is in to.query), so both /system and /system/xxx can be matched
   if (to.path === '/system' || to.path.startsWith('/system/')) {
     document.title = 'SS-DATA';
   } else {

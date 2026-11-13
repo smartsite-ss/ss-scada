@@ -30,7 +30,7 @@ watch(() => props.size, (size) => {
 const iconVNode = computed<VNode>(() => {
   const icon = iconMap[props.name];
   if (icon) return icon();
-  // fallback: 默认图标
+  // fallback: default icon
   return s(circle('12', '12', '3'));
 });
 </script>

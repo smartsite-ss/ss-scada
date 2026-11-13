@@ -124,7 +124,7 @@ const emit = defineEmits(['updateGraphicProperties']);
 const { themeStyles } = useTheme();
 const { t } = useI18n();
 
-/** 在 setup 中直接获取 pageStore（Pinia inject 在 setup 上下文中可用） */
+/** Get pageStore directly in setup (Pinia inject is available in the setup context) */
 const pageStore = (() => {
   try { return usePageStore(); } catch (err) {
     console.warn('[GenericConfig] usePageStore() 调用失败:', err);
@@ -157,9 +157,9 @@ const propsPath = computed<string>(() => {
 });
 
 /**
- * 预解析 optionsProvider。
- * - string key：由已知映射解析（如 'pageStore.pages'）
- * - 函数：在 setup 上下文中调用
+ * Pre-parse optionsProvider.
+ * - string key: resolved from a known mapping (e.g. 'pageStore.pages')
+ * - function: called within the setup context
  */
 const resolvedProviderOptions = computed(() => {
   const map: Record<string, { value: any; label: string }[]> = {};

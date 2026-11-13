@@ -3,7 +3,7 @@
     class="app"
     :style="themeStyles"
   >
-    <!-- 顶部工具栏 -->
+    <!--Top Toolbar-->
     <header class="app-header">
       <AppHeader
         @open-settings="openSettings"
@@ -15,7 +15,7 @@
       />
     </header>
 
-    <!-- 模板编辑模式提示栏 -->
+    <!--Template Edit Mode Prompt Bar-->
     <div v-if="isTemplateEditMode" class="template-edit-banner">
       <span class="template-edit-banner-icon">📐</span>
       <span class="template-edit-banner-text">{{ t('system.canvasTemplate.editing') }}</span>
@@ -24,16 +24,16 @@
       </button>
     </div>
     
-    <!-- 主内容区域 -->
+    <!--Main Content Area-->
     <main class="app-content">
-      <!-- 左侧图层面板 -->
+      <!--Left-side Layers Panel-->
       <aside 
         v-if="configStore.ui.showLayerPanel !== false"
         class="app-layer" 
         :class="{ collapsed: leftPanelCollapsed }"
         :style="{ width: leftPanelCollapsed ? configStore.ui.collapsedPanelWidth + 'px' : leftPanelWidth + 'px' }"
       >
-        <!-- 折叠切换按钮 -->
+        <!--Collapse Toggle Button-->
         <button
           class="panel-toggle-btn"
           :class="{ expanded: !leftPanelCollapsed }"
@@ -43,7 +43,7 @@
           <span class="toggle-icon">{{ leftPanelCollapsed ? '›' : '‹' }}</span>
         </button>
         
-        <!-- 内容 -->
+        <!--Contents-->
         <div
           v-show="!leftPanelCollapsed"
           class="panel-content"
@@ -51,7 +51,7 @@
           <SidePanel />
         </div>
         
-        <!-- 拖拽手柄 -->
+        <!--Drag Handle-->
         <div 
           v-show="!leftPanelCollapsed"
           class="resize-handle right"
@@ -59,9 +59,9 @@
         />
       </aside>
       
-      <!-- 中央设计区域 -->
+      <!--Central Design Area-->
       <div class="app-main">
-        <!-- 项目恢复期 loading 覆盖层：从挂载到 restoreProject 完成期间显示 -->
+        <!--Project recovery period loading overlay: Displayed from mounting to the completion of restoreProject-->
         <div
           v-if="projectLoading"
           class="app-main-loading"
@@ -75,7 +75,7 @@
           class="app-canvas"
           :class="{ 'app-canvas--hidden': projectLoading }"
         >
-          <!-- 画布工具栏 -->
+          <!--Canvas Toolbar-->
           <div
             v-if="configStore.ui.showToolbar !== false"
             class="canvas-controls"
@@ -110,12 +110,12 @@
             />
           </div>
           
-          <!-- 页面标签 -->
+          <!--Pages Label-->
           <div class="canvas-tabs">
             <PageTabs :project-id="projectId" />
           </div>
           
-          <!-- 画布区域 -->
+          <!--Off-Canvas Area-->
           <DesignCanvas
             ref="designCanvasRef"
             :format-painter-manager="formatPainterManager"
@@ -123,14 +123,14 @@
         </div>
       </div>
       
-      <!-- 右侧属性面板 -->
+      <!--Right-side Properties Panel-->
       <aside
         v-if="configStore.ui.showPropertyPanel !== false"
         class="app-property"
         :class="{ collapsed: rightPanelCollapsed }"
         :style="{ width: rightPanelCollapsed ? configStore.ui.collapsedPanelWidth + 'px' : rightPanelWidth + 'px' }"
       >
-        <!-- 折叠切换按钮 -->
+        <!--Collapse Toggle Button-->
         <button
           class="panel-toggle-btn"
           :class="{ expanded: !rightPanelCollapsed }"
@@ -140,7 +140,7 @@
           <span class="toggle-icon">{{ rightPanelCollapsed ? '‹' : '›' }}</span>
         </button>
 
-        <!-- 内容 -->
+        <!--Contents-->
         <div
           v-show="!rightPanelCollapsed"
           class="panel-content"
@@ -148,7 +148,7 @@
           <PropertyPanel />
         </div>
 
-        <!-- 拖拽手柄 -->
+        <!--Drag Handle-->
         <div
           v-show="!rightPanelCollapsed"
           class="resize-handle left"
@@ -157,15 +157,15 @@
       </aside>
     </main>
 
-    <!-- AI 助手浮动面板（可拖动，P1-T04） -->
+    <!--AI Assistant Floating Panel (Draggable, P1-T04)-->
     <FloatingAiPanel />
 
-    <!-- 底部脚本编辑抽屉 -->
+    <!--Bottom Script Editing Drawer-->
     <ScriptDrawer />
 
-    <!-- 底部状态栏已整合到 DesignCanvas 中 -->
+    <!--The bottom status bar has been integrated into DesignCanvas-->
 
-    <!-- 预览模态框 -->
+    <!--Preview Modal-->
     <div
       v-if="showPreview"
       class="preview-modal"
@@ -193,20 +193,20 @@
       </div>
     </div>
 
-    <!-- 设置模态框 -->
+    <!--Set Modal Box-->
     <SettingsModal 
       :visible="showSettingsModal" 
       @close="closeSettingsModal" 
     />
 
-    <!-- 打开工程对话框 -->
+    <!--Open Project Dialog-->
     <OpenProjectDialog
       v-model:visible="showOpenProjectDialog"
       :current-project-id="projectId"
       @selected="onProjectSelected"
     />
 
-    <!-- 导入工程对话框 -->
+    <!--Import Project Dialog-->
     <div
       v-if="showImportDialog"
       class="dialog-overlay"
@@ -288,7 +288,7 @@ import {
   GraphicFactory,
 } from '@scada-editor/core';
 import type { PageTemplate } from '@scada-editor/core';
-// 经 unknown 断言窄化 t 签名：解构 i18n.global 会触发 vue-i18n messages 字面量 schema 深度类型实例化（TS2589）
+// t signature narrowed by unknown assertion: Deconstructing i18n.global triggers vue-i18n messages literal schema deep type instantiation (TS2589)
 const t = (key: string, params?: Record<string, unknown>): string =>
   (i18n.global as unknown as { t: (key: string, params?: Record<string, unknown>) => string }).t(key, params);
 import { showAlert, showConfirm, useGraphic, useProjectSave, useProjectData } from '@scada-editor/editor';
@@ -305,31 +305,31 @@ const projectId = (route.params.projectId as string | undefined) || 'default-pro
 const projectStore = useProjectStore();
 const templateStore = useTemplateStore();
 
-/** 编辑模式：项目页面 / 模板页面 */
+/** Edit Mode: Project Page / Template Page*/
 type EditorMode = 'project' | 'template';
 
-/** 当前编辑模式 */
+/** Current Editing Mode*/
 const editorMode = ref<EditorMode>('project');
 
-/** 正在编辑的画布模板 ID（从路由 params 传入，仅在 editorMode=template 时有值） */
+/** ID of the canvas template being edited (passed from route params, only has a value when editorMode=template)*/
 const canvasTemplateEditId = ref<string | null>(
   (route.params.canvasTemplateId as string) || null,
 );
 
-/** 模板编辑时的项目 ID（从 query 传入，用于区分项目级/系统级模板保存路径） */
+/** Project ID when editing the template (passed from the query to distinguish between project-level and system-level template save paths)*/
 const canvasTemplateProjectId = ref<string | null>(
   (route.query.projectId as string) || null,
 );
 
-// 根据路由参数初始化编辑模式
+// Initialize Edit Mode Based on Routing Parameters
 if (canvasTemplateEditId.value) {
   editorMode.value = 'template';
 }
 
-/** 是否处于模板编辑模式 */
+/** Whether in template editing mode*/
 const isTemplateEditMode = computed(() => editorMode.value === 'template');
 
-// 面板状态 - 使用 configStore
+// Panel Status - Use configStore
 const configStore = useConfigStore();
 const leftPanelWidth = computed({
   get: () => configStore.ui.leftPanelWidth,
@@ -348,19 +348,19 @@ const rightPanelCollapsed = computed({
   set: (val) => configStore.updateUIConfig({ rightPanelCollapsed: val })
 });
 
-// 拖拽状态
+// Drag State
 const isResizingLeft = ref<boolean>(false);
 const isResizingRight = ref<boolean>(false);
 const resizeStartX = ref<number>(0);
 const resizeStartWidth = ref<number>(0);
 
-// 项目恢复加载状态：从挂载到 restoreProject 完成期间显示 loading 覆盖层
+// Project Restore Loading State: Display the loading overlay from mounting to the completion of restoreProject
 const projectLoading = ref<boolean>(true);
 
-// 引用 DesignCanvas 组件
+// Reference the DesignCanvas component
 const designCanvasRef = ref<InstanceType<typeof DesignCanvas> | null>(null);
 
-// 格式刷管理器
+// Format Painter Manager
 const formatPainterManager = new FormatPainterManager();
 const isFormatPainterActive = ref(false);
 
@@ -368,10 +368,10 @@ formatPainterManager.onModeChange((mode) => {
   isFormatPainterActive.value = mode !== 'idle';
 });
 
-// 设置模态框
+// Set Modal Box
 const showSettingsModal = ref<boolean>(false);
 
-// 工程操作对话框
+// Project Operation Dialog Box
 const showOpenProjectDialog = ref(false);
 const showImportDialog = ref(false);
 const importFileInput = ref<HTMLInputElement | null>(null);
@@ -385,13 +385,13 @@ const closeSettingsModal = () => {
   showSettingsModal.value = false;
 };
 
-// 主题相关
+// Topic-related
 const pageStore = usePageStore();
 const { themeStyles } = useTheme();
  
  
 
-// 使用统一的 useGraphic composable
+// Use a unified useGraphic composable
 const {
   alignLeft: alignLeftFromGraphic,
   alignRight: alignRightFromGraphic,
@@ -406,10 +406,10 @@ const {
   exportPage: exportPageFromGraphic
 } = useGraphic();
  
-// 画布状态
+// Canvas Status
 const snapToGrid = ref(true);
 
-// 画布控制方法
+// Canvas Control Method
 const zoomIn = () => designCanvasRef.value?.zoomIn();
 const zoomOut = () => designCanvasRef.value?.zoomOut();
 const resetZoom = () => designCanvasRef.value?.resetZoom();
@@ -464,7 +464,7 @@ const redo = () => {
   designCanvasRef.value?.refresh();
 };
 
-// 格式刷处理
+// Format Painter Processing
 const handleFormatPainter = () => {
   if (formatPainterManager.isActive()) {
     formatPainterManager.deactivate();
@@ -481,7 +481,7 @@ const handleFormatPainter = () => {
   }
 };
 
-// 面板折叠/展开
+// Panel Collapse/Expand
 const toggleLeftPanel = () => {
   leftPanelCollapsed.value = !leftPanelCollapsed.value;
 };
@@ -490,7 +490,7 @@ const toggleRightPanel = () => {
   rightPanelCollapsed.value = !rightPanelCollapsed.value;
 };
 
-// 左侧面板拖拽
+// Drag the left panel
 const startLeftResize = (e: MouseEvent) => {
   isResizingLeft.value = true;
   resizeStartX.value = e.clientX;
@@ -516,7 +516,7 @@ const stopLeftResize = () => {
   document.body.style.userSelect = '';
 };
 
-// 右侧面板拖拽
+// Drag the right panel
 const startRightResize = (e: MouseEvent) => {
   isResizingRight.value = true;
   resizeStartX.value = e.clientX;
@@ -542,7 +542,7 @@ const stopRightResize = () => {
   document.body.style.userSelect = '';
 };
 
-// 预览当前页面
+// Preview Current Page
 const showPreview = ref(false);
 const previewWidth = ref(800);
 const previewHeight = ref(600);
@@ -550,16 +550,15 @@ const previewHeight = ref(600);
 const { initDataSourceLifecycle, destroyDataSourceLifecycle } = useDataSourceLifecycle();
 
 /**
- * 激活当前页面编辑态数据管道（EditorView 中调用）。
+ * Activate the edit-mode data pipeline of the current page (called in EditorView).
  *
- * 注意：不能因「页面级 dataSources 为空」提前返回——wsStore.connect 位于
- * initDataSourceLifecycle 内部（dataSources 守卫之前），直连绑定变量的图元
- * （tag-variable 等，绑定信息写在 config.customProps）同样依赖该连接收数。
- */
+ * Note: Cannot return early due to "page-level dataSources being empty" – wsStore.connect is located
+ * inside initDataSourceLifecycle (before the dataSources guard), the element directly connected to the bound variable
+ * (tag-variable, etc., with binding information written in config.customProps) also rely on this connection to receive data.*/
 async function activateEditModeDataSources() {
   const pageData = pageStore.currentPage as any;
   if (!pageData) return;
-  // 确保 graphicBindings 已填充（页面 JSON 可能未持久化）
+  // Ensure that graphicBindings have been populated (the page JSON may not have been persisted)
   if (pageData.dataSource) {
     pageData.dataSource.graphicBindings = buildGraphicBindingsFromPage(pageData);
   }
@@ -573,10 +572,10 @@ const preview = async () => {
     previewHeight.value = page.height || 600;
   }
 
-  // 清理编辑态绑定，再启动预览态绑定（对齐 §16.3 生命周期）
+  // Clear the edit mode binding, then start the preview mode binding (align with §16.3 Lifecycle)
   await destroyDataSourceLifecycle();
 
-  // 初始化模态预览的数据源，使数据绑定在预览中生效（逻辑抽取至 useDataSourceLifecycle）
+  // Initialize the data source for the modal preview to make data binding effective in the preview (logic extracted to useDataSourceLifecycle)
   const pageData = pageStore.currentPage as any;
   pageData.dataSource.graphicBindings = buildGraphicBindingsFromPage(pageData);
   await initDataSourceLifecycle(pageData, projectId, 'EditorView');
@@ -587,14 +586,14 @@ const preview = async () => {
 
 const closePreview = async () => {
   showPreview.value = false;
-  // 清理预览数据源，恢复编辑态数据绑定
+  // Clear preview data source and restore edit mode data binding
   await destroyDataSourceLifecycle();
   await activateEditModeDataSources();
-  // 恢复键盘上下文为全局模式
+  // Restore keyboard context to global mode
   keyboardService.setContext(KeyboardContext.GLOBAL);
 };
 
-// 注册预览相关的按键
+// Buttons related to registration preview
 function registerPreviewKeys() {
   keyboardService.registerKey(
     'escape',
@@ -609,7 +608,7 @@ function registerPreviewKeys() {
     10
   );
 
-  // 格式刷模式下 ESC 退出
+  // Press ESC to exit Format Painter mode
   keyboardService.registerKey(
     'escape',
     (event) => {
@@ -624,10 +623,10 @@ function registerPreviewKeys() {
   );
 }
 
-// 刷新当前编辑的页码及所有图元
+// Refresh the currently edited page number and all graphics
 const refresh = () => designCanvasRef.value?.refresh();
 
-// 布局配置变化处理
+// Handling Changes in Layout Configuration
 const handleLayoutConfigChanged = (config: {
   leftPanelDefaultWidth: number;
   rightPanelDefaultWidth: number;
@@ -639,56 +638,56 @@ const handleLayoutConfigChanged = (config: {
 let triggerAutoSave: (() => void) | undefined;
 let saveListener: (() => void) | null = null;
 
-// 生命周期钩子
+// Lifecycle Hooks
 onMounted(async () => {
-  // 初始化项目上下文，供编辑器内组件通过 projectStore.currentProject 获取项目信息
+  // Initialize the project context so that components within the editor can obtain project information through projectStore.currentProject.
   if (projectId && projectId !== 'default-project') {
     projectStore.fetchProject(projectId).catch(() => {
       console.warn('[EditorView] 获取项目信息失败，projectId:', projectId);
     });
   }
 
-  // 开始监听键盘事件
+  // Start listening for keyboard events
   keyboardService.startListening();
-  // 注册预览相关的按键
+  // Buttons related to registration preview
   registerPreviewKeys();
 
-  // 标记进入编辑态，允许 StateService 自动保存
+  // Mark as in edit mode, allowing StateService to automatically save
   stateService.setEditMode(true);
 
-  // 初始化保存服务
+  // Initialize Save Service
   initSaveService();
 
-  // 注册保存快捷键监听器
+  // Register Save Shortcut Key Listener
   saveListener = () => {
     manualSave();
   };
   eventBus.on('save-page', saveListener);
   
-  // 注册保存全部快捷键监听器
+  // Register to save all shortcut key listeners
   eventBus.on('save-all-pages', saveAllPages);
   
-  // 注册预览快捷键监听
+  // Register Preview Shortcut Key Listener
   eventBus.on('preview-in-new-tab', previewInNewTab);
 
-  // 注册布局配置变化监听器
+  // Register Layout Configuration Change Listener
   eventBus.on('layout-config-changed', handleLayoutConfigChanged);
 
-  // 注册页面分组事件监听
+  // Registration Page Group Event Listener
   eventBus.on('page-group-created', handlePageGroupCreated);
   eventBus.on('page-group-renamed', handlePageGroupRenamed);
   eventBus.on('page-group-deleted', handlePageGroupDeleted);
 
-  // 注册页面操作事件监听
+  // Registration Page Action Event Listener
   eventBus.on('page-renamed', handlePageRenamed);
   eventBus.on('page-moved', handlePageMoved);
 
-  // 注册页面刷新事件
+  // Register Page Refresh Event
   eventBus.on('page-refresh', handlePageRefresh);
 
-  // 尝试从保存服务恢复项目
+  // Try to recover the item from the Save Service
   nextTick(async () => {
-    // 模板编辑模式：跳过项目恢复，清空页面后直接加载模板
+    // Template Editing Mode: Skip item restoration and load the template directly after clearing the page.
     if (canvasTemplateEditId.value) {
       projectLoading.value = false;
       pageStore.pages.splice(0, pageStore.pages.length);
@@ -696,18 +695,18 @@ onMounted(async () => {
       await loadTemplateForEditing(canvasTemplateEditId.value);
     } else {
       await restoreProject();
-      // 编辑态激活数据管道，画布图元实时显示数据值（对齐 §16.3 生命周期）
+      // Activate the data pipeline in edit mode, and the canvas element displays data values in real time (aligned with §16.3 Lifecycle)
       await activateEditModeDataSources();
     }
   });
 
-  // 监听图元变化，触发自动保存
+  // Monitor element changes and trigger auto-save
   triggerAutoSave = () => scheduleAutoSave(saveProject);
   eventBus.on(Events.GRAPHIC_ADDED, triggerAutoSave);
   eventBus.on(Events.GRAPHIC_REMOVED, triggerAutoSave);
   eventBus.on(Events.GRAPHIC_UPDATED, triggerAutoSave);
 
-  // 监听图元增删/更新，动态维护数据绑定
+  // Monitor the addition/deletion/update of elements, and dynamically maintain data binding
   eventBus.on(Events.GRAPHIC_ADDED, ({ graphic }: any) => {
     if (!graphic?.dataSource?.enabled) return;
     const dsId = graphic.dataSource.dataSource;
@@ -727,10 +726,10 @@ onMounted(async () => {
 
   eventBus.on(Events.GRAPHIC_UPDATED, ({ graphic, properties }: any) => {
     if (!graphic) return;
-    // §12 统一方案：仅 dataSource 配置实际变更时才重建订阅，
-    // style/geometry 等变更不做无谓的 unbind + rebind
+    // §12 Unified solution: Rebuild subscriptions only when the dataSource configuration actually changes.
+    // Changes such as style/geometry do not perform unnecessary unbind + rebind
     if (!properties?.dataSource) return;
-    // 先解绑旧绑定，再根据新配置重新注册
+    // Unlink the old binding first, then re-register according to the new configuration
     BindingManager.getInstance().unbind(graphic.id);
     if (!graphic.dataSource?.enabled) return;
     const dsId = graphic.dataSource.dataSource;
@@ -746,52 +745,52 @@ onMounted(async () => {
 });
 
 onUnmounted(() => {
-  // 标记退出编辑态，阻止 StateService 自动保存
+  // Mark exit from edit mode to prevent StateService from auto-saving
   stateService.setEditMode(false);
 
-  // 停止监听键盘事件
+  // Stop listening to keyboard events
   keyboardService.stopListening();
-  // 清除预览相关的按键绑定
+  // Clear preview-related keybindings
   keyboardService.unregisterContext(KeyboardContext.PREVIEW);
 
-  // 清除保存监听
+  // Clear Saved Monitoring
   if (saveListener) {
     eventBus.off('save-page', saveListener);
   }
   eventBus.off('save-all-pages', saveAllPages);
   eventBus.off('preview-in-new-tab', previewInNewTab);
 
-  // 清除布局配置变化监听
+  // Clear Layout Configuration Change Listener
   eventBus.off('layout-config-changed', handleLayoutConfigChanged);
 
-  // 清除页面分组事件监听
+  // Clear Page Grouping Event Listener
   eventBus.off('page-group-created', handlePageGroupCreated);
   eventBus.off('page-group-renamed', handlePageGroupRenamed);
   eventBus.off('page-group-deleted', handlePageGroupDeleted);
 
-  // 清除页面操作事件监听
+  // Clear Page Action Event Listener
   eventBus.off('page-renamed', handlePageRenamed);
   eventBus.off('page-moved', handlePageMoved);
 
-  // 清除自动保存监听
+  // Clear Auto-Save Listener
   if (triggerAutoSave) {
     eventBus.off(Events.GRAPHIC_ADDED, triggerAutoSave);
     eventBus.off(Events.GRAPHIC_REMOVED, triggerAutoSave);
     eventBus.off(Events.GRAPHIC_UPDATED, triggerAutoSave);
   }
 
-  // 清理编辑态数据管道
+  // Clean up data pipeline in edit mode
   destroyDataSourceLifecycle();
 });
 
-// 导出当前页面为 JSON 格式（使用统一导出）
+// Export the current page in JSON format (using unified export)
 const exportPage = () => {
   exportPageFromGraphic();
 };
 
-// ==================== 保存功能（Composables） ====================
+// ==================== Save Function (Composables) ====================
 
-// 配置保存服务（默认使用 localStorage）
+// Configuration Saving Service (localStorage used by default)
 const customSaveService = projectId ? createProjectSaveService(projectId) : undefined;
 
 const saveConfig: SaveServiceConfig = projectId
@@ -810,10 +809,10 @@ const {
   intervalMs: (configStore.autoSave?.interval ?? 300) * 1000,
 });
 
-// 使用项目数据 Composable
+// Using Project Data Composable
 const { collectProjectData, restorePagesToStore } = useProjectData();
 
-// 监听自动保存配置变化，动态更新
+// Monitor auto-save configuration changes and update dynamically
 watch(
   () => ({ enabled: configStore.autoSave?.enabled, interval: configStore.autoSave?.interval }),
   ({ enabled, interval }) => {
@@ -827,7 +826,7 @@ watch(
   { immediate: false },
 );
 
-// 保存项目（封装 composable 调用）
+// Save Project (Encapsulate Composable Call)
 const saveProject = async () => {
   const projectData = collectProjectData();
   if (!projectData) {
@@ -837,7 +836,7 @@ const saveProject = async () => {
 
   try {
 
-    // 模板编辑模式：保存到画布模板 API
+    // Template Edit Mode: Save to Canvas Template API
     if (isTemplateEditMode.value && canvasTemplateEditId.value) {
       const currentPage = pageStore.currentPage;
       if (!currentPage) return;
@@ -856,7 +855,7 @@ const saveProject = async () => {
         pageStore.pages.forEach(p => p.clearDirty?.());
         MessageService.showSaveSuccess(t('editor.saveSuccess'));
 
-        // 引用模式：提示同步关联页面
+        // Reference Mode: Prompt for Synchronous Association Page
         if (templateStore.configMode === 'reference') {
           const updatedTpl = templateStore.findTemplate(canvasTemplateEditId.value!);
           if (updatedTpl) {
@@ -879,7 +878,7 @@ const saveProject = async () => {
       return;
     }
 
-    // 同步上传当前页的 preview.png + preview_small.png（与 page.json 同请求落盘）
+    // Simultaneously upload preview.png and preview_small.png of the current page (written to disk in the same request as page.json)
     const currentPage = pageStore.currentPage;
     if (currentPage) {
       const dataURL = (document.getElementById('canvas') as HTMLCanvasElement | null)?.toDataURL('image/png');
@@ -901,7 +900,7 @@ const saveProject = async () => {
 
     await saveProjectFromComposable(projectData);
 
-    // 保存成功后清除所有页面的 dirty 标记
+    // Clear the dirty flag for all pages after successful saving
     pageStore.pages.forEach(p => p.clearDirty?.());
 
     if (currentPage) {
@@ -962,12 +961,12 @@ async function handlePageMoved({ pageId: _pageId, pageName, fromGroupName, toGro
   }
 }
 
-// 手动保存（Ctrl+S / 菜单点击）
+// Save Manually (Ctrl+S / Menu Click)
 const manualSave = () => {
   saveProject().catch(err => console.error('[EditorView] 手动保存失败', err));
 };
 
-// 工程保存（Ctrl+Shift+S）：保存所有已加载（非 _lazy）的页面
+// Save Project (Ctrl+Shift+S): Saves all loaded (non-_lazy) pages
 const saveAllPages = async () => {
   const projectData = collectProjectData();
   if (!projectData) {
@@ -975,13 +974,13 @@ const saveAllPages = async () => {
     return;
   }
 
-  // 标记为保存全部（传递给 projectSaveService save() 方法）
+  // Marked as Save All (passed to the projectSaveService save() method)
   (projectData as any).__saveAll = true;
 
   try {
     await saveProjectFromComposable(projectData);
 
-    // 保存成功后清除所有页面的 dirty 标记
+    // Clear the dirty flag for all pages after successful saving
     pageStore.pages.forEach(p => p.clearDirty?.());
 
     MessageService.showSaveSuccess(t('editor.saveAllSuccess'));
@@ -991,7 +990,7 @@ const saveAllPages = async () => {
   }
 };
 
-// 刷新页面结构（从服务器重新加载）
+// Refresh page structure (reload from server)
 async function handlePageRefresh() {
   try {
     const projectData = await restoreProjectFromComposable();
@@ -1002,7 +1001,7 @@ async function handlePageRefresh() {
           page.scale = 100;
         }
       });
-      // 如果有延迟加载的页面，重置加载状态并加载当前页
+      // If there are pages with delayed loading, reset the loading status and load the current page
       if (lazyPageNames.length > 0) {
         loadedPageNames.clear();
         const currentPage = pageStore.currentPage;
@@ -1014,8 +1013,8 @@ async function handlePageRefresh() {
         }
       }
 
-      // 页面重建后重新激活数据管道（splice 替换页面不改变 currentPageId，
-      // 页面切换 watch 不会触发，此处必须显式重建绑定）
+      // Reactivate the data pipeline after the page is rebuilt (Splice replaces the page without changing the currentPageId,
+      // The watch for page switching will not be triggered. The binding must be explicitly recreated here.)
       await destroyDataSourceLifecycle();
       await activateEditModeDataSources();
     }
@@ -1024,7 +1023,7 @@ async function handlePageRefresh() {
   }
 }
 
-// ==================== 工程菜单操作 ====================
+// ==================== Engineering Menu Operations ====================
 
 function handleOpenProject() {
   showOpenProjectDialog.value = true;
@@ -1050,12 +1049,12 @@ async function handleCloseProject() {
   router.push('/');
 }
 
-// 延迟辅助函数
+// Deferred Auxiliary Function
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 async function handleExportProject() {
   try {
-    // 显示9条导出进度日志
+    // Display 9 export progress logs
     MessageService.showMessage(t('editor.exportStep1'), 'info', 2000);
     await delay(400);
     MessageService.showMessage(t('editor.exportStep2'), 'info', 2000);
@@ -1069,11 +1068,11 @@ async function handleExportProject() {
     MessageService.showMessage(t('editor.exportStep6'), 'info', 5000);
     await delay(400);
 
-    // Step 7: 调用后端 API 生成压缩包
+    // Step 7: Call the backend API to generate the compressed package
     MessageService.showMessage(t('editor.exportStep7'), 'info', 10000);
     const blob = await projectApi.exportProjectZip(projectId);
 
-    // Step 8: 下载文件
+    // Step 8: Download the file
     MessageService.showMessage(t('editor.exportStep8'), 'info', 3000);
 
     const url = window.URL.createObjectURL(blob);
@@ -1085,7 +1084,7 @@ async function handleExportProject() {
     document.body.removeChild(a);
     window.URL.revokeObjectURL(url);
 
-    // Step 9: 导出完成
+    // Step 9: Export Complete
     MessageService.showExportSuccess(t('editor.exportStep9') + ' ' + t('editor.exportSuccess'));
   } catch (error) {
     console.error('[EditorView] Export failed:', error);
@@ -1214,7 +1213,7 @@ async function uploadPageScreenshot(pageName: string, groupName?: string) {
     const blob = dataURLtoBlob(dataURL);
     const file = new File([blob], 'preview.png', { type: 'image/png' });
 
-    // 生成缩略图（用于页面面板显示）
+    // Generate thumbnail (for display on the page panel)
     const smallDataURL = generateSmallPreviewDataURL(canvas, PREVIEW_SMALL_MAX_WIDTH, PREVIEW_SMALL_MAX_HEIGHT);
     const smallBlob = dataURLtoBlob(smallDataURL);
     const smallFile = new File([smallBlob], 'preview_small.png', { type: 'image/png' });
@@ -1225,14 +1224,13 @@ async function uploadPageScreenshot(pageName: string, groupName?: string) {
   }
 }
 
-// 缩略图最大尺寸（保持纵横比，长边不超过该值）
+// Maximum thumbnail size (maintain aspect ratio, long side does not exceed this value)
 const PREVIEW_SMALL_MAX_WIDTH = 320;
 const PREVIEW_SMALL_MAX_HEIGHT = 240;
 
 /**
- * 将 canvas 缩放后导出为 PNG dataURL。
- * 使用浏览器原生 canvas，无需额外依赖。
- */
+ * Resize the canvas and export it as a PNG dataURL.
+ * Uses the browser's native canvas, with no additional dependencies.*/
 function generateSmallPreviewDataURL(source: HTMLCanvasElement, maxW: number, maxH: number): string {
   const ratio = Math.min(maxW / source.width, maxH / source.height, 1);
   const w = Math.max(1, Math.round(source.width * ratio));
@@ -1251,13 +1249,12 @@ function generateSmallPreviewDataURL(source: HTMLCanvasElement, maxW: number, ma
   return small.toDataURL('image/png');
 }
 
-// ─── 按需加载：已加载完整数据的页面名集合 ───
+// ─── Lazy Loading: Set of page names with fully loaded data ───
 const loadedPageNames = new Set<string>();
 
 /**
- * 按需加载页面的完整数据（包含 graphics）
- * 当用户打开一个未加载数据的页面时触发
- */
+ * Load complete page data (including graphics) on demand
+ * Triggered when a user opens a page that has not loaded data*/
 async function ensurePageDataLoaded(pageId: string): Promise<void> {
   if (loadedPageNames.has(pageId)) return;
 
@@ -1267,7 +1264,7 @@ async function ensurePageDataLoaded(pageId: string): Promise<void> {
   const page = pageStore.pages[pageIndex];
   const pageName = page.name || pageId;
 
-  // 如果是本地新建的页面（无 _lazy 标记），无需从后端加载数据
+  // If it is a newly created local page (without the _lazy tag), there is no need to load data from the backend.
   if (!(page as any)._lazy) {
     loadedPageNames.add(pageId);
     return;
@@ -1280,9 +1277,9 @@ async function ensurePageDataLoaded(pageId: string): Promise<void> {
       return;
     }
 
-    // ── 创建新 BasePage 实例，加载完整数据 ──
-    // 不能直接修改原 page 对象（BasePage 属性非 Vue 响应式），
-    // 必须替换 pages 数组中的元素才能触发 Vue 响应式更新
+    // ── Create a new BasePage instance and load the complete data ──
+    // The original page object cannot be modified directly (the BasePage property is not Vue-reactive),
+    // Elements in the pages array must be replaced to trigger Vue's reactive update.
     const newPage = new BasePage();
     newPage.init({
       id: pageData.id || page.id,
@@ -1298,10 +1295,10 @@ async function ensurePageDataLoaded(pageId: string): Promise<void> {
       newPage.scale = pageData.scale;
     }
 
-    // 用 fromJSON 加载 graphics 等完整数据
+    // Load complete data such as graphics using fromJSON
     newPage.fromJSON(pageData);
 
-    // 更新 pageGroupMap 映射（如果 ID 变了）
+    // Update pageGroupMap mapping (if ID has changed)
     const oldId = page.id;
     const newId = newPage.id;
     if (oldId !== newId) {
@@ -1315,18 +1312,18 @@ async function ensurePageDataLoaded(pageId: string): Promise<void> {
       }
     }
 
-    // 从旧页面保留预览小图 URL（来自大纲数据）
+    // Retain preview thumbnail URL from old page (from outline data)
     const previewSmallUrl = (page as any).previewSmallUrl;
     if (previewSmallUrl) {
       (newPage as any).previewSmallUrl = previewSmallUrl;
     }
 
-    // 替换 pages 数组中的页面 → 触发 Vue 响应式更新
-    // pageStore.currentPage 返回新引用 → sortedGraphics 等 computed 重新求值
-    // 所有 watch（deep watch、PluginLayerManager 等）都会自动触发
+    // Replace the pages in the pages array → Trigger Vue reactive update
+    // pageStore.currentPage returns a new reference → computed properties such as sortedGraphics are re-evaluated
+    // All watches (deep watch, PluginLayerManager, etc.) will be triggered automatically
     pageStore.pages.splice(pageIndex, 1, newPage);
 
-    // 如果新 ID 与旧 ID 不同，需更新 currentPageId
+    // If the new ID is different from the old ID, the currentPageId needs to be updated.
     if (oldId !== newId && pageStore.currentPageId === oldId) {
       pageStore.currentPageId = newId;
     }
@@ -1337,17 +1334,17 @@ async function ensurePageDataLoaded(pageId: string): Promise<void> {
   }
 }
 
-/** 从画布模板管理页打开模板进入编辑模式 */
+/** Open the template from the Canvas Template Management page to enter edit mode*/
 async function loadTemplateForEditing(templateId: string): Promise<void> {
   try {
-    // 如果有 projectId（项目级模板），同时加载系统模板和项目模板
+    // If there is a projectId (project-level template), load both the system template and the project template.
     if (canvasTemplateProjectId.value) {
       await templateStore.loadTemplates(canvasTemplateProjectId.value);
     } else {
       await templateStore.loadSystemTemplates();
     }
 
-    // 在系统模板和项目模板两个列表中搜索
+    // Search in both the System Templates and Project Templates lists
     let tpl = templateStore.systemTemplates.find(t => t.id === templateId);
     if (!tpl) {
       tpl = templateStore.projectTemplates.find(t => t.id === templateId);
@@ -1389,7 +1386,7 @@ async function loadTemplateForEditing(templateId: string): Promise<void> {
   }
 }
 
-/** 将模板图元和配置同步到引用该模板的页面 */
+/** Sync template elements and configurations to pages that reference the template*/
 function syncTemplateToPages(template: PageTemplate, templateId: string) {
   const linkedPages = pageStore.pages.filter(p => p.templateId === templateId);
 
@@ -1400,14 +1397,14 @@ function syncTemplateToPages(template: PageTemplate, templateId: string) {
   for (const page of linkedPages) {
     const p = page as any;
 
-    // 更新页面配置
+    // Update Page Configuration
     if (template.pageConfig) {
       p.width = template.pageConfig.width;
       p.height = template.pageConfig.height;
       p.backgroundColor = template.pageConfig.backgroundColor;
     }
 
-    // 替换图元
+    // Replace Graphic Element
     if (p.graphics && typeof p.removeGraphic === 'function') {
       const current = [...(p.graphics || [])];
       for (const g of current) {
@@ -1428,7 +1425,7 @@ function syncTemplateToPages(template: PageTemplate, templateId: string) {
   }
 }
 
-// 恢复项目（封装 composable 调用）
+// Restore Project (Encapsulate Composable Call)
 const restoreProject = async (): Promise<boolean> => {
   try {
     const projectData = await restoreProjectFromComposable();
@@ -1442,7 +1439,7 @@ const restoreProject = async (): Promise<boolean> => {
       }
     });
 
-    // 如果有延迟加载的页面，立即加载当前页的完整数据
+    // If there are pages with lazy loading, load the full data of the current page immediately.
     if (lazyPageNames.length > 0) {
       const currentPage = pageStore.currentPage;
       if (currentPage) {
@@ -1458,12 +1455,12 @@ const restoreProject = async (): Promise<boolean> => {
     console.error('[EditorView] 恢复项目失败', error);
     return false;
   } finally {
-    // 无论成功或失败，都关闭 loading 覆盖层，避免画布永久被遮挡
+    // Regardless of success or failure, close the loading overlay to prevent the canvas from being permanently obstructed.
     projectLoading.value = false;
   }
 };
 
-// 监听页面切换，触发按需加载 + 数据源生命周期重建
+// Monitor page switching, trigger on-demand loading + data source lifecycle reconstruction
 watch(
   () => pageStore.currentPageId,
   async (newPageId, oldPageId) => {
@@ -1471,7 +1468,7 @@ watch(
     if (!loadedPageNames.has(newPageId)) {
       await ensurePageDataLoaded(newPageId);
     }
-    // 页面切换时重建数据源绑定
+    // Rebuild data source binding when switching pages
     if (oldPageId && newPageId !== oldPageId) {
       await destroyDataSourceLifecycle();
       await activateEditModeDataSources();
@@ -1479,7 +1476,7 @@ watch(
   },
 );
 
-// 在新标签页预览
+// Preview in a new tab
 const previewInNewTab = async () => {
   const currentPage = pageStore.currentPage;
   if (!currentPage) {
@@ -1492,7 +1489,7 @@ const previewInNewTab = async () => {
       ? await (currentPage as any).toJSONAsync()
       : currentPage.toJSON();
 
-    // 保存所有页面数据到 IndexedDB，供 PageBrowser 等图元在预览中使用
+    // Save all page data to IndexedDB for use in previews by elements such as PageBrowser
     const allPages = pageStore.pages.map(p => ({
       name: p.name,
       data: p.toJSON(),
@@ -1504,8 +1501,8 @@ const previewInNewTab = async () => {
     const pageName = currentPage.name || pageData.id;
 
     if (isTemplateEditMode.value) {
-      // 模板模式：通过 IndexedDB 加载，无需 projectId
-      // 预览地址基于部署基路径（H5 内嵌场景 VITE_BASE=/scada-preview/），不能硬编码根路径 /preview
+      // Template Mode: Loaded via IndexedDB, no projectId required
+      // The preview address is based on the deployment base path (H5 embedded scenario VITE_BASE=/scada-preview/), and the root path /preview cannot be hard-coded.
       const previewUrl = `${window.location.origin}${import.meta.env.BASE_URL}preview?mode=template&pageName=${encodeURIComponent(pageName)}`;
       const newWindow = window.open(previewUrl, '_blank');
       if (!newWindow) {
@@ -1514,7 +1511,7 @@ const previewInNewTab = async () => {
       return;
     }
 
-    // 项目模式：保存当前页面到后端，确保预览时可从后端加载
+    // Project Mode: Save the current page to the backend to ensure it can be loaded from the backend during preview.
     try {
       const groupName = getCurrentPageGroupName();
       await pageApi.savePage(projectId, currentPage.name || pageData.id, pageData, groupName);
@@ -1523,7 +1520,7 @@ const previewInNewTab = async () => {
     }
 
     const groupName = getCurrentPageGroupName();
-    // 预览地址基于部署基路径（H5 内嵌场景 VITE_BASE=/scada-preview/），不能硬编码根路径 /preview
+    // The preview address is based on the deployment base path (H5 embedded scenario VITE_BASE=/scada-preview/), and the root path /preview cannot be hard-coded.
     let previewUrl = `${window.location.origin}${import.meta.env.BASE_URL}preview?projectId=${encodeURIComponent(projectId)}&pageName=${encodeURIComponent(pageName)}`;
     if (groupName) {
       previewUrl += `&group=${encodeURIComponent(groupName)}`;
@@ -1541,7 +1538,7 @@ const previewInNewTab = async () => {
 </script>
 
 <style>
-/* 全局样式重置 */
+/*Global Style Reset*/
 * {
   margin: 0;
   padding: 0;
@@ -1560,7 +1557,7 @@ body {
 </style>
 
 <style scoped>
-/* 应用主容器 */
+/*Application Main Container*/
 .app {
   width: 100vw;
   height: 100vh;
@@ -1572,7 +1569,7 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 }
 
-/* 顶部工具栏 */
+/*Top Toolbar*/
 .app-header {
   height: var(--header-height);
   border-bottom: 1px solid var(--border, #2a2a2a);
@@ -1581,7 +1578,7 @@ body {
   box-shadow: var(--shadow-small);
 }
 
-/* 模板编辑模式提示栏 */
+/*Template Edit Mode Prompt Bar*/
 .template-edit-banner {
   display: flex;
   align-items: center;
@@ -1620,14 +1617,14 @@ body {
   color: #fff;
 }
 
-/* 主内容区域 */
+/*Main Content Area*/
 .app-content {
   flex: 1;
   display: flex;
   min-height: 0;
 }
 
-/* 左侧图层面板 */
+/*Left-side Layers Panel*/
 .app-layer {
   width: var(--layer-width);
   border-right: 1px solid var(--border, #2a2a2a);
@@ -1640,13 +1637,13 @@ body {
 }
 
  
-/* 面板内容容器 */
+/*Panel Content Container*/
 .panel-content {
   flex: 1;
   overflow: hidden auto;
 }
 
-/* 面板切换按钮 */
+/*Panel Toggle Button*/
 .panel-toggle-btn {
   position: absolute;
   top: 50%;
@@ -1684,7 +1681,7 @@ body {
   background: linear-gradient(180deg, var(--surface, #252525) 0%, var(--background, #1a1a1a) 100%);
 }
 
-/* Tooltip 效果 */
+/*Tooltip Effect*/
 .panel-toggle-btn::before {
   content: attr(data-tooltip);
   position: absolute;
@@ -1734,7 +1731,7 @@ body {
   color: var(--text, #fff);
 }
 
-/* 拖拽手柄 */
+/*Drag Handle*/
 .resize-handle {
   width: 4px;
   cursor: col-resize;
@@ -1758,7 +1755,7 @@ body {
   left: -2px;
 }
 
-/* 右侧属性面板 */
+/*Right-side Properties Panel*/
 .app-property {
   width: var(--property-width);
   border-left: 1px solid var(--border, #2a2a2a);
@@ -1771,7 +1768,7 @@ body {
 }
 
  
-/* 中央设计区域 */
+/*Central Design Area*/
 .app-main {
   flex: 1;
   display: flex;
@@ -1782,7 +1779,7 @@ body {
   position: relative;
 }
 
-/* 项目恢复期 loading 覆盖层 */
+/*Project recovery period loading overlay*/
 .app-main-loading {
   position: absolute;
   top: 0;
@@ -1796,12 +1793,12 @@ body {
   z-index: 50;
 }
 
-/* 项目恢复期间隐藏画布内容，避免未就绪的 DesignCanvas 闪现 */
+/*Hide canvas content during project recovery to prevent the appearance of an unprepared DesignCanvas.*/
 .app-canvas--hidden {
   visibility: hidden;
 }
 
-/* 画布容器 */
+/*Canvas Container*/
 .app-canvas {
   flex: 1;
   display: flex;
@@ -1811,7 +1808,7 @@ body {
   overflow: hidden;
 }
 
-/* 画布工具栏 */
+/*Canvas Toolbar*/
 .canvas-controls {
   background-color: var(--surface, #252525);
   border-bottom: 1px solid var(--border, #2a2a2a);
@@ -1819,7 +1816,7 @@ body {
   z-index: 20;
 }
 
-/* 页面标签 */
+/*Pages Label*/
 .canvas-tabs {
   background-color: var(--surface, #252525);
   border-bottom: 1px solid var(--border, #2a2a2a);
@@ -1830,7 +1827,7 @@ body {
   z-index: 15;
 }
 
-/* 系统底部状态栏 */
+/*System Bottom Status Bar*/
 .app-footer {
   height: var(--footer-height);
   border-top: 1px solid var(--border, #2a2a2a);
@@ -1839,7 +1836,7 @@ body {
   box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.1);
 }
 
-/* 预览模态框样式 */
+/*Preview Modal Style*/
 .preview-modal {
   position: fixed;
   top: 0;
@@ -1926,7 +1923,7 @@ body {
   background-color: var(--surface);
 }
 
-/* 响应式布局 */
+/*Responsive layout */
 @media (max-width: 1600px) {
   .app-layer:not(.collapsed) {
     width: 240px;
@@ -1946,7 +1943,7 @@ body {
     width: 260px;
   }
 
-  /* 减小工具栏按钮尺寸 */
+  /*Reduce the size of toolbar buttons*/
   .panel-toggle-btn {
     width: 18px;
     height: 56px;
@@ -1983,7 +1980,7 @@ body {
   }
 }
 
-/* 导入工程对话框 */
+/*Import Project Dialog*/
 .import-hint {
   margin-bottom: 12px;
   color: var(--text-secondary);

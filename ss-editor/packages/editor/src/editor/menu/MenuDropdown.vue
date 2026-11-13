@@ -31,7 +31,7 @@ interface Props {
 const _props = defineProps<Props>();
 const emit = defineEmits(['menu-item-click']);
 
-// 处理菜单项点击
+// Handle menu item click
 const handleItemClick = (item: MenuItemType) => {
   emit('menu-item-click', item);
 };

@@ -1,6 +1,6 @@
 <template>
   <div class="audit-log-page">
-    <!-- 统一工具栏 -->
+    <!-- Unified toolbar -->
     <div class="toolbar">
       <h1 class="page-title">
         {{ $t('system.audit.title') }}
@@ -66,7 +66,7 @@
       </div>
     </div>
 
-    <!-- 表格 -->
+    <!-- Table -->
     <SmartTable
       table-id="audit-log"
       :data="logs"
@@ -230,7 +230,7 @@ onMounted(() => {
   overflow-y: auto;
 }
 
-/* ===== 统一工具栏 ===== */
+/* ===== Unified toolbar ===== */
 .toolbar {
   display: flex;
   align-items: center;

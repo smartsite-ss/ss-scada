@@ -48,37 +48,35 @@ function buildResourceUrl(projectId: string, pageName: string, fileName: string,
   return `/api/v1/projects/${projectId}/pages/${encodeURIComponent(pageName)}/${encodeURIComponent(fileName)}${params}`;
 }
 
-// ─── 按需加载：保存页面名到分组名的映射 ───
-// pageName → groupName（用于按需加载时知道从哪个分组加载页面数据）
+//─── Lazy Loading: Save the mapping of page names to group names ───
+//pageName → groupName (used to know from which group to load page data when loading on demand)
 const pageGroupMapping = new Map<string, string | undefined>();
 
 /**
- * 获取页面名到分组名的映射
- */
+ * Get the mapping from page name to group name*/
 export function getPageGroupMapping(): Map<string, string | undefined> {
   return pageGroupMapping;
 }
 
 /**
- * 按需加载单个页面的完整数据（含 graphics）
- * 由 EditorView 在用户打开页面时调用
- * @param pageId 页面唯一 ID（UUID），用于从映射表查找分组。如果 pageId 有值则优先使用，否则回退到 pageName。
- *               不同分组中同名的页面有不同的 pageId，使用 pageId 可确保正确查找分组。
- */
+ * Load the complete data (including graphics) of a single page on demand
+ * Called by EditorView when the user opens the page
+ * @param pageId Unique ID (UUID) of the page, used to look up the group from the mapping table. If pageId has a value, it will be used first; otherwise, pageName will be used.
+ *               Pages with the same name in different groups have different pageIds. Using the pageId ensures that the correct group is found.*/
 export async function loadPageData(
   projectId: string,
   pageName: string,
   pageId?: string,
 ): Promise<any | null> {
   try {
-    // 优先使用 pageId 查找分组映射，确保同名页面在不同分组中能正确加载
+    //Prioritize the use of pageId to find group mappings to ensure that pages with the same name can be loaded correctly in different groups.
     const mappingKey = pageId || pageName;
     const groupName = pageGroupMapping.get(mappingKey);
     const res = await pageApi.readPage(projectId, pageName, groupName);
     const result = res.data || (res as any);
     if (!result?.success || !result?.data) return null;
     const pageData = result.data;
-    // 解析背景图 URL
+    //Parse Background Image URL
     if (isRelativePath(pageData.backgroundImage)) {
       pageData.backgroundImage = buildResourceUrl(projectId, pageName, pageData.backgroundImage, groupName);
     }
@@ -90,8 +88,7 @@ export async function loadPageData(
 }
 
 /**
- * 按需加载多个页面数据（批量，用于首次打开时填充当前页数据）
- */
+ * Load multiple page data on demand (in bulk, used to populate the current page data when opened for the first time)*/
 export async function loadPagesData(
   projectId: string,
   pageNames: string[],
@@ -110,10 +107,10 @@ async function uploadBackgroundForPage(projectId: string, page: any, groupName?:
   const bgImage: string | undefined = page.backgroundImage;
   if (!bgImage) return;
 
-  // 已是相对路径（如 "bg.png"），无需处理
+  //Already a relative path (e.g., "bg.png"), no processing required
   if (isRelativePath(bgImage)) return;
 
-  // 已上传过的绝对 API 路径 → 提取文件名即可，无需重新上传
+  //Absolute API path already uploaded → Simply extract the file name; no need to re-upload
   if (isAbsoluteApiPath(bgImage)) {
     const fileName = bgImage.split('/').pop() || 'bg.png';
     page.backgroundImage = fileName;
@@ -125,15 +122,15 @@ async function uploadBackgroundForPage(projectId: string, page: any, groupName?:
   const pageName = page.name || page.id;
   try {
     const blob = await urlToBlob(page.backgroundImage);
-    // 后端 uploadPageBackground 统一将背景图保存为 bg.png
-    // 因此前端上传后也必须将 backgroundImage 设置为 bg.png，确保 page.json 中的路径与实际文件一致
+    //The backend uploadPageBackground uniformly saves the background image as bg.png.
+    //Therefore, after uploading from the front end, backgroundImage must also be set to bg.png to ensure that the path in page.json matches the actual file.
     const fileName = 'bg.png';
     const file = new File([blob], fileName, { type: blob.type });
     await pageApi.uploadBackground(projectId, pageName, file, groupName);
     page.backgroundImage = fileName;
   } catch (err) {
     console.warn(`[projectSaveService] Failed to upload background for page ${pageName}:`, err);
-    // 上传失败时不清除 backgroundImage，保留原始 data/blob URL 以便下次重试
+    //Do not clear backgroundImage when the upload fails, and retain the original data/blob URL for the next retry
   }
 }
 
@@ -144,12 +141,12 @@ async function processPagesBackgrounds(projectId: string, pages: any[], groupNam
 }
 
 export function createProjectSaveService(projectId: string): ISaveService {
-  // 实例级加载锁：防止 load() 被并发调用导致重复请求
+  //Instance-level load lock: Prevents duplicate requests caused by concurrent calls to load()
   let loadPromise: Promise<ProjectData | null> | null = null;
 
   return {
     async save(data: ProjectData): Promise<void> {
-      // 当前页面预览（由调用方注入到 data 上）
+      //Preview of the current page (injected into data by the caller)
       const previews = (data as any).previews as
         | { previewPageName?: string; previewPageId?: string; preview?: File | Blob; previewSmall?: File | Blob }
         | undefined;
@@ -171,32 +168,32 @@ export function createProjectSaveService(projectId: string): ISaveService {
         throw new Error('没有页面数据可保存，请先创建页面');
       }
 
-      // ── 根据 __saveAll 标志确定保存范围 ──
-      // 工程保存（__saveAll=true）：保存所有已加载（非 _lazy）的页面
-      // Ctrl+S（__saveAll=false 或未设置）：只保存当前编辑页面（由 previewPageName 标识）
+      //── Determine the scope of saving based on the __saveAll flag ──
+      //Project Save (__saveAll=true): Save all loaded (non-_lazy) pages
+      //Ctrl+S (__saveAll=false or not set): Only save the currently edited page (identified by previewPageName)
       const saveAll = (data as any).__saveAll === true;
       let pagesToSave: any[];
 
       if (saveAll) {
-        // 保存所有已加载的页面（过滤掉 _lazy 占位符，避免覆盖服务端已有数据）
+        //Save all loaded pages (filter out _lazy placeholders to avoid overwriting existing server-side data)
         pagesToSave = pages.filter(page => !page._lazy);
         if (pagesToSave.length === 0) {
           console.warn('[projectSaveService] saveAll: no loaded pages to save');
           throw new Error('没有已加载的页面数据可保存，请先打开需要保存的页面');
         }
       } else if (previewPageName) {
-        // Ctrl+S：只保存当前编辑页面
+        //Ctrl+S: Save only the currently edited page
         pagesToSave = pages.filter(page => (page.name || page.id) === previewPageName);
         if (pagesToSave.length === 0) {
           console.warn('[projectSaveService] save: no matching page found for previewPageName:', previewPageName);
           throw new Error('未找到当前编辑页面的数据，请确认页面已打开');
         }
       } else {
-        // 无 previewPageName 时保存全部页面（兼容旧调用）
+        //Save all pages when there is no previewPageName (compatible with old calls)
         pagesToSave = pages;
       }
 
-      // 验证 pages 数据可序列化
+      //Verify that pages data can be serialized
       try {
         JSON.stringify(pagesToSave);
       } catch (serializeErr) {
@@ -237,26 +234,26 @@ export function createProjectSaveService(projectId: string): ISaveService {
     },
 
     async load(): Promise<ProjectData | null> {
-      // 如果已有正在进行的 load()，直接复用其 Promise
+      //If there is already an ongoing load(), directly reuse its Promise
       if (loadPromise) {
         return loadPromise;
       }
 
       loadPromise = (async () => {
         try {
-          // ── 按需加载：先加载大纲（轻量级，仅目录结构，不含 page.json 数据） ──
+          //── Load on Demand: Load the outline first (lightweight, only the directory structure, without page.json data) ──
           const outlineRes = await pageApi.getProjectOutline(projectId);
           const outline = outlineRes.data || (outlineRes as any);
           if (!outline?.success || outline.totalPageCount === 0) return null;
 
-          // 清空旧的映射
+          //Clear old mappings
           pageGroupMapping.clear();
 
           const allPages: any[] = [];
           const pageGroups: Record<string, string> = {};
           const groupNames: Record<string, string> = {};
 
-          /** 将大纲中的页面添加到 page list */
+          /** Add pages from the outline to the page list*/
           const addPageFromOutline = (
             pageName: string,
             pageId: string | undefined,
@@ -267,7 +264,7 @@ export function createProjectSaveService(projectId: string): ISaveService {
             width?: number,
             height?: number,
           ) => {
-            // 优先使用 outline 返回的 id（page.json 中的唯一 ID），没有时回退到 pageName
+            //Preferably use the ID returned by outline (the unique ID in page.json); if not available, fall back to pageName.
             const id = pageId || pageName;
             allPages.push({
               id,
@@ -276,23 +273,23 @@ export function createProjectSaveService(projectId: string): ISaveService {
               height: height ?? 1080,
               backgroundColor: backgroundColor || '#1e1e2e',
               ...(backgroundImage ? { backgroundImage } : {}),
-              graphics: [], // 空 graphics，按需加载
-              _lazy: true,  // 标记为延迟加载
+              graphics: [], //Empty graphics, load on demand
+              _lazy: true,  //Marked for lazy loading
               ...(previewSmallUrl ? { previewSmallUrl } : {}),
             });
             if (groupName) {
               pageGroups[id] = groupName;
               groupNames[groupName] = groupName;
             }
-            // 使用 pageId（或 pageName 作为 fallback）作为键，确保同名页面在不同分组中能正确查找分组
+            //Use pageId (or pageName as a fallback) as the key to ensure that pages with the same name can be correctly found in different groups.
             pageGroupMapping.set(pageId || pageName, groupName);
           }
 
-          // 先加载根目录页面
+          //Load the root directory page first
           for (const page of outline.rootPages || []) {
             addPageFromOutline(page.name, page.id, undefined, page.previewSmallUrl, page.backgroundColor, page.backgroundImage, page.width, page.height);
           }
-          // 再加载分组内页面
+          //Reload pages within the group
           for (const group of outline.groups || []) {
             for (const page of group.pages || []) {
               addPageFromOutline(page.name, page.id, group.name, page.previewSmallUrl, page.backgroundColor, page.backgroundImage, page.width, page.height);
@@ -310,7 +307,7 @@ export function createProjectSaveService(projectId: string): ISaveService {
           console.error('[projectSaveService] load failed:', err);
           return null;
         } finally {
-          // 清除加载锁
+          //Clear Load Lock
           loadPromise = null;
         }
       })();

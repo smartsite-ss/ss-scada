@@ -1,6 +1,6 @@
 <template>
   <div class="ai-assistant-panel">
-    <!-- 标题栏 -->
+    <!-- Title bar -->
     <header class="ai-header">
       <div class="ai-header-title">
         <svg
@@ -106,7 +106,7 @@
       </div>
     </header>
 
-    <!-- 会话侧边栏（P2-T08 对话持久化） -->
+    <!-- Session sidebar (P2-T08 conversation persistence) -->
     <div
       v-if="showConversations"
       class="ai-conversations-sidebar"
@@ -218,7 +218,7 @@
       </div>
     </div>
 
-    <!-- 状态提示（D-015 三态：未启用/认证失败/服务不可达） -->
+    <!-- Status hint (D-015 three-state: not enabled / auth failed / service unreachable) -->
     <div
       v-if="statusHintKey"
       class="ai-status-banner ai-status-warning"
@@ -226,12 +226,12 @@
       {{ t(statusHintKey) }}
     </div>
 
-    <!-- 消息列表 -->
+    <!-- Message list -->
     <div
       ref="messageListRef"
       class="ai-message-list"
     >
-      <!-- 空状态 -->
+      <!-- Empty state -->
       <div
         v-if="messages.length === 0"
         class="ai-empty"
@@ -257,7 +257,7 @@
         </div>
       </div>
 
-      <!-- 消息气泡 -->
+      <!-- Message bubble -->
       <div
         v-for="msg in messages"
         :key="msg.id"
@@ -273,7 +273,7 @@
             class="ai-message-content"
             v-html="renderContent(msg)"
           />
-          <!-- 插件/脚本代码块预览（P1-T05/P1-T06） -->
+          <!-- Plugin/script code-block preview (P1-T05/P1-T06) -->
           <div
             v-if="!msg.streaming && msg.taskType && hasCodeBlocks(msg) && msg.content"
             class="ai-file-tree"
@@ -341,7 +341,7 @@
       </div>
     </div>
 
-    <!-- Agent 思考步骤面板 -->
+    <!-- Agent thought-steps panel -->
     <div
       v-if="agentSteps.length > 0"
       class="ai-agent-steps"
@@ -389,7 +389,7 @@
       </div>
     </div>
 
-    <!-- 错误提示 -->
+    <!-- Error hint -->
     <div
       v-if="error"
       class="ai-error-banner"
@@ -403,9 +403,9 @@
       </button>
     </div>
 
-    <!-- 输入区域 -->
+    <!-- Input area -->
     <footer class="ai-input-area">
-      <!-- 第一行：任务类型 + 模型选择 -->
+      <!-- First row: task type + model selection -->
       <div class="ai-selectors-row">
         <select
           v-model="taskType"
@@ -441,7 +441,7 @@
           </option>
         </select>
       </div>
-      <!-- 第二行：输入框 + 发送按钮 -->
+      <!-- Second row: input box + send button -->
       <div class="ai-input-row">
         <textarea
           ref="inputRef"
@@ -514,29 +514,29 @@ import { marked, type Tokens } from 'marked';
 import DOMPurify from 'dompurify';
 
 // ============================================================
-// S-M05: AI 输出 XSS 防护
-// 使用 marked 解析 Markdown + DOMPurify 净化 HTML，双重防护防止 XSS
+// S-M05: XSS protection for AI output
+// Use marked to parse Markdown + DOMPurify to sanitize HTML, with double protection against XSS
 // ============================================================
 
-// 配置 marked：启用 GFM（表格/删除线/任务列表）+ breaks（换行转 <br>）
+// Configure marked: enable GFM (tables/strikethrough/task lists) + breaks (newline → <br>)
 marked.use({
   gfm: true,
   breaks: true,
   renderer: {
-    // 自定义围栏代码块渲染：保持与现有 CSS 类名兼容（ai-code-block / ai-code-lang）
+    // Custom fenced code-block rendering: keep compatible with existing CSS classes (ai-code-block / ai-code-lang)
     code({ text, lang }: Tokens.Code): string {
       const langLabel = lang ? `<span class="ai-code-lang">${lang}</span>` : '';
-      // marked 已对 text 做了 HTML 转义，直接输出
+      // marked already HTML-escapes text; output directly
       return `<pre class="ai-code-block">${langLabel}<code>${text}</code></pre>`;
     },
-    // 自定义行内代码：添加 ai-inline-code 类名
+    // Custom inline code: add the ai-inline-code class
     codespan({ text }: Tokens.Codespan): string {
       return `<code class="ai-inline-code">${text}</code>`;
     },
   },
 });
 
-// DOMPurify 白名单：仅允许 Markdown 常用标签，阻止 script/iframe/object 等
+// DOMPurify whitelist: only common Markdown tags allowed; blocks script/iframe/object, etc.
 const PURIFY_CONFIG = {
   ALLOWED_TAGS: [
     'p', 'br', 'strong', 'em', 'code', 'pre', 'ul', 'ol', 'li',
@@ -564,7 +564,7 @@ const {
   abort,
   clear,
   checkStatus,
-  // P2-T08 会话管理
+  // P2-T08 session management
   currentConversationId,
   currentProjectId,
   conversations,
@@ -576,12 +576,12 @@ const {
   setCurrentConversationId,
 } = useStreamChat();
 
-// ============ Agent 模式 ============
+// ============ Agent mode ============
 const agentMode = ref(true);
 const agentSteps = ref<AgentStreamStep[]>([]);
 const agentStepsExpanded = ref(true);
 
-/** Agent 执行（当 agentMode=true 时使用） */
+/** Agent execution (used when agentMode=true) */
 const {
   isStreaming: agentStreaming,
   execute: agentExecute,
@@ -625,16 +625,16 @@ const stepLabels = computed<Record<string, string>>(() => ({
   pending: '···',
 }));
 
-/** 清除 Agent 步骤 */
+/** Clear Agent steps */
 function clearAgentSteps() {
   agentSteps.value = [];
   agentStepsExpanded.value = true;
 }
 
-/** 统一的忙状态（聊天或 Agent 任一运行中） */
+/** Unified busy state (chat or Agent running) */
 const isBusy = computed(() => isStreaming.value || agentStreaming.value);
 
-// AI 状态对应的提示键（null = 正常或未检测，不显示横幅）
+// AI status hint key (null = normal or undetected, no banner shown)
 const statusHintKey = computed(() => {
   switch (aiStatus.value) {
     case 'disabled':
@@ -653,14 +653,14 @@ const taskType = ref<TaskType>('chat');
 const messageListRef = ref<HTMLElement | null>(null);
 const inputRef = ref<HTMLTextAreaElement | null>(null);
 
-// ============ 模型选择（仅显示已配置并启用的供应商模型） ============
+// ============ Model selection (shows only configured and enabled provider models) ============
 const enabledProviders = ref<EnabledProviderOption[]>([]);
 const selectedModel = ref<string>('');
 
-/** 复合值分隔符（model 名不含 ::，避免歧义） */
+/** Composite value separator (model name does not contain :: to avoid ambiguity) */
 const MODEL_VALUE_SEP = '::';
 
-/** 模型下拉选项：value 用「providerId::model」复合编码，确保选中时能同时定位供应商与模型 */
+/** Model dropdown options: value uses composite encoding "providerId::model" so that selection locates both provider and model */
 const modelOptions = computed(() => {
   const opts: { value: string; label: string }[] = [];
   for (const p of enabledProviders.value) {
@@ -674,7 +674,7 @@ const modelOptions = computed(() => {
   return opts;
 });
 
-/** 从复合值解析出 { providerId, model }，发送请求时分别传递 */
+/** Parse { providerId, model } from a composite value, passing them separately when sending the request */
 const selectedModelParts = computed(() => {
   const v = selectedModel.value;
   if (!v) return { providerId: undefined as string | undefined, model: undefined as string | undefined };
@@ -686,7 +686,7 @@ const selectedModelParts = computed(() => {
   };
 });
 
-/** 默认选第一个供应商的 defaultModel（构造复合值） */
+/** Default to the first provider's defaultModel (construct the composite value) */
 function initDefaultModel() {
   if (selectedModel.value && modelOptions.value.some((o) => o.value === selectedModel.value)) {
     return;
@@ -708,7 +708,7 @@ async function loadEnabledProviders() {
   }
 }
 
-// 快捷建议
+// Quick suggestions
 const suggestions = computed(() => [
   {
     key: 'create-graphic',
@@ -742,10 +742,10 @@ async function handleSend() {
   inputText.value = '';
 
   if (agentMode.value) {
-    // Agent 模式：使用 Agent 编排器，并将结果写入消息列表
+    // Agent mode: use the Agent orchestrator and write the result into the message list
     addUserMessage(text, taskType.value);
     clearAgentSteps();
-    // 传入 conversationId/projectId 实现持久化（P2-T08）
+    // Pass conversationId/projectId to enable persistence (P2-T08)
     const result = await agentExecute(
       text,
       'chat',
@@ -753,23 +753,23 @@ async function handleSend() {
       currentConversationId.value || undefined,
       currentProjectId.value || undefined,
     );
-    // 后端在 answer/error 步骤注入 conversationId，更新本地状态
+    // The backend injects conversationId in the answer/error steps and updates the local state
     if (result.conversationId) {
       setCurrentConversationId(result.conversationId);
     }
-    // 将 Agent 回答添加到消息对话框
+    // Add the Agent's answer to the message dialog
     const answerContent = result.type === 'answer' ? result.content : (result.content || t('editor.aiAssistant.agentAnswer'));
     addAssistantMessage(answerContent, taskType.value);
     return;
   }
 
-  // 普通聊天模式
+  // Normal chat mode
   const { model, providerId } = selectedModelParts.value;
   const systemPrompt = buildSystemPrompt(taskType.value, text);
   await sendMessage(text, taskType.value, systemPrompt, model, providerId);
 }
 
-/** 根据任务类型构建 System Prompt（P1-T05/P1-T06 统一面板架构） */
+/** Build the System Prompt based on task type (P1-T05/P1-T06 unified panel architecture) */
 function buildSystemPrompt(taskType: TaskType, userInput: string): string | undefined {
   if (taskType === 'plugin-dev') {
     const { systemPrompt } = pluginGeneratorAgent.analyze(userInput);
@@ -783,28 +783,28 @@ function buildSystemPrompt(taskType: TaskType, userInput: string): string | unde
 }
 
 /**
- * S-M05: 安全 Markdown 渲染
+ * S-M05: safe Markdown rendering
  *
- * 1. marked 将 Markdown 解析为 HTML（支持 GFM 表格/列表/链接/标题等）
- * 2. DOMPurify 净化 HTML（白名单过滤，阻止 script/iframe/onerror 等 XSS 向量）
+ * 1. marked parses Markdown into HTML (supports GFM tables/lists/links/headings, etc.)
+ * 2. DOMPurify sanitizes HTML (whitelist filtering, blocks XSS vectors like script/iframe/onerror)
  *
- * 双重防护：即使 marked 解析出恶意 HTML，DOMPurify 也会拦截。
+ * Double protection: even if marked produces malicious HTML, DOMPurify will block it.
  */
 function renderContent(msg: { content: string; streaming?: boolean }): string {
   const raw = msg.content || (msg.streaming ? t('editor.aiAssistant.thinking') : '');
   if (!msg.content) return raw;
 
-  // 1. marked 解析 Markdown → HTML
+  // 1. marked parses Markdown → HTML
   const rawHtml = marked.parse(raw) as string;
-  // 2. DOMPurify 净化，防止 XSS
+  // 2. DOMPurify sanitization to prevent XSS
   return DOMPurify.sanitize(rawHtml, PURIFY_CONFIG);
 }
 
 // ============================================================
-// 代码块预览（P1-T05/P1-T06 文件树）
+// Code block preview (P1-T05/P1-T06 file tree)
 // ============================================================
 
-/** 判断消息中是否包含代码块 */
+/** Determine whether a message contains a code block */
 function hasCodeBlocks(msg: { content: string; taskType?: string }): boolean {
   if (!msg.content) return false;
   return /```/.test(msg.content);
@@ -931,11 +931,11 @@ async function quickSend(text: string, task: TaskType) {
   if (isStreaming.value) return;
 
   if (agentMode.value) {
-    // Agent 模式：快捷发送也走 Agent 编排器
+    // Agent mode: quick send also goes through the Agent orchestrator
     taskType.value = task;
     addUserMessage(text, task);
     clearAgentSteps();
-    // 传入 conversationId/projectId 实现持久化（P2-T08）
+    // Pass conversationId/projectId to enable persistence (P2-T08)
     const result = await agentExecute(
       text,
       task,
@@ -957,13 +957,13 @@ async function quickSend(text: string, task: TaskType) {
   await sendMessage(text, task, systemPrompt, model, providerId);
 }
 
-// 清空对话时同时清除 Agent 步骤
+// Also clear Agent steps when clearing the conversation
 function handleClear() {
   clearAgentSteps();
   clear();
 }
 
-// 中断时同时中断 Agent
+// Interrupt the Agent as well when interrupted
 function handleAbort() {
   if (agentMode.value) {
     agentAbort();
@@ -972,13 +972,13 @@ function handleAbort() {
 }
 
 // ============================================================
-// 会话管理（P2-T08 对话持久化）
+// Session management (P2-T08 conversation persistence)
 // ============================================================
 
-/** 会话侧边栏是否展开 */
+/** Whether the session sidebar is expanded */
 const showConversations = ref(false);
 
-/** 切换会话侧边栏（首次打开时加载列表） */
+/** Toggle the session sidebar (load the list on first open) */
 async function toggleConversations() {
   showConversations.value = !showConversations.value;
   if (showConversations.value && conversations.value.length === 0 && !conversationsLoading.value) {
@@ -986,14 +986,14 @@ async function toggleConversations() {
   }
 }
 
-/** 手动刷新会话列表 */
+/** Manually refresh the session list */
 async function handleRefreshConversations() {
   await refreshConversations();
 }
 
 /**
- * 点击会话项：加载历史消息
- * 当前有进行中的流式请求时拒绝切换
+ * Click a session item: load history messages
+ * Reject switching when a streaming request is in progress
  */
 async function handleSelectConversation(conversationId: string) {
   if (isBusy.value) return;
@@ -1002,7 +1002,7 @@ async function handleSelectConversation(conversationId: string) {
 }
 
 /**
- * 开始新会话：清空当前消息并重置会话关联
+ * Start a new session: clear current messages and reset the session association
  */
 function handleNewConversation() {
   if (isBusy.value) return;
@@ -1011,18 +1011,18 @@ function handleNewConversation() {
 }
 
 /**
- * 删除指定会话（带确认）
+ * Delete the specified session (with confirmation)
  */
 async function handleDeleteConversation(conversationId: string, title: string) {
   if (!confirm(t('editor.aiAssistant.confirmDeleteConversation', { title }))) return;
   try {
     await deleteConversationById(conversationId);
   } catch {
-    // 错误已由 composable 写入 error，此处无需重复处理
+    // The error is already written to error by the composable; no need to handle it again here
   }
 }
 
-/** 格式化会话更新时间为相对时间 */
+/** Format the session update time as relative time */
 function formatConversationTime(timeStr: string): string {
   const ts = new Date(timeStr).getTime();
   if (Number.isNaN(ts)) return '';
@@ -1036,7 +1036,7 @@ function formatConversationTime(timeStr: string): string {
   return new Date(ts).toLocaleDateString();
 }
 
-// 自动滚动到最新消息
+// Auto-scroll to latest message
 watch(
   () => messages.value.length,
   async () => {
@@ -1047,7 +1047,7 @@ watch(
   },
 );
 
-// 流式时也持续滚动
+// Keep scrolling even while streaming
 watch(
   () => messages.value[messages.value.length - 1]?.content,
   async () => {
@@ -1060,20 +1060,20 @@ watch(
 );
 
 onMounted(async () => {
-  // 注册编辑器 MCP 工具（P1-T04）
+  // Register editor MCP tools (P1-T04)
   registerEditorTools();
   await Promise.all([checkStatus(), loadEnabledProviders()]);
-  // 后台预加载会话列表（不阻塞主面板初始化）
+  // Preload the session list in the background (does not block main panel init)
   refreshConversations().catch(() => {
-    // 预加载失败不阻塞面板使用
+    // Preload failure does not block panel use
   });
 });
 
-// 流式结束后刷新会话列表（覆盖普通 chat 和 Agent 两种模式）
+// After streaming ends, refresh the session list (covers both normal chat and Agent modes)
 watch(
   () => isBusy.value,
   async (busy, prevBusy) => {
-    // 仅在忙状态从 true → false 时刷新（流结束）
+    // Only refresh when busy state goes true → false (stream ended)
     if (prevBusy && !busy && showConversations.value) {
       await refreshConversations();
     }
@@ -1081,7 +1081,7 @@ watch(
 );
 
 onUnmounted(() => {
-  // 组件卸载时中止所有进行中的请求，避免内存泄漏和 net::ERR_ABORTED
+  // Abort all in-flight requests on component unmount to avoid memory leaks and net::ERR_ABORTED
   agentAbort();
   abort();
 });
@@ -1097,7 +1097,7 @@ onUnmounted(() => {
   overflow: hidden;
 }
 
-/* 标题栏 */
+/* Title bar */
 .ai-header {
   display: flex;
   align-items: center;
@@ -1150,7 +1150,7 @@ onUnmounted(() => {
   cursor: not-allowed;
 }
 
-/* 状态横幅 */
+/* Status banner */
 .ai-status-banner {
   padding: 6px 12px;
   font-size: 12px;
@@ -1164,7 +1164,7 @@ onUnmounted(() => {
   border-bottom: 1px solid var(--toast-warning-border, rgba(245, 158, 11, 0.3));
 }
 
-/* 消息列表 */
+/* Message list */
 .ai-message-list {
   flex: 1;
   overflow-y: auto;
@@ -1183,7 +1183,7 @@ onUnmounted(() => {
   border-radius: 2px;
 }
 
-/* 空状态 */
+/* Empty state */
 .ai-empty {
   display: flex;
   flex-direction: column;
@@ -1247,7 +1247,7 @@ onUnmounted(() => {
   background-color: var(--surface);
 }
 
-/* 消息气泡 */
+/* Message bubble */
 .ai-message {
   display: flex;
   gap: 8px;
@@ -1300,12 +1300,12 @@ onUnmounted(() => {
 
 .ai-message-content {
   min-height: 18px;
-  /* 覆盖父级 .ai-message-bubble 的 pre-wrap：marked 已将换行转为 <p>/<br>，
-     pre-wrap 会导致额外空白 */
+  /* Override the parent .ai-message-bubble pre-wrap: marked already converted newlines to <p>/<br>,
+     and pre-wrap would cause extra whitespace */
   white-space: normal;
 }
 
-/* ===== S-M05: Markdown 渲染样式（marked 输出） ===== */
+/* ===== S-M05: Markdown rendering style (marked output) ===== */
 .ai-message-content :deep(p) {
   margin: 4px 0;
 }
@@ -1369,7 +1369,7 @@ onUnmounted(() => {
   text-decoration: underline;
 }
 
-/* GFM 表格 */
+/* GFM tables */
 .ai-message-content :deep(table) {
   width: 100%;
   margin: 8px 0;
@@ -1403,7 +1403,7 @@ onUnmounted(() => {
   color: var(--text-tertiary);
 }
 
-/* 流式光标 */
+/* Streaming cursor */
 .ai-message-cursor {
   display: inline-flex;
   gap: 3px;
@@ -1444,7 +1444,7 @@ onUnmounted(() => {
   color: var(--text-tertiary);
 }
 
-/* 错误横幅 */
+/* Error banner */
 .ai-error-banner {
   display: flex;
   align-items: center;
@@ -1470,7 +1470,7 @@ onUnmounted(() => {
   padding: 0 4px;
 }
 
-/* 输入区域 */
+/* Input area */
 .ai-input-area {
   border-top: 1px solid var(--border);
   padding: 10px 12px 12px;
@@ -1481,7 +1481,7 @@ onUnmounted(() => {
   gap: 8px;
 }
 
-/* 第一行：选择器并排，各占一半 */
+/* First row: selectors side by side, each half width */
 .ai-selectors-row {
   display: flex;
   gap: 6px;
@@ -1591,7 +1591,7 @@ onUnmounted(() => {
   text-align: right;
 }
 
-/* ===== Markdown 代码块渲染 ===== */
+/* ===== Markdown code-block rendering ===== */
 .ai-message-content :deep(.ai-code-block) {
   position: relative;
   margin: 8px 0;
@@ -1635,7 +1635,7 @@ onUnmounted(() => {
   color: var(--text);
 }
 
-/* ===== 文件树预览（P1-T05/P1-T06） ===== */
+/* ===== File-tree preview (P1-T05/P1-T06) ===== */
 .ai-file-tree {
   margin-top: 10px;
   border: 1px solid var(--border);
@@ -1706,7 +1706,7 @@ onUnmounted(() => {
   border-radius: 2px;
 }
 
-/* 代码校验指示器（P1-T05/P1-T06） */
+/* Code validation indicator (P1-T05/P1-T06) */
 .ai-file-validation {
   flex-shrink: 0;
   width: 16px;
@@ -1763,13 +1763,13 @@ onUnmounted(() => {
   opacity: 0.85;
 }
 
-/* ===== Agent 模式切换按钮激活态 ===== */
+/* ===== Agent mode toggle button active state ===== */
 .ai-btn-icon--active {
   color: var(--accent) !important;
   background-color: var(--hover);
 }
 
-/* ===== Agent 思考步骤面板 ===== */
+/* ===== Agent thought-steps panel ===== */
 .ai-agent-steps {
   margin: 0 12px 8px;
   border: 1px solid var(--border);
@@ -1903,7 +1903,7 @@ onUnmounted(() => {
   vertical-align: bottom;
 }
 
-/* ===== 会话侧边栏（P2-T08 对话持久化） ===== */
+/* ===== Session sidebar (P2-T08 conversation persistence) ===== */
 .ai-conversations-sidebar {
   border-bottom: 1px solid var(--border);
   background-color: var(--background);

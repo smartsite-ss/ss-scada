@@ -40,7 +40,7 @@
     </div>
 
     <div class="content-panels">
-      <!-- 左侧菜单树 -->
+      <!-- Left menu tree -->
       <div class="left-panel">
         <div class="panel-header">
           {{ $t('system.menus.menuTree') }}
@@ -87,7 +87,7 @@
         </div>
       </div>
 
-      <!-- 右侧编辑面板 -->
+      <!-- Right edit panel -->
       <div class="right-panel">
         <template v-if="selectedItem">
           <div class="panel-header">
@@ -109,7 +109,7 @@
                 class="form-input"
               >
             </div>
-            <!-- 菜单显示名称（按系统语言编辑） -->
+            <!-- Menu display name (edited by system language) -->
             <div class="form-row">
               <label class="form-label">{{ $t('system.menus.displayName') }}</label>
               <div class="locale-inputs">
@@ -210,7 +210,7 @@
             </div>
           </div>
 
-          <!-- 按钮管理区域 -->
+          <!-- Button management area -->
           <div class="buttons-section">
             <div class="panel-header">
               {{ $t('system.menus.buttons') }}
@@ -276,7 +276,7 @@
       </div>
     </div>
 
-    <!-- 同步操作栏 -->
+    <!-- Sync the action bar -->
     <div class="sync-bar">
       <span class="sync-hint">{{ $t('system.menus.syncHint') }}</span>
       <button
@@ -319,10 +319,10 @@ const selectedId = ref<string | null>(null);
 
 const availableRoles: SystemRole[] = ['admin', 'user', 'viewer'];
 
-/** 新创建菜单项的父节点 ID（用于保存时传给后端） */
+/** Parent node ID of a newly created menu item (passed to the backend on save) */
 const newItemParentId = ref<string | null>(null);
 
-/** 当前系统语言（从 vue-i18n 获取，无需手动切换） */
+/** Current system language (from vue-i18n, no manual switching needed) */
 const activeLocale = computed(() => {
   const loc = getLocale();
   // normalize: 'zh' → 'zh-CN', 'en' → 'en-US'
@@ -330,30 +330,30 @@ const activeLocale = computed(() => {
   if (loc === 'en') return 'en-US';
   return loc;
 });
-/** 支持的语言列表 */
+/** Supported languages list */
 const supportedLocales = ref<string[]>(['zh-CN', 'en-US']);
-/** 菜单国际化标签映射: locale → (labelKey → label) */
+/** Menu i18n label mapping: locale → (labelKey → label) */
 const menuI18nLabels = ref<Map<string, Map<string, string>>>(new Map());
 
-/** 获取菜单项的显示名称 */
+/** Get the display name of a menu item */
 function getDisplayLabel(labelKey: string): string | undefined {
   const localeMap = menuI18nLabels.value.get(activeLocale.value);
   return localeMap?.get(labelKey);
 }
 
-/** 获取指定 locale 下 labelKey 的显示名称 */
+/** Get the display name of a labelKey under a given locale */
 function getDisplayLabelForLocale(labelKey: string, locale: string): string {
-  // 优先从 API 加载的菜单 i18n 数据中获取
+  // Prefer data from the API-loaded menu i18n data
   const localeMap = menuI18nLabels.value.get(locale);
   const apiLabel = localeMap?.get(labelKey);
   if (apiLabel) return apiLabel;
-  // 回退到 vue-i18n locale JSON
+  // Fall back to the vue-i18n locale JSON
   const tLabel = t(labelKey, {} as Record<string, unknown>, { locale });
   if (tLabel !== labelKey) return tLabel;
   return '';
 }
 
-/** 中文显示名称（双向绑定到 i18n label） */
+/** Chinese display name (two-way bound to i18n label) */
 const displayLabelZhCN = computed({
   get: () => {
     if (!selectedItem.value) return '';
@@ -368,7 +368,7 @@ const displayLabelZhCN = computed({
   },
 });
 
-/** 英文显示名称（双向绑定到 i18n label） */
+/** English display name (two-way bound to i18n label) */
 const displayLabelEnUS = computed({
   get: () => {
     if (!selectedItem.value) return '';
@@ -383,20 +383,20 @@ const displayLabelEnUS = computed({
   },
 });
 
-/** 选中的菜单项（浅拷贝用于编辑） */
+/** The selected menu item (shallow copy for editing) */
 const selectedItem = ref<SystemMenuItem | null>(null);
 
-/** 是否为已存在的项（编辑模式） */
+/** Whether this is an existing item (edit mode) */
 const isExisting = computed(() => {
   if (!selectedItem.value) return false;
   return findInTree(menuTree.value, selectedItem.value.id) !== null;
 });
 
-/** 扁平化菜单列表（用于左侧树展示） */
+/** Flattened menu list (for left-side tree display) */
 const flatMenuList = computed<FlatMenuItem[]>(() => {
   const result: FlatMenuItem[] = [];
   function walk(items: SystemMenuItem[], depth: number) {
-    // 按 order 排序后再遍历，确保显示顺序始终正确
+    // Sort by order before iterating to ensure the display order is always correct
     const sorted = [...items].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     for (const item of sorted) {
       result.push({ ...item, _depth: depth });
@@ -409,7 +409,7 @@ const flatMenuList = computed<FlatMenuItem[]>(() => {
   return result;
 });
 
-/** 当前选中菜单项关联的按钮 */
+/** Button associated with the currently selected menu item */
 const currentButtons = computed({
   get: () => {
     if (!selectedId.value) return [];
@@ -435,7 +435,7 @@ function findInTree(items: SystemMenuItem[], id: string): SystemMenuItem | null 
 
 function selectItem(item: FlatMenuItem) {
   selectedId.value = item.id;
-  newItemParentId.value = null; // 选择已有项，非新建
+  newItemParentId.value = null; // Select an existing item, not a new one
   selectedItem.value = {
     id: item.id,
     labelKey: item.labelKey,
@@ -462,7 +462,7 @@ function toggleRole(role: SystemRole) {
 
 function addRootItem() {
   const newId = `menu-${Date.now()}`;
-  // 计算新 order：同级最大 order + 10
+  // Compute new order: max sibling order + 10
   const maxOrder = menuTree.value.reduce((max, s) => Math.max(max, s.order ?? 0), 0);
   const newItem: SystemMenuItem = {
     id: newId,
@@ -474,14 +474,14 @@ function addRootItem() {
   menuTree.value.push(newItem);
   selectedId.value = newId;
   selectedItem.value = { ...newItem };
-  newItemParentId.value = null; // 根节点无父级
+  newItemParentId.value = null; // Root node has no parent
 }
 
 function addChildItem() {
   if (!selectedId.value) return;
   const parentId = selectedId.value;
   const newId = `menu-${Date.now()}`;
-  // 计算新 order：同级最大 order + 10
+  // Compute new order: max sibling order + 10
   let maxOrder = 0;
   function findParentAndMax(items: SystemMenuItem[]): { found: boolean; maxOrder: number } {
     for (const item of items) {
@@ -506,7 +506,7 @@ function addChildItem() {
     order: maxOrder + 10,
   };
 
-  // 添加到父节点的 children 中
+  // Add into the parent node's children
   function addChild(items: SystemMenuItem[]): boolean {
     for (const item of items) {
       if (item.id === parentId) {
@@ -521,10 +521,10 @@ function addChildItem() {
   addChild(menuTree.value);
   selectedId.value = newId;
   selectedItem.value = { ...newItem };
-  newItemParentId.value = parentId; // 记录父节点
+  newItemParentId.value = parentId; // Record the parent node
 }
 
-/** 在同级菜单中上移/下移（direction: -1 上移, 1 下移） */
+/** Move up/down among sibling menus (direction: -1 up, 1 down) */
 function moveItem(item: FlatMenuItem, direction: number) {
   const siblings = findSiblingArray(menuTree.value, item.id);
   if (!siblings) return;
@@ -532,11 +532,11 @@ function moveItem(item: FlatMenuItem, direction: number) {
   if (idx < 0) return;
   const newIdx = idx + direction;
   if (newIdx < 0 || newIdx >= siblings.length) return;
-  // 交换位置并更新排序值
+  // Swap positions and update sort values
   [siblings[idx], siblings[newIdx]] = [siblings[newIdx], siblings[idx]];
-  // 按当前顺序重新设置 order 值
+  // Re-set order values by the current sequence
   siblings.forEach((s, i) => { s.order = i * 10; });
-  // 保持选中项
+  // Keep the selected item
   selectedItem.value = {
     id: siblings[newIdx].id,
     labelKey: siblings[newIdx].labelKey,
@@ -550,7 +550,7 @@ function moveItem(item: FlatMenuItem, direction: number) {
   };
 }
 
-/** 查找 item 所在的兄弟数组 */
+/** Find the sibling array containing an item */
 function findSiblingArray(items: SystemMenuItem[], id: string): SystemMenuItem[] | null {
   for (const item of items) {
     if (item.id === id) return items;
@@ -570,18 +570,18 @@ async function saveCurrentItem() {
     const parentId = isExisting.value ? undefined : (newItemParentId.value ?? undefined);
 
     if (isExisting.value) {
-      // 已有菜单项：更新数据库记录
+      // Existing menu item: update the database record
       await menuApi.updateMenuItem(item.id, item);
     } else {
-      // 新菜单项：创建数据库记录
+      // New menu item: create a database record
       await menuApi.createMenuItem(item, parentId);
       newItemParentId.value = null;
     }
 
-    // 保存当前项的 i18n 显示名称到 data/menu/ JSON 文件
+    // Save the current item's i18n display name to the data/menu/ JSON file
     await saveCurrentItemI18nLabel();
 
-    // 更新本地树
+    // Update the local tree
     const updateInTree = (items: SystemMenuItem[]): boolean => {
       for (let i = 0; i < items.length; i++) {
         if (items[i].id === item.id) {
@@ -608,7 +608,7 @@ async function deleteCurrentItem() {
   saving.value = true;
   try {
     await menuApi.deleteMenuItem(selectedId.value);
-    // 从本地树中移除
+    // Remove from the local tree
     const removeFromTree = (items: SystemMenuItem[]): boolean => {
       for (let i = 0; i < items.length; i++) {
         if (items[i].id === selectedId.value!) {
@@ -620,7 +620,7 @@ async function deleteCurrentItem() {
       return false;
     };
     removeFromTree(menuTree.value);
-    // 移除关联按钮
+    // Remove-association button
     allButtons.value = allButtons.value.filter(b => b.menuId !== selectedId.value);
     selectedId.value = null;
     selectedItem.value = null;
@@ -636,7 +636,7 @@ async function deleteCurrentItem() {
 async function handleSaveAll() {
   saving.value = true;
   try {
-    // 先将当前编辑项的修改同步到菜单树，避免 "保存全部" 时丢失未保存的编辑
+    // First sync the current edit item's changes to the menu tree, to avoid losing unsaved edits on "保存全部"
     if (selectedItem.value && selectedItem.value.id) {
       const syncToTree = (items: SystemMenuItem[]): boolean => {
         for (let i = 0; i < items.length; i++) {
@@ -651,9 +651,9 @@ async function handleSaveAll() {
       syncToTree(menuTree.value);
     }
     await menuApi.updateMenu(menuTree.value);
-    // 同时保存按钮
+    // Save button (also)
     await menuApi.updateButtons(allButtons.value);
-    // 保存 i18n 标签
+    // Save i18n labels
     await saveCurrentI18nLabels();
     showSuccess(t('system.menus.saveSuccess'));
   } catch (e: any) {
@@ -693,7 +693,7 @@ async function loadData() {
     allButtons.value = buttons || [];
     supportedLocales.value = locales.length > 0 ? locales : ['zh-CN', 'en-US'];
 
-    // 加载所有语言的菜单 i18n 数据
+    // Load menu i18n data for all languages
     await loadAllI18nLabels();
   } catch {
     /* ignore */
@@ -702,7 +702,7 @@ async function loadData() {
   }
 }
 
-/** 加载所有语言的菜单 i18n 标签 */
+/** Load menu i18n labels for all languages */
 async function loadAllI18nLabels() {
   const newLabels = new Map<string, Map<string, string>>();
   for (const locale of supportedLocales.value) {
@@ -725,7 +725,7 @@ async function loadAllI18nLabels() {
   menuI18nLabels.value = newLabels;
 }
 
-/** 保存当前编辑的 i18n 标签到后端 */
+/** Save the currently edited i18n label to the backend */
 async function saveCurrentI18nLabels() {
   const menuId = 'system-menu';
   for (const locale of supportedLocales.value) {
@@ -743,7 +743,7 @@ async function saveCurrentI18nLabels() {
   }
 }
 
-/** 保存当前项在当前语言下的 i18n 显示名称（单项保存时调用） */
+/** Save the i18n display name of the current item in the current language (called on single-item save) */
 async function saveCurrentItemI18nLabel() {
   const locale = activeLocale.value;
   const labelMap = menuI18nLabels.value.get(locale);
@@ -760,13 +760,13 @@ async function saveCurrentItemI18nLabel() {
   }
 }
 
-/** 同步菜单国际化到 locale JSON 文件 */
+/** Sync menu internationalization to locale JSON files */
 async function handleSyncI18n(locale: string) {
   saving.value = true;
   try {
-    // 先保存当前编辑的标签
+    // First save the currently edited label
     await saveCurrentI18nLabels();
-    // 再同步到 locale JSON 文件
+    // Then sync to the locale JSON file
     const result = await menuApi.syncMenuI18n(locale);
     showSuccess(`${locale} 同步完成：已更新 ${result.synced} 个菜单名称${result.errors.length > 0 ? '，错误: ' + result.errors.join(', ') : ''}`);
   } catch (e: any) {
@@ -778,10 +778,10 @@ async function handleSyncI18n(locale: string) {
   }
 }
 
-/** 内置的菜单 i18n 键值对（locale → key → value），用于回退显示 */
+/** Built-in menu i18n key-value pairs (locale → key → value) for fallback display */
 const builtinMenusI18n = ref<Record<string, Record<string, string>>>({});
 
-/** 确保菜单管理的 i18n 键已合并到全局 locale 中（解决 Vite pre-bundle 缓存导致部分新增键缺失的问题） */
+/** Ensure the menu-management i18n keys are merged into the global locale (fixes missing new keys caused by Vite pre-bundle caching) */
 function ensureMenusI18n() {
   const menusZhCN: Record<string, string> = {
     title: '菜单管理',
@@ -871,7 +871,7 @@ function ensureMenusI18n() {
   };
   i18n.global.mergeLocaleMessage('zh-CN', { system: { menus: menusZhCN } });
   i18n.global.mergeLocaleMessage('en-US', { system: { menus: menusEnUS } });
-  // 保存到本地 ref 用于跨语言回退
+  // Save to a local ref for cross-language fallback
   builtinMenusI18n.value = { 'zh-CN': menusZhCN, 'en-US': menusEnUS };
 }
 
@@ -905,7 +905,7 @@ onMounted(() => {
   display: flex;
   gap: 8px;
 }
-/* 菜单树项扩展样式 */
+/* Menu tree item expand style */
 .tree-item-path {
   font-size: 11px;
   color: var(--text-secondary);
@@ -960,7 +960,7 @@ onMounted(() => {
   margin-left: 6px;
 }
 
-/* 同步操作栏 */
+/* Sync the action bar */
 .sync-bar {
   display: flex;
   align-items: center;

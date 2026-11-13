@@ -18,12 +18,12 @@ module.exports = {
     '^@ss-node/ss-sdk$': '<rootDir>/packages/ss-sdk/src',
     '^@ss-node/ss-core$': '<rootDir>/packages/ss-core/src',
     '^@ss-node/ss-i18n$': '<rootDir>/packages/ss-i18n/src',
-    // ss-collector 包嵌套在 packages/ss-collector/ 下，需优先匹配
+    // ss-collector-* packages are nested under packages/ss-collector/; must be matched first
     '^@ss-node/(ss-collector-sdk|ss-collector-modbus|ss-collector-mqtt|ss-collector-opcua|ss-collector-s7|ss-collector-virtual)$':
       '<rootDir>/packages/ss-collector/$1/src',
     '^@ss-node/(ss-collector-sdk|ss-collector-modbus|ss-collector-mqtt|ss-collector-opcua|ss-collector-s7|ss-collector-virtual)/(.+)$':
       '<rootDir>/packages/ss-collector/$1/src/$2',
-    // ss-storage-influx 包嵌套在 packages/ss-storage/ 下，需优先匹配
+    // ss-storage-influx is nested under packages/ss-storage/; must be matched first
     '^@ss-node/(ss-storage-influx)$': '<rootDir>/packages/ss-storage/$1/src',
     '^@ss-node/(ss-storage-influx)/(.+)$': '<rootDir>/packages/ss-storage/$1/src/$2',
     '^@ss-node/([^/]+)/(.+)$': '<rootDir>/packages/$1/src/$2',

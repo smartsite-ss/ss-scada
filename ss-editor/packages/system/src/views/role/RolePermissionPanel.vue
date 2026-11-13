@@ -85,7 +85,7 @@ const emit = defineEmits<{
 
 const collapsed = reactive<Record<string, boolean>>({});
 
-// ▼ v8.0 权限码注册表：从后端 API 动态加载，当前硬编码数据作为初始 fallback
+// ▼ v8.0 permission-code registry: loaded dynamically from the backend API; current hardcoded data is the initial fallback
 const DEFAULT_CATEGORIES: PermissionCategory[] = [
   {
     module: 'project',
@@ -211,13 +211,13 @@ const DEFAULT_CATEGORIES: PermissionCategory[] = [
   },
 ];
 
-// v8.0：权限码分组从后端 API 动态加载，DEFAULT_CATEGORIES 作为初始/fallback 数据
+// v8.0: permission-code groups are loaded dynamically from the backend API; DEFAULT_CATEGORIES serves as initial/fallback data
 const categories = ref<PermissionCategory[]>(DEFAULT_CATEGORIES);
 
 onMounted(async () => {
   try {
     const res = await roleApi.getPermissionsRegistry().catch(() => null);
-    if (!res) return; // 后端 v8.0 端点未部署，使用 DEFAULT_CATEGORIES
+    if (!res) return; // The backend v8.0 endpoint is not deployed; use DEFAULT_CATEGORIES
     const data: any = (res as any)?.data || res;
     if (data?.categories && data.categories.length > 0) {
       categories.value = data.categories.map((cat: any) => ({
@@ -230,7 +230,7 @@ onMounted(async () => {
       }));
     }
   } catch {
-    // API 不可用时保持 DEFAULT_CATEGORIES
+    // Keep DEFAULT_CATEGORIES when the API is unavailable
   }
 });
 
@@ -267,7 +267,7 @@ function toggleCategoryAll(category: PermissionCategory) {
   if (allIncluded) {
     updated = props.modelValue.filter(c => !codeValues.includes(c as any));
   } else {
-    // 手动去重合并（避免 Set 迭代的 downlevelIteration 问题）
+    // Manual deduplicated merge (avoiding the Set-iteration downlevelIteration issue)
     const merged = [...props.modelValue];
     for (const cv of codeValues) {
       if (!merged.includes(cv)) merged.push(cv);

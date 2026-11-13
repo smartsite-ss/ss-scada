@@ -49,7 +49,7 @@
       <div class="history-body">
         <template v-if="entries.length > 0">
           <div class="history-timeline">
-            <!-- 初始状态 -->
+            <!-- Initial state -->
             <div
               class="history-entry"
               :class="{ 'history-entry-current': currentIndex === -1 }"
@@ -61,7 +61,7 @@
               />
               <span class="history-label">{{ t('canvasFooter.historyCurrentState') }}</span>
             </div>
-            <!-- 历史记录列表 -->
+            <!-- History list -->
             <div
               v-for="(entry, idx) in entries"
               :key="idx"

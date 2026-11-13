@@ -20,28 +20,28 @@
             ⟳
           </button>
         </div>
-        <!-- 搜索过滤 -->
+        <!-- Search filter -->
         <input
           v-model="searchQuery"
           type="text"
           class="search-input"
           :placeholder="$t('sourceEditor.searchPlaceholder')"
         >
-        <!-- 加载中 -->
+        <!-- Loading -->
         <div
           v-if="loading"
           class="status-hint"
         >
           {{ $t('sourceEditor.loading') }}
         </div>
-        <!-- 无数据 -->
+        <!-- No data -->
         <div
           v-else-if="filteredTree.length === 0"
           class="status-hint"
         >
           {{ searchQuery ? $t('sourceEditor.noTags') : $t('sourceEditor.noTags') }}
         </div>
-        <!-- 设备变量树 -->
+        <!-- Device variable tree -->
         <div
           v-for="device in filteredTree"
           :key="device.key"
@@ -174,20 +174,20 @@ const actualTags = ref<TagItem[]>([]);
 const loading = ref(false);
 const searchQuery = ref('');
 
-/** 从 URL 路径中提取 projectId（编辑器路由 /editor/:projectId） */
+/** Extract projectId from URL path (editor route /editor/:projectId) */
 function getProjectIdFromPath(): string {
   const match = window.location.pathname.match(/\/editor\/([^/]+)/);
   return match ? match[1] : '';
 }
 
-/** 从后端加载项目实际设备及变量（与 DeviceMonitorView 相同方式：deviceApi.getById 含内嵌 tags） */
+/** Load the project's actual devices and variables from the backend (same way as DeviceMonitorView: deviceApi.getById includes embedded tags) */
 async function loadActualTags() {
   const projectId = projectStore.currentProject?.projectId || getProjectIdFromPath();
   if (!projectId || projectId === 'default-project') return;
 
   loading.value = true;
 
-  // 1. 获取设备列表
+  // 1. Get the device list
   try {
     await deviceStore.fetchDevices(projectId, 1, 100);
   } catch (err: any) {
@@ -196,7 +196,7 @@ async function loadActualTags() {
     return;
   }
 
-  // 2. 通过 deviceApi.getById 获取每个设备的详情（含内嵌 tags），与 DeviceMonitorView 一致
+  // 2. Fetch each device's details (including embedded tags) via deviceApi.getById, consistent with DeviceMonitorView
   const allTags: TagItem[] = [];
   const devices = deviceStore.devices;
   if (devices.length > 0) {
@@ -225,11 +225,11 @@ async function loadActualTags() {
 
 onMounted(() => {
   loadActualTags();
-  // 订阅已选标签到 WebSocket，确保变量实时预览有数据
+  // Subscribe selected tags to the WebSocket to ensure live variable preview has data
   subscribeSelectedTags();
 });
 
-/** 订阅已选标签到 WebSocket，确保变量实时预览有数据 */
+/** Subscribe the selected tags to the WebSocket to ensure live preview data for variables */
 function subscribeSelectedTags() {
   if (selectedTagIds.value.length === 0) return;
   const projectId = projectStore.currentProject?.projectId || getProjectIdFromPath();
@@ -237,14 +237,14 @@ function subscribeSelectedTags() {
     console.warn('[TagSourceSelector] projectId 无效，跳过订阅');
     return;
   }
-  // 如果 wsStore 未连接或连接到其他项目，则连接
+  // If wsStore is not connected or connected to another project, connect
   if (!wsStore.isConnected || wsStore.subscribedProjectId !== projectId) {
     wsStore.connect(projectId);
   }
   wsStore.subscribeTags(selectedTagIds.value);
 }
 
-// 当选中的标签变化时，订阅新的标签
+// When the selected tag changes, subscribe to the new tag
 watch(selectedTagIds, (newIds, oldIds) => {
   if (newIds.length > 0) {
     subscribeSelectedTags();
@@ -262,7 +262,7 @@ const deviceTree = computed(() => {
       key: item.tagId,
     });
   }
-  // 补充 deviceStore 中有但 actualTags 中未出现的设备（按 deviceName 去重）
+  // Add devices present in deviceStore but missing from actualTags (dedupe by deviceName)
   for (const device of deviceStore.devices) {
     const deviceName = device.deviceName;
     if (!deviceMap[deviceName]) {
@@ -281,7 +281,7 @@ const selectedItems = computed(() =>
   actualTags.value.filter((d) => selectedTagIds.value.includes(d.tagId)),
 );
 
-/** 按搜索词过滤设备树 */
+/** Filter the device tree by search term */
 const filteredTree = computed(() => {
   if (!searchQuery.value.trim()) return deviceTree.value;
   const query = searchQuery.value.trim().toLowerCase();
@@ -297,13 +297,13 @@ const filteredTree = computed(() => {
     .filter((device) => device.children.length > 0);
 });
 
-/** 判断设备下所有标签是否全选 */
+/** Determine whether all tags under a device are selected */
 function isDeviceAllSelected(children: any[]): boolean {
   if (children.length === 0) return false;
   return children.every((c) => selectedTagIds.value.includes(c.key));
 }
 
-/** 切换设备下所有标签的选中状态 */
+/** Toggle the selected state of all tags under a device */
 function toggleDeviceAll(children: any[], _deviceKey: string) {
   const childIds = children.map((c) => c.key);
   const allSelected = isDeviceAllSelected(children);
@@ -316,7 +316,7 @@ function toggleDeviceAll(children: any[], _deviceKey: string) {
   syncData();
 }
 
-/** 清空全部已选 */
+/** Clear all selections */
 function clearAll() {
   selectedTagIds.value = [];
   syncData();
@@ -344,12 +344,12 @@ function syncData() {
 }
 
 function getTagValue(tagId: string): string {
-  // 优先从 WebSocket 实时缓存读取
+  // Prefer reading from the WebSocket live cache
   const wsEntry = wsStore.tagValues.get(tagId);
   if (wsEntry?.value !== undefined && wsEntry?.value !== null) {
     return String(wsEntry.value);
   }
-  // 回退到 pageDsStore 静态值
+  // Fall back to pageDsStore static value
   const v = pageDsStore.getVariableByTagId(tagId);
   if (!v || v.currentValue === undefined || v.currentValue === null) return '--';
   return String(v.currentValue);
@@ -358,7 +358,7 @@ function getTagValue(tagId: string): string {
 function getQualityColor(tagId: string): string {
   const wsEntry = wsStore.tagValues.get(tagId);
   const quality = wsEntry?.quality ?? pageDsStore.getVariableByTagId(tagId)?.quality;
-  // 委托到统一映射 sourceMeta.getQualityColor（已包含 stale/disconnected 完整状态）
+  // Delegate to the unified mapping sourceMeta.getQualityColor (already includes complete stale/disconnected states)
   return getQualityColorCommon(quality);
 }
 

@@ -1,6 +1,6 @@
 <template>
   <div class="preview-view">
-    <!-- 错误/加载状态 UI -->
+    <!-- Error/loading state UI -->
     <div
       v-if="!isReady && !hasError"
       class="preview-loading"
@@ -35,7 +35,7 @@
       </button>
     </div>
 
-    <!-- 正常预览 UI -->
+    <!-- Normal preview UI -->
     <PreviewCanvas
       v-else
       :width="previewWidth"
@@ -69,28 +69,28 @@ import { SsLoading } from '@scada-editor/shared';
 import { pluginReady } from '../plugins';
 import { useDataSourceLifecycle } from '../composables/useDataSourceLifecycle';
 
-// 经 unknown 断言窄化 t 签名：解构 i18n.global 会触发 vue-i18n messages 字面量 schema 深度类型实例化（TS2589）
+// Narrow the t signature via unknown assertion: destructuring i18n.global triggers deep type instantiation of the vue-i18n messages literal schema (TS2589)
 const t = (key: string): string =>
   (i18n.global as unknown as { t: (key: string) => string }).t(key);
 const route = useRoute();
 
 const pageStore = usePageStore();
 
-// 预览尺寸 - 占满整个窗口
+// Preview size — fill the entire window
 const previewWidth = ref(window.innerWidth);
 const previewHeight = ref(window.innerHeight);
 
-// 状态管理
+// State management
 const isReady = ref(false);
 const hasError = ref(false);
 const errorTitle = ref('');
 const errorMessage = ref('');
 const errorHint = ref('');
 
-// 轮播配置（从项目 projectinfo.json 加载）
+// Carousel config (loaded from the project's projectinfo.json)
 const carouselConfig = ref<CarouselConfig>({ ...DEFAULT_CAROUSEL_CONFIG });
 
-// 显示错误
+// Show error
 const showError = (title: string, message: string, hint?: string) => {
   hasError.value = true;
   isReady.value = false;
@@ -99,22 +99,22 @@ const showError = (title: string, message: string, hint?: string) => {
   errorHint.value = hint || '';
 };
 
-// 返回编辑器
+// Return to editor
 const goBack = () => {
   window.close();
-  // 如果无法关闭（不是通过 window.open 打开的），尝试返回历史记录
+  // If it cannot be closed (not opened via window.open), try returning to history
   if (window.history.length > 1) {
     window.history.back();
   }
 };
 
-// 窗口大小改变处理
+// Window resize handling
 const handleResize = () => {
   previewWidth.value = window.innerWidth;
   previewHeight.value = window.innerHeight;
 };
 
-// 从 IndexedDB 恢复所有页面数据，供 PageBrowser 等图元在预览中使用
+// Restore all page data from IndexedDB for graphics like PageBrowser to use in preview
 const restoreAllPages = async () => {
   try {
     const allPages = await loadAllPagesData();
@@ -134,7 +134,7 @@ const restoreAllPages = async () => {
     });
 
     if (restoredPages.length > 0) {
-      // 保留当前页面（从后端加载的主页面），其他页面（供 PageBrowser 使用）合并进来
+      // Keep the current page (main page loaded from backend); merge in other pages (for PageBrowser use)
       const currentPage = pageStore.currentPage;
       const mergedPages = [currentPage, ...restoredPages.filter(p => p.id !== currentPage?.id)].filter(Boolean) as NonNullable<typeof currentPage>[];
       pageStore.pages = mergedPages;
@@ -144,7 +144,7 @@ const restoreAllPages = async () => {
   }
 };
 
-// 模板模式专用：从 IndexedDB 恢复页面数据
+// Template-mode only: restore page data from IndexedDB
 const restoreFromIndexedDB = async (pageName?: string) => {
   try {
     const allPages = await loadAllPagesData();
@@ -157,7 +157,7 @@ const restoreFromIndexedDB = async (pageName?: string) => {
       return;
     }
 
-    // 查找匹配的页面，或使用第一个
+    // Find a matching page, or use the first
     const matchedPage = pageName
       ? allPages.find((p: any) => (p.data?.name || p.name) === pageName)
       : allPages[0];
@@ -182,7 +182,7 @@ const restoreFromIndexedDB = async (pageName?: string) => {
     });
     tempPage.fromJSON(pageData);
 
-    // 恢复所有页面到 store
+    // Restore all pages to the store
     const restoredPages = allPages.map((item: any) => {
       const page = new BasePage();
       page.init({
@@ -199,7 +199,7 @@ const restoreFromIndexedDB = async (pageName?: string) => {
     pageStore.pages = restoredPages;
     pageStore.currentPageId = tempPage.id;
 
-    // ── 数据源统一调度：模板模式下无 projectId，使用临时 ID ──
+    // ── Unified data-source scheduling: template mode has no projectId, use a temporary ID ──
     await initDataSourceManager(tempPage, 'template-mode');
 
     nextTick(() => {
@@ -216,22 +216,22 @@ const restoreFromIndexedDB = async (pageName?: string) => {
   }
 };
 
-// 从后端 API 或 IndexedDB 加载页面数据
+// Load page data from the backend API or IndexedDB
 const restorePageFromStorage = async () => {
   const mode = route.query.mode as string | undefined;
   const projectId = route.query.projectId as string | undefined;
   const pageName = route.query.pageName as string | undefined;
   const groupName = route.query.group as string | undefined;
 
-  // 一次性票据鉴权桥（06 方案路线 B #2）：移动端（uni-app H5/App）以 Bearer 会话
-  // 签发票据经 URL 传入，本壳先兑换为 Bearer Token（存内存），再加载需鉴权的页面数据。
-  // 兑换失败不阻断：若本壳已有 Bearer 会话（如浏览器直开），仍可正常加载。
+  // One-time ticket auth bridge (plan 06 route B #2): mobile (uni-app H5/App) uses a Bearer session
+  // The signed ticket is passed via URL; this shell first exchanges it for a Bearer Token (in memory), then loads page data that requires auth.
+  // Exchange failure does not block: if this shell already has a Bearer session (e.g. opened directly in a browser), loading still works.
   const previewTicket = route.query.ticket as string | undefined;
   if (previewTicket) {
     await exchangePreviewTicket(previewTicket);
   }
 
-  // 模板模式：直接从 IndexedDB 加载，不依赖后端项目 API
+  // Template mode: load directly from IndexedDB, without depending on the backend project API
   if (mode === 'template') {
     await restoreFromIndexedDB(pageName);
     return;
@@ -248,9 +248,9 @@ const restorePageFromStorage = async () => {
 
   try {
     const response = await pageApi.readPage(projectId, pageName, groupName);
-    // 后端响应可能有多层包装：
-    //   无拦截器: { success: true, data: pageJSON }
-    //   有拦截器: { data: { success: true, data: pageJSON }, message, timestamp }
+    // The backend response may have multiple wrapper layers:
+    //   No interceptor: { success: true, data: pageJSON }
+    //   With interceptor: { data: { success: true, data: pageJSON }, message, timestamp }
     const pageResult = (response as any)?.data || (response as any);
     const pageData = pageResult?.data;
 
@@ -283,23 +283,23 @@ const restorePageFromStorage = async () => {
     });
 
     tempPage.fromJSON(pageData);
-    // 设置 projectId，解决 PreviewCanvas 中背景图片相对路径（如 bg.png）
-    // 需解析为 /api/v1/projects/{projectId}/pages/{pageName}/bg.png 的场景
+    // Set projectId to resolve background-image relative paths (e.g. bg.png) in PreviewCanvas
+    // Scenarios that resolve to /api/v1/projects/{projectId}/pages/{pageName}/bg.png
     (tempPage as any).projectId = projectId;
 
-    // 先设置当前页面
+    // Set the current page first
     pageStore.pages = [tempPage];
     pageStore.currentPageId = tempPage.id;
 
-    // 从 IndexedDB 恢复所有页面数据，供 PageBrowser 等图元使用
+    // Restore all page data from IndexedDB for graphics like PageBrowser
     await restoreAllPages();
 
-    // ── 数据源统一调度：初始化 DataSourceManager ──
-    // 必须传 tempPage（BasePage 实例，含 getGraphicById），不能传原始 JSON pageData
-    // 否则 BindingManager 注册时 getGraphicById 返回 undefined，绑定全部被跳过
+    // ── Unified data-source scheduling: initialize DataSourceManager ──
+    // Must pass tempPage (a BasePage instance with getGraphicById), not the raw JSON pageData
+    // Otherwise getGraphicById returns undefined when BindingManager registers, and all bindings are skipped
     await initDataSourceManager(tempPage, projectId);
 
-    // 从项目 projectinfo.json 加载轮播配置
+    // Load carousel config from the project's projectinfo.json
     await loadCarouselConfig(projectId);
 
     nextTick(() => {
@@ -318,16 +318,16 @@ const restorePageFromStorage = async () => {
 };
 
 /**
- * 数据源统一调度：通过 ScadaDataManager.initPage 启动 DataSourceManager，
- * 由其内部的 WebSocketDriver / HttpPollingDriver / SqlQueryDriver 等接管所有数据源的生命周期。
+ * Unified data-source scheduling: start DataSourceManager via ScadaDataManager.initPage,
+ * whose internal WebSocketDriver / HttpPollingDriver / SqlQueryDriver, etc. take over the lifecycle of all data sources.
  *
- * 数据流：ws/api/sql driver → DataSourceManager._onDataReceived → EventBus.emit('tagValueChanged')
- *        → BindingManager.handleDataUpdate → 图元属性更新。
+ * Data flow: ws/api/sql driver → DataSourceManager._onDataReceived → EventBus.emit('tagValueChanged')
+ *        → BindingManager.handleDataUpdate → graphic property update.
  *
- * wsStore.flushTagUpdates 检测到 WebSocketDriver 注册了 onFlushed 监听器后，
- * 不再直接 emit EventBus，避免双重触发。
+ * Once wsStore.flushTagUpdates detects that WebSocketDriver registered an onFlushed listener,
+ * it no longer emits EventBus directly, avoiding double triggering.
  *
- * 实现已抽取至 useDataSourceLifecycle composable，供 PreviewView/EditorView 共享。
+ * Implementation extracted into the useDataSourceLifecycle composable, shared by PreviewView/EditorView.
  */
 const { initDataSourceLifecycle, destroyDataSourceLifecycle } = useDataSourceLifecycle();
 
@@ -336,7 +336,7 @@ const initDataSourceManager = async (pageData: any, projectId: string) => {
 };
 
 /**
- * 从项目 projectinfo.json 加载轮播配置
+ * Load carousel config from the project's projectinfo.json
  */
 const loadCarouselConfig = async (projectId: string) => {
   try {
@@ -355,7 +355,7 @@ const loadCarouselConfig = async (projectId: string) => {
 };
 
 /**
- * 持久化轮播配置到项目 projectinfo.json
+ * Persist carousel config to the project's projectinfo.json
  */
 const handleCarouselConfigChanged = async (config: CarouselConfig) => {
   carouselConfig.value = { ...config };
@@ -369,16 +369,16 @@ const handleCarouselConfigChanged = async (config: CarouselConfig) => {
 };
 
 /**
- * 兑换一次性预览票据为 Bearer 会话凭证（后端 POST /auth/preview-ticket-exchange）。
+ * Exchange a one-time preview ticket for a Bearer session credential (backend POST /auth/preview-ticket-exchange).
  *
- * 鉴权模式：Bearer Token（响应体返回）。壳内 axios 拦截器会从内存读取 token 注入
- * `Authorization` 头，JwtStrategy 已支持从该头取 token。
+ * Auth mode: Bearer Token (returned in response body). The in-shell axios interceptor reads the token from memory and injects it into the
+ * `Authorization` header; JwtStrategy already supports reading the token from this header.
  *
- * 历史背景：原本设置 HttpOnly Cookie（SameSite=Strict），仅适用于「壳与 H5 同源部署」。
- * 现 H5 iframe 改为直连远程 8080 壳（跨源），浏览器视为第三方 Cookie 拦截 → 401。
- * 改 Bearer 后跨源可用，token 存内存（与 client.ts S-C03 一致）。
+ * Background: originally an HttpOnly Cookie (SameSite=Strict) was set, which only fits "shell and H5 same-origin deployment".
+ * Now the H5 iframe connects directly to the remote 8080 shell (cross-origin), so the browser treats it as a third-party Cookie and blocks it → 401.
+ * Switching to Bearer works cross-origin; the token is kept in memory (consistent with client.ts S-C03).
  *
- * 成功后从地址栏移除 ticket 参数（票据已一次性消费，留在 URL 中只会误导刷新重试，且有泄露风险）。
+ * After success, remove the ticket param from the address bar (the ticket is single-use; leaving it in the URL only misleads refresh retries and risks leakage).
  */
 const exchangePreviewTicket = async (previewTicket: string) => {
   try {
@@ -392,7 +392,7 @@ const exchangePreviewTicket = async (previewTicket: string) => {
       return;
     }
     const data = await response.json();
-    // 后端经全局 TransformInterceptor 包装为 { code, data: { accessToken, refreshToken }, message }
+    // The backend wraps it via the global TransformInterceptor into { code, data: { accessToken, refreshToken }, message }
     const tokenPair = data?.data ?? data;
     if (tokenPair?.accessToken && tokenPair?.refreshToken) {
       const { setToken, setRefreshToken } = await import('@scada-editor/system');
@@ -421,16 +421,16 @@ onMounted(async () => {
 });
 
 onUnmounted(() => {
-  // ── 数据源统一调度：清理 DataSourceManager ──
+  // ── Unified data-source scheduling: clean up DataSourceManager ──
   destroyDataSourceLifecycle();
 
-  // 停止监听键盘事件
+  // Stop listening to keyboard events
   keyboardService.stopListening();
-  // 清除预览相关的按键绑定
+  // Clear preview-related key bindings
   keyboardService.unregisterContext(KeyboardContext.PREVIEW);
-  // 恢复键盘上下文为全局模式
+  // Restore the keyboard context to global mode
   keyboardService.setContext(KeyboardContext.GLOBAL);
-  // 移除监听
+  // Remove listeners
   window.removeEventListener('resize', handleResize);
 });
 </script>
@@ -447,7 +447,7 @@ onUnmounted(() => {
   justify-content: center;
 }
 
-/* 加载状态 */
+/* Loading state */
 .preview-loading {
   display: flex;
   flex-direction: column;
@@ -455,7 +455,7 @@ onUnmounted(() => {
   justify-content: center;
 }
 
-/* 错误状态 */
+/* Error state */
 .preview-error {
   display: flex;
   flex-direction: column;
@@ -505,7 +505,7 @@ onUnmounted(() => {
   background-color: var(--primary-dark, #2563eb);
 }
 
-/* Canvas 样式 */
+/* Canvas style */
 :deep(.preview-canvas-container) {
   border: none !important;
   border-radius: 0 !important;
@@ -517,7 +517,7 @@ onUnmounted(() => {
   display: none !important;
 }
 
-/* 保留 overflow:auto：fitWidth/fitHeight 扩展位图需原生滚动承接，强制 hidden 会裁剪内容 */
+/* Keep overflow:auto: fitWidth/fitHeight expanded bitmaps need native scroll to hold them; forcing hidden would clip content */
 :deep(.preview-canvas-container .canvas-wrapper.no-controls) {
   padding: 0 !important;
   height: 100% !important;

@@ -1,6 +1,6 @@
 <template>
   <div class="pipeline-metrics">
-    <!-- 页头 -->
+    <!-- Page header -->
     <div class="page-header">
       <div class="header-title">
         <button
@@ -79,7 +79,7 @@
       </div>
     </div>
 
-    <!-- 诊断结果面板 -->
+    <!-- Diagnostics result panel -->
     <div
       v-if="diagnosticResult"
       class="panel diagnostic-panel"
@@ -98,7 +98,7 @@
           {{ $t('system.pipeline.close') }}
         </button>
       </div>
-      <!-- 自动诊断结论 -->
+      <!-- Auto-diagnosis conclusion -->
       <div class="diagnosis-conclusions">
         <div
           v-for="(conclusion, idx) in diagnosticResult.diagnosis"
@@ -109,7 +109,7 @@
           {{ conclusion }}
         </div>
       </div>
-      <!-- 详细状态 -->
+      <!-- Detailed status -->
       <div class="diagnosis-details">
         <div class="diagnosis-section">
           <h4>Orchestrator</h4>
@@ -177,14 +177,14 @@
       </div>
     </div>
 
-    <!-- 加载状态（首次） -->
+    <!-- Loading state (first time) -->
     <SsLoading
       v-if="loading && !snapshot"
       :text="$t('system.pipeline.loading')"
       size="small"
     />
 
-    <!-- 错误状态 -->
+    <!-- Error state -->
     <div
       v-else-if="error && !snapshot"
       class="error-state"
@@ -199,7 +199,7 @@
     </div>
 
     <template v-else-if="snapshot">
-      <!-- 按协议维度视图 -->
+      <!-- View by protocol dimension -->
       <template v-if="selectedProtocol && protocolMetrics">
         <div class="metrics-cards">
           <div class="metric-card">
@@ -229,9 +229,9 @@
         </div>
       </template>
 
-      <!-- 全局视图 -->
+      <!-- Global view -->
       <template v-else-if="!selectedProtocol">
-        <!-- 顶部指标卡片 -->
+        <!-- Top metric card -->
         <div class="metrics-cards">
           <div class="metric-card">
             <span class="metric-label">{{ $t('system.pipeline.executionsTotal') }}</span>
@@ -261,7 +261,7 @@
           </div>
         </div>
 
-        <!-- 子系统指标 -->
+        <!-- Subsystem metrics -->
         <div class="dashboard-row">
           <div class="sub-panel">
             <h3 class="section-title">
@@ -332,7 +332,7 @@
           </div>
         </div>
 
-        <!-- 步骤耗时统计（P50/P95/P99） -->
+        <!-- Step duration statistics (P50/P95/P99) -->
         <div class="panel">
           <h3 class="section-title">
             {{ $t('system.pipeline.stepStats') }}
@@ -431,7 +431,7 @@
           </table>
         </div>
 
-        <!-- 火焰图（Pipeline 耗时分解） -->
+        <!-- Flame graph (Pipeline time breakdown) -->
         <div class="panel">
           <div class="panel-header">
             <h3
@@ -486,7 +486,7 @@
           </div>
         </div>
 
-        <!-- 离线缓存状态 -->
+        <!-- Offline cache state -->
         <div class="panel">
           <div class="panel-header">
             <h3
@@ -555,7 +555,7 @@
           </div>
         </div>
 
-        <!-- Prometheus 原始文本 -->
+        <!-- Prometheus raw text -->
         <div class="panel">
           <div class="panel-header">
             <h3
@@ -623,20 +623,20 @@ const error = ref<string>('');
 const autoRefresh = ref(false);
 const lastRefreshAt = ref<number>(0);
 
-// 诊断相关状态
+// Diagnostics-related state
 const diagnosticLoading = ref(false);
 const diagnosticResult = ref<any>(null);
 
-// 协议筛选状态
+// Protocol filter state
 const selectedProtocol = ref('');
 const protocols = ref<ProtocolSummary[]>([]);
 const protocolMetrics = ref<ProtocolMetrics | null>(null);
 const protocolLoading = ref(false);
 
 let refreshTimer: ReturnType<typeof setInterval> | null = null;
-let isRefreshing = false; // 防止刷新重叠的同步标志
+let isRefreshing = false; // Sync flag to prevent overlapping refreshes
 const AUTO_REFRESH_INTERVAL = 5000;
-const REFRESH_TIMEOUT_MS = 20000; // 单次刷新最长 20s，防止永久卡住
+const REFRESH_TIMEOUT_MS = 20000; // A single refresh lasts at most 20s to prevent permanent stalls
 const MAX_DISPLAY_BREAKDOWNS = 20;
 
 const displayBreakdowns = computed(() =>
@@ -715,7 +715,7 @@ function unwrap<T>(res: any): T {
   return (res?.data ?? res) as T;
 }
 
-/** 带超时的 Promise 包装，防止某个 API 永久挂起导致 loading 卡住 */
+/** Promise wrapper with timeout to prevent a stuck API from freezing loading */
 function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
   return Promise.race([
     promise,
@@ -726,7 +726,7 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
 }
 
 async function refreshAll() {
-  // 防止刷新重叠：如果上一次刷新仍在进行中，直接跳过
+  // Prevent overlapping refreshes: skip directly if the last refresh is still in progress
   if (isRefreshing) return;
   isRefreshing = true;
   loading.value = true;
@@ -738,7 +738,7 @@ async function refreshAll() {
         const res = await withTimeout(pipelineApi.getJsonMetrics(), 10000);
         snapshot.value = unwrap<PipelineMetricsSnapshot>(res);
       } catch {
-        // 静默处理，保持现有数据
+        // Handle silently, keep existing data
       }
     })(),
     (async () => {
@@ -746,7 +746,7 @@ async function refreshAll() {
         const res = await withTimeout(pipelineApi.getPercentiles(), 10000);
         stepStats.value = unwrap<StepTimingStats[]>(res) || [];
       } catch {
-        // 保持现有数据
+        // Keep existing data
       }
     })(),
     (async () => {
@@ -754,14 +754,14 @@ async function refreshAll() {
         const res = await withTimeout(pipelineApi.getBreakdowns(50), 10000);
         breakdowns.value = unwrap<PipelineTimingBreakdown[]>(res) || [];
       } catch {
-        // 保持现有数据
+        // Keep existing data
       }
     })(),
     (async () => {
       try {
         prometheusText.value = await withTimeout(pipelineApi.getPrometheusMetrics(), 10000);
       } catch {
-        // 保持现有数据
+        // Keep existing data
       }
     })(),
     (async () => {
@@ -769,16 +769,16 @@ async function refreshAll() {
         const res = await withTimeout(offlineCacheApi.getStats(), 10000);
         offlineCacheStats.value = res.data;
       } catch {
-        // 保持现有数据
+        // Keep existing data
       }
     })(),
-    // 始终刷新协议列表（下拉框数据源）
+    // Always refresh the protocol list (dropdown data source)
     (async () => {
       await loadProtocols();
     })(),
   ];
 
-  // 如果当前已在按协议视图，同时刷新协议指标
+  // If already in the by-protocol view, also refresh protocol metrics
   if (selectedProtocol.value) {
     tasks.push(
       (async () => {
@@ -789,13 +789,13 @@ async function refreshAll() {
           );
           protocolMetrics.value = unwrap<ProtocolMetrics>(res);
         } catch {
-          // 保持现有数据
+          // Keep existing data
         }
       })(),
     );
   }
 
-  // 安全超时：无论如何 20s 后强制结束 loading
+  // Safe timeout: force-end loading after 20s regardless
   const safetyTimer = setTimeout(() => {
     if (loading.value) {
       loading.value = false;
@@ -891,7 +891,7 @@ async function runDiagnostic() {
   }
 }
 
-/** 根据诊断结论的 emoji 前缀返回样式类 */
+/** Return the style class based on the emoji prefix of the diagnosis conclusion */
 function getDiagnosisClass(conclusion: string): string {
   if (conclusion.startsWith('✅')) return 'ok';
   if (conclusion.startsWith('❌')) return 'error';
@@ -899,7 +899,7 @@ function getDiagnosisClass(conclusion: string): string {
   return '';
 }
 
-/** 切换全局/按协议视图 */
+/** Toggle global / by-protocol view */
 async function onScopeChange() {
   if (selectedProtocol.value) {
     protocolLoading.value = true;
@@ -919,7 +919,7 @@ async function onScopeChange() {
   }
 }
 
-/** 加载有指标数据的协议列表 */
+/** Load the list of protocols that have metric data */
 async function loadProtocols() {
   try {
     const res = await withTimeout(pipelineApi.getProtocols(), 10000);
@@ -928,7 +928,7 @@ async function loadProtocols() {
       protocols.value = data;
     }
   } catch {
-    // 静默处理
+    // Handle silently
   }
 }
 
@@ -944,7 +944,7 @@ onBeforeUnmount(() => {
   }
 });
 
-// keep-alive 缓存：离开页面时停止刷新，返回时恢复
+// keep-alive cache: stop refresh when leaving the page, resume on return
 const wasAutoRefreshOn = ref(false);
 
 onDeactivated(() => {
@@ -1060,7 +1060,7 @@ onActivated(() => {
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* 指标卡片 */
+/* Metric card */
 .metrics-cards {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
@@ -1118,7 +1118,7 @@ onActivated(() => {
   color: var(--status-error);
 }
 
-/* 子系统指标行 */
+/* Subsystem metrics row */
 .dashboard-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -1161,7 +1161,7 @@ onActivated(() => {
   color: var(--status-error);
 }
 
-/* 面板通用 */
+/* Panel common */
 .panel {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -1189,7 +1189,7 @@ onActivated(() => {
   margin: 0 0 14px 0;
 }
 
-/* 数据表格 */
+/* Data table */
 .data-table {
   width: 100%;
   border-collapse: collapse;
@@ -1252,7 +1252,7 @@ onActivated(() => {
   background: rgba(var(--primary-rgb), 0.05);
 }
 
-/* 火焰图 */
+/* Flame graph */
 .flame-chart {
   display: flex;
   flex-direction: column;
@@ -1338,7 +1338,7 @@ onActivated(() => {
   text-align: right;
 }
 
-/* Prometheus 文本 */
+/* Prometheus text */
 .prometheus-text {
   background: var(--background);
   border: 1px solid var(--border);
@@ -1355,7 +1355,7 @@ onActivated(() => {
   margin: 0;
 }
 
-/* 诊断面板 */
+/* Diagnostics panel */
 .diagnostic-panel {
   border-color: rgba(var(--primary-rgb), 0.4);
 }
@@ -1431,7 +1431,7 @@ onActivated(() => {
   font-size: 13px;
 }
 
-/* 离线缓存面板 */
+/* Offline cache panel */
 .panel-actions {
   display: flex;
   gap: 8px;
@@ -1496,7 +1496,7 @@ onActivated(() => {
   gap: 4px;
 }
 
-/* 响应式 */
+/* Responsive */
 @media (max-width: 1024px) {
   .metrics-cards {
     grid-template-columns: repeat(3, 1fr);

@@ -153,7 +153,7 @@ import { ThemeSwitcher, LanguageSwitcher } from '@scada-editor/plugin-sdk';
 import { useSelection } from '../../composables/useSelection';
 import { useLayout } from '../../composables/useLayout';
 
-// 预加载所有工具栏图标（库模式下静态 src 无法被 Rollup 解析，需显式导入）
+// Preload all toolbar icons (in library mode static src cannot be parsed by Rollup; explicit import needed)
 const iconModules = import.meta.glob('../../assets/icons/*.svg', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
 const iconUrl = (name: string) => iconModules[`../../assets/icons/${name}.svg`];
 
@@ -199,34 +199,34 @@ const toggleCanvasPreview = () => {
   }));
 };
 
-// 计算当前选择的工具
+// Compute the currently selected tool
 const selectedTool = computed(() => {
   return configStore.tools.selectedTool;
 });
 
-// 选择工具
+// Select tool
 const selectTool = (tool: string) => {
   configStore.updateToolConfig({ selectedTool: tool });
 };
 
-// 应用布局
+// Apply layout
 const applyLayout = (layoutType: string) => {
   setPageLayout(layoutType);
 };
 
-// 复制选择的图形
+// Copy the selected graphic
 const duplicateSelected = () => {
   duplicateSelectedGraphic();
 };
 
-// 删除选择的图形
+// Delete the selected graphic
 const deleteSelected = () => {
   deleteSelectedGraphic();
 };
 
-// 清空所有图形
+// Clear all graphics
 const clearAll = () => {
-  // 这里应该实现清空所有图形的逻辑
+  // Here you should implement the clear-all-graphics logic
   ('Clear all graphics');
 };
 </script>

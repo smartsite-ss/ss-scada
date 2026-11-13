@@ -16,7 +16,7 @@
           </button>
         </div>
         <div class="map-picker-body">
-          <!-- 搜索栏 -->
+          <!-- Search bar -->
           <div class="map-search-bar">
             <input
               v-model="searchKeyword"
@@ -73,7 +73,7 @@
               /></svg>
             </button>
           </div>
-          <!-- 搜索结果 -->
+          <!-- Search results -->
           <div
             v-if="searchResults.length"
             class="map-search-results"
@@ -102,12 +102,12 @@
               <span class="result-text">{{ item.display_name }}</span>
             </div>
           </div>
-          <!-- 地图容器 -->
+          <!-- Map container -->
           <div
             ref="mapContainerRef"
             class="map-container"
           />
-          <!-- 坐标显示 -->
+          <!-- Coordinate display -->
           <div class="coord-display">
             <span class="coord-item"><span class="coord-label">LNG</span>{{ selectedLng !== null ? selectedLng.toFixed(6) : '—' }}</span>
             <span class="coord-item"><span class="coord-label">LAT</span>{{ selectedLat !== null ? selectedLat.toFixed(6) : '—' }}</span>
@@ -141,7 +141,7 @@
 import { ref, watch, nextTick, onBeforeUnmount } from 'vue';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-// 修复打包器环境下 Leaflet 默认标记图标路径失效问题
+// Fix the Leaflet default marker icon path failure under bundler environments
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerIconRetina from 'leaflet/dist/images/marker-icon-2x.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
@@ -194,7 +194,7 @@ function handleConfirm() {
   emit('update:visible', false);
 }
 
-/** 放置/移动标记并更新坐标 */
+/** Place/move a marker and update coordinates */
 function placeMarker(lat: number, lng: number, fly = true) {
   if (!map) return;
   const latlng = L.latLng(lat, lng);
@@ -220,7 +220,7 @@ function initMap() {
   const initLat = props.initialLat ? parseFloat(props.initialLat) : NaN;
   const initLng = props.initialLng ? parseFloat(props.initialLng) : NaN;
   const hasInit = !isNaN(initLat) && !isNaN(initLng);
-  // 无初始坐标时默认定位中国中心
+  // Default to China's center when there is no initial coordinate
   const center: L.LatLngExpression = hasInit ? [initLat, initLng] : [35.0, 105.0];
   map = L.map(mapContainerRef.value, { zoomControl: true }).setView(center, hasInit ? 13 : 4);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -233,7 +233,7 @@ function initMap() {
   if (hasInit) {
     placeMarker(initLat, initLng, false);
   }
-  // 弹窗渲染后尺寸可能未就绪，需强制重算
+  // After dialog rendering the size may not be ready; force recompute
   nextTick(() => map?.invalidateSize());
   setTimeout(() => map?.invalidateSize(), 200);
 }
@@ -250,7 +250,7 @@ watch(
   () => props.visible,
   (val) => {
     if (val) {
-      // 重置选中状态（保留初始坐标由 initMap 读取）
+      // Reset the selection state (initial coordinates are read by initMap)
       selectedLng.value = null;
       selectedLat.value = null;
       searchResults.value = [];
@@ -266,7 +266,7 @@ onBeforeUnmount(() => {
   destroyMap();
 });
 
-/** 关键字搜索地点（OSM Nominatim） */
+/** Keyword search for places (OSM Nominatim) */
 async function handleSearch() {
   const q = searchKeyword.value.trim();
   if (!q) return;
@@ -279,7 +279,7 @@ async function handleSearch() {
       searchResults.value = await resp.json();
     }
   } catch {
-    // 网络异常时静默，仅清空结果
+    // Silent on network anomaly; just clear the result
   } finally {
     searching.value = false;
   }
@@ -294,7 +294,7 @@ function handleSelectSearchResult(item: SearchResult) {
   searchResults.value = [];
 }
 
-/** 浏览器定位 */
+/** Browser geolocation */
 function handleLocateMe() {
   if (!navigator.geolocation) return;
   navigator.geolocation.getCurrentPosition(
@@ -302,7 +302,7 @@ function handleLocateMe() {
       placeMarker(pos.coords.latitude, pos.coords.longitude, true);
     },
     () => {
-      // 定位失败时静默
+      // Silent on positioning failure
     },
     { enableHighAccuracy: true, timeout: 8000 },
   );

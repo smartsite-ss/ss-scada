@@ -13,7 +13,7 @@
       </radialGradient>
     </defs>
 
-    <!-- 左侧管道 -->
+    <!-- Left pipe -->
     <rect
       :x="0"
       :y="pipeY"
@@ -22,7 +22,7 @@
       :rx="pipeHeight * 0.2"
       :fill="pipeColor"
     />
-    <!-- 右侧管道 -->
+    <!-- Right pipe -->
     <rect
       :x="rightPipeStartX"
       :y="pipeY"
@@ -32,7 +32,7 @@
       :fill="pipeColor"
     />
 
-    <!-- 泵体 -->
+    <!-- Pump body -->
     <circle
       :cx="cx"
       :cy="cy"
@@ -41,14 +41,14 @@
       :stroke="bodyStroke"
       stroke-width="2"
     />
-    <!-- 泵体高光 -->
+    <!-- Pump body highlight -->
     <circle
       :cx="cx - bodyRadius * 0.3"
       :cy="cy - bodyRadius * 0.3"
       :r="bodyRadius * 0.55"
       fill="rgba(255, 255, 255, 0.25)"
     />
-    <!-- 叶轮舱 -->
+    <!-- Impeller housing -->
     <circle
       :cx="cx"
       :cy="cy"
@@ -58,7 +58,7 @@
       stroke-width="1.5"
     />
 
-    <!-- 叶轮（运行状态旋转） -->
+    <!-- Impeller (rotating when running) -->
     <g :style="spinStyle">
       <rect
         v-for="index in 6"
@@ -74,7 +74,7 @@
       <circle :cx="cx" :cy="cy" :r="hubRadius" :fill="hubColor" />
     </g>
 
-    <!-- 法兰 -->
+    <!-- Flange -->
     <rect
       v-for="flangeX in [leftFlangeX, rightFlangeX]"
       :key="flangeX"
@@ -86,7 +86,7 @@
       :fill="flangeColor"
     />
 
-    <!-- 法兰螺栓 -->
+    <!-- Flange bolts -->
     <circle
       v-for="(bolt, index) in flangeBolts"
       :key="index"
@@ -98,7 +98,7 @@
       stroke-width="0.5"
     />
 
-    <!-- 标签 -->
+    <!-- Tag -->
     <text
       v-if="showLabel && labelText"
       :x="cx"
@@ -109,7 +109,7 @@
       dominant-baseline="middle"
     >{{ labelText }}</text>
 
-    <!-- 状态灯（带光晕） -->
+    <!-- Status light (with glow) -->
     <circle
       :cx="statusLightX"
       :cy="statusLightY"
@@ -162,7 +162,7 @@ const { currentValue, bindTitle } = useTagValue(props);
 
 const bodyGradientId = `waterpump-body-gradient-${Math.random().toString(36).slice(2, 8)}`;
 
-/** 解析实时值 → 状态：未绑定时用手动 status；绑定时按「值→状态」映射，未命中用 defaultStatus */
+/** Parse live value → status: manual status when unbound; when bound, use the value→status mapping, falling back to defaultStatus on miss */
 const effectiveStatus = computed(() => {
   if (!props.tagId) return props.status;
   const raw = currentValue.value;

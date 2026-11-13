@@ -4,7 +4,7 @@
     class="script-drawer"
     :style="{ height: drawerState.height + 'px' }"
   >
-    <!-- 拖拽手柄 -->
+    <!-- Drag handle -->
     <div
       class="drawer-resize-handle"
       @mousedown="startResize"
@@ -12,7 +12,7 @@
       <div class="resize-bar" />
     </div>
 
-    <!-- 标签栏 -->
+    <!-- Tag bar -->
     <div class="drawer-tabs">
       <div class="tabs-list">
         <div
@@ -47,7 +47,7 @@
       </div>
     </div>
 
-    <!-- 编辑器内容 -->
+    <!-- Editor content -->
     <div class="drawer-editor">
       <template
         v-for="tab in drawerState.tabs"
@@ -106,7 +106,7 @@ function getEditorMode(mode: string): ScriptEditorMode {
   return validModes.includes(mode as ScriptEditorMode) ? (mode as ScriptEditorMode) : 'timer';
 }
 
-// 拖拽调整高度
+// Drag to adjust height
 const isResizing = ref(false);
 const resizeStartY = ref(0);
 const resizeStartHeight = ref(0);

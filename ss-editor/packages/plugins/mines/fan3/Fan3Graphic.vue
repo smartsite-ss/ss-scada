@@ -264,7 +264,7 @@ const props = defineProps<{
 
 const { currentValue, bindTitle } = useTagValue(props);
 
-/** 动画方向：绑定实时值 → cls 映射，未绑定沿用静态 cls */
+/** Animation direction: bind live value → cls mapping; unbound keeps static cls */
 const effectiveCls = computed(() => {
   if (!props.tagId) return props.cls;
   const raw = currentValue.value;

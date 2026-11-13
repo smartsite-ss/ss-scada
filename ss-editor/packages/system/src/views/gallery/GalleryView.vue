@@ -1,6 +1,6 @@
 <template>
   <div class="gallery-page">
-    <!-- ========== 页头 ========== -->
+    <!-- ========== Page header ========== -->
     <div class="page-header">
       <h1 class="page-title">
         <svg
@@ -45,9 +45,9 @@
       </div>
     </div>
 
-    <!-- ========== 主体 ========== -->
+    <!-- ========== Main body ========== -->
     <div class="gallery-body">
-      <!-- 左侧分类 -->
+      <!-- Left category -->
       <aside class="gallery-sidebar">
         <div class="sidebar-header">
           {{ $t('system.gallery.selectCategory') }}
@@ -81,7 +81,7 @@
         </div>
       </aside>
 
-      <!-- 右侧图片网格 -->
+      <!-- Right-side image grid -->
       <main class="gallery-content">
         <div
           v-if="loadingImages"
@@ -136,7 +136,7 @@
       </main>
     </div>
 
-    <!-- ========== 上传对话框 ========== -->
+    <!-- ========== Upload dialog ========== -->
     <div
       v-if="uploadDialogVisible"
       class="dialog-overlay"
@@ -289,7 +289,7 @@ async function onImageSelected(event: Event) {
     });
     uploadDialogVisible.value = false;
     showSuccess(t('system.gallery.uploadSuccess'));
-    // 若上传到新分类，刷新分类列表
+    // If uploaded to a new category, refresh the category list
     await loadCategories();
   } catch (e: any) {
     if (!e._errorHandled) {
@@ -342,7 +342,7 @@ function formatSize(size: number): string {
   min-height: 0;
 }
 
-/* ===== 页头 ===== */
+/* ===== Page header ===== */
 .page-header {
   display: flex;
   align-items: center;
@@ -397,7 +397,7 @@ function formatSize(size: number): string {
   border-color: var(--primary);
 }
 
-/* ===== 按钮 ===== */
+/* ===== Button ===== */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -450,7 +450,7 @@ function formatSize(size: number): string {
   background: color-mix(in srgb, var(--status-error) 10%, transparent);
 }
 
-/* ===== 主体 ===== */
+/* ===== Main body ===== */
 .gallery-body {
   display: flex;
   flex: 1;
@@ -527,7 +527,7 @@ function formatSize(size: number): string {
   font-size: 13px;
 }
 
-/* ===== 内容区 ===== */
+/* ===== Content area ===== */
 .gallery-content {
   flex: 1;
   overflow-y: auto;
@@ -592,7 +592,7 @@ function formatSize(size: number): string {
   opacity: 0.7;
 }
 
-/* ===== 上传对话框 ===== */
+/* ===== Upload dialog ===== */
 .dialog-overlay {
   position: fixed;
   top: 0;

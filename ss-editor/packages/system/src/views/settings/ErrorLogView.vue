@@ -1,8 +1,8 @@
 <template>
   <div class="error-log-page">
-    <!-- 统一工具栏：标题 + 统计 + 筛选 + 操作 -->
+    <!-- Unified toolbar: title + stats + filter + actions -->
     <div class="toolbar">
-      <!-- 左侧：标题 + 统计 -->
+      <!-- Left: title + statistics -->
       <div class="toolbar-left">
         <h1 class="page-title">
           {{ $t('system.errorLogs.title') }}
@@ -28,7 +28,7 @@
           </div>
         </div>
       </div>
-      <!-- 右侧：筛选 + 操作 -->
+      <!-- Right: filter + actions -->
       <div class="toolbar-right">
         <select
           v-model="filters.level"
@@ -82,7 +82,7 @@
       </div>
     </div>
 
-    <!-- 表格 -->
+    <!-- Table -->
     <SmartTable
       table-id="error-logs"
       :data="logs"
@@ -128,7 +128,7 @@
       </template>
     </SmartTable>
 
-    <!-- 清理对话框 -->
+    <!-- Cleanup dialog -->
     <div
       v-if="showCleanDialog"
       class="modal-overlay"
@@ -295,7 +295,7 @@ async function loadData(p: number) {
     logs.value = data.data || [];
     total.value = data.total || 0;
   } catch {
-    // 静默失败
+    // Fail silently
   } finally {
     loading.value = false;
   }
@@ -307,7 +307,7 @@ async function loadStats() {
     const data = (res as any)?.data || res || {};
     stats.value = { total: data.total || 0, byLevel: data.byLevel || [] };
   } catch {
-    // 静默失败
+    // Fail silently
   }
 }
 
@@ -363,7 +363,7 @@ onMounted(() => {
   overflow-y: auto;
 }
 
-/* ===== 统一工具栏 ===== */
+/* ===== Unified toolbar ===== */
 .toolbar {
   display: flex;
   align-items: center;

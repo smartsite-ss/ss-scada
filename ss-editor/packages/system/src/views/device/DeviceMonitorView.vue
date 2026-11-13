@@ -1,6 +1,6 @@
 <template>
   <div class="device-monitor-view">
-    <!-- 左侧：项目/分组/设备 三级树 -->
+    <!-- Left: project/group/device three-level tree -->
     <aside class="sidebar">
       <div class="sidebar-header">
         <span class="sidebar-title">{{ $t('system.deviceMonitor.deviceTree') }}</span>
@@ -33,7 +33,7 @@
           v-for="proj in projectStore.projects"
           :key="proj.projectId"
         >
-          <!-- 项目节点 -->
+          <!-- Project node -->
           <div
             class="tree-node project-node"
             :class="{
@@ -79,7 +79,7 @@
             <span class="node-count">{{ getProjectDeviceCount(proj.projectId) }}</span>
           </div>
 
-          <!-- 展开后的分组和设备 -->
+          <!-- Expanded groups and devices -->
           <div
             v-if="expandedProjects.has(proj.projectId)"
             class="project-children"
@@ -107,7 +107,7 @@
                 @select-device="selectDeviceNode"
               />
             </template>
-            <!-- 未分组的根设备（直接挂载在项目节点下） -->
+            <!-- Ungrouped root devices (mounted directly under the project node) -->
             <div
               v-for="dev in getRootDevices(proj.projectId)"
               :key="'root-dev-' + dev.id"
@@ -165,9 +165,9 @@
       </div>
     </aside>
 
-    <!-- 右侧：设备详情 -->
+    <!-- Right: device details -->
     <div class="main-content">
-      <!-- 未选中设备时的空状态 -->
+      <!-- Empty state when no device is selected -->
       <div
         v-if="!selectedDeviceId"
         class="empty-state"
@@ -201,7 +201,7 @@
       </div>
 
       <template v-else>
-        <!-- 设备头部 -->
+        <!-- Device header -->
         <div class="device-header">
           <div class="device-header-left">
             <h1 class="device-name">
@@ -227,7 +227,7 @@
           </div>
         </div>
 
-        <!-- Tab 切换 -->
+        <!-- Tab switch -->
         <div class="tab-bar">
           <button
             class="tab-item"
@@ -252,9 +252,9 @@
           </button>
         </div>
 
-        <!-- Tab 内容 -->
+        <!-- Tab content -->
         <div class="tab-content">
-          <!-- 基本信息 -->
+          <!-- Basic info -->
           <div
             v-if="activeTab === 'basic'"
             class="tab-pane"
@@ -271,7 +271,7 @@
               {{ $t('system.deviceDetail.notFound') }}
             </div>
             <template v-else>
-              <!-- 分组1：标识信息 -->
+              <!-- Group 1: identification info -->
               <section class="info-section">
                 <header class="info-section-header">
                   <svg
@@ -316,7 +316,7 @@
                 </div>
               </section>
 
-              <!-- 分组2：协议与配置 -->
+              <!-- Group 2: protocol and config -->
               <section class="info-section">
                 <header class="info-section-header">
                   <svg
@@ -364,7 +364,7 @@
                 </div>
               </section>
 
-              <!-- 分组3：运行状态 -->
+              <!-- Group 3: running status -->
               <section class="info-section">
                 <header class="info-section-header">
                   <svg
@@ -439,7 +439,7 @@
                 </div>
               </section>
 
-              <!-- 通道配置 -->
+              <!-- Channel config -->
               <section
                 v-if="deviceConnection && Object.keys(deviceConnection).length > 0"
                 class="info-section"
@@ -507,7 +507,7 @@
             </template>
           </div>
 
-          <!-- 实时数据 -->
+          <!-- Live data -->
           <div
             v-if="activeTab === 'realtime'"
             class="tab-pane tab-pane-full"
@@ -751,7 +751,7 @@
             </table>
           </div>
 
-          <!-- 报警规则 -->
+          <!-- Alarm rule -->
           <div
             v-if="activeTab === 'alarms'"
             class="tab-pane"
@@ -831,7 +831,7 @@
       </template>
     </div>
 
-    <!-- 标签历史数据弹窗 -->
+    <!-- Tag history data dialog -->
     <TagHistoryDialog
       v-model:visible="tagHistoryVisible"
       :tag-id="tagHistoryTagId"
@@ -843,13 +843,13 @@
       :project-id="projectId"
     />
 
-    <!-- 标签详情弹窗 -->
+    <!-- Tag detail dialog -->
     <TagDetailDialog
       v-model:visible="tagDetailVisible"
       :tag-data="tagDetailData"
     />
 
-    <!-- 反控写入弹窗 -->
+    <!-- Reverse-control write dialog -->
     <Teleport to="body">
       <div
         v-if="writeModalVisible"
@@ -928,7 +928,7 @@
       </div>
     </Teleport>
 
-    <!-- 设备错误详情面板 -->
+    <!-- Device error detail panel -->
     <Teleport to="body">
       <div
         v-if="showErrorPanel"
@@ -991,7 +991,7 @@
               >
                 <span class="error-message-empty">{{ $t('system.devices.noErrorMessage') }}</span>
               </div>
-              <!-- 采集诊断数据 -->
+              <!-- Acquisition diagnostics data -->
               <div
                 v-if="device?._diagnostics"
                 class="error-info-divider"
@@ -1071,7 +1071,7 @@ import { useProjectContext } from '../../composables/useProjectContext';
 
 const { t, locale } = useI18n();
 
-/** 标签实时数据项 */
+/** Tag live data item */
 interface TagRealtimeItem {
   id: string;
   name: string;
@@ -1088,9 +1088,9 @@ interface TagRealtimeItem {
   value: unknown;
   quality: string;
   timestamp: string | number | null;
-  /** 后端 FormatStep 产出的格式化字符串（如 "12.34"），WS 推送时携带 */
+  /** Formatted string produced by the backend FormatStep (e.g. "12.34"), carried in WS push */
   wsDisplayValue?: string;
-  /** 活跃告警（仅当后端推送包含此字段时存在，无告警时为 undefined） */
+  /** Active alarm (present only when the backend push includes this field; undefined when there is no alarm) */
   activeAlarms?: Array<{
     alarmId: string;
     level: string;
@@ -1099,7 +1099,7 @@ interface TagRealtimeItem {
   }>;
 }
 
-/** 标签详情数据 */
+/** Tag detail data */
 interface TagDetailData {
   name?: string;
   address?: string;
@@ -1123,7 +1123,7 @@ const deviceStore = useDeviceStore();
 const projectStore = useProjectStore();
 const wsStore = useWsStore();
 
-// ===== 设备树状态 =====
+// ===== Device tree state =====
 const projectId = ref('');
 const selectedDeviceId = ref('');
 const loading = ref(false);
@@ -1131,30 +1131,30 @@ const expandedProjects = ref(new Set<string>());
 const expandedGroups = ref(new Set<string>());
 const loadingGroups = ref(new Set<string>());
 
-// 缓存项目分组树数据
+// Cache project group-tree data
 const projectGroupTrees = ref<Map<string, DeviceTree[]>>(new Map());
 const projectRootDevices = ref<Map<string, DeviceSummary[]>>(new Map());
 const groupDeviceCache = ref<Map<string, DeviceSummary[]>>(new Map());
 
-// ===== Tab 状态 =====
+// ===== Tab state =====
 const activeTab = ref<'basic' | 'realtime' | 'alarms'>('realtime');
 
-// ===== 设备详情 =====
+// ===== Device details =====
 const device = ref<Device | null>(null);
 const deviceTags = ref<DataTag[]>([]);
 const detailLoading = ref(false);
 
-// ===== 实时数据 =====
+// ===== Live data =====
 const tagDataList = ref<TagRealtimeItem[]>([]);
 const realtimeLoading = ref(false);
 const autoRefresh = ref(false);
 let realtimeTimer: ReturnType<typeof setInterval> | null = null;
 
-// ===== 报警规则 =====
+// ===== Alarm rules =====
 const deviceAlarmRules = ref<AlarmRule[]>([]);
 const alarmLoading = ref(false);
 
-// ===== 标签历史数据弹窗 =====
+// ===== Tag history data dialog =====
 const tagHistoryVisible = ref(false);
 const tagHistoryTagId = ref('');
 const tagHistoryTagName = ref('');
@@ -1163,28 +1163,28 @@ const tagHistoryDisplayFormat = ref<string | undefined>(undefined);
 const tagHistoryUnit = ref<string | undefined>(undefined);
 const tagHistoryDataType = ref<string | undefined>(undefined);
 
-// ===== 标签详情弹窗 =====
+// ===== Tag detail dialog =====
 const tagDetailVisible = ref(false);
 const tagDetailData = ref<TagDetailData | null>(null);
 
-// ===== 反控写入弹窗 =====
+// ===== Reverse-control write dialog =====
 const writeModalVisible = ref(false);
 const writeLoading = ref(false);
 const writeTag = ref<TagRealtimeItem | null>(null);
 const writeValue = ref('');
 const writeReason = ref('');
 
-// ===== WebSocket 连接状态 =====
+// ===== WebSocket connection status =====
 const wsConnected = computed(() => wsStore.isConnected);
 
-// ===== 错误详情面板 =====
+// ===== Error detail panel =====
 const showErrorPanel = ref(false);
 
 function showErrorDetail() {
   showErrorPanel.value = true;
 }
 
-// ===== 计算属性 =====
+// ===== Computed properties =====
 const deviceDeviceCode = computed(() => device.value?.deviceCode || device.value?.id || '');
 const deviceNameAlias = computed(() => device.value?.nameAlias || '');
 const deviceTemplateId = computed(() => device.value?.templateId || '');
@@ -1194,7 +1194,7 @@ const deviceConnection = computed(() => {
   return typeof conn === 'object' ? conn : {};
 });
 
-// ===== 标签与映射 =====
+// ===== Tags and mapping =====
 const DEVICE_TYPE_LABELS: Record<string, string> = {
   modbus_tcp: t('system.devices.deviceTypes.modbus_tcp'),
   modbus_rtu: t('system.devices.deviceTypes.modbus_rtu'),
@@ -1286,7 +1286,7 @@ function formatTime(val?: string | number | Date | null): string {
   }
 }
 
-/** 格式化 epoch 毫秒时间戳 */
+/** Format an epoch millisecond timestamp */
 function formatErrorTime(epochMs?: number): string {
   if (!epochMs) return '-';
   return formatTime(new Date(epochMs));
@@ -1299,7 +1299,7 @@ function formatPeriod(ms?: number): string {
   return t('system.deviceMonitor.durationMin', { n: (ms / 60000).toFixed(1) });
 }
 
-// 敏感字段掩码
+// Sensitive-field mask
 const SENSITIVE_KEYS = new Set(['password', 'passphrase', 'secret', 'token', 'apikey', 'privateKey', 'cert']);
 
 function maskSensitive(key: string, value: unknown): string {
@@ -1311,7 +1311,7 @@ function maskSensitive(key: string, value: unknown): string {
   return String(value);
 }
 
-// ===== 设备树操作 =====
+// ===== Device tree operations =====
 
 async function loadProjectTree(projId: string) {
   loadingGroups.value.add(projId);
@@ -1321,7 +1321,7 @@ async function loadProjectTree(projId: string) {
     const treeData = Array.isArray(raw) ? raw : [];
     projectGroupTrees.value.set(projId, treeData);
 
-    // 缓存未分组的根设备
+    // Cache ungrouped root devices
     const rootDevs = Array.isArray(deviceStore.rootDevices) ? deviceStore.rootDevices : [];
     projectRootDevices.value.set(projId, rootDevs);
 
@@ -1330,7 +1330,7 @@ async function loadProjectTree(projId: string) {
         if (item.group) {
           const key = `${projId}::${item.group.id}`;
           groupDeviceCache.value.set(key, Array.isArray(item.devices) ? item.devices : []);
-          // 有子分组或设备时自动展开该分组
+          // Auto-expand the group when it has subgroups or devices
           if ((item.children && item.children.length > 0) || (item.devices && item.devices.length > 0)) {
             expandedGroups.value.add(item.group.id);
           }
@@ -1411,13 +1411,13 @@ function getProjectDeviceCount(projId: string): number {
   for (const t of tree) {
     count += (t.devices || []).length;
   }
-  // 加上未分组的根设备
+  // Add the ungrouped root devices
   const rootDevs = projectRootDevices.value.get(projId);
   count += Array.isArray(rootDevs) ? rootDevs.length : 0;
   return count;
 }
 
-/** 获取项目下未分组的根设备 */
+/** Get the ungrouped root devices under a project */
 function getRootDevices(projId: string): DeviceSummary[] {
   const rootDevs = projectRootDevices.value.get(projId);
   return Array.isArray(rootDevs) ? rootDevs : [];
@@ -1435,7 +1435,7 @@ async function handleRefresh() {
   }
 }
 
-// ===== 设备详情加载 =====
+// ===== Device details loading =====
 
 async function loadDeviceDetail() {
   if (!projectId.value || !selectedDeviceId.value) return;
@@ -1454,7 +1454,7 @@ async function loadDeviceDetail() {
   }
 }
 
-// ===== 实时数据 =====
+// ===== Live data =====
 
 async function refreshRealtimeData() {
   if (!projectId.value || !selectedDeviceId.value) return;
@@ -1514,7 +1514,7 @@ function stopAutoRefresh() {
   }
 }
 
-// WebSocket 实时订阅
+// WebSocket live subscription
 async function subscribeWsTags() {
   if (!projectId.value || !selectedDeviceId.value) return;
   try {
@@ -1524,7 +1524,7 @@ async function subscribeWsTags() {
       wsStore.subscribeTags(tagIds);
     }
   } catch {
-    // WS 不可用时降级为 HTTP 模式
+    // Degrade to HTTP mode when WS is unavailable
   }
 }
 
@@ -1535,7 +1535,7 @@ function unsubscribeWsTags() {
   }
 }
 
-// ===== 报警规则 =====
+// ===== Alarm rules =====
 
 async function loadAlarmRules() {
   if (!projectId.value || !selectedDeviceId.value) return;
@@ -1543,7 +1543,7 @@ async function loadAlarmRules() {
   try {
     const res = await alarmApi.getRules(projectId.value);
     const allRules: AlarmRule[] = res.data || [];
-    // 按设备标签 ID 过滤
+    // Filter by device tag ID
     const deviceTagIds = new Set(deviceTags.value.map((t) => t.id));
     deviceAlarmRules.value = allRules.filter((r) =>
       r.tagId && deviceTagIds.has(r.tagId)
@@ -1556,7 +1556,7 @@ async function loadAlarmRules() {
   }
 }
 
-/** 打开标签历史数据查询弹窗 */
+/** Open the tag history data query dialog */
 function openTagHistory(tag: {
   id: string;
   name: string;
@@ -1574,7 +1574,7 @@ function openTagHistory(tag: {
   tagHistoryVisible.value = true;
 }
 
-/** 打开标签详情弹窗 */
+/** Open the tag detail dialog */
 function openTagDetail(tag: TagRealtimeItem) {
   tagDetailData.value = {
     name: tag.name,
@@ -1591,7 +1591,7 @@ function openTagDetail(tag: TagRealtimeItem) {
   tagDetailVisible.value = true;
 }
 
-// ===== 反控写入 =====
+// ===== Reverse-control write =====
 
 function openWriteModal(tag: TagRealtimeItem) {
   writeTag.value = tag;
@@ -1620,7 +1620,7 @@ async function handleWriteTag() {
     if (res?.data?.success) {
       showSuccess(t('system.deviceControl.writeSuccess'));
       writeModalVisible.value = false;
-      // 刷新实时数据以获取最新值
+      // Refresh live data to get the latest values
       refreshRealtimeData();
     } else {
       const errMsg = res?.data?.error || t('system.deviceControl.writeFailed');
@@ -1634,7 +1634,7 @@ async function handleWriteTag() {
   }
 }
 
-/** 根据数据类型解析写入值 */
+/** Parse the written value based on the data type */
 function parseWriteValue(raw: string, dataType?: string): any {
   if (!dataType) return raw;
   const dt = dataType.toLowerCase();
@@ -1655,11 +1655,11 @@ function parseWriteValue(raw: string, dataType?: string): any {
   return raw;
 }
 
-// ===== 选中设备变化时加载数据 =====
+// ===== Load data when the selected device changes =====
 
 watch(selectedDeviceId, (newId, oldId) => {
   if (newId && newId !== oldId) {
-    // 清理旧的 WS 订阅
+    // Clean up old WS subscriptions
     if (oldId) {
       unsubscribeWsTags();
     }
@@ -1676,13 +1676,13 @@ watch(activeTab, (tab) => {
   }
 });
 
-// WebSocket 实时推送驱动：WS 每次收到新值即增量更新表格对应行，
-// 无需等待 HTTP 轮询；仅更新 value/quality/timestamp，标签元数据保持不变。
-// store 每次推送都会 reassign tagValues 的 Map 引用，因此浅 watch 即可触发。
+// WebSocket live-push driver: each WS new value incrementally updates the corresponding table row,
+// No need to wait for HTTP polling; only update value/quality/timestamp; tag metadata stays unchanged.
+// The store reassigns the tagValues Map reference on every push, so a shallow watch is enough to trigger.
 watch(
   () => wsStore.tagValues,
   () => {
-    // 仅在实时数据 Tab 且表格已有数据时更新，避免无意义的重渲染
+    // Only update on the live-data tab when the table already has data, to avoid meaningless re-renders
     if (activeTab.value !== 'realtime' || tagDataList.value.length === 0) return;
     const wsTagValues = wsStore.tagValues;
     let changed = false;
@@ -1693,7 +1693,7 @@ watch(
       return {
         ...row,
         value: wsEntry.value,
-        // 保留后端 FormatStep 产出的格式化字符串作为前端 formatTagValue 的兜底
+        // Keep the formatted string from the backend FormatStep as a fallback for the frontend formatTagValue
         wsDisplayValue: wsEntry.displayValue,
         quality: wsEntry.quality,
         timestamp: wsEntry.timestamp,
@@ -1709,9 +1709,9 @@ watch(
 onMounted(async () => {
   loading.value = true;
   try {
-    // 设备树只需要启用项目；不复用项目管理页可能缓存的全量列表（含停用项目）
+    // The device tree only needs enabled projects; it does not reuse the possibly cached full list (including disabled) from the project management page
     await projectStore.fetchProjects();
-    // 优先使用默认项目，否则展开第一个项目
+    // Prefer the default project; otherwise expand the first project
     if (projectStore.projects.length > 0 && !projectId.value) {
       const { loadDefault } = useProjectContext();
       const defaultId = await loadDefault();
@@ -1732,7 +1732,7 @@ onUnmounted(() => {
   unsubscribeWsTags();
 });
 
-// P1优化：keep-alive 缓存场景下，页面切换时停止/恢复定时器和 WS 订阅，避免泄漏
+// P1 optimization: in keep-alive cache scenarios, stop/restore timers and WS subscriptions on page switch to avoid leaks
 onDeactivated(() => {
   stopAutoRefresh();
   unsubscribeWsTags();
@@ -1755,7 +1755,7 @@ onActivated(() => {
   overflow: hidden;
 }
 
-/* ===== 侧边栏 ===== */
+/* ===== Sidebar ===== */
 .sidebar {
   width: 240px;
   min-width: 240px;
@@ -1858,11 +1858,11 @@ onActivated(() => {
 .project-node { font-weight: 600; padding: 7px 12px; }
 .project-icon { color: var(--primary); flex-shrink: 0; }
 
-/* 根设备节点（未分组设备，直接挂载在项目下） */
+/* Root device node (ungrouped device, mounted directly under the project) */
 .root-device-node { padding-left: 40px; font-size: 12px; }
 .device-icon { color: var(--text-secondary); flex-shrink: 0; }
 
-/* 设备图标按状态着色 */
+/* Device icons colored by status */
 .device-icon.device-status-online { color: var(--status-online); }
 .device-icon.device-status-offline { color: var(--status-offline); }
 .device-icon.device-status-connecting { color: var(--primary); }
@@ -1916,7 +1916,7 @@ onActivated(() => {
   margin-left: 19px;
 }
 
-/* ===== 主内容区 ===== */
+/* ===== Main content area ===== */
 .main-content {
   flex: 1;
   display: flex;
@@ -2002,7 +2002,7 @@ onActivated(() => {
   color: var(--text-secondary);
 }
 
-/* 读写方向标识 */
+/* Read/write direction marker */
 .direction-badge {
   display: inline-block;
   padding: 2px 6px;
@@ -2032,7 +2032,7 @@ onActivated(() => {
   background: color-mix(in srgb, currentColor 10%, transparent);
 }
 
-/* 描述列 */
+/* Description column */
 .desc-col {
   max-width: 140px;
   overflow: hidden;
@@ -2045,7 +2045,7 @@ onActivated(() => {
   font-size: 12px;
 }
 
-/* ===== Tab 栏 ===== */
+/* ===== Tab bar ===== */
 .tab-bar {
   display: flex;
   gap: 0;
@@ -2085,7 +2085,7 @@ onActivated(() => {
   max-width: 1000px;
 }
 
-/* 实时数据表列较多，需铺满页面宽度，避免列过窄导致行高被撑高 */
+/* The live data table has many columns and must fill the page width to avoid columns being too narrow and inflating row height */
 .tab-pane-full {
   max-width: 100%;
 }
@@ -2103,7 +2103,7 @@ onActivated(() => {
   gap: 12px;
 }
 
-/* ===== 基本信息 ===== */
+/* ===== Basic info ===== */
 .info-section {
   background: var(--surface);
   border: 1px solid var(--border-light);
@@ -2154,7 +2154,7 @@ onActivated(() => {
   min-width: 0;
 }
 
-/* 当分组字段数为奇数时，最后一项跨满整行并改为横向布局，避免右侧留白 */
+/* When the group has an odd number of fields, the last item spans the full row and switches to a horizontal layout to avoid right-side whitespace */
 .info-grid > .info-item:last-child:nth-child(odd) {
   grid-column: 1 / -1;
   flex-direction: row;
@@ -2210,7 +2210,7 @@ onActivated(() => {
   white-space: nowrap;
 }
 
-/* 标签数量药丸 */
+/* Tag count pill */
 .tag-count-pill {
   display: inline-flex;
   align-items: baseline;
@@ -2233,7 +2233,7 @@ onActivated(() => {
   opacity: 0.7;
 }
 
-/* 错误计数药丸 */
+/* Error count pill */
 .error-pill {
   display: inline-flex;
   align-items: center;
@@ -2259,7 +2259,7 @@ onActivated(() => {
   50% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--status-error) 0%, transparent); }
 }
 
-/* 内联驱动徽标 */
+/* Inline driver badge */
 .driver-inline-tag {
   display: inline-block;
   padding: 2px 8px;
@@ -2271,7 +2271,7 @@ onActivated(() => {
   font-family: 'Courier New', monospace;
 }
 
-/* 状态时间行：圆点 + 时间 */
+/* Status time row: dot + time */
 .status-time-row {
   display: inline-flex;
   align-items: center;
@@ -2294,7 +2294,7 @@ onActivated(() => {
 
 .text-danger { color: var(--status-error); }
 
-/* ===== 通道配置（已并入 info-section 体系） ===== */
+/* ===== Channel config (merged into the info-section system) ===== */
 .channel-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -2338,7 +2338,7 @@ onActivated(() => {
   font-family: 'Courier New', monospace;
 }
 
-/* ===== 实时数据表 ===== */
+/* ===== Live data table ===== */
 .tag-data-table {
   width: 100%;
   border-collapse: collapse;
@@ -2360,7 +2360,7 @@ onActivated(() => {
   padding: 10px 12px;
   color: var(--text);
   border-bottom: 1px solid var(--border);
-  /* 默认不换行，避免窄列（如分类）文字折行导致单行行高过高；描述列单独用省略号处理 */
+  /* No wrapping by default to avoid narrow columns (e.g. category) wrapping and inflating single-row height; the description column is handled separately with ellipsis */
   white-space: nowrap;
 }
 
@@ -2381,7 +2381,7 @@ onActivated(() => {
   background: color-mix(in srgb, var(--primary) 6%, transparent);
 }
 
-/* 告警行高亮 */
+/* Alarm row highlight */
 .tag-row.alarm-row {
   background: color-mix(in srgb, var(--status-error) 6%, transparent);
   border-left: 3px solid var(--status-error);
@@ -2391,7 +2391,7 @@ onActivated(() => {
   background: color-mix(in srgb, var(--status-error) 10%, transparent);
 }
 
-/* 告警值红色高亮 */
+/* Alarm value red highlight */
 .value-alarm {
   color: var(--status-error);
   font-weight: 700;
@@ -2474,7 +2474,7 @@ onActivated(() => {
 .quality-good { background: color-mix(in srgb, var(--status-online) 15%, transparent); color: var(--status-online); }
 .quality-bad { background: color-mix(in srgb, var(--status-error) 15%, transparent); color: var(--status-error); }
 
-/* ===== 报警规则表 ===== */
+/* ===== Alarm rules table ===== */
 .alarm-rules-table {
   width: 100%;
   border-collapse: collapse;
@@ -2530,7 +2530,7 @@ onActivated(() => {
   color: var(--text-secondary);
 }
 
-/* ===== WebSocket 状态 ===== */
+/* ===== WebSocket status ===== */
 .ws-status {
   display: inline-flex;
   align-items: center;
@@ -2584,7 +2584,7 @@ onActivated(() => {
   animation: pulse 2s infinite;
 }
 
-/* ===== 通用按钮 ===== */
+/* ===== Generic button ===== */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -2606,7 +2606,7 @@ onActivated(() => {
 .btn-secondary:hover:not(:disabled) { background: var(--border-light); }
 .btn-sm { padding: 6px 12px; font-size: 13px; }
 
-/* ===== 操作按钮组 ===== */
+/* ===== Action button group ===== */
 .actions-btn-group {
   display: flex;
   align-items: center;
@@ -2636,7 +2636,7 @@ onActivated(() => {
   border-color: var(--primary);
 }
 
-/* ===== 反控写入按钮与弹窗 ===== */
+/* ===== Reverse-control write button and dialog ===== */
 
 .btn-write {
   display: inline-flex;
@@ -2804,7 +2804,7 @@ onActivated(() => {
   font-family: 'Courier New', Consolas, monospace;
 }
 
-/* ===== 错误详情面板 ===== */
+/* ===== Error detail panel ===== */
 .error-info {
   display: flex;
   flex-direction: column;
@@ -2892,7 +2892,7 @@ onActivated(() => {
   color: var(--status-error);
 }
 
-/* ===== 采集诊断 ===== */
+/* ===== Acquisition diagnostics ===== */
 .error-info-diagnostics {
   margin-top: 4px;
 }

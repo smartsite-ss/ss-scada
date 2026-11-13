@@ -1,6 +1,6 @@
 <template>
   <div class="global-tools">
-    <!-- 搜索框 -->
+    <!-- Search box -->
     <div class="search-box">
       <input 
         type="text" 
@@ -9,7 +9,7 @@
       >
     </div>
     
-    <!-- 全屏切换 -->
+    <!-- Fullscreen toggle -->
     <button
       class="tool-button"
       @click="toggleFullscreen"
@@ -20,7 +20,7 @@
       />
     </button>
     
-    <!-- 语言切换 -->
+    <!-- Language switch -->
     <div class="language-switcher">
       <div class="language-dropdown">
         <button 
@@ -57,7 +57,7 @@
       </div>
     </div>
     
-    <!-- 主题切换 -->
+    <!-- Theme switch -->
     <div class="theme-switcher">
       <div class="theme-dropdown">
         <button 
@@ -88,7 +88,7 @@
       </div>
     </div>
     
-    <!-- 数据中台 -->
+    <!-- Data platform -->
     <button 
       class="nav-button" 
       :title="$t('globalTools.dataCenter')"
@@ -101,7 +101,7 @@
       <span class="nav-label">{{ $t('globalTools.dataCenter') }}</span>
     </button>
 
-    <!-- 设置按钮 -->
+    <!-- Settings button -->
     <button 
       class="tool-button" 
       :title="$t('globalTools.settings')"
@@ -131,8 +131,8 @@ import {
 
 type LocaleType = 'zh-CN' | 'en-US';
 
-// 全局工具区组件
-// 负责辅助功能，如搜索、消息通知、全屏切换、主题切换、语言切换等
+// Global toolbar area component
+// Responsible for auxiliary functions such as search, message notifications, fullscreen toggle, theme switch, language switch, etc.
 
 const emit = defineEmits<{
   (e: 'open-settings'): void;
@@ -141,7 +141,7 @@ const emit = defineEmits<{
 const router = useRouter();
 const configStore = useConfigStore();
 const { switchTheme: useThemeSwitch } = useTheme();
-const { t: _t } = useI18n(); // 只使用 t 函数进行翻译
+const { t: _t } = useI18n(); // Use only the t function for translation
 const currentTheme = computed(() => configStore.ui?.theme ?? 'dark');
 const showThemeDropdown = ref(false);
 
@@ -181,11 +181,11 @@ const allThemes = computed(() => {
   }));
 });
 
-// 语言切换相关
+// Language-switch-related
 const showLanguageDropdown = ref(false);
 const currentLanguage = computed(() => getLocale());
 
-// 初始化：应用保存的语言设置
+// Initialization: apply the saved language setting
 onMounted(() => {
   const savedLang = configStore.ui?.language;
   if (savedLang && savedLang !== getLocale()) {
@@ -193,39 +193,39 @@ onMounted(() => {
   }
 });
 
-// 监听 configStore 中的语言变化
+// Watch the language change in configStore
 watch(() => configStore.ui?.language, (newLang) => {
   if (newLang && newLang !== getLocale()) {
     setLocale(newLang as 'zh-CN' | 'en-US');
   }
 });
 
-// 切换主题
+// Switch theme
 const switchTheme = (theme: string) => {
   useThemeSwitch(theme as any);
   showThemeDropdown.value = false;
 };
 
-// 切换语言
+// Switch language
 const switchLanguage = (language: LocaleType) => {
   setLocale(language);
   configStore.updateUIConfig({ language });
   showLanguageDropdown.value = false;
 };
 
-// 切换主题下拉菜单
+// Switch-theme dropdown menu
 const toggleThemeDropdown = () => {
   showThemeDropdown.value = !showThemeDropdown.value;
   showLanguageDropdown.value = false;
 };
 
-// 切换语言下拉菜单
+// Switch-language dropdown menu
 const toggleLanguageDropdown = () => {
   showLanguageDropdown.value = !showLanguageDropdown.value;
   showThemeDropdown.value = false;
 };
 
-// 点击外部关闭下拉菜单
+// Click outside to close the dropdown
 const handleClickOutside = (event: MouseEvent) => {
   const themeDropdown = document.querySelector('.theme-dropdown');
   const languageDropdown = document.querySelector('.language-dropdown');
@@ -239,17 +239,17 @@ const handleClickOutside = (event: MouseEvent) => {
   }
 };
 
-// 监听点击事件
+// Watch click event
 onMounted(() => {
   document.addEventListener('click', handleClickOutside);
 });
 
-// 移除事件监听
+// Remove event listeners
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside);
 });
 
-// 切换全屏
+// Toggle fullscreen
 const toggleFullscreen = () => {
   if (!document.fullscreenElement) {
     document.documentElement.requestFullscreen().catch(err => {
@@ -262,12 +262,12 @@ const toggleFullscreen = () => {
   }
 };
 
-// 打开设置
+// Open settings
 const openSettings = () => {
   emit('open-settings');
 };
 
-// 导航到数据中台
+// Navigate to the data platform
 const navigateToSystem = () => {
   router.push('/system');
 };

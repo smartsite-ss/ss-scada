@@ -26,7 +26,7 @@
         v-else-if="data"
         class="monitor-body"
       >
-        <!-- 进程性能指标 -->
+        <!-- Process performance metrics -->
         <div class="metrics-section">
           <h3 class="section-title">
             {{ $t('system.plugins.processMetrics') }}
@@ -76,7 +76,7 @@
           </div>
         </div>
 
-        <!-- 采集日志 -->
+        <!-- Acquisition log -->
         <div class="logs-section">
           <div class="logs-header">
             <h3 class="section-title">
@@ -217,7 +217,7 @@ const heapPercent = computed(() => {
 
 const rssPercent = computed(() => {
   if (!data.value) return 0;
-  // Rss 相对于堆总量显示一个相对比例
+  // Rss shows a relative ratio against total heap
   const total = data.value.metrics.heapTotal || 512;
   return Math.min((data.value.metrics.rss / total) * 100, 100);
 });
@@ -301,7 +301,7 @@ onMounted(() => {
   padding: 20px;
 }
 
-/* 性能指标 */
+/* Performance metrics */
 .metrics-section {
   margin-bottom: 20px;
 }
@@ -408,7 +408,7 @@ onMounted(() => {
   transition: width 0.5s;
 }
 
-/* 日志 */
+/* Log */
 .logs-section {
   border-top: 1px solid var(--border);
   padding-top: 16px;

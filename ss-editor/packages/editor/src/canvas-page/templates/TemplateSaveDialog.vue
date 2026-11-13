@@ -2,15 +2,15 @@
   <Teleport to="body">
     <div v-if="visible" class="dialog-overlay" @click.self="$emit('close')">
       <div class="dialog-panel">
-        <!-- 标题栏 -->
+        <!-- Title bar -->
         <div class="dialog-header">
           <span class="dialog-title">{{ t('template.saveDialog.title') }}</span>
           <button class="dialog-close" @click="$emit('close')">✕</button>
         </div>
 
-        <!-- 表单 -->
+        <!-- Form -->
         <div class="dialog-body">
-          <!-- 模板名称 -->
+          <!-- Template name -->
           <div class="form-group">
             <label class="form-label">
               {{ t('template.saveDialog.name') }} <span class="required">*</span>
@@ -24,7 +24,7 @@
             />
           </div>
 
-          <!-- 保存到 -->
+          <!-- Save to -->
           <div class="form-group">
             <label class="form-label">{{ t('template.saveDialog.scopeLabel') }}</label>
             <select v-model="form.saveToSystem" class="form-select">
@@ -33,7 +33,7 @@
             </select>
           </div>
 
-          <!-- 分类 -->
+          <!-- Category -->
           <div class="form-group">
             <label class="form-label">{{ t('template.saveDialog.category') }}</label>
             <select v-model="form.category" class="form-select">
@@ -47,7 +47,7 @@
             </select>
           </div>
 
-          <!-- 描述 -->
+          <!-- Description -->
           <div class="form-group">
             <label class="form-label">{{ t('template.saveDialog.description') }}</label>
             <textarea
@@ -59,7 +59,7 @@
             />
           </div>
 
-          <!-- 标签 -->
+          <!-- Tag -->
           <div class="form-group">
             <label class="form-label">{{ t('template.saveDialog.tags') }}</label>
             <input
@@ -71,7 +71,7 @@
           </div>
         </div>
 
-        <!-- 底部 -->
+        <!-- Bottom -->
         <div class="dialog-footer">
           <button class="btn btn-secondary" @click="$emit('close')">
             {{ t('template.saveDialog.cancel') }}
@@ -121,7 +121,7 @@ const form = reactive({
   tagsInput: '',
 });
 
-// 默认模板名 = 页面名
+// Default template name = page name
 watch(() => props.visible, (isVisible) => {
   if (isVisible) {
     form.name = props.pageName ? `${props.pageName} 模板` : '';
@@ -129,7 +129,7 @@ watch(() => props.visible, (isVisible) => {
     form.saveToSystem = false;
     form.description = '';
     form.tagsInput = '';
-    // 聚焦输入框
+    // Focus the input box
     setTimeout(() => nameInputRef.value?.focus(), 100);
   }
 });

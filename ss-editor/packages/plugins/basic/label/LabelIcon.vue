@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-// LabelIcon 组件
+// LabelIcon component
 </script>
 
 <style scoped>

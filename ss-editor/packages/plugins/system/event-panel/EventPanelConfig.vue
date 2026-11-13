@@ -1,6 +1,6 @@
 <template>
   <div class="event-panel-config">
-    <!-- 1. 项目与筛选 -->
+    <!-- 1. Project and filtering -->
     <div class="filter-section">
       <div class="filter-item">
         <label class="filter-label">{{ $t('eventPanel.config.project') }}</label>
@@ -45,7 +45,7 @@
       </div>
     </div>
 
-    <!-- 2. 列表行为 / 列显隐 / 排版 / 容器样式 -->
+    <!-- 2. List behavior / column visibility / layout / container style -->
     <PluginConfigPanel
       :schema="eventPanelPropertySchema"
       :values="values"

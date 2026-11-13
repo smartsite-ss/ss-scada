@@ -1,6 +1,6 @@
 <template>
   <div class="security-audit-page">
-    <!-- 统一工具栏 -->
+    <!-- Unified toolbar -->
     <div class="toolbar">
       <h1 class="page-title">
         {{ $t('system.securityAuditLogs.title') }}
@@ -106,7 +106,7 @@
       </div>
     </div>
 
-    <!-- 统计概览 -->
+    <!-- Statistics overview -->
     <div
       v-if="stats"
       class="stats-bar"
@@ -137,7 +137,7 @@
       </div>
     </div>
 
-    <!-- 表格 -->
+    <!-- Table -->
     <SmartTable
       table-id="security-audit-logs"
       :data="logs"
@@ -164,7 +164,7 @@
       </template>
     </SmartTable>
 
-    <!-- 行点击提示 -->
+    <!-- Row-click hint -->
     <div
       v-if="!selectedLog"
       class="click-hint"
@@ -172,7 +172,7 @@
       {{ $t('system.securityAuditLogs.clickToView') }}
     </div>
 
-    <!-- 详情面板 -->
+    <!-- Detail panel -->
     <div
       v-if="selectedLog"
       class="detail-panel"
@@ -238,7 +238,7 @@
       </div>
     </div>
 
-    <!-- 哈希链验证结果弹窗 -->
+    <!-- Hash-chain verification result dialog -->
     <div
       v-if="verifyResult"
       class="modal-overlay"
@@ -336,7 +336,7 @@ const filters = reactive({
   username: '',
 });
 
-/** 审计事件类型列表（与后端 AuditEventType 对齐） */
+/** Audit event type list (aligned with backend AuditEventType) */
 const auditEventTypes = [
   { value: 'auth.login.success', label: 'auth.login.success' },
   { value: 'auth.login.failed', label: 'auth.login.failed' },
@@ -443,7 +443,7 @@ function onPageChange(event: PageChangeEvent) {
   loadData(event.page);
 }
 
-/** 清空所有筛选条件并重新加载数据 */
+/** Clear all filters and reload data */
 function handleClearFilters(): void {
   filters.date = '';
   filters.type = '';
@@ -469,7 +469,7 @@ async function loadData(p: number) {
     logs.value = data.items || [];
     total.value = data.total || 0;
   } catch {
-    // 静默失败
+    // Fail silently
   } finally {
     loading.value = false;
   }
@@ -480,7 +480,7 @@ async function loadStats() {
     const res = await systemApi.getAuditStats(filters.date || undefined);
     stats.value = (res as any)?.data || res || null;
   } catch {
-    // 静默失败
+    // Fail silently
   }
 }
 
@@ -490,7 +490,7 @@ async function handleVerifyChain() {
     const res = await systemApi.verifyAuditChain(filters.date || undefined);
     verifyResult.value = (res as any)?.data || res || null;
     showSuccess(t('system.securityAuditLogs.verifySuccess'));
-    // 同时刷新统计
+    // Refresh stats at the same time
     await loadStats();
   } catch (e: any) {
     showError(e?.message || t('system.securityAuditLogs.verifyError'));
@@ -512,7 +512,7 @@ onMounted(() => {
   overflow-y: auto;
 }
 
-/* ===== 统一工具栏 ===== */
+/* ===== Unified toolbar ===== */
 .toolbar {
   display: flex;
   align-items: center;
@@ -562,7 +562,7 @@ onMounted(() => {
   width: 140px;
 }
 
-/* ===== 统计概览 ===== */
+/* ===== Stats overview ===== */
 .stats-bar {
   display: flex;
   align-items: center;
@@ -601,7 +601,7 @@ onMounted(() => {
 .stat-critical { color: var(--status-error, #f44336); }
 .stat-unknown { color: var(--text-secondary, #999); }
 
-/* ===== 严重级别标签 ===== */
+/* ===== Severity level label ===== */
 .badge-severity {
   display: inline-block;
   padding: 2px 8px;
@@ -649,7 +649,7 @@ onMounted(() => {
   display: inline-block;
 }
 
-/* ===== 按钮 ===== */
+/* ===== Button ===== */
 .sys-btn {
   display: inline-flex;
   align-items: center;
@@ -693,7 +693,7 @@ onMounted(() => {
   cursor: not-allowed;
 }
 
-/* ===== 行点击提示 ===== */
+/* ===== Row-click hint ===== */
 .click-hint {
   text-align: center;
   font-size: 12px;
@@ -702,7 +702,7 @@ onMounted(() => {
   opacity: 0.7;
 }
 
-/* ===== 详情面板 ===== */
+/* ===== Detail panel ===== */
 .detail-panel {
   margin-top: 16px;
   border: 1px solid var(--border);
@@ -796,7 +796,7 @@ onMounted(() => {
   line-height: 1.5;
 }
 
-/* ===== 模态框 ===== */
+/* ===== Modal ===== */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -852,7 +852,7 @@ onMounted(() => {
   padding: 20px;
 }
 
-/* ===== 验证结果 ===== */
+/* ===== Verification result ===== */
 .verify-result {
   display: flex;
   align-items: flex-start;

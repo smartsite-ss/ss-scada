@@ -101,7 +101,7 @@ const { getQuickSnippets, getApiGroups } = useScriptTemplates(props.mode);
 const snippets = getQuickSnippets();
 const apiGroups = getApiGroups();
 
-/** 获取 API 的详细 tooltip 文本 */
+/** Get the detailed tooltip text for an API */
 function getApiTooltip(item: { name: string; label: string }): string {
   const api = getApiByName(item.name);
   if (!api) return item.label;
@@ -112,7 +112,7 @@ function getApiTooltip(item: { name: string; label: string }): string {
 
 const modeLabel = computed(() => i18n.global.t(`system.scriptEditor.toolbar.mode.${props.mode}`));
 
-// ── 模板 & API 选择：使用 v-model 替代原生 @change + DOM 操作 ──
+// ── Template & API selection: use v-model instead of native @change + DOM ops ──
 const templateValue = ref('');
 const apiValue = ref('');
 
@@ -197,8 +197,8 @@ watch(apiValue, (code) => {
   background: var(--button-hover, color-mix(in srgb, var(--status-success) 80%, black));
 }
 
-/* ── 响应式优化 ── */
-/* 窗口缩小时，增大操作按钮便于点击，缩小 API 选择器宽度 */
+/* ── Responsive optimization ── */
+/* When the window shrinks, enlarge the action buttons for easier clicking and narrow the API selector width */
 @media (max-width: 1200px) {
   .toolbar-select:last-of-type {
     max-width: 160px;

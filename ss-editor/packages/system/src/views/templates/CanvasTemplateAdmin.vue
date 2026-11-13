@@ -1,6 +1,6 @@
 <template>
   <div class="canvas-template-admin">
-    <!-- 标题栏 -->
+    <!-- Title bar -->
     <div class="admin-header">
       <h2 class="admin-title">{{ t('system.canvasTemplate.title') }}</h2>
       <div class="admin-actions">
@@ -8,12 +8,12 @@
       </div>
     </div>
 
-    <!-- 加载状态 -->
+    <!-- Loading state -->
     <div v-if="isLoading" class="admin-loading">
       {{ t('system.canvasTemplate.loading') }}
     </div>
 
-    <!-- 模板表格 -->
+    <!-- Template table -->
     <table v-else-if="templates.length > 0" class="admin-table">
       <thead>
         <tr>
@@ -68,7 +68,7 @@
       </tbody>
     </table>
 
-    <!-- 空状态 -->
+    <!-- Empty state -->
     <div v-else class="admin-empty">
       {{ t('system.canvasTemplate.empty') }}
     </div>

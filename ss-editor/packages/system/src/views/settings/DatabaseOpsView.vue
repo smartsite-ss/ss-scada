@@ -6,7 +6,7 @@
       </h1>
     </div>
 
-    <!-- ==================== 标签页 ==================== -->
+    <!-- ==================== Tab pages ==================== -->
     <div class="tabs">
       <button
         v-for="tab in tabs"
@@ -19,12 +19,12 @@
       </button>
     </div>
 
-    <!-- ==================== 备份管理 ==================== -->
+    <!-- ==================== Backup management ==================== -->
     <div
       v-if="activeTab === 'backup'"
       class="tab-content"
     >
-      <!-- 备份统计 -->
+      <!-- Backup statistics -->
       <div
         v-if="backupStats"
         class="stats-bar"
@@ -66,7 +66,7 @@
         </div>
       </div>
 
-      <!-- ==================== 全局数据库备份 ==================== -->
+      <!-- ==================== Global database backup ==================== -->
       <div class="card">
         <div class="card-header">
           <div class="card-header-left">
@@ -199,7 +199,7 @@
         </div>
       </div>
 
-      <!-- ==================== 项目数据库备份 ==================== -->
+      <!-- ==================== Project database backup ==================== -->
       <div class="card">
         <div class="card-header">
           <div class="card-header-left">
@@ -249,7 +249,7 @@
           </div>
         </div>
 
-        <!-- 项目勾选列表 -->
+        <!-- Project checkbox list -->
         <div class="project-select-bar">
           <button
             class="btn btn-text btn-sm"
@@ -378,7 +378,7 @@
       </div>
     </div>
 
-    <!-- ==================== 备份日志 ==================== -->
+    <!-- ==================== Backup log ==================== -->
     <div
       v-if="activeTab === 'logs'"
       class="tab-content"
@@ -519,7 +519,7 @@
       </div>
     </div>
 
-    <!-- ==================== 数据库运行 ==================== -->
+    <!-- ==================== Database runtime ==================== -->
     <div
       v-if="activeTab === 'status'"
       class="tab-content"
@@ -541,7 +541,7 @@
         </button>
       </div>
 
-      <!-- 系统数据库 -->
+      <!-- System database -->
       <div class="card">
         <div class="card-header">
           <div class="card-header-left">
@@ -584,7 +584,7 @@
         </div>
       </div>
 
-      <!-- 项目数据库 -->
+      <!-- Project database -->
       <div class="card">
         <div class="card-header">
           <div class="card-header-left">
@@ -676,12 +676,12 @@
       </div>
     </div>
 
-    <!-- ==================== 健康检查 ==================== -->
+    <!-- ==================== Health check ==================== -->
     <div
       v-if="activeTab === 'health'"
       class="tab-content"
     >
-      <!-- 完整性检查 -->
+      <!-- Integrity check -->
       <div class="card">
         <div class="card-header">
           <div class="card-header-left">
@@ -751,7 +751,7 @@
         </div>
       </div>
 
-      <!-- 空间回收 -->
+      <!-- Space reclamation -->
       <div class="card">
         <div class="card-header">
           <div class="card-header-left">
@@ -801,7 +801,7 @@
       </div>
     </div>
 
-    <!-- ==================== InfluxDB 运维 ==================== -->
+    <!-- ==================== InfluxDB maintenance ==================== -->
     <div
       v-if="activeTab === 'influxdb'"
       class="tab-content"
@@ -823,7 +823,7 @@
         </button>
       </div>
 
-      <!-- 汇总统计 -->
+      <!-- Summary statistics -->
       <div class="stats-row">
         <div class="stat-card">
           <div class="stat-value">
@@ -855,7 +855,7 @@
         </div>
       </div>
 
-      <!-- 概览 -->
+      <!-- Overview -->
       <div class="card">
         <div class="card-header">
           <div class="card-header-left">
@@ -937,7 +937,7 @@
         </div>
       </div>
 
-      <!-- Bucket 列表 -->
+      <!-- Bucket list -->
       <div class="card">
         <div class="card-header">
           <div class="card-header-left">
@@ -1089,7 +1089,7 @@
         </div>
       </div>
 
-      <!-- 操作 -->
+      <!-- Actions -->
       <div
         v-if="!influxSetup.initialized || influxSetup.reachable"
         class="card"
@@ -1135,7 +1135,7 @@
       </div>
     </div>
 
-    <!-- ==================== 定时备份配置弹窗 ==================== -->
+    <!-- ==================== Scheduled backup config dialog ==================== -->
     <div
       v-if="showConfigModal"
       class="modal-overlay"
@@ -1248,7 +1248,7 @@ import { showConfirm, showSuccess, showError } from '../../utils/messageBox';
 
 const { t, locale } = useI18n();
 
-// ==================== 状态 ====================
+// ==================== Status ====================
 
 const activeTab = ref('backup');
 const systemBackupLoading = ref(false);
@@ -1271,7 +1271,7 @@ const dbStatus = ref<{ system: DatabaseStatus | null; projects: DatabaseStatus[]
   projects: [],
 });
 
-/** 当前配置弹窗对应的类型 */
+/** Type corresponding to the current config dialog */
 const configCategory = ref<'system' | 'project'>('system');
 const configForm = ref<CategoryBackupConfig>({
   enabled: true,
@@ -1282,10 +1282,10 @@ const configForm = ref<CategoryBackupConfig>({
 });
 const fullBackupConfig = ref<BackupConfig | null>(null);
 
-/** 选中的项目备份行（用于勾选备份） */
+/** The selected project backup row (for backup selection) */
 const selectedProjectRows = ref<string[]>([]);
 
-// ==================== InfluxDB 状态 ====================
+// ==================== InfluxDB status ====================
 
 const influxSetupLoading = ref(false);
 const influxHealthLoading = ref(false);
@@ -1352,7 +1352,7 @@ const configModalTitle = computed(() => {
     : `${t('system.database.scheduledBackupConfig')} - ${t('system.database.configForProject')}`;
 });
 
-// ==================== 标签页配置 ====================
+// ==================== Tab config ====================
 
 const tabs = computed(() => [
   { name: 'backup', label: t('system.database.backupTab') },
@@ -1362,14 +1362,14 @@ const tabs = computed(() => [
   { name: 'influxdb', label: t('system.influxdb.tabLabel') },
 ]);
 
-// 切换到 InfluxDB 标签时自动加载数据
+// Auto-load data when switching to the InfluxDB tab
 watch(activeTab, (tab) => {
   if (tab === 'influxdb') {
     loadInfluxDbData();
   }
 });
 
-// ==================== 加载 ====================
+// ==================== Loading ====================
 
 async function loadBackups() {
   backupListLoading.value = true;
@@ -1392,7 +1392,7 @@ async function loadBackupStats() {
     const res = await databaseApi.getBackupStats();
     backupStats.value = res.data || null;
   } catch {
-    // 静默忽略
+    // Silently ignore
   }
 }
 
@@ -1434,7 +1434,7 @@ async function loadDatabaseStatus() {
   }
 }
 
-// ==================== 操作：备份 ====================
+// ==================== Operation: backup ====================
 
 async function handleCreateSystemBackup() {
   systemBackupLoading.value = true;
@@ -1522,7 +1522,7 @@ async function handleBackupAllProjects() {
   }
 }
 
-// ==================== 操作：下载/恢复/删除 ====================
+// ==================== Operations: download/restore/delete ====================
 
 function handleDownload(filename: string) {
   const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
@@ -1568,7 +1568,7 @@ async function handleDeleteBackup(row: BackupInfo) {
   }
 }
 
-// ==================== 操作：配置 ====================
+// ==================== Operation: config ====================
 
 function openConfigModal(category: 'system' | 'project') {
   configCategory.value = category;
@@ -1604,7 +1604,7 @@ async function handleSaveConfig() {
   }
 }
 
-// ==================== 操作：清理 ====================
+// ==================== Operation: cleanup ====================
 
 async function handleCleanup(dbType: 'system' | 'project') {
   const days = fullBackupConfig.value?.[dbType]?.retentionDays ?? 30;
@@ -1629,7 +1629,7 @@ async function handleCleanup(dbType: 'system' | 'project') {
   }
 }
 
-// ==================== 操作：健康检查 ====================
+// ==================== Operation: health check ====================
 
 async function handleIntegrityCheck() {
   integrityLoading.value = true;
@@ -1669,9 +1669,9 @@ async function handleVacuum() {
   }
 }
 
-// ==================== 操作：项目数据库清空/收缩 ====================
+// ==================== Operation: project database clear/shrink ====================
 
-/** 项目数据库操作加载状态（同时只允许一个项目的一个操作） */
+/** Project database operation loading state (only one operation per project at a time) */
 const projectOpLoading = ref<{ project: string; op: 'events' | 'logs' | 'shrink' } | null>(null);
 
 function isProjectOpLoading(project: string, op: 'events' | 'logs' | 'shrink'): boolean {
@@ -1741,7 +1741,7 @@ async function handleShrinkProject(row: DatabaseStatus) {
   }
 }
 
-// ==================== InfluxDB 操作 ====================
+// ==================== InfluxDB operations ====================
 
 async function loadInfluxDbData() {
   await Promise.all([
@@ -1761,7 +1761,7 @@ async function loadInfluxConfig() {
       influxConfig.value = res as any;
     }
   } catch {
-    // 使用默认值
+    // Use default value
   }
 }
 
@@ -1774,7 +1774,7 @@ async function loadInfluxSetupStatus() {
       tokenConfigured: false,
     };
   } catch {
-    // 静默失败，保持默认值
+    // Fail silently; keep the default value
   }
 }
 
@@ -1798,7 +1798,7 @@ async function handleInfluxSetup() {
     const res = await baseServicesApi.setupInfluxDB();
     if (res.data?.success) {
       showSuccess(t('system.influxdb.setupSuccess'));
-      // 重新加载状态
+      // Reload state
       await loadInfluxSetupStatus();
     } else {
       showError(res.data?.message || t('system.influxdb.setupFailed'));
@@ -1818,16 +1818,16 @@ async function loadInfluxBuckets() {
     const res = await baseServicesApi.listInfluxBuckets();
     influxBuckets.value = (res as any).data ?? res ?? [];
   } catch {
-    // 静默失败
+    // Fail silently
   } finally {
     influxBucketsLoading.value = false;
   }
 }
 
-/** 正在导出的 bucket 名称（空串表示空闲，用于按钮禁用态） */
+/** Name of the bucket being exported (empty string means idle, used for the disabled button state) */
 const exportingBucket = ref<string>('');
 
-/** 导出单个 Bucket 的时序数据为 CSV（通过鉴权 API 客户端获取 Blob） */
+/** Export a single Bucket's time-series data to CSV (fetch Blob via authenticated API client) */
 async function handleExportBucketData(bucketName: string) {
   if (exportingBucket.value) return;
   exportingBucket.value = bucketName;
@@ -1849,7 +1849,7 @@ async function handleExportBucketData(bucketName: string) {
   }
 }
 
-/** 导出 Bucket 列表监控数据为 CSV */
+/** Export Bucket list monitoring data to CSV */
 function handleExportBucketList() {
   const headers = [
     t('system.influxdb.bucketName'),
@@ -1887,7 +1887,7 @@ function handleExportBucketList() {
   showSuccess(t('system.influxdb.exportSuccess'));
 }
 
-// ==================== 工具 ====================
+// ==================== Tools ====================
 
 function formatBytes(bytes: number): string {
   if (!bytes || bytes <= 0) return '0 B';
@@ -1961,7 +1961,7 @@ onMounted(() => {
   margin-bottom: 12px;
 }
 
-/* ===== 标签页 ===== */
+/* ===== Tab page ===== */
 .tabs {
   display: flex;
   gap: 4px;
@@ -1990,7 +1990,7 @@ onMounted(() => {
   font-weight: 500;
 }
 
-/* ===== 统计栏 ===== */
+/* ===== Stats bar ===== */
 .stats-bar {
   display: flex;
   flex-wrap: wrap;
@@ -2024,7 +2024,7 @@ onMounted(() => {
   font-weight: 500;
 }
 
-/* ===== 卡片 ===== */
+/* ===== Card ===== */
 .card {
   background: var(--surface);
   border-radius: 8px;
@@ -2055,7 +2055,7 @@ onMounted(() => {
   padding: 16px;
 }
 
-/* ===== 按钮 ===== */
+/* ===== Button ===== */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -2114,7 +2114,7 @@ onMounted(() => {
   gap: 2px;
 }
 
-/* ===== 项目数据库操作按钮组（文字按钮，间距更大） ===== */
+/* ===== Project database operation button group (text buttons, wider spacing) ===== */
 .project-actions {
   display: flex;
   gap: 6px;
@@ -2152,7 +2152,7 @@ onMounted(() => {
   background: color-mix(in srgb, var(--status-error) 10%, transparent);
 }
 
-/* ===== 标签 ===== */
+/* ===== Tags ===== */
 .tag {
   display: inline-flex;
   align-items: center;
@@ -2188,7 +2188,7 @@ onMounted(() => {
   color: color-mix(in srgb, var(--status-error) 70%, transparent);
 }
 
-/* ===== 数据表格 ===== */
+/* ===== Data table ===== */
 .data-table {
   width: 100%;
   border-collapse: collapse;
@@ -2261,7 +2261,7 @@ onMounted(() => {
   white-space: nowrap;
 }
 
-/* ===== 项目选择栏 ===== */
+/* ===== Project selection bar ===== */
 .project-select-bar {
   display: flex;
   gap: 12px;
@@ -2269,7 +2269,7 @@ onMounted(() => {
   border-bottom: 1px solid var(--border);
 }
 
-/* ===== 信息网格 ===== */
+/* ===== Info grid ===== */
 .info-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -2307,7 +2307,7 @@ onMounted(() => {
   font-weight: 600;
 }
 
-/* ===== 检查结果 ===== */
+/* ===== Check result ===== */
 .check-result {
   display: flex;
   align-items: center;
@@ -2345,7 +2345,7 @@ onMounted(() => {
   font-size: 12px;
 }
 
-/* ===== 加载覆盖层 ===== */
+/* ===== Loading overlay ===== */
 .loading-overlay {
   display: flex;
   flex-direction: column;
@@ -2369,7 +2369,7 @@ onMounted(() => {
   to { transform: rotate(360deg); }
 }
 
-/* ===== 弹窗 ===== */
+/* ===== Dialog ===== */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -2438,7 +2438,7 @@ onMounted(() => {
   border-top: 1px solid var(--border);
 }
 
-/* ===== 表单 ===== */
+/* ===== Form ===== */
 .form-group {
   margin-bottom: 16px;
 }
@@ -2489,7 +2489,7 @@ onMounted(() => {
   color: var(--text);
 }
 
-/* ===== 开关 ===== */
+/* ===== Switch ===== */
 .toggle {
   width: 44px;
   height: 24px;
@@ -2520,7 +2520,7 @@ onMounted(() => {
   transform: translateX(20px);
 }
 
-/* ===== 输入框后缀 ===== */
+/* ===== Input suffix ===== */
 .input-suffix {
   display: flex;
   align-items: center;
@@ -2536,13 +2536,13 @@ onMounted(() => {
   color: var(--text-secondary);
 }
 
-/* ===== 筛选行 ===== */
+/* ===== Filter row ===== */
 .filter-row {
   display: flex;
   gap: 12px;
 }
 
-/* ===== InfluxDB 运维 ===== */
+/* ===== InfluxDB operations ===== */
 .setup-hint {
   margin: 0 0 12px;
   font-size: 13px;
@@ -2554,7 +2554,7 @@ onMounted(() => {
   color: var(--status-error);
 }
 
-/* ===== InfluxDB 统计卡片 ===== */
+/* ===== InfluxDB statistics card ===== */
 .stats-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -2586,7 +2586,7 @@ onMounted(() => {
   color: var(--text-secondary);
 }
 
-/* ===== 状态指示点 ===== */
+/* ===== Status indicator dot ===== */
 .status-dot {
   display: inline-block;
   width: 10px;
@@ -2607,14 +2607,14 @@ onMounted(() => {
   background: var(--status-error);
 }
 
-/* ===== 卡片内分隔线 ===== */
+/* ===== Divider inside card ===== */
 .card-body hr {
   border: none;
   border-top: 1px solid var(--border);
   margin: 16px 0;
 }
 
-/* ===== 卡片标题计数 ===== */
+/* ===== Card title count ===== */
 .card-header-count {
   font-size: 12px;
   background: var(--border);
@@ -2624,7 +2624,7 @@ onMounted(() => {
   margin-left: 8px;
 }
 
-/* ===== 操作行 ===== */
+/* ===== Action row ===== */
 .card-actions-row {
   display: flex;
   gap: 24px;
@@ -2636,7 +2636,7 @@ onMounted(() => {
   min-width: 200px;
 }
 
-/* ===== 健康检查加载 ===== */
+/* ===== Health check loading ===== */
 .health-checking {
   display: flex;
   align-items: center;
@@ -2646,12 +2646,12 @@ onMounted(() => {
   margin-top: 12px;
 }
 
-/* ===== 默认桶高亮 ===== */
+/* ===== Default bucket highlight ===== */
 .row-highlight td {
   background: var(--border);
 }
 
-/* ===== 小标签 ===== */
+/* ===== Small label ===== */
 .tag-sm {
   font-size: 11px;
   padding: 1px 6px;
@@ -2659,7 +2659,7 @@ onMounted(() => {
   vertical-align: middle;
 }
 
-/* ===== 存储占比进度条 ===== */
+/* ===== Storage-usage progress bar ===== */
 .col-proportion {
   min-width: 120px;
 }

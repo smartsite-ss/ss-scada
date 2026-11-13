@@ -125,7 +125,7 @@
         :height="h"
       />
 
-      <!-- 扫描线 -->
+      <!-- Scan line -->
       <g
         v-if="showScanline"
         opacity="0.08"
@@ -150,7 +150,7 @@
         </line>
       </g>
 
-      <!-- 顶部霓虹边框 -->
+      <!-- Top neon border -->
       <line
         x1="28"
         y1="4"
@@ -177,7 +177,7 @@
         stroke-opacity="0.4"
       />
 
-      <!-- 底部霓虹边框 -->
+      <!-- Bottom neon border -->
       <line
         x1="28"
         :y1="h - 4"
@@ -204,7 +204,7 @@
         stroke-opacity="0.4"
       />
 
-      <!-- 左侧霓虹边框 -->
+      <!-- Left neon border -->
       <line
         y1="28"
         x1="4"
@@ -232,7 +232,7 @@
         stroke-opacity="0.4"
       />
 
-      <!-- 右侧霓虹边框 -->
+      <!-- Right neon border -->
       <line
         :y1="28"
         :x1="w - 4"
@@ -260,9 +260,9 @@
         stroke-opacity="0.4"
       />
 
-      <!-- L形角 brackets -->
+      <!-- L-shaped corner brackets -->
       <g filter="url(#cb-glow-light)">
-        <!-- 左上 -->
+        <!-- Top-left -->
         <polyline
           :stroke="colors[0]"
           stroke-width="2"
@@ -276,7 +276,7 @@
           points="10,28 10,10 28,10"
           stroke-opacity="0.5"
         />
-        <!-- 右上 -->
+        <!-- Top-right -->
         <polyline
           :stroke="colors[1]"
           stroke-width="2"
@@ -290,7 +290,7 @@
           :points="`${w - 10},28 ${w - 10},10 ${w - 28},10`"
           stroke-opacity="0.5"
         />
-        <!-- 左下 -->
+        <!-- Bottom-left -->
         <polyline
           :stroke="colors[1]"
           stroke-width="2"
@@ -304,7 +304,7 @@
           :points="`10,${h - 28} 10,${h - 10} 28,${h - 10}`"
           stroke-opacity="0.5"
         />
-        <!-- 右下 -->
+        <!-- Bottom-right -->
         <polyline
           :stroke="colors[0]"
           stroke-width="2"
@@ -320,7 +320,7 @@
         />
       </g>
 
-      <!-- 电路纹理 circuit traces along edges -->
+      <!-- Circuit traces along edges -->
       <g
         v-if="showCircuit"
         stroke-width="1"
@@ -328,7 +328,7 @@
         fill="none"
         filter="url(#cb-glow-light)"
       >
-        <!-- 顶部电路 -->
+        <!-- Top circuit -->
         <polyline
           :stroke="colors[0]"
           :points="`40,0 40,12 55,12 55,0`"
@@ -357,7 +357,7 @@
           :stroke="colors[0]"
           :points="`${w - 40},0 ${w - 40},12 ${w - 55},12 ${w - 55},0`"
         />
-        <!-- 底部电路 -->
+        <!-- Bottom circuit -->
         <polyline
           :stroke="colors[1]"
           :points="`40,${h} 40,${h - 12} 55,${h - 12} 55,${h}`"
@@ -386,7 +386,7 @@
           :stroke="colors[1]"
           :points="`${w - 40},${h} ${w - 40},${h - 12} ${w - 55},${h - 12} ${w - 55},${h}`"
         />
-        <!-- 左侧电路 -->
+        <!-- Left circuit -->
         <polyline
           :stroke="colors[0]"
           :points="`0,40 12,40 12,55 0,55`"
@@ -411,7 +411,7 @@
           :stroke="colors[1]"
           :points="`0,${h - 40} 12,${h - 40} 12,${h - 55} 0,${h - 55}`"
         />
-        <!-- 右侧电路 -->
+        <!-- Right circuit -->
         <polyline
           :stroke="colors[1]"
           :points="`${w},40 ${w - 12},40 ${w - 12},55 ${w},55`"
@@ -438,9 +438,9 @@
         />
       </g>
 
-      <!-- 边框上的霓虹发光点 -->
+      <!-- Neon glow dot on the border -->
       <g>
-        <!-- 顶部发光点 -->
+        <!-- Top glow dot -->
         <circle
           v-for="dot in topDots"
           :key="'td'+dot"
@@ -458,7 +458,7 @@
             :begin="`${dot * 0.005}s`"
           />
         </circle>
-        <!-- 底部发光点 -->
+        <!-- Bottom glow dot -->
         <circle
           v-for="dot in bottomDots"
           :key="'bd'+dot"
@@ -476,7 +476,7 @@
             :begin="`${dot * 0.005}s`"
           />
         </circle>
-        <!-- 左侧发光点 -->
+        <!-- Left glow dot -->
         <circle
           v-for="dot in leftDots"
           :key="'ld'+dot"
@@ -494,7 +494,7 @@
             :begin="`${dot * 0.005}s`"
           />
         </circle>
-        <!-- 右侧发光点 -->
+        <!-- Right-side glow dot -->
         <circle
           v-for="dot in rightDots"
           :key="'rd'+dot"
@@ -514,7 +514,7 @@
         </circle>
       </g>
 
-      <!-- 四角霓虹核心点 -->
+      <!-- Four-corner neon core dots -->
       <circle
         cx="4"
         cy="4"

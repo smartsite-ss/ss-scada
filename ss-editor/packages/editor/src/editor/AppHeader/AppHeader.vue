@@ -1,9 +1,9 @@
 <template>
   <div class="app-header">
-    <!-- 品牌/Logo区 -->
+    <!-- Brand/Logo area -->
     <BrandLogo />
     
-    <!-- 主导航区 -->
+    <!-- Main navigation area -->
     <MenuContainer
       @save="emit('save')"
       @open-project="emit('open-project')"
@@ -12,12 +12,12 @@
       @import-project="emit('import-project')"
     />
     
-    <!-- 右侧区域 -->
+    <!-- Right-side area -->
     <div class="header-right">
-      <!-- 全局工具区 -->
+      <!-- Global toolbar area -->
       <GlobalTools @open-settings="emit('open-settings')" />
       
-      <!-- 用户信息区 -->
+      <!-- User info area -->
       <UserInfo />
     </div>
   </div>

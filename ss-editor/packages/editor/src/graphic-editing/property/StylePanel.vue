@@ -1,6 +1,6 @@
 <template>
   <div class="style-panel-content">
-    <!-- ====== 1. 基本属性（合并图形属性+位置尺寸）====== -->
+    <!-- ====== 1. Basic properties (merged graphic properties + position/size) ====== -->
     <div
       v-if="config"
       class="property-group"
@@ -171,7 +171,7 @@
       </div>
     </div>
 
-    <!-- ====== 2. 高级配置（图元差异化配置）====== -->
+    <!-- ====== 2. Advanced config (graphic-specific config) ====== -->
     <div
       v-if="config"
       class="property-group"
@@ -195,7 +195,7 @@
       </div>
     </div>
 
-    <!-- ====== 3. 填充与边框 ====== -->
+    <!-- ====== 3. Fill and border ====== -->
     <div
       v-if="hasStyleConfig"
       class="property-group"
@@ -313,7 +313,7 @@
       </div>
     </div>
 
-    <!-- ====== 4. 文字样式 ====== -->
+    <!-- ====== 4. Text style ====== -->
     <div
       v-if="hasStyleConfig && showTextStyle"
       class="property-group"
@@ -459,7 +459,7 @@
       </div>
     </div>
 
-    <!-- ====== 5. 阴影效果 ====== -->
+    <!-- ====== 5. Shadow effect ====== -->
     <div
       v-if="hasStyleConfig"
       class="property-group"
@@ -554,7 +554,7 @@
       </div>
     </div>
 
-    <!-- ====== 6. 动画 ====== -->
+    <!-- ====== 6. Animation ====== -->
     <div
       class="property-group"
     >
@@ -623,7 +623,7 @@
       </div>
     </div>
 
-    <!-- ====== 7. 布局间距（仅容器类图元）====== -->
+    <!-- ====== 7. Layout spacing (container graphics only) ====== -->
     <div
       v-if="hasStyleConfig && isContainerType"
       class="property-group"
@@ -802,13 +802,13 @@ const {
   (event) => emit(event),
 );
 
-// ===== 动画预览 =====
+// ===== Animation preview =====
 function onAnimationTypeChange() {
   previewAnimation();
   onFieldChange();
 }
 
-// 模板中用于安全访问可选动画属性的辅助方法
+// Helper method in the template for safely accessing optional animation properties
 function _anim(): NonNullable<typeof props.graphicProperties.animation> {
   return props.graphicProperties.animation ?? { enabled: false, type: 'fade', duration: 1, delay: 0, properties: {} };
 }
@@ -821,7 +821,7 @@ function onAnimToggle(e: Event) {
   onFieldChange();
 }
 
-// ===== 图形属性增强 =====
+// ===== Graphic property enhancement =====
 function _toggleLock() {
   if (config.value) config.value.locked = !config.value.locked;
   onFieldChange();
@@ -832,7 +832,7 @@ function _toggleVisible() {
   onFieldChange();
 }
 
-// ===== 位置尺寸增强 =====
+// ===== Position/size enhancement =====
 const aspectLocked = ref(false);
 
 watch(aspectLocked, (locked) => {
@@ -855,7 +855,7 @@ function resetScale() {
   }
 }
 
-// ===== 填充边框增强 =====
+// ===== Fill/border enhancement =====
 const fillEnabled = ref(true);
 const borderEnabled = ref(true);
 const opacityPercent = ref(100);
@@ -868,14 +868,14 @@ function onOpacityChange() {
   if (style.value) onFieldChange();
 }
 
-// 初始化 opacityPercent
+// Initialize opacityPercent
 watch(style, (s) => {
   if (s && s.opacity !== undefined) {
     opacityPercent.value = Math.round(s.opacity * 100);
   }
 }, { immediate: true });
 
-// ===== 文字样式增强 =====
+// ===== Text style enhancement =====
 const lineHeightDisplay = ref(1.5);
 
 watch(lineHeightDisplay, (val) => {
@@ -892,7 +892,7 @@ watch(style, (s) => {
   }
 }, { immediate: true });
 
-// ===== 阴影增强 =====
+// ===== Shadow enhancement =====
 const shadowEnabled = ref(false);
 const shadowInset = ref(false);
 
@@ -909,7 +909,7 @@ const shadowPreviewStyle = computed(() => {
   };
 });
 
-// 初始化 shadowEnabled
+// Initialize shadowEnabled
 watch(style, (s) => {
   if (s) {
     const hasShadow = (s.shadowBlur ?? 0) > 0 || (s.shadowOffsetX ?? 0) !== 0 || (s.shadowOffsetY ?? 0) !== 0;
@@ -917,10 +917,10 @@ watch(style, (s) => {
   }
 }, { immediate: true });
 
-// ===== 动画配置增强 =====
+// ===== Animation config enhancement =====
 const animationTypeOptions = ALL_ANIMATION_TYPE_LABELS;
 
-// ===== 布局间距增强 =====
+// ===== Layout spacing enhancement =====
 const containerTypes = ['container', 'panel', 'group'];
 const isContainerType = computed(() => {
   return config.value ? containerTypes.includes(config.value.type) : false;
@@ -953,7 +953,7 @@ function updatePaddingMargin() {
 <style scoped>
 @import '../../panels/styles/property-panel.scss';
 
-/* ==================== ID 复制栏（顶部固定）==================== */
+/* ==================== ID copy bar (pinned at top) ==================== */
 .id-copy-bar {
   display: flex;
   align-items: center;
@@ -975,7 +975,7 @@ function updatePaddingMargin() {
   padding: 3px 6px;
 }
 
-/* ==================== 内联复制按钮（标题右侧）==================== */
+/* ==================== Inline copy button (right of title) ==================== */
 .copy-btn-inline {
   padding: 4px 6px;
   border: 1px solid var(--border);
@@ -1003,7 +1003,7 @@ function updatePaddingMargin() {
   display: block;
 }
 
-/* ==================== 分组标题（可折叠）==================== */
+/* ==================== Group title (collapsible) ==================== */
 .group-label {
   display: flex;
   align-items: center;
@@ -1043,7 +1043,7 @@ function updatePaddingMargin() {
   margin-bottom: 0;
 }
 
-/* P1-4: collapse-icon 纯 CSS 实现 */
+/* P1-4: collapse-icon implemented purely in CSS */
 .collapse-icon {
   display: inline-block;
   width: 0; height: 0;
@@ -1059,7 +1059,7 @@ function updatePaddingMargin() {
   transform: rotate(90deg);
 }
 
-/* 分组内容区 */
+/* Group content area */
 .group-body {
   overflow: hidden;
   transition: max-height 0.25s ease;
@@ -1072,7 +1072,7 @@ function updatePaddingMargin() {
   padding-left: 8px;
 }
 
-/* ==================== 复制按钮 ==================== */
+/* ==================== Copy button ==================== */
 .copy-btn {
   padding: 4px 6px;
   border: 1px solid var(--border);
@@ -1097,7 +1097,7 @@ function updatePaddingMargin() {
   cursor: not-allowed;
 }
 
-/* ==================== 位置尺寸 ==================== */
+/* ==================== Position and size ==================== */
 .position-size-row {
   display: flex; gap: 8px;
 }
@@ -1127,7 +1127,7 @@ function updatePaddingMargin() {
 
 .property-row { display: flex; gap: 8px; }
 
-/* 快捷按钮 */
+/* Quick buttons */
 .rotation-row, .scale-row, .zindex-row, .scale-zindex-row {
   display: flex; align-items: center; gap: 4px;
 }
@@ -1141,7 +1141,7 @@ function updatePaddingMargin() {
 }
 .quick-btn:hover { border-color: var(--primary); color: var(--primary); }
 
-/* ==================== 颜色+启用 checkbox ==================== */
+/* ==================== Color + enabled checkbox ==================== */
 .color-with-enable {
   align-items: stretch;
 }
@@ -1170,7 +1170,7 @@ function updatePaddingMargin() {
   color: var(--text-secondary); font-weight: 500;
 }
 
-/* ==================== Radio 对齐按钮组 ==================== */
+/* ==================== Radio alignment button group ==================== */
 .align-radio-row {
   display: flex; align-items: center; gap: 4px;
 }
@@ -1194,7 +1194,7 @@ function updatePaddingMargin() {
   min-width: 32px; text-align: right; font-size: 11px; color: var(--text-secondary);
 }
 
-/* ==================== 阴影预览 ==================== */
+/* ==================== Shadow preview ==================== */
 .shadow-header {
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
   margin-bottom: 8px;
@@ -1204,7 +1204,7 @@ function updatePaddingMargin() {
   flex-shrink: 0;
 }
 
-/* ==================== 四向间距输入器 ==================== */
+/* ==================== Four-direction spacing input ==================== */
 .spacing-section {
   display: flex; align-items: flex-start; gap: 8px; margin-bottom: 10px;
 }
@@ -1237,7 +1237,7 @@ function updatePaddingMargin() {
 .sync-btn:hover { border-color: var(--primary); color: var(--primary); }
 .unit-row { display: flex; align-items: center; gap: 8px; }
 
-/* ==================== 自定义属性 key 样式 ==================== */
+/* ==================== Custom property key style ==================== */
 .prop-key {
   min-width: 50px; max-width: 120px; overflow: hidden;
   text-overflow: ellipsis; white-space: nowrap;

@@ -45,7 +45,7 @@
         </div>
       </div>
 
-      <!-- 渲染时间 -->
+      <!-- Render time -->
       <div class="metric-section">
         <div class="metric-label">
           {{ t('performanceMonitor.renderTime') }}
@@ -59,7 +59,7 @@
         </div>
       </div>
 
-      <!-- 内存使用 -->
+      <!-- Memory usage -->
       <div class="metric-section">
         <div class="metric-label">
           {{ t('performanceMonitor.memory') }}
@@ -83,7 +83,7 @@
         </div>
       </div>
 
-      <!-- 图元数量 -->
+      <!-- Graphic count -->
       <div class="metric-section">
         <div class="metric-label">
           {{ t('performanceMonitor.graphicCount') }}
@@ -93,7 +93,7 @@
         </div>
       </div>
 
-      <!-- 渲染统计 -->
+      <!-- Render statistics -->
       <div class="metric-section">
         <div class="metric-label">
           {{ t('performanceMonitor.renderStats') }}
@@ -139,7 +139,7 @@ const props = defineProps({
 
 defineEmits(['close']);
 
-// FPS - 使用独立 requestAnimationFrame 计算，确保实时准确
+// FPS — computed with a separate requestAnimationFrame to ensure real-time accuracy
 const currentFps = ref(0);
 let rafId: number | null = null;
 let fpsFrameCount = 0;
@@ -159,7 +159,7 @@ function fpsLoop() {
   rafId = requestAnimationFrame(fpsLoop);
 }
 
-// 聚合统计数据
+// Aggregated statistics
 const stats = ref({
   minFps: 0,
   maxFps: 0,

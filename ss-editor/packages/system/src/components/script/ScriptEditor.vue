@@ -3,7 +3,7 @@
     class="script-editor"
     :style="{ height: normalizedHeight }"
   >
-    <!-- 工具栏 -->
+    <!-- Toolbar -->
     <ScriptToolbar
       v-if="showToolbar"
       :mode="mode"
@@ -15,18 +15,18 @@
       @toggle-knowledge="showKnowledgePanel = !showKnowledgePanel"
     />
 
-    <!-- 主编辑区域：编辑器 + 调试面板（左右结构） -->
+    <!-- Main editing area: editor + debug panel (left-right layout) -->
     <div
       class="script-editor-body"
       :class="{ 'has-toolbar': showToolbar }"
     >
-      <!-- 编辑器容器 -->
+      <!-- Editor container -->
       <div
         ref="editorContainerRef"
         class="editor-container"
       />
 
-      <!-- API 参考面板 -->
+      <!-- API reference panel -->
       <ScriptApiPanel
         v-if="showApiPanel"
         :mode="mode"
@@ -34,14 +34,14 @@
         @insert="insertSnippet"
       />
 
-      <!-- 知识库面板 -->
+      <!-- Knowledge-base panel -->
       <ScriptKnowledgePanel
         v-if="showKnowledgePanel"
         class="knowledge-side-panel"
         @insert-snippet="insertSnippet"
       />
 
-      <!-- 调试面板（右侧） -->
+      <!-- Debug panel (right) -->
       <ScriptDebugPanel
         v-if="debugPanelVisible"
         class="debug-side-panel"
@@ -55,7 +55,7 @@
       />
     </div>
 
-    <!-- 占位符覆盖 -->
+    <!-- Placeholder override -->
     <div
       v-if="placeholder && !modelValue"
       class="editor-placeholder"
@@ -104,7 +104,7 @@ const normalizedHeight = computed(() => {
   return props.height;
 });
 
-// Composable 实例
+// Composable instance
 const valueRef = ref(props.modelValue);
 watch(() => props.modelValue, (v) => { valueRef.value = v; });
 
@@ -130,7 +130,7 @@ const testResult = computed(() => debug.testResult.value);
 let completionDisposer: any = null;
 
 onMounted(() => {
-  // 延迟注册，等待 Monaco 就绪
+  // Defer registration until Monaco is ready
   setTimeout(() => {
     if (monacoRef.value) {
       completionDisposer = completion.register();
@@ -144,7 +144,7 @@ onUnmounted(() => {
   completionDisposer?.dispose?.();
 });
 
-// ═══ 对外暴露方法 ═══
+// ═══ Exposed methods ═══
 
 function getValue(): string {
   return editorRef.value?.getValue() ?? valueRef.value;
@@ -161,9 +161,9 @@ function formatCode(): void {
 }
 
 /**
- * 安全延迟执行编辑器操作。
- * 使用 requestAnimationFrame + setTimeout 双重延迟，
- * 确保浏览器完全处理完 click 事件后再操作编辑器，避免主线程死锁。
+ * Safely defer editor operations.
+ * Uses requestAnimationFrame + setTimeout double delay
+ * to ensure the browser fully processes the click event before operating the editor, avoiding main-thread deadlock.
  */
 function deferEditorOp(fn: () => void, delayMs: number = 30) {
   requestAnimationFrame(() => {
@@ -180,8 +180,8 @@ function insertSnippet(snippet: string): void {
     range: selection,
     text: snippet,
   }]);
-  // 使用双重延迟聚焦编辑器，确保原生下拉框已完全关闭后再聚焦，
-  // 避免与 select 下拉框的关闭操作产生 focus 竞态导致浏览器卡死
+  // Use double delay to focus the editor, ensuring the native dropdown is fully closed before focusing,
+  // Avoid a focus race with the select dropdown's close operation that freezes the browser
   deferEditorOp(() => {
     editor.focus();
   });
@@ -219,7 +219,7 @@ async function testRun(mockData?: Record<string, any>): Promise<TestRunResult> {
 }
 
 function handleTestRun(testData: Record<string, any>): void {
-  // 延迟执行测试运行，避免在 click 事件处理中同步操作 Monaco Editor 导致浏览器卡死
+  // Defer test execution to avoid synchronously operating Monaco Editor in the click handler and freezing the browser
   deferEditorOp(() => {
     testRun(testData);
   });

@@ -1,5 +1,5 @@
 <template>
-  <!-- 分组节点 -->
+  <!-- Group node -->
   <div
     class="tree-node group-node"
     :style="{ paddingLeft: (16 + depth * 12) + 'px' }"
@@ -75,13 +75,13 @@
     </div>
   </div>
 
-  <!-- 展开后：递归显示子分组（设备列表在右侧表格中展示，不在此树中显示） -->
+  <!-- After expanding: show subgroups recursively (the device list is shown in the right-side table, not in this tree) -->
   <div
     v-if="expandedGroups.has(group.id)"
     class="group-children"
     :style="{ marginLeft: '12px' }"
   >
-    <!-- 子分组（递归） -->
+    <!-- Subgroup (recursive) -->
     <GroupTreeNode
       v-for="child in childGroups"
       :key="child.id"
@@ -133,7 +133,7 @@ const emit = defineEmits<{
   deleteGroup: [group: any];
 }>();
 
-// 在树形结构中查找当前分组对应的 tree item
+// Find the tree item corresponding to the current group in the tree structure
 function findTreeItem(items: any[], groupId: string): any | null {
   for (const item of items) {
     if (item.group?.id === groupId) return item;
@@ -145,23 +145,23 @@ function findTreeItem(items: any[], groupId: string): any | null {
   return null;
 }
 
-// 当前分组对应的 tree item（包含 children 和 devices）
+// The tree item for the current group (includes children and devices)
 const treeItem = computed(() => {
   const raw = props.groupTreeCache.get(props.projectId);
   const tree = Array.isArray(raw) ? raw : [];
   return findTreeItem(tree, props.group.id);
 });
 
-// 子分组 — 使用树形结构的 children
+// Subgroup — use the tree structure's children
 const childGroups = computed(() => {
   if (!treeItem.value?.children || !Array.isArray(treeItem.value.children)) return [];
   return treeItem.value.children.map((child: any) => child.group).filter(Boolean);
 });
 
-// 是否有可展开内容（有子分组即可展开）
+// Whether there is expandable content (expandable if there is a subgroup)
 const hasExpandableContent = computed(() => childGroups.value.length > 0);
 
-// 递归计算该分组下的设备总数（含子分组设备）
+// Recursively compute the total device count under a group (including subgroup devices)
 const totalDescendantDevices = computed(() => {
   if (!treeItem.value) return 0;
   let count = (treeItem.value.devices || []).length;
@@ -183,7 +183,7 @@ function onToggleGroup() {
 
 function onSelectGroup() {
   emit('selectGroup', props.projectId, props.group.id);
-  // 有可展开内容时，单击分组名也自动展开
+  // When there is expandable content, clicking the group name also auto-expands
   if (hasExpandableContent.value && !props.expandedGroups.has(props.group.id)) {
     emit('toggleGroup', props.group.id);
   }

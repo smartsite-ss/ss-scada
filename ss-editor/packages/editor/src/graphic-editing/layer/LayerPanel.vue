@@ -284,7 +284,7 @@
         class="layer-list"
         @dragover.prevent
       >
-        <!-- 递归渲染分组 -->
+        <!-- Render groups recursively -->
         <LayerItem
           v-for="(item, _) in layerTree"
           :key="item.id"
@@ -502,13 +502,13 @@ const selectedAll = computed(() => {
          filteredGraphics.value.every(g => selectedGraphics.value.includes(g.id));
 });
 
-// 构建图层树
+// Build the layer tree
 const layerTree = computed(() => {
   refreshTrigger.value;
 
   const gm = groupManager.value;
 
-  // 搜索模式下使用过滤后的结果，以扁平列表展示（不显示分组结构）
+  // In search mode, use filtered results shown as a flat list (no group structure)
   if (searchQuery.value) {
     return filteredGraphics.value.map(graphic => ({
       type: 'graphic' as const,
@@ -557,7 +557,7 @@ const layerTree = computed(() => {
 });
 
 const getGroups = computed(() => {
-  // 依赖 refreshTrigger 确保组结构变化时重新计算（因 GroupManager 内部 Map 变更不触发响应式）
+  // Rely on refreshTrigger to ensure recalculation when the group structure changes (since GroupManager's internal Map changes do not trigger reactivity)
   refreshTrigger.value;
   const gm = groupManager.value;
   return gm ? gm.getGroupsByParent(null) : [];
@@ -821,8 +821,8 @@ const handleDrop = (event: DragEvent, targetId: string) => {
     return;
   }
 
-  // 使用 LayerManager 的 reorderGraphic 方法来正确调整 zIndex，
-  // 避免简单的 +1 赋值导致 zIndex 重复
+  // Use LayerManager's reorderGraphic method to correctly adjust zIndex,
+  // Avoid simple +1 assignment causing duplicate zIndex
   const currentPage = pageStore.currentPage;
   if (currentPage) {
     const targetGraphic = graphics.value.find(g => g.id === targetId);
@@ -887,7 +887,7 @@ function isEventFromInputLike(event: KeyboardEvent): boolean {
   return false;
 }
 
-// 键盘事件仅在画布中有选中图元时生效，避免在无选中状态或焦点在输入框等控件时触发误操作。
+// Keyboard events only take effect when a graphic is selected on the canvas, avoiding mis-triggering when nothing is selected or focus is in an input or other control.
 // Keyboard events only apply when a graphic is selected on the canvas,
 // preventing unintended operations when no selection exists or focus is on input controls.
 const handleKeydown = (event: KeyboardEvent) => {
@@ -928,7 +928,7 @@ const updateGroupManagerReferences = () => {
   gm.updateReferences(graphics.value, graphicMap);
 };
 
-// 刷新图层列表
+// Refresh the layer list
 const refreshLayerList = () => {
   const gm = groupManager.value;
   const gList = graphics.value;
@@ -937,7 +937,7 @@ const refreshLayerList = () => {
     return;
   }
 
-  // 更新引用
+  // Update reference
   const graphicMap = new Map(gList.map(g => [g.id, g]));
   gm.updateReferences(gList, graphicMap);
   refreshTrigger.value++;
@@ -949,15 +949,15 @@ onMounted(() => {
   document.addEventListener('click', closeLayerDropdown);
   updateGroupManagerReferences();
   
-  // 监听图元添加/删除事件，刷新图层列表
+  // Watch graphic add/remove events; refresh the layer list
   eventBus.on(Events.GRAPHIC_ADDED, refreshLayerList);
   eventBus.on(Events.GRAPHIC_REMOVED, refreshLayerList);
   eventBus.on(Events.GRAPHIC_UPDATED, refreshLayerList);
-  // 监听组创建/删除/更新事件，刷新图层列表
+  // Watch group create/delete/update events; refresh the layer list
   eventBus.on(Events.GROUP_CREATED, refreshLayerList);
   eventBus.on(Events.GROUP_DELETED, refreshLayerList);
   eventBus.on(Events.GROUP_UPDATED, refreshLayerList);
-  // 监听页面切换事件，刷新图层列表
+  // Watch page-switch event; refresh the layer list
   eventBus.on(Events.PAGE_SWITCHED, refreshLayerList);
 });
 

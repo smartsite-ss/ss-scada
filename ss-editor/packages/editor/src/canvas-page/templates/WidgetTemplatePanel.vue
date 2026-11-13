@@ -1,6 +1,6 @@
 <template>
   <div class="widget-template-panel">
-    <!-- 工具栏：分类筛选 + 保存选中为模板 -->
+    <!-- Toolbar: category filter + save selection as template -->
     <div class="wtp-toolbar">
       <select v-model="category" class="wtp-select" @change="onCategoryChange">
         <option value="all">{{ $t('widgetTemplate.category.all') }}</option>
@@ -21,7 +21,7 @@
       </button>
     </div>
 
-    <!-- 列表 -->
+    <!-- List -->
     <div class="wtp-list">
       <div v-if="isLoading" class="wtp-loading">
         {{ $t('widgetTemplate.gallery.title') }}
@@ -63,7 +63,7 @@
       </div>
     </div>
 
-    <!-- 保存为组件模板弹窗 -->
+    <!-- Save-as-component-template dialog -->
     <div v-if="showSaveDialog" class="wtp-modal-mask" @click.self="showSaveDialog = false">
       <div class="wtp-modal">
         <h3>{{ $t('widgetTemplate.saveDialog.title') }}</h3>
@@ -90,7 +90,7 @@
       </div>
     </div>
 
-    <!-- 实例化变量赋值对话框 -->
+    <!-- Instance variable assignment dialog -->
     <div v-if="showInstanceDialog" class="wtp-modal-mask" @click.self="showInstanceDialog = false">
       <div class="wtp-modal">
         <h3>{{ $t('widgetTemplate.instanceDialog.title') }}</h3>
@@ -145,7 +145,7 @@ const saveForm = ref<{ name: string; description: string; category: string; vari
 
 const templates = computed(() => widgetStore.allTemplates());
 
-// ── 实例化变量赋值对话框状态 ──
+// ── Instance variable assignment dialog state ──
 const showInstanceDialog = ref(false);
 const instanceFull = ref<WidgetTemplate | null>(null);
 const instanceValues = ref<Record<string, string | number>>({});
@@ -157,7 +157,7 @@ onMounted(async () => {
   isLoading.value = true;
   await widgetStore.loadTemplates();
   isLoading.value = false;
-  // 订阅画布拖放（拖拽组件模板到画布指定位置）
+  // Subscribe to canvas drop (drag component template to a canvas position)
   unsubDrop = onWidgetTemplateDrop(handleDropFromCanvas);
 });
 
@@ -175,7 +175,7 @@ function onDragStart(e: DragEvent, tpl: WidgetTemplateMeta) {
   e.dataTransfer!.effectAllowed = 'copy';
 }
 
-/** 画布 drop：读取模板，有变量先弹赋值对话框，否则直接实例化到落点 */
+/** Canvas drop: read the template; if it has variables, show the assignment dialog first, otherwise instantiate it directly at the drop point */
 async function handleDropFromCanvas(payload: { templateId: string; logicalPos: { x: number; y: number } }) {
   const page = pageStore.currentPage as any;
   if (!page) {
@@ -195,7 +195,7 @@ async function handleDropFromCanvas(payload: { templateId: string; logicalPos: {
   await instantiateFull(full, payload.logicalPos);
 }
 
-/** 双击/点击＋：将组件模板实例化到当前页（有变量时先弹赋值对话框） */
+/** Double-click / click +: instantiate the component template onto the current page (show an assignment dialog first when variables exist) */
 async function instantiate(tpl: WidgetTemplateMeta) {
   const page = pageStore.currentPage as any;
   if (!page) {
@@ -234,7 +234,7 @@ async function confirmInstantiate() {
   await instantiateFull(full, pos ?? undefined, { ...instanceValues.value });
 }
 
-/** 核心实例化：应用变量占位符替换，可选平移到目标坐标后逐个创建图元 */
+/** Core instantiation: apply variable placeholder replacement, optionally translate to the target coordinates, then create graphics one by one */
 async function instantiateFull(
   full: WidgetTemplate,
   atPos?: { x: number; y: number },
@@ -246,7 +246,7 @@ async function instantiateFull(
     return;
   }
   const normalized = normalizeTemplateGraphics(full.graphics as Record<string, any>[]);
-  // 合并变量值：调用方传入值优先，否则取模板默认值
+  // Merge variable values: caller-passed value takes precedence, otherwise use the template default
   const merged: Record<string, string | number> = {};
   for (const v of full.variables || []) {
     merged[v.key] =
@@ -256,7 +256,7 @@ async function instantiateFull(
   }
   const resolved = applyVariables(normalized, full.variables || [], merged);
 
-  // 计算包围盒最小点，整体平移使模板对准落点
+  // Compute the bounding-box min point and translate the whole so the template aligns to the drop point
   let minX = Infinity;
   let minY = Infinity;
   for (const g of resolved) {
@@ -287,7 +287,7 @@ async function instantiateFull(
   }
 }
 
-/** 将当前选中的图元保存为组件模板 */
+/** Save the currently selected graphic as a component template */
 function saveSelectedAsTemplate() {
   const page = pageStore.currentPage as any;
   if (!page) {
@@ -299,7 +299,7 @@ function saveSelectedAsTemplate() {
     MessageService.showWarning($t('widgetTemplate.gallery.selectGraphics'));
     return;
   }
-  // 收集选中图元的序列化 JSON
+  // Collect the serialized JSON of selected graphics
   const allGraphics: any[] = page.graphics || [];
   const graphics = selectedIds
     .map((id: string) => allGraphics.find((g) => g.id === id))

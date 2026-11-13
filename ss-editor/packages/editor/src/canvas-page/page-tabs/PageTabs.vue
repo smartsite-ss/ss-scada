@@ -225,7 +225,7 @@
       </div>
     </Teleport>
 
-    <!-- 模板库 -->
+    <!-- Template library -->
     <TemplateGallery
       :visible="templateGalleryVisible"
       :project-id="projectId"
@@ -233,7 +233,7 @@
       @create="handleTemplateCreate"
     />
 
-    <!-- 保存为模板对话框 -->
+    <!-- Save-as-template dialog -->
     <TemplateSaveDialog
       :visible="templateSaveDialogVisible"
       :page-name="saveAsTemplatePageName"
@@ -243,7 +243,7 @@
       @saved="handleTemplateSaved"
     />
 
-    <!-- 模板同步对话框（引用模式） -->
+    <!-- Template sync dialog (reference mode) -->
     <TemplateSyncDialog
       :visible="syncDialogVisible"
       :template-name="syncTemplateName"
@@ -296,14 +296,14 @@ const iconPicker = reactive({
   targetPage: null as any,
 });
 
-// 模板相关状态
+// Template-related state
 const templateGalleryVisible = ref(false);
 const templateSaveDialogVisible = ref(false);
 const saveAsTemplatePageName = ref('');
 const saveAsTemplatePageConfig = ref({ width: 1920, height: 1080, backgroundColor: '#808080', layout: 'free' as const });
 const saveAsTemplateGraphics = ref<any[]>([]);
 
-// 模板同步状态
+// Template sync state
 const syncDialogVisible = ref(false);
 const syncTemplateName = ref('');
 const syncLinkedPages = ref<Array<{ id: string; name: string }>>([]);
@@ -361,12 +361,12 @@ function openTemplateGallery() {
   templateGalleryVisible.value = true;
 }
 
-/** 从模板创建新页面 */
+/** Create a new page from a template */
 function handleTemplateCreate(template: PageTemplate) {
   const pageName = template.name || t('template.pageDefaultName');
   const newPage = pageStore.addPage(pageName);
 
-  // 设置页面尺寸和背景色
+  // Set page size and background color
   const page = newPage as any;
   if (template.pageConfig) {
     try {
@@ -376,13 +376,13 @@ function handleTemplateCreate(template: PageTemplate) {
     } catch { /* ignore */ }
   }
 
-  // 引用模式：记录模板 ID，以便模板更新时同步
+  // Reference mode: record the template ID so it syncs when the template updates
   if (templateStore.configMode === 'reference') {
     page.templateId = template.id;
     page.templateMode = 'reference';
   }
 
-  // 还原图元：先规范化模板图元为标准格式，再通过 GraphicFactory 反序列化
+  // Restore graphics: first normalize the template graphic to the standard format, then deserialize via GraphicFactory
   if (template.graphics && template.graphics.length > 0) {
     const normalized = normalizeTemplateGraphics(template.graphics as Record<string, any>[]);
     for (const g of normalized) {
@@ -400,9 +400,9 @@ function handleTemplateCreate(template: PageTemplate) {
   templateGalleryVisible.value = false;
 }
 
-/** 保存为模板 */
+/** Save as template */
 function openSaveAsTemplateDialog(page: any) {
-  // 设置当前项目 ID，确保模板保存到项目级目录而非系统级
+  // Set the current project ID to ensure templates are saved under the project-level directory, not system-level
   templateStore.setCurrentProjectId(props.projectId || null);
   saveAsTemplatePageName.value = page.name || '';
   saveAsTemplatePageConfig.value = {
@@ -418,7 +418,7 @@ function openSaveAsTemplateDialog(page: any) {
 function handleTemplateSaved(template: PageTemplate) {
   templateSaveDialogVisible.value = false;
 
-  // 引用模式：扫描已打开页面，找出引用此模板的页面
+  // Reference mode: scan opened pages to find pages referencing this template
   if (templateStore.configMode === 'reference') {
     const linked = pageStore.pages
       .filter(p => p.templateId === template.id)
@@ -434,7 +434,7 @@ function handleTemplateSaved(template: PageTemplate) {
   }
 }
 
-/** 模板同步：将模板的图元和配置写入选中页面 */
+/** Template sync: write the template's graphics and config into the selected page */
 function handleSyncPages(pageIds: string[]) {
   const normalizedGraphics = syncTemplateGraphics.length > 0
     ? normalizeTemplateGraphics(syncTemplateGraphics as Record<string, any>[])
@@ -444,14 +444,14 @@ function handleSyncPages(pageIds: string[]) {
     const page = pageStore.pages.find(p => p.id === pageId) as any;
     if (!page) continue;
 
-    // 更新页面配置
+    // Update page config
     if (syncTemplatePageConfig) {
       page.width = syncTemplatePageConfig.width;
       page.height = syncTemplatePageConfig.height;
       page.backgroundColor = syncTemplatePageConfig.backgroundColor;
     }
 
-    // 替换图元（清空后重新添加）
+    // Replace graphics (clear then re-add)
     if (page.graphics && typeof page.removeGraphic === 'function') {
       const currentGraphics = [...(page.graphics || [])];
       for (const g of currentGraphics) {
@@ -530,7 +530,7 @@ async function handleRemove(id: string, name: string) {
     ? pageStore.pageGroups.find(g => g.id === groupId)?.name
     : undefined;
   pageStore.removePage(id);
-  // 同步删除服务端页面文件
+  // Also delete the server-side page file
   if (props.projectId) {
     pageApi.deletePage(props.projectId, pageName, groupName).catch(err => {
       console.warn('[PageTabs] 删除页面文件失败:', err);
@@ -939,7 +939,7 @@ onUnmounted(() => {
   border-style: solid;
 }
 
-/* 右键菜单 */
+/* Right-click menu */
 .tab-context-menu {
   position: fixed;
   background-color: var(--surface);
@@ -996,7 +996,7 @@ onUnmounted(() => {
   margin: 4px 0;
 }
 
-/* 图标选择器 */
+/* Icon selector */
 .icon-picker-overlay {
   position: fixed;
   inset: 0;

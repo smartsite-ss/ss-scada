@@ -34,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-// TagValueIcon 组件
+// TagValueIcon component
 </script>
 
 <style scoped>

@@ -48,7 +48,7 @@
 </template>
 
 <script setup lang="ts">
-// StateVariableIcon 组件
+// StateVariableIcon component
 </script>
 
 <style scoped>

@@ -4,7 +4,7 @@
     class="preview-canvas-container"
     :class="transitionClass"
   >
-    <!-- 设备尺寸选择 - 仅在 showControls=true 时显示 -->
+    <!-- Device size selection — shown only when showControls=true -->
     <div
       v-if="showControls"
       class="preview-controls"
@@ -26,7 +26,7 @@
           {{ $t('runtime.preview.deviceMobile') }} (375x667)
         </option>
       </select>
-      <!-- 当前实际适配模式徽标（auto 已解析为具体模式，优化方案 C2 策略可见化） -->
+      <!-- Badge for the current effective fit mode (auto resolved to a concrete mode; optimization C2 strategy made visible) -->
       <span
         class="fit-mode-badge"
         :title="fitModeDescription"
@@ -49,7 +49,7 @@
       </button>
     </div>
 
-    <!-- 画布容器 -->
+    <!-- Canvas container -->
     <div
       ref="wrapperRef"
       class="canvas-wrapper"
@@ -171,7 +171,7 @@
       @change-fit-mode="switchFitMode"
     />
 
-    <!-- 轮播指示器 -->
+    <!-- Carousel indicator -->
     <CarouselIndicator
       :visible="carouselControlsVisible"
       :pages="carouselState.carouselPages"
@@ -179,7 +179,7 @@
       @go-to="carouselManager?.goTo($event)"
     />
 
-    <!-- 轮播控制栏 -->
+    <!-- Carousel control bar -->
     <CarouselControls
       :visible="carouselControlsVisible"
       :state="carouselState"
@@ -191,7 +191,7 @@
       @go-to="carouselManager?.goTo($event)"
     />
 
-    <!-- 轮播设置面板 -->
+    <!-- Carousel settings panel -->
     <CarouselSettingsPanel
       :visible="showCarouselSettings"
       :config="carouselConfig"
@@ -246,7 +246,7 @@ const props = defineProps({
     type: String as () => FitMode,
     default: 'auto'
   },
-  /** 轮播初始配置（从项目 projectinfo.json 加载） */
+  /** Initial carousel config (loaded from the project's projectinfo.json) */
   carouselConfig: {
     type: Object as () => CarouselConfig | null,
     default: null,
@@ -254,28 +254,28 @@ const props = defineProps({
 });
 
 const emit = defineEmits<{
-  /** 轮播配置变更（用户通过设置面板保存） */
+  /** Carousel config change (saved by the user via the settings panel) */
   carouselConfigChanged: [config: CarouselConfig];
 }>();
 
 const canvasRef = ref<HTMLCanvasElement | null>(null);
 const containerRef = ref<HTMLDivElement | null>(null);
-// 画布滚动视口（.canvas-wrapper）：尺寸测量以此为准，clientWidth 已排除纵向滚动条宽度
+// Canvas scroll viewport (.canvas-wrapper): this is the source of truth for size measurement; clientWidth already excludes the vertical scrollbar width
 const wrapperRef = ref<HTMLDivElement | null>(null);
-// 四个图元容器组件引用：适配/容器尺寸变化后刷新画布偏移（优化方案 P0-2）
+// References to the four graphic-container components: refresh canvas offset after fit/container size changes (optimization P0-2)
 const vueContainerRef = ref<{ updateCanvasOffset: () => void } | null>(null);
 const svgContainerRef = ref<{ updateCanvasOffset: () => void } | null>(null);
 const cssContainerRef = ref<{ updateCanvasOffset: () => void } | null>(null);
 const threeContainerRef = ref<{ updateCanvasOffset: () => void } | null>(null);
 const containerWidth = ref(props.width);
 const containerHeight = ref(props.height);
-// 画布分辨率 = 容器尺寸（始终填满容器，无溢出，无滚动条）
+// Canvas resolution = container size (always fills the container, no overflow, no scrollbar)
 const canvasWidth = ref(props.width);
 const canvasHeight = ref(props.height);
 const pageStore = usePageStore();
 const wsStore = useWsStore();
 
-// 背景图片绘制参数（根据 fitMode 统一计算）
+// Background-image draw params (unified by fitMode)
 const bgImageDrawParams = ref<{
   x: number;
   y: number;
@@ -284,10 +284,10 @@ const bgImageDrawParams = ref<{
 }>({ x: 0, y: 0, width: props.width, height: props.height });
 let resizeObserver: ResizeObserver | null = null;
 
-// 直接存储图形列表的 ref，避免响应式依赖问题
+// Store the graphic-list ref directly to avoid reactivity dependency issues
 const graphicsList = ref<IGraphic[]>([]);
 
-// 缓存背景图片
+// Cache background image
 let cachedBgImage: HTMLImageElement | null = null;
 let cachedBgImageSrc: string | null = null;
 
@@ -298,16 +298,16 @@ let animInitialized = false;
 let canvasBackend: Canvas2DBackend | null = null;
 const registeredGraphics = new Set<string>();
 
-// 背景图片加载失败重试次数限制
+// Retry-count limit for failed background-image loads
 const BG_IMAGE_MAX_RETRIES = 3;
 const bgImageRetryCount = new Map<string, number>();
 const bgImageExhausted = new Set<string>();
 
-// 调试面板状态
+// Debug panel state
 const showDebugPanel = ref(false);
 const showDiagnosticOverlay = ref(false);
 
-// 画布诊断结果接口
+// Canvas diagnostics result interface
 interface CanvasDiagnosticResult {
   timestamp: number;
   canvasRefExists: boolean;
@@ -338,7 +338,7 @@ interface CanvasDiagnosticResult {
 
 const diagnosticInfo = ref<CanvasDiagnosticResult | null>(null);
 
-/** 运行画布诊断 - 可独立调用 */
+/** Run canvas diagnostics — callable independently */
 function runCanvasDiagnostics(): CanvasDiagnosticResult {
   const allCanvases = document.querySelectorAll('canvas');
   const canvas = canvasRef.value;
@@ -400,25 +400,25 @@ function runCanvasDiagnostics(): CanvasDiagnosticResult {
   return result;
 }
 
-/** 切换诊断覆盖层 */
+/** Toggle the diagnostic overlay */
 function toggleDiagnosticOverlay(on?: boolean) {
   showDiagnosticOverlay.value = on !== undefined ? on : !showDiagnosticOverlay.value;
 }
 
-// 加载背景图片（带缓存+重试限制）
+// Load background image (with cache + retry limit)
 const loadBackgroundImage = async (src: string): Promise<HTMLImageElement | null> => {
-  // 将相对路径（如 bg.png）解析为页面目录下的完整 API 路径
+  // Resolve a relative path (e.g. bg.png) into the full API path under the page directory
   const effectiveSrc = resolvePageAssetPath(src);
   const resolvedSrc = resolveAssetPath(effectiveSrc);
 
-  // 校验路径有效性：忽略明显无效的路径（截断的 base64、双重编码等脏数据）
+  // Validate path validity: ignore obviously invalid paths (truncated base64, double-encoded dirty data, etc.)
   if (!isValidImagePath(resolvedSrc)) {
     bgImageExhausted.add(resolvedSrc);
     console.warn('[PreviewCanvas] 背景图片路径无效，已跳过:', resolvedSrc);
     return null;
   }
 
-  // 已超过重试次数，不再加载
+  // Retry count exceeded; stop loading
   if (bgImageExhausted.has(resolvedSrc)) {
     return null;
   }
@@ -446,10 +446,10 @@ const loadBackgroundImage = async (src: string): Promise<HTMLImageElement | null
   }
 };
 
-/** 将页面相对路径解析为完整 API 路径：bg.png → /api/v1/projects/{project}/pages/{page}/bg.png */
+/** Resolve a page-relative path to a full API path: bg.png → /api/v1/projects/{project}/pages/{page}/bg.png */
 function resolvePageAssetPath(src: string): string {
   if (!src) return src;
-  // 已是绝对路径或完整 URL，直接返回
+  // Already an absolute path or full URL; return directly
   if (src.startsWith('data:') || src.startsWith('blob:') || src.startsWith('http://') || src.startsWith('https://') || src.startsWith('/')) {
     return src;
   }
@@ -460,24 +460,24 @@ function resolvePageAssetPath(src: string): string {
   return `/api/v1/projects/${encodeURIComponent(projectName)}/pages/${encodeURIComponent(pageName)}/${src}`;
 }
 
-/** 组合解析：先解析页面相对路径，再规范化 API 版本前缀 */
+/** Combined resolution: first resolve the page-relative path, then normalize the API version prefix */
 function resolvePageBgSrc(src: string | undefined): string | null {
   if (!src) return null;
   return resolveAssetPath(resolvePageAssetPath(src));
 }
 
-/** 校验图片路径是否为有效格式 */
+/** Validate whether an image path is a valid format */
 function isValidImagePath(path: string): boolean {
   if (!path) return false;
-  // data URL / blob URL: 始终有效
+  // data URL / blob URL: always valid
   if (path.startsWith('data:image/') || path.startsWith('blob:')) return true;
-  // HTTP(S) URL: 始终有效
+  // HTTP(S) URL: always valid
   if (path.startsWith('http://') || path.startsWith('https://')) return true;
-  // /api/v{digits}/... 含有效资源段
+  // /api/v{digits}/... contains a valid resource segment
   if (/^\/api\/v\d+\/.+/.test(path)) return true;
-  // 相对路径（如 bg.png）— 至少以字母/数字/下划线开头且有扩展名
+  // Relative path (e.g. bg.png) — starts with a letter/digit/underscore and has an extension
   if (/^[a-zA-Z0-9_].+\.[a-zA-Z]{2,}$/.test(path)) return true;
-  // 截断的 base64 片段（如 9k=、%25%3D 等）或只有版本前缀无资源段：无效
+  // Truncated base64 fragments (e.g. 9k=, %25%3D) or a version prefix only with no resource segment: invalid
   return false;
 }
 
@@ -512,7 +512,7 @@ const initAnimationEngine = () => {
   }
 };
 
-// 安全获取图元数组
+// Safely get the graphic array
 const getSafeGraphics = (page: any): IGraphic[] => {
   if (!page) return [];
 
@@ -527,7 +527,7 @@ const getSafeGraphics = (page: any): IGraphic[] => {
   return [];
 };
 
-// 同步图形列表
+// Sync the graphic list
 const syncGraphics = () => {
   const currentPage = pageStore.currentPage;
   if (!currentPage) {
@@ -537,19 +537,19 @@ const syncGraphics = () => {
 
   const graphics = getSafeGraphics(currentPage);
 
-  // 直接赋值，不要展开操作
+  // Assign directly; do not spread
   graphicsList.value = graphics.slice().sort(
     (a: IGraphic, b: IGraphic) =>
       (a.config?.zIndex ?? 0) - (b.config?.zIndex ?? 0)
   );
 };
 
-// 简化 sortedGraphics，直接返回 graphicsList.value
+// Simplify sortedGraphics; directly return graphicsList.value
 const sortedGraphics = computed(() => {
   return graphicsList.value;
 });
 
-// 画布包装器 CSS class
+// Canvas wrapper CSS class
 const canvasWrapperClass = computed(() => {
   const classes: Record<string, boolean> = {};
   if (!props.showControls) {
@@ -558,7 +558,7 @@ const canvasWrapperClass = computed(() => {
   if (computedFitMode.value === 'stretch') {
     classes['stretch-mode'] = true;
   }
-  // 按实际生效模式锁定滚动轴：适应宽度不应出现横向滚动条，适应高度同理（避免亚像素/越界图元引发多余滚动条）
+  // Lock the scroll axis by the actually-effective mode: fit-width must not show a horizontal scrollbar, fit-height likewise (avoid extra scrollbars from sub-pixels/out-of-bounds graphics)
   if (resolvedFitMode.value === 'fitWidth') {
     classes['fit-width-mode'] = true;
   }
@@ -568,23 +568,23 @@ const canvasWrapperClass = computed(() => {
   return classes;
 });
 
-// 设备尺寸配置
+// Device size config
 const devices = {
   desktop: { width: 1920, height: 1080 },
   tablet: { width: 768, height: 1024 },
   mobile: { width: 375, height: 667 },
 };
 
-// 状态管理
+// State management
 const selectedDevice = ref('custom');
 
-/** 当前选中的设备模拟尺寸（未选设备时为 null，优化方案 P1-1） */
+/** Currently selected device simulation size (null when no device selected, optimization P1-1) */
 const getActiveDeviceSize = (): { width: number; height: number } | null =>
   selectedDevice.value !== 'custom'
     ? devices[selectedDevice.value as keyof typeof devices]
     : null;
 
-// 画布相关状态
+// Canvas-related state
 const zoom = ref(1);
 const zoomX = ref(1);
 const zoomY = ref(1);
@@ -594,11 +594,11 @@ const panY = ref(0);
 const computedFitMode = ref<FitMode>('auto');
 // User-configured fit mode before auto resolution (used for menu check state and badge)
 const pageFitMode = ref<FitMode>('auto');
-// 实际生效的适配模式（auto 已解析为具体模式；用于控件区徽标显示，优化方案 C2）
+// Actually effective fit mode (auto resolved to a concrete mode; used for the control-area badge, optimization C2)
 const resolvedFitMode = ref<FitMode>('contain');
 
-// 适配模式徽标文案（auto 显示解析结果，非 auto 直接显示模式名）
-// 经 unknown 断言窄化 t 签名：非字面量 key 会触发 vue-i18n messages 字面量 schema 深度实例化（TS2589）
+// Fit-mode badge text (auto shows the resolved result; non-auto shows the mode name directly)
+// Narrow the t signature via unknown assertion: a non-literal key triggers deep instantiation of the vue-i18n messages literal schema (TS2589)
 const translate = (key: string): string =>
   (i18n.global as unknown as { t: (key: string) => string }).t(key);
 const fitModeLabel = computed(() => {
@@ -609,15 +609,15 @@ const fitModeDescription = computed(() =>
   translate(`zoomManager.fitModes.${resolvedFitMode.value}.description`)
 );
 
-// ★ 统一缩放范围（百分比）：来源于 pageStore 可配置缩放三参数，对齐编辑态约束链（优化方案 C3）
-// 此前预览态依赖 ZoomManager 内部兑底默认 10~200，绕开用户在 CanvasSettings 中的配置
+// ★ Unified zoom range (percentage): from pageStore's three configurable zoom params, aligned with the edit-mode constraint chain (optimization C3)
+// Previously, preview relied on ZoomManager's internal fallback default 10~200, bypassing the user's config in CanvasSettings
 const scaleMinPercent = computed(() => pageStore.scaleMin ?? VIEWPORT.SCALE_MIN);
 const scaleMaxPercent = computed(() => pageStore.scaleMax ?? VIEWPORT.SCALE_MAX);
 
 /**
- * ★ 以容器中心为锚点更新缩放（对齐编辑态 zoomAtAnchor 的 CANVAS_CENTER 语义，优化方案 P1-4）
- * 保持画布中心视觉位置不变：pan' = center - (center - pan) × (newZoom / oldZoom)
- * 此前滑杆/滚轮只改 zoom 不调 pan，缩放围绕 (0,0) 原点，中心内容随缩放飞出视口
+ * ★ Update zoom anchored at the container center (aligns with editor zoomAtAnchor's CANVAS_CENTER semantics, optimization P1-4)
+ * Keep the canvas center's visual position fixed: pan' = center - (center - pan) × (newZoom / oldZoom)
+ * Previously the slider/wheel only changed zoom without adjusting pan; zooming around the (0,0) origin flew the center content out of the viewport
  */
 const zoomAtContainerCenter = (newZoom: number) => {
   const oldZoom = zoom.value;
@@ -629,7 +629,7 @@ const zoomAtContainerCenter = (newZoom: number) => {
   panY.value = centerY - (centerY - panY.value) * ratio;
 };
 
-/** 应用新缩放并同步 Canvas 后端（clamp + 中心锚点 + zoomX/zoomY 同步） */
+/** Apply new zoom and sync Canvas backend (clamp + center anchor + zoomX/zoomY sync) */
 const applyZoom = (newScalePercent: number) => {
   const clampedPercent = Math.max(
     scaleMinPercent.value,
@@ -647,9 +647,9 @@ const applyZoom = (newScalePercent: number) => {
   }
 };
 
-// 本地临时覆盖的显示模式（不持久化到页面，仅当前预览会话有效）
+// Locally temporarily overridden display mode (not persisted to page, only valid for current preview session)
 const localFitMode = ref<FitMode | null>(null);
-// 当前显示模式选中态（本地覆盖优先）：右键菜单勾选与调试面板高亮共用，保证两处一致（运行态显示模式统一）
+// Current display-mode selected state (local override priority): right-click menu checkbox and debug panel highlight share state, ensuring consistency (unified runtime display mode)
 const currentFitModeSelection = computed<FitMode>(() => localFitMode.value || pageFitMode.value);
 const isDragging = ref(false);
 const hasDragged = ref(false);
@@ -661,10 +661,10 @@ const startPanY = ref(0);
 const showDataPanel = ref(false);
 const dataPanelSources = ref<any[]>([]);
 let autoRefreshTimer: ReturnType<typeof setInterval> | null = null;
-const AUTO_REFRESH_INTERVAL = 3000; // 面板打开时每 3 秒自动刷新（兜底）
+const AUTO_REFRESH_INTERVAL = 3000; // Auto-refresh every 3 seconds while panel is open (fallback)
 
-// 响应式自动刷新：每次 wsStore flush 时触发（对齐编辑态 DataSourceConfigDialog）
-// 同时调用 syncGraphics() 生成新数组引用 + drawCanvas() 重绘 Canvas 2D 图元
+// Reactive auto-refresh: trigger on every wsStore flush (aligns with editor DataSourceConfigDialog)
+// Call syncGraphics() to generate a new array reference + drawCanvas() to redraw Canvas 2D graphics
 const wsVersion = ref(0);
 let tagValueUnsubscribeFn: (() => void) | null = null;
 watch(
@@ -692,7 +692,7 @@ const contextMenuItems = computed(() => {
     { id: 'statistics', label: translate('runtime.menu.statistics') },
     { id: 'script-monitor', label: translate('runtime.menu.scriptMonitor') },
     { id: 'divider-2', label: '─' },
-    // 显示模式分组（恢复 P2-1c 死代码对应的菜单项，当前模式前缀 ✓）
+    // Display mode grouping (restore the menu item corresponding to P2-1c dead code, current mode prefix ✓)
     { id: 'fitmode-header', label: translate('runtime.preview.fitModeGroup') },
     ...fitModes.map(mode => ({
       id: `fitmode-${mode}`,
@@ -722,7 +722,7 @@ const showPerformancePanel = ref(false);
 const showStatisticsPanel = ref(false);
 const showScriptMonitorDialog = ref(false);
 
-// 轮播相关状态
+// Carousel-related state
 const carouselManager = ref<CarouselManager | null>(null);
 const carouselStateTimer = ref<ReturnType<typeof setInterval> | null>(null);
 const carouselConfig = ref<CarouselConfig>(
@@ -766,14 +766,14 @@ function handleContextMenuItem(item: { id: string; label: string }) {
   } else if (item.id === 'carousel-settings') {
     showCarouselSettings.value = true;
   } else if (item.id === 'fitmode-header') {
-    // 点击"显示模式"标题不做任何操作，仅作为分组标识
+    // Clicking the "显示模式" title does nothing, it only serves as a group identifier
   } else if (item.id && typeof item.id === 'string' && item.id.startsWith('fitmode-')) {
     const mode = item.id.replace('fitmode-', '') as FitMode;
     switchFitMode(mode);
   }
 }
 
-/** 切换显示模式（仅更新当前显示，不持久化到页面） */
+/** Switch display mode (only updates current display, not persisted to page) */
 function switchFitMode(mode: FitMode) {
   localFitMode.value = mode;
   scrollbarCompensationApplied = false;
@@ -816,12 +816,12 @@ function toggleFullscreen() {
 function openDataPanel() {
   showDataPanel.value = true;
 
-  // 预览运行在 iframe 中时，Pinia 实例与父窗口隔离，需要自行建立 WS 连接
+  // When preview runs in an iframe, the Pinia instance is isolated from the parent window, need to establish WS connection itself
   if (!wsStore.isConnected) {
     const urlParams = new URLSearchParams(window.location.search);
     const projectId = urlParams.get('projectId');
     if (projectId) {
-      // 收集当前页面所有数据源的 tagId
+      // Collect tagIds of all data sources on the current page
       const pageData = pageStore.currentPage as any;
       const dsGroup = pageData?.dataSource;
       const allTagIds: string[] = [];
@@ -838,7 +838,7 @@ function openDataPanel() {
         refreshDataPanel(false);
       }).catch((err: any) => {
         console.warn('[PreviewCanvas] wsStore.connect FAILED:', err?.message || err);
-        // WS 连接失败也刷新面板：运行态数据源可能走 HTTP 轮询/Static 等非 WS 驱动
+        // Refresh panel even if WS connection fails: runtime data sources may use non-WS drivers like HTTP polling/Static
         refreshDataPanel(false);
       });
     } else {
@@ -849,7 +849,7 @@ function openDataPanel() {
     refreshDataPanel(false);
   }
 
-  // 启动自动刷新：面板打开期间每 3s 刷新，wsStore 后台持续接收 WS 推送
+  // Start auto-refresh: refresh every 3s while panel is open, wsStore keeps receiving WS pushes in background
   if (!autoRefreshTimer) {
     autoRefreshTimer = setInterval(() => refreshDataPanel(true), AUTO_REFRESH_INTERVAL);
   }
@@ -863,7 +863,7 @@ function closeDataPanel() {
   }
 }
 
-// 响应式自动刷新：当 wsStore 推送数据时立即更新面板（对齐编辑态 DataSourceConfigDialog）
+// Reactive auto-refresh: update panel immediately when wsStore pushes data (aligns with editor DataSourceConfigDialog)
 watch(wsVersion, () => {
   if (showDataPanel.value) {
     refreshDataPanel(true);
@@ -882,16 +882,16 @@ function refreshDataPanel(silent = false) {
     const dsGroup = currentPage.dataSource;
     const dm = ScadaDataManager.dataSourceManager;
 
-  // 运行态：DataSourceManager 已初始化时，读取其真实状态和缓存值（全部使用公共 API）
+  // Runtime: when DataSourceManager is initialized, read its real status and cached values (all via public API)
   if (dm.initialized) {
     const dmSources = dm.getAllSources();
-    // 使用公共 getStatus() 获取每个数据源的状态信息（替代对 _driverRegistry 私有属性的直接访问）
+    // Use the public getStatus() to get each data source's status info (replaces direct access to _driverRegistry private property)
     const statusSnap = dm.getStatus();
     const statusBySourceId = new Map(
       (statusSnap?.sources || []).map((s: any) => [s.id, s]),
     );
 
-    // 获取所有 bindings，并按 variable.dataSourceId 分组到对应数据源（避免从驱动 config 反推）
+    // Get all bindings and group by variable.dataSourceId into corresponding data sources (avoid reverse-deriving from driver config)
     const allBindings = dm.getBindings();
     const bindingsBySourceId = new Map<string, any[]>();
     for (const b of allBindings) {
@@ -906,7 +906,7 @@ function refreshDataPanel(silent = false) {
       const statusEntry = statusBySourceId.get(dsInfo.id);
 
       const dsBindings = bindingsBySourceId.get(dsInfo.id) || [];
-      // 对 tagId 去重（多个图元可能绑定同一个 tag）
+      // Deduplicate tagIds (multiple graphics may bind the same tag)
       const seenTagIds = new Set<string>();
       const tags: any[] = [];
       for (const b of dsBindings) {
@@ -925,7 +925,7 @@ function refreshDataPanel(silent = false) {
         });
       }
 
-      // 数据源级别聚合值
+      // Data-source level aggregated value
       const firstTag = tags[0];
       sources.push({
         id: dsInfo.id,
@@ -947,17 +947,17 @@ function refreshDataPanel(silent = false) {
     return;
   }
 
-  // 编辑态 fallback：从 pageDsStore / wsStore 读取（保持原有逻辑）
+  // Editor fallback: read from pageDsStore / wsStore (keep original logic)
 
   if (dsGroup?.dataSources) {
-    // 使用 pageDsStore（对齐编辑态 DataSourceConfigDialog），确保与编辑态共享数据模型
+    // Use pageDsStore (aligns with editor DataSourceConfigDialog), ensures sharing the data model with editor
     const pageDsStore = usePageDataSourceStore();
     const allVariables = pageDsStore.variables.length > 0
       ? pageDsStore.variables
       : (dsGroup.variables || []);
 
     for (const ds of dsGroup.dataSources) {
-      // 使用 DataSourceReader 统一提取 tagIds
+      // Use DataSourceReader to uniformly extract tagIds
       let sourceVars = allVariables
         .filter((v: any) => v.dataSourceId === ds.id);
 
@@ -971,12 +971,12 @@ function refreshDataPanel(silent = false) {
         }));
       }
 
-      // 构建 tags 数组：DataSourceReader 统一读取 wsStore.tagValues
+      // Build tags array: DataSourceReader uniformly reads wsStore.tagValues
       const tags = sourceVars.map((v: any) =>
         readTagSnapshot(v.tagId, v.tagName || v.tagId, wsStore),
       );
 
-      // DataSourceReader 统一聚合摘要
+      // DataSourceReader unified aggregation summary
       const summary = buildSourceSummary(
         ds,
         sourceVars.map((v: any) => v.tagId),
@@ -1022,8 +1022,8 @@ const syncGraphicsToBackend = () => {
   for (const graphic of graphics) {
     if (!graphic || !graphic.id) continue;
 
-    // ★ 只将 CANVAS_2D 类型的图元添加到 Canvas2DBackend
-    // 与 PageBrowser.vue 的 classifyGraphics() 逻辑对齐
+    // ★ Only add CANVAS_2D-type graphics to Canvas2DBackend
+    // Align with PageBrowser.vue's classifyGraphics() logic
     const backend = RendererRegistry.getBackendForPlugin(graphic as any);
     if (backend !== RenderBackend.CANVAS_2D) {
       continue;
@@ -1031,7 +1031,7 @@ const syncGraphicsToBackend = () => {
 
     currentIds.add(graphic.id);
 
-    // ★ 每次同步都重新注入运行态 pageContext，覆盖编辑器注入的 pageContextImpl
+    // ★ Re-inject runtime pageContext on every sync, overriding the editor-injected pageContextImpl
     if (graphic && typeof (graphic as any)._setPageContext === 'function') {
       (graphic as any)._setPageContext(animPageContext);
     }
@@ -1054,22 +1054,22 @@ const syncGraphicsToBackend = () => {
   console.log(`[PreviewCanvas.syncGraphicsToBackend] total=${graphics.length}, canvas2d=${canvasBackendUpdateCount}, registered=${registeredGraphics.size}`);
 };
 
-/** 刷新页面：从服务端重新加载页面数据，重置缓存，重新计算布局并重绘 */
+/** Refresh page: reload page data from server, reset cache, recompute layout and redraw */
 async function refreshPage(): Promise<void> {
   let freshDataLoaded = false;
 
-  // 1. 优先从后端 API 重新加载当前页面数据
+  // 1. Prefer reloading current page data from backend API
   const urlParams = new URLSearchParams(window.location.search);
   const projectId = urlParams.get('projectId');
-  // 使用当前页面的名称加载，而非 URL 中固定的 pageName（轮播切换时 URL 不变）
+  // Load by the current page's name instead of the fixed pageName in URL (URL does not change during carousel switch)
   const currentPageForLoad = pageStore.currentPage;
   const currentPageName = currentPageForLoad?.name || urlParams.get('pageName');
   if (projectId && currentPageName) {
     try {
       const response = await pageApi.readPage(projectId, currentPageName);
-      // 后端响应可能有多层包装：
-      //   无拦截器: { success: true, data: pageJSON }
-      //   有拦截器: { data: { success: true, data: pageJSON }, message, timestamp }
+      // The backend response may have multiple wrapper layers:
+      //   No interceptor: { success: true, data: pageJSON }
+      //   With interceptor: { data: { success: true, data: pageJSON }, message, timestamp }
       const pageResult = (response as any)?.data || (response as any);
       const pageData = pageResult?.data;
       if (pageData) {
@@ -1084,7 +1084,7 @@ async function refreshPage(): Promise<void> {
     }
   }
 
-  // 2. 如果无法从 URL 加载，尝试 SaveService（编辑器内预览模式）
+  // 2. If cannot load from URL, try SaveService (in-editor preview mode)
   if (!freshDataLoaded && saveServiceManager.isInitialized()) {
     try {
       const projectData = await saveServiceManager.load();
@@ -1104,43 +1104,43 @@ async function refreshPage(): Promise<void> {
     }
   }
 
-  // 3. 清除背景图片缓存 + 重试限制
+  // 3. Clear background image cache + retry limit
   cachedBgImage = null;
   cachedBgImageSrc = null;
   bgImageRetryCount.clear();
   bgImageExhausted.clear();
 
-  // 4. 重置 Canvas 后端注册的图形
+  // 4. Reset graphics registered in Canvas backend
   if (canvasBackend) {
     canvasBackend.clear();
   }
   registeredGraphics.clear();
 
-  // 5. 重新同步图形列表
+  // 5. Re-sync graphic list
   syncGraphics();
 
-  // 6. 重新计算布局
+  // 6. Recompute layout
   applyAutoFit();
 
-  // 7. 重新加载背景图片
+  // 7. Reload background image
   preloadBackgroundImage();
 
-  // 8. 重绘
+  // 8. Redraw
   drawCanvas();
 }
 
 /**
- * ★ 页面切换（按设计文档 §13.4.3 轮播页面切换链路）
- * Store 驱动，不修改 URL。CarouselManager 和按钮导航统一使用此入口。
+ * ★ Page switching (per design doc §13.4.3 carousel page-switch chain)
+ * Store-driven, does not modify the URL. CarouselManager and button navigation both use this entry point.
  *
- * targetPageId 可能是页面 id（轮播传入）或页面名称（按钮 optionsProvider 使用 p.name 作为 value）。
- * 策略：先按 id 查找，再按 name 查找，统一解析为真实 id 后再操作。
+ * targetPageId may be a page id (from carousel) or a page name (button optionsProvider uses p.name as value).
+ * Strategy: look up by id first, then by name, resolve to the real id before operating.
  *
- * 目标页面不在 store 中时，按优先级从 SaveService → IndexedDB → 后端API 加载。
- * 加载完成后执行 stopTimers → applyAutoFit → syncGraphics → startTimers 完整流程。
+ * When the target page is not in the store, load it by priority from SaveService -> IndexedDB -> backend API.
+ * After loading, run the full flow: stopTimers -> applyAutoFit -> syncGraphics -> startTimers.
  */
 async function handlePageSwitch(targetPageId: string, oldPageId?: string): Promise<void> {
-  // ★ 统一解析：targetPageId 可能是页面名称（按钮下拉 value=p.name）或页面 ID（轮播 value=p.id）
+  // ★ Unified resolution: targetPageId may be a page name (button dropdown value=p.name) or a page ID (carousel value=p.id)
   let resolvedId = targetPageId;
   let existingPage = pageStore.pages.find(p => p.id === targetPageId);
   if (!existingPage) {
@@ -1151,8 +1151,8 @@ async function handlePageSwitch(targetPageId: string, oldPageId?: string): Promi
     }
   }
 
-  // 1. 如果目标页面在 store 中但无图元（IndexedDB 可能存储了空页面），
-  //    或者不在 store 中：需要从数据源重新加载
+  // 1. If target page is in store but has no graphics (IndexedDB may store an empty page),
+  //    Or not in store: need to reload from data source
   const pageHasGraphics = existingPage ? getSafeGraphics(existingPage).length > 0 : false;
   if (!existingPage || !pageHasGraphics) {
     if (!existingPage) {
@@ -1162,7 +1162,7 @@ async function handlePageSwitch(targetPageId: string, oldPageId?: string): Promi
     }
     let pageData: any = null;
 
-    // 1a. 编辑器内预览：通过 SaveService 加载
+    // 1a. In-editor preview: load via SaveService
     if (saveServiceManager.isInitialized()) {
       try {
         const projectData = await saveServiceManager.load();
@@ -1173,7 +1173,7 @@ async function handlePageSwitch(targetPageId: string, oldPageId?: string): Promi
       }
     }
 
-    // 1b. 独立预览窗口：通过 IndexedDB 加载（同时支持 id 和 name 匹配）
+    // 1b. Standalone preview window: load via IndexedDB (supports both id and name matching)
     if (!pageData) {
       try {
         const allPages = await loadAllPagesData();
@@ -1190,13 +1190,13 @@ async function handlePageSwitch(targetPageId: string, oldPageId?: string): Promi
       }
     }
 
-    // 1c. 后端 API 兜底
+    // 1c. Backend API fallback
     if (!pageData) {
       const urlParams = new URLSearchParams(window.location.search);
       const projectId = urlParams.get('projectId');
       if (projectId) {
         try {
-          // targetPageId 可能就是 pageName
+          // targetPageId may simply be the pageName
           const response = await pageApi.readPage(projectId, targetPageId);
           const result = (response as any)?.data || response;
           pageData = result?.data || result;
@@ -1214,11 +1214,11 @@ async function handlePageSwitch(targetPageId: string, oldPageId?: string): Promi
     resolvedId = pageData.id || targetPageId;
 
     if (existingPage) {
-      // 页面已在 store 中但无图元 → 原地刷新数据
+      // Page already in store but no graphics → refresh data in place
       (existingPage as BasePage).fromJSON(pageData);
       console.log('[PreviewCanvas] handlePageSwitch: 页面数据已刷新:', { id: resolvedId, name: pageData.name });
     } else {
-      // 页面不在 store 中 → 创建并添加
+      // Page not in store → create and add
       const targetPage = new BasePage();
       targetPage.init({
         id: resolvedId,
@@ -1233,16 +1233,16 @@ async function handlePageSwitch(targetPageId: string, oldPageId?: string): Promi
     }
   }
 
-  // 2. 停止旧页定时器
+  // 2. Stop old page timers
   if (oldPageId) {
     const oldPage = pageStore.pages.find(p => p.id === oldPageId);
     oldPage?.stopTimers?.();
   }
 
-  // 3. 切换到目标页面（Store 驱动）- 使用解析后的真实 ID
+  // 3. Switch to target page (Store-driven) - use the resolved real ID
   pageStore.setCurrentPage(resolvedId);
 
-  // 4-8. 按 §13.4.3 流程刷新渲染
+  // 4-8. Refresh rendering per §13.4.3 flow
   applyAutoFit();
   preloadBackgroundImage();
   initAnimationEngine();
@@ -1250,12 +1250,12 @@ async function handlePageSwitch(targetPageId: string, oldPageId?: string): Promi
   syncGraphicsToBackend();
   drawCanvas();
 
-  // 9. 启动新页定时器
+  // 9. Start new page timers
   const newPage = pageStore.currentPage;
   newPage?.startTimers?.();
 }
 
-// 绘制画布
+// Draw canvas
 const drawCanvas = () => {
   const canvas = canvasRef.value;
   if (!canvas) return;
@@ -1270,7 +1270,7 @@ const drawCanvas = () => {
     return;
   }
 
-  // 回退：直接绘制图形（旧路径）
+  // Fallback: draw graphic directly (old path)
   context.clearRect(0, 0, canvas.width, canvas.height);
 
   const currentPage = pageStore.currentPage;
@@ -1280,9 +1280,9 @@ const drawCanvas = () => {
 
     if (currentPage.backgroundImage) {
       const resolvedBgSrc = resolvePageBgSrc(currentPage.backgroundImage);
-      // 已超过重试次数，不再加载（resolvedBgSrc 可空：无效解析时返回 null）
+      // Exceeded retry count, stop loading (resolvedBgSrc can be null: returns null on invalid parse)
       if (resolvedBgSrc !== null && bgImageExhausted.has(resolvedBgSrc)) {
-        // 不显示背景图片
+        // Do not show background image
       } else if (cachedBgImage && cachedBgImageSrc === resolvedBgSrc && cachedBgImage.complete) {
         const params = bgImageDrawParams.value;
         context.drawImage(cachedBgImage, params.x, params.y, params.width, params.height);
@@ -1310,7 +1310,7 @@ const drawCanvas = () => {
     for (let i = 0; i < graphics.length; i++) {
       try {
         const graphic = graphics[i];
-        // ★ 只绘制 CANVAS_2D 类型的图元
+        // ★ Only draw CANVAS_2D-type graphics
         const backend = RendererRegistry.getBackendForPlugin(graphic as any);
         if (backend !== RenderBackend.CANVAS_2D) continue;
         if (graphic && typeof graphic.draw === 'function') {
@@ -1323,8 +1323,8 @@ const drawCanvas = () => {
   context.restore();
 }
 
-// 设备模拟视口（优化方案 P1-1）：以容器为视口、以设备分辨率为适配目标尺寸，
-// 内容在容器内等比居中显示设备比例区域；位图分辨率保持 = 容器尺寸，不做位图拉伸
+// Device simulation viewport (optimization P1-1): use container as viewport, device resolution as fit target size,
+// Content is proportionally centered in the container showing the device ratio area; bitmap resolution stays = container size, no bitmap stretch
 const changeDevice = () => {
   const device = getActiveDeviceSize();
   scrollbarCompensationApplied = false;
@@ -1337,17 +1337,17 @@ const changeDevice = () => {
   drawCanvas();
 };
 
-// 缩放功能（滑杆回调）：clamp + 容器中心锚点 + zoomX/zoomY 同步统一由 applyZoom 处理（优化方案 P1-4）
+// Zoom feature (slider callback): clamp + container-center anchor + zoomX/zoomY sync uniformly handled by applyZoom (optimization P1-4)
 const handleScaleChange = (newScale: number) => {
-  // stretch 模式下禁用手动缩放，保护非均匀比例（zoomX/zoomY 仅由 applyAutoFit 设置）
+  // Disable manual zoom in stretch mode to protect non-uniform ratio (zoomX/zoomY only set by applyAutoFit)
   if (computedFitMode.value === 'stretch') return;
   applyZoom(newScale);
   drawCanvas();
 };
 
-// ★ 重置 = 回到自动适配态（对齐编辑态 resetZoom 语义），而非裸 100%（优化方案 C4）
-// applyAutoFit 内部已同步 canvasBackend 的 scale/scaleXY/pan/resize；
-// 设备模拟选中时重置回到设备适配态（优化方案 P1-1）
+// ★ Reset = return to auto-fit state (aligns with editor resetZoom semantics), not bare 100% (optimization C4)
+// applyAutoFit already syncs canvasBackend's scale/scaleXY/pan/resize internally;
+// When device simulation is selected, reset to device-fit state (optimization P1-1)
 const resetZoom = () => {
   const deviceSize = getActiveDeviceSize();
   scrollbarCompensationApplied = false;
@@ -1356,7 +1356,7 @@ const resetZoom = () => {
   scheduleScrollbarCompensation(deviceSize?.width, deviceSize?.height);
 };
 
-// 鼠标事件处理
+// Mouse event handling
 const handleMouseDown = (event: MouseEvent) => {
   isDragging.value = true;
   hasDragged.value = false;
@@ -1387,24 +1387,24 @@ const handleMouseUp = () => {
 };
 
 const handleWheel = (event: WheelEvent) => {
-  // 只有在按住Ctrl键时才进行缩放
+  // Only zoom when the Ctrl key is held
   if (event.ctrlKey) {
-    // stretch 模式下禁用缩放，保护非均匀比例
+    // Disable zoom in stretch mode to protect non-uniform ratio
     if (computedFitMode.value === 'stretch') return;
-    // 被动模式下 preventDefault 被忽略，缩放计算仍然生效
-    // 步进常量化 + clamp + 容器中心锚点统一由 applyZoom 处理（优化方案 P1-4/C3）
+    // In passive mode preventDefault is ignored, but zoom calculation still takes effect
+    // Step constant + clamp + container-center anchor are uniformly handled by applyZoom (optimization P1-4/C3)
     const wheelFactor = event.deltaY > 0
       ? VIEWPORT.PREVIEW_WHEEL_ZOOM_OUT
       : VIEWPORT.PREVIEW_WHEEL_ZOOM_IN;
     applyZoom(zoomValue.value * wheelFactor);
     drawCanvas();
   }
-  // 否则不阻止默认事件，允许页面正常滚动
+  // Otherwise do not prevent default events, allow normal page scrolling
 };
 
-// 画布点击事件
+// Canvas click event
 const handleCanvasClick = (event: MouseEvent) => {
-  // 拖拽操作不触发点击导航
+  // Drag operation does not trigger click navigation
   if (hasDragged.value) return;
 
   const canvas = canvasRef.value;
@@ -1412,14 +1412,14 @@ const handleCanvasClick = (event: MouseEvent) => {
 
   const rect = canvas.getBoundingClientRect();
   
-  // 根据是否是stretch模式使用不同的缩放因子计算点击坐标
+  // Use different scaling factors to compute click coordinates based on whether it is stretch mode
   const scaleX = computedFitMode.value === 'stretch' ? zoomX.value : zoom.value;
   const scaleY = computedFitMode.value === 'stretch' ? zoomY.value : zoom.value;
   
   const x = (event.clientX - rect.left - panX.value) / scaleX;
   const y = (event.clientY - rect.top - panY.value) / scaleY;
 
-  // 检查是否点击了图形
+  // Check if a graphic was clicked
   const graphics = sortedGraphics.value;
   if (Array.isArray(graphics)) {
     for (let i = graphics.length - 1; i >= 0; i--) {
@@ -1432,7 +1432,7 @@ const handleCanvasClick = (event: MouseEvent) => {
   }
 };
 
-/** 处理图元导航（从 customProps 读取导航配置） */
+/** Handle graphic navigation (read navigation config from customProps) */
 const handleGraphicNavigate = (graphic: IGraphic) => {
   const customProps = (graphic as any).config?.customProps;
   if (!customProps || customProps.targetType === 'none') return;
@@ -1449,15 +1449,15 @@ const handleGraphicNavigate = (graphic: IGraphic) => {
 };
 
 /**
- * 计算图元边界框并应用自动适配。
- * 位图尺寸行为按容器模式分述（优化方案 P1-3）：
- * - 默认/设备模拟：画布填满容器，无溢出无滚动条；
- * - fitWidth/fitHeight：内容超尺寸时扩展位图分辨率（上限 MAX_BITMAP_SIZE，
- *   超限保持容器尺寸并居中），由 .canvas-wrapper 原生滚动承接溢出，
- *   运行态与控件态行为一致（no-controls 容器同样支持扩展位图 + 滚动，不再降级）。
- * @param targetWidth 设备模拟目标宽（可选）：传入时强制 contain 等比居中，
- *        位图保持容器尺寸，避免位图拉伸变形（优化方案 P1-1）
- * @param targetHeight 设备模拟目标高（可选）
+ * Compute the graphic bounding box and apply auto-fit.
+ * Bitmap sizing behavior by container mode (optimization P1-3):
+ * - default/device-simulation: canvas fills the container, no overflow, no scrollbar;
+ * - fitWidth/fitHeight: when content exceeds size, expand bitmap resolution (capped at MAX_BITMAP_SIZE,
+ *   beyond cap keep container size and center), overflow handled by .canvas-wrapper native scroll,
+ *   runtime and control-mode behavior are consistent (no-controls container also supports expanded bitmap + scroll, no degradation).
+ * @param targetWidth device-simulation target width (optional): when passed, force contain centered,
+ *        bitmap keeps container size, avoid bitmap stretch distortion (optimization P1-1)
+ * @param targetHeight device-simulation target height (optional)
  */
 const applyAutoFit = (targetWidth?: number, targetHeight?: number) => {
   const currentPage = pageStore.currentPage as BasePage;
@@ -1466,7 +1466,7 @@ const applyAutoFit = (targetWidth?: number, targetHeight?: number) => {
   let panXOffset = 0;
   let panYOffset = 0;
 
-  // 设备模拟时适配目标取设备分辨率，否则取页面尺寸（优化方案 P1-1）
+  // Device simulation fit target uses device resolution, otherwise page size (optimization P1-1)
   const pageWidth = targetWidth ?? currentPage.width;
   const pageHeight = targetHeight ?? currentPage.height;
   const isDeviceSimulation = targetWidth !== undefined && targetHeight !== undefined;
@@ -1485,13 +1485,13 @@ const applyAutoFit = (targetWidth?: number, targetHeight?: number) => {
     configuredFitMode === 'auto' && !isDeviceSimulation ? 'stretch' : configuredFitMode;
   computedFitMode.value = currentFitMode;
 
-  // 默认路径：画布填满容器，不产生溢出/滚动条（控件态扩展分支见下方）
+  // Default path: canvas fills container, no overflow/scrollbar (control-mode expand branch see below)
   canvasWidth.value = containerWidth.value;
   canvasHeight.value = containerHeight.value;
 
-  // 对stretch模式进行特殊处理（设备模拟不适用：非均匀缩放与等比居中语义冲突）
+  // Special handling for stretch mode (not applicable to device simulation: non-uniform scaling conflicts with proportional-centering semantics)
   if (currentFitMode === 'stretch' && !isDeviceSimulation) {
-    // 分别计算x和y轴的缩放因子，使内容完全填充容器
+    // Compute x and y scaling factors separately so content fully fills the container
     zoomX.value = containerWidth.value / pageWidth;
     zoomY.value = containerHeight.value / pageHeight;
     resolvedFitMode.value = 'stretch';
@@ -1502,14 +1502,14 @@ const applyAutoFit = (targetWidth?: number, targetHeight?: number) => {
     zoom.value = zoomX.value;
     zoomValue.value = zoomX.value * 100;
 
-    // 背景图：拉伸填满整个画布
+    // Background image: stretch to fill the entire canvas
     bgImageDrawParams.value = {
       x: 0, y: 0,
       width: canvasWidth.value,
       height: canvasHeight.value,
     };
   } else {
-    // 非stretch模式使用ZoomManager计算（缩放范围接入 pageStore 可配置参数，优化方案 C3）
+    // Non-stretch mode uses ZoomManager computation (zoom range wired to pageStore configurable param, optimization C3)
     const result = ZoomManager.calculateScaleByMode(
       currentFitMode,
       pageWidth,
@@ -1525,17 +1525,17 @@ const applyAutoFit = (targetWidth?: number, targetHeight?: number) => {
 
     resolvedFitMode.value = actualFitMode;
 
-    // 设置统一的缩放因子
+    // Set unified scaling factor
     zoom.value = scaleValue / 100;
     zoomX.value = zoom.value;
     zoomY.value = zoom.value;
     zoomValue.value = scaleValue;
 
-    // 计算缩放后的尺寸
+    // Compute scaled size
     const scaledWidth = pageWidth * zoom.value;
     const scaledHeight = pageHeight * zoom.value;
 
-    // 计算偏移量（画布=容器，内容居中或靠边）
+    // Compute offset (canvas = container, content centered or aligned to edge)
     switch (actualFitMode) {
       case 'contain':
         panXOffset = (canvasWidth.value - scaledWidth) / 2;
@@ -1548,8 +1548,8 @@ const applyAutoFit = (targetWidth?: number, targetHeight?: number) => {
       case 'fitWidth':
         panXOffset = 0;
         panYOffset = scaledHeight > canvasHeight.value ? 0 : (canvasHeight.value - scaledHeight) / 2;
-        // 当内容高度超过容器时，扩展画布高度以显示完整内容（控件态/运行态一致），
-        // 超限 MAX_BITMAP_SIZE 时保持容器尺寸并居中（优化方案 P1-3）
+        // When content height exceeds container, expand canvas height to show full content (consistent in control/runtime mode),
+        // When exceeding MAX_BITMAP_SIZE, keep container size and center (optimization P1-3)
         if (scaledHeight > canvasHeight.value) {
           if (scaledHeight > VIEWPORT.MAX_BITMAP_SIZE) {
             console.warn(`[PreviewCanvas] fitWidth 扩展位图高度 ${Math.round(scaledHeight)}px 超过上限 ${VIEWPORT.MAX_BITMAP_SIZE}px，已保持容器尺寸并居中显示`);
@@ -1566,8 +1566,8 @@ const applyAutoFit = (targetWidth?: number, targetHeight?: number) => {
       case 'fitHeight':
         panXOffset = scaledWidth > canvasWidth.value ? 0 : (canvasWidth.value - scaledWidth) / 2;
         panYOffset = 0;
-        // 当内容宽度超过容器时，扩展画布宽度以显示完整内容（控件态/运行态一致），
-        // 超限 MAX_BITMAP_SIZE 时保持容器尺寸并居中（优化方案 P1-3）
+        // When content width exceeds container, expand canvas width to show full content (consistent in control/runtime mode),
+        // When exceeding MAX_BITMAP_SIZE, keep container size and center (optimization P1-3)
         if (scaledWidth > canvasWidth.value) {
           if (scaledWidth > VIEWPORT.MAX_BITMAP_SIZE) {
             console.warn(`[PreviewCanvas] fitHeight 扩展位图宽度 ${Math.round(scaledWidth)}px 超过上限 ${VIEWPORT.MAX_BITMAP_SIZE}px，已保持容器尺寸并居中显示`);
@@ -1596,7 +1596,7 @@ const applyAutoFit = (targetWidth?: number, targetHeight?: number) => {
 
   if (canvasBackend) {
     if (computedFitMode.value === 'stretch') {
-      // stretch 模式需要非均匀缩放，使用 setScaleXY
+      // stretch mode requires non-uniform scaling, use setScaleXY
       if (canvasBackend.setScaleXY) {
         canvasBackend.setScaleXY(zoomX.value, zoomY.value);
       } else {
@@ -1606,15 +1606,15 @@ const applyAutoFit = (targetWidth?: number, targetHeight?: number) => {
       canvasBackend.setScale(zoom.value);
     }
     canvasBackend.setPan(panXOffset, panYOffset);
-    // 画布尺寸可能因 fitWidth/fitHeight 模式而扩展，需要同步更新后端
+    // Canvas size may expand due to fitWidth/fitHeight mode, need to sync update to backend
     canvasBackend.resize(canvasWidth.value, canvasHeight.value);
   }
 
-  // 画布尺寸/位置变化后刷新容器组件的画布偏移，避免 DOM 层与 Canvas 层漂移（优化方案 P0-2）
+  // After canvas size/position changes, refresh the container component's canvas offset to avoid DOM-layer vs Canvas-layer drift (optimization P0-2)
   refreshContainerOffsets();
 };
 
-/** 刷新四个图元容器的画布偏移（等 DOM 尺寸生效后读取，优化方案 P0-2） */
+/** Refresh canvas offset for the four graphic containers (read after DOM size takes effect, optimization P0-2) */
 const refreshContainerOffsets = () => {
   nextTick(() => {
     vueContainerRef.value?.updateCanvasOffset();
@@ -1624,9 +1624,9 @@ const refreshContainerOffsets = () => {
   });
 };
 
-// 零尺寸兜底重试（优化方案 P1-2）：隐藏标签页/嵌入式 iframe 挂载时容器尺寸可能为 0，
-// 按 PREVIEW_INIT_RETRY_DELAYS 延迟重测，避免 applyAutoFit 得到 zoom≈0 的退化画面，
-// 与编辑态 INIT_RETRY_DELAYS 重试机制对齐（00 文档 §7.2）
+// Zero-size fallback retry (optimization P1-2): hidden tab/embedded iframe mount may have container size 0,
+// Delay re-measure by PREVIEW_INIT_RETRY_DELAYS to avoid applyAutoFit producing a degenerate zoom≈0 view,
+// Align with editor INIT_RETRY_DELAYS retry mechanism (doc 00 §7.2)
 let zeroSizeRetryCount = 0;
 let zeroSizeRetryTimer: ReturnType<typeof setTimeout> | null = null;
 const scheduleZeroSizeRetry = () => {
@@ -1642,10 +1642,10 @@ const scheduleZeroSizeRetry = () => {
   }, delay);
 };
 
-// 处理容器大小变化（设备模拟时以设备分辨率为适配目标，优化方案 P1-1）
+// Handle container size change (device simulation uses device resolution as fit target, optimization P1-1)
 let pendingResize = false;
-// 滚动条补偿：扩展位图（fitWidth/fitHeight）可能触发纵向滚动条出现，使 wrapper 可视宽度收窄，
-// 需再适配一次以免内容比可视区宽产生横向滚动条；每次适配动作限一次补偿防振荡
+// Scrollbar compensation: expanding bitmap (fitWidth/fitHeight) may trigger vertical scrollbar, narrowing wrapper visible width,
+// Need one more fit to avoid content wider than visible area causing horizontal scrollbar; each fit action limits compensation to once to prevent oscillation
 let scrollbarCompensationApplied = false;
 const scheduleScrollbarCompensation = (targetWidth?: number, targetHeight?: number) => {
   if (scrollbarCompensationApplied) return;
@@ -1669,8 +1669,8 @@ const handleResize = () => {
     pendingResize = false;
     if (!props.autoSize || !containerRef.value) return;
 
-    // 优先测量 canvas-wrapper（滚动视口）：clientWidth 已排除纵向滚动条宽度，
-    // 若测外层 containerRef，滚动条出现后位图会比可视区宽，引发横向滚动条（滚动条反馈环）
+    // Prefer measuring canvas-wrapper (scroll viewport): clientWidth already excludes the vertical scrollbar width,
+    // If measuring outer containerRef, after scrollbar appears the bitmap is wider than the visible area, causing horizontal scrollbar (scrollbar feedback loop)
     let measuredWidth: number;
     let measuredHeight: number;
     if (wrapperRef.value) {
@@ -1682,7 +1682,7 @@ const handleResize = () => {
       measuredHeight = containerRef.value.clientHeight - controlsHeight;
     }
 
-    // 容器尺寸为 0 时延迟重试（优化方案 P1-2）
+    // Delay retry when container size is 0 (optimization P1-2)
     if (measuredWidth <= 0 || measuredHeight <= 0) {
       scheduleZeroSizeRetry();
       return;
@@ -1702,25 +1702,25 @@ const handleResize = () => {
 
     drawCanvas();
 
-    // 滚动条补偿：首次适配若因扩展位图触发纵向滚动条，按收窄后的可视宽度再适配一次（限一次）
+    // Scrollbar compensation: if first fit triggers vertical scrollbar due to expanded bitmap, refit once with the narrowed visible width (limited to once)
     scheduleScrollbarCompensation(deviceSize?.width, deviceSize?.height);
   });
 };
 
-// ★ 页面切换 Watch（Store 驱动，按设计文档 §13.4.3）
-// 监视 currentPageId 变化，统一调用 handlePageSwitch。
-// CarouselManager.next() 和按钮导航都通过 pageStore.setCurrentPage() 触发此 watch。
+// ★ Page-switch Watch (Store-driven, per design doc §13.4.3)
+// Watch currentPageId changes, uniformly call handlePageSwitch.
+// CarouselManager.next() and button navigation both trigger this watch via pageStore.setCurrentPage().
 watch(
   () => pageStore.currentPageId,
   (newId, oldId) => {
-    // 首次挂载时 oldId 为 undefined，跳过（由 onMounted 处理初始绘制）
+    // On first mount oldId is undefined, skip (initial drawing handled by onMounted)
     if (!oldId || newId === oldId) return;
     handlePageSwitch(newId, oldId);
   }
 );
 
-// 页面尺寸变化兜底 watch（背景色/fitMode 已有独立 watch；页面切换由 currentPageId watch 统一处理，
-// 避免与其双触发导致 applyAutoFit 执行两次，优化方案 P2-2）
+// Page-size change fallback watch (background color/fitMode already have separate watches; page switch uniformly handled by currentPageId watch,
+// Avoid double-trigger with it causing applyAutoFit to run twice, optimization P2-2)
 watch(
   () => {
     const page = pageStore.currentPage as BasePage | null;
@@ -1733,7 +1733,7 @@ watch(
   }
 );
 
-// 监听适配模式变化
+// Listen to fit-mode changes
 watch(
   () => props.fitMode,
   () => {
@@ -1742,7 +1742,7 @@ watch(
   }
 );
 
-// 监听页面属性中的fitMode变化
+// Listen to fitMode changes in page properties
 watch(
   () => (pageStore.currentPage as BasePage)?.fitMode,
   (newFitMode) => {
@@ -1753,7 +1753,7 @@ watch(
   }
 );
 
-// 监听背景图片变化，预加载新图片
+// Listen to background image changes, preload new image
 watch(
   () => (pageStore.currentPage as BasePage)?.backgroundImage,
   (newBgImage) => {
@@ -1764,7 +1764,7 @@ watch(
       cachedBgImageSrc = null;
       drawCanvas();
     }
-    // 更换背景图片时，清除旧的失败计数
+    // When changing background image, clear the old failure count
     if (newBgImage) {
       bgImageRetryCount.delete(resolveAssetPath(newBgImage));
       bgImageExhausted.delete(resolveAssetPath(newBgImage));
@@ -1772,18 +1772,18 @@ watch(
   }
 );
 
-// === 轮播功能 ===
+// === Carousel feature ===
 
 /**
- * 执行页面切换（store 驱动，不动 URL）
+ * Perform page switch (store-driven, does not touch URL)
  */
 function performPageSwitch(pageId: string): void {
   pageStore.setCurrentPage(pageId);
-  // 后续由 watch(currentPageId) / watch(currentPage) 自动触发渲染更新
+  // Subsequently, watch(currentPageId) / watch(currentPage) auto-trigger render updates
 }
 
 /**
- * 轮播页面切换回调（支持过渡效果）
+ * Carousel page-switch callback (supports transition effects)
  */
 function handleCarouselPageSwitch(pageId: string): void {
   if (carouselConfig.value.transition !== 'none') {
@@ -1794,7 +1794,7 @@ function handleCarouselPageSwitch(pageId: string): void {
 }
 
 /**
- * 过渡动画执行
+ * Execute transition animation
  */
 function executeTransition(pageId: string, type: string): void {
   carouselManager.value?.pause();
@@ -1807,7 +1807,7 @@ function executeTransition(pageId: string, type: string): void {
 }
 
 /**
- * 轮播配置保存
+ * Save carousel config
  */
 function handleCarouselConfigSave(config: CarouselConfig): void {
   carouselConfig.value = { ...config };
@@ -1816,7 +1816,7 @@ function handleCarouselConfigSave(config: CarouselConfig): void {
 }
 
 /**
- * 初始化轮播管理器
+ * Initialize the carousel manager
  */
 function initCarousel(): void {
   console.log('[PreviewCanvas] initCarousel 开始:', {
@@ -1846,7 +1846,7 @@ function initCarousel(): void {
     count: carouselState.value.carouselPages.length,
   });
 
-  // 定时同步轮播状态到响应式 ref（驱动 UI 更新：圆点、进度、计时器等）
+  // Periodically sync carousel status to reactive ref (drives UI updates: dots, progress, timers, etc.)
   if (carouselStateTimer.value) clearInterval(carouselStateTimer.value);
   carouselStateTimer.value = setInterval(() => {
     if (carouselManager.value) {
@@ -1854,7 +1854,7 @@ function initCarousel(): void {
     }
   }, 100);
 
-  // 自动开始轮播（需页面数大于1 且 autoStart=true）
+  // Auto-start carousel (requires page count > 1 and autoStart=true)
   if (carouselConfig.value.autoStart && carouselState.value.carouselPages.length > 1) {
     console.log('[PreviewCanvas] initCarousel: autoStart=true, 启动轮播');
     carouselManager.value.start();
@@ -1866,9 +1866,9 @@ function initCarousel(): void {
   }
 }
 
-// === 轮播功能结束 ===
+// === Carousel feature end ===
 
-// 监听外部传入的轮播配置变化（如从项目配置异步加载）
+// Listen to externally passed carousel config changes (e.g. async load from project config)
 watch(
   () => props.carouselConfig,
   (newConfig) => {
@@ -1878,13 +1878,13 @@ watch(
   },
 );
 
-// 组件挂载后绘制画布
+// Draw canvas after component mount
 onMounted(() => {
   pageStore.setPageMode('preview');
   nextTick(() => {
     if (canvasRef.value) {
-      // 确保 canvas 初始尺寸有效：优先读容器实际尺寸（此前 canvasWidth 初始即命中 props.width，
-      // 兜底链永远用不到容器实测值，优化方案 P1-2）
+      // Ensure canvas initial size is valid: prefer reading the container's actual size (previously canvasWidth initially hit props.width,
+      // The fallback chain never uses the container's measured value, optimization P1-2)
       const initWidth = containerRef.value?.clientWidth || canvasWidth.value || window.innerWidth || 1024;
       const initHeight = containerRef.value?.clientHeight || canvasHeight.value || window.innerHeight || 768;
 
@@ -1899,13 +1899,13 @@ onMounted(() => {
             const resolvedSrc = resolvePageBgSrc(currentPage?.backgroundImage);
             const isExhausted = resolvedSrc ? bgImageExhausted.has(resolvedSrc) : false;
             if (currentPage) {
-              // 背景色填满整个画布
+              // Background color fills the entire canvas
               const bgColor = currentPage.backgroundColor;
               if (bgColor && bgColor !== 'transparent') {
                 ctx.fillStyle = bgColor;
                 ctx.fillRect(0, 0, canvasRef.value!.width, canvasRef.value!.height);
               }
-              // 背景图片按 fitMode 统一绘制
+              // Background image drawn uniformly per fitMode
               const shouldDrawBgImage = currentPage.backgroundImage
                 && !isExhausted
                 && cachedBgImage?.complete
@@ -1916,20 +1916,20 @@ onMounted(() => {
               }
             }
 
-            // ★ 诊断标记（受 showDiagnosticOverlay 控制）
+            // ★ Diagnostic marker (controlled by showDiagnosticOverlay)
             if (showDiagnosticOverlay.value) {
               const cw = canvasRef.value?.width || 0;
               const ch = canvasRef.value?.height || 0;
               if (cw > 0 && ch > 0) {
                 ctx.save();
-                // 半透明红色覆盖层（验证 canvas 是否可见）
+                // Semi-transparent red overlay (verify canvas is visible)
                 ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
                 ctx.fillRect(0, 0, cw, ch);
-                // 黄色边框
+                // Yellow border
                 ctx.strokeStyle = '#FFFF00';
                 ctx.lineWidth = 6;
                 ctx.strokeRect(3, 3, cw - 6, ch - 6);
-                // 四角三角形
+                // Corner triangles
                 ctx.fillStyle = '#FF0000';
                 ctx.strokeStyle = '#FFFF00';
                 ctx.lineWidth = 3;
@@ -1941,7 +1941,7 @@ onMounted(() => {
                 ctx.fill(); ctx.stroke();
                 ctx.beginPath(); ctx.moveTo(cw, ch); ctx.lineTo(cw-60, ch); ctx.lineTo(cw, ch-60); ctx.closePath();
                 ctx.fill(); ctx.stroke();
-                // 居中文本
+                // Center text
                 ctx.fillStyle = '#FFFF00';
                 ctx.font = 'bold 28px sans-serif';
                 ctx.textAlign = 'center';
@@ -1962,8 +1962,8 @@ onMounted(() => {
     if (props.autoSize) {
       handleResize();
       if (containerRef.value) {
-        // 设备模拟时容器变化同样需要重新适配（以设备分辨率为目标，优化方案 P1-1），
-        // 零尺寸场景由 handleResize 内部重试链接管（优化方案 P1-2）
+        // Device simulation container changes also need re-fit (target device resolution, optimization P1-1),
+        // Zero-size scenario is handled by handleResize's internal retry chain (optimization P1-2)
         resizeObserver = new ResizeObserver(() => {
           handleResize();
         });
@@ -1977,18 +1977,18 @@ onMounted(() => {
     preloadBackgroundImage();
     drawCanvas();
 
-    // ★ 诊断：使用统一的诊断方法
+    // ★ Diagnostic: use the unified diagnostic method
     const _diagResult = runCanvasDiagnostics();
 
-    // ★ 连接脚本引擎的图元变更处理器到 Canvas2DBackend
-    // 使 moveGraphic / setGraphicProps 等脚本 API 能直接更新运行态渲染
+    // ★ Connect the script engine's graphic-change handler to Canvas2DBackend
+    // So that script APIs like moveGraphic / setGraphicProps can directly update runtime rendering
     const scriptEngine = ScriptEngine.getInstance();
     scriptEngine.setGraphicChangeHandler((graphicId: string, props: Record<string, any>) => {
       if (!canvasBackend) return;
       const graphic = canvasBackend.getGraphic(graphicId);
       if (!graphic) return;
 
-      // 更新图元位置
+      // Update graphic position
       if (typeof props.x === 'number' || typeof props.y === 'number') {
         const pos = graphic.getPosition();
         const newX = typeof props.x === 'number' ? props.x : pos.x;
@@ -1996,17 +1996,17 @@ onMounted(() => {
         graphic.setPosition(newX, newY);
       }
 
-      // 更新可见性
+      // Update visibility
       if (typeof props.visible === 'boolean') {
         graphic.setVisible(props.visible);
       }
 
-      // 更新旋转角度
+      // Update rotation angle
       if (typeof props.rotation === 'number') {
         graphic.setRotation(props.rotation);
       }
 
-      // 更新自定义属性
+      // Update custom properties
       const customProps: Record<string, any> = {};
       for (const [key, value] of Object.entries(props)) {
         if (!['x', 'y', 'visible', 'rotation'].includes(key)) {
@@ -2019,22 +2019,22 @@ onMounted(() => {
         }
       }
 
-      // 通知 Canvas2DBackend 更新
+      // Notify Canvas2DBackend to update
       canvasBackend.update(graphic);
     });
 
-    // 启动页面定时器（运行态核心功能）
+    // Start page timers (core runtime feature)
     const currentPage = pageStore.currentPage as BasePage | null;
     if (currentPage && typeof currentPage.startTimers === 'function') {
       currentPage.startTimers();
     }
 
-    // 初始化轮播管理器
+    // Initialize carousel manager
     initCarousel();
 
-    // ★ 监听 DataSourceManager/EventBus 的 tagValueChanged 事件（HTTP轮询/Static/表达式等驱动统一走 EventBus）
-    // 数据到达后调用 syncGraphics() 生成新数组引用 + drawCanvas() 重绘 Canvas 2D 图元（如 Label）
-    // （BindingManager.handleDataUpdate 只修改 graphic.config 内部属性，不触发 Canvas 重绘）
+    // ★ Listen to DataSourceManager/EventBus tagValueChanged events (HTTP polling/Static/expression drivers all go through EventBus)
+    // After data arrives, call syncGraphics() to generate new array reference + drawCanvas() to redraw Canvas 2D graphics (e.g. Label)
+    // (BindingManager.handleDataUpdate only modifies graphic.config internal properties, does not trigger Canvas redraw)
     tagValueUnsubscribeFn = ScadaDataManager.eventBus.on('tagValueChanged', (event: unknown) => {
       const payload = (event as any)?.payload;
       console.log(`[PreviewCanvas] tagValueChanged event: tagId=${payload?.tagId?.slice(0,8) || '?'}, value=${String(payload?.value || '').slice(0,20)}`);
@@ -2047,26 +2047,26 @@ onMounted(() => {
 onUnmounted(() => {
   pageStore.setPageMode('edit');
 
-  // 清理 EventBus tagValueChanged 监听
+  // Clean up EventBus tagValueChanged listener
   if (tagValueUnsubscribeFn) {
     tagValueUnsubscribeFn();
     tagValueUnsubscribeFn = null;
   }
 
-  // 清理数据面板自动刷新定时器
+  // Clean up data-panel auto-refresh timer
   if (autoRefreshTimer) {
     clearInterval(autoRefreshTimer);
     autoRefreshTimer = null;
   }
 
-  // 清理轮播管理器
+  // Clean up carousel manager
   if (carouselStateTimer.value) clearInterval(carouselStateTimer.value);
   carouselManager.value?.destroy();
   carouselManager.value = null;
-  // 清理脚本引擎的图元变更处理器
+  // Clean up script engine's graphic-change handler
   ScriptEngine.getInstance().setGraphicChangeHandler(null);
   
-  // 停止页面定时器，清除 window.setInterval/setTimeout 句柄
+  // Stop page timers, clear window.setInterval/setTimeout handles
   const currentPage = pageStore.currentPage as BasePage | null;
   if (currentPage && typeof currentPage.stopTimers === 'function') {
     currentPage.stopTimers();
@@ -2170,7 +2170,7 @@ onUnmounted(() => {
 
 .canvas-wrapper.no-controls {
   cursor: default;
-  /* 与控件态一致：允许扩展位图（fitWidth/fitHeight）原生滚动，不再强制裁剪 */
+  /* Consistent with control mode: allow expanded bitmap (fitWidth/fitHeight) native scroll, no longer force-clip */
   overflow: auto;
   display: flex;
   padding: 0;
@@ -2178,7 +2178,7 @@ onUnmounted(() => {
   height: 100%;
 }
 
-/* stretch 模式：填充整个容器，无 padding，无滚动条（声明在 no-controls 之后以覆盖其 overflow） */
+/* stretch mode: fills the entire container, no padding, no scrollbar (declared after no-controls to override its overflow) */
 .canvas-wrapper.stretch-mode {
   overflow: hidden;
   padding: 0;
@@ -2190,14 +2190,14 @@ onUnmounted(() => {
   height: 100%;
 }
 
-/* 安全居中：内容小于容器时 margin:auto 居中，大于容器时退化为顶/左对齐可滚动，
- * 避免 flex 强制居中导致溢出部分被裁剪无法滚达（content-area 保持位图自然尺寸） */
+/* Safe centering: when content is smaller than the container, margin:auto centers it; when larger, degrade to top/left-aligned and scrollable,
+ * avoiding flex forced-centering that clips the overflow and makes it unscrollable (content-area keeps the bitmap's natural size) */
 .canvas-wrapper.no-controls .canvas-content-area {
   margin: auto;
 }
 
-/* 按实际生效模式锁定滚动轴：适应宽度不应出现横向滚动条（亚像素舍入、越界图元、
- * 滚动条补偿残差均不得引发多余滚动条），适应高度同理锁定纵轴 */
+/* Lock the scroll axis by the actually-effective mode: fit-width must not show a horizontal scrollbar (sub-pixel rounding, out-of-bounds graphics,
+ * and scrollbar compensation residuals must not cause extra scrollbars); fit-height locks the vertical axis likewise */
 .canvas-wrapper.fit-width-mode {
   overflow-x: hidden;
 }
@@ -2206,7 +2206,7 @@ onUnmounted(() => {
   overflow-y: hidden;
 }
 
-/* 预览模式下 canvas 填满容器（背景用主题变量，透明背景页面由页面 backgroundColor 接管，优化方案 P2-1a） */
+/* In preview mode the canvas fills the container (background uses theme variables; transparent-background pages are taken over by the page backgroundColor, optimization P2-1a) */
 .preview-canvas {
   display: block;
   margin: 0;
@@ -2214,7 +2214,7 @@ onUnmounted(() => {
   box-shadow: none;
 }
 
-/* 轮播过渡效果 */
+/* Carousel transition effect */
 .preview-canvas-container.carousel-transition-fade {
   transition: opacity 0.3s ease;
   opacity: 1;

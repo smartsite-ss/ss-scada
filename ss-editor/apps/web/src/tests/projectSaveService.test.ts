@@ -101,7 +101,7 @@ describe('projectSaveService', () => {
       expect(result).not.toBeNull();
       expect(result!.pages).toHaveLength(2);
       expect(result!.pages.map((p: any) => p.id)).toEqual(['Page1', 'Page2']);
-      // 验证延迟加载标记
+      // Validate Lazy Loading Tags
       expect(result!.pages[0]._lazy).toBe(true);
       expect(result!.pages[0].graphics).toEqual([]);
     });
@@ -137,7 +137,7 @@ describe('projectSaveService', () => {
 
       expect(result).not.toBeNull();
       expect(result!.pages).toHaveLength(2);
-      // 验证 pageGroups 和 groupNames
+      // Validate pageGroups and groupNames
       expect((result!.pageGroups as Record<string, string>)['GroupPage1']).toBe('group-a');
       expect((result!.pageGroups as Record<string, string>)['GroupPage2']).toBe('group-b');
       expect((result!.groupNames as Record<string, string>)['group-a']).toBe('group-a');
@@ -167,7 +167,7 @@ describe('projectSaveService', () => {
 
       expect(result).not.toBeNull();
       expect(result!.pages).toHaveLength(2);
-      // 验证延迟加载映射
+      // Validate Lazy Loading Mapping
       const mapping = getPageGroupMapping();
       expect(mapping.get('RootPage')).toBeUndefined();
       expect(mapping.get('SensorPage')).toBe('prod');
@@ -195,9 +195,9 @@ describe('projectSaveService', () => {
       await service!.load();
 
       const mapping = getPageGroupMapping();
-      // pageId 作为键时，根页面映射为 undefined
+      // When pageId is used as the key, the root page is mapped to undefined
       expect(mapping.get('page-001')).toBeUndefined();
-      // 分组页面映射为分组名
+      // Group page mapped to group name
       expect(mapping.get('page-002')).toBe('g1');
     });
 
@@ -227,7 +227,7 @@ describe('projectSaveService', () => {
       await service!.load();
 
       const mapping = getPageGroupMapping();
-      // 三个同名的 "Dashboard" 页面因不同 pageId 而有独立的映射条目
+      // Three "Dashboard" pages with the same name have separate mapping entries due to different pageIds
       expect(mapping.get('page-root-001')).toBeUndefined();
       expect(mapping.get('page-grpA-001')).toBe('groupA');
       expect(mapping.get('page-grpB-001')).toBe('groupB');
@@ -255,7 +255,7 @@ describe('projectSaveService', () => {
       await service!.load();
 
       const mapping = getPageGroupMapping();
-      // 没有 pageId 时使用 pageName 作为键
+      // Use pageName as the key when there is no pageId
       expect(mapping.get('Page1')).toBeUndefined();
       expect(mapping.get('Page2')).toBe('group1');
     });
@@ -293,7 +293,7 @@ describe('projectSaveService', () => {
 
   describe('loadPageData - lazy loading', () => {
     it('should load page data with group query param when page is in a group', async () => {
-      // 先加载 outline 填充 pageGroupMapping
+      // Load the outline first to fill in the pageGroupMapping
       setupMock({
         getProjectOutline: {
           data: {
@@ -314,13 +314,13 @@ describe('projectSaveService', () => {
       const service = createProjectSaveService('test');
       await service!.load();
 
-      // 模拟 readPage 返回
+      // Simulate readPage return
       const { pageApi } = await import('@scada-editor/system');
       (pageApi.readPage as any).mockResolvedValue({
         data: { success: true, data: { id: 'sensor-1', name: 'SensorPage', graphics: [{ type: 'shape' }] } },
       });
 
-      // 按需加载
+      // On demand
       const { loadPageData } = await import('../services/projectSaveService');
       const pageData = await loadPageData('test', 'SensorPage');
 
@@ -328,7 +328,7 @@ describe('projectSaveService', () => {
       expect(pageData.id).toBe('sensor-1');
       expect(pageData.name).toBe('SensorPage');
       expect(pageData.graphics).toHaveLength(1);
-      // 验证 readPage 被调用时传入了 group=prod
+      // Verify that group=prod was passed when readPage was called
       expect(pageApi.readPage).toHaveBeenCalledWith('test', 'SensorPage', 'prod');
     });
 
@@ -342,7 +342,7 @@ describe('projectSaveService', () => {
     });
 
     it('【loadPageData 传参】传入 pageId 时使用 pageId 查找分组映射', async () => {
-      // 先加载 outline 填充 pageGroupMapping（使用 pageId 作为键）
+      // First, load the outline to populate pageGroupMapping (using pageId as the key)
       setupMock({
         getProjectOutline: {
           data: {
@@ -369,7 +369,7 @@ describe('projectSaveService', () => {
       });
 
       const { loadPageData } = await import('../services/projectSaveService');
-      // 传入 pageId="sensor-uuid"，应正确查找分组 "prod"
+      // Pass in pageId="sensor-uuid", and the group "prod" should be found correctly.
       const pageData = await loadPageData('test', 'SensorPage', 'sensor-uuid');
 
       expect(pageData).not.toBeNull();
@@ -399,12 +399,12 @@ describe('projectSaveService', () => {
       });
 
       const { loadPageData } = await import('../services/projectSaveService');
-      // 不传 pageId，应回退到 pageName 查找
+      // If pageId is not passed, it should fall back to pageName lookup.
       const pageData = await loadPageData('test', 'RootPage');
 
       expect(pageData).not.toBeNull();
       expect(pageData.id).toBe('root-uuid');
-      // 根页面无分组，group 为 undefined
+      // No groups on the root page, group is undefined
       expect(pageApi.readPage).toHaveBeenCalledWith('test', 'RootPage', undefined);
     });
   });
@@ -429,7 +429,7 @@ describe('projectSaveService', () => {
 
       const { pageApi } = await import('@scada-editor/system');
 
-      // 应只发送 1 个页面（CurrentPage），而非全部
+      // Only 1 page (CurrentPage) should be sent, not all
       expect(pageApi.saveAllPages).toHaveBeenCalledTimes(1);
       const sentPages = (pageApi.saveAllPages as any).mock.calls[0][1];
       expect(sentPages).toHaveLength(1);
@@ -456,7 +456,7 @@ describe('projectSaveService', () => {
 
       expect(pageApi.saveAllPages).toHaveBeenCalledTimes(1);
       const sentPages = (pageApi.saveAllPages as any).mock.calls[0][1];
-      // 没有 previewPageName 时保存全部页面
+      // Save all pages when there is no previewPageName
       expect(sentPages).toHaveLength(2);
     });
 
@@ -482,7 +482,7 @@ describe('projectSaveService', () => {
 
       const { pageApi } = await import('@scada-editor/system');
 
-      // 验证 saveAllPages 的 options 中包含 previewPageId
+      // Verify that the options for saveAllPages contain previewPageId
       const options = (pageApi.saveAllPages as any).mock.calls[0][2];
       expect(options.previewPageName).toBe('MyPage');
       expect(options.previewPageId).toBe('page-uuid-999');
@@ -499,7 +499,7 @@ describe('projectSaveService', () => {
         { id: 'page-002', name: 'PageB', _lazy: true, graphics: [] },
       ];
 
-      // previewPageName=NonExistent 无法匹配任何页面
+      // previewPageName=NonExistent cannot match any page
       await expect(service!.save({
         version: '1.0',
         savedAt: Date.now(),
@@ -516,7 +516,7 @@ describe('projectSaveService', () => {
 
       const service = createProjectSaveService('test');
 
-      // _lazy=false 的页面有 2 个（第 3 个是 _lazy 占位符）
+      // There are 2 pages with _lazy=false (the 3rd is the _lazy placeholder)
       const pages = [
         { id: 'page-a', name: 'PageA', _lazy: false, graphics: [{ type: 'rect' }] },
         { id: 'page-b', name: 'PageB', _lazy: false, graphics: [{ type: 'circle' }] },
@@ -535,7 +535,7 @@ describe('projectSaveService', () => {
       expect(pageApi.saveAllPages).toHaveBeenCalledTimes(1);
       const sentPages = (pageApi.saveAllPages as any).mock.calls[0][1];
       expect(sentPages).toHaveLength(2);
-      // 应包含 PageA 和 PageB，不应包含 PageC（_lazy）
+      // Should include PageA and PageB, but not PageC (_lazy)
       expect(sentPages.map((p: any) => p.id)).toEqual(['page-a', 'page-b']);
     });
 
@@ -568,7 +568,7 @@ describe('projectSaveService', () => {
         { id: 'page-2', name: 'Page2', _lazy: false, graphics: [] },
         { id: 'page-3', name: 'Page3', _lazy: true, graphics: [] },
       ];
-      // 虽然有 previewPageName=Page1，但 __saveAll=true 应保存所有非 _lazy 页面
+      // Although there is previewPageName=Page1, __saveAll=true should save all non-_lazy pages
       await service!.save({
         version: '1.0',
         savedAt: Date.now(),
@@ -582,7 +582,7 @@ describe('projectSaveService', () => {
 
       expect(pageApi.saveAllPages).toHaveBeenCalledTimes(1);
       const sentPages = (pageApi.saveAllPages as any).mock.calls[0][1];
-      expect(sentPages).toHaveLength(2); // Page1 + Page2（Page3 是 _lazy）
+      expect(sentPages).toHaveLength(2); // Page1 + Page2 (Page3 is _lazy)
     });
   });
 });

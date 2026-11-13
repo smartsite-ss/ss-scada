@@ -1,6 +1,6 @@
 <template>
   <div class="js-editor-wrapper">
-    <!-- 工具栏 -->
+    <!-- Toolbar -->
     <div class="editor-toolbar">
       <div class="toolbar-section">
         <button
@@ -54,7 +54,7 @@
       </div>
     </div>
 
-    <!-- 搜索栏 -->
+    <!-- Search bar -->
     <div
       v-if="showSearch"
       class="search-bar"
@@ -129,12 +129,12 @@
       </div>
     </div>
 
-    <!-- 编辑器主体 -->
+    <!-- Editor body -->
     <div
       ref="editorBody"
       class="editor-body"
     >
-      <!-- 行号 -->
+      <!-- Line number -->
       <div class="line-numbers">
         <div
           v-for="n in lineCount"
@@ -145,14 +145,14 @@
         </div>
       </div>
 
-      <!-- 高亮层 -->
+      <!-- Highlight layer -->
       <div
         ref="highlightLayer"
         class="highlight-layer"
         v-html="highlightedContent"
       />
 
-      <!-- 编辑层 -->
+      <!-- Edit layer -->
       <textarea
         ref="editorTextarea"
         v-model="content"
@@ -165,7 +165,7 @@
       />
     </div>
 
-    <!-- 状态栏 -->
+    <!-- Status bar -->
     <div class="status-bar">
       <div class="status-left">
         <span
@@ -208,13 +208,13 @@ const emit = defineEmits([
   'change',
 ])
 
-// 核心状态
+// Core state
 const content = ref('')
 const highlightLayer = ref<HTMLElement | null>(null)
 const editorTextarea = ref<HTMLTextAreaElement | null>(null)
 const editorBody = ref<HTMLElement | null>(null)
 
-// 搜索相关
+// Search-related
 const showSearch = ref(false)
 const showReplace = ref(false)
 const searchQuery = ref('')
@@ -223,19 +223,19 @@ const matchCount = ref(0)
 const currentMatchIndex = ref(-1)
 const matches: Array<{ start: number; end: number }> = []
 
-// 缩进
+// Indent
 const indentSize = ref(2)
 
-// 历史记录
+// History
 const historyStack: string[] = []
 const historyIndex = ref(-1)
 const MAX_HISTORY = 50
 
-// 错误处理
+// Error handling
 const hasError = ref(false)
 const errorMessage = ref('')
 
-// 计算属性
+// Computed properties
 const lineCount = computed(() => content.value.split('\n').length)
 
 const cursorPosition = computed(() => {
@@ -256,30 +256,30 @@ const highlightedContent = computed(() => {
   return syntaxHighlight(content.value)
 })
 
-// JavaScript 语法高亮函数
+// JavaScript syntax highlight function
 function syntaxHighlight(code: string): string {
   if (!code) return ''
 
   let result = escapeHtml(code)
 
-  // 注释 (先处理注释，防止被其他规则匹配
-  // 多行注释 /* ... */
+  // Comments (handle comments first to prevent them from matching other rules
+  // Multi-line comment /* ... */
   result = result.replace(/(\/\*[\s\S]*?\*\/)/g, '<span class="token comment">$1</span>')
-  // 单行注释 // ...
+  // Single-line comment // ...
   result = result.replace(/(\/\/.*$)/gm, '<span class="token comment">$1</span>')
 
-  // 字符串
-  // 双引号
+  // String
+  // Double quotes
   result = result.replace(/"(?:[^"\\]|\\.)*"/g, (match) => {
     if (match.includes('<span class="token comment">')) return match
     return `<span class="token string">${match}</span>`
   })
-  // 单引号
+  // Single quote
   result = result.replace(/'(?:[^'\\]|\\.)*'/g, (match) => {
     if (match.includes('<span class="token comment">')) return match
     return `<span class="token string">${match}</span>`
   })
-  // 模板字符串
+  // Template literal
   result = result.replace(/`(?:[^`\\]|\\.)*`/g, (match) => {
     if (match.includes('<span class="token comment">')) return match
     return `<span class="token template-string">${match}</span>`
@@ -330,7 +330,7 @@ function escapeHtml(str: string): string {
     .replace(/>/g, '&gt;')
 }
 
-// 处理输入
+// Handle input
 function handleInput() {
   saveToHistory()
   validateJs()
@@ -339,7 +339,7 @@ function handleInput() {
   emit('change', content.value)
 }
 
-// 保存历史记录
+// Save history record
 function saveToHistory() {
   const currentContent = content.value
   if (historyStack[historyIndex.value] === currentContent) {
@@ -357,7 +357,7 @@ function saveToHistory() {
   historyIndex.value = historyStack.length - 1
 }
 
-// 撤销
+// Undo
 function undo() {
   if (historyIndex.value > 0) {
     historyIndex.value--
@@ -367,7 +367,7 @@ function undo() {
   }
 }
 
-// 重做
+// Redo
 function redo() {
   if (historyIndex.value < historyStack.length - 1) {
     historyIndex.value++
@@ -377,7 +377,7 @@ function redo() {
   }
 }
 
-// 验证 JavaScript 语法
+// Validate JavaScript syntax
 function validateJs(): boolean {
   try {
     new Function(content.value)
@@ -391,58 +391,58 @@ function validateJs(): boolean {
   }
 }
 
-// 快捷键处理
+// Shortcut handling
 function handleKeydown(e: KeyboardEvent) {
-  // Ctrl + Z 撤销
+  // Ctrl + Z undo
   if (e.ctrlKey && e.key === 'z' && !e.shiftKey) {
     e.preventDefault()
     undo()
     return
   }
 
-  // Ctrl + Shift + Z / Ctrl + Y 重做
+  // Ctrl + Shift + Z / Ctrl + Y redo
   if ((e.ctrlKey && e.key === 'y') || (e.ctrlKey && e.shiftKey && e.key === 'z')) {
     e.preventDefault()
     redo()
     return
   }
 
-  // Ctrl + F 搜索
+  // Ctrl + F search
   if (e.ctrlKey && e.key === 'f') {
     e.preventDefault()
     toggleSearch()
     return
   }
 
-  // Ctrl + / 注释
+  // Ctrl + / comment
   if (e.ctrlKey && e.key === '/') {
     e.preventDefault()
     toggleComment()
     return
   }
 
-  // Tab 键 - 缩进
+  // Tab key — indent
   if (e.key === 'Tab' && !e.shiftKey) {
     e.preventDefault()
     insertAtCursor(' '.repeat(indentSize.value))
     return
   }
 
-  // Shift + Tab - 反缩进
+  // Shift + Tab — outdent
   if (e.key === 'Tab' && e.shiftKey) {
     e.preventDefault()
     unindent()
     return
   }
 
-  // Enter 键 - 自动缩进
+  // Enter key — auto-indent
   if (e.key === 'Enter') {
     e.preventDefault()
     handleEnter()
     return
   }
 
-  // 搜索框内处理
+  // Search-box internal handling
   if (showSearch.value) {
     if (e.key === 'Escape') {
       closeSearch()
@@ -450,7 +450,7 @@ function handleKeydown(e: KeyboardEvent) {
   }
 }
 
-// 插入文本
+// Insert text
 function insertAtCursor(text: string) {
   if (!editorTextarea.value) return
 
@@ -469,7 +469,7 @@ function insertAtCursor(text: string) {
   })
 }
 
-// 处理回车缩进
+// Handle Enter indentation
 function handleEnter() {
   if (!editorTextarea.value) return
 
@@ -477,11 +477,11 @@ function handleEnter() {
   const before = content.value.substring(0, textarea.selectionStart)
   const after = content.value.substring(textarea.selectionEnd)
 
-  // 获取当前行的缩进
+  // Get the current line's indentation
   const currentLine = before.split('\n').pop() || ''
   let indent = currentLine.match(/^(\s*)/)?.[1] || ''
 
-  // 如果最后一个字符是 { 或 [，则增加缩进
+  // If the last character is { or [, increase indentation
   const lastChar = before.trim().slice(-1)
   if (lastChar === '{' || lastChar === '[' || lastChar === '(') {
     indent += ' '.repeat(indentSize.value)
@@ -495,7 +495,7 @@ function handleEnter() {
   })
 }
 
-// 反缩进
+// Outdent
 function unindent() {
   if (!editorTextarea.value) return
 
@@ -515,7 +515,7 @@ function unindent() {
   content.value = lines.join('\n')
 }
 
-// 搜索功能
+// Search feature
 function toggleSearch() {
   showSearch.value = !showSearch.value
   if (showSearch.value) {
@@ -595,7 +595,7 @@ function scrollToMatch() {
   const textBefore = content.value.substring(0, match.start)
   const line = textBefore.split('\n').length
 
-  const lineHeight = 19.2 // 根据字体大小计算
+  const lineHeight = 19.2 // Compute by font size
   if (editorBody.value) {
     editorBody.value.scrollTop = Math.max(0, (line - 5) * lineHeight)
   }
@@ -628,7 +628,7 @@ function handleSearchKeydown(e: KeyboardEvent) {
   }
 }
 
-// 滚动同步
+// Scroll sync
 function handleScroll(e: Event) {
   if (!highlightLayer.value || !editorTextarea.value) return
 
@@ -636,7 +636,7 @@ function handleScroll(e: Event) {
   highlightLayer.value.scrollTop = target.scrollTop
   highlightLayer.value.scrollLeft = target.scrollLeft
 
-  // 同步行号
+  // Sync line numbers
   const lineNumbers = editorBody.value?.querySelector('.line-numbers') as HTMLElement
   if (lineNumbers) {
     lineNumbers.scrollTop = target.scrollTop
@@ -645,11 +645,11 @@ function handleScroll(e: Event) {
 
 function updateHighlight() {
   nextTick(() => {
-    // 触发重新计算高亮
+    // Trigger highlight recomputation
   })
 }
 
-// 注释/取消注释
+// Comment/uncomment
 function toggleComment() {
   if (!editorTextarea.value) return
 
@@ -661,7 +661,7 @@ function toggleComment() {
   const selected = content.value.substring(start, end)
   const after = content.value.substring(end)
 
-  // 单行
+  // Single row
   if (!selected) {
     const currentLine = before.split('\n').pop() || ''
     const lineStart = before.length - currentLine.length
@@ -676,7 +676,7 @@ function toggleComment() {
       content.value = content.value.substring(0, lineStart) + newLine + content.value.substring(lineStart + currentLine.length)
     }
   } else {
-    // 多行选择
+    // Multi-line selection
     const lines = selected.split('\n')
     const isAllCommented = lines.every(line => line.trim().startsWith('//'))
 
@@ -695,11 +695,11 @@ function toggleComment() {
   saveToHistory()
 }
 
-// 格式化代码（简单格式化）
+// Format code (simple formatting)
 function formatCode() {
-  // 这里是一个简单的格式化，实际项目可以集成 Prettier 等库
+  // Here is a simple formatting; real projects can integrate libraries like Prettier
   try {
-    // 简单的格式化：去掉行尾空格，统一缩进
+    // Simple formatting: strip trailing spaces, unify indentation
     let formatted = content.value
       .replace(/\s+$/gm, '')
       .replace(/\t/g, ' '.repeat(indentSize.value))
@@ -707,11 +707,11 @@ function formatCode() {
     content.value = formatted
     saveToHistory()
   } catch (e) {
-    // 忽略错误
+    // Ignore errors
   }
 }
 
-// 初始化
+// Initialization
 watch(
   () => props.modelValue,
   (newVal) => {
@@ -938,7 +938,7 @@ onMounted(() => {
   caret-color: var(--text);
 }
 
-/* JavaScript 语法高亮样式 */
+/* JavaScript syntax highlight style */
 .token.comment {
   color: #6a9955;
 }

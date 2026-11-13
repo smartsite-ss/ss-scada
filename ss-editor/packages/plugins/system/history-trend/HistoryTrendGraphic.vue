@@ -10,7 +10,7 @@
       {{ $t('historyTrend.config.unbound') }}
     </div>
     <template v-else>
-      <!-- 查询栏：时间段 + 查询方式，变更后自动查询（无需查询按钮） -->
+      <!-- Query bar: time period + query method; auto-queries on change (no query button needed) -->
       <div class="query-bar">
         <TimeRangePicker
           v-model="runtime.timeRange"
@@ -127,7 +127,7 @@ function toLocalDatetime(d: Date): string {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
-/** 组态时默认时间范围 → 运行态初始 TimeRange */
+/** Default time range at config time → initial TimeRange at runtime */
 function initDefaultRange() {
   const now = new Date();
   const preset = props.defaultPresetRange || '1h';
@@ -210,7 +210,7 @@ onMounted(() => {
   onQuery();
 });
 
-// 绑定变更（增删变量）：重新查询
+// Binding change (add/remove variable): re-query
 watch(
   () => props.tags.map((t) => t.tagId).join('|'),
   () => {

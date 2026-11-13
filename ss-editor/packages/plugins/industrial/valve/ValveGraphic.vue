@@ -5,9 +5,9 @@
     :title="bindTitle"
     style="display:block; overflow:visible;"
   >
-    <!-- 蝶阀 -->
+    <!-- Butterfly valve -->
     <g v-if="valveType === 'butterfly'">
-      <!-- 阀体 -->
+      <!-- Valve body -->
       <rect
         :x="cx - bodyW / 2"
         :y="cy - bodyH / 2"
@@ -16,7 +16,7 @@
         :rx="bodyH * 0.3"
         :fill="bodyColor"
       />
-      <!-- 法兰 -->
+      <!-- Flange -->
       <rect
         :x="cx - bodyW / 2 - flangeW / 3"
         :y="cy - flangeH / 2"
@@ -33,7 +33,7 @@
         :rx="3"
         :fill="flangeColor"
       />
-      <!-- 蝶板 -->
+      <!-- Butterfly plate -->
       <ellipse
         :cx="cx"
         :cy="cy"
@@ -44,7 +44,7 @@
         stroke-width="1.5"
         :transform="`rotate(${discAngle} ${cx} ${cy})`"
       />
-      <!-- 阀杆 -->
+      <!-- Valve stem -->
       <rect
         :x="cx - stemW / 2"
         :y="cy - bodyH / 2 - stemH"
@@ -53,12 +53,12 @@
         :rx="stemW * 0.5"
         :fill="stemColor"
       />
-      <!-- 手轮 -->
+      <!-- Handwheel -->
       <circle :cx="cx" :cy="hwY" :r="hwRadius" fill="none" :stroke="stemColor" stroke-width="2" />
       <line :x1="cx - hwRadius" :y1="hwY" :x2="cx + hwRadius" :y2="hwY" :stroke="stemColor" stroke-width="2" />
     </g>
 
-    <!-- 闸阀 -->
+    <!-- Gate valve -->
     <g v-else>
       <rect
         :x="cx - gateBodyW / 2"
@@ -68,7 +68,7 @@
         :rx="gateBodyH * 0.3"
         :fill="bodyColor"
       />
-      <!-- 闸板（开度随状态） -->
+      <!-- Gate plate (opening varies by state) -->
       <rect
         :x="cx - gateBodyW * 0.4"
         :y="cy - gateBodyH * 0.5"
@@ -87,7 +87,7 @@
       <circle :cx="cx" :cy="gateHwY" :r="hwRadius" fill="none" :stroke="stemColor" stroke-width="2" />
     </g>
 
-    <!-- 标签 -->
+    <!-- Tag -->
     <text
       v-if="showLabel"
       :x="cx"
@@ -131,7 +131,7 @@ const props = defineProps<{
 
 const { currentValue, bindTitle } = useTagValue(props);
 
-/** 解析实时值 → 状态：未绑定时用手动 status；绑定时按「值→状态」映射，未命中用 defaultStatus */
+/** Parse live value → status: manual status when unbound; when bound, use the value→status mapping, falling back to defaultStatus on miss */
 const effectiveStatus = computed(() => {
   if (!props.tagId) return props.status;
   const raw = currentValue.value;

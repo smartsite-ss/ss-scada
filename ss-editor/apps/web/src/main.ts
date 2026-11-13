@@ -19,29 +19,29 @@ const app = createApp(App);
 const pinia = createPinia();
 
 app.use(pinia);
-// core 导出的 i18n 为规避 TS2589 收窄了类型（见 locales 门面），运行时仍是真实 vue-i18n 实例
+//The i18n exported by core narrows the type to avoid TS2589 (see locales facade). It is still a real vue-i18n instance at runtime.
 app.use(i18n as unknown as Parameters<typeof app.use>[0]);
 app.directive('permission', vPermission);
 
-// ── 数据源统一调度：注册驱动工厂到 DataSourceManager ──
-// tag/websocket → WebSocketDriver；sql → SqlQueryDriver；api/polling/static/expression 已由 DriverRegistry 内置注册
+//── Unified Scheduling of Data Sources: Registering the Driver Factory with DataSourceManager ──
+//tag/websocket → WebSocketDriver; sql → SqlQueryDriver; api/polling/static/expression has been registered internally in DriverRegistry
 ScadaDataManager.init({
   tag: () => new WebSocketDriver(),
   websocket: () => new WebSocketDriver(),
   sql: () => new SqlQueryDriver(),
 });
 
-// ── 数据源统一调度：BindingManager 接入 EventBus ──
+//── Unified Scheduling of Data Sources: BindingManager Integration with EventBus ──
 BindingManager.setEventBus(ScadaDataManager.eventBus);
 
-// 注入标签订阅处理器，解耦 core 与 system 的循环依赖
+//Inject tag subscription handler to decouple the circular dependency between core and system
 const wsStore = useWsStore();
 BindingManager.setTagHandler({
   subscribeTags: (tagIds: string[]) => wsStore.subscribeTags(tagIds),
   unsubscribeTags: (tagIds: string[]) => wsStore.unsubscribeTags(tagIds),
 });
 
-// 注入 GraphicStore 访问器，解耦 BindingManager 与 graphic.store 的循环依赖
+//Inject the GraphicStore accessor to decouple the circular dependency between BindingManager and graphic.store
 const graphicStore = useGraphicStore();
 BindingManager.setGraphicStore({
   applyProperty: (graphicId: string, propertyPath: string, value: any) =>
@@ -87,25 +87,25 @@ router.beforeEach(async (to, _from, next) => {
   next();
 });
 
-// 调试模式：仅在 VITE_DEBUG_SKIP_AUTH=true 时跳过认证
-// ⚠️  debug-mock-token 仅在后端 NODE_ENV !== 'production' 时被识别（参见 jwt-auth.guard.ts isDevMode()）
-//     生产构建绝不可使 VITE_DEBUG_SKIP_AUTH 为 true，否则前端跳过登录但后端拒绝 mock token → 所有 API 401
-//     开发模式下此环境变量定义在 .env.development（--mode development 加载）
+//Debug Mode: Skip authentication only when VITE_DEBUG_SKIP_AUTH=true
+//⚠️  debug-mock-token is only recognized in the backend NODE_ENV !== 'production' (see jwt-auth.guard.ts isDevMode())
+//The production build must never set VITE_DEBUG_SKIP_AUTH to true, otherwise the front end will skip login but the back end will reject the mock token → all APIs will return 401.
+//In development mode, this environment variable is defined in .env.development (--mode development loaded)
 const debugSkipAuth = import.meta.env.VITE_DEBUG_SKIP_AUTH === 'true';
 if (debugSkipAuth) {
   setDebugSkipAuth(true);
 
-  // S-C03: debug 模式下 token 仅存内存（与 HttpOnly Cookie 模式保持一致）
-  // 不再写入 localStorage，避免 XSS 风险与状态不一致
-  // initDebugSession 内部会调用 setToken(debugToken) 写入内存，并填充 user 使菜单过滤生效
+  //S-C03: In debug mode, the token is only stored in memory (consistent with the HttpOnly Cookie mode)
+  //No longer writes to localStorage to avoid XSS risks and state inconsistencies
+  //initDebugSession internally calls setToken(debugToken) to write to memory and populate user to enable menu filtering.
   const authStore = useAuthStore();
   authStore.initDebugSession();
 }
 
-// 使用 Editor 路由
+//Use Editor Routing
 app.use(router);
 
-// 确保主题被应用到 DOM
+//Ensure that the theme is applied to the DOM
 themeManager.applyThemeToDOM();
 
 app.mount('#app');

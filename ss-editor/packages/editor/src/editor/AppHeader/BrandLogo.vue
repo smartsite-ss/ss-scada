@@ -12,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-// 品牌/Logo区组件 — 使用纯图标 + 独立文字，避免全尺寸 logo 在小空间内不可读
+// Brand/Logo area component — uses a plain icon + separate text to avoid an oversized logo being unreadable in small spaces
 import logoUrl from '../../assets/logo.svg';
 </script>
 

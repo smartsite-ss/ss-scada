@@ -1,6 +1,6 @@
 <template>
   <div class="realtime-alarm-view">
-    <!-- 统一工具栏 -->
+    <!-- Unified toolbar -->
     <div class="unified-toolbar">
       <div class="toolbar-left">
         <h1 class="toolbar-title">
@@ -116,7 +116,7 @@
     </div>
 
     <template v-else>
-      <!-- 批量操作工具栏 -->
+      <!-- Batch-action toolbar -->
       <div
         v-if="selectedIds.size > 0"
         class="batch-bar"
@@ -142,7 +142,7 @@
         </button>
       </div>
 
-      <!-- 实时告警列表 -->
+      <!-- Live alarm list -->
       <div class="records-table-wrapper">
         <table class="records-table">
           <thead>
@@ -283,7 +283,7 @@
       </div>
     </template>
 
-    <!-- 告警数据弹窗 -->
+    <!-- Alarm data dialog -->
     <AlarmDataDialog
       v-model:visible="alarmDialogVisible"
       :alarm-time="alarmDialogRecord?.createdAt || ''"
@@ -329,17 +329,17 @@ const { t } = useI18n();
 const selectedProjectId = ref('');
 const selectedIds = ref<Set<string>>(new Set());
 
-/** P1-5 混合模式：HTTP 初次全量加载 + WebSocket 增量状态更新
- *  自动刷新间隔从 10s 延长到 60s（降级为兜底），减轻后端压力 */
+/** P1-5 hybrid mode: HTTP initial full load + WebSocket incremental state update
+ * Auto-refresh interval extended from 10s to 60s (degraded fallback) to reduce backend pressure */
 const autoRefresh = ref(true);
 const AUTO_REFRESH_INTERVAL_MS = 60000;
 let refreshTimer: ReturnType<typeof setInterval> | null = null;
 
-// 告警数据弹窗
+// Alarm data dialog
 const alarmDialogVisible = ref(false);
 const alarmDialogRecord = ref<any>(null);
 
-// 字典选项（告警类型）
+// Dictionary options (alarm type)
 const alarmTypeOptions = ref<DictItem[]>([]);
 
 async function loadDicts() {
@@ -347,7 +347,7 @@ async function loadDicts() {
     const typeRes = await dictApi.getDict('alarmType');
     alarmTypeOptions.value = typeRes.data?.items ?? [];
   } catch {
-    // 字典加载失败不阻塞主流程
+    // Dictionary load failure does not block the main flow
   }
 }
 
@@ -356,16 +356,16 @@ function dictLabel(options: DictItem[], value?: string): string {
   return options.find((o) => o.value === value)?.label ?? value;
 }
 
-// 简化筛选（实时告警均未闭环，无需 status/日期范围）
+// Simplify filtering (live alarms are all open; no status/date-range needed)
 const filters = reactive({
   level: '',
   keyword: '',
 });
 
-// 前端本地过滤兜底（后端已按 isActive 过滤）
+// Frontend local filter fallback (backend already filters by isActive)
 const filteredRecords = computed(() => store.records);
 
-// 分页状态（客户端分页）
+// Pagination state (client-side pagination)
 const currentPage = ref(1);
 const pageSize = ref(20);
 const pageSizes = [10, 20, 50, 100];
@@ -397,7 +397,7 @@ function buildFilterParams() {
   return params;
 }
 
-// 全选状态
+// Select-all state
 const isAllSelected = computed(() => filteredRecords.value.length > 0 && filteredRecords.value.every((r) => selectedIds.value.has(r.id)));
 const isIndeterminate = computed(() => {
   const count = filteredRecords.value.filter((r) => selectedIds.value.has(r.id)).length;
@@ -460,7 +460,7 @@ async function handleAcknowledge(recordId: string) {
   if (!selectedProjectId.value) return;
   try {
     await store.acknowledgeAlarm(selectedProjectId.value, recordId);
-    // 确认后该条仍为 isActive=true（acknowledged 也算未闭环），保留在列表
+    // After acknowledgement it remains isActive=true (acknowledged also counts as not closed) and stays in the list
   } catch { /* ignore */ }
 }
 
@@ -468,7 +468,7 @@ async function handleClear(recordId: string) {
   if (!selectedProjectId.value) return;
   try {
     await store.clearAlarm(selectedProjectId.value, recordId);
-    // 清除后 isActive=false，从实时列表移除
+    // After clearing, isActive=false; remove from the live list
     removeRecordFromList(recordId);
   } catch { /* ignore */ }
 }
@@ -491,14 +491,14 @@ async function handleBatchClear() {
   try {
     const ids = [...selectedIds.value];
     await store.batchClearAlarms(selectedProjectId.value, ids);
-    // 清除后批量从实时列表移除
+    // After clearing, batch-remove from the live list
     const next = store.records.filter((r) => !ids.includes(r.id));
     store.records.splice(0, store.records.length, ...next);
     clearSelection();
   } catch { /* ignore */ }
 }
 
-/** 从实时列表移除单条（清除后 isActive=false） */
+/** Remove a single entry from the live list (isActive=false after clearing) */
 function removeRecordFromList(recordId: string) {
   const idx = store.records.findIndex((r) => r.id === recordId);
   if (idx !== -1) store.records.splice(idx, 1);
@@ -561,20 +561,20 @@ onMounted(async () => {
   await fetchData();
   startAutoRefresh();
 
-  // P1-5: WebSocket 实时监听 — 当 activeAlarms 变化时同步更新本地 records
-  // 告警被恢复(cleared)时立即从实时列表移除，不等 60s HTTP 刷新
+  // P1-5: WebSocket live listening — sync local records when activeAlarms changes
+  // When an alarm is cleared, remove it from the live list immediately instead of waiting for the 60s HTTP refresh
   watch(
     () => wsStore.activeAlarms,
     (alarmsMap) => {
       if (!alarmsMap || alarmsMap.size === 0) return;
       let hasChanges = false;
-      // 过滤掉已恢复(cleared)的告警，同步状态变更
+      // Filter out recovered (cleared) alarms and sync status changes
       const updatedRecords = store.records
         .filter((r) => {
           const wsAlarm = alarmsMap.get(r.id);
           if (wsAlarm && wsAlarm.state === 'cleared') {
             hasChanges = true;
-            return false; // 已恢复，从实时列表移除
+            return false; // Recovered; removed from the live list
           }
           return true;
         })
@@ -613,7 +613,7 @@ onUnmounted(() => {
   padding: 16px;
 }
 
-/* ===== 统一工具栏 ===== */
+/* ===== Unified toolbar ===== */
 .unified-toolbar {
   display: flex;
   align-items: center;
@@ -720,7 +720,7 @@ onUnmounted(() => {
   cursor: pointer;
 }
 
-/* ===== 批量操作栏 ===== */
+/* ===== Batch action bar ===== */
 .batch-bar {
   display: flex;
   align-items: center;
@@ -739,7 +739,7 @@ onUnmounted(() => {
   margin-right: auto;
 }
 
-/* ===== 表格 ===== */
+/* ===== Table ===== */
 .records-table-wrapper {
   flex: 1;
   min-height: 0;
@@ -842,7 +842,7 @@ onUnmounted(() => {
 .status-cleared { background: color-mix(in srgb, var(--status-success) 15%, transparent); color: var(--status-success); }
 .status-shelved { background: var(--border); color: var(--text-secondary); }
 
-/* ===== 按钮 ===== */
+/* ===== Button ===== */
 .row-actions {
   display: flex;
   gap: 4px;

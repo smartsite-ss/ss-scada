@@ -48,7 +48,7 @@
 </template>
 
 <script setup lang="ts">
-// EventPanelIcon 组件
+// EventPanelIcon component
 </script>
 
 <style scoped>

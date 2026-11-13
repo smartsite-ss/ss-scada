@@ -79,7 +79,7 @@
       </SmartTable>
     </div>
 
-    <!-- 对话框 -->
+    <!-- Dialog -->
     <div
       v-if="dialogVisible"
       class="modal-overlay"

@@ -1,6 +1,6 @@
 <template>
   <div class="operation-log-page">
-    <!-- 统一工具栏 -->
+    <!-- Unified toolbar -->
     <div class="toolbar">
       <h1 class="page-title">
         {{ $t('system.operationLogs.title') }}
@@ -94,7 +94,7 @@
       </div>
     </div>
 
-    <!-- 表格 -->
+    <!-- Table -->
     <SmartTable
       table-id="operation-logs"
       :data="logs"
@@ -140,7 +140,7 @@
       </template>
     </SmartTable>
 
-    <!-- 行点击提示 -->
+    <!-- Row-click hint -->
     <div
       v-if="logs.length > 0 && !selectedLog"
       class="click-hint"
@@ -148,7 +148,7 @@
       {{ $t('system.operationLogs.clickToView') }}
     </div>
 
-    <!-- 请求详情面板 -->
+    <!-- Request detail panel -->
     <div
       v-if="selectedLog"
       class="detail-panel"
@@ -227,7 +227,7 @@
       </div>
     </div>
 
-    <!-- 清理过期日志对话框 -->
+    <!-- Cleanup-expired-log dialog -->
     <div
       v-if="showCleanExpiredDialog"
       class="modal-overlay"
@@ -302,35 +302,35 @@ const filters = reactive({
   dateRange: { start: '', end: '' } as TimeRange,
 });
 
-// 清理过期日志对话框状态
+// Cleanup-expired-log dialog state
 const showCleanExpiredDialog = ref(false);
 const cleanDays = ref(30);
 const cleaning = ref(false);
 
-// 选中行详情
+// Selected row details
 const selectedLog = ref<OperationLog | null>(null);
 
 function handleRowClick(row: OperationLog) {
   selectedLog.value = selectedLog.value?.id === row.id ? null : row;
 }
 
-/** 从 action 字段提取 HTTP 方法（action 格式："GET /api/v1/projects"） */
+/** Extract the HTTP method from the action field (action format: "GET /api/v1/projects") */
 function getMethod(action: string): string {
   if (!action) return '-';
   return action.split(' ')[0] || '-';
 }
 
-/** 从 action 字段提取 URL 路径 */
+/** Extract the URL path from the action field */
 function getUrl(action: string): string {
   if (!action) return '';
   const idx = action.indexOf(' ');
   return idx >= 0 ? action.substring(idx + 1) : action;
 }
 
-/** 从 details 字段提取耗时信息（格式："Duration: 0ms" 或 "error msg (10ms)"） */
+/** Extract duration info from the details field (format: "Duration: 0ms" or "error msg (10ms)") */
 function formatDuration(details?: string): string {
   if (!details) return '-';
-  // 匹配 "Duration: Xms" 或 "(Xms)"
+  // Match "Duration: Xms" or "(Xms)"
   const match1 = details.match(/Duration:\s*(\d+ms)/);
   if (match1) return match1[1];
   const match2 = details.match(/\((\d+ms)\)/);
@@ -338,17 +338,17 @@ function formatDuration(details?: string): string {
   return details;
 }
 
-/** 从 details 字段提取请求体（格式：'{"key":"val"} | Duration: 5ms' 或 'Error: xxx'） */
+/** Extract the request body from the details field (format: '{"key":"val"} | Duration: 5ms' or 'Error: xxx') */
 function extractBody(log: OperationLog): string | null {
   if (!log.details) return null;
-  // 去除后缀的 Duration / Error 信息
+  // Strip the Duration / Error suffix info
   let body = log.details
     .replace(/\s*\|\s*Duration:\s*\d+ms$/, '')
     .replace(/\s*\|\s*Error:.*$/, '')
     .replace(/^Error:\s*/, '')
     .trim();
   if (!body || body.startsWith('Duration:')) return null;
-  // 尝试格式化 JSON
+  // Try to format JSON
   try {
     const parsed = JSON.parse(body);
     return JSON.stringify(parsed, null, 2);
@@ -433,7 +433,7 @@ async function loadData(p: number) {
     logs.value = data.items || [];
     total.value = data.total || 0;
   } catch {
-    // 静默失败
+    // Fail silently
   } finally {
     loading.value = false;
   }
@@ -489,7 +489,7 @@ onMounted(() => {
   overflow-y: auto;
 }
 
-/* ===== 统一工具栏 ===== */
+/* ===== Unified toolbar ===== */
 .toolbar {
   display: flex;
   align-items: center;
@@ -539,7 +539,7 @@ onMounted(() => {
   width: 160px;
 }
 
-/* 表格单元格 */
+/* Table cell */
 .action-cell {
   display: flex;
   align-items: center;
@@ -605,7 +605,7 @@ onMounted(() => {
   color: var(--text-secondary);
 }
 
-/* 按钮（与项目其它页面一致的 sys-btn 样式） */
+/* Button (sys-btn style consistent with other project pages) */
 .sys-btn {
   display: inline-flex;
   align-items: center;
@@ -659,7 +659,7 @@ onMounted(() => {
   cursor: not-allowed;
 }
 
-/* 模态框 */
+/* Modal */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -740,7 +740,7 @@ onMounted(() => {
   border-top: 1px solid var(--border);
 }
 
-/* 行点击提示 */
+/* Row-click hint */
 .click-hint {
   text-align: center;
   font-size: 12px;
@@ -749,7 +749,7 @@ onMounted(() => {
   opacity: 0.7;
 }
 
-/* 详情面板 */
+/* Detail panel */
 .detail-panel {
   margin-top: 16px;
   border: 1px solid var(--border);

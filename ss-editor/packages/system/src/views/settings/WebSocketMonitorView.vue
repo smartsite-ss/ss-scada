@@ -1,6 +1,6 @@
 <template>
   <div class="ws-monitor-page">
-    <!-- 页面头部 -->
+    <!-- Page header -->
     <div class="page-header">
       <h1 class="page-title">
         {{ $t('system.websocket.title') }}
@@ -43,7 +43,7 @@
       </div>
     </div>
 
-    <!-- WebSocket 状态指示器 -->
+    <!-- WebSocket status indicator -->
     <div class="status-indicator-section">
       <div class="status-card">
         <div class="status-header">
@@ -181,7 +181,7 @@
       </div>
     </div>
 
-    <!-- 数据为0时的提示 -->
+    <!-- Hint when data is all 0 -->
     <div
       v-if="showZeroDataHint"
       class="zero-data-hint"
@@ -234,7 +234,7 @@
       </div>
     </div>
 
-    <!-- 概览卡片 -->
+    <!-- Overview card -->
     <div class="overview-grid">
       <div class="stat-card">
         <div class="stat-label">
@@ -282,7 +282,7 @@
       </div>
     </div>
 
-    <!-- 连接限制配置 -->
+    <!-- Connection limit config -->
     <div class="section-card">
       <div class="section-header">
         <h2 class="section-title">
@@ -336,7 +336,7 @@
       </div>
     </div>
 
-    <!-- 连接列表 -->
+    <!-- Connection list -->
     <div class="section-card">
       <div class="section-header">
         <h2 class="section-title">
@@ -428,7 +428,7 @@
       </div>
     </div>
 
-    <!-- 消息速率 -->
+    <!-- Message rate -->
     <div class="section-card">
       <div class="section-header">
         <h2 class="section-title">
@@ -478,7 +478,7 @@
       </div>
     </div>
 
-    <!-- 连接时长分布 -->
+    <!-- Connection duration distribution -->
     <div class="section-card">
       <div class="section-header">
         <h2 class="section-title">
@@ -552,7 +552,7 @@
       </div>
     </div>
 
-    <!-- 异常连接 -->
+    <!-- Abnormal connection -->
     <div
       v-if="overview?.monitor?.abnormalConnections?.length"
       class="section-card alert-section"
@@ -574,7 +574,7 @@
       </div>
     </div>
 
-    <!-- 诊断信息 -->
+    <!-- Diagnostics info -->
     <div class="section-card">
       <div class="section-header">
         <h2 class="section-title">
@@ -684,9 +684,9 @@ const diagnosticExpanded = ref(false);
 const autoRefresh = ref(false);
 const disconnectLoading = reactive<Record<string, boolean>>({});
 
-// WebSocket 状态相关
+// WebSocket status related
 const backendStatus = ref<'online' | 'offline' | 'unknown'>('unknown');
-// 客户端状态直接读取全局 wsStore（真实连接来源），不再依赖 window 全局标记
+// The client status reads the global wsStore directly (the real connection source) instead of relying on a window global flag
 const clientConnected = computed(() => wsStore.isConnected);
 const clientSocketId = computed<string | null>(() => wsStore.socketId);
 const subscribedRooms = computed<string[]>(() => {
@@ -709,7 +709,7 @@ const paginatedConnections = computed(() => {
   return connectionsData.connections.slice(start, start + pageSize);
 });
 
-// ==================== WebSocket 状态计算属性 ====================
+// ==================== WebSocket status computed property ====================
 const backendStatusClass = computed(() => {
   if (backendStatus.value === 'online') return 'status-online';
   if (backendStatus.value === 'offline') return 'status-offline';
@@ -744,19 +744,19 @@ const dataFlowText = computed(() => {
 });
 
 const showZeroDataHint = computed(() => {
-  // 当数据全为0且服务状态已知时显示提示
+  // Show a hint when all data is 0 and the service status is known
   const allZero = (overview.value?.gateway?.totalConnections ?? 0) === 0 &&
                   (overview.value?.metrics?.totalBroadcasts ?? 0) === 0;
   return allZero && backendStatus.value !== 'unknown';
 });
 
-// ==================== 数据加载 ====================
+// ==================== Data loading ====================
 async function loadOverview() {
   try {
     const res = await websocketApi.getOverview();
     const data = (res as any).data || (res as any);
     overview.value = data;
-    backendStatus.value = 'online'; // API 成功响应说明后端服务运行正常
+    backendStatus.value = 'online'; // A successful API response indicates the backend service is running normally
   } catch (err: any) {
     backendStatus.value = 'offline';
     if (!err._errorHandled) {
@@ -789,7 +789,7 @@ async function loadConfig() {
       configForm.idleTimeoutMinutes = data.idleTimeoutMinutes ?? 30;
     }
   } catch (err: any) {
-    // 配置加载失败时使用默认值，不弹窗打扰
+    // Use defaults on config load failure without a popup
     if (import.meta.env.DEV) console.warn('Failed to load WS config:', err);
   }
 }
@@ -810,7 +810,7 @@ async function loadData() {
   loading.value = false;
 }
 
-// ==================== 操作处理 ====================
+// ==================== Operation handling ====================
 async function handleSaveConfig() {
   configSaving.value = true;
   try {
@@ -877,7 +877,7 @@ function toggleAutoRefresh() {
   }
 }
 
-// ==================== 工具函数 ====================
+// ==================== Utility functions ====================
 function formatTime(ts: number | string): string {
   if (!ts) return '-';
   try {
@@ -917,22 +917,22 @@ function rateBadgeClass(rate: number): string {
   return 'rate-low';
 }
 
-// ==================== 生命周期 ====================
+// ==================== Lifecycle ====================
 /**
- * 建立客户端 WebSocket 连接以真实检测前后端 WS 连通性。
- * wsStore 为全局单例，设备监控等视图复用同一连接；此处仅在未连接时发起连接，
- * 不在卸载时断开，以免影响其他正在使用连接的视图。
+ * Establish a client WebSocket connection to genuinely detect frontend-backend WS connectivity.
+ * wsStore is a global singleton; views like device monitoring reuse the same connection. We only connect when not already connected,
+ * and do not disconnect on unmount, to avoid affecting other views using the connection.
  */
 function connectClient() {
   if (wsStore.isConnected || wsStore.connectionStatus === 'connecting') return;
-  // 优先订阅当前选中项目，无项目则传空串仅建立 socket 连接用于连通性检测
+  // Prefer subscribing to the currently selected project; with no project, pass an empty string to just open the socket for connectivity detection
   const projectId = projectStore.projects[0]?.projectId || '';
   wsStore.connect(projectId);
 }
 
 onMounted(async () => {
   loadData();
-  // 确保项目列表已加载，以便建立带项目订阅的 WS 连接
+  // Ensure the project list is loaded so a WS connection with project subscription can be established
   if (!projectStore.projects.length) {
     await projectStore.fetchProjects().catch(() => {});
   }
@@ -946,7 +946,7 @@ onUnmounted(() => {
   }
 });
 
-// keep-alive 缓存：离开页面时停止刷新，返回时恢复
+// keep-alive cache: stop refresh when leaving the page, resume on return
 const wasAutoRefreshOn = ref(false);
 
 onDeactivated(() => {
@@ -1010,7 +1010,7 @@ onActivated(() => {
   cursor: pointer;
 }
 
-/* WebSocket 状态指示器 */
+/* WebSocket status indicator */
 .status-indicator-section {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -1087,7 +1087,7 @@ onActivated(() => {
   margin-top: 4px;
 }
 
-/* 数据为0时的提示 */
+/* Hint when data is all 0 */
 .zero-data-hint {
   display: flex;
   gap: 16px;
@@ -1133,7 +1133,7 @@ onActivated(() => {
   color: var(--status-success);
 }
 
-/* 概览卡片 */
+/* Overview card */
 .overview-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -1174,7 +1174,7 @@ onActivated(() => {
   margin-top: 6px;
 }
 
-/* 通用区块卡片 */
+/* Generic section card */
 .section-card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -1206,7 +1206,7 @@ onActivated(() => {
   border-radius: 10px;
 }
 
-/* 配置表单 */
+/* Config form */
 .config-form {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -1241,7 +1241,7 @@ onActivated(() => {
   border-color: var(--primary);
 }
 
-/* 数据表格 */
+/* Data table */
 .table-wrapper {
   overflow-x: auto;
 }
@@ -1281,7 +1281,7 @@ onActivated(() => {
   font-size: 12px;
 }
 
-/* 分页 */
+/* Pagination */
 .pagination {
   display: flex;
   align-items: center;
@@ -1296,7 +1296,7 @@ onActivated(() => {
   color: var(--text-secondary);
 }
 
-/* 速率徽章 */
+/* Rate badge */
 .rate-badge {
   display: inline-block;
   padding: 2px 10px;
@@ -1321,7 +1321,7 @@ onActivated(() => {
   color: var(--status-success);
 }
 
-/* 时长分布 */
+/* Duration distribution */
 .duration-stats {
   padding: 18px;
 }
@@ -1374,7 +1374,7 @@ onActivated(() => {
   color: var(--text-secondary);
 }
 
-/* 异常连接 */
+/* Abnormal connection */
 .alert-section {
   border-left: 3px solid var(--status-error);
 }
@@ -1406,7 +1406,7 @@ onActivated(() => {
   border: 1px solid color-mix(in srgb, var(--status-error) 20%, transparent);
 }
 
-/* 诊断信息 */
+/* Diagnostics info */
 .diagnostic-content {
   padding: 18px;
 }
@@ -1446,7 +1446,7 @@ onActivated(() => {
   line-height: 1.5;
 }
 
-/* 通用按钮样式 */
+/* Generic button style */
 .sys-btn {
   padding: 5px 12px;
   border-radius: 4px;
@@ -1514,7 +1514,7 @@ onActivated(() => {
   color: var(--text);
 }
 
-/* 状态提示 */
+/* Status hint */
 .loading-state {
   text-align: center;
   padding: 40px;

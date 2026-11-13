@@ -1,6 +1,6 @@
 <template>
   <div class="script-knowledge-panel">
-    <!-- 头部：标题 + 搜索 + 刷新 -->
+    <!-- Header: title + search + refresh -->
     <div class="kb-header">
       <div class="kb-header-top">
         <span class="kb-title">📚 脚本知识库</span>
@@ -22,7 +22,7 @@
         class="kb-search"
         placeholder="搜索示例..."
       >
-      <!-- 版本信息 -->
+      <!-- Version info -->
       <div class="kb-version-bar">
         <span class="kb-version-text">
           版本: {{ kbVersion }}
@@ -42,7 +42,7 @@
       </div>
     </div>
 
-    <!-- 分类标签 -->
+    <!-- Category label -->
     <div
       v-if="!searchText && categories.length > 0"
       class="kb-tabs"
@@ -60,7 +60,7 @@
       </button>
     </div>
 
-    <!-- 示例列表 -->
+    <!-- Example list -->
     <div class="kb-list">
       <div
         v-for="example in filteredExamples"
@@ -68,7 +68,7 @@
         class="kb-item"
         :class="{ 'kb-item--expanded': expandedId === example.id }"
       >
-        <!-- 示例标题行 -->
+        <!-- Example title row -->
         <div
           class="kb-item-header"
           @click="toggleExpand(example.id)"
@@ -97,7 +97,7 @@
           </div>
         </div>
 
-        <!-- 展开内容：代码预览 + 插入按钮 -->
+        <!-- Expanded content: code preview + insert button -->
         <div
           v-if="expandedId === example.id"
           class="kb-item-body"
@@ -114,7 +114,7 @@
         </div>
       </div>
 
-      <!-- 空状态：加载中 -->
+      <!-- Empty state: loading -->
       <div
         v-if="isLoading"
         class="kb-empty"
@@ -122,7 +122,7 @@
         加载中...
       </div>
 
-      <!-- 空状态：无结果 -->
+      <!-- Empty state: no result -->
       <div
         v-if="!isLoading && filteredExamples.length === 0 && isLoaded"
         class="kb-empty"
@@ -130,7 +130,7 @@
         {{ searchText ? '无匹配结果' : '暂无示例' }}
       </div>
 
-      <!-- 空状态：未加载 -->
+      <!-- Empty state: not loaded -->
       <div
         v-if="!isLoading && !isLoaded"
         class="kb-empty"
@@ -167,23 +167,23 @@ const {
   refreshKb,
 } = useKnowledgeBase();
 
-// 本地状态
+// Local state
 const searchText = ref('');
 const activeCategory = ref('');
 const expandedId = ref<string | null>(null);
 const isLoading = ref(false);
 
-// 初始化加载
+// Initial load
 onMounted(async () => {
   isLoading.value = true;
   await loadKb();
   isLoading.value = false;
 });
 
-// 分类列表
+// Category list
 const categories = computed(() => examples.value);
 
-// 过滤后的示例
+// Filtered examples
 const filteredExamples = computed(() => {
   if (searchText.value) {
     const lower = searchText.value.toLowerCase();
@@ -204,7 +204,7 @@ const filteredExamples = computed(() => {
   return allExamples.value;
 });
 
-// 难度标签
+// Difficulty label
 function difficultyLabel(difficulty: string): string {
   const labels: Record<string, string> = {
     easy: '入门',
@@ -214,7 +214,7 @@ function difficultyLabel(difficulty: string): string {
   return labels[difficulty] || difficulty;
 }
 
-// 触发方式标签
+// Trigger-type label
 function triggerLabel(triggerType: string): string {
   const labels: Record<string, string> = {
     dataChange: '数据变化',
@@ -226,17 +226,17 @@ function triggerLabel(triggerType: string): string {
   return labels[triggerType] || triggerType;
 }
 
-// 展开/收起
+// Expand/collapse
 function toggleExpand(id: string) {
   expandedId.value = expandedId.value === id ? null : id;
 }
 
-// 插入示例代码
+// Insert example code
 function insertExample(code: string) {
   emit('insertSnippet', code);
 }
 
-// 刷新知识库
+// Refresh the knowledge base
 async function handleRefresh() {
   isLoading.value = true;
   await refreshKb();
@@ -256,7 +256,7 @@ async function handleRefresh() {
   flex-direction: column;
 }
 
-/* ── 头部 ── */
+/* ── Header ── */
 .kb-header {
   padding: 8px 12px;
   background: #0f172a;
@@ -315,7 +315,7 @@ async function handleRefresh() {
   border-color: #3b82f6;
 }
 
-/* ── 版本条 ── */
+/* ── Version bar ── */
 .kb-version-bar {
   font-size: 11px;
   color: #64748b;
@@ -345,7 +345,7 @@ async function handleRefresh() {
   margin-left: 4px;
 }
 
-/* ── 分类标签 ── */
+/* ── Category label ── */
 .kb-tabs {
   display: flex;
   flex-wrap: wrap;
@@ -382,7 +382,7 @@ async function handleRefresh() {
   margin-left: 2px;
 }
 
-/* ── 示例列表 ── */
+/* ── Example list ── */
 .kb-list {
   flex: 1;
   overflow-y: auto;
@@ -464,7 +464,7 @@ async function handleRefresh() {
   line-height: 1.4;
 }
 
-/* ── 展开内容 ── */
+/* ── Expanded content ── */
 .kb-item-body {
   border-top: 1px solid #334155;
   padding: 8px 10px;
@@ -502,7 +502,7 @@ async function handleRefresh() {
   background: #059669;
 }
 
-/* ── 空状态 ── */
+/* ── Empty state ── */
 .kb-empty {
   color: #64748b;
   text-align: center;

@@ -1,6 +1,6 @@
 <template>
   <div class="interface-tab">
-    <!-- 缓存管理（置顶） -->
+    <!-- Cache management (pinned top) -->
     <div class="setting-group">
       <div class="group-title">
         <span class="group-icon">🗑️</span>
@@ -19,7 +19,7 @@
       </button>
     </div>
 
-    <!-- 主题设置 -->
+    <!-- Theme settings -->
     <div class="setting-group">
       <div class="group-title">
         <span class="group-icon">🎨</span>
@@ -49,7 +49,7 @@
       </div>
     </div>
 
-    <!-- 语言设置 -->
+    <!-- Language settings -->
     <div class="setting-group">
       <div class="group-title">
         <span class="group-icon">🌐</span>
@@ -73,7 +73,7 @@
       </div>
     </div>
 
-    <!-- 显示设置 -->
+    <!-- Display settings -->
     <div class="setting-group">
       <div class="group-title">
         <span class="group-icon">👁️</span>
@@ -128,7 +128,7 @@
         </label>
       </div>
     </div>
-    <!-- 定时保存设置 -->
+    <!-- Periodic save settings -->
     <div class="setting-group">
       <div class="group-title">
         <span class="group-icon">💾</span>
@@ -180,35 +180,35 @@ const configStore = useConfigStore();
 const { switchTheme: useThemeSwitch } = useTheme();
 const { t } = i18n.global;
 
-// 主题
+// Theme
 const selectedTheme = ref('dark');
 
-// 语言
+// Language
 type LocaleType = 'zh-CN' | 'en-US';
 const selectedLanguage = ref<LocaleType>('zh-CN');
 
-// 显示设置
+// Display settings
 const showRulers = ref(true);
 const showToolbar = ref(true);
 const showPropertyPanel = ref(true);
 const showLayerPanel = ref(true);
 
-// 自动保存设置
+// Auto-save settings
 const autoSaveEnabled = ref(true);
 const autoSaveInterval = ref(300);
 
-// 初始化
+// Initialization
 onMounted(() => {
-  // 恢复保存的主题
+  // Restore the saved theme
   if (configStore.ui?.theme) {
     selectedTheme.value = configStore.ui.theme;
   }
-  // 恢复保存的语言，并应用到 i18n 实例
+  // Restore the saved language and apply it to the i18n instance
   if (configStore.ui?.language) {
     selectedLanguage.value = configStore.ui.language as LocaleType;
     setLocale(configStore.ui.language as LocaleType);
   }
-  // 恢复画布设置
+  // Restore canvas settings
   if (configStore.canvas?.showRulers) {
     showRulers.value = configStore.canvas.showRulers;
   }
@@ -221,7 +221,7 @@ onMounted(() => {
   if (configStore.ui?.showLayerPanel) {
     showLayerPanel.value = configStore.ui.showLayerPanel;
   }
-  // 恢复自动保存配置
+  // Restore auto-save config
   if (configStore.autoSave?.enabled !== undefined) {
     autoSaveEnabled.value = configStore.autoSave.enabled;
   }
@@ -230,7 +230,7 @@ onMounted(() => {
   }
 });
 
-// 监听 configStore 中的语言变化（防止异步加载导致遗漏）
+// Watch the language change in configStore (to avoid missing it due to async loading)
 watch(() => configStore.ui?.language, (newLang) => {
   if (newLang && newLang !== getLocale()) {
     selectedLanguage.value = newLang as LocaleType;
@@ -238,51 +238,51 @@ watch(() => configStore.ui?.language, (newLang) => {
   }
 });
 
-// 主题变化
+// Theme change
 const handleThemeChange = () => {
   useThemeSwitch(selectedTheme.value as any);
   configStore.updateUIConfig({ theme: selectedTheme.value });
 };
 
-// 语言变化
+// Language change
 const handleLanguageChange = () => {
   setLocale(selectedLanguage.value);
   configStore.updateUIConfig({ language: selectedLanguage.value });
 };
 
-// 显示标尺变化
+// Show ruler changes
 const handleShowRulersChange = () => {
   configStore.updateCanvasConfig({ showRulers: showRulers.value });
 };
 
-// 显示工具栏变化
+// Show toolbar changes
 const handleShowToolbarChange = () => {
   configStore.updateUIConfig({ showToolbar: showToolbar.value });
 };
 
-// 显示属性面板变化
+// Show property-panel changes
 const handleShowPropertyPanelChange = () => {
   configStore.updateUIConfig({ showPropertyPanel: showPropertyPanel.value });
 };
 
-// 显示图层面板变化
+// Show layer-panel changes
 const handleShowLayerPanelChange = () => {
   configStore.updateUIConfig({ showLayerPanel: showLayerPanel.value });
 };
 
-// 自动保存启用变化
+// Auto-save enable change
 const handleAutoSaveEnabledChange = () => {
   configStore.updateAutoSaveConfig({ enabled: autoSaveEnabled.value });
 };
 
-// 自动保存间隔变化
+// Auto-save interval change
 const handleAutoSaveIntervalChange = () => {
   const val = Math.max(60, Math.min(600, autoSaveInterval.value));
   autoSaveInterval.value = val;
   configStore.updateAutoSaveConfig({ interval: val });
 };
 
-// 清空浏览器缓存
+// Clear browser cache
 const handleClearCache = async () => {
   const confirmed = await showConfirm(t('settings.clearCacheConfirm'), t('settings.clearCache'));
   if (confirmed) {

@@ -235,7 +235,7 @@ import { useDict } from '../../../composables/useDict';
 const { t: _t, locale } = useI18n();
 const { loadDict, getOptions } = useDict();
 
-// 加载字典
+// Load dictionaries
 onMounted(() => {
   loadDict('tagDataType', locale.value);
   loadDict('variableCategory', locale.value);

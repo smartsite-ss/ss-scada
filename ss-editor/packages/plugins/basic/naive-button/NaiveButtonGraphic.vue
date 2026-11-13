@@ -60,13 +60,13 @@ export default defineComponent({
       const eventHandlers = props.graphic?.events?.eventHandlers;
       if (!eventHandlers) return;
 
-      // eventHandlers 是 Record<eventId, eventObj>，需要遍历找出 eventType === 'click' 的事件
+      // eventHandlers is a Record<eventId, eventObj>; iterate to find events where eventType === 'click'
       for (const [_eventId, eventObj] of Object.entries(eventHandlers)) {
         const evt = eventObj as any;
         if (evt.eventType !== 'click') continue;
         if (!Array.isArray(evt.actions)) continue;
 
-        // 执行每个动作
+        // Execute each action
         for (const action of evt.actions) {
           executeAction(action);
         }

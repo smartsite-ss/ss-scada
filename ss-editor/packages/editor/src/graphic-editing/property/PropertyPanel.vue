@@ -9,7 +9,7 @@
     >
       <h3>{{ $t('propertyPanel.componentProperties') }}</h3>
 
-      <!-- 标签页切换 -->
+      <!-- Tab switching -->
       <div class="property-tabs">
         <button
           class="tab-button"
@@ -34,7 +34,7 @@
         </button>
       </div>
 
-      <!-- 样式面板 -->
+      <!-- Style panel -->
       <div
         v-if="activeTab === 'style'"
         class="tab-content"
@@ -45,7 +45,7 @@
         />
       </div>
 
-      <!-- 数据绑定面板 -->
+      <!-- Data-binding panel -->
       <div
         v-if="activeTab === 'data'"
         class="tab-content"
@@ -57,7 +57,7 @@
         />
       </div>
 
-      <!-- 事件交互面板 -->
+      <!-- Event interaction panel -->
       <div
         v-if="activeTab === 'interaction'"
         class="tab-content"
@@ -69,14 +69,14 @@
       </div>
     </div>
 
-    <!-- 画布属性 -->
+    <!-- Canvas properties -->
     <div
       v-else
       class="property-section"
     >
       <h3>{{ $t('propertyPanel.canvasProperties') }}</h3>
       
-      <!-- 标签页切换 -->
+      <!-- Tab switching -->
       <div class="property-tabs">
         <button
           class="tab-button"
@@ -101,7 +101,7 @@
         </button>
       </div>
 
-      <!-- 画布属性内容 -->
+      <!-- Canvas properties content -->
       <div
         v-if="canvasActiveTab === 'properties'"
         class="tab-content"
@@ -112,7 +112,7 @@
         />
       </div>
 
-      <!-- 定时器内容 -->
+      <!-- Timer content -->
       <div
         v-if="canvasActiveTab === 'timers'"
         class="tab-content"
@@ -123,7 +123,7 @@
         />
       </div>
 
-      <!-- JSON 编辑器内容 -->
+      <!-- JSON editor content -->
       <div
         v-if="canvasActiveTab === 'json'"
         class="tab-content"
@@ -151,7 +151,7 @@ const { themeStyles } = useTheme();
 const { selectedGraphic } = useSelection();
 const { updateGraphic } = useGraphic();
 
-// 图形属性 - 使用 any 类型避免复杂的类型检查
+// Graphic properties — use the any type to avoid complex type checks
 const graphicProperties = ref<any>({
   config: {
     id: '',
@@ -228,22 +228,22 @@ const graphicProperties = ref<any>({
   },
 });
 
-// 标签页状态
+// Tab state
 const activeTab = ref('style');
 const canvasActiveTab = ref('properties');
 
-// 页面属性
+// Page properties
 const pageStore = usePageStore();
 const pageProperties = ref<any>(pageStore.currentPage || { id: '', name: '', width: 1920, height: 1080, scale: 1, backgroundColor: '#ffffff', backgroundImage: '' });
 
-// 监听当前页面变化
+// Watch current-page change
 watch(() => pageStore.currentPage, (newPage) => {
   if (newPage) {
     pageProperties.value = newPage;
   }
 }, { immediate: true });
 
-// 更新页面属性（支持 undo/redo）
+// Update page properties (supports undo/redo)
 const updatePageProperties = () => {
   if (pageProperties.value && pageProperties.value.id) {
     const currentPage = pageStore.currentPage;
@@ -262,7 +262,7 @@ const updatePageProperties = () => {
   }
 };
 
-// 监听选择的图形变化
+// Watch selected-graphic change
 watch(
   () => {
     const graphic = selectedGraphic.value;
@@ -291,7 +291,7 @@ watch(
       const validation = dataSource?.validation || {};
 
       const events = (newGraphic as any)?.events;
-      // 兼容旧数据格式：{ eventHandlers: { [id]: IEvent } } → 提取为数组
+      // Compatible with old data format: { eventHandlers: { [id]: IEvent } } → extract into an array
       const normalizedEvents = Array.isArray(events)
         ? events
         : (events?.eventHandlers ? Object.values(events.eventHandlers as Record<string, any>) : []);
@@ -327,10 +327,10 @@ watch(
   { immediate: true, deep: true }
 );
 
-// 更新图形属性
+// Update graphic properties
 const updateGraphicProperties = () => {
   if (selectedGraphic.value) {
-    // 转换数组格式 события → eventHandlers Record 格式
+    // Convert array-format events → eventHandlers Record format
     const eventsArray = graphicProperties.value.events;
     let eventsForUpdate: any = {};
     if (Array.isArray(eventsArray) && eventsArray.length > 0) {
@@ -381,7 +381,7 @@ const updateGraphicProperties = () => {
 
 
 <style lang="scss">
-// 全局基础样式——不 scoped，保证规则 100% 命中不受 scope 渗透影响
+// Global base style — not scoped, ensuring rules hit 100% without scope penetration
 @import '../../panels/styles/property-panel.scss';
 </style>
 
@@ -471,7 +471,7 @@ const updateGraphicProperties = () => {
   margin-top: 0 !important;
 }
 
-/* 显式覆盖子组件根元素的 padding（@import 在 scoped 中存在 scope 渗透问题） */
+/* Explicitly override the child component root's padding (@import has scope-penetration issues in scoped styles) */
 .style-panel-content {
   padding: 0 !important;
   margin: 0 !important;

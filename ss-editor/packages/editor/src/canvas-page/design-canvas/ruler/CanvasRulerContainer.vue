@@ -62,7 +62,7 @@
       <slot />
     </div>
     
-    <!-- 右键上下文菜单 -->
+    <!-- Right-click context menu -->
     <Teleport to="body">
       <div 
         v-if="showContextMenu"
@@ -106,12 +106,12 @@ const { t: _t } = useI18n();
 const PLM_PADDING = 20;
 const HORIZONTAL_RULER_HEIGHT = 30;
 
-// 标尺组件引用（用于 Tab 焦点切换）
+// Ruler component reference (for Tab focus switching)
 const verticalRulerRef = ref<InstanceType<typeof VerticalRuler> | null>(null);
 const horizontalRulerRef = ref<InstanceType<typeof HorizontalRuler> | null>(null);
 const canvasContentWrapperRef = ref<HTMLElement | null>(null);
 
-// canvas-content-wrapper 尺寸（响应式）
+// canvas-content-wrapper size (responsive)
 const wrapperWidth = ref(0);
 const wrapperHeight = ref(0);
 let resizeObserver: ResizeObserver | null = null;
@@ -139,17 +139,17 @@ onUnmounted(() => {
 const props = withDefaults(defineProps<{
   showRuler?: boolean;
   showReferenceLines?: boolean;
-  showAutoFitCentering?: boolean;  // 画布是否居中（AutoFit 模式）
+  showAutoFitCentering?: boolean;  // Whether the canvas is centered (AutoFit mode)
   canvasWidth: number;
   canvasHeight: number;
   scale: number;
   scrollLeft: number;
   scrollTop: number;
   mousePosition: { x: number; y: number } | null;
-  containerWidth?: number;   // 容器可视宽度（用于水平视口指示器）
-  containerHeight?: number;  // 容器可视高度（用于垂直视口指示器）
-  unit?: string;            // P3: 标尺单位 (px/cm/inch/mm/m)
-  gridSize?: number;        // P3: 网格大小（网格联动高亮）
+  containerWidth?: number;   // Container visible width (for the horizontal viewport indicator)
+  containerHeight?: number;  // Container visible height (for the vertical viewport indicator)
+  unit?: string;            // P3: ruler unit (px/cm/inch/mm/m)
+  gridSize?: number;        // P3: grid size (grid-linked highlight)
 }>(), {
   showRuler: true,
   showReferenceLines: false,
@@ -158,7 +158,7 @@ const props = withDefaults(defineProps<{
   containerHeight: 0,
 });
 
-// 画布原点距标尺边缘的CSS像素偏移（X: 水平标尺左边缘, Y: 垂直标尺上边缘）
+// CSS-pixel offset of the canvas origin from the ruler edge (X: left horizontal-ruler edge, Y: top vertical-ruler edge)
 const canvasOriginOffsetX = computed(() => {
   const baseOffset = PLM_PADDING;
   if (!props.showAutoFitCentering) return baseOffset;
@@ -175,7 +175,7 @@ const canvasOriginOffsetY = computed(() => {
   if (!props.showAutoFitCentering) return baseOffset;
 
   const canvasScaledHeight = props.canvasHeight * props.scale;
-  // PLM 高度 = wrapper高度 - 水平标尺高度(30px)
+  // PLM height = wrapper height − horizontal ruler height (30px)
   const plmHeight = wrapperHeight.value - HORIZONTAL_RULER_HEIGHT;
   const plmContentHeight = plmHeight - PLM_PADDING * 2;
   if (plmContentHeight <= 0 || canvasScaledHeight >= plmContentHeight) return baseOffset;
@@ -187,13 +187,13 @@ const emit = defineEmits<{
   'toggle-reference-lines': [];
   'update-mouse-position': [position: { x: number; y: number } | null];
   'create-guide-line': [position: number, direction: 'horizontal' | 'vertical'];
-  'delete-last-guide-line': []; // 新增：删除最后一条辅助线
-  'clear-all-guides': [];       // 新增：清除所有辅助线
-  'toggle-ruler-visibility': []; // 新增：切换标尺显示/隐藏
-  'open-ruler-settings': [];     // 新增：打开标尺设置
+  'delete-last-guide-line': []; // Added: delete the last guide line
+  'clear-all-guides': [];       // Added: clear all guide lines
+  'toggle-ruler-visibility': []; // Added: toggle ruler show/hide
+  'open-ruler-settings': [];     // Added: open ruler settings
 }>();
 
-// ===== 右键上下文菜单状态 =====
+// ===== Right-click context menu state =====
 const showContextMenu = ref(false);
 const contextMenuX = ref(0);
 const contextMenuY = ref(0);
@@ -214,7 +214,7 @@ const handleDeleteLastGuideLine = () => {
   emit('delete-last-guide-line');
 };
 
-// ===== 右键上下文菜单处理 =====
+// ===== Right-click context menu handling =====
 const handleContextMenu = (event: MouseEvent) => {
   event.preventDefault();
   contextMenuX.value = event.clientX;
@@ -243,8 +243,8 @@ const openSettings = () => {
   closeContextMenu();
 };
 
-// ===== Tab 焦点切换（文档10.3规划） =====
-// 在垂直标尺和水平标尺之间通过 Tab/Shift+Tab 切换焦点
+// ===== Tab focus switching (doc 10.3 plan) =====
+// Switch focus between the vertical and horizontal rulers via Tab/Shift+Tab
 type _RulerRef = { $el: HTMLElement } | null;
 let activeRuler: 'vertical' | 'horizontal' = 'vertical';
 
@@ -259,7 +259,7 @@ const handleRulerKeyDown = (event: KeyboardEvent) => {
 
     activeRuler = targetRuler;
 
-    // 使用 nextTick 确保 DOM 更新后再聚焦
+    // Use nextTick to ensure focus after the DOM updates
     setTimeout(() => {
       const targetEl = targetRuler === 'vertical'
         ? verticalRulerRef.value?.$el
@@ -331,7 +331,7 @@ const handleRulerKeyDown = (event: KeyboardEvent) => {
   flex-direction: column;
 }
 
-/* ===== 右键上下文菜单样式 ===== */
+/* ===== Right-click context menu style ===== */
 .ruler-context-menu {
   position: fixed;
   background: var(--surface);

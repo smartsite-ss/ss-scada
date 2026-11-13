@@ -120,7 +120,7 @@ const props = defineProps<{
 
 const { currentValue, bindTitle } = useTagValue(props);
 
-/** 数据值：绑定实时值，未绑定用静态 dataset */
+/** Data value: bind live value; unbound uses static dataset */
 const effectiveValue = computed(() => {
   if (!props.tagId) return props.dataset;
   const v = currentValue.value;

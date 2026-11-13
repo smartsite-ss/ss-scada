@@ -1,6 +1,6 @@
 <template>
   <div class="config-tab">
-    <!-- 配置导出 -->
+    <!-- Config export -->
     <div class="setting-group">
       <div class="group-title">
         <span class="group-icon">📤</span>
@@ -43,7 +43,7 @@
       </div>
     </div>
 
-    <!-- 配置导入 -->
+    <!-- Config import -->
     <div class="setting-group">
       <div class="group-title">
         <span class="group-icon">📥</span>
@@ -89,7 +89,7 @@
       </div>
     </div>
 
-    <!-- 配置对比 -->
+    <!-- Config comparison -->
     <div class="setting-group">
       <div class="group-title">
         <span class="group-icon">🔍</span>

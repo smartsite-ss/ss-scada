@@ -28,19 +28,19 @@ const startY = ref(0);
 const startWidth = ref(0);
 const startHeight = ref(0);
 
-// 处理鼠标按下事件
+// Handle mouse-down event
 const handleMouseDown = (e: MouseEvent) => {
   e.stopPropagation();
   isResizing.value = true;
   startX.value = e.clientX;
   startY.value = e.clientY;
-  // 这里应该获取图形的初始大小
-  // 暂时使用默认值
+  // Here you should get the graphic's initial size
+  // Temporarily use the default value
   startWidth.value = 100;
   startHeight.value = 100;
 };
 
-// 处理鼠标移动事件
+// Handle mouse-move event
 const handleMouseMove = (e: MouseEvent) => {
   if (!isResizing.value) return;
 
@@ -50,7 +50,7 @@ const handleMouseMove = (e: MouseEvent) => {
   let newWidth = startWidth.value;
   let newHeight = startHeight.value;
 
-  // 根据位置调整大小
+  // Resize by position
   switch (props.position) {
     case 'top-left':
       newWidth = startWidth.value - deltaX;
@@ -70,25 +70,25 @@ const handleMouseMove = (e: MouseEvent) => {
       break;
   }
 
-  // 确保大小不为负数
+  // Ensure the size is not negative
   newWidth = Math.max(10, newWidth);
   newHeight = Math.max(10, newHeight);
 
   emit('resize', { width: newWidth, height: newHeight });
 };
 
-// 处理鼠标释放事件
+// Handle mouse-up event
 const handleMouseUp = () => {
   isResizing.value = false;
 };
 
-// 挂载事件监听器
+// Mount event listeners
 onMounted(() => {
   window.addEventListener('mousemove', handleMouseMove);
   window.addEventListener('mouseup', handleMouseUp);
 });
 
-// 卸载事件监听器
+// Remove event listeners
 onUnmounted(() => {
   window.removeEventListener('mousemove', handleMouseMove);
   window.removeEventListener('mouseup', handleMouseUp);

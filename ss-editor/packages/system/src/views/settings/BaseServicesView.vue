@@ -54,7 +54,7 @@
       </div>
     </div>
 
-    <!-- 服务卡片列表 -->
+    <!-- Service card list -->
     <div class="services-grid">
       <div
         v-for="svc in services"
@@ -149,7 +149,7 @@
             </div>
           </div>
 
-          <!-- InfluxDB Setup 状态 -->
+          <!-- InfluxDB Setup status -->
           <div
             v-if="svc.name === 'influxdb' && influxSetup"
             class="influx-setup-status"
@@ -174,7 +174,7 @@
             <span v-else>{{ $t('system.baseServices.initInfluxdbUnreachable') }}</span>
           </div>
 
-          <!-- NanoMQ 健康状态 -->
+          <!-- NanoMQ health status -->
           <div
             v-if="svc.name === 'nanomq' && svc.status === 'running' && nanomqHealth"
             class="influx-setup-status"
@@ -233,7 +233,7 @@
           >
             {{ $t('system.baseServices.edit') }}
           </button>
-          <!-- InfluxDB 一键初始化 -->
+          <!-- One-click InfluxDB initialization -->
           <button
             v-if="svc.name === 'influxdb' && influxSetup?.reachable && !influxSetup?.initialized"
             class="sys-btn sys-btn-primary sys-btn-sm"
@@ -242,7 +242,7 @@
           >
             {{ influxInitLoading ? $t('system.baseServices.initInfluxdbIniting') : $t('system.baseServices.initInfluxdb') }}
           </button>
-          <!-- NanoMQ 健康检查 -->
+          <!-- NanoMQ health check -->
           <button
             v-if="svc.name === 'nanomq' && svc.status === 'running'"
             class="sys-btn sys-btn-secondary sys-btn-sm"
@@ -268,7 +268,7 @@
       {{ $t('system.baseServices.noServices') }}
     </div>
 
-    <!-- ==================== 新增/编辑服务模态框 ==================== -->
+    <!-- ==================== Add/edit service modal ==================== -->
     <div
       v-if="formModal.visible"
       class="modal-overlay"
@@ -437,7 +437,7 @@
       </div>
     </div>
 
-    <!-- ==================== 配置文件编辑模态框 ==================== -->
+    <!-- ==================== Config file edit modal ==================== -->
     <div
       v-if="configModal.visible"
       class="modal-overlay"
@@ -491,7 +491,7 @@
       </div>
     </div>
 
-    <!-- ==================== 日志查看模态框 ==================== -->
+    <!-- ==================== Log view modal ==================== -->
     <div
       v-if="logsModal.visible"
       class="modal-overlay"
@@ -554,7 +554,7 @@
             v-else
             class="logs-tab-view"
           >
-            <!-- Tab 栏：每个日志文件一个 tab -->
+            <!-- Tab bar: one tab per log file -->
             <div class="log-tabs">
               <button
                 v-for="entry in logsModal.entries"
@@ -568,7 +568,7 @@
                 <span class="tab-size">{{ formatLogSize(entry.size) }}</span>
               </button>
             </div>
-            <!-- 当前选中 tab 的日志内容 -->
+            <!-- Log content of the currently selected tab -->
             <div
               v-for="entry in logsModal.entries"
               :key="'content-' + entry.filename"
@@ -609,16 +609,16 @@ const actionLoading = reactive<Record<string, boolean>>({});
 
 let pollTimer: ReturnType<typeof setInterval> | null = null;
 
-// ==================== InfluxDB Setup 状态 ====================
+// ==================== InfluxDB Setup status ====================
 const influxSetup = ref<InfluxSetupStatus | null>(null);
 const influxSetupLoading = ref(false);
 const influxInitLoading = ref(false);
 
-// ==================== NanoMQ 健康状态 ====================
+// ==================== NanoMQ health status ====================
 const nanomqHealth = ref<NanomqHealthStatus | null>(null);
 const nanomqHealthLoading = ref(false);
 
-// ==================== 新增/编辑模态框 ====================
+// ==================== Add/edit modal ====================
 const formModal = reactive<{
   visible: boolean;
   isEdit: boolean;
@@ -648,7 +648,7 @@ const formModal = reactive<{
   },
 });
 
-// ==================== 配置模态框 ====================
+// ==================== Config modal ====================
 const configModal = reactive<{
   visible: boolean;
   name: string | null;
@@ -667,7 +667,7 @@ const configModal = reactive<{
   saving: false,
 });
 
-// ==================== 日志模态框 ====================
+// ==================== Log modal ====================
 const logsModal = reactive<{
   visible: boolean;
   name: string | null;
@@ -688,7 +688,7 @@ const logsModal = reactive<{
   activeTab: '',
 });
 
-// ==================== 数据加载 ====================
+// ==================== Data loading ====================
 async function fetchAllStatus() {
   loading.value = true;
   try {
@@ -696,11 +696,11 @@ async function fetchAllStatus() {
     const data = (res as any).data || (res as any);
     services.value = Array.isArray(data) ? data : [];
 
-    // 如果存在 InfluxDB 服务，检测其 setup 状态
+    // If an InfluxDB service exists, detect its setup status
     if (services.value.some((s) => s.name === 'influxdb' && s.processRunning)) {
       checkInfluxSetupStatus();
     }
-    // 如果存在 NanoMQ 服务且运行中，检测其健康状态
+    // If a NanoMQ service exists and is running, detect its health status
     if (services.value.some((s) => s.name === 'nanomq' && s.processRunning)) {
       checkNanomqHealthStatus();
     }
@@ -717,7 +717,7 @@ function refreshAll() {
   fetchAllStatus();
 }
 
-// ==================== 服务操作 ====================
+// ==================== Service operations ====================
 async function handleStart(name: string) {
   actionLoading[name] = true;
   try {
@@ -799,7 +799,7 @@ async function handleDelete(name: string) {
   }
 }
 
-// ==================== InfluxDB 初始化 ====================
+// ==================== InfluxDB initialization ====================
 async function checkInfluxSetupStatus() {
   influxSetupLoading.value = true;
   try {
@@ -813,7 +813,7 @@ async function checkInfluxSetupStatus() {
   }
 }
 
-// ==================== NanoMQ 健康检测 ====================
+// ==================== NanoMQ health check ====================
 
 async function checkNanomqHealthStatus() {
   nanomqHealthLoading.value = true;
@@ -852,7 +852,7 @@ async function handleInitInfluxDB() {
   }
 }
 
-// ==================== 新增/编辑服务 ====================
+// ==================== Add/edit service ====================
 function openCreateModal() {
   formModal.isEdit = false;
   formModal.visible = true;
@@ -944,7 +944,7 @@ async function handleSaveService() {
   }
 }
 
-// ==================== 配置文件 ====================
+// ==================== Config file ====================
 async function openConfig(name: string) {
   const svc = services.value.find((s) => s.name === name);
   configModal.name = name;
@@ -994,7 +994,7 @@ async function handleSaveConfig() {
   }
 }
 
-// ==================== 日志 ====================
+// ==================== Logs ====================
 function formatLogSize(bytes: number): string {
   if (bytes >= 1048576) return (bytes / 1048576).toFixed(1) + ' MB';
   if (bytes >= 1024) return (bytes / 1024).toFixed(1) + ' KB';
@@ -1009,7 +1009,7 @@ async function openLogs(name: string) {
   logsModal.entries = [];
   logsModal.activeTab = '';
   await reloadLogs();
-  // 默认选中第一个日志文件
+  // Select the first log file by default
   if (logsModal.entries.length > 0) {
     logsModal.activeTab = logsModal.entries[0].filename;
   }
@@ -1059,7 +1059,7 @@ async function handleClearLogs() {
   }
 }
 
-// ==================== 工具函数 ====================
+// ==================== Utility functions ====================
 function statusText(status: string): string {
   const map: Record<string, string> = {
     running: t('system.baseServices.statusRunning'),
@@ -1084,7 +1084,7 @@ function formatUptime(sec?: number): string {
   return parts.join(' ');
 }
 
-// ==================== 生命周期 ====================
+// ==================== Lifecycle ====================
 onMounted(() => {
   fetchAllStatus();
   pollTimer = setInterval(fetchAllStatus, 10000);
@@ -1097,7 +1097,7 @@ onUnmounted(() => {
   }
 });
 
-// keep-alive 缓存：离开页面时停止轮询，返回时恢复
+// keep-alive cache: stop polling when leaving the page, resume on return
 onDeactivated(() => {
   if (pollTimer) {
     clearInterval(pollTimer);
@@ -1290,7 +1290,7 @@ onActivated(() => {
   font-weight: bold;
 }
 
-/* InfluxDB Setup 状态 */
+/* InfluxDB Setup status */
 .influx-setup-status {
   display: flex;
   align-items: center;
@@ -1353,7 +1353,7 @@ onActivated(() => {
   background: var(--bg, rgba(0, 0, 0, 0.02));
 }
 
-/* 通用按钮 */
+/* Generic button */
 .sys-btn {
   padding: 5px 12px;
   border-radius: 4px;
@@ -1428,7 +1428,7 @@ onActivated(() => {
   font-size: 14px;
 }
 
-/* 模态框 */
+/* Modal */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -1519,7 +1519,7 @@ onActivated(() => {
   border-top: 1px solid var(--border);
 }
 
-/* 表单 */
+/* Form */
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1576,7 +1576,7 @@ onActivated(() => {
   cursor: pointer;
 }
 
-/* 配置编辑器 */
+/* Config editor */
 .config-meta {
   display: flex;
   justify-content: space-between;
@@ -1604,7 +1604,7 @@ onActivated(() => {
   border-color: var(--primary);
 }
 
-/* 日志 */
+/* Log */
 .logs-toolbar {
   display: flex;
   align-items: center;
@@ -1702,7 +1702,7 @@ onActivated(() => {
   background: var(--bg, rgba(0, 0, 0, 0.01));
 }
 
-/* 服务标志标签 */
+/* Service badge label */
 .flags {
   display: flex;
   gap: 6px;

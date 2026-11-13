@@ -1,6 +1,6 @@
 <template>
   <div class="alarm-list">
-    <!-- 统一工具栏 -->
+    <!-- Unified toolbar -->
     <div class="unified-toolbar">
       <div class="toolbar-left">
         <h1 class="toolbar-title">
@@ -169,13 +169,13 @@
       </button>
     </div>
 
-    <!-- ===== 报警记录 Tab ===== -->
+    <!-- ===== Alarm records tab ===== -->
     <template v-else>
       <div
         v-if="activeTab === 'records'"
         class="tab-content"
       >
-        <!-- 筛选栏（含实时/历史切换） -->
+        <!-- Filter bar (with live/history switch) -->
         <div class="filter-bar">
           <div class="sub-tabs-inline">
             <button
@@ -313,7 +313,7 @@
           </div>
         </div>
 
-        <!-- 批量操作工具栏 -->
+        <!-- Batch-action toolbar -->
         <div
           v-if="selectedIds.size > 0"
           class="batch-bar"
@@ -339,7 +339,7 @@
           </button>
         </div>
 
-        <!-- 报警记录表格 -->
+        <!-- Alarm records table -->
         <div class="records-table-wrapper">
           <table class="records-table">
             <thead>
@@ -521,7 +521,7 @@
         </div>
       </div>
 
-      <!-- ===== 报警规则 Tab ===== -->
+      <!-- ===== Alarm rules tab ===== -->
       <div
         v-if="activeTab === 'rules'"
         class="tab-content"
@@ -582,7 +582,7 @@
         </SmartTable>
       </div>
 
-      <!-- ===== 统计报表 Tab ===== -->
+      <!-- ===== Statistics report tab ===== -->
       <div
         v-if="activeTab === 'stats'"
         class="tab-content"
@@ -593,7 +593,7 @@
           size="small"
         />
         <template v-else-if="store.statistics">
-          <!-- 总览卡片 -->
+          <!-- Overview card -->
           <div class="stats-grid">
             <div class="stat-card">
               <div class="stat-value">
@@ -629,9 +629,9 @@
             </div>
           </div>
 
-          <!-- 级别分布 + Top规则 双栏 -->
+          <!-- Severity distribution + Top rules two-column -->
           <div class="stats-two-col">
-            <!-- 级别分布 -->
+            <!-- Severity distribution -->
             <div class="stats-panel">
               <h3 class="section-title">
                 {{ $t('system.alarms.levelDist') }}
@@ -658,7 +658,7 @@
               </div>
             </div>
 
-            <!-- Top 报警规则 -->
+            <!-- Top alarm rules -->
             <div class="stats-panel">
               <h3 class="section-title">
                 {{ $t('system.alarms.topRules') }}
@@ -689,7 +689,7 @@
             </div>
           </div>
 
-          <!-- 设备排行 + 变量排行 双栏 -->
+          <!-- Device ranking + variable ranking two-column -->
           <div class="stats-two-col">
             <div class="stats-panel">
               <h3 class="section-title">
@@ -749,7 +749,7 @@
             </div>
           </div>
 
-          <!-- 7天趋势 -->
+          <!-- 7-day trend -->
           <div
             v-if="store.trends.length > 0"
             class="trends-section"
@@ -793,7 +793,7 @@
       </div>
     </template>
 
-    <!-- 告警数据弹窗 -->
+    <!-- Alarm data dialog -->
     <AlarmDataDialog
       v-model:visible="alarmDialogVisible"
       :alarm-time="alarmDialogRecord?.createdAt || ''"
@@ -841,15 +841,15 @@ const selectedProjectId = ref('');
 const selectedIds = ref<Set<string>>(new Set());
 const statsLoading = ref(false);
 
-/** 记录子标签：all=全部 / realtime=实时告警(isActive=true) / history=历史告警(isActive=false)。
- *  Phase 5.6：基于 isActive 字段显式区分实时/历史，替代隐式 status 映射 */
+/** Record subtab: all=all / realtime=live alarms (isActive=true) / history=history alarms (isActive=false).
+ *  Phase 5.6: explicitly distinguish live/history based on the isActive field, replacing the implicit status mapping */
 const recordsScope = ref<'all' | 'realtime' | 'history'>('all');
 
-// 告警数据弹窗
+// Alarm data dialog
 const alarmDialogVisible = ref(false);
 const alarmDialogRecord = ref<any>(null);
 
-// 字典选项（告警类型、告警处置类型）
+// Dictionary options (alarm type, alarm disposition type)
 const alarmTypeOptions = ref<DictItem[]>([]);
 const dispositionTypeOptions = ref<DictItem[]>([]);
 
@@ -862,7 +862,7 @@ async function loadDicts() {
     alarmTypeOptions.value = typeRes.data?.items ?? [];
     dispositionTypeOptions.value = actionRes.data?.items ?? [];
   } catch (e) {
-    // 字典加载失败不阻塞主流程
+    // Dictionary load failure does not block the main flow
   }
 }
 
@@ -871,7 +871,7 @@ function dictLabel(options: DictItem[], value?: string): string {
   return options.find((o) => o.value === value)?.label ?? value;
 }
 
-// 筛选条件
+// Filter condition
 const filters = reactive({
   level: '',
   status: '',
@@ -881,10 +881,10 @@ const filters = reactive({
   dispositionType: '',
 });
 
-// 前端本地过滤（后端已过滤，这里作为显示兜底）
+// Frontend local filter (backend already filtered; this is a display fallback)
 const filteredRecords = computed(() => store.records);
 
-// 分页状态（客户端分页）
+// Pagination state (client-side pagination)
 const currentPage = ref(1);
 const pageSize = ref(20);
 const pageSizes = [10, 20, 50, 100];
@@ -909,7 +909,7 @@ function handlePageSizeChange(size: number) {
   currentPage.value = 1;
 }
 
-// 级别分布数据
+// Severity distribution data
 const LEVEL_COLORS: Record<string, string> = {
   info: 'var(--text-secondary)',
   warning: 'var(--status-warning)',
@@ -943,7 +943,7 @@ const ruleColumns = computed<SmartTableColumn[]>(() => [
   { key: 'enabled', title: t('system.alarms.status'), dataKey: 'enabled' },
 ]);
 
-// 全选状态
+// Select-all state
 const isAllSelected = computed(() => filteredRecords.value.length > 0 && filteredRecords.value.every((r) => selectedIds.value.has(r.id)));
 const isIndeterminate = computed(() => {
   const count = filteredRecords.value.filter((r) => selectedIds.value.has(r.id)).length;
@@ -1052,18 +1052,18 @@ function buildFilterParams() {
   if (filters.dispositionType) params.dispositionType = filters.dispositionType;
   if (filters.dateRange.start) params.startDate = filters.dateRange.start;
   if (filters.dateRange.end) params.endDate = filters.dateRange.end;
-  // Phase 5.6：基于 isActive 字段显式区分实时/历史
+  // Phase 5.6: explicitly distinguish live/history based on the isActive field
   if (recordsScope.value === 'realtime') params.isActive = true;
   else if (recordsScope.value === 'history') params.isActive = false;
   return params;
 }
 
-/** 切换实时/历史子标签（Phase 5.6） */
+/** Toggle live/history subtabs (Phase 5.6) */
 function switchRecordsScope(scope: 'all' | 'realtime' | 'history') {
   if (recordsScope.value === scope) return;
   recordsScope.value = scope;
   clearSelection();
-  // 切换 scope 后实时拉取（applyFilters 已封装加载逻辑）
+  // Fetch live after switching scope (applyFilters already wraps the load logic)
   applyFilters();
 }
 
@@ -1120,7 +1120,7 @@ function onProjectChange() {
   resetFilters();
   recordsScope.value = 'all';
   fetchData();
-  // 如果当前在统计标签页，切换项目后也需要刷新统计
+  // If currently on the statistics tab, also refresh stats after switching projects
   if (activeTab.value === 'stats') {
     fetchStatsData();
   }
@@ -1129,7 +1129,7 @@ function onProjectChange() {
 onMounted(async () => {
   if (!projectStore.projects.length) await projectStore.fetchProjects();
   if (!selectedProjectId.value && projectStore.projects.length > 0) {
-    // 优先使用默认项目，否则选中第一个
+    // Prefer the default project; otherwise select the first
     const defaultId = await loadDefault();
     if (defaultId && projectStore.projects.some(p => p.projectId === defaultId)) {
       selectedProjectId.value = defaultId;
@@ -1137,7 +1137,7 @@ onMounted(async () => {
       selectedProjectId.value = projectStore.projects[0].projectId;
     }
   }
-  // 加载字典（告警类型、处置类型）—— 全局字典，加载一次即可
+  // Load dictionaries (alarm type, disposition type) — global dictionaries, load once
   loadDicts();
   await fetchData();
 });
@@ -1152,7 +1152,7 @@ onMounted(async () => {
   padding: 16px;
 }
 
-/* ===== 统一工具栏 ===== */
+/* ===== Unified toolbar ===== */
 .unified-toolbar {
   display: flex;
   align-items: center;
@@ -1241,7 +1241,7 @@ onMounted(async () => {
   50% { opacity: 0.4; }
 }
 
-/* ===== 筛选栏 ===== */
+/* ===== Filter bar ===== */
 .filter-bar {
   display: flex;
   flex-wrap: wrap;
@@ -1291,7 +1291,7 @@ onMounted(async () => {
   gap: 6px;
 }
 
-/* ===== 批量操作栏 ===== */
+/* ===== Batch action bar ===== */
 .batch-bar {
   display: flex;
   align-items: center;
@@ -1311,7 +1311,7 @@ onMounted(async () => {
   margin-right: auto;
 }
 
-/* ===== 表格 ===== */
+/* ===== Table ===== */
 .records-table-wrapper {
   flex: 1;
   min-height: 0;
@@ -1409,7 +1409,7 @@ onMounted(async () => {
   overflow: hidden;
 }
 
-/* ===== 子标签（实时/历史，Phase 5.6） ===== */
+/* ===== Subtabs (live/history, Phase 5.6) ===== */
 .sub-tabs {
   display: flex;
   gap: 4px;
@@ -1507,7 +1507,7 @@ onMounted(async () => {
 .tag-status.enabled { background: color-mix(in srgb, var(--status-success) 15%, transparent); color: var(--status-success); }
 .tag-status.disabled { background: var(--border); color: var(--text-secondary); }
 
-/* ===== 按钮 ===== */
+/* ===== Button ===== */
 .row-actions { display: flex; gap: 4px; }
 
 /* ===== Rules Tab ===== */
@@ -1545,7 +1545,7 @@ onMounted(async () => {
 .text-warning { color: var(--status-warning); }
 .text-success { color: var(--status-success); }
 
-/* 双栏布局 */
+/* Two-column layout */
 .stats-two-col {
   display: grid; grid-template-columns: 1fr 1fr;
   gap: 16px; margin-bottom: 24px;
@@ -1556,7 +1556,7 @@ onMounted(async () => {
   border-radius: 10px; padding: 20px 24px;
 }
 
-/* 级别分布 */
+/* Severity distribution */
 .level-dist { display: flex; flex-direction: column; gap: 10px; }
 
 .level-dist-row {
@@ -1585,7 +1585,7 @@ onMounted(async () => {
 
 .level-dist-pct { font-size: 12px; color: var(--text-secondary); min-width: 32px; text-align: right; }
 
-/* Top 报警规则 */
+/* Top alarm rules */
 .top-rules-list { display: flex; flex-direction: column; gap: 8px; }
 
 .top-rule-row {

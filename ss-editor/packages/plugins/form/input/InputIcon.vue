@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-// InputIcon 组件
+// InputIcon component
 </script>
 
 <style scoped>

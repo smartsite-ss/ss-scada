@@ -1,6 +1,6 @@
 <template>
   <div class="tab-panel">
-    <!-- 标签页切换 - 画布属性/组件属性/JSON -->
+    <!-- Tab switching — canvas properties / component properties / JSON -->
     <div class="property-tabs">
       <button
         v-for="tab in mainTabs"
@@ -13,9 +13,9 @@
       </button>
     </div>
 
-    <!-- 主内容区 -->
+    <!-- Main content area -->
     <div class="tab-content">
-      <!-- 画布属性 -->
+      <!-- Canvas properties -->
       <div v-if="activeMainTab === 'canvas'">
         <CanvasProperties
           :page-properties="pageProperties"
@@ -23,7 +23,7 @@
         />
       </div>
 
-      <!-- 组件属性 -->
+      <!-- Component properties -->
       <div v-else-if="activeMainTab === 'component'">
         <PropertyPanel />
       </div>
@@ -34,7 +34,7 @@
       </div>
     </div>
 
-    <!-- 图层 - 始终显示 -->
+    <!-- Layer — always visible -->
     <div class="layer-section">
       <LayerPanel />
     </div>
@@ -49,14 +49,14 @@ import PropertyPanel from '../../graphic-editing/property/PropertyPanel.vue';
 import LayerPanel from '../../graphic-editing/layer/LayerPanel.vue';
 import JsonPanel from '../../panels/json/JsonPanel.vue';
 
-// 活动主标签
+// Active main tab
 const activeMainTab = ref('canvas');
 
-// 根据是否有选中的图元动态调整标签页
+// Dynamically adjust tabs based on whether a graphic is selected
 const mainTabs = computed(() => {
   const tabs: Array<{ id: string; labelKey: string; label: string }> = [];
 
-  // 先强制显示画布属性 + JSON，确保能看到
+  // First force-show the canvas properties + JSON to ensure visibility
   tabs.push({
     id: 'canvas',
     labelKey: 'canvasProperties.canvasProperties',
@@ -71,27 +71,27 @@ const mainTabs = computed(() => {
   return tabs;
 });
 
-// 监听标签页变化，确保activeMainTab在标签列表中
+// Watch tab changes; ensure activeMainTab is in the tab list
 watch(mainTabs, (newTabs) => {
   const hasActiveTab = newTabs.some(tab => tab.id === activeMainTab.value);
   if (!hasActiveTab && newTabs.length > 0) {
-    // 如果当前标签不在新标签列表中，选择第一个标签
+    // If the current tab is not in the new tab list, select the first tab
     activeMainTab.value = newTabs[0].id;
   }
 }, { immediate: true });
 
-// 页面属性
+// Page properties
 const pageStore = usePageStore();
 const pageProperties = ref<any>(pageStore.currentPage || { id: '', name: '', width: 1920, height: 1080 });
 
-// 监听当前页面变化
+// Watch current-page change
 watch(() => pageStore.currentPage, (newPage) => {
   if (newPage) {
     pageProperties.value = newPage;
   }
 }, { immediate: true });
 
-// 更新页面属性
+// Update page properties
 const updatePageProperties = () => {
   if (pageProperties.value && (pageProperties.value as any).id) {
     pageStore.updatePage((pageProperties.value as any).id, pageProperties.value);
@@ -110,7 +110,7 @@ const updatePageProperties = () => {
   overflow: hidden;
 }
 
-/* 确保property-tabs样式正确应用 */
+/* Ensure the property-tabs style is applied correctly */
 :deep(.property-tabs) {
   display: flex;
   background-color: var(--background);

@@ -3,14 +3,14 @@
     class="main-navigation"
     :style="themeStyles"
   >
-    <!-- 显示前5个菜单项 -->
+    <!-- Show the first 5 menu items -->
     <div 
       v-for="item in visibleItems" 
       :key="item.id"
       class="nav-item"
       :class="{ active: activeItem === item.id }"
     >
-      <!-- 通用组件菜单 -->
+      <!-- Generic component menu -->
       <div
         v-if="item.id === 'general'"
         class="nav-item with-submenu"
@@ -22,7 +22,7 @@
           <span class="nav-icon">{{ item.icon }}</span>
           <span class="nav-text">{{ item.name }}</span>
         </button>
-        <!-- 二级菜单 -->
+        <!-- Submenu -->
         <div
           v-if="showGeneralSubmenu"
           class="submenu"
@@ -56,7 +56,7 @@
           </div>
         </div>
       </div>
-      <!-- 编辑菜单 -->
+      <!-- Edit menu -->
       <div
         v-else-if="item.id === 'edit'"
         class="nav-item with-submenu"
@@ -68,7 +68,7 @@
           <span class="nav-icon">{{ item.icon }}</span>
           <span class="nav-text">{{ item.name }}</span>
         </button>
-        <!-- 编辑下拉菜单 -->
+        <!-- Edit dropdown menu -->
         <div
           v-if="showEditSubmenu"
           class="submenu edit-submenu"
@@ -118,7 +118,7 @@
           </div>
         </div>
       </div>
-      <!-- 其他菜单项 -->
+      <!-- Other menu items -->
       <button 
         v-else 
         class="nav-button"
@@ -136,16 +136,16 @@ import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { GraphicFactory, i18n } from '@scada-editor/core';
 import { useTheme } from '@scada-editor/core';
 
-// 国际化翻译函数
+// Internationalization translation function
 const { t } = i18n.global;
 
-// 使用主题
+// Use theme
 const { themeStyles } = useTheme();
 
-// 主导航区组件
-// 负责模块切换的一级菜单
+// Main navigation area component
+// Top-level menu responsible for module switching
 
-// 菜单数据
+// Menu data
 const menuItems = [
   { id: 'scene', name: t('menu.scene'), icon: '🎬' },
   { id: 'edit', name: t('menu.edit'), icon: '✏️' },
@@ -157,16 +157,16 @@ const menuItems = [
 
 
 
-// 当前激活的菜单项
+// Currently active menu item
 const activeItem = ref('general');
 
-// 通用组件二级菜单状态
+// Generic-component submenu state
 const showGeneralSubmenu = ref(false);
 
-// 编辑菜单二级菜单状态
+// Edit-menu submenu state
 const showEditSubmenu = ref(false);
 
-// 图元分类
+// Graphic category
 const graphicCategories = [
   { id: 'basic', name: t('menu.graphicCategory.basic') },
   { id: 'system', name: t('menu.graphicCategory.system') },
@@ -178,21 +178,21 @@ const graphicCategories = [
 ];
 
 
-// 选中的图元分类
+// Selected graphic category
 const selectedGraphicCategory = ref('basic');
 
-// 显示的菜单项（所有）
+// Menu items shown (all)
 const visibleItems = computed(() => {
   return menuItems;
 });
 
-// 计算选中分类的图元
+// Compute graphics of the selected category
 const selectedCategoryGraphics = computed(() => {
   const graphics = GraphicFactory.getGraphicTypes().filter(
     (graphic) => graphic.category === selectedGraphicCategory.value
   );
 
-  // 添加 Naive Button
+  // Add Naive Button
   if (selectedGraphicCategory.value === 'basic') {
     graphics.push({
       type: 'naive-button',
@@ -206,54 +206,54 @@ const selectedCategoryGraphics = computed(() => {
   return graphics;
 });
 
-// 切换通用组件二级菜单
+// Switch generic-component submenu
 const toggleGeneralSubmenu = () => {
   showGeneralSubmenu.value = !showGeneralSubmenu.value;
-  // 关闭其他菜单
+  // Close other menus
   showEditSubmenu.value = false;
 };
 
-// 切换编辑菜单二级菜单
+// Switch edit-menu submenu
 const toggleEditSubmenu = () => {
   showEditSubmenu.value = !showEditSubmenu.value;
-  // 关闭其他菜单
+  // Close other menus
   showGeneralSubmenu.value = false;
 };
 
-// 选择菜单项
+// Select menu item
 const selectItem = (id: string) => {
   activeItem.value = id;
-  // 如果是通用组件，切换二级菜单
+  // If a generic component, switch submenu
   if (id === 'general') {
     toggleGeneralSubmenu();
   } 
-  // 如果是编辑，切换二级菜单
+  // If editing, switch submenu
   else if (id === 'edit') {
     toggleEditSubmenu();
   } 
   else {
-    // 关闭所有菜单
+    // Close all menus
     showGeneralSubmenu.value = false;
     showEditSubmenu.value = false;
   }
-  // 这里可以添加路由跳转或其他逻辑
+  // Here you can add route navigation or other logic
 };
 
-// 选择图元分类
+// Select graphic category
 const selectGraphicCategory = (categoryId: string) => {
   selectedGraphicCategory.value = categoryId;
 };
 
-// 处理图元拖拽开始
+// Handle graphic drag start
 const handleGraphicDragStart = (event: DragEvent, graphicType: string) => {
   if (event.dataTransfer) {
     event.dataTransfer.setData('text/plain', graphicType);
   }
 };
 
-// 获取图元图标
+// Get the graphic icon
 const getGraphicIcon = (type: string) => {
-  // 根据图元类型返回对应的图标
+  // Return the icon corresponding to the graphic type
   const iconMap: Record<string, string> = {
     button: '🔘',
     input: '📝',
@@ -267,41 +267,41 @@ const getGraphicIcon = (type: string) => {
   return iconMap[type] || '📦';
 };
 
-// 处理撤销操作
+// Handle undo operation
 const handleUndo = () => {
   ('Undo operation');
-  // 这里可以添加撤销操作的逻辑
+  // Here you can add undo-operation logic
 };
 
-// 处理重做操作
+// Handle redo operation
 const handleRedo = () => {
   ('Redo operation');
-  // 这里可以添加重做操作的逻辑
+  // Here you can add redo-operation logic
 };
 
-// 处理历史记录操作
+// Handle history operations
 const handleHistory = () => {
   ('History operation');
-  // 这里可以添加历史记录操作的逻辑
+  // Here you can add history-operation logic
 };
 
-// 处理框选操作
+// Handle box-select operation
 const handleSelect = () => {
   ('Select operation');
-  // 这里可以添加框选操作的逻辑
+  // Here you can add box-select logic
 };
 
-// 处理粘贴操作
+// Handle paste operation
 const handlePaste = () => {
   ('Paste operation');
-  // 这里可以添加粘贴操作的逻辑
+  // Here you can add paste-operation logic
 };
 
-// 点击外部关闭菜单
+// Click outside to close the menu
 const handleClickOutside = (event: MouseEvent) => {
   const submenus = document.querySelectorAll('.with-submenu');
   
-  // 检查是否点击在任何二级菜单内部
+  // Check whether the click is inside any submenu
   let clickInsideSubmenu = false;
   submenus.forEach(submenu => {
     if (submenu.contains(event.target as Node)) {
@@ -309,19 +309,19 @@ const handleClickOutside = (event: MouseEvent) => {
     }
   });
   
-  // 关闭所有二级菜单
+  // Close all submenus
   if (!clickInsideSubmenu) {
     showGeneralSubmenu.value = false;
     showEditSubmenu.value = false;
   }
 };
 
-// 添加点击外部关闭菜单的事件监听
+// Add the click-outside-to-close-menu event listener
 onMounted(() => {
   document.addEventListener('click', handleClickOutside);
 });
 
-// 移除事件监听
+// Remove event listeners
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside);
 });
@@ -406,7 +406,7 @@ onUnmounted(() => {
   font-weight: bold;
 }
 
-/* 折叠菜单样式 */
+/* Collapsed menu style */
 .dropdown {
   position: relative;
 }
@@ -479,7 +479,7 @@ onUnmounted(() => {
   line-height: 1;
 }
 
-/* 二级菜单样式 */
+/* Submenu style */
 .submenu {
   position: absolute;
   top: 100%;
@@ -580,7 +580,7 @@ onUnmounted(() => {
   color: white;
 }
 
-/* 滚动条样式 */
+/* Scrollbar style */
 .submenu-items::-webkit-scrollbar {
   width: 6px;
 }
@@ -599,7 +599,7 @@ onUnmounted(() => {
   background: var(--border-light);
 }
 
-/* 编辑菜单下拉菜单样式 */
+/* Edit-menu dropdown style */
 .edit-submenu {
   min-width: 200px;
 }

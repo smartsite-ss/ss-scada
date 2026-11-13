@@ -47,7 +47,7 @@ const props = defineProps({
 
 const { selectGraphic, isSelected } = useSelection();
 
-// 计算包装器样式
+// Compute wrapper style
 const wrapperStyle = computed(() => {
   return {
     position: 'absolute' as const,
@@ -58,12 +58,12 @@ const wrapperStyle = computed(() => {
   };
 });
 
-// 检查图形是否被选择
+// Check whether the graphic is selected
 const isComponentSelected = computed(() => {
   return isSelected(props.graphicId);
 });
 
-// 处理点击事件
+// Handle click event
 const handleClick = (e: MouseEvent) => {
   e.stopPropagation();
   selectGraphic(props.graphicId);

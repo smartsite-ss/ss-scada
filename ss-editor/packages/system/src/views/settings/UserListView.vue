@@ -100,7 +100,7 @@
       </SmartTable>
     </div>
 
-    <!-- 新建/编辑对话框 -->
+    <!-- Create/edit dialog -->
     <div
       v-if="dialogVisible"
       class="modal-overlay"

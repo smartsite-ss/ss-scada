@@ -7,11 +7,10 @@ import { ScadaDataManager, BindingManager } from '@scada-editor/core';
 import { usePageDataSourceStore, useWsStore } from '@scada-editor/system';
 
 /**
- * 从页面图元的 dataSource 配置提取绑定列表。
+ * Extract the binding list from the dataSource configuration of the page graphic element.
  *
- * graphicBindings 可能未持久化到页面 JSON（或已陈旧），此函数作为唯一构建入口，
- * 供 EditorView / PreviewView 在激活数据管道前重建最新绑定。
- */
+ * graphicBindings may not be persisted to the page JSON (or may be outdated). This function serves as the sole build entry point,
+ * for EditorView / PreviewView to rebuild the latest bindings before activating the data pipeline.*/
 export function buildGraphicBindingsFromPage(page: any): any[] {
   const rawGraphics = page?.graphics?.value || page?.graphics || [];
   const entries: any[] = [];
@@ -30,47 +29,46 @@ export function buildGraphicBindingsFromPage(page: any): any[] {
 }
 
 /**
- * useDataSourceLifecycle — 数据源生命周期统一管理
+ * useDataSourceLifecycle — unified lifecycle management for page data sources
  *
- * 抽取自 PreviewView.initDataSourceManager / EditorView.preview 中的重复逻辑：
- * 1. 合并 graphicBindings 与图元自身 dataSource 配置（filterScript/driverScript/propertyPath 兜底）
- * 2. ScadaDataManager.initPage 启动数据源调度
- * 3. pageDataSourceStore.loadGroup 加载运行态数据面板状态
- * 4. BindingManager.bind 批量注册属性路径映射
+ * Extracted from the duplicated logic in PreviewView.initDataSourceManager / EditorView.preview:
+ * 1. Merge graphicBindings with the graphic's own dataSource config (filterScript/driverScript/propertyPath fallback)
+ * 2. ScadaDataManager.initPage starts the data-source scheduling
+ * 3. pageDataSourceStore.loadGroup loads the runtime data-panel state
+ * 4. BindingManager.bind registers the property-path mappings in batch
  *
- * 互补关系说明：
- * - DataSourceManager 负责驱动/管道/AQ 订阅（filterScript/driverScript 执行）
- * - BindingManager 负责属性路径映射（expression/format → applyProperty）
- * - 二者互补非冗余，数据到达后各自承担不同职责
+ * Complementary relationship:
+ * - DataSourceManager handles drivers/pipeline/AQ subscriptions (filterScript/driverScript execution)
+ * - BindingManager handles property-path mapping (expression/format -> applyProperty)
+ * - The two are complementary, not redundant; each takes on a different role once data arrives
  */
 export function useDataSourceLifecycle() {
   const wsStore = useWsStore();
-  /** 补偿订阅监听器：bind 执行时 WS 未连接（订阅被丢弃），连接成功后一次性补发 */
+  /** Compensation subscription listener: WS is not connected when bind is executed (subscription is discarded), and it is reissued once after successful connection.*/
   let subscriptionResyncStop: (() => void) | null = null;
 
   /**
-   * 初始化页面数据源生命周期。
+   * Initialize the lifecycle of the page data source.
    *
-   * @param pageData 当前页面 JSON（需包含 dataSource 字段和 getGraphicById 方法）
-   * @param projectId 项目标识（用于 WebSocketDriver 建立连接）
-   * @param logTag 日志前缀（如 'PreviewView' / 'EditorView'），便于定位问题
-   */
+   * @param pageData Current page JSON (must contain the dataSource field and the getGraphicById method)
+   * @param projectId Project identifier (used by WebSocketDriver to establish a connection)
+   * @param logTag Log prefix (e.g., 'PreviewView' / 'EditorView') for easy problem identification*/
   async function initDataSourceLifecycle(
     pageData: any,
     projectId: string,
     logTag = 'useDataSourceLifecycle',
   ): Promise<void> {
     try {
-      // 独立 wsStore 连接与 dataSource 生命周期解耦：即使页面未配置任何数据源，
-      // 「直接绑定」图元（tag-variable / tag-trend，绑定信息写在 config.customProps）
-      // 也需要 wsStore 已连接，才能在编辑态 / 运行态收到实时数据。
+      //Decoupling of independent wsStore connections from the dataSource lifecycle: Even if the page is not configured with any data sources,
+      //"Direct Binding" element (tag-variable / tag-trend, binding information is written in config.customProps)
+      //wsStore also needs to be connected in order to receive real-time data in edit mode/runtime mode.
       const isRealProject =
         !!projectId && projectId !== 'template-mode' && projectId !== 'default-project';
       if (isRealProject) {
         try {
           await wsStore.connect(projectId);
         } catch {
-          // wsStore 连接失败（如 connect_error）不应阻断数据源初始化
+          //wsStore connection failures (e.g., connect_error) should not block data source initialization
         }
       }
 
@@ -85,10 +83,10 @@ export function useDataSourceLifecycle() {
         return;
       }
 
-      // ── 合并 graphicBindings 与图元自身的 dataSource 配置 ──
-      //    filterScript / driverScript / propertyPath 在编辑态写入 graphic.dataSource，
-      //    而 pageGroup.graphicBindings 可能未持久化/未同步，需从图元兜底读取；
-      //    graphicBindings 为空时从图元配置重建（修复：预览态首次打开绑定全部被跳过）
+      //── Merge graphicBindings with the dataSource configuration of the graphic element itself ──
+      //filterScript / driverScript / propertyPath writes to graphic.dataSource in edit mode,
+      //And pageGroup.graphicBindings may not be persisted/synchronized, and needs to be read from the graphic element as a fallback;
+      //Rebuild from graphic element configuration when graphicBindings is empty (Fix: All bindings are skipped when the preview state is opened for the first time)
       const persistedBindings = dataSourceGroup.graphicBindings ?? [];
       const rawBindings = persistedBindings.length > 0
         ? persistedBindings
@@ -106,9 +104,9 @@ export function useDataSourceLifecycle() {
         };
       });
 
-      // ── 启动 DataSourceManager：注入 projectId 上下文 ──
-      //    WebSocketDriver.connect 会读取 projectId 建立 WS 连接并订阅标签
-      //    DataPipelineBridge 会监听 tagValueChanged 并按 filterScript/driverScript 执行
+      //── Launch DataSourceManager: Inject projectId context ──
+      //WebSocketDriver.connect will read the projectId to establish a WS connection and subscribe to labels
+      //DataPipelineBridge listens to tagValueChanged and executes according to filterScript/driverScript
       await ScadaDataManager.initPage({
         pageId: currentPage.id,
         projectId,
@@ -117,7 +115,7 @@ export function useDataSourceLifecycle() {
         graphicBindings,
       });
 
-      // ── 加载 pageDataSourceStore（仅供运行态数据面板/调试使用）──
+      //── Load pageDataSourceStore (for runtime data panel/debugging only) ──
       const pageDsStore = usePageDataSourceStore();
       pageDsStore.loadGroup({
         pageId: currentPage.id,
@@ -126,9 +124,9 @@ export function useDataSourceLifecycle() {
         graphicBindings,
       });
 
-      // ── 运行时注册数据绑定到 BindingManager ──
-      //    DataSourceManager 负责驱动/管道/AQ 订阅；BindingManager 负责属性路径映射
-      //    （handleDataUpdate → graphicStore.applyProperty），二者互补非冗余
+      //── Runtime registration of data binding to BindingManager ──
+      //DataSourceManager is responsible for driver/pipeline/AQ subscriptions; BindingManager is responsible for property path mapping
+      //(handleDataUpdate → graphicStore.applyProperty), the two are complementary and not redundant
       for (const gb of rawBindings) {
         const graphic = currentPage.getGraphicById?.(gb.graphicId);
         if (!graphic) continue;
@@ -143,9 +141,9 @@ export function useDataSourceLifecycle() {
         }
       }
 
-      // ── 补偿订阅 ──
-      //    subscribeTags 在 WS 未连接时被静默丢弃，而 BindingManager 内部引用计数已递增，
-      //    后续不会重新触发订阅；若 bind 执行时连接尚未就绪，连接成功后补发一次。
+      //── Compensatory Subscription ──
+      //subscribeTags are silently discarded when WS is not connected, and the internal reference count of BindingManager has been incremented,
+      //The subscription will not be re-triggered subsequently; if the connection is not ready when bind is executed, it will be re-sent once the connection is successful.
       subscriptionResyncStop?.();
       subscriptionResyncStop = null;
       if (!wsStore.isConnected) {
@@ -165,8 +163,7 @@ export function useDataSourceLifecycle() {
   }
 
   /**
-   * 销毁页面数据源生命周期（页面卸载/预览关闭时调用）。
-   */
+   * Destroys the lifecycle of the page data source (called when the page is unloaded/preview is closed).*/
   async function destroyDataSourceLifecycle(): Promise<void> {
     subscriptionResyncStop?.();
     subscriptionResyncStop = null;

@@ -156,13 +156,13 @@
 <script setup lang="ts">
 import { useTheme, i18n } from '@scada-editor/core';
 
-// 预加载所有编辑器工具图标（库模式下静态 src 无法被 Rollup 解析，需显式导入）
+// Preload all editor-tool icons (in library mode static src cannot be parsed by Rollup; explicit import needed)
 const iconModules = import.meta.glob('../../assets/icons/*.svg', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
 const iconUrl = (name: string) => iconModules[`../../assets/icons/${name}.svg`];
 
 const { themeStyles } = useTheme();
 
-// 国际化翻译函数
+// Internationalization translation function
 const { t } = i18n.global;
 
 defineProps({

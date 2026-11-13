@@ -5,17 +5,17 @@
     :title="bindTitle"
     style="display:block; overflow:visible;"
   >
-    <!-- 外圈 rim -->
+    <!-- Outer rim -->
     <circle :cx="cx" :cy="cy" :r="radius * 1.15" :fill="rimColor" />
-    <!-- 表盘 face -->
+    <!-- Gauge face -->
     <circle :cx="cx" :cy="cy" :r="radius" :fill="faceColor" />
 
-    <!-- 量程彩色弧（正常/警告/危险） -->
+    <!-- Range colored arc (normal/warning/danger) -->
     <path :d="normalArc" fill="none" :stroke="normalColor" :stroke-width="arcWidth" />
     <path v-if="warningArcVisible" :d="warningArc" fill="none" :stroke="warningColor" :stroke-width="arcWidth" />
     <path v-if="dangerArcVisible" :d="dangerArc" fill="none" :stroke="dangerColor" :stroke-width="arcWidth" />
 
-    <!-- 刻度线 -->
+    <!-- Tick marks -->
     <g v-if="showTicks">
       <line
         v-for="(tick, index) in ticks"
@@ -29,7 +29,7 @@
       />
     </g>
 
-    <!-- 量程标签 -->
+    <!-- Range label -->
     <g v-if="showLabels">
       <text
         v-for="(label, index) in labels"
@@ -43,17 +43,17 @@
       >{{ label.text }}</text>
     </g>
 
-    <!-- 指针 -->
+    <!-- Pointer -->
     <polygon
       :points="needlePoints"
       :fill="needleColor"
       :transform="`rotate(${needleAngle} ${cx} ${cy})`"
     />
 
-    <!-- 中心帽 -->
+    <!-- Center cap -->
     <circle :cx="cx" :cy="cy" :r="radius * 0.1" :fill="centerCapColor" />
 
-    <!-- 数值文本 -->
+    <!-- Numeric text -->
     <text
       v-if="showValue"
       :x="cx"
@@ -117,7 +117,7 @@ const totalAngle = computed(() => normalizeDelta(endAngle.value - startAngle.val
 const minValue = computed(() => Number(props.minValue));
 const maxValue = computed(() => Number(props.maxValue));
 
-/** 有效实时值：绑定标签时读 WS 实时值，未绑定则回退静态 value */
+/** Effective live value: when a tag is bound, read the WS live value; otherwise fall back to the static value */
 const effectiveValue = computed(() => {
   if (props.tagId) {
     const v = Number(currentValue.value);
@@ -139,7 +139,7 @@ const valueText = computed(() =>
   props.unit ? `${displayText.value} ${props.unit}` : displayText.value,
 );
 
-// ── 量程彩色弧 ──
+// ── Range colored arc ──
 const arcRadius = computed(() => radius.value * 0.88);
 const arcWidth = computed(() => radius.value * 0.08);
 const normalColor = '#2ECC71';
@@ -164,7 +164,7 @@ const dangerArc = computed(() =>
   arcPath(cx.value, cy.value, arcRadius.value, dangerAngle.value, arcEnd.value),
 );
 
-// ── 刻度 ──
+// ── Ticks ──
 const ticks = computed(() => {
   const result: Array<{ x1: number; y1: number; x2: number; y2: number; major: boolean }> = [];
   if (!props.showTicks) return result;
@@ -182,7 +182,7 @@ const ticks = computed(() => {
   return result;
 });
 
-// ── 量程标签 ──
+// ── Range label ──
 const labels = computed(() => {
   const result: Array<{ x: number; y: number; text: string }> = [];
   if (!props.showLabels) return result;
@@ -199,7 +199,7 @@ const labels = computed(() => {
   return result;
 });
 
-// ── 指针 ──
+// ── Pointer ──
 const needleLength = computed(() => radius.value * 0.75);
 const needleWidth = computed(() => radius.value * 0.06);
 const needleTail = computed(() => radius.value * 0.18);

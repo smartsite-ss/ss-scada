@@ -1,6 +1,6 @@
 <template>
   <div class="terminal-page">
-    <!-- 页面头部 -->
+    <!-- Page header -->
     <div class="page-header">
       <div class="page-title-area">
         <h1 class="page-title">
@@ -41,7 +41,7 @@
       </div>
     </div>
 
-    <!-- 安全提示 -->
+    <!-- Safety hint -->
     <div class="section-card security-info">
       <div class="security-info-content">
         <span class="security-icon">!</span>
@@ -55,7 +55,7 @@
       </button>
     </div>
 
-    <!-- 白名单列表 -->
+    <!-- Whitelist list -->
     <div
       v-if="showWhitelist"
       class="section-card"
@@ -74,7 +74,7 @@
       </div>
     </div>
 
-    <!-- 终端输出区 -->
+    <!-- Terminal output area -->
     <div
       ref="terminalRef"
       class="terminal-output"
@@ -106,7 +106,7 @@
       </div>
     </div>
 
-    <!-- 命令输入区 -->
+    <!-- Command input area -->
     <div class="command-input-area">
       <span class="input-prompt mono-text">{{ promptText }}</span>
       <input
@@ -131,7 +131,7 @@
       </button>
     </div>
 
-    <!-- 历史命令 -->
+    <!-- History commands -->
     <div
       v-if="commandHistory.length > 0"
       class="section-card history-section"
@@ -178,7 +178,7 @@ import { useAuthStore } from '../../stores/auth.store';
 const { t } = useI18n();
 const authStore = useAuthStore();
 
-// ==================== 类型定义 ====================
+// ==================== Type definitions ====================
 interface OutputLine {
   type: 'command' | 'output' | 'error' | 'system';
   text: string;
@@ -190,7 +190,7 @@ interface HistoryEntry {
   exitCode: number;
 }
 
-// ==================== 响应式状态 ====================
+// ==================== Responsive state ====================
 const terminalRef = ref<HTMLElement | null>(null);
 const inputRef = ref<HTMLInputElement | null>(null);
 const currentCommand = ref('');
@@ -211,13 +211,13 @@ const whitelistCommands = [
   'git status', 'git log', 'git branch', 'pm2 list', 'pm2 status',
 ];
 
-// ==================== 计算属性 ====================
+// ==================== Computed properties ====================
 const promptText = computed(() => {
   const user = authStore.user?.username || 'admin';
   return `${user}@scada:~$`;
 });
 
-// ==================== WebSocket 连接 ====================
+// ==================== WebSocket connection ====================
 function connect() {
   if (socket) {
     socket.disconnect();
@@ -225,7 +225,7 @@ function connect() {
   }
 
   connectionStatus.value = 'connecting';
-  // Web 同源：页面 origin；桌面端（Tauri）：后端绝对地址（见 ws-url.ts）
+  // Web same-origin: page origin; desktop (Tauri): backend absolute address (see ws-url.ts)
   const wsUrl = getWsServerUrl();
   const token = getToken();
 
@@ -293,7 +293,7 @@ function disconnect() {
   connectionStatus.value = 'disconnected';
 }
 
-// ==================== 命令执行 ====================
+// ==================== Command execution ====================
 function executeCommand() {
   const cmd = currentCommand.value.trim();
   if (!cmd || connectionStatus.value !== 'connected' || executing.value) return;
@@ -335,7 +335,7 @@ function navigateHistory(direction: 'up' | 'down') {
   }
 }
 
-// ==================== 输出管理 ====================
+// ==================== Output management ====================
 function addCommandLine(text: string) {
   outputLines.push({ type: 'command', text });
 }
@@ -374,7 +374,7 @@ function scrollToBottom() {
   });
 }
 
-// ==================== 生命周期 ====================
+// ==================== Lifecycle ====================
 onMounted(() => {
   connect();
   nextTick(() => inputRef.value?.focus());
@@ -384,7 +384,7 @@ onUnmounted(() => {
   disconnect();
 });
 
-// keep-alive 缓存：离开页面时断开 WebSocket，返回时自动重连
+// keep-alive cache: disconnect WebSocket when leaving the page, auto-reconnect on return
 onDeactivated(() => {
   disconnect();
 });
@@ -440,7 +440,7 @@ onActivated(() => {
   flex-wrap: wrap;
 }
 
-/* 连接状态 */
+/* Connection state */
 .connection-status {
   display: flex;
   align-items: center;
@@ -474,7 +474,7 @@ onActivated(() => {
 .status-connected { color: var(--status-success); }
 .status-error { color: var(--status-error); }
 
-/* 安全提示 */
+/* Safety hint */
 .security-info {
   display: flex;
   align-items: center;
@@ -517,7 +517,7 @@ onActivated(() => {
   text-decoration: underline;
 }
 
-/* 白名单 */
+/* Whitelist */
 .whitelist-grid {
   padding: 14px 20px;
   display: flex;
@@ -534,7 +534,7 @@ onActivated(() => {
   color: var(--text-secondary);
 }
 
-/* 通用 section-card */
+/* Generic section-card */
 .section-card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -558,7 +558,7 @@ onActivated(() => {
   margin: 0;
 }
 
-/* 终端输出区 */
+/* Terminal output area */
 .terminal-output {
   flex: 1;
   min-height: 300px;
@@ -626,7 +626,7 @@ onActivated(() => {
   to { transform: rotate(360deg); }
 }
 
-/* 命令输入区 */
+/* Command input area */
 .command-input-area {
   display: flex;
   align-items: center;
@@ -662,7 +662,7 @@ onActivated(() => {
   cursor: not-allowed;
 }
 
-/* 历史命令 */
+/* History commands */
 .history-section {
   flex-shrink: 0;
 }

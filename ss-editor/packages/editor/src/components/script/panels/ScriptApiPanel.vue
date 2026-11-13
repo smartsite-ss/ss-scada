@@ -1,6 +1,6 @@
 <template>
   <div class="script-api-panel">
-    <!-- 搜索栏 -->
+    <!-- Search bar -->
     <div class="api-header">
       <span class="api-title">{{ $t('system.scriptEditor.api.title') }}</span>
       <input
@@ -10,7 +10,7 @@
       >
     </div>
 
-    <!-- API 列表 -->
+    <!-- API list -->
     <div class="api-list">
       <div
         v-for="group in filteredGroups"
@@ -36,7 +36,7 @@
         </div>
       </div>
 
-      <!-- 无结果 -->
+      <!-- No result -->
       <div
         v-if="filteredGroups.length === 0"
         class="api-empty"
@@ -45,7 +45,7 @@
       </div>
     </div>
 
-    <!-- API 详情面板 -->
+    <!-- API detail panel -->
     <div
       v-if="selectedApiDetail"
       class="api-detail-panel"
@@ -60,7 +60,7 @@
         </button>
       </div>
       <div class="api-detail-body">
-        <!-- 签名 -->
+        <!-- Signature -->
         <div class="api-detail-section">
           <div class="api-detail-label">
             {{ $t('system.scriptEditor.api.signature') }}
@@ -68,7 +68,7 @@
           <code class="api-detail-signature">{{ selectedApiDetail.signature }}</code>
         </div>
 
-        <!-- 说明 -->
+        <!-- Note -->
         <div class="api-detail-section">
           <div class="api-detail-label">
             {{ $t('system.scriptEditor.api.description') }}
@@ -78,7 +78,7 @@
           </div>
         </div>
 
-        <!-- 分类 -->
+        <!-- Category -->
         <div class="api-detail-section">
           <div class="api-detail-label">
             {{ $t('system.scriptEditor.api.category') }}
@@ -91,7 +91,7 @@
           >{{ env }}</span>
         </div>
 
-        <!-- 参数 -->
+        <!-- Parameters -->
         <div
           v-if="selectedApiDetail.params.length > 0"
           class="api-detail-section"
@@ -126,7 +126,7 @@
           </div>
         </div>
 
-        <!-- 返回值 -->
+        <!-- Return value -->
         <div
           v-if="selectedApiDetail.returns"
           class="api-detail-section"
@@ -139,7 +139,7 @@
           </div>
         </div>
 
-        <!-- 使用注意 -->
+        <!-- Usage notes -->
         <div
           v-if="selectedApiDetail.notes"
           class="api-detail-section"
@@ -152,7 +152,7 @@
           </div>
         </div>
 
-        <!-- 示例 -->
+        <!-- Example -->
         <div
           v-if="selectedApiDetail.example"
           class="api-detail-section"
@@ -163,7 +163,7 @@
           <pre class="api-detail-example">{{ selectedApiDetail.example }}</pre>
         </div>
 
-        <!-- 插入按钮 -->
+        <!-- Insert button -->
         <button
           class="api-detail-insert"
           @click="$emit('insert', selectedApiDetail.insertText)"
@@ -192,13 +192,13 @@ defineEmits<{
 const searchText = ref('');
 const selectedApi = ref<string | null>(null);
 
-/** 当前选中的 API 详情 */
+/** Currently selected API details */
 const selectedApiDetail = computed<ApiMethodDef | null>(() => {
   if (!selectedApi.value) return null;
   return getApiByName(selectedApi.value) ?? null;
 });
 
-/** 分类分组后的 API */
+/** APIs grouped by category */
 const apiGroups = computed(() => {
   const categoryMap = new Map<string, { label: string; icon: string; apis: ApiMethodDef[] }>();
 
@@ -217,7 +217,7 @@ const apiGroups = computed(() => {
   return Array.from(categoryMap.values());
 });
 
-/** 搜索过滤后的分组 */
+/** Groups after search filtering */
 const filteredGroups = computed(() => {
   const keyword = searchText.value.toLowerCase().trim();
   if (!keyword) return apiGroups.value;
@@ -236,7 +236,7 @@ const filteredGroups = computed(() => {
     .filter((group) => group.apis.length > 0);
 });
 
-/** 选中 API 查看详情 */
+/** Select an API to view details */
 function selectApi(name: string) {
   selectedApi.value = selectedApi.value === name ? null : name;
 }
@@ -279,7 +279,7 @@ function selectApi(name: string) {
   border-color: var(--border-focus);
 }
 
-/* ── API 列表 ── */
+/* ── API list ── */
 .api-list {
   flex: 1;
   overflow-y: auto;
@@ -339,7 +339,7 @@ function selectApi(name: string) {
   font-size: 12px;
 }
 
-/* ── API 详情面板 ── */
+/* ── API detail panel ── */
 .api-detail-panel {
   border-top: 1px solid var(--border);
   background: var(--background);

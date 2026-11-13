@@ -98,7 +98,7 @@
         :height="h"
       />
 
-      <!-- 顶部边框 -->
+      <!-- Top border -->
       <line
         x1="24"
         y1="3"
@@ -125,7 +125,7 @@
         stroke-opacity="0.5"
       />
 
-      <!-- 底部边框 -->
+      <!-- Bottom border -->
       <line
         x1="24"
         :y1="h - 3"
@@ -152,7 +152,7 @@
         stroke-opacity="0.5"
       />
 
-      <!-- 左侧边框 -->
+      <!-- Left border -->
       <line
         y1="24"
         x1="3"
@@ -180,7 +180,7 @@
         stroke-opacity="0.5"
       />
 
-      <!-- 右侧边框 -->
+      <!-- Right border -->
       <line
         :y1="24"
         :x1="w - 3"
@@ -208,13 +208,13 @@
         stroke-opacity="0.5"
       />
 
-      <!-- 放射光芒 sunburst from corners -->
+      <!-- Radiant sunburst from corners -->
       <g
         v-if="showSunburst"
         opacity="0.4"
         filter="url(#ad-glow)"
       >
-        <!-- 左上 -->
+        <!-- Top-left -->
         <g>
           <line
             x1="3"
@@ -273,7 +273,7 @@
             stroke-width="0.2"
           />
         </g>
-        <!-- 右上 -->
+        <!-- Top-right -->
         <g>
           <line
             :x1="w - 3"
@@ -332,7 +332,7 @@
             stroke-width="0.2"
           />
         </g>
-        <!-- 左下 -->
+        <!-- Bottom-left -->
         <g>
           <line
             x1="3"
@@ -391,7 +391,7 @@
             stroke-width="0.2"
           />
         </g>
-        <!-- 右下 -->
+        <!-- Bottom-right -->
         <g>
           <line
             :x1="w - 3"
@@ -452,12 +452,12 @@
         </g>
       </g>
 
-      <!-- 角饰 Art Deco stepped chevrons -->
+      <!-- Corner trim: Art Deco stepped chevrons -->
       <g
         v-if="showCorners"
         filter="url(#ad-glow)"
       >
-        <!-- 左上三段阶梯 -->
+        <!-- Top-left three-step stair -->
         <polyline
           :stroke="`url(#ad-gold-diag)`"
           stroke-width="1.5"
@@ -476,7 +476,7 @@
           fill="none"
           points="13,36 24,36 24,24 36,24 36,13"
         />
-        <!-- 右上 -->
+        <!-- Top-right -->
         <polyline
           :stroke="`url(#ad-gold-diag)`"
           stroke-width="1.5"
@@ -495,7 +495,7 @@
           fill="none"
           :points="`${w - 13},36 ${w - 24},36 ${w - 24},24 ${w - 36},24 ${w - 36},13`"
         />
-        <!-- 左下 -->
+        <!-- Bottom-left -->
         <polyline
           :stroke="`url(#ad-gold-diag)`"
           stroke-width="1.5"
@@ -514,7 +514,7 @@
           fill="none"
           :points="`13,${h - 36} 24,${h - 36} 24,${h - 24} 36,${h - 24} 36,${h - 13}`"
         />
-        <!-- 右下 -->
+        <!-- Bottom-right -->
         <polyline
           :stroke="`url(#ad-gold-diag)`"
           stroke-width="1.5"
@@ -535,7 +535,7 @@
         />
       </g>
 
-      <!-- 四角钻石点 -->
+      <!-- Four-corner diamond dots -->
       <circle
         cx="3"
         cy="3"

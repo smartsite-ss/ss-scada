@@ -5,7 +5,7 @@
     @click.stop
   >
     <div class="carousel-controls-inner">
-      <!-- 播放/暂停 -->
+      <!-- Play/pause -->
       <button
         class="ctrl-btn"
         :title="state.isRunning && !state.isPaused ? t('carousel.pause') : t('carousel.play')"
@@ -14,7 +14,7 @@
         {{ state.isRunning && !state.isPaused ? '⏸' : '▶' }}
       </button>
 
-      <!-- 上一页 -->
+      <!-- Previous page -->
       <button
         class="ctrl-btn"
         :title="t('carousel.previous')"
@@ -23,7 +23,7 @@
         ◀
       </button>
 
-      <!-- 指示器 -->
+      <!-- Indicator -->
       <div class="carousel-dots">
         <span
           v-for="(page, index) in state.carouselPages"
@@ -38,7 +38,7 @@
         />
       </div>
 
-      <!-- 下一页 -->
+      <!-- Next page -->
       <button
         class="ctrl-btn"
         :title="t('carousel.next')"
@@ -47,12 +47,12 @@
         ▶
       </button>
 
-      <!-- 位置信息 -->
+      <!-- Location info -->
       <span class="carousel-info">
         {{ t('carousel.pagePosition', { current: state.currentIndex + 1, total: state.carouselPages.length }) }}
       </span>
 
-      <!-- 剩余时间 -->
+      <!-- Remaining time -->
       <span class="carousel-timer">
         {{ formatRemainingTime() }}
       </span>
@@ -81,9 +81,9 @@ const props = defineProps({
 });
 
 const emit = defineEmits<{
-  /** 播放（启动或继续） */
+  /** Play (start or resume) */
   play: [];
-  /** 暂停 */
+  /** Pause */
   pause: [];
   previous: [];
   next: [];

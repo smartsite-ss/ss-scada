@@ -114,7 +114,7 @@ function deviceLabel(device: DeviceEntry): string {
   return device.deviceName || device.deviceCode || device.deviceId;
 }
 
-// ===== 实时值订阅（列表项展示标签实时值，替代 UUID） =====
+// ===== Live-value subscription (list items show tag live values instead of UUIDs) =====
 let subscribedTagIds: string[] = [];
 
 function collectTagIds(): string[] {
@@ -128,8 +128,8 @@ function subscribeAllTags() {
   unsubscribeAllTags();
   subscribedTagIds = collectTagIds();
   if (subscribedTagIds.length === 0) return;
-  // 编辑态下 wsStore 可能尚未连接（连接通常由数据面板/数据源配置触发）。
-  // 变量绑定选择器需在此确保连接，否则选择设备变量后无法订阅实时数据。
+  // In edit mode, wsStore may not be connected yet (connection is usually triggered by the data panel / data-source config).
+  // The variable-binding selector must ensure the connection here; otherwise, after selecting a device variable, real-time data cannot be subscribed.
   if (!wsStore.isConnected || wsStore.subscribedProjectId !== props.projectId) {
     void wsStore.connect(props.projectId);
   }

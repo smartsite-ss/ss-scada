@@ -73,7 +73,7 @@ const props = defineProps<{
 
 const { currentValue, bindTitle } = useTagValue(props);
 
-/** 解析实时值 → 启停：未绑定时用手动 running；绑定时按「值→状态」映射，未命中用 defaultStatus */
+/** Parse live value → running/stopped: manual running when unbound; when bound, use the value→status mapping, falling back to defaultStatus on miss */
 const effectiveStatus = computed(() => {
   if (!props.tagId) return props.running ? 'running' : 'stopped';
   const raw = currentValue.value;

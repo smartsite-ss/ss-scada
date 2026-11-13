@@ -25,7 +25,7 @@
       </button>
     </div>
 
-    <!-- 语法检查状态 -->
+    <!-- Syntax-check status -->
     <div class="debug-section">
       <div class="section-title">
         {{ $t('system.scriptEditor.debug.syntaxCheck') }}
@@ -39,7 +39,7 @@
       </div>
     </div>
 
-    <!-- 执行结果 -->
+    <!-- Execution result -->
     <div
       v-if="result"
       class="debug-section"
@@ -93,7 +93,7 @@
       </div>
     </div>
 
-    <!-- 测试输入 -->
+    <!-- Test input -->
     <div class="debug-section">
       <div class="section-title">
         {{ $t('system.scriptEditor.debug.testInput') }}

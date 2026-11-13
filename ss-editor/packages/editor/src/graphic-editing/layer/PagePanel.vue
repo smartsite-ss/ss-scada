@@ -81,7 +81,7 @@
       </div>
     </div>
 
-    <!-- 隐藏的文件输入 -->
+    <!-- Hidden file input -->
     <input
       ref="zipInputRef"
       type="file"
@@ -364,11 +364,11 @@ const contextMenu = reactive({
   pageGroupId: null as string | null,
 });
 
-// ─── 页面预览图 ───
+// ─── Page preview image ───
 const previewUrls = ref<Record<string, string>>({});
 const previewLoading = ref<Set<string>>(new Set());
 
-/** 内置占位图（preview_small.png 尺寸 80x54 的纯 CSS 风格 SVG） */
+/** Built-in placeholder image (preview_small.png, an 80x54 pure-CSS-style SVG) */
 const NO_PREVIEW_PLACEHOLDER = 'data:image/svg+xml,' + encodeURIComponent(
   '<svg xmlns="http://www.w3.org/2000/svg" width="80" height="54" viewBox="0 0 80 54">' +
   '<rect width="80" height="54" fill="#e8e8e8" rx="4"/>' +
@@ -378,12 +378,12 @@ const NO_PREVIEW_PLACEHOLDER = 'data:image/svg+xml,' + encodeURIComponent(
   '</svg>'
 );
 
-/** 安全去前缀：去除 p_/g_ 前缀 */
+/** Safely strip prefix: remove p_/g_ prefix */
 function stripPrefix(name: string): string {
   return name.replace(/^(p_|g_)/, '');
 }
 
-/** 从 URL 路径中提取项目 ID（/editor/:projectId） */
+/** Extract project ID from URL path (/editor/:projectId) */
 function getProjectIdFromPath(): string {
   const match = window.location.pathname.match(/\/editor\/([^/]+)/);
   return match ? match[1] : '';
@@ -404,14 +404,14 @@ async function loadPreview(pageId: string, pageName: string, groupName?: string,
     const token = getToken();
     const headers: Record<string, string> = {};
     if (token) headers.Authorization = `Bearer ${token}`;
-    // 优先使用大纲返回的 URL，没有则构造
+    // Prefer the URL returned by the outline; construct one if absent
     const url = previewSmallUrl || buildPreviewUrl(pageName, groupName);
     const res = await fetch(url, { headers });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const blob = await res.blob();
     previewUrls.value[pageId] = URL.createObjectURL(blob);
   } catch {
-    // 图片不存在或加载失败时使用内置占位图
+    // Use the built-in placeholder image when the image is missing or fails to load
     previewUrls.value[pageId] = NO_PREVIEW_PLACEHOLDER;
   } finally {
     previewLoading.value.delete(pageId);
@@ -436,7 +436,7 @@ async function loadAllPreviews() {
     previewSmallUrl: (p as any).previewSmallUrl,
   }));
 
-  // 并发加载尚未请求过的页面，每次最多 4 个
+  // Concurrently load pages not yet requested, at most 4 at a time
   const CONCURRENCY = 4;
   const toLoad = pageEntries.filter((e) => !previewUrls.value[e.id]);
   for (let i = 0; i < toLoad.length; i += CONCURRENCY) {
@@ -459,7 +459,7 @@ function clearPreviews() {
   previewLoading.value = new Set();
 }
 
-// 导入相关
+// Import-related
 const zipInputRef = ref<HTMLInputElement | null>(null);
 const jsonInputRef = ref<HTMLInputElement | null>(null);
 const dirInputRef = ref<HTMLInputElement | null>(null);
@@ -471,7 +471,7 @@ const currentPageId = computed(() => pageStore.currentPage?.id);
 const pageGroups = computed(() => pageStore.pageGroups || []);
 const ungroupedPages = computed(() => pageStore.getUngroupedPages || []);
 
-// 全部展开/折叠状态
+// Expand/collapse-all state
 const allExpanded = computed(() => {
   if (pageGroups.value.length === 0) return false;
   return pageGroups.value.every(g => expandedGroups.value.has(g.id));
@@ -492,7 +492,7 @@ function switchPage(pageId: string) {
   }
 }
 
-// ─── 分组折叠/展开 ───
+// ─── Group collapse/expand ───
 function toggleGroupExpand(groupId: string) {
   if (expandedGroups.value.has(groupId)) {
     expandedGroups.value.delete(groupId);
@@ -503,15 +503,15 @@ function toggleGroupExpand(groupId: string) {
 
 function toggleAllGroups() {
   if (allExpanded.value) {
-    // 全部折叠
+    // Collapse all
     expandedGroups.value = new Set();
   } else {
-    // 全部展开
+    // Expand all
     expandedGroups.value = new Set(pageGroups.value.map(g => g.id));
   }
 }
 
-// ─── 导入/导出 ───
+// ─── Import/export ───
 function toggleImportMenu() {
   importMenuVisible.value = !importMenuVisible.value;
 }
@@ -520,19 +520,19 @@ function closeImportMenu() {
   importMenuVisible.value = false;
 }
 
-// 导入 ZIP 压缩包
+// Import ZIP archive
 function handleImportZip() {
   closeImportMenu();
   zipInputRef.value?.click();
 }
 
-// 导入 JSON 文件
+// Import JSON file
 function handleImportJson() {
   closeImportMenu();
   jsonInputRef.value?.click();
 }
 
-// 导入目录
+// Import directory
 function handleImportDirectory() {
   closeImportMenu();
   dirInputRef.value?.click();
@@ -553,7 +553,7 @@ async function onZipFileSelected(e: Event) {
         const content = await zipEntry.async('string');
         try {
           const data = JSON.parse(content);
-          // 提取文件名（去掉路径和 .json 后缀）
+          // Extract the file name (strip path and .json suffix)
           const baseName = filename.split('/').pop()?.replace('.json', '') || filename;
           pageFiles.push({ name: baseName, data });
         } catch {
@@ -573,7 +573,7 @@ async function onZipFileSelected(e: Event) {
     await showPrompt('', '', t('pagePanel.zipReadError') || '读取ZIP文件失败');
   }
 
-  // 重置 input 以便可以重新选择相同文件
+  // Reset the input so the same file can be re-selected
   input.value = '';
 }
 
@@ -587,14 +587,14 @@ async function onJsonFileSelected(e: Event) {
     const data = JSON.parse(content);
 
     if (Array.isArray(data)) {
-      // 如果是一个页面数组
+      // If it is a page array
       const pageFiles = data.map((pageData: any, _index: number) => ({
         name: pageData.name || file.name.replace('.json', ''),
         data: pageData,
       }));
       importPageData(pageFiles);
     } else {
-      // 单个页面
+      // Single page
       importPageData([{ name: data.name || file.name.replace('.json', ''), data }]);
     }
   } catch (err: any) {
@@ -636,18 +636,18 @@ async function onDirectorySelected(e: Event) {
 }
 
 async function importPageData(pageFiles: { name: string; data: any }[]) {
-  // 动态导入 GraphicFactory 避免循环依赖导致生产构建 TDZ 错误
+  // Dynamically import GraphicFactory to avoid circular-dependency TDZ errors in production builds
   const { GraphicFactory } = await import('@scada-editor/core');
 
   for (const { name, data } of pageFiles) {
-    // 检查是否有重名页面
+    // Check for duplicate page names
     const existingPage = pages.value.find(p => p.name === name);
     const pageName = existingPage ? `${name}_imported` : name;
 
-    // 创建新页面
+    // Create new page
     const newPage = pageStore.addPage(pageName);
 
-    // 如果导入的数据包含页面属性，则更新
+    // If the imported data contains page properties, update them
     if (data && typeof data === 'object') {
       const updateData: any = {};
       if (data.width) updateData.width = data.width;
@@ -660,7 +660,7 @@ async function importPageData(pageFiles: { name: string; data: any }[]) {
         pageStore.updatePage(newPage.id, updateData);
       }
 
-      // 导入图元
+      // Import graphic
       if (data.graphics && Array.isArray(data.graphics)) {
         const targetPage = pages.value.find(p => p.id === newPage.id);
         if (targetPage) {
@@ -680,15 +680,15 @@ async function importPageData(pageFiles: { name: string; data: any }[]) {
   eventBus.emit('page-imported', { count: pageFiles.length });
 }
 
-// 导出所有页面
+// Export all pages
 async function handleExport() {
   try {
     const zip = new JSZip();
 
-    // 导出每个页面为单独的 JSON 文件
+    // Export each page as a separate JSON file
     for (const page of pages.value) {
       const jsonData = page.toJSON();
-      // 使用页面的 toJSONAsync 以处理 blob URL
+      // Use the page's toJSONAsync to handle blob URLs
       let pageJson: any;
       try {
         if (typeof (page as any).toJSONAsync === 'function') {
@@ -704,14 +704,14 @@ async function handleExport() {
       zip.file(fileName, JSON.stringify(pageJson, null, 2));
     }
 
-    // 导出分组信息
+    // Export group info
     const groupsData = {
       pageGroups: pageGroups.value,
       pageGroupMap: pageStore.pageGroupMap,
     };
     zip.file('_page_groups.json', JSON.stringify(groupsData, null, 2));
 
-    // 生成并下载 ZIP
+    // Generate and download ZIP
     const blob = await zip.generateAsync({ type: 'blob' });
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
     saveAs(blob, `pages_export_${timestamp}.zip`);
@@ -721,7 +721,7 @@ async function handleExport() {
   }
 }
 
-// ─── 分组操作 ───
+// ─── Group operations ───
 async function handleAddGroup() {
   const name = await showPrompt(
     t('pagePanel.addGroupPrompt'),
@@ -738,7 +738,7 @@ async function handleAddGroup() {
 async function handleRenameGroup(groupId: string) {
   const group = pageGroups.value.find(g => g.id === groupId);
   if (!group) return;
-  const oldName = group.name; // 在 await 前保存，防止异步期间数据变化
+  const oldName = group.name; // Save before await, to prevent data changes during async
   const name = await showPrompt(
     t('pagePanel.renameGroupPrompt'),
     stripPrefix(oldName),
@@ -806,7 +806,7 @@ async function handleRemovePage(pageId: string) {
     : undefined;
 
   pageStore.removePage(pageId);
-  // 同步删除服务端页面文件
+  // Also delete the server-side page file
   if (projectId.value) {
     pageApi.deletePage(projectId.value, pageName, groupName).catch(err => {
       console.warn('[PagePanel] 删除页面文件失败:', err);
@@ -814,7 +814,7 @@ async function handleRemovePage(pageId: string) {
   }
 }
 
-// ─── 右键菜单 ───
+// ─── Right-click menu ───
 function openPageContextMenu(e: MouseEvent, page: any) {
   const pageGroupId = pageStore.pageGroupMap[page.id] || null;
   contextMenu.x = e.clientX;
@@ -845,7 +845,7 @@ async function handleContextAddGroup() {
   await handleAddGroup();
 }
 
-// ─── 拖拽相关 ───
+// ─── Drag-related ───
 function onDragStart(e: DragEvent, page: any, groupId: string | null) {
   draggedPageId.value = page.id;
   draggedPageGroupId.value = groupId;
@@ -960,10 +960,10 @@ function onDropInUngrouped(e: DragEvent) {
   onDragEnd();
 }
 
-// ─── 右键菜单操作 ───
+// ─── Right-click menu operations ───
 async function handleContextRename() {
   if (!contextMenu.page) return;
-  const page = contextMenu.page; // 在 await 前保存引用，防止菜单关闭后 contextMenu.page 变为 null
+  const page = contextMenu.page; // Save the reference before await, to prevent contextMenu.page from becoming null after the menu closes
   const oldName = page.name;
   const name = await showPrompt(
     t('pagePanel.renamePrompt'),
@@ -1038,7 +1038,7 @@ async function handleContextDelete() {
     : undefined;
 
   pageStore.removePage(page.id);
-  // 同步删除服务端页面文件
+  // Also delete the server-side page file
   if (projectId.value) {
     pageApi.deletePage(projectId.value, pageName, groupName).catch(err => {
       console.warn('[PagePanel] 删除页面文件失败:', err);
@@ -1047,7 +1047,7 @@ async function handleContextDelete() {
   closeContextMenu();
 }
 
-// ─── 点击外部关闭导入菜单 ───
+// ─── Click outside to close the import menu ───
 function handleGlobalClick(e: MouseEvent) {
   if (importMenuVisible.value && importWrapperRef.value && !importWrapperRef.value.contains(e.target as Node)) {
     closeImportMenu();
@@ -1056,13 +1056,13 @@ function handleGlobalClick(e: MouseEvent) {
 
 onMounted(() => {
   document.addEventListener('click', handleGlobalClick);
-  // 初始加载预览
+  // Initial load preview
   if (projectId.value) {
     loadAllPreviews();
   }
 });
 
-// 项目切换时重新加载预览
+// Reload the preview when the project switches
 watch(projectId, (newId, oldId) => {
   if (oldId && oldId !== newId) {
     clearPreviews();
@@ -1072,7 +1072,7 @@ watch(projectId, (newId, oldId) => {
   }
 });
 
-// 页面变化时更新预览
+// Update the preview when the page changes
 watch(pages, () => {
   if (projectId.value) {
     loadAllPreviews();
@@ -1141,7 +1141,7 @@ onUnmounted(() => {
   color: var(--primary);
 }
 
-/* 导入下拉菜单 */
+/* Import dropdown menu */
 .page-import-wrapper {
   position: relative;
 }
@@ -1337,7 +1337,7 @@ onUnmounted(() => {
   transform: scale(1.03);
 }
 
-/* 预览图加载骨架 */
+/* Preview image loading skeleton */
 .page-item-preview-loading {
   width: 80px;
   height: 54px;
@@ -1504,7 +1504,7 @@ onUnmounted(() => {
   user-select: none;
 }
 
-/* ── 滚动条美化 ── */
+/* ── Scrollbar styling ── */
 .page-panel-groups::-webkit-scrollbar {
   width: 4px;
 }

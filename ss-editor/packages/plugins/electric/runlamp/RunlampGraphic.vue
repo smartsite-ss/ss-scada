@@ -86,7 +86,7 @@ const props = defineProps<{
 
 const { currentValue, bindTitle } = useTagValue(props);
 
-/** 解析实时值 → 状态：未绑定时用手动 state；绑定时按「值→状态」映射，未命中用 defaultStatus */
+/** Parse live value → status: manual state when unbound; when bound, use the value→status mapping, falling back to defaultStatus on miss */
 const effectiveState = computed(() => {
   if (!props.tagId) return props.state;
   const raw = currentValue.value;

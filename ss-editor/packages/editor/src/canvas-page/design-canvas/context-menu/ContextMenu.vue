@@ -4,7 +4,7 @@
     class="context-menu"
     :style="{ left: position.x + 'px', top: position.y + 'px' }"
   >
-    <!-- 选中图元时的菜单 -->
+    <!-- Menu when a graphic is selected -->
     <div
       v-if="selectedGraphicIds.length > 0"
       class="context-menu-content"
@@ -122,7 +122,7 @@
         <span class="text">导出图层数据</span>
       </div>
     </div>
-    <!-- 未选中图元时的菜单 -->
+    <!-- Menu when no graphic is selected -->
     <div
       v-else
       class="context-menu-content"
@@ -189,7 +189,7 @@ const _emit = defineEmits([
 </script>
 
 <style scoped>
-/* 右键菜单样式 */
+/* Right-click menu style */
 .context-menu {
   position: fixed;
   z-index: 10000;

@@ -21,7 +21,7 @@
       </button>
     </div>
 
-    <!-- 总体状态横幅 -->
+    <!-- Overall status banner -->
     <div
       class="status-banner"
       :class="'status-' + healthStatus"
@@ -31,7 +31,7 @@
       <span class="status-uptime">{{ $t('system.health.uptime') }}: {{ formatUptime(detailedHealth?.uptime) }}</span>
     </div>
 
-    <!-- 探针检查结果 -->
+    <!-- Probe check result -->
     <div class="section">
       <h3 class="section-title">
         {{ $t('system.health.probes') }}
@@ -58,13 +58,13 @@
       </div>
     </div>
 
-    <!-- 资源指标 -->
+    <!-- Resource metrics -->
     <div class="section">
       <h3 class="section-title">
         {{ $t('system.health.resources') }}
       </h3>
       <div class="resources-grid">
-        <!-- 内存 -->
+        <!-- Memory -->
         <div class="resource-card">
           <div class="resource-header">
             <span class="resource-label">{{ $t('system.health.memory') }}</span>
@@ -106,7 +106,7 @@
       </div>
     </div>
 
-    <!-- 磁盘分区详情 -->
+    <!-- Disk partition details -->
     <div
       v-if="detailedHealth?.disks"
       class="section"
@@ -159,7 +159,7 @@
       </div>
     </div>
 
-    <!-- 系统信息 -->
+    <!-- System info -->
     <div class="section">
       <h3 class="section-title">
         {{ $t('system.health.systemInfo') }}
@@ -261,7 +261,7 @@ async function fetchHealth() {
     const res = await systemApi.getHealthDetails();
     detailedHealth.value = (res as any).data || (res as any);
   } catch {
-    // 静默失败
+    // Fail silently
   } finally {
     loading.value = false;
   }
@@ -308,7 +308,7 @@ function diskStatusText(status: string): string {
   return map[status] || status;
 }
 
-/** 根据内存/磁盘阈值返回进度条样式类 */
+/** Return the progress-bar style class based on memory/disk thresholds */
 function getThresholdClass(pct: number, type: 'memory' | 'disk'): string {
   const thresholds = type === 'memory'
     ? detailedHealth.value?.memoryThresholds
@@ -382,7 +382,7 @@ onMounted(() => {
   margin: 0;
 }
 
-/* 总体状态横幅 */
+/* Overall status banner */
 .status-banner {
   display: flex;
   align-items: center;
@@ -430,7 +430,7 @@ onMounted(() => {
   font-weight: 400;
 }
 
-/* 区块 */
+/* Block */
 .section {
   margin-bottom: 24px;
 }
@@ -444,7 +444,7 @@ onMounted(() => {
   border-bottom: 1px solid var(--border);
 }
 
-/* 探针 */
+/* Probe */
 .probes-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -500,7 +500,7 @@ onMounted(() => {
   font-family: monospace;
 }
 
-/* 资源指标 */
+/* Resource metrics */
 .resources-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -555,7 +555,7 @@ onMounted(() => {
   opacity: 0.7;
 }
 
-/* 磁盘卡片 */
+/* Disk card */
 .disk-path {
   font-size: 11px;
   color: var(--text-secondary);
@@ -636,7 +636,7 @@ onMounted(() => {
 .progress-fill.warning { background: var(--status-warning); }
 .progress-fill.danger { background: var(--status-error); }
 
-/* 系统信息 */
+/* System info */
 .info-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));

@@ -38,7 +38,7 @@
     </div>
 
     <div class="panel-body">
-      <!-- 无定时器 -->
+      <!-- No timer -->
       <div
         v-if="timerList.length === 0"
         class="empty-state"
@@ -46,7 +46,7 @@
         {{ t('runtime.scriptMonitor.noTimers') }}
       </div>
 
-      <!-- 定时器列表 -->
+      <!-- Timer list -->
       <div
         v-for="timer in timerList"
         :key="timer.id"
@@ -81,7 +81,7 @@
           </div>
         </div>
 
-        <!-- 执行日志列表 -->
+        <!-- Execution log list -->
         <div class="log-section">
           <div class="log-label">
             {{ t('runtime.scriptMonitor.latestLog') }}
@@ -114,7 +114,7 @@
       </div>
     </div>
 
-    <!-- 复制成功提示 -->
+    <!-- Copy success hint -->
     <transition name="fade">
       <div
         v-if="showCopyTip"
@@ -200,7 +200,7 @@ function fetchTimerData() {
 
   timerList.value = allTimers.map((timer: any) => {
     const logs = getLogs(timer.id);
-    // 取最近 N 条日志（从后往前）
+    // Take the most recent N logs (from back to front)
     const recentLogs: TimerLogInfo[] = logs.slice(-MAX_DISPLAY_LOGS).reverse().map((log: any) => ({
       id: log.timestamp.toString(),
       success: log.success,
@@ -273,9 +273,9 @@ function clearLogs() {
   if (!currentPage) return;
   const timerManager = currentPage.timerManager;
   if (!timerManager || typeof timerManager.clearExecutionLogs !== 'function') return;
-  // 清除所有定时器的执行日志
+  // Clear execution logs of all timers
   timerManager.clearExecutionLogs();
-  // 立即刷新显示
+  // Refresh the display immediately
   fetchTimerData();
 }
 

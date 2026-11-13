@@ -79,7 +79,7 @@ const digitalFontSize = computed(() => circleR.value * 0.5);
 const symbolY = computed(() => (props.showDigital ? -circleR.value * 0.24 : 4));
 const digitalY = computed(() => circleR.value * 0.4);
 
-/** 绑定标签时取实时值，否则回退静态 dataset */
+/** Take the live value when a tag is bound, otherwise fall back to the static dataset */
 const effectiveValue = computed(() => (props.tagId ? currentValue.value : props.dataset));
 
 const digitalText = computed(() => {

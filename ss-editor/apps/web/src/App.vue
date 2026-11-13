@@ -14,7 +14,7 @@ onMounted(() => {
 </script>
 
 <style>
-/* 全局样式重置 */
+/*Global Style Reset*/
 * {
   margin: 0;
   padding: 0;

@@ -33,15 +33,15 @@ function buildPreviewUrl(projectId: string, pageName: string, group?: string): s
   return `/preview?${q.toString()}`;
 }
 
-// 监听 route.fullPath（含 query）：仅在有参数时更新 iframeSrc
-// 切换 tab 时 query 丢失 → 不更新 iframeSrc → keep-alive 下 iframe 内容保持
+// Watch route.fullPath (including query): update iframeSrc only when there are params
+// On tab switch the query is lost → do not update iframeSrc → iframe content stays under keep-alive
 watch(() => route.fullPath, () => {
   const pageName = decodeURIComponent((route.params as Record<string, string>).pageName || '');
   const { projectId, group } = route.query as Record<string, string | undefined>;
   if (projectId && pageName) {
     iframeSrc.value = buildPreviewUrl(projectId, pageName, group);
   }
-  // query 缺失时不操作，保留上次的 iframeSrc
+  // When query is missing, do nothing and keep the last iframeSrc
 }, { immediate: true });
 </script>
 

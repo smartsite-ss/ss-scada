@@ -1,6 +1,6 @@
 <template>
   <div class="alarm-statistics">
-    <!-- 页头 -->
+    <!-- Page header -->
     <div class="page-header">
       <div class="header-title">
         <button
@@ -70,14 +70,14 @@
       </div>
     </div>
 
-    <!-- 加载状态（首次） -->
+    <!-- Loading state (first time) -->
     <SsLoading
       v-if="loading && !loaded"
       :text="$t('system.alarmStatistics.loading')"
       size="small"
     />
 
-    <!-- 错误状态 -->
+    <!-- Error state -->
     <div
       v-else-if="error && !loaded"
       class="error-state"
@@ -92,7 +92,7 @@
     </div>
 
     <template v-else-if="loaded">
-      <!-- 顶部指标卡片 -->
+      <!-- Top metric card -->
       <div class="metrics-cards">
         <div class="metric-card">
           <span class="metric-label">{{ $t('system.alarmStatistics.currentPeriodCount') }}</span>
@@ -118,7 +118,7 @@
         </div>
       </div>
 
-      <!-- 级别分布面板 -->
+      <!-- Severity distribution panel -->
       <div class="panel">
         <h3 class="section-title">
           {{ $t('system.alarmStatistics.levelDistribution') }}
@@ -154,7 +154,7 @@
         </div>
       </div>
 
-      <!-- 最频繁报警面板 -->
+      <!-- Most-frequent-alarm panel -->
       <div class="panel">
         <h3 class="section-title">
           {{ $t('system.alarmStatistics.topAlarms') }}
@@ -202,7 +202,7 @@
         </table>
       </div>
 
-      <!-- 时间序列面板 -->
+      <!-- Time-series panel -->
       <div class="panel">
         <h3 class="section-title">
           {{ $t('system.alarmStatistics.timeSeries') }}
@@ -242,7 +242,7 @@
         </div>
       </div>
 
-      <!-- 响应时间统计面板 -->
+      <!-- Response time statistics panel -->
       <div class="panel">
         <h3 class="section-title">
           {{ $t('system.alarmStatistics.responseTimeStats') }}
@@ -477,7 +477,7 @@ onMounted(async () => {
   margin: 0 auto;
 }
 
-/* 页头 */
+/* Page header */
 .page-header {
   display: flex;
   align-items: center;
@@ -538,7 +538,7 @@ onMounted(async () => {
   font-size: 13px;
 }
 
-/* 加载/错误状态 */
+/* Loading/error state */
 .loading-state,
 .error-state {
   display: flex;
@@ -565,7 +565,7 @@ onMounted(async () => {
   }
 }
 
-/* 指标卡片 */
+/* Metric card */
 .metrics-cards {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -622,7 +622,7 @@ onMounted(async () => {
   color: var(--text-secondary);
 }
 
-/* 面板通用 */
+/* Panel common */
 .panel {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -638,7 +638,7 @@ onMounted(async () => {
   margin: 0 0 14px 0;
 }
 
-/* 数据表格 */
+/* Data table */
 .data-table {
   width: 100%;
   border-collapse: collapse;
@@ -679,7 +679,7 @@ onMounted(async () => {
   background: var(--background);
 }
 
-/* 级别徽章 */
+/* Severity badge */
 .level-badge {
   display: inline-block;
   padding: 2px 10px;
@@ -711,7 +711,7 @@ onMounted(async () => {
   color: var(--text-secondary);
 }
 
-/* 级别分布条形图 */
+/* Severity distribution bar chart */
 .level-bars {
   display: flex;
   flex-direction: column;
@@ -786,7 +786,7 @@ onMounted(async () => {
   font-variant-numeric: tabular-nums;
 }
 
-/* 时间序列条形图 */
+/* Time-series bar chart */
 .time-chart {
   display: flex;
   flex-direction: column;
@@ -841,7 +841,7 @@ onMounted(async () => {
   letter-spacing: 0.5px;
 }
 
-/* 响应时间统计 */
+/* Response time statistics */
 .response-stats {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -876,7 +876,7 @@ onMounted(async () => {
   font-size: 16px;
 }
 
-/* 空状态 */
+/* Empty state */
 .empty-state {
   padding: 40px 16px;
   text-align: center;
@@ -884,7 +884,7 @@ onMounted(async () => {
   font-size: 13px;
 }
 
-/* 响应式 */
+/* Responsive */
 @media (max-width: 1024px) {
   .metrics-cards {
     grid-template-columns: repeat(2, 1fr);

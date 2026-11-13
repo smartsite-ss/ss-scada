@@ -2,7 +2,7 @@
   <Teleport to="body">
     <div v-if="visible" class="gallery-overlay" @click.self="$emit('close')">
       <div class="gallery-panel">
-        <!-- 标题栏 -->
+        <!-- Title bar -->
         <div class="gallery-header">
           <span class="gallery-title">{{ t('template.gallery.title') }}</span>
           <div class="gallery-header-right">
@@ -11,7 +11,7 @@
             </button>
             <button class="gallery-close" @click="$emit('close')">✕</button>
           </div>
-          <!-- 隐藏的文件输入 -->
+          <!-- Hidden file input -->
           <input
             ref="fileInputRef"
             type="file"
@@ -21,7 +21,7 @@
           />
         </div>
 
-        <!-- 分类 Tab -->
+        <!-- Category tab -->
         <div class="gallery-tabs">
           <button
             v-for="cat in tabCategories"
@@ -42,7 +42,7 @@
           </button>
         </div>
 
-        <!-- 搜索 -->
+        <!-- Search -->
         <div class="gallery-search">
           <input
             v-model="searchText"
@@ -52,7 +52,7 @@
           />
         </div>
 
-        <!-- 模板列表 -->
+        <!-- Template list -->
         <div v-if="templateStore.isLoading" class="gallery-loading">
           {{ t('template.gallery.loading') }}
         </div>
@@ -76,7 +76,7 @@
           />
         </div>
 
-        <!-- 底部 -->
+        <!-- Bottom -->
         <div class="gallery-footer">
           <div class="footer-info">
             {{ t('template.gallery.count', { count: filteredTemplates.length }) }}
@@ -222,7 +222,7 @@ async function handleFileSelected(event: Event) {
   };
   reader.readAsText(file);
 
-  // 重置 input 以允许重复导入同一文件
+  // Reset the input to allow re-importing the same file
   target.value = '';
 }
 </script>

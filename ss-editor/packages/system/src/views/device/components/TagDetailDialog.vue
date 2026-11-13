@@ -42,7 +42,7 @@
           </div>
 
           <div class="tag-detail-body">
-            <!-- 当前值条 — 醒目展示 -->
+            <!-- Current-value bar — prominent display -->
             <div class="current-value-bar">
               <div class="current-value-main">
                 <span class="current-value-label">{{ $t('system.devices.tagValue') }}</span>
@@ -64,7 +64,7 @@
               </div>
             </div>
 
-            <!-- 基本信息 -->
+            <!-- Basic info -->
             <section class="detail-section">
               <h3 class="detail-section-title">
                 {{ $t('system.tagDetail.sectionBasic') }}
@@ -106,7 +106,7 @@
               </div>
             </section>
 
-            <!-- 采集配置 + 数据转换 合并为一个紧凑区块 -->
+            <!-- Acquisition config + data conversion merged into one compact block -->
             <section class="detail-section">
               <h3 class="detail-section-title">
                 {{ $t('system.tagDetail.sectionCollection') }} &middot; {{ $t('system.tagDetail.sectionConversion') }}
@@ -135,7 +135,7 @@
               </div>
             </section>
 
-            <!-- 报警限值 -->
+            <!-- Alarm limit -->
             <section class="detail-section">
               <h3 class="detail-section-title">
                 {{ $t('system.tagDetail.sectionAlarm') }}
@@ -293,7 +293,7 @@ function formatTime(val?: string | number | Date | null): string {
   padding: 12px 16px 16px;
 }
 
-/* ===== 当前值醒目条 ===== */
+/* ===== Current-value highlight bar ===== */
 .current-value-bar {
   background: var(--surface);
   border: 1px solid var(--border);

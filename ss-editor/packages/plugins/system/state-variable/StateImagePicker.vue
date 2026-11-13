@@ -28,7 +28,7 @@
           </button>
         </div>
 
-        <!-- 图库 -->
+        <!-- Graphic library -->
         <template v-if="activeSource === 'gallery'">
           <div class="gallery-toolbar">
             <select
@@ -133,7 +133,7 @@
           </div>
         </template>
 
-        <!-- 上传 -->
+        <!-- Upload -->
         <template v-else>
           <div class="upload-row">
             <input

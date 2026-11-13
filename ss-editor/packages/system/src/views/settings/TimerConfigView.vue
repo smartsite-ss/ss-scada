@@ -1,6 +1,6 @@
 <template>
   <div class="timer-config-page">
-    <!-- 页面标题 -->
+    <!-- Page title -->
     <div class="page-header">
       <h2 class="page-title">
         {{ $t('system.timerConfig.title') }}
@@ -10,7 +10,7 @@
       </p>
     </div>
 
-    <!-- 加载状态 -->
+    <!-- Loading state -->
     <div
       v-if="loading"
       class="loading-state"
@@ -21,7 +21,7 @@
       />
     </div>
 
-    <!-- 错误状态 -->
+    <!-- Error state -->
     <div
       v-else-if="error"
       class="error-state"
@@ -36,7 +36,7 @@
       </button>
     </div>
 
-    <!-- 定时器配置表格 -->
+    <!-- Timer config table -->
     <div
       v-else
       class="config-table-wrapper"
@@ -142,7 +142,7 @@
         </tbody>
       </table>
 
-      <!-- 图例 -->
+      <!-- Legend -->
       <div class="legend">
         <div class="legend-item">
           <span class="badge badge-yes legend-badge">{{ $t('system.timerConfig.hotReloadYes') }}</span>
@@ -166,7 +166,7 @@ import { showSuccess, showError } from '../../utils/messageBox';
 
 const { t } = useI18n();
 
-// 状态
+// Status
 const configs = ref<TimerConfigEntry[]>([]);
 const loading = ref(true);
 const error = ref('');
@@ -175,7 +175,7 @@ const editValue = ref<number>(0);
 const savingId = ref<string | null>(null);
 const editInput = ref<HTMLInputElement | null>(null);
 
-// 加载配置
+// Load config
 async function fetchConfigs(): Promise<void> {
   loading.value = true;
   error.value = '';
@@ -189,7 +189,7 @@ async function fetchConfigs(): Promise<void> {
   }
 }
 
-// 开始编辑
+// Start editing
 function startEdit(item: TimerConfigEntry): void {
   editingId.value = item.id;
   editValue.value = item.currentInterval;
@@ -199,13 +199,13 @@ function startEdit(item: TimerConfigEntry): void {
   });
 }
 
-// 取消编辑
+// Cancel editing
 function cancelEdit(): void {
   editingId.value = null;
   editValue.value = 0;
 }
 
-// 保存编辑
+// Save edits
 async function saveEdit(item: TimerConfigEntry): Promise<void> {
   const newInterval = editValue.value;
   if (!newInterval || newInterval < 100) {
@@ -233,7 +233,7 @@ async function saveEdit(item: TimerConfigEntry): Promise<void> {
   }
 }
 
-// 重置为默认值
+// Reset to default value
 async function resetConfig(item: TimerConfigEntry): Promise<void> {
   try {
     const updated = await timerConfigApi.resetInterval(item.id);
@@ -247,7 +247,7 @@ async function resetConfig(item: TimerConfigEntry): Promise<void> {
   }
 }
 
-// 格式化间隔
+// Format interval
 function formatInterval(ms: number): string {
   if (ms >= 60_000) {
     const min = ms / 60_000;
@@ -291,7 +291,7 @@ onMounted(() => {
   margin: 0;
 }
 
-/* 加载/错误状态 */
+/* Loading/error state */
 .loading-state {
   display: flex;
   justify-content: center;
@@ -333,7 +333,7 @@ onMounted(() => {
   background: var(--border);
 }
 
-/* 表格 */
+/* Table */
 .config-table-wrapper {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -380,7 +380,7 @@ onMounted(() => {
   background: rgba(59, 130, 246, 0.04);
 }
 
-/* 名称列 */
+/* Name column */
 .cell-name {
   min-width: 200px;
 }
@@ -402,7 +402,7 @@ onMounted(() => {
   font-weight: 500;
 }
 
-/* 模块标签 */
+/* Module label */
 .module-tag {
   display: inline-block;
   padding: 2px 10px;
@@ -413,7 +413,7 @@ onMounted(() => {
   white-space: nowrap;
 }
 
-/* 间隔列 */
+/* Interval column */
 .cell-interval {
   min-width: 160px;
 }
@@ -455,12 +455,12 @@ onMounted(() => {
   font-size: 13px;
 }
 
-/* 默认值列 */
+/* Default value column */
 .cell-default {
   min-width: 120px;
 }
 
-/* 热更新列 */
+/* Hot-reload column */
 .cell-runtime {
   min-width: 100px;
   text-align: center;
@@ -485,7 +485,7 @@ onMounted(() => {
   color: var(--status-error);
 }
 
-/* 描述列 */
+/* Description column */
 .cell-desc {
   max-width: 240px;
   font-size: 13px;
@@ -493,7 +493,7 @@ onMounted(() => {
   line-height: 1.4;
 }
 
-/* 操作列 */
+/* Actions column */
 .cell-actions {
   min-width: 140px;
   white-space: nowrap;
@@ -546,7 +546,7 @@ onMounted(() => {
   border-color: var(--status-error);
 }
 
-/* 图例 */
+/* Legend */
 .legend {
   display: flex;
   gap: 24px;

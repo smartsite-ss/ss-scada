@@ -1,6 +1,6 @@
 <template>
   <div class="script-knowledge-panel">
-    <!-- 头部：标题 + 搜索 + 刷新 -->
+    <!-- Header: title + search + refresh -->
     <div class="kb-header">
       <div class="kb-header-top">
         <span class="kb-title">📚 {{ $t('scriptEditor.knowledge.title') }}</span>
@@ -39,7 +39,7 @@
           :placeholder="$t('scriptEditor.knowledge.searchPlaceholder')"
         >
       </div>
-      <!-- 版本信息 -->
+      <!-- Version info -->
       <div
         v-if="versionCheck"
         class="kb-version-bar"
@@ -57,7 +57,7 @@
 
 
 
-    <!-- 示例列表 -->
+    <!-- Example list -->
     <div class="kb-list">
       <div
         v-for="example in filteredExamples"
@@ -65,7 +65,7 @@
         class="kb-item"
         :class="{ 'kb-item--expanded': expandedId === example.id }"
       >
-        <!-- 示例标题行 -->
+        <!-- Example title row -->
         <div
           class="kb-item-header"
           @click="toggleExpand(example.id)"
@@ -94,7 +94,7 @@
           </div>
         </div>
 
-        <!-- 展开内容：代码预览 + 插入按钮 -->
+        <!-- Expanded content: code preview + insert button -->
         <div
           v-if="expandedId === example.id"
           class="kb-item-body"
@@ -111,7 +111,7 @@
         </div>
       </div>
 
-      <!-- 无结果 -->
+      <!-- No result -->
       <div
         v-if="filteredExamples.length === 0"
         class="kb-empty"
@@ -131,7 +131,7 @@ const emit = defineEmits<{
   (e: 'insertSnippet', code: string): void;
 }>();
 
-// 使用知识库服务
+// Use the knowledge-base service
 const {
   isLoading,
   versionCheck,
@@ -144,20 +144,20 @@ const {
   refreshKb,
 } = useKnowledgeBase();
 
-// 本地状态
+// Local state
 const searchText = ref('');
 const activeCategory = ref('');
 const expandedId = ref<string | null>(null);
 
-// 初始化加载
+// Initial load
 onMounted(() => {
   loadKb();
 });
 
-// 分类列表
+// Category list
 const categories = computed(() => examples.value);
 
-// 过滤后的示例
+// Filtered examples
 const filteredExamples = computed<ScriptExample[]>(() => {
   if (searchText.value) {
     return searchExamples(searchText.value);
@@ -168,11 +168,11 @@ const filteredExamples = computed<ScriptExample[]>(() => {
     return cat?.items ?? [];
   }
 
-  // 默认显示所有
+  // Show all by default
   return allExamples.value;
 });
 
-// 难度标签
+// Difficulty label
 function difficultyLabel(difficulty: string): string {
   const labels: Record<string, string> = {
     easy: '入门',
@@ -182,7 +182,7 @@ function difficultyLabel(difficulty: string): string {
   return labels[difficulty] || difficulty;
 }
 
-// 触发方式标签
+// Trigger-type label
 function triggerLabel(triggerType: string): string {
   const labels: Record<string, string> = {
     dataChange: '数据变化',
@@ -194,17 +194,17 @@ function triggerLabel(triggerType: string): string {
   return labels[triggerType] || triggerType;
 }
 
-// 展开/收起
+// Expand/collapse
 function toggleExpand(id: string) {
   expandedId.value = expandedId.value === id ? null : id;
 }
 
-// 插入示例代码
+// Insert example code
 function insertExample(code: string) {
   emit('insertSnippet', code);
 }
 
-// 刷新知识库
+// Refresh the knowledge base
 async function handleRefresh() {
   await refreshKb();
 }
@@ -222,7 +222,7 @@ async function handleRefresh() {
   flex-direction: column;
 }
 
-/* ── 头部 ── */
+/* ── Header ── */
 .kb-header {
   padding: 8px 12px;
   background: var(--background);
@@ -300,7 +300,7 @@ async function handleRefresh() {
   border-color: var(--border-focus);
 }
 
-/* ── 版本条 ── */
+/* ── Version bar ── */
 .kb-version-bar {
   font-size: 11px;
   color: var(--text-tertiary);
@@ -318,7 +318,7 @@ async function handleRefresh() {
   margin-left: 4px;
 }
 
-/* ── 示例列表 ── */
+/* ── Example list ── */
 .kb-list {
   flex: 1;
   overflow-y: auto;
@@ -400,7 +400,7 @@ async function handleRefresh() {
   line-height: 1.4;
 }
 
-/* ── 展开内容 ── */
+/* ── Expanded content ── */
 .kb-item-body {
   border-top: 1px solid var(--border);
   padding: 8px 10px;
@@ -438,7 +438,7 @@ async function handleRefresh() {
   background: var(--button-hover, color-mix(in srgb, var(--status-success) 80%, black));
 }
 
-/* ── 空状态 ── */
+/* ── Empty state ── */
 .kb-empty {
   color: var(--text-tertiary);
   text-align: center;

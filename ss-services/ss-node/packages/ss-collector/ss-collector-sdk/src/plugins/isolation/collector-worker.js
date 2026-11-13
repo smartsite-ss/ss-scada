@@ -3,13 +3,13 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * collector-worker.js — 采集隔离 Worker 脚本
+ * collector-worker.js — collection isolation Worker script
  *
- * 兼容 worker_threads 和 child_process 两种模式。
- * 在 Worker 线程中使用 worker_threads 的 parentPort，
- * 在子进程中使用 process.send / process.on('message')。
+ * Compatible with both worker_threads and child_process modes.
+ * Uses worker_threads' parentPort in Worker threads,
+ * and process.send / process.on('message') in child processes.
  *
- * 不依赖 NestJS，仅依赖采集适配器自身的包。
+ * Does not depend on NestJS; only depends on the collector adapter's own package.
  */
 
 'use strict';
@@ -23,32 +23,32 @@ const { protocol, adapterModule } = workerData || {
   adapterModule: process.env.COLLECTOR_ADAPTER_MODULE,
 };
 
-// 设置进程标题，便于在系统进程列表中区分不同协议的采集子进程
+// Set process title to distinguish collector child processes of different protocols in the system process list
 if (protocol && process.title !== undefined) {
   process.title = `ss-collector-${protocol}`;
-  // 示例：ss-collector-modbus_tcp、ss-collector-opcua、ss-collector-mqtt
+  // Examples: ss-collector-modbus_tcp, ss-collector-opcua, ss-collector-mqtt
 }
 
 let adapter = null;
 const connections = new Map();
 
 /**
- * 动态加载适配器模块
+ * Dynamically load the adapter module
  *
- * 扫描模块导出查找实现了 IProtocolAdapter 接口（readTag 方法）或
- * BaseCollectorService 子类（doReadTag 方法）的类，并尝试实例化。
+ * Scan module exports for classes implementing the IProtocolAdapter interface (readTag method)
+ * or BaseCollectorService subclasses (doReadTag method), and try to instantiate them.
  *
- * 实例化策略：
- * 1. 优先无参实例化（适用于无依赖的采集器，如 ModbusRTUService）
- * 2. 失败时从同模块查找无参可实例化的类作为依赖候选，
- *    按顺序尝试注入（适用于有依赖的采集器，如 VirtualProtocolAdapter 需要 SimulatorFactory）
+ * Instantiation strategy:
+ * 1. Prefer no-arg instantiation (for collectors without dependencies, e.g. ModbusRTUService)
+ * 2. On failure, look up no-arg instantiable classes in the same module as dependency candidates,
+ *    and try injecting them in order (for collectors with dependencies, e.g. VirtualProtocolAdapter needs SimulatorFactory)
  */
 async function loadAdapter() {
   let mod;
   try {
     mod = require(adapterModule);
   } catch (e) {
-    // 降级：从 cwd/node_modules 解析（子进程 cwd 继承自父进程，包含 workspace 依赖）
+    // Fallback: resolve from cwd/node_modules (child process cwd inherits from parent, containing workspace dependencies)
     const path = require('path');
     const modPath = path.resolve(process.cwd(), 'node_modules', adapterModule);
     try {
@@ -60,7 +60,7 @@ async function loadAdapter() {
     }
   }
 
-  // 1. 查找 adapter 类（优先 readTag，兼容 doReadTag）
+  // 1. Find the adapter class (prefer readTag, compatible with doReadTag)
   let AdapterClass = null;
   let adapterKey = null;
   for (const key of Object.keys(mod)) {
@@ -72,7 +72,7 @@ async function loadAdapter() {
       break;
     }
   }
-  // 兼容 BaseCollectorService 子类
+  // Compatible with BaseCollectorService subclasses
   if (!AdapterClass) {
     for (const key of Object.keys(mod)) {
       const cls = mod[key];
@@ -88,7 +88,7 @@ async function loadAdapter() {
     throw new Error(`No adapter class (readTag/doReadTag) found in ${adapterModule}`);
   }
 
-  // 2. 尝试无参实例化
+  // 2. Try no-arg instantiation
   try {
     adapter = new AdapterClass();
     log('info', `Adapter loaded: ${adapterModule} (${adapterKey})`);
@@ -97,7 +97,7 @@ async function loadAdapter() {
     log('info', `Direct instantiation failed, resolving deps: ${e.message}`);
   }
 
-  // 3. 收集同模块中无参可实例化的类作为依赖候选
+  // 3. Collect no-arg instantiable classes in the same module as dependency candidates
   const depCandidates = [];
   for (const key of Object.keys(mod)) {
     if (mod[key] === AdapterClass) continue;
@@ -108,11 +108,11 @@ async function loadAdapter() {
       depCandidates.push(instance);
       log('info', `Dependency candidate: ${key}`);
     } catch {
-      // 跳过无法无参实例化的类
+      // Skip classes that cannot be instantiated without arguments
     }
   }
 
-  // 4. 尝试用依赖实例化（逐个增加参数数量）
+  // 4. Try instantiation with dependencies (increasing argument count one by one)
   for (let n = 1; n <= depCandidates.length; n++) {
     const args = depCandidates.slice(0, n);
     try {
@@ -120,7 +120,7 @@ async function loadAdapter() {
       log('info', `Adapter loaded: ${adapterModule} (${adapterKey}) with ${n} dep(s)`);
       return;
     } catch {
-      // 继续尝试更多依赖
+      // Keep trying more dependencies
     }
   }
 
@@ -205,7 +205,7 @@ function log(level, message) {
 }
 
 /**
- * 消息收发 —— 兼容 worker_threads 的 parentPort.on 和 child_process 的 process.on
+ * Message send/receive — compatible with worker_threads' parentPort.on and child_process' process.on
  */
 function setupReceiver() {
   const receiver = parentPort || process;
@@ -232,7 +232,7 @@ function setupReceiver() {
   });
 }
 
-// 未捕获异常兜底（子进程模式关键保护）
+// Uncaught exception fallback (critical protection in child-process mode)
 if (typeof process !== 'undefined') {
   process.on('uncaughtException', (err) => {
     console.error(`[${protocol}] Uncaught exception:`, err);
@@ -245,7 +245,7 @@ if (typeof process !== 'undefined') {
   });
 }
 
-// === 启动 ===
+// === Startup ===
 (async () => {
   try {
     await loadAdapter();

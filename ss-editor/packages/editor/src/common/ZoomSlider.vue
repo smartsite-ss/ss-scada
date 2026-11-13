@@ -141,7 +141,7 @@ const props = defineProps({
     type: Boolean,
     default: true
   },
-  /** 禁用缩放（如 stretch 模式下保护非均匀比例，置灰 + tooltip 说明） */
+  /** Disable zoom (e.g. to protect non-uniform ratio in stretch mode; greyed out + tooltip explanation) */
   disabled: {
     type: Boolean,
     default: false

@@ -1,6 +1,6 @@
 <template>
   <div class="login-page">
-    <!-- 工业风背景层：精密网格 + 几何线条 + 扫描线 -->
+    <!-- Industrial-style background layer: precise grid + geometric lines + scan line -->
     <div class="login-background">
       <svg
         class="grid-pattern"
@@ -47,27 +47,27 @@
         />
       </svg>
 
-      <!-- 工业风装饰光晕（克制） -->
+      <!-- Industrial-style decorative glow (restrained) -->
       <div class="glow-orb glow-orb-1" />
       <div class="glow-orb glow-orb-2" />
 
-      <!-- 几何装饰线条 -->
+      <!-- Geometric decorative lines -->
       <div class="geo-line geo-line-top" />
       <div class="geo-line geo-line-bottom" />
 
-      <!-- 扫描线动效 -->
+      <!-- Scan-line animation -->
       <div class="scan-line" />
     </div>
 
-    <!-- 登录卡片：带四角定位框 -->
+    <!-- Login card: with four-corner positioning box -->
     <div class="login-container">
-      <!-- 四角定位框（工业严谨感） -->
+      <!-- Four-corner positioning box (industrial rigor) -->
       <span class="corner corner-tl" />
       <span class="corner corner-tr" />
       <span class="corner corner-bl" />
       <span class="corner corner-br" />
 
-      <!-- 顶部技术状态条 -->
+      <!-- Top technical status bar -->
       <div class="tech-status-bar">
         <span class="status-dot status-dot-online" />
         <span class="status-text">{{ $t('system.login.techStatus') || 'SYSTEM READY' }}</span>
@@ -75,14 +75,14 @@
         <span class="status-version">v2.7</span>
       </div>
 
-      <!-- 品牌头部：Logo + 标题（突出视觉焦点） -->
+      <!-- Brand header: Logo + title (emphasize the visual focus) -->
       <div class="login-header">
         <div class="logo-icon">
-          <!-- 外层旋转环 -->
+          <!-- Outer rotating ring -->
           <div class="logo-rotating-ring" />
-          <!-- 内层发光环 -->
+          <!-- Inner glow ring -->
           <div class="logo-ring" />
-          <!-- Logo 主体 -->
+          <!-- Logo main body -->
           <img
             src="../assets/logo.svg"
             width="76"
@@ -101,7 +101,7 @@
         </div>
       </div>
 
-      <!-- 错误提示（增强版） -->
+      <!-- Error hint (enhanced) -->
       <transition name="error-fade">
         <div
           v-if="errorMsg"
@@ -112,7 +112,7 @@
         </div>
       </transition>
 
-      <!-- 登录方式切换（账号密码 / 微信扫码）—— 仅 WECHAT_LOGIN_ENABLED=true 时显示 -->
+      <!-- Login method switch (account/password / WeChat scan-code) — shown only when WECHAT_LOGIN_ENABLED=true -->
       <div
         v-if="!isRegister && loginFeatures.wechatLoginEnabled"
         class="login-mode-switch"
@@ -162,14 +162,14 @@
         </button>
       </div>
 
-      <!-- 微信扫码登录面板 -->
+      <!-- WeChat scan-code login panel -->
       <div
         v-if="loginMode === 'wechat' && !isRegister"
         class="wechat-panel"
       >
-        <!-- 二维码区域 -->
+        <!-- QR code area -->
         <div class="qrcode-container">
-          <!-- 加载中 -->
+          <!-- Loading -->
           <div
             v-if="wechatLoading"
             class="qrcode-loading"
@@ -178,7 +178,7 @@
             <p>{{ $t('system.login.qrcodeLoading') }}</p>
           </div>
 
-          <!-- Mock 模式：显示占位二维码 + 模拟按钮 -->
+          <!-- Mock mode: show placeholder QR code + simulate buttons -->
           <div
             v-else-if="wechatMock"
             class="qrcode-mock"
@@ -223,7 +223,7 @@
                   height="180"
                   fill="url(#qr-pattern)"
                 />
-                <!-- 三个定位角 -->
+                <!-- Three positioning corners -->
                 <rect
                   x="10"
                   y="10"
@@ -272,7 +272,7 @@
                   height="20"
                   fill="#0f172a"
                 />
-                <!-- 中心微信图标 -->
+                <!-- Center WeChat icon -->
                 <circle
                   cx="90"
                   cy="90"
@@ -286,7 +286,7 @@
                 />
               </svg>
             </div>
-            <!-- 过期/取消遮罩 -->
+            <!-- Expired/cancelled mask -->
             <div
               v-if="scanStatus === 'expired' || scanStatus === 'cancelled'"
               class="qrcode-overlay"
@@ -304,7 +304,7 @@
             </div>
           </div>
 
-          <!-- 真实模式：嵌入微信官方二维码 iframe -->
+          <!-- Real mode: embed the official WeChat QR-code iframe -->
           <div
             v-else
             class="qrcode-real"
@@ -335,7 +335,7 @@
           </div>
         </div>
 
-        <!-- 扫码状态提示 -->
+        <!-- Scan-code status hint -->
         <div
           class="scan-status"
           :class="`scan-status-${scanStatus}`"
@@ -355,7 +355,7 @@
           <span class="status-text">{{ scanStatusText }}</span>
         </div>
 
-        <!-- Mock 模式操作按钮（开发调试用） -->
+        <!-- Mock mode action buttons (for dev debugging) -->
         <div
           v-if="wechatMock && scanStatus === 'pending'"
           class="mock-actions"
@@ -376,7 +376,7 @@
           </button>
         </div>
 
-        <!-- Mock 模式提示横幅 -->
+        <!-- Mock mode hint banner -->
         <div
           v-if="wechatMock"
           class="mock-banner"
@@ -385,13 +385,13 @@
         </div>
       </div>
 
-      <!-- 表单区域（账号密码模式） -->
+      <!-- Form area (account/password mode) -->
       <form
         v-if="loginMode === 'password' || isRegister"
         class="login-form"
         @submit.prevent="handleSubmit"
       >
-        <!-- 用户名 -->
+        <!-- Username -->
         <div class="form-group">
           <label
             class="form-label"
@@ -425,7 +425,7 @@
           >
         </div>
 
-        <!-- 邮箱（注册模式） -->
+        <!-- Email (registration mode) -->
         <div
           v-if="isRegister"
           class="form-group"
@@ -464,7 +464,7 @@
           >
         </div>
 
-        <!-- 显示名称（注册模式） -->
+        <!-- Display name (registration mode) -->
         <div
           v-if="isRegister"
           class="form-group"
@@ -505,7 +505,7 @@
           >
         </div>
 
-        <!-- 密码 -->
+        <!-- Password -->
         <div class="form-group">
           <label
             class="form-label"
@@ -585,7 +585,7 @@
           </div>
         </div>
 
-        <!-- 渐变登录按钮 -->
+        <!-- Gradient login button -->
         <button
           type="submit"
           class="login-btn"
@@ -602,7 +602,7 @@
         </button>
       </form>
 
-      <!-- 底部切换链接 -->
+      <!-- Bottom switch link -->
       <div class="login-footer">
         <transition
           name="fade"
@@ -631,7 +631,7 @@
         </transition>
       </div>
 
-      <!-- 客户端下载入口 -->
+      <!-- Client download entry -->
       <div class="login-client-download">
         <a
           href="/downloads/scada-editor-tauri_0.1.0_x64-portable.zip"
@@ -654,7 +654,7 @@
         </a>
       </div>
 
-      <!-- 底部构建信息（工业风） -->
+      <!-- Bottom build info (industrial style) -->
       <div class="login-build-info">
         <span class="build-label">BUILD</span>
         <span class="build-value">2026.08.05</span>
@@ -683,10 +683,10 @@ const isRegister = ref(false);
 const errorMsg = ref('');
 const showPassword = ref(false);
 
-// ── 登录方式：password（账密）| wechat（扫码）──
+// ── Login method: password (account) | wechat (scan-code) ──
 const loginMode = ref<'password' | 'wechat'>('password');
 
-// ── 登录功能开关（启动时从后端查询，决定是否显示微信扫码入口）──
+// ── Login feature toggle (queried from backend at startup, decides whether to show the WeChat scan-code entry) ──
 const loginFeatures = ref<LoginFeatures>({
   wechatLoginEnabled: false,
   smsLoginEnabled: false,
@@ -696,7 +696,7 @@ onMounted(async () => {
   try {
     loginFeatures.value = await authApi.getLoginFeatures();
   } catch {
-    // 接口不可用时保持默认 false（安全默认：不显示第三方登录入口）
+    // Keep the default false when the interface is unavailable (safe default: do not show the third-party login entry)
   }
 });
 
@@ -707,7 +707,7 @@ const form = reactive({
   displayName: '',
 });
 
-// ── 微信扫码状态 ──
+// ── WeChat scan-code status ──
 const wechatState = ref('');
 const wechatUrl = ref('');
 const wechatMock = ref(false);
@@ -736,16 +736,16 @@ function toggleMode() {
   isRegister.value = !isRegister.value;
   errorMsg.value = '';
   showPassword.value = false;
-  // 切换到注册时强制回到密码模式（注册不支持微信扫码）
+  // Force back to password mode when switching to register (register does not support WeChat scan-code)
   if (isRegister.value) {
     switchLoginMode('password');
   }
 }
 
-/** 切换登录方式，切换到微信时自动发起扫码流程 */
+/** Switch login method; switching to WeChat auto-starts the scan-code flow */
 function switchLoginMode(mode: 'password' | 'wechat') {
   if (loginMode.value === mode) return;
-  // 切离微信模式时停止轮询
+  // Stop polling when leaving WeChat mode
   if (loginMode.value === 'wechat') {
     stopWechatPolling();
   }
@@ -756,7 +756,7 @@ function switchLoginMode(mode: 'password' | 'wechat') {
   }
 }
 
-/** 发起微信扫码：生成二维码并开始轮询状态 */
+/** Initiate WeChat scan-code: generate QR code and start polling status */
 async function startWechatLogin() {
   stopWechatPolling();
   wechatLoading.value = true;
@@ -771,7 +771,7 @@ async function startWechatLogin() {
     wechatUrl.value = result.wechatUrl;
     wechatMock.value = result.mock;
     wechatLoading.value = false;
-    // 开始轮询扫码状态（1.5s 间隔）
+    // Start polling the scan-code status (1.5s interval)
     pollingTimer = setInterval(pollScanStatus, 1500);
   } catch (err: any) {
     wechatLoading.value = false;
@@ -780,7 +780,7 @@ async function startWechatLogin() {
   }
 }
 
-/** 停止轮询扫码状态 */
+/** Stop polling the scan-code status */
 function stopWechatPolling() {
   if (pollingTimer) {
     clearInterval(pollingTimer);
@@ -788,10 +788,10 @@ function stopWechatPolling() {
   }
 }
 
-/** 轮询扫码状态，confirmed 时完成登录 */
+/** Poll the scan-code status; complete login when confirmed */
 async function pollScanStatus() {
   if (!wechatState.value) return;
-  // 已进入终态（expired/cancelled/confirmed）时停止轮询
+  // Stop polling once a terminal state (expired/cancelled/confirmed) is reached
   if (scanStatus.value === 'expired' || scanStatus.value === 'cancelled' || scanStatus.value === 'confirmed') {
     stopWechatPolling();
     return;
@@ -814,21 +814,21 @@ async function pollScanStatus() {
       }
     }
   } catch (err: any) {
-    // 401/400 等错误：state 失效，标记过期
+    // 401/400 and similar errors: state invalid, mark as expired
     if (err?.response?.status === 400 || err?.response?.status === 404) {
       scanStatus.value = 'expired';
       stopWechatPolling();
     }
-    // 其他网络错误静默忽略，下轮重试
+    // Other network errors are silently ignored and retried next round
   }
 }
 
-/** Mock 模式模拟扫码确认/取消 */
+/** Mock mode simulates scan-code confirmation/cancel */
 async function handleMockScan(action: 'confirm' | 'cancel') {
   if (!wechatState.value) return;
   try {
     await authApi.wechatMockScan(wechatState.value, action);
-    // 立即触发一次状态轮询，加速 UI 响应
+    // Immediately trigger one status poll to speed up UI response
     await pollScanStatus();
   } catch (err: any) {
     const msg = err?.response?.data?.message || err?.message || t('system.login.scanFailed');
@@ -836,12 +836,12 @@ async function handleMockScan(action: 'confirm' | 'cancel') {
   }
 }
 
-/** 刷新二维码（过期/取消后重新生成） */
+/** Refresh the QR code (regenerate after expiry/cancel) */
 function refreshQrcode() {
   startWechatLogin();
 }
 
-// 组件卸载时清理轮询定时器
+// Clean up the polling timer on component unmount
 onUnmounted(() => {
   stopWechatPolling();
 });
@@ -902,14 +902,14 @@ async function handleSubmit() {
 </script>
 
 <style scoped>
-/* ==================== 工业风深色背景 ==================== */
+/* ==================== Industrial-style dark background ==================== */
 .login-page {
   position: relative;
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  /* 与系统深色主题一致的背景色阶 */
+  /* Background color steps consistent with the system dark theme */
   background:
     radial-gradient(ellipse at top, #0f172a 0%, transparent 60%),
     radial-gradient(ellipse at bottom, #1e293b 0%, transparent 60%),
@@ -926,7 +926,7 @@ async function handleSubmit() {
   z-index: 1;
 }
 
-/* 精密网格（工业严谨感） */
+/* Precise grid (industrial rigor) */
 .grid-pattern {
   position: absolute;
   inset: 0;
@@ -934,7 +934,7 @@ async function handleSubmit() {
   animation: gridMove 40s linear infinite;
 }
 
-/* 装饰光晕（克制，不喧宾夺主） */
+/* Decorative glow (restrained, not overpowering) */
 .glow-orb {
   position: absolute;
   border-radius: 50%;
@@ -960,7 +960,7 @@ async function handleSubmit() {
   animation-delay: -6s;
 }
 
-/* 几何装饰线（工业感） */
+/* Geometric decorative line (industrial feel) */
 .geo-line {
   position: absolute;
   height: 1px;
@@ -979,7 +979,7 @@ async function handleSubmit() {
   right: 0;
 }
 
-/* 扫描线动效（工业严谨感） */
+/* Scan-line animation (industrial rigor) */
 .scan-line {
   position: absolute;
   left: 0;
@@ -1030,19 +1030,19 @@ async function handleSubmit() {
   }
 }
 
-/* ==================== 登录卡片 ==================== */
+/* ==================== Login card ==================== */
 .login-container {
   position: relative;
   z-index: 10;
   width: 100%;
   max-width: 440px;
 
-  /* 玻璃态 + 工业感深色 */
+  /* Glassmorphism + industrial dark */
   background: rgba(15, 23, 42, 0.78);
   backdrop-filter: blur(28px);
   -webkit-backdrop-filter: blur(28px);
 
-  /* 严谨的细边框 */
+  /* Rigorous thin border */
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-top: 1px solid rgba(59, 130, 246, 0.3);
 
@@ -1051,7 +1051,7 @@ async function handleSubmit() {
     0 0 0 1px rgba(255, 255, 255, 0.04) inset,
     0 1px 0 rgba(255, 255, 255, 0.06) inset;
 
-  border-radius: 4px; /* 工业感：极小圆角 */
+  border-radius: 4px; /* Industrial feel: minimal border radius */
   padding: 40px 40px 28px;
 
   animation: cardEnter 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -1068,7 +1068,7 @@ async function handleSubmit() {
   }
 }
 
-/* ==================== 四角定位框（工业严谨感） ==================== */
+/* ==================== Four-corner positioning box (industrial rigor) ==================== */
 .corner {
   position: absolute;
   width: 14px;
@@ -1107,7 +1107,7 @@ async function handleSubmit() {
   border-right-width: 2px;
 }
 
-/* ==================== 顶部技术状态条 ==================== */
+/* ==================== Top technical status bar ==================== */
 .tech-status-bar {
   position: absolute;
   top: 14px;
@@ -1154,14 +1154,14 @@ async function handleSubmit() {
   color: rgba(148, 163, 184, 0.6);
 }
 
-/* ==================== 品牌头部（突出 Logo + 标题） ==================== */
+/* ==================== Brand header (highlights Logo + title) ==================== */
 .login-header {
   text-align: center;
   margin-top: 28px;
   margin-bottom: 32px;
 }
 
-/* Logo 容器：增大 + 多层发光 */
+/* Logo container: enlarged + multi-layer glow */
 .logo-icon {
   position: relative;
   width: 76px;
@@ -1184,7 +1184,7 @@ async function handleSubmit() {
   z-index: 3;
 }
 
-/* Logo 内层发光环（呼吸动效） */
+/* Logo inner glow ring (breathing animation) */
 .logo-ring {
   position: absolute;
   inset: -8px;
@@ -1195,7 +1195,7 @@ async function handleSubmit() {
   z-index: 1;
 }
 
-/* Logo 外层旋转环（工业严谨感） */
+/* Logo outer rotating ring (industrial rigor) */
 .logo-rotating-ring {
   position: absolute;
   inset: -14px;
@@ -1247,13 +1247,13 @@ async function handleSubmit() {
   }
 }
 
-/* 标题：突出、醒目 */
+/* Title: prominent and eye-catching */
 .login-title {
   font-size: 30px;
   font-weight: 700;
   margin: 0;
   line-height: 1.2;
-  /* 品牌渐变文字（增强对比度） */
+  /* Brand gradient text (enhanced contrast) */
   background: linear-gradient(135deg, #f8fafc 0%, #93c5fd 60%, #60a5fa 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -1262,7 +1262,7 @@ async function handleSubmit() {
   text-shadow: 0 0 40px rgba(59, 130, 246, 0.2);
 }
 
-/* 副标题（标语） */
+/* Subtitle (tagline) */
 .brand-tagline {
   font-size: 11px;
   color: rgba(148, 163, 184, 0.75);
@@ -1273,7 +1273,7 @@ async function handleSubmit() {
   font-family: 'Courier New', 'Consolas', monospace;
 }
 
-/* 分隔线（工业严谨感） */
+/* Divider (industrial rigor) */
 .header-divider {
   position: relative;
   width: 60px;
@@ -1294,7 +1294,7 @@ async function handleSubmit() {
   box-shadow: 0 0 8px rgba(59, 130, 246, 0.8);
 }
 
-/* ==================== 错误提示 ==================== */
+/* ==================== Error hint ==================== */
 .login-error {
   display: flex;
   align-items: center;
@@ -1326,7 +1326,7 @@ async function handleSubmit() {
   transform: translateY(-8px);
 }
 
-/* ==================== 表单 ==================== */
+/* ==================== Form ==================== */
 .login-form {
   display: flex;
   flex-direction: column;
@@ -1357,7 +1357,7 @@ async function handleSubmit() {
   opacity: 0.7;
 }
 
-/* 输入框：工业感深色 */
+/* Input box: industrial dark */
 .login-form .form-input {
   width: 100%;
   flex: none;
@@ -1404,7 +1404,7 @@ async function handleSubmit() {
   color: var(--primary);
 }
 
-/* 密码输入框容器 */
+/* Password input container */
 .input-wrap {
   position: relative;
   display: flex;
@@ -1442,7 +1442,7 @@ async function handleSubmit() {
   transform: translateY(-50%) scale(0.92);
 }
 
-/* ==================== 登录按钮 ==================== */
+/* ==================== Login button ==================== */
 .login-btn {
   height: 46px;
   margin-top: 6px;
@@ -1534,7 +1534,7 @@ async function handleSubmit() {
   }
 }
 
-/* ==================== 底部 ==================== */
+/* ==================== Bottom ==================== */
 .login-footer {
   text-align: center;
   margin-top: 24px;
@@ -1568,7 +1568,7 @@ async function handleSubmit() {
   transform: translateY(-6px);
 }
 
-/* 底部构建信息（工业风） */
+/* Bottom build info (industrial style) */
 .login-build-info {
   display: flex;
   align-items: center;
@@ -1596,7 +1596,7 @@ async function handleSubmit() {
   color: rgba(148, 163, 184, 0.25);
 }
 
-/* ==================== 登录方式切换 ==================== */
+/* ==================== Login method switch ==================== */
 .login-mode-switch {
   display: flex;
   gap: 4px;
@@ -1643,7 +1643,7 @@ async function handleSubmit() {
   flex-shrink: 0;
 }
 
-/* ==================== 微信扫码面板 ==================== */
+/* ==================== WeChat scan-code panel ==================== */
 .wechat-panel {
   display: flex;
   flex-direction: column;
@@ -1667,7 +1667,7 @@ async function handleSubmit() {
     0 0 0 1px rgba(59, 130, 246, 0.2);
 }
 
-/* 加载状态 */
+/* Loading state */
 .qrcode-loading {
   display: flex;
   flex-direction: column;
@@ -1692,7 +1692,7 @@ async function handleSubmit() {
   animation: spin 0.7s linear infinite;
 }
 
-/* Mock 模式占位二维码 */
+/* Mock mode placeholder QR code */
 .qrcode-mock {
   position: relative;
   width: 100%;
@@ -1716,7 +1716,7 @@ async function handleSubmit() {
   border-radius: 4px;
 }
 
-/* 真实模式 iframe */
+/* Real-mode iframe */
 .qrcode-real {
   position: relative;
   width: 100%;
@@ -1734,7 +1734,7 @@ async function handleSubmit() {
   background: #fff;
 }
 
-/* 过期/取消遮罩 */
+/* Expired/cancelled mask */
 .qrcode-overlay {
   position: absolute;
   inset: 0;
@@ -1774,7 +1774,7 @@ async function handleSubmit() {
   box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
 }
 
-/* 扫码状态提示 */
+/* Scan-code status hint */
 .scan-status {
   display: flex;
   align-items: center;
@@ -1835,7 +1835,7 @@ async function handleSubmit() {
   letter-spacing: 0.3px;
 }
 
-/* Mock 模式操作按钮 */
+/* Mock mode action buttons */
 .mock-actions {
   display: flex;
   gap: 10px;
@@ -1877,7 +1877,7 @@ async function handleSubmit() {
   border-color: rgba(239, 68, 68, 0.3);
 }
 
-/* Mock 模式提示横幅 */
+/* Mock mode hint banner */
 .mock-banner {
   width: 100%;
   padding: 8px 12px;
@@ -1892,7 +1892,7 @@ async function handleSubmit() {
   line-height: 1.5;
 }
 
-/* ==================== 客户端下载入口 ==================== */
+/* ==================== Client download entry ==================== */
 .login-client-download {
   display: flex;
   justify-content: center;
@@ -1928,7 +1928,7 @@ async function handleSubmit() {
   flex-shrink: 0;
 }
 
-/* ==================== 响应式 ==================== */
+/* ==================== Responsive ==================== */
 @media (max-width: 480px) {
   .login-container {
     padding: 32px 24px 24px;
@@ -1975,7 +1975,7 @@ async function handleSubmit() {
   }
 }
 
-/* ==================== 无障碍 ==================== */
+/* ==================== Accessibility ==================== */
 .login-form .form-input:focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: 2px;
@@ -1992,7 +1992,7 @@ async function handleSubmit() {
   border-radius: 2px;
 }
 
-/* 减少动画偏好 */
+/* Reduced-motion preference */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

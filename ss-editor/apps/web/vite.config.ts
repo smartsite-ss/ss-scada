@@ -63,13 +63,13 @@ function formatBuildTime(date: Date): string {
 export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   const apiBase = env.VITE_API_BASE_URL || 'http://localhost:4000';
-  // 注意：build 命令使用 `vite build --mode full|scada|data`，
-  // mode 是产品模式（full/scada/data），不是 'production'。
-  // 因此判断是否为生产构建必须用 command，不能用 mode。
+  // Note: the build command uses `vite build --mode full|scada|data`,
+  // mode is the product mode (full/scada/data), not 'production'.
+  // Therefore, detecting a production build must use command, not mode.
   const isProd = command === 'build';
-  // 部署基路径：默认根路径；H5 内嵌场景由 bin/build-h5-shell.bat 注入 VITE_BASE=/scada-preview/，
-  // 使壳可挂载于 H5 站点子路径（同源反代，规避第三方 Cookie 限制）。
-  // 所有动态拼接的绝对资源路径（importmap 等）必须基于 appBase，不能硬编码 '/assets/'。
+  // Deployment base path: defaults to root; the H5 embed scenario injects VITE_BASE=/scada-preview/ via bin/build-h5-shell.bat,
+  // Lets the shell mount under an H5 site sub-path (same-origin reverse proxy, avoiding third-party Cookie restrictions).
+  // All dynamically concatenated absolute resource paths (importmap, etc.) must be based on appBase; do not hardcode '/assets/'.
   const appBase = env.VITE_BASE || '/';
   const APP_VERSION = getAppVersion();
   const BUILD_TIME = formatBuildTime(new Date());
@@ -92,8 +92,8 @@ export default defineConfig(({ command, mode }) => {
       vue() as any,
       {
         name: 'strip-baidu-tongji-in-dev',
-        // 百度统计仅在发布（生产构建）时保留；开发模式下从 index.html 中剥离，
-        // 避免本地开发时向 hm.baidu.com 上报统计数据。
+        // Baidu Analytics is kept only in releases (production builds); stripped from index.html in dev mode,
+        // Avoid reporting stats to hm.baidu.com during local development.
         transformIndexHtml(html) {
           if (isProd) return html;
           return html.replace(/<!--[\s\S]*?Baidu Tongji[\s\S]*?<\/script>\s*/i, '');
@@ -241,20 +241,20 @@ export default defineConfig(({ command, mode }) => {
       ],
     },
     server: {
-      // 端口按产品模式分离（.env.data=5175 / .env.scada=5174），默认 full=5173：
-      // 5173 必须留给 full 壳（含 /preview），data/scada 若也起在 5173 会占用壳端口，
-      // 且 data 模式无 /preview 路由，H5 iframe 打开 /preview 会重定向 /system（管理端后台）。
+      // Ports are separated by product mode (.env.data=5175 / .env.scada=5174), default full=5173:
+      // 5173 must be reserved for the full shell (includes /preview); if data/scada also starts on 5173 it occupies the shell port,
+      // Also, data mode has no /preview route; when H5 iframe opens /preview it redirects to /system (admin backend).
       port: env.VITE_PORT ? Number(env.VITE_PORT) : 5173,
       proxy: {
         '/api': {
           target: apiBase,
           changeOrigin: true,
-          // SSE 长连接支持：禁用超时与缓冲，确保 agent/execute 等流式端点不会断开
+          // SSE long-connection support: disable timeout and buffering to ensure streaming endpoints like agent/execute do not disconnect
           timeout: 0,
           proxyTimeout: 0,
           configure: (proxy) => {
             proxy.on('proxyRes', (proxyRes) => {
-              // 移除可能被中间件添加的 content-length（流式 SSE 响应不应有固定长度）
+              // Remove content-length that middleware may add (streaming SSE responses should not have a fixed length)
               const ct = proxyRes.headers['content-type'] || '';
               if (ct.includes('text/event-stream')) {
                 delete proxyRes.headers['content-length'];
@@ -272,25 +272,25 @@ export default defineConfig(({ command, mode }) => {
     build: {
       rollupOptions: {
         external: isProd ? SHARED_DEPS : [],
-        // CODE-14: 生产构建也启用 manualChunks，避免所有应用代码打进单一 index.js (3.3MB)。
-        // 拆分策略：
-        //   - editor: 编辑器代码（含 three.js 用法、xlsx/html2canvas 等大依赖），登录页不加载
-        //   - system: 系统管理视图 + shared 共享模块（40+ 视图），登录页仅需 LoginView，但 barrel 导出使整包同 chunk
-        //   - vendor: 其余 node_modules 第三方依赖
-        //   - xlsx / html2canvas: 超大独立依赖单独成 chunk，仅在对应功能触发时加载
-        // 注意：packages/shared/ 合并到 system chunk，不再独立成 chunk。
-        // 原因：Vue SFC 编译时注入的 _export_sfc 辅助函数（minified 后名为 ct/ie）会被 Rollup 分到
-        // "首次使用它的 SFC"所在的 chunk（即 system chunk）。若 shared 独立成 chunk，shared 中的 SFC
-        // 会跨 chunk import system chunk 的 _export_sfc，而 system chunk 又 import shared chunk 的内容，
-        // 形成 shared ↔ system 循环依赖，触发 "Cannot access 'X' before initialization" TDZ 错误。
-        // 由于 LoginView 不 import shared，此合并不影响登录页加载性能。
+        // CODE-14: also enable manualChunks in production builds to avoid packing all app code into a single index.js (3.3MB).
+        // Split strategy:
+        //   - editor: editor code (includes three.js usage, large deps like xlsx/html2canvas); not loaded on the login page
+        //   - system: system management views + shared module (40+ views); the login page only needs LoginView, but barrel exports put the whole package in one chunk
+        //   - vendor: remaining node_modules third-party dependencies
+        //   - xlsx / html2canvas: oversized standalone dependencies form their own chunk, loaded only when the corresponding feature is triggered
+        // Note: packages/shared/ is merged into the system chunk and no longer a separate chunk.
+        // Reason: the _export_sfc helper injected by the Vue SFC compiler at compile time (named ct/ie after minification) gets split by Rollup into
+        // "首次使用它的 SFC" chunk (i.e. the system chunk). If shared becomes its own chunk, SFCs in shared
+        // will cross-chunk import _export_sfc from the system chunk, and the system chunk in turn imports content from the shared chunk,
+        // forms a shared ↔ system circular dependency, triggering the "Cannot access 'X' before initialization" TDZ error.
+        // Since LoginView does not import shared, this merge does not affect login-page load performance.
         output: {
           manualChunks(id) {
-            // 应用源码按子系统分包（基于 packages/ 路径匹配，与 resolve.alias 一致）
+            // The app source is split by subsystem (based on packages/ path matching, consistent with resolve.alias)
             if (id.includes('packages/editor/')) return 'editor';
             if (id.includes('packages/system/') || id.includes('packages/shared/')) return 'system';
 
-            // 第三方依赖细分
+            // Third-party dependency breakdown
             if (id.includes('node_modules/')) {
               if (id.includes('xlsx') || id.includes('xlml') || id.includes('cpexcel')) return 'xlsx';
               if (id.includes('html2canvas')) return 'html2canvas';

@@ -4,14 +4,14 @@
     class="selection-container"
     :style="selectionStyle"
   >
-    <!-- 半透明遮罩 -->
+    <!-- Semi-transparent mask -->
     <div class="selection-mask" />
-    <!-- 边框 -->
+    <!-- Border -->
     <div class="selection-border" />
     
-    <!-- 图元选中时显示调整手柄（框选时不显示，自定义控制点的图元不显示） -->
+    <!-- Show resize handles when a graphic is selected (not shown during box-select; not shown for graphics with custom control points) -->
     <template v-if="selectionMode !== 'box' && !disableResizeHandles">
-      <!-- 角落手柄 -->
+      <!-- Corner handle -->
       <div
         class="corner top-left"
         @mousedown.stop="(e) => onResizeStart(e, 'TOP_LEFT')"
@@ -28,7 +28,7 @@
         class="corner bottom-right"
         @mousedown.stop="(e) => onResizeStart(e, 'BOTTOM_RIGHT')"
       />
-      <!-- 边中间手柄 -->
+      <!-- Edge-midpoint handle -->
       <div
         class="handle top-middle"
         @mousedown.stop="(e) => onResizeStart(e, 'TOP')"
@@ -45,7 +45,7 @@
         class="handle right-middle"
         @mousedown.stop="(e) => onResizeStart(e, 'RIGHT')"
       />
-      <!-- 旋转手柄（仅单图元选中时显示） -->
+      <!-- Rotate handle (shown only when a single graphic is selected) -->
       <div 
         v-if="selectionMode === 'single'"
         class="rotation-container"
@@ -55,9 +55,9 @@
           transform: 'translateX(-50%)',
         }"
       >
-        <!-- 连接线 -->
+        <!-- Connection line -->
         <div class="rotation-line" />
-        <!-- 旋转手柄 -->
+        <!-- Rotate handle -->
         <div 
           class="rotation-handle" 
           @mousedown.stop="onRotationStart"
@@ -134,7 +134,7 @@ const selectionStyle = computed(() => {
   const { left, top, width, height } = props.selectionRect;
   const { scale, panX, panY, rotation } = props;
 
-  // 零尺寸 rect 不渲染，防止 8 个手柄重叠在顶点
+  // A zero-size rect is not rendered to avoid the 8 handles overlapping at the vertex
   if (width <= 0 || height <= 0) return { display: 'none' };
   
   if (props.isGraphicSelection) {
@@ -211,7 +211,7 @@ const onRotationStart = (event: MouseEvent) => {
   startAngle.value = calculateAngle(event.clientX, event.clientY);
   startRotation.value = props.rotation;
   
-  // 记录旋转前的 geometry 用于历史记录
+  // Record geometry before rotation for history
   const selectedGraphics = graphicStore.selectedGraphics;
   if (selectedGraphics.length > 0) {
     const graphic = selectedGraphics[0];
@@ -224,7 +224,7 @@ const onRotationStart = (event: MouseEvent) => {
       height: size.height,
       rotation: graphic.config?.geometry?.rotation ?? 0,
     };
-    // 开始批量历史记录
+    // Start batch history recording
     pageStore.currentPage?.startBatch?.('旋转图元');
   }
   
@@ -250,7 +250,7 @@ const onRotationMove = (event: MouseEvent) => {
 const onRotationEnd = () => {
   isRotating.value = false;
   
-  // 记录旋转的历史：对比起始和终点的 geometry
+  // Record rotation history: compare start and end geometry
   const startGeom = rotationStartGeometry.value;
   if (startGeom) {
     const selectedGraphics = graphicStore.selectedGraphics;
@@ -286,7 +286,7 @@ const onRotationEnd = () => {
         }
       }
     }
-    // 结束批量历史记录
+    // End batch history recording
     pageStore.currentPage?.endBatch?.();
   }
   rotationStartGeometry.value = null;
@@ -302,7 +302,7 @@ const onResizeStart = (event: MouseEvent, handleType: string) => {
   startResizeClientY.value = event.clientY;
   startRect.value = { ...props.selectionRect as { left: number; top: number; width: number; height: number } };
   
-  // 记录缩放前的 geometry 用于历史记录
+  // Record geometry before zoom for history
   const selectedGraphics = graphicStore.selectedGraphics;
   if (selectedGraphics.length > 0) {
     resizeStartGeometry.value = {};
@@ -319,7 +319,7 @@ const onResizeStart = (event: MouseEvent, handleType: string) => {
         };
       }
     }
-    // 开始批量历史记录
+    // Start batch history recording
     pageStore.currentPage?.startBatch?.('缩放图元');
   }
   
@@ -387,7 +387,7 @@ const onResizeMove = (event: MouseEvent) => {
 const onResizeEnd = () => {
   isResizing.value = false;
   
-  // 记录缩放的历史：对比起始和终点的 geometry
+  // Record zoom history: compare start and end geometry
   const startGeoms = resizeStartGeometry.value;
   if (startGeoms) {
     const selectedGraphics = graphicStore.selectedGraphics;
@@ -425,7 +425,7 @@ const onResizeEnd = () => {
         }
       }
     }
-    // 结束批量历史记录
+    // End batch history recording
     pageStore.currentPage?.endBatch?.();
   }
   resizeStartGeometry.value = null;

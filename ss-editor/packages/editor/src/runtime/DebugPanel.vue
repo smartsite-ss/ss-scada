@@ -18,7 +18,7 @@
     </div>
 
     <div class="panel-body">
-      <!-- 画布信息 -->
+      <!-- Canvas info -->
       <div class="section">
         <div class="section-title">
           {{ t('runtime.debugPanel.canvasInfo') }}
@@ -49,7 +49,7 @@
         </div>
       </div>
 
-      <!-- 显示模式 -->
+      <!-- Display mode -->
       <div class="section">
         <div class="section-title">
           {{ t('runtime.debugPanel.fitMode') }}
@@ -66,7 +66,7 @@
         </div>
       </div>
 
-      <!-- Canvas 诊断 -->
+      <!-- Canvas diagnostics -->
       <div class="section">
         <div class="section-title">
           {{ t('runtime.debugPanel.canvasDiagnostic') }}
@@ -89,7 +89,7 @@
         </button>
       </div>
 
-      <!-- 诊断结果 -->
+      <!-- Diagnostics result -->
       <div
         v-if="diagnosticInfo"
         class="section"
@@ -153,7 +153,7 @@
         </div>
       </div>
 
-      <!-- 刷新按钮 -->
+      <!-- Refresh button -->
       <div class="section">
         <button
           class="btn-action"
@@ -171,7 +171,7 @@ import { computed } from 'vue';
 import { i18n } from '@scada-editor/core';
 import type { FitMode } from '@scada-editor/core';
 
-// 经 unknown 断言窄化 t 签名：解构 i18n.global 与动态 key 均会触发 vue-i18n messages 字面量 schema 深度类型实例化（TS2589）
+// Narrow the t signature via unknown assertion: destructuring i18n.global together with a dynamic key triggers deep type instantiation of the vue-i18n messages literal schema (TS2589)
 const t = (key: string): string =>
   (i18n.global as unknown as { t: (key: string) => string }).t(key);
 
@@ -250,8 +250,8 @@ const emit = defineEmits({
   'change-fit-mode': (_mode: FitMode) => true,
 });
 
-// 显示模式选项：与右键菜单共用同一组 i18n key（zoomManager.fitModes.*），文案全局统一；
-// computed 保证语言切换后标签同步刷新
+// Display-mode options: share the same i18n key group (zoomManager.fitModes.*) with the right-click menu, unified globally;
+// computed ensures labels refresh synchronously after a language switch
 const FIT_MODES: FitMode[] = ['auto', 'contain', 'fitWidth', 'fitHeight', 'stretch'];
 const fitModes = computed(() =>
   FIT_MODES.map((mode) => ({ mode, label: t(`zoomManager.fitModes.${mode}.label`) })),
@@ -344,7 +344,7 @@ function handleFitModeChange(mode: FitMode) {
   padding-bottom: 4px;
 }
 
-/* 信息网格 */
+/* Info grid */
 .info-grid {
   display: grid;
   gap: 4px;
@@ -381,7 +381,7 @@ function handleFitModeChange(mode: FitMode) {
   color: #f44336;
 }
 
-/* 显示模式按钮 */
+/* Display-mode button */
 .fitmode-group {
   display: flex;
   flex-wrap: wrap;
@@ -411,7 +411,7 @@ function handleFitModeChange(mode: FitMode) {
   font-weight: 600;
 }
 
-/* 操作 */
+/* Actions */
 .action-row {
   margin-bottom: 8px;
 }
@@ -433,7 +433,7 @@ function handleFitModeChange(mode: FitMode) {
   color: var(--text, #ccc);
 }
 
-/* 通用操作按钮 */
+/* Generic action button */
 .btn-action {
   width: 100%;
   padding: 7px 0;
@@ -459,7 +459,7 @@ function handleFitModeChange(mode: FitMode) {
   display: inline-block;
 }
 
-/* 诊断结果 */
+/* Diagnostics result */
 .diag-results {
   background: var(--elevated, rgba(255, 255, 255, 0.04));
   border-radius: 6px;

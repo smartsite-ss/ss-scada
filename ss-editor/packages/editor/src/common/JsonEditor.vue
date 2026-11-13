@@ -1,6 +1,6 @@
 <template>
   <div class="json-editor-wrapper">
-    <!-- 工具栏 -->
+    <!-- Toolbar -->
     <div class="editor-toolbar">
       <div class="toolbar-section">
         <button
@@ -126,7 +126,7 @@
       </div>
     </div>
 
-    <!-- 搜索栏 -->
+    <!-- Search bar -->
     <div
       v-if="showSearch"
       class="search-bar"
@@ -201,12 +201,12 @@
       </div>
     </div>
 
-    <!-- 编辑器主体 -->
+    <!-- Editor body -->
     <div
       ref="editorBody"
       class="editor-body"
     >
-      <!-- 行号 -->
+      <!-- Line number -->
       <div class="line-numbers">
         <div
           v-for="n in lineCount"
@@ -217,14 +217,14 @@
         </div>
       </div>
 
-      <!-- 高亮层 -->
+      <!-- Highlight layer -->
       <div
         ref="highlightLayer"
         class="highlight-layer"
         v-html="highlightedContent"
       />
 
-      <!-- 编辑层 -->
+      <!-- Edit layer -->
       <textarea
         ref="editorTextarea"
         v-model="content"
@@ -237,7 +237,7 @@
       />
     </div>
 
-    <!-- 状态栏 -->
+    <!-- Status bar -->
     <div
       v-if="!compact"
       class="status-bar"
@@ -267,7 +267,7 @@
       </div>
     </div>
 
-    <!-- 隐藏的文件输入 -->
+    <!-- Hidden file input -->
     <input
       ref="fileInput"
       type="file"
@@ -307,14 +307,14 @@ const emit = defineEmits([
   'generateTestGraphics',
 ])
 
-// 核心状态
+// Core state
 const content = ref('')
 const highlightLayer = ref<HTMLElement | null>(null)
 const editorTextarea = ref<HTMLTextAreaElement | null>(null)
 const editorBody = ref<HTMLElement | null>(null)
 const fileInput = ref<HTMLInputElement | null>(null)
 
-// 搜索相关
+// Search-related
 const showSearch = ref(false)
 const showReplace = ref(false)
 const searchQuery = ref('')
@@ -323,19 +323,19 @@ const matchCount = ref(0)
 const currentMatchIndex = ref(-1)
 const matches: Array<{ start: number; end: number }> = []
 
-// 格式化
+// Format
 const indentSize = ref(2)
 
-// 历史记录
+// History
 const historyStack: string[] = []
 const historyIndex = ref(-1)
 const MAX_HISTORY = 50
 
-// 错误处理
+// Error handling
 const hasError = ref(false)
 const errorMessage = ref('')
 
-// 计算属性
+// Computed properties
 const lineCount = computed(() => content.value.split('\n').length)
 
 const sizeInKb = computed(() => {
@@ -360,22 +360,22 @@ const highlightedContent = computed(() => {
   return syntaxHighlight(content.value)
 })
 
-// 语法高亮函数
+// Syntax-highlight function
 function syntaxHighlight(json: string): string {
   if (!json) return ''
 
   let result = escapeHtml(json)
 
-  // 字符串
+  // String
   result = result.replace(/"(.*?)"/g, '<span class="token string">"$1"</span>')
-  // 数字
+  // Number
   result = result.replace(/\b(\d+(\.\d+)?)\b/g, '<span class="token number">$1</span>')
-  // 关键字
+  // Keyword
   result = result.replace(/\b(true|false|null)\b/g, '<span class="token keyword">$1</span>')
-  // 标点符号
+  // Punctuation
   result = result.replace(/({|}|\[|\]|:|,)/g, '<span class="token punctuation">$1</span>')
 
-  // 应用搜索高亮
+  // Apply search highlight
   if (searchQuery.value && matchCount.value > 0) {
     const searchStr = escapeHtml(searchQuery.value)
     const regex = new RegExp(searchStr, 'gi')
@@ -397,7 +397,7 @@ function escapeHtml(str: string): string {
     .replace(/>/g, '&gt;')
 }
 
-// 处理输入
+// Handle input
 function handleInput() {
   saveToHistory()
   validateJson()
@@ -406,7 +406,7 @@ function handleInput() {
   emit('change', content.value)
 }
 
-// 保存历史记录
+// Save history record
 function saveToHistory() {
   const currentContent = content.value
   if (historyStack[historyIndex.value] === currentContent) {
@@ -424,7 +424,7 @@ function saveToHistory() {
   historyIndex.value = historyStack.length - 1
 }
 
-// 撤销
+// Undo
 function undo() {
   if (historyIndex.value > 0) {
     historyIndex.value--
@@ -434,7 +434,7 @@ function undo() {
   }
 }
 
-// 重做
+// Redo
 function redo() {
   if (historyIndex.value < historyStack.length - 1) {
     historyIndex.value++
@@ -444,7 +444,7 @@ function redo() {
   }
 }
 
-// 格式化
+// Format
 function format(type: 'pretty' | 'compact' = 'pretty') {
   try {
     const data = JSON.parse(content.value)
@@ -459,11 +459,11 @@ function format(type: 'pretty' | 'compact' = 'pretty') {
     updateHighlight()
     emit('update:modelValue', content.value)
   } catch (e) {
-    // 忽略格式化错误
+    // Ignore formatting errors
   }
 }
 
-// 验证 JSON
+// Validate JSON
 function validateJson(): boolean {
   try {
     JSON.parse(content.value)
@@ -477,39 +477,39 @@ function validateJson(): boolean {
   }
 }
 
-// 快捷键处理
+// Shortcut handling
 function handleKeydown(e: KeyboardEvent) {
-  // Ctrl + F 搜索
+  // Ctrl + F search
   if (e.ctrlKey && e.key === 'f') {
     e.preventDefault()
     toggleSearch()
   }
 
-  // Ctrl + S 格式化
+  // Ctrl + S format
   if (e.ctrlKey && e.key === 's') {
     e.preventDefault()
     format('pretty')
   }
 
-  // Tab 键 - 缩进
+  // Tab key — indent
   if (e.key === 'Tab' && !e.shiftKey) {
     e.preventDefault()
     insertAtCursor(' '.repeat(indentSize.value))
   }
 
-  // Shift + Tab - 反缩进
+  // Shift + Tab — outdent
   if (e.key === 'Tab' && e.shiftKey) {
     e.preventDefault()
     unindent()
   }
 
-  // Enter 键 - 自动缩进
+  // Enter key — auto-indent
   if (e.key === 'Enter') {
     e.preventDefault()
     handleEnter()
   }
 
-  // 搜索框内处理
+  // Search-box internal handling
   if (showSearch.value) {
     if (e.key === 'Escape') {
       closeSearch()
@@ -517,7 +517,7 @@ function handleKeydown(e: KeyboardEvent) {
   }
 }
 
-// 插入文本
+// Insert text
 function insertAtCursor(text: string) {
   if (!editorTextarea.value) return
 
@@ -536,7 +536,7 @@ function insertAtCursor(text: string) {
   })
 }
 
-// 处理回车缩进
+// Handle Enter indentation
 function handleEnter() {
   if (!editorTextarea.value) return
 
@@ -544,11 +544,11 @@ function handleEnter() {
   const before = content.value.substring(0, textarea.selectionStart)
   const after = content.value.substring(textarea.selectionEnd)
 
-  // 获取当前行的缩进
+  // Get the current line's indentation
   const currentLine = before.split('\n').pop() || ''
   let indent = currentLine.match(/^(\s*)/)?.[1] || ''
 
-  // 如果最后一个字符是 { 或 [，则增加缩进
+  // If the last character is { or [, increase indentation
   const lastChar = before.trim().slice(-1)
   if (lastChar === '{' || lastChar === '[') {
     indent += ' '.repeat(indentSize.value)
@@ -562,7 +562,7 @@ function handleEnter() {
   })
 }
 
-// 反缩进
+// Outdent
 function unindent() {
   if (!editorTextarea.value) return
 
@@ -582,7 +582,7 @@ function unindent() {
   content.value = lines.join('\n')
 }
 
-// 搜索功能
+// Search feature
 function toggleSearch() {
   showSearch.value = !showSearch.value
   if (showSearch.value) {
@@ -662,7 +662,7 @@ function scrollToMatch() {
   const textBefore = content.value.substring(0, match.start)
   const line = textBefore.split('\n').length
 
-  const lineHeight = 19.2 // 根据字体大小计算
+  const lineHeight = 19.2 // Compute by font size
   if (editorBody.value) {
     editorBody.value.scrollTop = Math.max(0, (line - 5) * lineHeight)
   }
@@ -695,7 +695,7 @@ function handleSearchKeydown(e: KeyboardEvent) {
   }
 }
 
-// 滚动同步
+// Scroll sync
 function handleScroll(e: Event) {
   if (!highlightLayer.value || !editorTextarea.value) return
 
@@ -703,7 +703,7 @@ function handleScroll(e: Event) {
   highlightLayer.value.scrollTop = target.scrollTop
   highlightLayer.value.scrollLeft = target.scrollLeft
 
-  // 同步行号
+  // Sync line numbers
   const lineNumbers = editorBody.value?.querySelector('.line-numbers') as HTMLElement
   if (lineNumbers) {
     lineNumbers.scrollTop = target.scrollTop
@@ -712,11 +712,11 @@ function handleScroll(e: Event) {
 
 function updateHighlight() {
   nextTick(() => {
-    // 触发重新计算高亮
+    // Trigger highlight recomputation
   })
 }
 
-// 初始化
+// Initialization
 watch(
   () => props.modelValue,
   (newVal) => {
@@ -736,7 +736,7 @@ onMounted(() => {
   validateJson()
 })
 
-// 新功能函数
+// New feature function
 function handleRefresh() {
   emit('refresh')
 }
@@ -779,7 +779,7 @@ function handleFileChange(e: Event) {
     }
     reader.readAsText(file)
   }
-  // 重置文件输入，允许选择同一个文件
+  // Reset the file input to allow selecting the same file
   if (fileInput.value) {
     fileInput.value.value = ''
   }
@@ -795,7 +795,7 @@ function handleFileChange(e: Event) {
   border: 1px solid var(--border);
   border-radius: 4px;
   overflow: hidden;
-  min-height: 0; /* 防止flex子元素溢出 */
+  min-height: 0; /* Prevent flex children from overflowing */
 }
 
 .editor-toolbar {
@@ -966,7 +966,7 @@ function handleFileChange(e: Event) {
   flex: 1;
   overflow: auto;
   position: relative;
-  min-height: 0; /* 允许flex子元素缩小 */
+  min-height: 0; /* Allow flex children to shrink */
 }
 
 .line-numbers {
@@ -1021,7 +1021,7 @@ function handleFileChange(e: Event) {
   caret-color: var(--text);
 }
 
-/* 语法高亮样式 */
+/* Syntax-highlight style */
 .token.string {
   color: #690;
 }
@@ -1079,7 +1079,7 @@ function handleFileChange(e: Event) {
   color: #f56c6c;
 }
 
-/* 响应式 */
+/* Responsive */
 @media (max-width: 600px) {
   .btn-text {
     display: none;

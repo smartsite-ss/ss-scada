@@ -22,7 +22,7 @@
       </div>
     </div>
 
-    <!-- 工具栏：筛选 -->
+    <!-- Toolbar: filter -->
     <div class="toolbar">
       <div class="toolbar-left">
         <div class="toolbar-field">
@@ -81,7 +81,7 @@
       </div>
     </div>
 
-    <!-- 表格区（始终显示表头） -->
+    <!-- Table area (header always shown) -->
     <div class="table-wrap">
       <table class="data-table">
         <thead>
@@ -174,7 +174,7 @@
       </table>
     </div>
 
-    <!-- 分页 -->
+    <!-- Pagination -->
     <div class="pagination-bar">
       <span class="page-summary">{{ t('system.controlLogs.totalRecords', { total: pagination.total }) }}</span>
       <button
@@ -209,7 +209,7 @@ const { t } = useI18n();
 const projectStore = useProjectStore();
 const { loadDefault } = useProjectContext();
 
-// ==================== 状态 ====================
+// ==================== Status ====================
 const loading = ref(false);
 const error = ref(false);
 const logs = ref<any[]>([]);
@@ -242,7 +242,7 @@ const timePresets = computed(() => [
   { label: t('system.historicalTrend.last30d'), value: '30d' },
 ]);
 
-// ==================== 方法 ====================
+// ==================== Methods ====================
 async function loadLogs(page: number = 1) {
   const pid = selectedProjectId.value;
   if (!pid) {
@@ -263,9 +263,9 @@ async function loadLogs(page: number = 1) {
       startDate: filterStartDate.value ? new Date(filterStartDate.value).toISOString() : undefined,
       endDate: filterEndDate.value ? new Date(filterEndDate.value + 'T23:59:59').toISOString() : undefined,
     });
-    // 后端 TransformInterceptor 将 { items, pagination } 转换为
+    // The backend TransformInterceptor converts { items, pagination } into
     // { code, data: items[], pagination, message, timestamp }
-    // 即 res.data 为日志数组，res.pagination 为分页信息（位于顶层）
+    // i.e. res.data is the log array and res.pagination is the pagination info (at the top level)
     const payload = (res as any)?.data;
     logs.value = Array.isArray(payload) ? payload : (payload?.items ?? []);
     const pag = (res as any)?.pagination ?? payload?.pagination;

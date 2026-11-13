@@ -4,7 +4,7 @@
     class="page-browser"
     :style="rootStyle"
   >
-    <!-- Canvas 2D 渲染层 —— 始终在 DOM 中，避免 v-if 导致 canvasRef 失效 -->
+    <!-- Canvas 2D rendering layer — always present in the DOM to avoid canvasRef becoming invalid due to v-if -->
     <canvas
       ref="canvasRef"
       :width="pageWidth"
@@ -13,7 +13,7 @@
       class="page-browser-canvas"
     />
 
-    <!-- Vue 组件渲染层 -->
+    <!-- Vue component rendering layer -->
     <div class="page-browser-vue-layer">
       <template v-if="vueComponents.length > 0">
         <component
@@ -26,7 +26,7 @@
       </template>
     </div>
 
-    <!-- SVG 渲染层 -->
+    <!-- SVG rendering layer -->
     <div class="page-browser-svg-layer">
       <div
         v-for="g in svgGraphics"
@@ -36,7 +36,7 @@
       />
     </div>
 
-    <!-- CSS 渲染层 -->
+    <!-- CSS rendering layer -->
     <div class="page-browser-css-layer">
       <div
         v-for="g in cssGraphics"
@@ -46,7 +46,7 @@
       />
     </div>
 
-    <!-- Three.js 渲染层 -->
+    <!-- Three.js rendering layer -->
     <div class="page-browser-three-layer">
       <div
         v-for="g in threeGraphics"
@@ -56,7 +56,7 @@
       />
     </div>
 
-    <!-- 加载中叠加层 -->
+    <!-- Loading overlay -->
     <div
       v-show="loading"
       class="page-browser-loading"
@@ -64,7 +64,7 @@
       <span>{{ t('page-browser.loading') }}</span>
     </div>
 
-    <!-- 加载失败叠加层 -->
+    <!-- Load-failure overlay -->
     <div
       v-show="error"
       class="page-browser-error"
@@ -100,11 +100,11 @@ const props = defineProps({
   backgroundColor: { type: String, default: '#FFFFFF' },
   width: { type: Number, default: 400 },
   height: { type: Number, default: 300 },
-  /** 页面数据加载完成回调：将 PageBrowser 尺寸调整为目标页面尺寸，使选择框与实际内容匹配 */
+  /** Page data load-complete callback: resize PageBrowser to the target page size so the selection box matches the actual content */
   onPageLoaded: { type: Function as PropType<(pageWidth: number, pageHeight: number) => void>, default: null },
 });
 
-// ─── 状态 ───
+// ─── Status ───
 const rootRef = ref<HTMLDivElement | null>(null);
 const canvasRef = ref<HTMLCanvasElement | null>(null);
 const pageWidth = ref(800);
@@ -112,32 +112,32 @@ const pageHeight = ref(600);
 const loading = ref(false);
 const error = ref<string | null>(null);
 
-// 页面背景 —— 从目标页面数据中读取，未设置时默认透明
+// Page background — read from target page data; defaults to transparent when unset
 const pageBackgroundColor = ref<string | null>(null);
 const pageBackgroundImage = ref<string | null>(null);
 const pageBackgroundImageEl = ref<HTMLImageElement | null>(null);
 
-// 分类后的图元
+// Graphics after categorization
 const canvas2dGraphics = ref<IGraphic[]>([]);
 const vueGraphics = ref<IGraphic[]>([]);
 const svgGraphics = ref<IGraphic[]>([]);
 const cssGraphics = ref<IGraphic[]>([]);
 const threeGraphics = ref<IGraphic[]>([]);
 
-// 缩放（zoomX/zoomY 支持非等比拉伸）
+// Zoom (zoomX/zoomY support non-uniform stretch)
 const zoomX = ref(1);
 const zoomY = ref(1);
 
 // Canvas2DBackend
 let canvasBackend: Canvas2DBackend | null = null;
 
-// Three.js 挂载记录
+// Three.js mount record
 const threeMounts = new Map<string, HTMLElement>();
 
-// 容器尺寸监听器
+// Container size listener
 let resizeObserver: ResizeObserver | null = null;
 
-// ─── 缩放计算 ───
+// ─── Zoom calculation ───
 function recalculateZoom(): void {
   if (pageWidth.value <= 0 || pageHeight.value <= 0) return;
 
@@ -157,7 +157,7 @@ function recalculateZoom(): void {
   }
 }
 
-// ─── 计算样式 ───
+// ─── Computed style ───
 const rootStyle = computed(() => ({
   width: '100%',
   height: '100%',
@@ -171,7 +171,7 @@ const rootStyle = computed(() => ({
 
 const canvasStyle = computed(() => {
   if (props.displayMode === 'stretch') {
-    // 拉伸满屏：不保持比例，分别计算 X/Y 缩放
+    // Stretch to full screen: does not preserve ratio; X/Y scaling computed separately
     return {
       transform: `scale(${zoomX.value}, ${zoomY.value})`,
       transformOrigin: 'top left',
@@ -202,7 +202,7 @@ const BORDER_STYLE_MAP: Record<string, string> = {
   dotted: 'dotted',
 };
 
-// ─── Vue 组件列表 ───
+// ─── Vue component list ───
 const vueComponents = computed(() => {
   return vueGraphics.value
     .filter((g: any) => g.componentName)
@@ -219,7 +219,7 @@ const vueComponents = computed(() => {
     .filter(Boolean) as Array<{ id: string; componentDef: Component; style: Record<string, string>; componentProps: Record<string, any> }>;
 });
 
-// ─── 图元样式 ───
+// ─── Graphic style ───
 function getGraphicStyle(g: any): Record<string, string> {
   const pos = g.getPosition?.() || g.config?.geometry || { x: 0, y: 0 };
   const size = g.getSize?.() || g.config?.geometry || { width: 0, height: 0 };
@@ -236,7 +236,7 @@ function getGraphicStyle(g: any): Record<string, string> {
   };
 }
 
-// ─── SVG/CSS 图元 HTML ───
+// ─── SVG/CSS graphic HTML ───
 function getGraphicHtml(g: any): string {
   if (typeof g.getSvgTemplate === 'function') {
     return g.getSvgTemplate(g.props);
@@ -247,7 +247,7 @@ function getGraphicHtml(g: any): string {
   return '';
 }
 
-// ─── Three.js 图元挂载 ───
+// ─── Three.js graphic mount ───
 function mountThreeGraphic(g: any, el: HTMLElement | null): void {
   if (!el || threeMounts.has(g.id)) return;
   threeMounts.set(g.id, el);
@@ -256,7 +256,7 @@ function mountThreeGraphic(g: any, el: HTMLElement | null): void {
   }
 }
 
-// ─── 图元分类 ───
+// ─── Graphic category ───
 function classifyGraphics(graphics: IGraphic[]): void {
   const c2d: IGraphic[] = [];
   const vue: IGraphic[] = [];
@@ -286,7 +286,7 @@ function classifyGraphics(graphics: IGraphic[]): void {
   threeGraphics.value = three;
 }
 
-// ─── 加载页面数据 ───
+// ─── Load page data ───
 async function loadPageData(): Promise<void> {
   if (!props.pageName) return;
 
@@ -294,7 +294,7 @@ async function loadPageData(): Promise<void> {
   error.value = null;
 
   try {
-    // 从 pageStore 中查找（已打开的页面）—— 优先使用内存中的数据
+    // Look up in pageStore (open pages) — prefer in-memory data
     let targetPageData: { width: number; height: number; graphics: any[] } | null = null;
     const pageStore = usePageStore();
     const targetPage = pageStore.pages.find(p => p.name === props.pageName);
@@ -309,7 +309,7 @@ async function loadPageData(): Promise<void> {
       pageBackgroundImage.value = targetPage.backgroundImage || null;
     }
 
-    // pageStore 中找不到时，尝试从项目持久化数据加载指定页面
+    // When not found in pageStore, try loading the specified page from project persisted data
     if (!targetPageData) {
       try {
         const projectData = await saveServiceManager.load();
@@ -326,11 +326,11 @@ async function loadPageData(): Promise<void> {
           }
         }
       } catch {
-        // 保存服务不可用或未初始化，静默处理
+        // If the save service is unavailable or uninitialized, handle silently
       }
     }
 
-    // 两种方式都没找到，报告页面不存在
+    // Neither method found it; report that the page does not exist
     if (!targetPageData) {
       error.value = props.pageName + t('page-browser.errors.pageNotFound');
       loading.value = false;
@@ -340,9 +340,9 @@ async function loadPageData(): Promise<void> {
     pageWidth.value = targetPageData.width || 800;
     pageHeight.value = targetPageData.height || 600;
 
-    // 反序列化图元
-    // 注意：从 pageStore 获取的 graphics 已是 IGraphic 实例（已由 BasePage.fromJSON 反序列化），
-    // 需要先通过 toJSON() 转回原始 JSON 再反序列化，否则 createGraphicFromJSON 无法正确提取几何信息。
+    // Deserialize graphic
+    // Note: the graphics from pageStore are already IGraphic instances (deserialized by BasePage.fromJSON),
+    // Must first convert back to raw JSON via toJSON() before deserializing; otherwise createGraphicFromJSON cannot correctly extract geometry info.
     const rawGraphics = targetPageData.graphics || [];
 
     const allGraphics = rawGraphics
@@ -358,21 +358,21 @@ async function loadPageData(): Promise<void> {
       })
       .filter(Boolean) as IGraphic[];
 
-    // 分类
+    // Category
     classifyGraphics(allGraphics);
 
-    // 计算缩放（基于实际容器尺寸，确保与编辑器缩放一致）
+    // Compute zoom (based on actual container size, ensuring consistency with editor zoom)
     recalculateZoom();
 
-    // 预加载页面背景图片
+    // Preload the page background image
     await preloadPageBackgroundImage();
 
     await nextTick();
     initCanvasBackend();
     syncCanvasGraphics();
 
-    // 通知外部页面已加载完成，自动将 PageBrowser 尺寸调整为目标页面尺寸
-    // 使编辑器中的选择框与实际页面内容尺寸一致
+    // Notify the external page that loading is complete and auto-resize PageBrowser to the target page size
+    // Make the selection box in the editor match the actual page content size
     if (typeof props.onPageLoaded === 'function') {
       props.onPageLoaded(pageWidth.value, pageHeight.value);
     }
@@ -384,7 +384,7 @@ async function loadPageData(): Promise<void> {
   }
 }
 
-// ─── 预加载页面背景图片 ───
+// ─── Preload the page background image ───
 async function preloadPageBackgroundImage(): Promise<void> {
   pageBackgroundImageEl.value = null;
   const src = pageBackgroundImage.value;
@@ -415,13 +415,13 @@ function initCanvasBackend(): void {
     height: pageHeight.value,
     renderMode: 'canvas',
     onBackgroundRender: (ctx: CanvasRenderingContext2D) => {
-      // 绘制背景色（无背景色时保持透明，不填充）
+      // Draw the background color (stay transparent when no background color; do not fill)
       const bgColor = pageBackgroundColor.value;
       if (bgColor && bgColor !== 'transparent') {
         ctx.fillStyle = bgColor;
         ctx.fillRect(0, 0, pageWidth.value, pageHeight.value);
       }
-      // 绘制背景图片（异步加载，加载完成后自动出现在下一帧）
+      // Draw the background image (async load; appears automatically on the next frame once loaded)
       const bgImage = pageBackgroundImageEl.value;
       if (bgImage && bgImage.complete && bgImage.naturalWidth > 0) {
         ctx.drawImage(bgImage, 0, 0, pageWidth.value, pageHeight.value);
@@ -437,11 +437,11 @@ function syncCanvasGraphics(): void {
   }
 }
 
-// ─── 生命周期 ───
+// ─── Lifecycle ───
 onMounted(async () => {
   await nextTick();
 
-  // 监听容器尺寸变化（编辑器缩放/geometry 调整时自动重算 zoom）
+  // Watch container size change (auto-recompute zoom on editor zoom / geometry adjust)
   if (rootRef.value) {
     resizeObserver = new ResizeObserver(() => {
       recalculateZoom();
@@ -461,7 +461,7 @@ onUnmounted(() => {
     canvasBackend.destroy();
     canvasBackend = null;
   }
-  // 卸载 Three.js 图元
+  // Unmount Three.js graphics
   for (const [id, _el] of threeMounts) {
     const g = threeGraphics.value.find(g => g.id === id);
     if (g && typeof (g as any).unmount === 'function') {
@@ -471,11 +471,11 @@ onUnmounted(() => {
   threeMounts.clear();
 });
 
-// 监听 pageName 变化
+// Watch pageName change
 watch(() => props.pageName, () => { loadPageData(); });
 
-// 监听 pageStore.pages 变化，当页面数据加载完成时重试
-// 解决预览模式下 pageStore 延迟加载导致找不到目标页面的问题
+// Watch pageStore.pages change; retry when page data finishes loading
+// Fix the issue where preview-mode pageStore lazy loading causes the target page to be not found
 watch(
   () => usePageStore().pages.map(p => p.name),
   () => {
@@ -485,12 +485,12 @@ watch(
   },
 );
 
-// 监听 displayMode 变化
+// Watch displayMode change
 watch(() => props.displayMode, () => {
   recalculateZoom();
 });
 
-// 监听 geometry 变化
+// Watch geometry change
 watch(() => [props.width, props.height], () => {
   if (pageWidth.value > 0 && pageHeight.value > 0) {
     recalculateZoom();

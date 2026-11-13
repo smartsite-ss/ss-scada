@@ -13,10 +13,10 @@ module.exports = {
   roots: ['<rootDir>/apps/ss-node-server/src'],
 
   moduleNameMapper: {
-    // ss-collector 系列嵌套在 packages/ss-collector/ 下，需优先匹配
+    // ss-collector-* packages are nested under packages/ss-collector/; must be matched first
     '^@ss-node/ss-collector-([^/]+)/(.+)$': '<rootDir>/packages/ss-collector/ss-collector-$1/src/$2',
     '^@ss-node/ss-collector-([^/]+)$': '<rootDir>/packages/ss-collector/ss-collector-$1/src',
-    // ss-storage-influx 嵌套在 packages/ss-storage/ 下，需优先匹配
+    // ss-storage-influx is nested under packages/ss-storage/; must be matched first
     '^@ss-node/ss-storage-influx/(.+)$': '<rootDir>/packages/ss-storage/ss-storage-influx/src/$1',
     '^@ss-node/ss-storage-influx$': '<rootDir>/packages/ss-storage/ss-storage-influx/src',
     '^@ss-node/([^/]+)/(.+)$': '<rootDir>/packages/$1/src/$2',

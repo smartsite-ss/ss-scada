@@ -1,5 +1,5 @@
 <template>
-  <!-- 分组节点（只读：用于设备监控视图，无编辑/删除操作） -->
+  <!-- Group node (read-only: for the device monitoring view; no edit/delete operations) -->
   <div
     class="tree-node group-node"
     :style="{ paddingLeft: (16 + depth * 12) + 'px' }"
@@ -41,13 +41,13 @@
     <span class="node-count">{{ totalDescendantDevices }}</span>
   </div>
 
-  <!-- 展开后：先显示子分组，再显示设备 -->
+  <!-- After expanding: show subgroups first, then devices -->
   <div
     v-if="expandedGroups.has(group.id)"
     class="group-children"
     :style="{ marginLeft: '12px' }"
   >
-    <!-- 子分组（递归） -->
+    <!-- Subgroup (recursive) -->
     <MonitorGroupTreeNode
       v-for="child in childGroups"
       :key="child.id"
@@ -62,7 +62,7 @@
       @select-device="onSelectDeviceBubble"
     />
 
-    <!-- 直属于该分组的设备 -->
+    <!-- Devices directly under this group -->
     <div
       v-for="dev in directDevices"
       :key="dev.id"
@@ -136,7 +136,7 @@ const emit = defineEmits<{
   selectDevice: [projectId: string, groupId: string, deviceId: string];
 }>();
 
-// 在树形结构中查找当前分组对应的 tree item
+// Find the tree item corresponding to the current group in the tree structure
 function findTreeItem(items: any[], groupId: string): any | null {
   for (const item of items) {
     if (item.group?.id === groupId) return item;
@@ -148,33 +148,33 @@ function findTreeItem(items: any[], groupId: string): any | null {
   return null;
 }
 
-// 当前分组对应的 tree item（包含 children 和 devices）
+// The tree item for the current group (includes children and devices)
 const treeItem = computed(() => {
   const raw = props.groupTreeCache.get(props.projectId);
   const tree = Array.isArray(raw) ? raw : [];
   return findTreeItem(tree, props.group.id);
 });
 
-// 子分组 — 使用树形结构的 children
+// Subgroup — use the tree structure's children
 const childGroups = computed(() => {
   if (!treeItem.value?.children || !Array.isArray(treeItem.value.children)) return [];
   return treeItem.value.children.map((child: any) => child.group).filter(Boolean);
 });
 
-// 是否有可展开内容（子分组或直属设备）
+// Whether there is expandable content (subgroup or direct devices)
 const hasExpandableContent = computed(() => childGroups.value.length > 0 || directDevices.value.length > 0);
 
-// 直属设备 — 优先使用 tree item 的 devices
+// Direct devices — prefer the tree item's devices
 const directDevices = computed(() => {
   if (treeItem.value?.devices && Array.isArray(treeItem.value.devices)) {
     return treeItem.value.devices;
   }
-  // 回退到缓存
+  // Fall back to cache
   const raw = props.groupDeviceCache.get(`${props.projectId}::${props.group.id}`);
   return Array.isArray(raw) ? raw : [];
 });
 
-// 递归计算该分组下的设备总数（含子分组设备）
+// Recursively compute the total device count under a group (including subgroup devices)
 const totalDescendantDevices = computed(() => {
   if (!treeItem.value) return 0;
   let count = (treeItem.value.devices || []).length;
@@ -225,12 +225,12 @@ function onSelectDeviceBubble(projId: string, groupId: string, deviceId: string)
 .group-node { font-weight: 500; }
 .device-node { font-size: 12px; }
 
-/* 节点图标配色：分组=琥珀色（文件夹），设备=按状态着色 */
+/* Node icon colors: group = amber (folder); device = colored by status */
 .node-icon { flex-shrink: 0; }
 .group-icon { color: var(--status-warning); }
 .device-icon { color: var(--text-secondary); }
 
-/* 设备图标按状态着色 */
+/* Device icons colored by status */
 .device-icon.device-status-online { color: var(--status-online); }
 .device-icon.device-status-offline { color: var(--status-offline); }
 .device-icon.device-status-connecting { color: var(--primary); }

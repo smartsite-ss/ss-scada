@@ -1,6 +1,6 @@
 <template>
   <div class="tools-tab">
-    <!-- 颜色设置 -->
+    <!-- Color settings -->
     <div class="setting-group">
       <div class="group-title">
         <span class="group-icon">🎨</span>
@@ -34,7 +34,7 @@
       </div>
     </div>
 
-    <!-- 线条设置 -->
+    <!-- Line settings -->
     <div class="setting-group">
       <div class="group-title">
         <span class="group-icon">✏️</span>
@@ -57,7 +57,7 @@
       </div>
     </div>
 
-    <!-- 字体设置 -->
+    <!-- Font settings -->
     <div class="setting-group">
       <div class="group-title">
         <span class="group-icon">📝</span>

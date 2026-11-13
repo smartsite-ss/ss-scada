@@ -1,6 +1,6 @@
 <template>
   <div class="history-trend-config">
-    <!-- 变量绑定 -->
+    <!-- Variable binding -->
     <TagBindingEditor
       mode="multiple"
       :project-id="projectId"
@@ -10,7 +10,7 @@
       @remove="removeTag"
     />
 
-    <!-- 每变量趋势样式 -->
+    <!-- Per-variable trend style -->
     <div
       v-for="(item, index) in tags"
       :key="item.tagId"
@@ -26,7 +26,7 @@
         </summary>
 
         <div class="style-grid">
-          <!-- 线条 -->
+          <!-- Line -->
           <label class="field">
             <span class="field-label">{{ $t('historyTrend.series.lineWidth') }}</span>
             <input
@@ -58,7 +58,7 @@
             >
           </label>
 
-          <!-- 实心点 -->
+          <!-- Solid dot -->
           <label class="field">
             <span class="field-label">{{ $t('historyTrend.series.symbolSize') }}</span>
             <input
@@ -71,7 +71,7 @@
             >
           </label>
 
-          <!-- 标签 -->
+          <!-- Tag -->
           <label class="field field--inline">
             <input
               type="checkbox"
@@ -112,7 +112,7 @@
             </select>
           </label>
 
-          <!-- 区域填充 -->
+          <!-- Area fill -->
           <label class="field field--inline">
             <input
               type="checkbox"
@@ -160,7 +160,7 @@
       </details>
     </div>
 
-    <!-- 全局配置（默认查询/时间范围 + 标题 + 图表 + 样式） -->
+    <!-- Global config (default query/time range + title + chart + style) -->
     <PluginConfigPanel
       :schema="historyTrendPropertySchema"
       :values="values"

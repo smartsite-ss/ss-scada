@@ -1,6 +1,6 @@
 <template>
   <div class="template-library">
-    <!-- ======================== 左侧：设备模板库树（含分类+模板管理） ======================== -->
+    <!-- ======================== Left: device template library tree (includes category + template management) ======================== -->
     <aside class="sidebar">
       <div class="sidebar-header">
         <h3 class="sidebar-title">
@@ -9,7 +9,7 @@
         <span class="template-count">{{ allTemplatesCount }}</span>
       </div>
 
-      <!-- 工具栏：只显示图标 -->
+      <!-- Toolbar: icons only -->
       <div class="sidebar-toolbar">
         <button
           class="tb-btn"
@@ -96,7 +96,7 @@
         </button>
       </div>
 
-      <!-- 搜索框 -->
+      <!-- Search box -->
       <div class="sidebar-search">
         <svg
           width="14"
@@ -125,7 +125,7 @@
         >
       </div>
 
-      <!-- 树结构 -->
+      <!-- Tree structure -->
       <SsLoading
         v-if="loading && allTemplates.length === 0"
         :text="t('system.templates.loading')"
@@ -135,7 +135,7 @@
         v-else
         class="industry-tree"
       >
-        <!-- "全部模板" 根节点 -->
+        <!-- "全部模板" root node -->
         <div
           class="tree-node root-node"
           :class="{ active: selectedNode?.type === 'root' }"
@@ -162,7 +162,7 @@
           <span class="node-count">{{ allTemplatesCount }}</span>
         </div>
 
-        <!-- 搜索无结果 -->
+        <!-- No search results -->
         <div
           v-if="searchQuery && filteredTree.length === 0"
           class="sidebar-loading"
@@ -170,17 +170,17 @@
           {{ t('system.deviceTemplate.noSearchResults') }}
         </div>
 
-        <!-- 动态树（支持搜索过滤） -->
+        <!-- Dynamic tree (supports search filter) -->
         <template
           v-for="section in filteredTree"
           :key="section.id"
         >
-          <!-- 区段标题 -->
+          <!-- Section title -->
           <div class="tree-section-label">
             {{ section.label }}
           </div>
 
-          <!-- 协议/行业节点 -->
+          <!-- Protocol/industry node -->
           <template
             v-for="group in section.children"
             :key="group.id"
@@ -217,7 +217,7 @@
               <span class="node-count">{{ group.count }}</span>
             </div>
 
-            <!-- 分类/模板子节点（行业展开后同时显示分类及模板） -->
+            <!-- Category/template child nodes (after expanding industry, show both categories and templates) -->
             <div
               v-if="expandedGroups.has(group.id)"
               class="group-children"
@@ -226,7 +226,7 @@
                 v-for="child in group.children"
                 :key="child.id"
               >
-                <!-- 分类节点（文件夹图标，不可展开） -->
+                <!-- Category node (folder icon, not expandable) -->
                 <div
                   v-if="child.type === 'category'"
                   class="tree-node category-node"
@@ -248,7 +248,7 @@
                   <span class="node-label">{{ child.label }}</span>
                   <span class="node-count">{{ child.count }}</span>
                 </div>
-                <!-- 分类下的模板叶子节点（始终显示） -->
+                <!-- Template leaf nodes under a category (always shown) -->
                 <template v-if="child.type === 'category'">
                   <div
                     v-for="tpl in child.children"
@@ -278,7 +278,7 @@
                     {{ t('system.deviceTemplate.noTemplates') }}
                   </div>
                 </template>
-                <!-- 直接挂在行业下的模板叶子节点 -->
+                <!-- Template leaf nodes directly under an industry -->
                 <div
                   v-if="child.type === 'template'"
                   class="tree-node template-node"
@@ -300,7 +300,7 @@
                   <span class="version-tag">v{{ child.data?.version || '' }}</span>
                 </div>
               </template>
-              <!-- 行业下无任何子节点 -->
+              <!-- No child nodes under an industry -->
               <div
                 v-if="!group.children || group.children.length === 0"
                 class="empty-children"
@@ -312,7 +312,7 @@
         </template>
       </div>
 
-      <!-- ===== 右键上下文菜单 ===== -->
+      <!-- ===== Right-click context menu ===== -->
       <Teleport to="body">
         <div
           v-if="contextMenu.visible"
@@ -324,7 +324,7 @@
             class="context-menu-panel"
             :style="{ left: contextMenu.x + 'px', top: contextMenu.y + 'px' }"
           >
-            <!-- 行业菜单 -->
+            <!-- Industry menu -->
             <template v-if="contextMenu.type === 'industry'">
               <div
                 class="context-item"
@@ -351,7 +351,7 @@
                 {{ t('system.deviceTemplate.directory.newCategory') }}
               </div>
             </template>
-            <!-- 分类菜单 -->
+            <!-- Category menu -->
             <template v-if="contextMenu.type === 'category'">
               <div
                 class="context-item"
@@ -404,7 +404,7 @@
                 {{ t('system.deviceTemplate.actions.paste') }}
               </div>
             </template>
-            <!-- 模板菜单 -->
+            <!-- Template menu -->
             <template v-if="contextMenu.type === 'template' && contextMenu.template">
               <div
                 class="context-item"
@@ -502,11 +502,11 @@
       </Teleport>
     </aside>
 
-    <!-- ======================== 右侧：选中模板的变量列表 ======================== -->
+    <!-- ======================== Right: variable list of the selected template ======================== -->
     <main class="main-area">
-      <!-- 已选中模板 -->
+      <!-- Selected template -->
       <template v-if="selectedTemplate">
-        <!-- 模板信息头 -->
+        <!-- Template info header -->
         <div class="template-header">
           <div class="template-info">
             <h2 class="template-name">
@@ -645,7 +645,7 @@
           </div>
         </div>
 
-        <!-- 变量表格 -->
+        <!-- Variable table -->
         <div class="variables-section">
           <div class="variables-toolbar">
             <span class="variables-title">
@@ -842,7 +842,7 @@
         </div>
       </template>
 
-      <!-- 未选中模板的占位 -->
+      <!-- Placeholder when no template is selected -->
       <div
         v-else
         class="empty-state"
@@ -872,7 +872,7 @@
       </div>
     </main>
 
-    <!-- ======================== 创建/编辑模板弹窗 ======================== -->
+    <!-- ======================== Create/edit template dialog ======================== -->
     <div
       v-if="showFormModal"
       class="modal-overlay"
@@ -1004,7 +1004,7 @@
       </div>
     </div>
 
-    <!-- ======================== 导入模板弹窗 ======================== -->
+    <!-- ======================== Import template dialog ======================== -->
     <div
       v-if="showImportModal"
       class="modal-overlay"
@@ -1065,7 +1065,7 @@
       </div>
     </div>
 
-    <!-- ======================== 目录结构编辑弹窗 ======================== -->
+    <!-- ======================== Directory structure edit dialog ======================== -->
     <div
       v-if="showCategoryDialog"
       class="modal-overlay"
@@ -1125,7 +1125,7 @@
       </div>
     </div>
 
-    <!-- ======================== 变量编辑弹窗 ======================== -->
+    <!-- ======================== Variable edit dialog ======================== -->
     <div
       v-if="showVarEditModal"
       class="modal-overlay"
@@ -1142,7 +1142,7 @@
           </button>
         </div>
         <div class="modal-body">
-          <!-- 基础信息 -->
+          <!-- Basic information -->
           <div class="edit-section">
             <div class="edit-section-title">
               {{ t('system.deviceTemplate.sectionBasic') }}
@@ -1245,7 +1245,7 @@
             </div>
           </div>
 
-          <!-- 采集参数 -->
+          <!-- Acquisition parameters -->
           <div class="edit-section">
             <div class="edit-section-title">
               {{ t('system.deviceTemplate.sectionCollection') }}
@@ -1295,7 +1295,7 @@
             </div>
           </div>
 
-          <!-- 数据转换 -->
+          <!-- Data conversion -->
           <div class="edit-section">
             <div class="edit-section-title">
               {{ t('system.deviceTemplate.sectionConversion') }}
@@ -1343,7 +1343,7 @@
             </div>
           </div>
 
-          <!-- 工程属性 -->
+          <!-- Project properties -->
           <div class="edit-section">
             <div class="edit-section-title">
               {{ t('system.deviceTemplate.sectionEngineering') }}
@@ -1400,7 +1400,7 @@
             </div>
           </div>
 
-          <!-- 死区 -->
+          <!-- Dead band -->
           <div class="edit-section">
             <div class="edit-section-title">
               {{ t('system.deviceTemplate.sectionDeadband') }}
@@ -1449,7 +1449,7 @@
             </div>
           </div>
 
-          <!-- 报警 -->
+          <!-- Alarm -->
           <div class="edit-section">
             <div class="edit-section-title">
               {{ t('system.deviceTemplate.sectionAlarm') }}
@@ -1514,7 +1514,7 @@
             </div>
           </div>
 
-          <!-- 质量检查与归档 -->
+          <!-- Quality check and archive -->
           <div class="edit-section">
             <div class="edit-section-title">
               {{ t('system.deviceTemplate.sectionQuality') }}
@@ -1573,7 +1573,7 @@
             </div>
           </div>
 
-          <!-- 其他 -->
+          <!-- Other -->
           <div class="edit-section">
             <div class="edit-section-title">
               {{ t('system.deviceTemplate.sectionOther') }}
@@ -1632,20 +1632,20 @@ import { useDict } from '../../composables/useDict';
 import { SsLoading } from '@scada-editor/shared';
 import type { DeviceTemplate, DeviceTemplateVariable } from '../../api/modules/template.api';
 
-/** 模板索引中行业条目 */
+/** Industry entry in the template index */
 interface TemplateIndexIndustry {
   name: string;
   path?: string;
   categories: TemplateIndexCategory[];
 }
 
-/** 模板索引中分类条目 */
+/** Category entry in the template index */
 interface TemplateIndexCategory {
   name: string;
   templates: TemplateIndexEntry[];
 }
 
-/** 模板索引中模板条目 */
+/** Template entry in the template index */
 interface TemplateIndexEntry {
   id: string;
   name: string;
@@ -1661,7 +1661,7 @@ interface TemplateIndexEntry {
   updatedAt?: string;
 }
 
-/** 模板索引结构 */
+/** Template index structure */
 interface TemplateIndustryIndex {
   industries: TemplateIndexIndustry[];
 }
@@ -1669,7 +1669,7 @@ interface TemplateIndustryIndex {
 const { t, locale } = useI18n();
 const { loadDicts } = useDict();
 
-/** 格式化日期 */
+/** Format the date */
 function formatDate(iso: string): string {
   if (!iso) return '-';
   const d = new Date(iso);
@@ -1680,9 +1680,9 @@ function formatDate(iso: string): string {
   } catch { return iso; }
 }
 
-// ====== 设备类型对应的 SVG 图标（SVG 内部元素） ======
+// ====== SVG icon for the device type (SVG inner elements) ======
 const deviceTypeSvgContent: Record<string, string> = {
-  // Modbus：芯片/微控制器
+  // Modbus: chip/microcontroller
   modbus_tcp:
     '<rect x="5" y="5" width="14" height="14" rx="2"/>' +
     '<line x1="9" y1="2" x2="9" y2="5"/><line x1="15" y1="2" x2="15" y2="5"/>' +
@@ -1695,30 +1695,30 @@ const deviceTypeSvgContent: Record<string, string> = {
     '<line x1="9" y1="19" x2="9" y2="22"/><line x1="15" y1="19" x2="15" y2="22"/>' +
     '<line x1="2" y1="9" x2="5" y2="9"/><line x1="2" y1="15" x2="5" y2="15"/>' +
     '<line x1="19" y1="9" x2="22" y2="9"/><line x1="19" y1="15" x2="22" y2="15"/>',
-  // OPC UA：数据库/服务器
+  // OPC UA: database/server
   opc_ua:
     '<ellipse cx="12" cy="5" rx="9" ry="3"/>' +
     '<path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>' +
     '<path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>',
-  // Siemens S7：齿轮/设置
+  // Siemens S7: gear/settings
   siemens_s7:
     '<circle cx="12" cy="12" r="3"/>' +
     '<path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
-  // MQTT：WiFi 信号
+  // MQTT: WiFi signal
   mqtt:
     '<circle cx="12" cy="12" r="2"/>' +
     '<path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/>',
-  // Ethernet/IP：网络接口
+  // Ethernet/IP: network interface
   ethernet_ip:
     '<rect x="2" y="6" width="20" height="12" rx="2"/>' +
     '<line x1="12" y1="10" x2="12" y2="14"/><line x1="8" y1="12" x2="16" y2="12"/>',
 };
 
-/** 默认模板图标 - 文件 */
+/** Default template icon — file */
 const defaultTemplateSvgContent =
   '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>';
 
-/** 根据设备类型获取 SVG 图标内容 */
+/** Get the SVG icon content based on the device type */
 function getTemplateIconSvg(deviceType?: string): string {
   if (deviceType && deviceTypeSvgContent[deviceType]) {
     return deviceTypeSvgContent[deviceType];
@@ -1726,7 +1726,7 @@ function getTemplateIconSvg(deviceType?: string): string {
   return defaultTemplateSvgContent;
 }
 
-/** 方向标签文本 */
+/** Direction label text */
 function directionLabel(dir?: string): string {
   if (dir === 'write') return t('system.deviceTemplate.directionWrite');
   if (dir === 'read-write') return t('system.deviceTemplate.directionReadWrite');
@@ -1735,13 +1735,13 @@ function directionLabel(dir?: string): string {
 
 const templateStore = useTemplateStore();
 
-/** HTTP 错误类型 */
+/** HTTP error types */
 interface HttpError {
   _errorHandled?: boolean;
   response?: { data?: { message?: string } };
 }
 
-// ====== 数据状态 ======
+// ====== Data state ======
 const templates = ref<DeviceTemplate[]>([]);
 const loading = ref(false);
 const reloading = ref(false);
@@ -1749,12 +1749,12 @@ const rebuilding = ref(false);
 const submitting = ref(false);
 const searchQuery = ref('');
 
-// ====== 模板库加载状态 ======
+// ====== Template library loading state ======
 const industryIndex = ref<TemplateIndustryIndex | null>(null);
 const loadedTemplates = ref<DeviceTemplate[]>([]);
 const libraryLoading = ref(false);
 
-// ====== 树节点选中状态 ======
+// ====== Tree node selected state ======
 interface SelectedNode {
   type: 'root' | 'group' | 'category' | 'template';
   groupId?: string;
@@ -1764,10 +1764,10 @@ interface SelectedNode {
 const selectedNode = ref<SelectedNode>({ type: 'root' });
 const expandedGroups = reactive(new Set<string>());
 
-// ====== 选中的模板 ======
+// ====== Selected template ======
 const selectedTemplate = ref<DeviceTemplate | null>(null);
 
-// ====== 弹窗状态 ======
+// ====== Dialog state ======
 const showFormModal = ref(false);
 const showImportModal = ref(false);
 const isEditing = ref(false);
@@ -1789,7 +1789,7 @@ const formTagsText = ref('');
 const importJsonText = ref('');
 const importResult = ref<{ valid: boolean } | null>(null);
 
-// ====== 右键上下文菜单 ======
+// ====== Right-click context menu ======
 const contextMenu = ref<{
   visible: boolean;
   x: number;
@@ -1808,14 +1808,14 @@ const contextMenu = ref<{
   template: null,
 });
 
-// ====== 分类目录编辑弹窗 ======
+// ====== Category directory edit dialog ======
 const showCategoryDialog = ref(false);
 const categoryDialogMode = ref<'create' | 'rename'>('create');
 const categoryDialogForm = ref({ industryName: '', categoryName: '' });
 const categoryDialogError = ref('');
 const categorySubmitting = ref(false);
 
-// ====== 变量编辑弹窗 ======
+// ====== Variable edit dialog ======
 const showVarEditModal = ref(false);
 const varEditSubmitting = ref(false);
 const varEditError = ref('');
@@ -1863,15 +1863,15 @@ const varEditForm = ref({
   category: '',
 });
 
-// ====== 计算属性 ======
+// ====== Computed properties ======
 
-/** 所有模板列表 */
+/** All templates list */
 const allTemplates = computed(() => templates.value);
 
-/** 全部模板数量 */
+/** Total number of templates */
 const allTemplatesCount = computed(() => allTemplates.value.length);
 
-/** 选中的模板的变量列表 */
+/** The variable list of the selected template */
 const varSearchQuery = ref('');
 const templateVariables = computed<DeviceTemplateVariable[]>(() => {
   if (!selectedTemplate.value) return [];
@@ -1887,7 +1887,7 @@ const templateVariables = computed<DeviceTemplateVariable[]>(() => {
   );
 });
 
-/** 右键菜单上下文 */
+/** Right-click menu context */
 interface ContextMenuContext {
   type: 'industry' | 'category' | 'template' | null;
   industryName?: string;
@@ -1895,7 +1895,7 @@ interface ContextMenuContext {
   template?: DeviceTemplate | null;
 }
 
-/** 构建树结构 */
+/** Build the tree structure */
 interface TreeNode {
   id: string;
   label: string;
@@ -1913,7 +1913,7 @@ interface TreeSection {
   children: TreeNode[];
 }
 
-/** 根据搜索过滤的树 */
+/** Tree filtered by search */
 const filteredTree = computed<TreeSection[]>(() => {
   const q = searchQuery.value.toLowerCase().trim();
 
@@ -1926,14 +1926,14 @@ const filteredTree = computed<TreeSection[]>(() => {
     },
   ];
 
-  // 如果有搜索条件，过滤掉空的区段
+  // If there are search conditions, filter out empty sections
   if (q) {
     return sections.filter(s => s.children.length > 0);
   }
   return sections;
 });
 
-/** 构建行业树（完全基于 index.json） */
+/** Build the industry tree (entirely based on index.json) */
 function buildIndustryTree(filterQuery: string): TreeNode[] {
   if (!industryIndex.value?.industries?.length) return [];
 
@@ -1941,7 +1941,7 @@ function buildIndustryTree(filterQuery: string): TreeNode[] {
   const nodes: TreeNode[] = [];
 
   for (const ind of industryIndex.value.industries) {
-    // 去重：跳过已出现过的行业名称
+    // Deduplicate: skip already-seen industry names
     const indKey = ind.name.toLowerCase();
     if (seenIndustries.has(indKey)) continue;
     seenIndustries.add(indKey);
@@ -1958,7 +1958,7 @@ function buildIndustryTree(filterQuery: string): TreeNode[] {
     const seenCategories = new Set<string>();
     const cats: TreeNode[] = [];
     for (const cat of (ind.categories || [])) {
-      // 去重：跳过已出现过的分类名称
+      // Deduplicate: skip already-seen category names
       const catKey = cat.name.toLowerCase();
       if (seenCategories.has(catKey)) continue;
       seenCategories.add(catKey);
@@ -1972,7 +1972,7 @@ function buildIndustryTree(filterQuery: string): TreeNode[] {
         contextMenu: { type: 'category', industryName: ind.name, categoryName: cat.name },
       };
 
-      // 添加分类下的模板
+      // Add a template under a category
       const catTpls = (cat.templates || []).filter((t) => {
         if (!filterQuery) return true;
         return t.name?.toLowerCase().includes(filterQuery);
@@ -1980,7 +1980,7 @@ function buildIndustryTree(filterQuery: string): TreeNode[] {
 
       const seenTemplateIds = new Set<string>();
       for (const t of catTpls) {
-        // 去重：跳过已出现过的模板 ID
+        // Deduplicate: skip already-seen template IDs
         if (seenTemplateIds.has(t.id)) continue;
         seenTemplateIds.add(t.id);
 
@@ -2007,9 +2007,9 @@ function buildIndustryTree(filterQuery: string): TreeNode[] {
   return nodes;
 }
 
-/** 从 index 条目构建模板对象 */
+/** Build a template object from an index entry */
 function buildTemplateFromIndexEntry(entry: TemplateIndexEntry, industry: string, category: string): DeviceTemplate {
-  // 优先从 loadedTemplates 中找完整数据
+  // Prefer complete data from loadedTemplates
   const loaded = loadedTemplates.value.find((t) => t.id === entry.id);
   if (loaded) return loaded as DeviceTemplate;
 
@@ -2035,7 +2035,7 @@ function buildTemplateFromIndexEntry(entry: TemplateIndexEntry, industry: string
   };
 }
 
-// ====== 树操作方法 ======
+// ====== Tree operation methods ======
 
 function toggleGroup(groupId: string) {
   if (expandedGroups.has(groupId)) {
@@ -2052,10 +2052,10 @@ function selectNode(node: SelectedNode) {
   selectedTemplate.value = null;
 }
 
-/** 选中模板：获取完整数据后显示变量 */
+/** Select a template: show variables after fetching complete data */
 async function selectTemplate(templateId: string) {
   selectedNode.value = { type: 'template', templateId };
-  // 先尝试从已有数据中获取
+  // First try to get it from existing data
   let tpl = allTemplates.value.find(t => t.id === templateId);
 
   if (tpl && tpl.variables && tpl.variables.length > 0) {
@@ -2063,21 +2063,21 @@ async function selectTemplate(templateId: string) {
     return;
   }
 
-  // 尝试从 loadedTemplates 获取
+  // Try to get from loadedTemplates
   const loaded = loadedTemplates.value.find((t) => t.id === templateId);
   if (loaded && loaded.variables) {
     selectedTemplate.value = loaded as DeviceTemplate;
     return;
   }
 
-  // 从后端获取完整模板数据
+  // Fetch complete template data from the backend
   try {
     loading.value = true;
-    const res = await templateApi.getById(templateId, locale.value);  // ✨ 传入 locale
+    const res = await templateApi.getById(templateId, locale.value);  // ✨ Pass in locale
     const data = (res as { data?: unknown })?.data ?? res;
     selectedTemplate.value = data as DeviceTemplate;
   } catch {
-    // 如果失败，退而使用已有数据
+    // If it fails, fall back to existing data
     if (tpl) {
       selectedTemplate.value = tpl;
     } else {
@@ -2088,9 +2088,9 @@ async function selectTemplate(templateId: string) {
   }
 }
 
-// ====== 右键菜单 ======
+// ====== Right-click menu ======
 
-/** 右键菜单数据 */
+/** Right-click menu data */
 interface ContextMenuData {
   type: 'industry' | 'category' | 'template' | null;
   industryName?: string;
@@ -2176,9 +2176,9 @@ async function contextPasteTemplateToCategory() {
   const { industryName, categoryName } = contextMenu.value;
   if (!industryName || !categoryName) return;
   try {
-    // 1. 克隆模板（后端 generateId() 生成新 ID）
+    // 1. Clone the template (backend generateId() generates a new ID)
     const cloned = await templateStore.cloneTemplate(copiedTemplateId.value);
-    // 2. 更新到目标分类目录
+    // 2. Update to the target category directory
     await templateStore.updateTemplate(cloned.id, {
       industry: industryName,
       category: categoryName,
@@ -2254,7 +2254,7 @@ async function contextDeleteTemplate() {
   }
 }
 
-// ====== 创建/编辑模板 ======
+// ====== Create/edit template ======
 
 function resetForm() {
   form.value = { name: '', description: '', deviceType: 'modbus_tcp', industry: '', category: '', version: '1.0.0', tags: [], status: 'draft' };
@@ -2330,7 +2330,7 @@ async function submitForm() {
   }
 }
 
-// ====== 导入 ======
+// ====== Import ======
 
 function openImportDialog() {
   importJsonText.value = '';
@@ -2359,7 +2359,7 @@ async function doImport() {
   }
 }
 
-// ====== 热重载 ======
+// ====== Hot reload ======
 
 async function handleReload() {
   const confirmed = await showConfirm(t('system.deviceTemplate.confirmReload'), t('system.messageBox.confirm'));
@@ -2403,7 +2403,7 @@ async function handleRebuildIndex() {
   }
 }
 
-// ====== 分类目录弹窗 ======
+// ====== Category directory dialog ======
 
 function closeCategoryDialog() {
   showCategoryDialog.value = false;
@@ -2442,7 +2442,7 @@ async function submitCategoryDialog() {
   }
 }
 
-// ====== 变量编辑 ======
+// ====== Variable editing ======
 
 function openVarEditDialog(v: DeviceTemplateVariable) {
   const tpl = selectedTemplate.value;
@@ -2578,7 +2578,7 @@ async function submitVarEdit() {
     varEditError.value = t('system.deviceTemplate.errorNameRequired');
     return;
   }
-  // 变量名校验：必须以字母/下划线/美元符开头，后续可包含字母数字下划线美元符
+  // Variable-name validation: must start with a letter/underscore/dollar sign; subsequent chars may include letters, digits, underscore, dollar sign
   if (!/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(varEditForm.value.name.trim())) {
     varEditError.value = t('system.deviceTemplate.errorNameInvalid');
     return;
@@ -2604,11 +2604,11 @@ async function submitVarEdit() {
     } else {
       updated.push({ ...varEditForm.value } as DeviceTemplateVariable);
     }
-    // 调用更新接口
+    // Call the update interface
     await templateStore.updateTemplate(tpl.id, { variables: updated }, locale.value);
     showSuccess(t('system.deviceTemplate.saveSuccess'));
     closeVarEditModal();
-    // 刷新模板数据
+    // Refresh template data
     await refreshAll();
   } catch (e: unknown) {
     const he = e as HttpError;
@@ -2618,7 +2618,7 @@ async function submitVarEdit() {
   }
 }
 
-/** 目录变更后的公共处理 */
+/** Common handling after a directory change */
 async function afterDirectoryChange() {
   await templateApi.rebuildIndex();
   const reloadRes = await templateApi.reload();
@@ -2627,38 +2627,38 @@ async function afterDirectoryChange() {
   await refreshAll();
 }
 
-// ====== 数据加载 ======
+// ====== Data loading ======
 
-/** 加载模板库数据（index + 已加载模板） */
+/** Load template library data (index + loaded templates) */
 async function loadLibrary() {
   libraryLoading.value = true;
   try {
     const [indexRes, loadedRes] = await Promise.all([
-      templateApi.getIndex(locale.value),   // ✨ 传入当前语言
-      templateApi.getLoaded(locale.value),  // ✨ 传入当前语言
+      templateApi.getIndex(locale.value),   // ✨ Pass in the current language
+      templateApi.getLoaded(locale.value),  // ✨ Pass in the current language
     ]);
-    // Axios response.data 得到后端响应体，getIndex 返回 { data: TemplateIndex, message, timestamp }
-    // indexRes.data 即为 TemplateIndex 对象
+    // Axios response.data gives the backend response body; getIndex returns { data: TemplateIndex, message, timestamp }
+    // indexRes.data is the TemplateIndex object
     industryIndex.value = indexRes.data ?? null;
     loadedTemplates.value = Array.isArray(loadedRes.data) ? loadedRes.data : [];
   } catch {
-    // API 不可用时静默
+    // Silent when the API is unavailable
   } finally {
     libraryLoading.value = false;
   }
 }
 
-/** 刷新所有模板数据 */
+/** Refresh all template data */
 async function refreshAll() {
   await fetchTemplates();
   await loadLibrary();
-  // 如果当前选中的模板还在列表中，刷新其数据
+  // If the currently selected template is still in the list, refresh its data
   if (selectedTemplate.value) {
     const updated = allTemplates.value.find(t => t.id === selectedTemplate.value?.id);
     if (updated) {
-      // 尝试从后端获取完整数据
+      // Try to fetch complete data from the backend
       try {
-        const res = await templateApi.getById(updated.id, locale.value);  // ✨ 传入 locale
+        const res = await templateApi.getById(updated.id, locale.value);  // ✨ Pass in locale
         selectedTemplate.value = (res.data ?? res) as DeviceTemplate;
       } catch {
         selectedTemplate.value = updated;
@@ -2670,7 +2670,7 @@ async function refreshAll() {
 async function fetchTemplates() {
   loading.value = true;
   try {
-    await templateStore.fetchTemplates(1, 1000, undefined, undefined, undefined, locale.value);  // ✨ 传入 locale
+    await templateStore.fetchTemplates(1, 1000, undefined, undefined, undefined, locale.value);  // ✨ Pass in locale
     templates.value = templateStore.templates;
   } catch (e: unknown) {
     const he = e as HttpError;
@@ -2682,30 +2682,30 @@ async function fetchTemplates() {
   }
 }
 
-// ✨ 新增：监听语言切换
+// ✨ Added: watch language switch
 watch(locale, () => {
   refreshAll();
 });
 
-// ====== 生命周期 ======
+// ====== Lifecycle ======
 
 onMounted(() => {
   loadLibrary();
   fetchTemplates();
-  // 预加载变量编辑弹窗使用的字典（部分字典可能尚未创建，捕获异常避免控制台报错）
+  // Preload the dictionaries used by the variable-edit dialog (some may not be created yet; catch exceptions to avoid console errors)
   loadDicts(['tagDataType', 'byteOrder', 'priority', 'conversionType', 'deadbandMode', 'deviceType', 'industry', 'variableCategory', 'templateStatus'], locale.value).catch(() => {});
 });
 </script>
 
 <style scoped>
-/* ===== 页面布局 ===== */
+/* ===== Page layout ===== */
 .template-library {
   height: 100%;
   display: flex;
   overflow: hidden;
 }
 
-/* ===== 左侧树 ===== */
+/* ===== Left tree ===== */
 .sidebar {
   width: 260px;
   min-width: 260px;
@@ -2770,7 +2770,7 @@ onMounted(() => {
   cursor: not-allowed;
 }
 
-/* 搜索框 */
+/* Search box */
 .sidebar-search {
   display: flex;
   align-items: center;
@@ -2797,7 +2797,7 @@ onMounted(() => {
   width: 100%;
 }
 
-/* 树区域 */
+/* Tree area */
 .sidebar-loading {
   padding: 20px;
   text-align: center;
@@ -2921,7 +2921,7 @@ onMounted(() => {
   font-style: italic;
 }
 
-/* ===== 右侧主区域 ===== */
+/* ===== Right main area ===== */
 .main-area {
   flex: 1;
   display: flex;
@@ -2929,7 +2929,7 @@ onMounted(() => {
   overflow: hidden;
 }
 
-/* 模板信息头 */
+/* Template info header */
 .template-header {
   display: flex;
   align-items: center;
@@ -2962,7 +2962,7 @@ onMounted(() => {
   flex-shrink: 0;
 }
 
-/* 模板元数据 */
+/* Template metadata */
 .template-meta {
   display: flex;
   flex-wrap: wrap;
@@ -3031,7 +3031,7 @@ onMounted(() => {
   flex-shrink: 0;
 }
 
-/* 变量区域 */
+/* Variable area */
 .variables-section {
   flex: 1;
   display: flex;
@@ -3066,7 +3066,7 @@ onMounted(() => {
   flex: 1;
 }
 
-/* 变量搜索 */
+/* Variable search */
 .variables-search {
   display: flex;
   align-items: center;
@@ -3103,7 +3103,7 @@ onMounted(() => {
   opacity: 0.6;
 }
 
-/* 表格 */
+/* Table */
 .table-wrapper {
   flex: 1;
   overflow: auto;
@@ -3203,7 +3203,7 @@ onMounted(() => {
   white-space: nowrap;
 }
 
-/* 启用状态圆点 */
+/* Enable-state dot */
 .col-enabled {
   text-align: center;
   width: 50px;
@@ -3223,7 +3223,7 @@ onMounted(() => {
   box-shadow: 0 0 4px var(--status-success);
 }
 
-/* 空状态 */
+/* Empty state */
 .empty-state {
   flex: 1;
   display: flex;
@@ -3302,7 +3302,7 @@ onMounted(() => {
   animation: spin 1s linear infinite;
 }
 
-/* ===== 弹窗 ===== */
+/* ===== Dialog ===== */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -3364,7 +3364,7 @@ onMounted(() => {
   background: color-mix(in srgb, var(--status-error) 8%, transparent);
 }
 
-/* ===== 变量编辑弹窗 ===== */
+/* ===== Variable edit dialog ===== */
 .edit-section {
   margin-bottom: 12px;
   padding: 12px 14px 10px;
@@ -3398,7 +3398,7 @@ onMounted(() => {
   align-items: start;
 }
 
-/* 复选框 — 紧凑内联风格 */
+/* Checkbox — compact inline style */
 .checkbox-label {
   display: flex;
   align-items: center;
@@ -3445,7 +3445,7 @@ onMounted(() => {
   border-radius: 0 0 10px 10px;
 }
 
-/* ===== 表单 ===== */
+/* ===== Form ===== */
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -3509,7 +3509,7 @@ select.form-input {
   font-size: 12px;
 }
 
-/* ===== 按钮 ===== */
+/* ===== Button ===== */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -3554,7 +3554,7 @@ select.form-input {
   font-size: 12px;
 }
 
-/* 图标按钮 */
+/* Icon button */
 .btn-icon {
   display: inline-flex;
   align-items: center;
@@ -3574,14 +3574,14 @@ select.form-input {
   color: var(--primary);
 }
 
-/* 表格操作列 */
+/* Table actions column */
 .col-actions {
   width: 40px;
   text-align: center;
   white-space: nowrap;
 }
 
-/* ===== 右键菜单 ===== */
+/* ===== Right-click menu ===== */
 .context-menu-overlay {
   position: fixed;
   inset: 0;
@@ -3627,7 +3627,7 @@ select.form-input {
   margin: 4px 8px;
 }
 
-/* ===== 导入结果 ===== */
+/* ===== Import result ===== */
 .import-result { margin-top: 12px; }
 .alert {
   padding: 10px 14px;

@@ -180,7 +180,7 @@ import { type ITimerConfig, type ITimerExecutionResult, type BasePage, i18n } fr
 import { useJsonEditor } from '../../composables/useJsonEditor';
 import { useScriptDrawer } from '../../components/script/useScriptDrawer';
 
-// 国际化翻译函数
+// Internationalization translation function
 const { t } = i18n.global;
 
 interface Props {
@@ -202,11 +202,11 @@ const timersInitialized = ref(false);
 
 onMounted(() => {
   if (props.page && !timersInitialized.value) {
-    // 初始化定时器
+    // Initialize timer
     if (props.page.timers) {
       timers.value = props.page.timers;
     }
-    // 启动定时器
+    // Start timer
     if (props.page.startTimers) {
       props.page.startTimers();
     }
@@ -220,7 +220,7 @@ onUnmounted(() => {
   }
 });
 
-/** 在底部抽屉中打开脚本编辑器 */
+/** Open the script editor in the bottom drawer */
 const openInDrawer = (timer: ITimerConfig) => {
   openScript(
     {
@@ -236,7 +236,7 @@ const openInDrawer = (timer: ITimerConfig) => {
   );
 };
 
-/** 脚本预览（截取前几行） */
+/** Script preview (first few lines) */
 const previewScript = (script: string): string => {
   if (!script) return '// 暂无脚本';
   const lines = script.split('\n').slice(0, 3);
@@ -591,7 +591,7 @@ input:checked + .toggle-slider:before {
   color: var(--status-error);
 }
 
-/* 滚动条样式 */
+/* Scrollbar style */
 .timer-panel-content::-webkit-scrollbar,
 .log-list::-webkit-scrollbar {
   width: 5px;

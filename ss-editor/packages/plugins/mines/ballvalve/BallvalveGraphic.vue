@@ -128,14 +128,14 @@ const props = defineProps<{
 
 const { currentValue, bindTitle } = useTagValue(props);
 
-/** 数据值：绑定实时值，未绑定用静态 dataset */
+/** Data value: bind live value; unbound uses static dataset */
 const effectiveValue = computed(() => {
   if (!props.tagId) return props.dataset;
   const v = currentValue.value;
   return v === null || v === undefined ? props.dataset : Number(v);
 });
 
-/** 动画方向：绑定实时值 → cls 映射，未绑定沿用静态 cls */
+/** Animation direction: bind live value → cls mapping; unbound keeps static cls */
 const effectiveCls = computed(() => {
   if (!props.tagId) return props.cls;
   const raw = currentValue.value;

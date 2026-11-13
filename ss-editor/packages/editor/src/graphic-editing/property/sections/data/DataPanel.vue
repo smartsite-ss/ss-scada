@@ -262,14 +262,14 @@ const graphicId = computed(() => props.graphicProperties?.config?.id ?? '');
 const graphicName = computed(() => props.graphicProperties?.config?.name ?? '');
 const graphicType = computed(() => props.graphicProperties?.config?.type ?? '');
 
-/** Phase 15.5: 画布原值浮层开关（读写 pageStore.showValueOverlay） */
+/** Phase 15.5: canvas raw-value overlay toggle (reads/writes pageStore.showValueOverlay) */
 const showValueOverlay = computed(() => (pageStore as any).showValueOverlay === true);
 
 function onToggleValueOverlay(checked: boolean): void {
   (pageStore as any).showValueOverlay = checked;
 }
 
-/** 可被数据源绑定的属性候选列表，从图元类型的 PluginPropertySchema 中筛选 dataBindable: true 字段 */
+/** Candidate property list bindable to data sources, filtered from the graphic type's PluginPropertySchema where dataBindable: true */
 const bindableFields = computed(() => {
   if (!graphicType.value) return [];
   const schema = ConfigTemplateManager.getPluginSchema(graphicType.value);
@@ -284,7 +284,7 @@ const bindableFields = computed(() => {
     }));
 });
 
-/** 当前选中的绑定属性路径，优先从 graphic.dataSource.propertyPath 读取，缺省 fallback 到 text */
+/** Currently selected bound property path; read from graphic.dataSource.propertyPath first, fallback to text */
 const currentPropertyPath = computed(() => {
   const ds = props.graphicProperties?.dataSource;
   return ds?.propertyPath || 'config.customProps.text';
@@ -329,7 +329,7 @@ watch(() => props.graphicProperties?.dataSource, (ds) => {
   }
 }, { immediate: true })
 
-// v3.0: 过滤/驱动脚本变更时同步写回图元 dataSource 字段
+// v3.0: sync back to the graphic dataSource field when filter/driver script changes
 watch([filterScript, driverScript], ([newFilter, newDriver]) => {
   if (graphicId.value && props.graphicProperties) {
     pageStore.currentPage?.updateGraphic(props.graphicProperties.config.id, {
@@ -355,7 +355,7 @@ onMounted(async () => {
   const pid = page?.projectId || page?.project?.id || 'default'
   projectId.value = pid
 
-  // v3.0: 从页面配置 dataSource 加载到页面数据结构，不调后端 API
+  // v3.0: load from the page config dataSource into the page data structure without calling the backend API
   const pageData = page as any
   if (pageData?.dataSource?.dataSources) {
     pageDsStore.loadGroup({
@@ -367,12 +367,12 @@ onMounted(async () => {
   } else {
     pageDsStore.initGroup(pid)
   }
-  // §12 统一方案：订阅管理由 EditorView 事件层统一处理，DataPanel 不再管理 BindingManager 订阅生命周期
+  // §12 unified plan: subscription management is handled centrally by the EditorView event layer; DataPanel no longer manages BindingManager subscription lifecycle
 });
 
 onUnmounted(() => {
-  // §12 统一方案：不在此处管理 BindingManager 订阅生命周期，
-  // 已由 EditorView 事件层（GRAPHIC_ADDED / GRAPHIC_UPDATED / GRAPHIC_REMOVED）统一处理
+  // §12 unified plan: do not manage BindingManager subscription lifecycle here,
+  // Already handled centrally by the EditorView event layer (GRAPHIC_ADDED / GRAPHIC_UPDATED / GRAPHIC_REMOVED)
 });
 
 function openSourceConfig() {
@@ -387,56 +387,56 @@ function onSourceConfigSaved() {
 }
 
 /**
- * 手动获取数据源数据并推送到选中图元。
+ * Manually fetch data-source data and push it to the selected graphic.
  *
- * - tag/device 类型：先连接 WebSocket 并订阅标签，等待数据到达后读取快照
- * - static 类型：从配置直接读取
- * - api 类型：发起 HTTP 请求
- * 拉取结果除了写入 FetchPanel 展示外，还会直接更新画布上图元的绑定属性值。
+ * - tag/device type: connect WebSocket and subscribe to tags first, then read the snapshot after data arrives
+ * - static type: read directly from config
+ * - api type: issue an HTTP request
+ * Besides writing to FetchPanel for display, the fetched result also directly updates the bound property values of graphics on the canvas.
  */
 async function onManualFetch() {
   const dataSourceId = currentBinding.value?.dataSourceId;
   if (!dataSourceId || !graphicId.value) return;
 
-  // 1. 确保数据源标签已激活 WebSocket 订阅（tag/device 类型的关键步骤）
+  // 1. Ensure the data-source tag has an active WebSocket subscription (key step for tag/device types)
   await ensureDataSourceWsActive(dataSourceId);
 
-  // 2. 拉取数据（tag 类型此时 wsStore.tagValues 已有实时数据）
+  // 2. Fetch data (for tag type, wsStore.tagValues already has live data at this point)
   await pageDsStore.fetchDataSourceData(dataSourceId);
 
-  // 3. 将拉取结果应用到选中图元的绑定属性（如 elbutton 的 text）
+  // 3. Apply the fetch result to the selected graphic's bound property (e.g. elbutton's text)
   applyFetchResultToGraphic();
 }
 
-/** 连接 WebSocket 并订阅数据源的所有标签（幂等，重复调用不影响） */
+/** Connect the WebSocket and subscribe to all tags of a data source (idempotent; repeated calls have no effect) */
 async function ensureDataSourceWsActive(dataSourceId: string) {
   const dsInfo = pageDsStore.getDataSourceById(dataSourceId);
   if (!dsInfo) return;
 
-  // 提取该数据源关联的变量
+  // Extract variables associated with this data source
   const dsVars = pageDsStore.variables.filter((v: any) => v.dataSourceId === dataSourceId);
   let tagIds: string[] = dsVars.map((v: any) => v.tagId);
 
-  // 变量为空时，尝试从数据源配置中提取 tagId
+  // When the variable is empty, try to extract tagId from the data-source config
   if (tagIds.length === 0) {
     tagIds = extractTagIds(dsInfo as unknown as Record<string, unknown>);
   }
   if (tagIds.length === 0) return;
 
-  // 连接 WS（若已连接则直接复用）
+  // Connect WS (reuse directly if already connected)
   if (projectId.value) {
     try {
       await wsStore.connect(projectId.value);
     } catch {
-      // WS 连接失败时跳过（static/api 类型不需要 WS）
+      // Skip when WS connection fails (static/api types do not need WS)
       return;
     }
   }
 
-  // 订阅标签（wsStore 内部有引用计数和去重，重复订阅安全）
+  // Subscribe tags (wsStore has internal reference counting and dedupe; repeated subscription is safe)
   wsStore.subscribeTags(tagIds);
 
-  // 等待 WS 推送首轮数据（最多等 800ms），确保 tag/device 类型能读到实时值
+  // Wait for the first WS push (up to 800ms) to ensure tag/device types can read live values
   if (!wsStore.isConnected) return;
   const start = Date.now();
   let hasData = false;
@@ -447,7 +447,7 @@ async function ensureDataSourceWsActive(dataSourceId: string) {
   }
 }
 
-/** 将 fetch 结果应用到选中图元的绑定属性 */
+/** Apply fetch results to the selected graphic's bound property */
 function applyFetchResultToGraphic() {
   const result = pageDsStore.currentFetchResult;
   if (!result || !result.items || result.items.length === 0) return;
@@ -455,11 +455,11 @@ function applyFetchResultToGraphic() {
   const graphicIdVal = graphicId.value;
   const propertyPath = currentPropertyPath.value;
 
-  // 取第一个标签的值作为主显示值
+  // Use the first tag's value as the primary display value
   const firstItem = result.items[0];
   const value = firstItem.value;
 
-  // 通过 GraphicStoreAccessor.applyProperty 写入图元属性（驱动画布重绘）
+  // Write graphic properties via GraphicStoreAccessor.applyProperty (drive canvas repaint)
   try {
     BindingManager.getGraphicStore()?.applyProperty(graphicIdVal, propertyPath, value);
   } catch (err) {
@@ -481,8 +481,8 @@ function onDataSourceSelected(dataSourceId: string) {
         dataSourceId,
       )
 
-      // §12 统一方案：不再在此处管理 BindingManager 订阅，
-      // 订阅生命周期由 EditorView GRAPHIC_UPDATED 事件层统一处理
+      // §12 unified plan: no longer manage BindingManager subscriptions here,
+      // Subscription lifecycle is handled centrally by the EditorView GRAPHIC_UPDATED event layer
 
       const dsInfo = pageDsStore.getDataSourceById(dataSourceId)
       const dsType = dsInfo?.type || ''
@@ -494,26 +494,26 @@ function onDataSourceSelected(dataSourceId: string) {
         enabled: true,
       }
 
-      // 1) 更新 PropertyPanel 响应式 ref → 驱动 BindingPanel UI 刷新
+      // 1) Update the PropertyPanel reactive ref → drives the BindingPanel UI refresh
       if (props.graphicProperties) {
         props.graphicProperties.dataSource = updatedDataSource
       }
 
-      // 2) 直接合并到图元对象的 dataSource 属性（保证解除选中再重新选中后数据不丢失）
+      // 2) Merge directly into the graphic object's dataSource property (ensures data is not lost after deselecting and reselecting)
       const graphic: any = pageStore.currentPage?.getGraphicById(graphicId.value)
       if (graphic?.dataSource) {
         Object.assign(graphic.dataSource, updatedDataSource)
       }
 
-      // 3) 通过 updateGraphic 触发历史记录和 GRAPHIC_UPDATED 事件
+      // 3) Trigger history recording and the GRAPHIC_UPDATED event via updateGraphic
       pageStore.currentPage?.updateGraphic(props.graphicProperties.config.id, {
         dataSource: updatedDataSource,
       })
 
       pageDsStore.fetchDataSourceData(dataSourceId)
 
-      // 持久化绑定到 page.dataSource.graphicBindings，确保页面 JSON 保存时包含绑定关系
-      // （onPropertyPathChange 已有此调用，onDataSourceSelected 缺失）
+      // Persist the binding to page.dataSource.graphicBindings, ensuring the page JSON includes the binding relationship on save
+      // (onPropertyPathChange already has this call; onDataSourceSelected is missing)
       const currentPage = pageStore.currentPage as any;
       if (currentPage) {
         pageDsStore.persistToPage(currentPage);
@@ -529,16 +529,16 @@ function onDataSourceSelected(dataSourceId: string) {
   }
 }
 
-/** 切换绑定目标属性时：更新图元 dataSource.propertyPath */
+/** When switching the bound target property: update graphic dataSource.propertyPath */
 function onPropertyPathChange(newPath: string) {
   if (!graphicId.value || !props.graphicProperties) return;
   const dataSourceId = currentBinding.value?.dataSourceId;
   if (!dataSourceId) return;
 
-  // §12 统一方案：不再在此处管理 BindingManager 订阅，
-  // 订阅生命周期由 EditorView GRAPHIC_UPDATED 事件层统一处理
+  // §12 unified plan: no longer manage BindingManager subscriptions here,
+  // Subscription lifecycle is handled centrally by the EditorView GRAPHIC_UPDATED event layer
 
-  // 更新图元 dataSource.propertyPath
+  // Update the graphic dataSource.propertyPath
   const updatedDataSource = {
     ...(props.graphicProperties.dataSource || {}),
     propertyPath: newPath,
@@ -554,7 +554,7 @@ function onPropertyPathChange(newPath: string) {
     dataSource: updatedDataSource,
   });
 
-  // 持久化到页面
+  // Persist to the page
   const currentPage = pageStore.currentPage as any;
   if (currentPage) {
     pageDsStore.persistToPage(currentPage);
@@ -591,7 +591,7 @@ function handleCreateDataSource(data: { name: string; type: string; pollingInter
         dsId,
       );
 
-      // §12 统一方案：不再在此处管理 BindingManager 订阅
+      // §12 unified plan: no longer manage BindingManager subscriptions here
 
       const updatedDataSource = {
         ...(props.graphicProperties?.dataSource || {}),

@@ -75,7 +75,7 @@ const iconImageStyle = computed(() => ({
 </script>
 
 <style scoped>
-/* 图标组件样式 */
+/* Icon component style */
 i {
   line-height: 1;
 }

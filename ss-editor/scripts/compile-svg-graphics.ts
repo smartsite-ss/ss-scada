@@ -3,34 +3,34 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * compile-svg-graphics.ts —— SVG 图元矢量指令编译器（03-小程序图元渲染方案 ADR §3）
+ * compile-svg-graphics.ts —— SVG graphic vector instruction compiler (03 mini-program graphic rendering ADR §3)
  *
- * 职责：扫描 packages/plugins 下各目录的 XxxGraphic.vue，将模板根为 <svg> 的轻量 Vue 组件
- * 编译为小程序端可解释的矢量指令 JSON（SvgDirective 契约），并输出编译审计报告。
+ * Responsibilities: scan XxxGraphic.vue in each directory under packages/plugins, compile the lightweight Vue components whose template root is <svg>
+ * into vector instruction JSON interpretable by the mini-program (SvgDirective contract), and emit a compilation audit report.
  *
- * 用法（在 ss-editor 根目录）：
- *   npx tsx scripts/compile-svg-graphics.ts                    # 全量编译
- *   npx tsx scripts/compile-svg-graphics.ts --audit-only       # 只跑审计，不落 JSON
- *   npx tsx scripts/compile-svg-graphics.ts --out <dir>        # 自定义输出目录
+ * Usage (from ss-editor root):
+ *   npx tsx scripts/compile-svg-graphics.ts                    # full compile
+ *   npx tsx scripts/compile-svg-graphics.ts --audit-only       # audit only, no JSON output
+ *   npx tsx scripts/compile-svg-graphics.ts --out <dir>        # custom output directory
  *
- * 契约权威定义：ss-wx/smart-site/src/utils/scada/svg-directive-types.ts
- * 产物消费方：ss-wx/smart-site/src/utils/scada/directive-registry.ts
+ * Authoritative contract: ss-wx/smart-site/src/utils/scada/svg-directive-types.ts
+ * Consumer: ss-wx/smart-site/src/utils/scada/directive-registry.ts
  *
- * 依赖：@vue/compiler-sfc（经 .pnpm 隐藏提升目录解析，未在根 package.json 声明）
+ * Dependency: @vue/compiler-sfc (resolved via .pnpm hoisted dir, not declared in root package.json)
  */
 import { createRequire } from 'node:module';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-/* ─────────────────────────── 基础工具 ─────────────────────────── */
+/* ─────────────────────────── Basic tools ─────────────────────────── */
 
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const EDITOR_ROOT = path.resolve(SCRIPT_DIR, '..');
 const PLUGINS_ROOT = path.join(EDITOR_ROOT, 'packages', 'plugins');
 const DEFAULT_OUT_DIR = path.resolve(EDITOR_ROOT, '..', 'ss-wx', 'smart-site', 'src', 'utils', 'scada', 'directives');
 
-/** 解析 @vue/compiler-sfc：优先常规解析，失败则回退 pnpm 隐藏提升目录 */
+/** Parse @vue/compiler-sfc: prefer normal resolution, fall back to the pnpm hoisted dir on failure */
 function resolveCompilerSfc(): typeof import('@vue/compiler-sfc') {
   const attempts: Array<() => NodeRequire> = [
     () => createRequire(import.meta.url),
@@ -41,13 +41,13 @@ function resolveCompilerSfc(): typeof import('@vue/compiler-sfc') {
     try {
       return getRequire()('@vue/compiler-sfc');
     } catch {
-      /* 尝试下一个解析路径 */
+      /* Try the next parse path */
     }
   }
   throw new Error('无法解析 @vue/compiler-sfc（请在 ss-editor 安装依赖后重试）');
 }
 
-/** @vue/compiler-core NodeTypes（稳定枚举，本地常量避免类型依赖） */
+/** @vue/compiler-core NodeTypes (stable enum; local constant avoids type dependency) */
 const NODE_ROOT = 0;
 const NODE_ELEMENT = 1;
 const NODE_TEXT = 2;
@@ -68,7 +68,7 @@ interface AstNode {
 }
 type AstProp = AstNode;
 
-/** 指令 JSON 中的取值形态（与 svg-directive-types.ts 契约对齐） */
+/** Value shape in the directive JSON (aligned with svg-directive-types.ts contract) */
 type SlotValue =
   | { const: string | number }
   | { slot: string }
@@ -98,7 +98,7 @@ interface GradientStop {
 interface GradientDef {
   id: string;
   type: 'linear' | 'radial';
-  /** 坐标单位（SVG gradientUnits 属性，缺省 objectBoundingBox） */
+  /** Coordinate unit (SVG gradientUnits attribute, defaults to objectBoundingBox) */
   units: 'objectBoundingBox' | 'userSpaceOnUse';
   coords: Record<string, number | SlotValue>;
   stops: GradientStop[];
@@ -114,7 +114,7 @@ interface SvgDirective {
   audit?: Record<string, unknown>;
 }
 
-/** 单文件编译结果 */
+/** Single-file compilation result */
 interface FileResult {
   category: string;
   type: string;
@@ -125,9 +125,9 @@ interface FileResult {
   audit: Record<string, unknown>;
 }
 
-/* ─────────────────────────── 静态表达式求值器 ─────────────────────────── */
+/* ─────────────────────────── Static expression evaluator ─────────────────────────── */
 
-/** Math 白名单（编译期与运行时一致的子集） */
+/** Math whitelist (subset consistent between compile-time and runtime) */
 const MATH_WHITELIST: Record<string, (...args: number[]) => number> = {
   cos: Math.cos, sin: Math.sin, tan: Math.tan, atan: Math.atan, atan2: Math.atan2,
   abs: Math.abs, floor: Math.floor, ceil: Math.ceil, round: Math.round,
@@ -136,7 +136,7 @@ const MATH_WHITELIST: Record<string, (...args: number[]) => number> = {
 
 interface StaticToken { kind: 'number' | 'string' | 'ident' | 'member' | 'math' | 'op'; value: string }
 
-/** 词法分析：支持标识符 / 数组字面量下标成员（colors[0]）/ Math.xx / 字符串 / 运算符 */
+/** Lexical analysis: supports identifiers / array-literal subscript members (colors[0]) / Math.xx / strings / operators */
 function tokenizeStatic(expression: string): StaticToken[] | null {
   const tokens: StaticToken[] = [];
   let i = 0;
@@ -158,14 +158,14 @@ function tokenizeStatic(expression: string): StaticToken[] | null {
       const m = /^[A-Za-z_$][\w$]*/.exec(expression.slice(i))!;
       const name = m[0];
       i += m[0].length;
-      // Math 成员函数（Math.cos / Math.PI）
+      // Math member functions (Math.cos / Math.PI)
       if (name === 'Math' && expression[i] === '.') {
         const mm = /^\.([A-Za-z_$][\w$]*)/.exec(expression.slice(i));
         if (!mm) return null;
         i += mm[0].length;
         tokens.push({ kind: 'math', value: mm[1] }); continue;
       }
-      // 数组字面量下标链：colors[0][1]
+      // Array-literal subscript chain: colors[0][1]
       let full = name;
       while (expression[i] === '[') {
         const close = expression.indexOf(']', i);
@@ -176,7 +176,7 @@ function tokenizeStatic(expression: string): StaticToken[] | null {
         i = close + 1;
       }
       tokens.push({ kind: 'ident', value: full });
-      // 布尔/字面量归一
+      // Boolean/literal normalization
       continue;
     }
     const two = expression.slice(i, i + 2);
@@ -191,7 +191,7 @@ function tokenizeStatic(expression: string): StaticToken[] | null {
   return tokens;
 }
 
-/** 静态求值递归下降器：变量仅来自 v-for 编译期绑定 */
+/** Static-evaluation recursive descent: variables come only from v-for compile-time bindings */
 class StaticEvaluator {
   private cursor = 0;
   constructor(private tokens: StaticToken[], private vars: Record<string, unknown>) {}
@@ -316,7 +316,7 @@ class StaticEvaluator {
   }
 }
 
-/** 编译期静态求值：失败返回 null（调用方按动态表达式处理） */
+/** Compile-time static evaluation: returns null on failure (caller treats it as a dynamic expression) */
 function evaluateStatic(expression: string, vars: Record<string, unknown>): unknown {
   const tokens = tokenizeStatic(expression);
   if (!tokens || tokens.length === 0) return null;
@@ -330,30 +330,30 @@ function evaluateStatic(expression: string, vars: Record<string, unknown>): unkn
   }
 }
 
-/** 判断表达式是否含运行时槽位标识符（排除 v-for 变量与 Math） */
+/** Determine whether an expression contains runtime slot identifiers (excluding v-for variables and Math) */
 function containsRuntimeIdentifiers(expression: string, staticVars: Record<string, unknown>): boolean {
   const tokens = tokenizeStatic(expression);
-  if (!tokens) return true; // 无法分析 → 保守视为动态
+  if (!tokens) return true; // Unanalyzable → conservatively treated as dynamic
   return tokens.some(t => (t.kind === 'ident' || t.kind === 'member') && !(t.value in staticVars));
 }
 
-/* ─────────────────────────── 表达式分类（SlotValue） ─────────────────────────── */
+/* ─────────────────────────── Expression classification (SlotValue) ─────────────────────────── */
 
-/** 纯标识符/成员路径：'state' / 'colors[0]' / 'colors[0][1]' */
+/** Pure identifier/member path: 'state' / 'colors[0]' / 'colors[0][1]' */
 const MEMBER_PATH_RE = /^[A-Za-z_$][\w$]*(\[\d+\])*$/;
 
 /**
- * 表达式 → SlotValue 分类：
- * 1. v-for 变量参与的静态可求值 → const（含 Math 折叠，如刻度盘坐标）
- * 2. 纯标识符/成员路径 → slot
- * 3. 其余含运行时标识符 → expr（运行时白名单解释器求值）
- * 4. 无法分析（对象字面量/方法调用运行时变量）→ null（元素级跳过）
+ * Expression → SlotValue classification:
+ * 1. static evaluable with v-for variables → const (includes Math folding, e.g. gauge coordinates)
+ * 2. pure identifier/member path → slot
+ * 3. others containing runtime identifiers → expr (evaluated by runtime whitelist interpreter)
+ * 4. unanalyzable (object literal/method call with runtime variables) → null (element-level skip)
  */
 function classifyExpression(expression: string, staticVars: Record<string, unknown>): SlotValue | null {
   const trimmed = expression.trim();
   if (!trimmed) return null;
 
-  // 常量模板字面量 `` `0 0 100 120` `` 或纯常量
+  // Constant template literal `` `0 0 100 120` `` or pure constant
   const templateLiteral = /^`([^`]*)`$/.exec(trimmed);
   if (templateLiteral) return { const: templateLiteral[1] };
 
@@ -421,18 +421,18 @@ function parseDynamicTransform(expression: string, staticVars: Record<string, un
   const templateLiteral = /^`([^`]*)`$/.exec(trimmed);
   if (templateLiteral) return parseStaticTransform(templateLiteral[1]);
 
-  // 用统一 tokenizer 拆分（string token 为字面量，其余 token 归属表达式段）
+  // Split with a unified tokenizer (string tokens are literals; the rest belong to the expression segment)
   const tokens = tokenizeStatic(trimmed);
   if (!tokens) return null;
-  // 按 '+' 运算符分组
+  // Group by '+' operator
   const groups: StaticToken[][] = [[]];
   for (const t of tokens) {
     if (t.kind === 'op' && t.value === '+') groups.push([]);
     else groups[groups.length - 1].push(t);
   }
-  if (groups.length === 1) return null; // 无拼接 → 非本模式
+  if (groups.length === 1) return null; // No concatenation → not this mode
 
-  // 重建骨架字符串（字面量段直接拼接，表达式段替换为占位符）
+  // Rebuild the skeleton string (literal segments concatenated directly, expression segments replaced with placeholders)
   let skeleton = '';
   const exprSlots: string[] = [];
   for (const group of groups) {
@@ -443,11 +443,11 @@ function parseDynamicTransform(expression: string, staticVars: Record<string, un
       exprSlots.push(expr);
       skeleton += `\u0000${exprSlots.length - 1}\u0000`;
     } else {
-      return null; // 空段（如 "a" + + "b"）非法
+      return null; // Empty segment (e.g. "a" + + "b") is invalid
     }
   }
 
-  // 骨架占位符回填为 slot/const 值后解析 SVG transform 语法
+  // After backfilling the skeleton placeholder with slot/const values, parse the SVG transform syntax
   const parseValue = (raw: string): SlotValue | number | null => {
     if (/^\u0000(\d+)\u0000$/.test(raw)) {
       const idx = Number(RegExp.$1);
@@ -490,7 +490,7 @@ function parseDynamicTransform(expression: string, staticVars: Record<string, un
       ops.push({ op: 'scale', sx: args[0], sy: args[1] ?? args[0] });
     } else {
       if (args.length !== 6) return null;
-      if (!allConst) return null; // matrix 仅支持全常量
+      if (!allConst) return null; // matrix only supports all-constant
       ops.push({ op: 'matrix', a: num(args[0]), b: num(args[1]), c: num(args[2]), d: num(args[3]), e: num(args[4]), f: num(args[5]) });
     }
   }
@@ -498,24 +498,24 @@ function parseDynamicTransform(expression: string, staticVars: Record<string, un
   return ops;
 }
 
-/* ─────────────────────────── 元素转换 ─────────────────────────── */
+/* ─────────────────────────── Element conversion ─────────────────────────── */
 
 const SHAPE_KINDS = new Set(['rect', 'circle', 'ellipse', 'line', 'polygon', 'polyline', 'path', 'text']);
-/** 需要保留的属性白名单（其余忽略） */
+/** Property whitelist to keep (others are ignored) */
 const ATTR_WHITELIST = new Set([
-  // 几何
+  // Geometry
   'x', 'y', 'width', 'height', 'rx', 'ry', 'cx', 'cy', 'r', 'x1', 'y1', 'x2', 'y2', 'points', 'd',
-  // 绘制
+  // Draw
   'fill', 'stroke', 'stroke-width', 'stroke-dasharray', 'stroke-linecap', 'stroke-linejoin',
   'stroke-opacity', 'fill-opacity', 'opacity', 'fill-rule',
-  // 文本
+  // Text
   'font-size', 'font-family', 'font-weight', 'font-style', 'text-anchor', 'letter-spacing',
 ]);
-/** 无条件忽略的绑定属性（元数据/CSS 动画） */
+/** Bound properties ignored unconditionally (metadata / CSS animation) */
 const IGNORED_BIND_PROPS = new Set(['title', 'class', 'style', 'key', 'dur', 'id']);
 
 interface CompileContext {
-  staticVars: Record<string, unknown>;   // v-for 展开变量（编译期已知）
+  staticVars: Record<string, unknown>;   // v-for expanded variables (known at compile time)
   audit: {
     elementCounts: Record<string, number>;
     animateCount: number;
@@ -526,7 +526,7 @@ interface CompileContext {
   };
 }
 
-/** 提取元素上 v-if/v-else-if/v-else 指令 */
+/** Extract v-if/v-else-if/v-else directives on an element */
 function getConditionDirective(props: AstProp[]): { name: string; exp: string } | null {
   for (const p of props) {
     if (p.type === NODE_DIRECTIVE && ['if', 'else-if', 'else'].includes(p.name ?? '')) {
@@ -536,20 +536,20 @@ function getConditionDirective(props: AstProp[]): { name: string; exp: string } 
   return null;
 }
 
-/** 提取 v-for 指令：v-for="i in 11" → { varName: 'i', count: 11 } */
+/** Extract v-for directive: v-for="i in 11" → { varName: 'i', count: 11 } */
 function getForDirective(props: AstProp[]): { varName: string; count: number } | null {
   for (const p of props) {
     if (p.type === NODE_DIRECTIVE && p.name === 'for') {
       const content = p.exp?.content ?? '';
       const m = /^\s*\(?(\w+)\)?\s+in\s+(\d+)\s*$/.exec(content);
       if (m) return { varName: m[1], count: Number(m[2]) };
-      return null; // 非固定整数范围：首版不支持
+      return null; // Non-fixed integer range: not supported in the first version
     }
   }
   return null;
 }
 
-/** 收集条件链：从起始 v-if 元素开始，吞并后续 v-else-if/v-else 兄弟元素 */
+/** Collect the condition chain: starting from the first v-if element, absorb subsequent v-else-if/v-else siblings */
 function collectBranchChain(children: AstNode[], startIndex: number, ctx: CompileContext): { end: number; branches: Array<{ when?: string; nodes: DirectiveNode[] }> } {
   const branches: Array<{ when?: string; nodes: DirectiveNode[] }> = [];
   let i = startIndex;
@@ -562,9 +562,9 @@ function collectBranchChain(children: AstNode[], startIndex: number, ctx: Compil
     } else if (!cond || !['else-if', 'else'].includes(cond.name)) {
       break;
     }
-    // 提取条件（v-else 无表达式）
+    // Extract condition (v-else has no expression)
     const when = cond.name === 'else' ? undefined : cond.exp.trim() || undefined;
-    // 编译该元素（剥离条件/循环指令）
+    // Compile this element (strip condition/loop directives)
     const stripped = stripDirectives(child, ['if', 'else-if', 'else', 'for']);
     const node = convertElement(stripped, ctx);
     if (node) branches.push({ when, nodes: [node] });
@@ -575,7 +575,7 @@ function collectBranchChain(children: AstNode[], startIndex: number, ctx: Compil
   return { end: i, branches };
 }
 
-/** 剥离指定指令后克隆元素（不改原 AST） */
+/** Clone an element after stripping the specified directive (without modifying the original AST) */
 function stripDirectives(el: AstNode, names: string[]): AstNode {
   return {
     ...el,
@@ -583,33 +583,33 @@ function stripDirectives(el: AstNode, names: string[]): AstNode {
   };
 }
 
-/** 转换单个元素节点 → DirectiveNode（不含条件链处理） */
+/** Convert a single element node → DirectiveNode (without condition-chain handling) */
 function convertElement(el: AstNode, ctx: CompileContext): DirectiveNode | null {
   const tag = el.tag ?? '';
   const props = el.props ?? [];
   ctx.audit.elementCounts[tag] = (ctx.audit.elementCounts[tag] ?? 0) + 1;
 
-  // SMIL 动画：忽略（静态首帧策略）
+  // SMIL animation: ignored (static first-frame strategy)
   if (tag === 'animate' || tag === 'animateTransform') {
     ctx.audit.animateCount += 1;
     return null;
   }
-  // 元数据：忽略
+  // Metadata: ignored
   if (tag === 'desc' || tag === 'title' || tag === 'metadata') return null;
-  // defs：渐变在文档级单独处理（collectGradients），此处跳过
+  // defs: gradients are handled separately at document level (collectGradients); skipped here
   if (tag === 'defs') return null;
-  // clipPath/mask/filter：元素级跳过（视觉近似，03 文档 §5）
+  // clipPath/mask/filter: skipped at element level (visual approximation, doc 03 §5)
   if (tag === 'clipPath' || tag === 'mask' || tag === 'filter') {
     ctx.audit.skippedElements.push(tag);
     return null;
   }
-  // 渐变定义出现在非 defs 位置（不合规模板）：跳过并记录
+  // Gradient defined outside defs (non-conforming template): skip and log
   if (tag === 'linearGradient' || tag === 'radialGradient' || tag === 'stop') {
     ctx.audit.skippedElements.push(`${tag}(out-of-defs)`);
     return null;
   }
 
-  // 属性转换
+  // Property conversion
   const attrs: Record<string, SlotValue | string | number> = {};
   let transform: TransformOp | TransformOp[] | undefined;
   let hasUnsupported = false;
@@ -625,25 +625,25 @@ function convertElement(el: AstNode, ctx: CompileContext): DirectiveNode | null 
         continue;
       }
       if (name === 'id' || name === 'class' || name === 'style') continue;
-      if (name === 'gradientUnits') continue; // 渐变属性由渐变收集器处理
+      if (name === 'gradientUnits') continue; // Gradient attributes are handled by the gradient collector
       if (ATTR_WHITELIST.has(name)) attrs[name] = value;
       continue;
     }
     if (p.type === NODE_DIRECTIVE) {
       const dName = p.name ?? '';
       const dArg = p.arg?.content ?? '';
-      // v-if/else/for 已在上级处理；v-show/v-html/on 事件不支持（忽略）
+      // v-if/else/for are handled at the upper level; v-show/v-html/on events are unsupported (ignored)
       if (['if', 'else-if', 'else', 'for', 'show', 'html', 'on'].includes(dName)) continue;
       if (dName !== 'bind') continue;
       if (IGNORED_BIND_PROPS.has(dArg)) {
         if (dArg === 'class' || dArg === 'style') ctx.audit.ignoredClassStyle += 1;
         continue;
       }
-      if (dArg === 'viewBox') continue; // 根元素处理
+      if (dArg === 'viewBox') continue; // Root element handling
       const expr = p.exp?.content ?? '';
       if (dArg === 'transform') {
         const ops = parseDynamicTransform(expr, ctx.staticVars) ?? (() => {
-          // 非拼接模式：尝试静态求值后按 SVG transform 解析
+          // Non-concatenation mode: try static evaluation then parse by SVG transform
           const v = evaluateStatic(expr, ctx.staticVars);
           return typeof v === 'string' ? parseStaticTransform(v) : null;
         })();
@@ -653,12 +653,12 @@ function convertElement(el: AstNode, ctx: CompileContext): DirectiveNode | null 
         }
         continue;
       }
-      if (!ATTR_WHITELIST.has(dArg)) continue; // 非白名单绑定（如 :x 之外的冷门属性）→ 忽略
+      if (!ATTR_WHITELIST.has(dArg)) continue; // Non-whitelist binding (e.g. obscure props other than :x) → ignore
       const classified = classifyExpression(expr, ctx.staticVars);
       if (classified) {
         attrs[dArg] = classified;
       } else {
-        // 无法支持 → 属性缺省（元素级降级标记）
+        // Unsupported → property defaults (element-level downgrade flag)
         ctx.audit.skippedDynamic.push({ element: tag, attr: dArg, expr });
         hasUnsupported = true;
       }
@@ -666,30 +666,30 @@ function convertElement(el: AstNode, ctx: CompileContext): DirectiveNode | null 
     }
   }
 
-  // 基础形状
+  // Basic shapes
   if (SHAPE_KINDS.has(tag)) {
     const node: DirectiveNode = { kind: tag as DirectiveNode['kind'], attrs };
     if (transform) node.transform = transform;
-    // path：静态 d 编译期解析命令序列
+    // path: static d parsed into a command sequence at compile time
     if (tag === 'path') {
       const dValue = attrs.d;
       if (typeof dValue === 'string') {
         const commands = parsePathData(dValue);
         if (commands) {
           node.pathCommands = commands;
-          delete attrs.d; // 已结构化，避免运行时二次解析
+          delete attrs.d; // Already structured to avoid runtime re-parsing
         } else {
           ctx.audit.skippedDynamic.push({ element: tag, attr: 'd', expr: String(dValue).slice(0, 40) });
         }
       }
-      // d 为 SlotValue（动态）→ 运行时无法解析 → 元素跳过（hasUnsupported 在 bind 阶段已标记 null 的情况外，
-      // 这里 d 若为 slot/expr 也视为不支持）
+      // d is a SlotValue (dynamic) → cannot be resolved at runtime → element skipped (except cases where hasUnsupported already marked null at bind time,
+      // here d being slot/expr is also treated as unsupported)
       if (dValue && typeof dValue === 'object') {
         ctx.audit.skippedDynamic.push({ element: tag, attr: 'd', expr: 'dynamic d' });
         return null;
       }
     }
-    // text 内容：静态文本或插值
+    // text content: static text or interpolation
     if (tag === 'text') {
       const content = extractTextContent(el, ctx);
       if (content !== null) node.text = content;
@@ -708,12 +708,12 @@ function convertElement(el: AstNode, ctx: CompileContext): DirectiveNode | null 
     return node;
   }
 
-  // 未知元素：跳过并记录
+  // Unknown element: skip and log
   ctx.audit.skippedElements.push(tag);
   return null;
 }
 
-/** 提取 text 元素内容：静态串 / 简单插值 slot；复杂插值 → null（局部缺失） */
+/** Extract text element content: static string / simple interpolation slot; complex interpolation → null (partially missing) */
 function extractTextContent(el: AstNode, ctx: CompileContext): string | SlotValue | null {
   const children = el.children ?? [];
   if (children.length === 0) return '';
@@ -724,12 +724,12 @@ function extractTextContent(el: AstNode, ctx: CompileContext): string | SlotValu
     ctx.audit.interpolations += 1;
     const expr = (children[0].content as { content?: string })?.content?.trim() ?? '';
     const classified = classifyExpression(expr, ctx.staticVars);
-    return classified; // slot/const 可用；复杂插值 → null
+    return classified; // slot/const usable; complex interpolation → null
   }
   return null;
 }
 
-/** 遍历子元素（含条件链/v-for 展开） */
+/** Traverse child elements (including condition-chain / v-for expansion) */
 function convertChildren(children: AstNode[], ctx: CompileContext, out: DirectiveNode[]): void {
   let i = 0;
   while (i < children.length) {
@@ -770,7 +770,7 @@ function convertChildren(children: AstNode[], ctx: CompileContext, out: Directiv
   }
 }
 
-/** path d 静态解析：M/L/H/V/C/S/Q/T/A/Z → 命令序列 */
+/** Static parsing of path d: M/L/H/V/C/S/Q/T/A/Z → command sequence */
 function parsePathData(d: string): Array<{ cmd: string; args: number[] }> | null {
   const commands: Array<{ cmd: string; args: number[] }> = [];
   const re = /([MLHVCSQTAZmlhvcsqtaz])((?:[^MLHVCSQTAZmlhvcsqtaz])*)/g;
@@ -783,7 +783,7 @@ function parsePathData(d: string): Array<{ cmd: string; args: number[] }> | null
     const argsRaw = m[2].trim();
     const args = argsRaw ? argsRaw.split(/[\s,]+/).map(Number) : [];
     if (args.some(n => !Number.isFinite(n))) return null;
-    // 参数个数校验
+    // Parameter count validation
     const expected: Record<string, number[]> = {
       M: [2], L: [2], H: [1], V: [1], C: [6], S: [4], Q: [4], T: [2], A: [7], Z: [0],
     };
@@ -791,7 +791,7 @@ function parsePathData(d: string): Array<{ cmd: string; args: number[] }> | null
     const allowed = expected[upper];
     if (!allowed) return null;
     if (cmd === upper && allowed[0] > 0) {
-      // 绝对坐标命令允许重复参数组（隐式重复）——拆分为多命令
+      // Absolute-coordinate commands allow repeated parameter groups (implicit repeat) — split into multiple commands
       const unit = allowed[0];
       if (args.length === 0 || args.length % unit !== 0) return null;
       for (let k = 0; k < args.length; k += unit) {
@@ -807,7 +807,7 @@ function parsePathData(d: string): Array<{ cmd: string; args: number[] }> | null
   return commands;
 }
 
-/** 收集 defs 内渐变定义 */
+/** Collect gradient definitions inside defs */
 function collectGradients(svgEl: AstNode, ctx: CompileContext, viewBox: SvgDirective['viewBox']): GradientDef[] {
   const gradients: GradientDef[] = [];
   const visit = (node: AstNode): void => {
@@ -826,7 +826,7 @@ function collectGradients(svgEl: AstNode, ctx: CompileContext, viewBox: SvgDirec
   return gradients;
 }
 
-/** 渐变坐标轴归属（百分比换算用） */
+/** Gradient coordinate-axis ownership (for percentage conversion) */
 type GradientCoordAxis = 'x' | 'y' | 'r';
 
 const GRADIENT_COORD_AXES: Record<string, GradientCoordAxis> = {
@@ -834,7 +834,7 @@ const GRADIENT_COORD_AXES: Record<string, GradientCoordAxis> = {
   cx: 'x', cy: 'y', r: 'r', fx: 'x', fy: 'y',
 };
 
-/** 解析 offset 值：'100%' / '1.0' → 0~1 分数 */
+/** Parse offset value: '100%' / '1.0' → 0~1 fraction */
 function parseOffsetValue(raw: string): number | undefined {
   const percentMatch = /^(-?[\d.]+)%$/.exec(raw.trim());
   const parsed = percentMatch ? Number(percentMatch[1]) / 100 : Number(raw);
@@ -842,9 +842,9 @@ function parseOffsetValue(raw: string): number | undefined {
 }
 
 /**
- * 解析渐变坐标：百分比按单位换算
- * - objectBoundingBox → 0~1 分数（浏览器同款语义，越界值保留）
- * - userSpaceOnUse → viewBox 绝对坐标（r 按 √((w²+h²)/2) 归一，SVG 规范近似）
+ * Parse gradient coordinates: percentages converted by unit
+ * - objectBoundingBox → 0~1 fraction (same semantics as the browser; out-of-range values preserved)
+ * - userSpaceOnUse → viewBox absolute coordinates (r normalized by √((w²+h²)/2), SVG-spec approximation)
  */
 function parseGradientCoord(
   raw: string,
@@ -892,7 +892,7 @@ function buildGradient(
     if (p.type === NODE_DIRECTIVE && p.name === 'bind') {
       const arg = p.arg?.content ?? '';
       const expr = p.exp?.content ?? '';
-      if (arg === 'id') continue; // 动态渐变 id：industrial 少见，跳过该渐变
+      if (arg === 'id') continue; // Dynamic gradient id: rare in industrial; skip this gradient
       if (GRADIENT_COORD_AXES[arg]) {
         const classified = classifyExpression(expr, ctx.staticVars);
         if (classified) coords[arg] = classified;
@@ -947,9 +947,9 @@ function buildGradient(
   };
 }
 
-/* ─────────────────────────── 文档级编译 ─────────────────────────── */
+/* ─────────────────────────── Document-level compilation ─────────────────────────── */
 
-/** 解析根 svg 的 viewBox（静态或常量模板字面量） */
+/** Parse the root svg viewBox (static or constant template literal) */
 function parseViewBox(svgEl: AstNode, staticVars: Record<string, unknown>): SvgDirective['viewBox'] | null {
   for (const p of svgEl.props ?? []) {
     const content = p.type === NODE_ATTRIBUTE

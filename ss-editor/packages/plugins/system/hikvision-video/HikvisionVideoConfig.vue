@@ -1,6 +1,6 @@
 <template>
   <div class="hikvision-video-config">
-    <!-- 1. 通道管理 -->
+    <!-- 1. Channel management -->
     <div class="channels-section">
       <div class="section-title">
         <span>{{ $t('hikvisionVideo.config.channels') }}</span>
@@ -86,7 +86,7 @@
       </div>
     </div>
 
-    <!-- 2. 布局 / 播放行为 / 通道名显示 / 容器样式 -->
+    <!-- 2. Layout / playback behavior / channel-name display / container style -->
     <PluginConfigPanel
       :schema="hikvisionVideoPropertySchema"
       :values="values"

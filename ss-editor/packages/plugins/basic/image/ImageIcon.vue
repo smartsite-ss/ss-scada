@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-// ImageIcon 组件
+// ImageIcon component
 </script>
 
 <style scoped>

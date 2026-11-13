@@ -300,14 +300,14 @@ const pageDsStore = usePageDataSourceStore()
 const pageStore = usePageStore()
 const wsStore = useWsStore()
 
-// 强制触发 computed 重新计算：每次 wsStore flush 时递增
+// Force computed recomputation: increment on every wsStore flush
 const wsVersion = ref(0)
 watch(
   () => wsStore.tagFlushVersion,
   () => { wsVersion.value++ },
 )
 
-/** 本对话框通过 wsStore.subscribeTags 订阅的标签列表（关闭时需取消订阅以释放引用计数） */
+/** Tags subscribed by this dialog via wsStore.subscribeTags (must unsubscribe on close to release the reference count) */
 const dialogSubscribedTagIds = ref<string[]>([])
 
 const selectedId = ref<string | null>(null)
@@ -532,10 +532,10 @@ const onEditorUpdate = (data: Record<string, any>) => {
     ...editorTypeData.value,
     [currentForm.type]: { ...data },
   }
-  // 当 tag 数据源选择标签变化时，订阅新的标签到 WebSocket
+  // When the selected tag of a tag data source changes, subscribe the new tag to the WebSocket
   if ((currentForm.type === 'tag' || currentForm.type === 'device') && data.tagIds?.length > 0) {
     wsStore.subscribeTags(data.tagIds);
-    // 合并到对话框级别的跟踪列表（wsStore 有引用计数，关闭时统一释放即可）
+    // Merge into the dialog-level tracking list (wsStore has a reference count; release all on close)
     const merged = new Set([...dialogSubscribedTagIds.value, ...data.tagIds]);
     dialogSubscribedTagIds.value = [...merged];
   }
@@ -544,13 +544,13 @@ const onEditorUpdate = (data: Record<string, any>) => {
 const syncDsToPage = () => {
   const currentPage = pageStore.currentPage as any
   if (currentPage) {
-    // 在序列化前，从数据源派生 variables（tags 等信息）
+    // Before serialization, derive variables (tags, etc.) from the data source
     syncVariablesFromDataSources()
     pageDsStore.persistToPage(currentPage)
   }
 }
 
-/** 从所有数据源的 properties 中提取标签，同步到 pageDsStore.variables */
+/** Extract tags from all data sources' properties and sync them to pageDsStore.variables */
 function syncVariablesFromDataSources() {
   const dsList = pageDsStore.dataSources as any[]
   const existingVars = new Set(pageDsStore.variables.map((v: any) => v.tagId))
@@ -621,7 +621,7 @@ function buildSummaryRow(ds: DataSourceRecord) {
       graphicName: b.graphicName || b.graphicId,
     }))
 
-  // DataSourceReader 统一提取 tagIds 并构建摘要
+  // DataSourceReader uniformly extracts tagIds and builds a summary
   const tagIds = extractTagIds(ds as unknown as Record<string, unknown>);
   let lastData: string | null = null;
   let latestTimestamp: number | undefined;
@@ -635,9 +635,9 @@ function buildSummaryRow(ds: DataSourceRecord) {
     lastData = summary.lastValue;
     latestTimestamp = summary.updatedAt ?? undefined;
   } else {
-    // 非 tag 类型保持原有的纯展示逻辑
+    // Non-tag types keep the original pure-display logic
     const lastRaw = buildLastDataFlat(ds);
-    // static 类型：仅 JSON/sql/db 等非实时类型使用原有逻辑，tag 回退到 wsStore
+    // static type: only non-real-time types like JSON/sql/db use the original logic; tag falls back to wsStore
     if (ds.type === 'static' && tagIds.length > 0) {
       const tagNames = tagIds.map((tid) => {
         const v = pageDsStore.variables.find((x) => x.tagId === tid);
@@ -658,7 +658,7 @@ function buildSummaryRow(ds: DataSourceRecord) {
   }
 }
 
-/** 非 tag/device 类型的纯展示值（精简自 buildLastData） */
+/** Pure display value for non-tag/device types (trimmed from buildLastData) */
 function buildLastDataFlat(ds: DataSourceRecord): string | null {
   const props = ds.properties ?? ({} as Record<string, any>);
   switch (ds.type) {
@@ -686,7 +686,7 @@ function buildLastDataFlat(ds: DataSourceRecord): string | null {
   }
 }
 
-// 用 ref + watch 替代 computed，确保 wsStore.tagValues 变化时可靠更新
+// Use ref + watch instead of computed to ensure reliable updates when wsStore.tagValues changes
 const dsSummaryList = ref<ReturnType<typeof buildSummaryRow>[]>([])
 function refreshSummaryList() {
   const result = pageDsStore.dataSources.map((ds) => buildSummaryRow(ds))
@@ -731,7 +731,7 @@ const handleRefresh = () => {
   selectedId.value = null
   editingId.value = null
   isCreating.value = false
-  // 刷新汇总表格
+  // Refresh the summary table
   refreshSummaryList()
 }
 
@@ -743,7 +743,7 @@ watch(
       selectedId.value = null
       editingId.value = null
       isCreating.value = false
-      // 连接 WebSocket 并订阅所有 tag 数据源的变量，实现实时数据刷新
+      // Connect the WebSocket and subscribe to all tag data-source variables for live data refresh
       if (props.projectId) {
         try {
           await wsStore.connect(props.projectId)
@@ -765,7 +765,7 @@ watch(
         console.warn('[DataSourceConfigDialog] projectId 为空，跳过 WebSocket 连接');
       }
     } else {
-      // 关闭时释放本对话框持有的标签订阅引用计数
+      // On close, release the tag-subscription reference count held by this dialog
       if (dialogSubscribedTagIds.value.length > 0) {
         wsStore.unsubscribeTags(dialogSubscribedTagIds.value)
         dialogSubscribedTagIds.value = []

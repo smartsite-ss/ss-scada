@@ -55,7 +55,7 @@
       v-else
       class="monitor-content"
     >
-      <!-- 插件基本信息 -->
+      <!-- Plugin basic info -->
       <div class="info-panel">
         <div class="info-header">
           <div class="info-title">
@@ -98,7 +98,7 @@
         </div>
       </div>
 
-      <!-- 设备层 + 进程性能：两列并排 -->
+      <!-- Device layer + process performance: two columns side by side -->
       <div class="dashboard-row">
         <div class="device-panel">
           <h3 class="section-title">
@@ -190,7 +190,7 @@
         </div>
       </div>
 
-      <!-- 工作日志 -->
+      <!-- Work log -->
       <div class="log-panel">
         <div class="log-header">
           <h3
@@ -375,7 +375,7 @@ const heapPercent = computed(() => {
 });
 
 const rssPercent = computed(() => {
-  return Math.min(100, rss.value / 10); // 每 10MB = 10%
+  return Math.min(100, rss.value / 10); // Every 10MB = 10%
 });
 
 const uptime = computed(() => {
@@ -513,7 +513,7 @@ onMounted(() => {
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* 信息面板 */
+/* Info panel */
 .info-panel,
 .log-panel {
   background: var(--surface);
@@ -523,7 +523,7 @@ onMounted(() => {
   margin-bottom: 20px;
 }
 
-/* 两列并排面板 */
+/* Two-column side-by-side panel */
 .dashboard-row {
   display: grid;
   grid-template-columns: 1fr 1.5fr;
@@ -614,7 +614,7 @@ onMounted(() => {
   margin: 0 0 14px 0;
 }
 
-/* 设备统计 */
+/* Device statistics */
 .device-stats-grid {
   display: flex;
   flex-direction: column;
@@ -659,7 +659,7 @@ onMounted(() => {
   gap: 8px;
 }
 
-/* 进程指标 */
+/* Process metrics */
 .process-info-row {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -735,7 +735,7 @@ onMounted(() => {
   color: var(--text);
 }
 
-/* 日志 */
+/* Log */
 .log-header {
   display: flex;
   align-items: center;

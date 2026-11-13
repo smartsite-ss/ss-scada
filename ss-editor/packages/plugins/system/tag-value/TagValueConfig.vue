@@ -1,6 +1,6 @@
 <template>
   <div class="tag-value-config">
-    <!-- 1. 变量绑定 -->
+    <!-- 1. Variable binding -->
     <TagBindingEditor
       mode="flat"
       :project-id="projectId"
@@ -9,7 +9,7 @@
       @clear="clearBind"
     />
 
-    <!-- 2. 装饰图片 -->
+    <!-- 2. Decorative image -->
     <div class="decoration-section">
       <div class="section-title">
         {{ $t('tagValue.config.decorationImage') }}
@@ -37,7 +37,7 @@
       </div>
     </div>
 
-    <!-- 3. 背景图片 -->
+    <!-- 3. Background image -->
     <div class="decoration-section">
       <div class="section-title">
         {{ $t('tagValue.config.backgroundImage') }}
@@ -65,7 +65,7 @@
       </div>
     </div>
 
-    <!-- 4. 显示配置（形态/名称/装饰/单位/文本/样式） -->
+    <!-- 4. Display config (shape/name/decoration/unit/text/style) -->
     <PluginConfigPanel
       :schema="tagValuePropertySchema"
       :values="values"
@@ -105,7 +105,7 @@ const { projectId, current, addVariable, clearBind } = useTagBinding(
   {
     mode: 'flat',
     extraFields: (variable) => ({
-      // 仅当标签已设置单位/小数位时才带出，避免覆盖手填值
+      // Only carry over when the tag already has unit/decimal set, to avoid overwriting manually entered values
       ...(variable.unit ? { unit: variable.unit } : {}),
       ...(variable.decimalPlaces !== undefined ? { decimalPlaces: variable.decimalPlaces } : {}),
     }),

@@ -126,7 +126,7 @@ function loadTemplate() {
   emit('update:modelValue', fullScript.value);
 }
 
-// 当 fetchResult（手动获取 / 获取全部）更新时，自动运行过滤测试
+// When fetchResult (manual fetch / fetch-all) updates, automatically run the filter test
 watch(
   () => props.fetchResult?.timestamp,
   (newTs) => {
@@ -147,7 +147,7 @@ function testFilter() {
     return;
   }
 
-  // 优先使用 fetchResult（手动获取 / 获取全部 驱动）中的真实数据
+  // Prefer real data from fetchResult (manual fetch / fetch-all driver)
   const items = props.fetchResult?.items;
   const hasRealData = items && items.length > 0;
 
@@ -163,7 +163,7 @@ function testFilter() {
       },
     }));
   } else {
-    // 无真实数据时回退到模拟数据
+    // Fall back to mock data when there is no real data
     const testRes = {
       tagId: 'tag_001',
       tagName: '温度传感器1',

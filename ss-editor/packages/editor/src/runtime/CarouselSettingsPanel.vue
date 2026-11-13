@@ -22,7 +22,7 @@
       </div>
 
       <div class="panel-body">
-        <!-- 启用开关 -->
+        <!-- Enable switch -->
         <div class="setting-row">
           <label class="setting-label">{{ t('carousel.settings.enabled') }}</label>
           <label class="toggle-switch">
@@ -35,7 +35,7 @@
           </label>
         </div>
 
-        <!-- 轮播间隔 -->
+        <!-- Carousel interval -->
         <div class="setting-row">
           <label class="setting-label">{{ t('carousel.settings.interval') }}</label>
           <div class="interval-options">
@@ -51,7 +51,7 @@
           </div>
         </div>
 
-        <!-- 参与页面 -->
+        <!-- Participating pages -->
         <div class="setting-row">
           <label class="setting-label">{{ t('carousel.settings.pages') }}</label>
           <label class="checkbox-label">
@@ -81,7 +81,7 @@
           </div>
         </div>
 
-        <!-- 过渡效果 -->
+        <!-- Transition effect -->
         <div class="setting-row">
           <label class="setting-label">{{ t('carousel.settings.transition') }}</label>
           <div class="transition-options">
@@ -100,7 +100,7 @@
           </div>
         </div>
 
-        <!-- 选项 -->
+        <!-- Option -->
         <div class="setting-row">
           <label class="setting-label" />
           <label class="checkbox-label">

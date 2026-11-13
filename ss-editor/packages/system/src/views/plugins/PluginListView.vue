@@ -182,7 +182,7 @@
           </span>
         </div>
 
-        <!-- 信息网格：2列布局，紧凑展示 -->
+        <!-- Info grid: 2-column layout, compact display -->
         <div class="card-body">
           <div class="info-grid">
             <div class="card-info">
@@ -213,7 +213,7 @@
             </div>
           </div>
 
-          <!-- 指标 + 设备统计合并区 -->
+          <!-- Metrics + device-statistics merged area -->
           <div class="stats-section">
             <div
               v-if="plugin.metrics"
@@ -255,7 +255,7 @@
           </div>
         </div>
 
-        <!-- 操作按钮：主操作 + 折叠更多 -->
+        <!-- Action buttons: primary action + collapse-more -->
         <div
           class="card-actions"
           @click.stop
@@ -408,7 +408,7 @@ function isolationModeLabel(mode?: string): string {
   return ISOLATION_MODE_LABELS[mode || ''] || mode || '—';
 }
 
-/** 根据隔离模式返回运行时标识标签 */
+/** Return the runtime identifier label based on the isolation mode */
 function runtimeLabel(plugin: PluginInfo): string {
   if (plugin.isolationMode === 'worker_thread') {
     return t('system.plugins.threadId');
@@ -416,7 +416,7 @@ function runtimeLabel(plugin: PluginInfo): string {
   return t('system.plugins.processId');
 }
 
-/** 根据隔离模式返回运行时标识值（进程名/线程名 + 进程号/线程号） */
+/** Return the runtime identifier value based on the isolation mode (process name/thread name + process id/thread id) */
 function runtimeValue(plugin: PluginInfo): string {
   const name = plugin.processName || '—';
   if (plugin.isolationMode === 'worker_thread' && plugin.threadId) {
@@ -525,7 +525,7 @@ function getDeviceStat(protocol: string, key: keyof DeviceStats): number {
 
 async function fetchData() {
   await store.fetchPlugins();
-  // 并行加载设备统计
+  // Load device statistics in parallel
   store.fetchDeviceStats();
 }
 
@@ -727,7 +727,7 @@ onMounted(() => {
   gap: 10px;
 }
 
-/* 信息网格：2列紧凑布局 */
+/* Info grid: compact 2-column layout */
 .info-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -766,7 +766,7 @@ onMounted(() => {
   flex-shrink: 0;
 }
 
-/* 指标 + 设备统计合并区 */
+/* Metrics + device-statistics merged area */
 .stats-section {
   display: flex;
   flex-direction: column;
@@ -801,7 +801,7 @@ onMounted(() => {
   text-align: center;
 }
 
-/* 设备在线/离线统计 */
+/* Device online/offline statistics */
 .device-stats-row {
   display: flex;
   gap: 8px;

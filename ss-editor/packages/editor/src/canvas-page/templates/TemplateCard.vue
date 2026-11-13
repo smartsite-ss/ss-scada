@@ -4,31 +4,31 @@
     :class="{ 'template-card--selected': selected, 'template-card--user': template.source === 'user' }"
     @click="$emit('select', template.id)"
   >
-    <!-- 预览区 -->
+    <!-- Preview area -->
     <div class="template-card-preview" :style="{ backgroundColor: template.pageConfig.backgroundColor }">
-      <!-- 尺寸标签 -->
+      <!-- Size label -->
       <span class="template-card-size">
         {{ template.pageConfig.width }} × {{ template.pageConfig.height }}
       </span>
-      <!-- 图标 -->
+      <!-- Icon -->
       <span class="template-card-icon">{{ template.icon || '📄' }}</span>
-      <!-- 来源标记 -->
+      <!-- Source marker -->
       <span class="template-card-source" :class="`source-${template.source}`">
         {{ sourceLabel }}
       </span>
-      <!-- 范围标记 -->
+      <!-- Range marker -->
       <span class="template-card-scope" :class="{ 'scope-project': templateStore.isProjectTemplate(template.id) }">
         {{ scopeLabel }}
       </span>
     </div>
 
-    <!-- 信息区 -->
+    <!-- Info area -->
     <div class="template-card-info">
       <div class="template-card-name">{{ template.name }}</div>
       <div v-if="template.description" class="template-card-desc">
         {{ template.description }}
       </div>
-      <!-- 标签 -->
+      <!-- Tag -->
       <div v-if="template.tags && template.tags.length" class="template-card-tags">
         <span v-for="tag in template.tags.slice(0, 3)" :key="tag" class="template-card-tag">
           {{ tag }}
@@ -36,7 +36,7 @@
       </div>
     </div>
 
-    <!-- 操作区（用户模板） -->
+    <!-- Action area (user templates) -->
     <div v-if="template.source === 'user' && showActions" class="template-card-actions">
       <button class="control-button" :title="t('template.editTemplate')" @click.stop="$emit('edit', template.id)">
         <span class="icon-emoji">✎</span>

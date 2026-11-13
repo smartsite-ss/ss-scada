@@ -1,6 +1,6 @@
 <template>
   <div class="layout-tab">
-    <!-- 布局设置 -->
+    <!-- Layout settings -->
     <div class="setting-group">
       <div class="group-title">
         <span class="group-icon">📐</span>
@@ -15,7 +15,7 @@
       </div>
     </div>
 
-    <!-- 默认布局 -->
+    <!-- Default layout -->
     <div class="setting-group">
       <div class="group-title">
         <span class="group-icon">🔄</span>
@@ -33,7 +33,7 @@
       </div>
     </div>
 
-    <!-- 布局信息 - 可编辑 -->
+    <!-- Layout info — editable -->
     <div class="setting-group">
       <div class="group-title">
         <span class="group-icon">📋</span>

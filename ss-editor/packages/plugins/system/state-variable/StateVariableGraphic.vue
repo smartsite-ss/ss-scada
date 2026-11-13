@@ -52,10 +52,10 @@ const props = defineProps<{
 
 const wsStore = useWsStore();
 
-/** 兜底刷新版本号：运行态 EventBus 或 HTTP 轮询等通道通过 tagValueChanged 触发 */
+/** Fallback refresh version: runtime EventBus or HTTP polling channels trigger via tagValueChanged */
 const localVersion = ref(0);
 
-/** 实时值：依赖 wsStore.tagFlushVersion 与 localVersion，任一变化即强制重算 */
+/** Live value: depends on wsStore.tagFlushVersion and localVersion; any change forces recompute */
 const currentValue = computed(() => {
   void wsStore.tagFlushVersion;
   void localVersion.value;
@@ -67,7 +67,7 @@ const currentValue = computed(() => {
   return ScadaDataManager.getTagValue(props.tagId) ?? null;
 });
 
-/** 根据当前值匹配状态规则，得到应显示的图片 */
+/** Match the current value against status rules to get the image to display */
 const currentImage = computed(() =>
   resolveStateImage(currentValue.value, props.states || [], props.dataType, props.defaultImage || ''),
 );
@@ -99,7 +99,7 @@ const imageStyle = computed(() => ({
 }));
 
 let unsubscribeEventBus: (() => void) | null = null;
-/** 已登记到 wsStore 的标签，用于绑定变更时退订 / 新增 */
+/** Tags registered to wsStore, used to unsubscribe / add on binding changes */
 let registeredTagId: string | null = null;
 
 function syncSubscription() {
@@ -123,7 +123,7 @@ onMounted(() => {
   });
 });
 
-// 首次连接建立后补偿订阅
+// Compensate subscription after the first connection is established
 watch(
   () => wsStore.isConnected,
   (connected) => {
@@ -132,7 +132,7 @@ watch(
   },
 );
 
-// 绑定变更时同步订阅
+// Sync subscription on binding change
 watch(
   () => props.tagId,
   () => syncSubscription(),

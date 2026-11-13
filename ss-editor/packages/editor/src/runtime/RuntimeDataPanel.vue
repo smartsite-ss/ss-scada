@@ -53,7 +53,7 @@
           class="source-card"
           :class="'status-' + source.status"
         >
-          <!-- 头部：类型标识 + 名称 + 状态 -->
+          <!-- Header: type mark + name + status -->
           <div class="source-header">
             <div class="source-info">
               <span
@@ -73,7 +73,7 @@
             </div>
           </div>
 
-          <!-- 数据详情行（参照编辑态摘要表：质量 / 更新值 / 更新时间） -->
+          <!-- Data detail row (per the edit-state summary table: quality / updated value / updated time) -->
           <div class="source-detail">
             <div class="detail-item">
               <span class="detail-label">质量</span>
@@ -202,11 +202,11 @@ interface SourceEntry {
   lastFetchTime: number;
   errorMessage?: string;
   tags?: TagEntry[];
-  /** 数据源级别的聚合更新值（如标签数据源为各变量值拼接） */
+  /** Aggregated update value at the data-source level (e.g. tag data source concatenates each variable value) */
   lastValue?: string | null;
-  /** 数据源级别的最新更新时间戳 */
+  /** Latest update timestamp at the data-source level */
   updatedAt?: number | null;
-  /** 数据源级别的聚合质量（取所有标签中最差的） */
+  /** Aggregated quality at the data-source level (worst of all tags) */
   quality?: string | null;
 }
 
@@ -271,18 +271,18 @@ function close() {
 async function manualRefresh() {
   isRefreshing.value = true;
   emit('refresh');
-  // lastRefreshTime 由 sources watch 自动更新（PreviewCanvas push 新数据后触发）
+  // lastRefreshTime is auto-updated by the sources watch (triggered after PreviewCanvas pushes new data)
   setTimeout(() => {
     isRefreshing.value = false;
   }, 800);
 }
 
-// 监听 sources 变化：PreviewCanvas 推送新数据时自动更新刷新时间戳
+// Watch sources change: auto-update the refresh timestamp when PreviewCanvas pushes new data
 watch(() => props.sources, () => {
   lastRefreshTime.value = Date.now();
 }, { deep: true });
 
-// 面板第一次打开时初始化时间戳
+// Initialize the timestamp the first time the panel opens
 watch(() => props.visible, (v) => {
   if (v) {
     lastRefreshTime.value = Date.now();
@@ -290,7 +290,7 @@ watch(() => props.visible, (v) => {
 }, { immediate: true });
 
 onUnmounted(() => {
-  // 定时器已由 PreviewCanvas 管理，此处无需清理
+  // Timers are already managed by PreviewCanvas; no cleanup needed here
 });
 </script>
 
@@ -507,7 +507,7 @@ onUnmounted(() => {
   color: var(--text-secondary, #606266);
 }
 
-/* 数据详情行：参照编辑态摘要表 — 质量 / 更新值 / 更新时间 */
+/* Data detail row: per the edit-state summary table — quality / updated value / updated time */
 .source-detail {
   display: flex;
   align-items: center;

@@ -1,12 +1,12 @@
 <template>
   <!--
-    【图层1 - 滚动容器】.plugin-layer-manager
-    作用：作为整个画布区域的滚动容器
-    - display: flex + flex: 1 → 自动填充父容器剩余空间
-    - padding: 20px → 为画布提供四周呼吸空间
-    - overflow: auto → 当画布缩放后超出可视区域时，自动显示滚动条
-    - 所有鼠标事件（scroll）在此层捕获并向上 emit
-    - active 状态下光标变为 grabbing（拖拽中状态）
+    【Layer 1 - Scroll container】.plugin-layer-manager
+    Role: scroll container for the entire canvas area
+    - display: flex + flex: 1 → auto-fill the parent's remaining space
+    - padding: 20px → breathing room around the canvas
+    - overflow: auto → auto-show scrollbars when the zoomed canvas exceeds the viewport
+    - all mouse events (scroll) are captured here and emitted upward
+    - cursor becomes grabbing in active state (during drag)
   -->
   <div
     ref="layerRootRef"
@@ -15,13 +15,13 @@
     @scroll="(event) => emit('scroll', event)"
   >
     <!--
-      【图层2 - 视口伸缩区】.canvas-viewport
-      作用：承载画布内容的弹性容器，随 zoom 变化动态调整尺寸
-      - position: relative → 为内部的绝对定位元素（Vue/SVG/CSS组件容器）提供定位参考
-      - flex-shrink: 0 → 缩放后尺寸不能被压缩，只能用滚动条查看
-      - margin: auto → 当画布比容器小时自动居中
-      - viewportStyle 控制 width/height = 页面原始宽高 × zoom
-        示例：1920×1080 的画布在 zoom=0.58 时，viewport 尺寸为 1114×627px
+      【Layer 2 - Viewport flex area】.canvas-viewport
+      Role: elastic container holding canvas content, dynamically resized with zoom
+      - position: relative → positioning reference for inner absolutely-positioned elements (Vue/SVG/CSS component containers)
+      - flex-shrink: 0 → zoomed size cannot be compressed; only scrollbars can be used to view
+      - margin: auto → auto-center when the canvas is smaller than the container
+      - viewportStyle controls width/height = page original size × zoom
+        example: a 1920×1080 canvas at zoom=0.58 has a viewport size of 1114×627px
     -->
     <div
       ref="viewportRef"
@@ -30,14 +30,14 @@
       :style="viewportStyle"
     >
       <!--
-        【图层3 - Canvas 画布】.design-canvas
-        作用：2D 绘图层，Canvas 2D API 绘制的唯一载体
-        - width/height 属性 → Canvas 内部分辨率（保持原始像素，不随 zoom 变化）
-        - canvasStyle 控制 CSS 显示尺寸 = 原始宽高 × zoom（与 viewport 等比缩放）
-        - background-color: var(--surface) → 画布未绘制区域的背景色（浅灰色）
-        - z-index: 1 → 位于最底层，其他组件容器覆盖其上
-        - 所有交互事件（click/drag/wheel 等）在此层统一捕获并向上 emit
-        - 实际的白色画布内容（fillRect(#FFF)）由 useCanvasRender 在此 canvas 上绘制
+        【Layer 3 - Canvas】.design-canvas
+        Role: 2D drawing layer, the sole carrier of Canvas 2D API drawing
+        - width/height attributes → canvas internal resolution (keeps original pixels, does not change with zoom)
+        - canvasStyle controls CSS display size = original size × zoom (proportional to viewport)
+        - background-color: var(--surface) → background color of undrawn canvas areas (light grey)
+        - z-index: 1 → at the bottom; other component containers overlay it
+        - all interaction events (click/drag/wheel, etc.) are captured here and emitted upward
+        - the actual white canvas content (fillRect(#FFF)) is drawn on this canvas by useCanvasRender
       -->
       <canvas
         id="canvas"
@@ -60,11 +60,11 @@
       />
 
       <!--
-        【图层4 - Vue 组件容器】VueComponentsContainer
-        作用：渲染 Vue 插件（运行时组件）的 DOM 容器
-        - 筛选 graphics 中类型为 'vue-component' 的图元
-        - 每个图元对应一个带绝对定位的 DOM 节点
-        - zoom 用于同步缩放组件的位置和尺寸
+        【Layer 4 - Vue component container】VueComponentsContainer
+        Role: DOM container for rendering Vue plugins (runtime components)
+        - filter graphics whose type is 'vue-component'
+        - each graphic maps to an absolutely-positioned DOM node
+        - zoom is used to sync the component's position and size
       -->
       <VueComponentsContainer
         :sorted-graphics="graphics"
@@ -74,11 +74,11 @@
       />
 
       <!--
-        【图层5 - SVG 组件容器】SvgComponentsContainer
-        作用：渲染 SVG 矢量图形组件的容器
-        - 筛选 graphics 中类型为 'svg' 的图元
-        - 返回纯 SVG DOM 节点，支持矢量无损缩放
-        - zoom 用于同步缩放 SVG 元素
+        【Layer 5 - SVG component container】SvgComponentsContainer
+        Role: container for rendering SVG vector graphic components
+        - filter graphics whose type is 'svg'
+        - returns pure SVG DOM nodes, supporting lossless vector scaling
+        - zoom is used to sync SVG element scaling
       -->
       <SvgComponentsContainer
         :sorted-graphics="graphics"
@@ -87,11 +87,11 @@
       />
 
       <!--
-        【图层6 - CSS 组件容器】CssComponentsContainer
-        作用：渲染纯 CSS/HTML 样式组件的容器
-        - 筛选 graphics 中类型为 'css' 的图元
-        - 使用 CSS transform 控制位置和缩放
-        - zoom 用于动态计算 transform 参数
+        【Layer 6 - CSS component container】CssComponentsContainer
+        Role: container for rendering pure CSS/HTML style components
+        - filter graphics whose type is 'css'
+        - uses CSS transform to control position and scaling
+        - zoom is used to dynamically compute transform params
       -->
       <CssComponentsContainer
         :sorted-graphics="graphics"
@@ -100,10 +100,10 @@
       />
 
       <!--
-        【图层7 - 3D 组件容器】ThreeComponentsContainer
-        作用：渲染 Three.js 3D 场景组件的独立容器
-        - 不依赖 graphics（由 Three.js scene graph 独立管理）
-        - zoom 用于同步 3D 场景的视口缩放
+        【Layer 7 - 3D component container】ThreeComponentsContainer
+        Role: independent container for rendering Three.js 3D scene components
+        - does not depend on graphics (managed independently by the Three.js scene graph)
+        - zoom is used to sync the 3D scene viewport scaling
       -->
       <ThreeComponentsContainer
         :sorted-graphics="graphics"
@@ -112,25 +112,25 @@
       />
 
       <!--
-        【图层8 - 覆盖层插槽】slot name="overlay"
-        作用：允许父组件注入自定义覆盖层内容
-        典型用途：选区框、对齐辅助线、拖拽预览、测量标尺等
+        【Layer 8 - Overlay slot】slot name="overlay"
+        Role: allow the parent component to inject custom overlay content
+        Typical uses: selection box, alignment guides, drag preview, measurement ruler, etc.
       -->
       <slot name="overlay" />
 
       <!--
-        【图层9 - 网格覆盖层】GridOverlay
-        作用：在画布上绘制可选的点阵/网格参考线
-        - showGrid 控制显示/隐藏
-        - 帮助用户对齐和对位图元
+        【Layer 9 - Grid overlay】GridOverlay
+        Role: draw optional dot/grid reference lines on the canvas
+        - showGrid controls visibility
+        - helps users align and position graphics
       -->
       <GridOverlay :show-grid="showGrid" />
 
       <!--
-        【图层10 - 图元原值浮层】GraphicValueOverlay
-        作用：编辑态在画布上图元旁显示数据原值（tagId/当前值/质量）
-        - 由 pageStore.showValueOverlay 控制显示/隐藏（DataPanel checkbox）
-        - 仅显示有数据绑定的图元
+        【Layer 10 - Graphic raw-value overlay】GraphicValueOverlay
+        Role: in edit mode, show the data raw values (tagId/current value/quality) next to graphics on the canvas
+        - visibility controlled by pageStore.showValueOverlay (DataPanel checkbox)
+        - only shows graphics with data bindings
       -->
       <GraphicValueOverlay
         :graphics="graphics"
@@ -183,7 +183,7 @@ const canvasRef = ref<HTMLCanvasElement | null>(null);
 const layerRootRef = ref<HTMLDivElement | null>(null);
 const viewportRef = ref<HTMLDivElement | null>(null);
 
-// 滚动层四周留白：由 VIEWPORT.LAYER_PADDING 常量注入，消除 CSS/JS 双轨数值（优化方案 P2-4）
+// Scroll-layer surrounding padding: injected by the VIEWPORT.LAYER_PADDING constant, eliminating the CSS/JS dual-track value (optimization P2-4)
 const layerPadding = `${VIEWPORT.LAYER_PADDING}px`;
 
 const viewportStyle = computed(() => ({

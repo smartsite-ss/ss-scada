@@ -146,7 +146,7 @@ import { SsLoading } from '@scada-editor/shared';
 import { formatTagValue } from '../../../utils/format';
 import { useWsStore } from '../../../stores/ws.store';
 
-/** 标签数据列表项（合并标签定义 + 实时值） */
+/** Tag data list item (merges tag definition + live value) */
 interface TagDataItem {
   id: string;
   name: string;
@@ -156,9 +156,9 @@ interface TagDataItem {
   quality: string;
   timestamp: string | number | null;
   displayFormat?: string;
-  /** 后端 FormatStep 产出的格式化字符串，WS 推送时携带 */
+  /** Formatted string produced by the backend FormatStep, carried in WS push */
   wsDisplayValue?: string;
-  /** 标签定义静态字段 */
+  /** Tag definition static fields */
   description?: string;
   direction?: string;
   unit?: string;
@@ -201,7 +201,7 @@ async function refresh() {
     tagDataList.value = tags.map((tag) => {
       const httpEntry = latestValues[tag.id];
       const wsEntry = wsTagValues.get(tag.id);
-      // WS 值优先于 HTTP 值
+      // WS value takes precedence over HTTP value
       const entry = wsEntry || (httpEntry ? { value: httpEntry.value, quality: httpEntry.quality || 'good', timestamp: httpEntry.timestamp } : null);
       return {
         id: tag.id,
@@ -253,7 +253,7 @@ function stopAutoRefresh() {
   }
 }
 
-// ──────── WebSocket 实时订阅 ────────
+// ──────── WebSocket live subscription ────────
 
 async function subscribeWsTags() {
   if (!props.projectId || !props.device) return;
@@ -265,7 +265,7 @@ async function subscribeWsTags() {
       wsStore.subscribeTags(tagIds);
     }
   } catch {
-    // WS 不可用时降级为 HTTP 轮询模式
+    // Degrade to HTTP polling mode when WS is unavailable
   }
 }
 
@@ -278,8 +278,8 @@ function unsubscribeWsTags() {
   }
 }
 
-// WebSocket 实时推送驱动：WS 收到新值即增量更新表格
-// store 每次推送都会 reassign tagValues Map 引用，浅 watch 即可触发
+// WebSocket live-push driver: the table is incrementally updated as soon as WS receives a new value
+// The store reassigns the tagValues Map reference on every push, so a shallow watch is enough to trigger
 watch(
   () => wsStore.tagValues,
   () => {
@@ -304,9 +304,9 @@ watch(
   },
 );
 
-// ──────── 生命周期 ────────
+// ──────── Lifecycle ────────
 
-// 面板打开时自动刷新 + WS 订阅
+// Auto-refresh + WS subscription when the panel opens
 watch(() => props.visible, (val) => {
   if (val) {
     autoRefresh.value = false;
@@ -324,7 +324,7 @@ onUnmounted(() => {
   unsubscribeWsTags();
 });
 
-// P1优化：keep-alive 缓存场景下，弹窗关闭/打开时停止/恢复定时器和 WS 订阅
+// P1 optimization: in keep-alive cache scenarios, stop/restore timers and WS subscriptions when the dialog closes/opens
 onDeactivated(() => {
   stopAutoRefresh();
   unsubscribeWsTags();

@@ -101,7 +101,7 @@ async function load() {
       status: (props.status as EventLogStatus) || undefined,
     });
     const list = res?.data?.items || [];
-    // 只显示实时事件（未闭环）：未指定状态时前端过滤 emitted/processing
+    // Show only live events (not closed): when no status specified, frontend filters emitted/processing
     items.value = props.status
       ? list
       : list.filter((item) => item.status === 'emitted' || item.status === 'processing');

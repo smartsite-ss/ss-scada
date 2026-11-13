@@ -17,8 +17,8 @@
         <textarea
           ref="textareaRef"
           v-model="dataDealFunction"
-          placeholder="// 输入 JS 代码
-// 内置函数: formatNumber, formatPercent, mapValue, limitRange, toFixed, timestampToDate"
+          placeholder="// Enter JS code
+// Built-in functions: formatNumber, formatPercent, mapValue, limitRange, toFixed, timestampToDate"
           @input="onTextareaInput"
         />
         <div class="quick-buttons">

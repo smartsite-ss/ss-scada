@@ -59,19 +59,19 @@ export default defineComponent({
       const typeStyle = TYPE_STYLES[props.type] || TYPE_STYLES.default;
       const sizeStyle = SIZE_STYLES[props.size] || SIZE_STYLES.default;
 
-      // 样式类：用户自定义值优先，空值回退到 type 预设
+      // Style class: user-custom value takes precedence, empty falls back to the type preset
       const bg = props.backgroundColor || typeStyle.bg;
       const color = props.fontColor || typeStyle.color;
       const borderColorVal = props.borderColor || typeStyle.border;
       const radius = `${props.borderRadius}px`;
 
-      // 阴影：shadowColor 为空时不显示阴影
+      // Shadow: hide the shadow when shadowColor is empty
       let boxShadow = 'none';
       if (props.shadowColor) {
         boxShadow = `${props.shadowOffsetX}px ${props.shadowOffsetY}px ${props.shadowBlur}px ${props.shadowColor}`;
       }
 
-      // 透明模式：隐藏背景和边框
+      // Transparent mode: hide background and border
       if (props.transparent) {
         return {
           background: 'transparent',

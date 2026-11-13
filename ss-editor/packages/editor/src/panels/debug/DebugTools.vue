@@ -3,7 +3,7 @@
     class="debug-tools-container"
     :style="themeStyles"
   >
-    <!-- 抽屉按钮 -->
+    <!-- Drawer button -->
     <button
       class="drawer-button"
       :class="{ expanded: isVisible }"
@@ -12,7 +12,7 @@
       {{ isVisible ? '←' : '→' }}
     </button>
 
-    <!-- 调试工具面板 -->
+    <!-- Debug tools panel -->
     <div
       class="debug-tools"
       :class="{ expanded: isVisible }"
@@ -20,7 +20,7 @@
       <div class="debug-section">
         <h3>{{ t('debugTools.title') }}</h3>
 
-        <!-- 图元层级关系展示 -->
+        <!-- Graphic hierarchy display -->
         <div class="debug-panel">
           <h4>{{ t('debugTools.graphicHierarchy') }}</h4>
           <div class="hierarchy-view">
@@ -61,7 +61,7 @@
           </div>
         </div>
 
-        <!-- 调试信息 -->
+        <!-- Debug info -->
         <div class="debug-panel">
           <h4>{{ t('debugTools.debugInfo') }}</h4>
           <div class="debug-info">
@@ -84,7 +84,7 @@
           </div>
         </div>
 
-        <!-- 错误历史 -->
+        <!-- Error history -->
         <div class="debug-panel">
           <div class="panel-header">
             <h4>{{ t('debugTools.errorHistory') }}</h4>
@@ -142,7 +142,7 @@
           </div>
         </div>
 
-        <!-- 控制台日志 -->
+        <!-- Console log -->
         <div class="debug-panel">
           <div class="panel-header">
             <h4>{{ t('debugTools.consoleLogs') }}</h4>
@@ -183,13 +183,13 @@ import type { ErrorDetails } from '@scada-editor/core';
 
 const { themeStyles } = useTheme();
 
-// 国际化翻译函数
+// Internationalization translation function
 const { t } = i18n.global;
 const pageStore = usePageStore();
 const { selectGraphic } = useGraphic();
 const { selectedGraphic, selectedGraphicId } = useSelection();
 
-// 计算当前页面的图形列表
+// Compute the current page's graphic list
 const sortedGraphics = computed(() => {
   const graphicStore = useGraphic();
   const currentGraphics = graphicStore.graphics;
@@ -198,52 +198,52 @@ const sortedGraphics = computed(() => {
   );
 });
 
-// 面板可见性状态
+// Panel visibility state
 const isVisible = ref(true);
 
-// 切换面板可见性
+// Toggle panel visibility
 const toggleVisibility = () => {
   isVisible.value = !isVisible.value;
 };
 
-// 当前页面
+// Current page
 const currentPage = computed(() => pageStore.currentPage);
 
  
-// 控制台日志
+// Console log
 const consoleLogs = ref<
   Array<{ level: string; message: string; timestamp: number }>
 >([]);
 const consoleLogsRef = ref<HTMLElement | null>(null);
 
-// 错误历史
+// Error history
 const errorHistory = ref<ErrorDetails[]>([]);
 const expandedErrorIndex = ref<number | null>(null);
 
-// 轮询更新错误历史
+// Poll to update error history
 let errorPollingTimer: number | null = null;
 
-// 更新错误历史
+// Update error history
 const updateErrorHistory = () => {
   errorHistory.value = errorService.getHistory();
 };
 
-// 切换错误详情
+// Toggle error details
 const toggleErrorDetail = (index: number) => {
   expandedErrorIndex.value = expandedErrorIndex.value === index ? null : index;
 };
 
-// 清空错误
+// Clear errors
 const clearErrors = () => {
   errorHistory.value = [];
 };
 
-// 获取友好的错误消息
+// Get a friendly error message
 const getFriendlyMessage = (error: ErrorDetails) => {
   return errorService.getFriendlyMessage(error);
 };
 
-// 原始 console 方法
+// Original console methods
 const originalConsole = {
   log: console.log,
   error: console.error,
@@ -251,7 +251,7 @@ const originalConsole = {
   info: console.info,
 };
 
-// 重写 console 方法
+// Override console methods
 const overrideConsole = () => {
   console.log = (...args) => {
     originalConsole.log(...args);
@@ -274,7 +274,7 @@ const overrideConsole = () => {
   };
 };
 
-// 恢复原始 console 方法
+// Restore the original console methods
 const restoreConsole = () => {
   console.log = originalConsole.log;
   console.error = originalConsole.error;
@@ -282,14 +282,14 @@ const restoreConsole = () => {
   console.info = originalConsole.info;
 };
 
-// 添加日志
+// Add log
 const addLog = (level: string, message: string) => {
   consoleLogs.value.push({ level, message, timestamp: Date.now() });
-  // 限制日志数量
+  // Limit the number of logs
   if (consoleLogs.value.length > 100) {
     consoleLogs.value.shift();
   }
-  // 自动滚动到底部
+  // Auto-scroll to bottom
   setTimeout(() => {
     if (consoleLogsRef.value) {
       consoleLogsRef.value.scrollTop = consoleLogsRef.value.scrollHeight;
@@ -297,29 +297,29 @@ const addLog = (level: string, message: string) => {
   }, 100);
 };
 
-// 清空日志
+// Clear logs
 const clearLogs = () => {
   consoleLogs.value = [];
 };
 
-// 格式化时间
+// Format time
 const formatTime = (timestamp: number) => {
   const date = new Date(timestamp);
   return date.toLocaleTimeString();
 };
 
-// 组件挂载时重写 console 方法
+// Override console methods on component mount
 onMounted(() => {
   overrideConsole();
-  // 添加初始日志
+  // Add initial log
   addLog('info', t('debugTools.consoleEnabled'));
-  // 初始化错误历史
+  // Initialize error history
   updateErrorHistory();
-  // 开始轮询更新错误历史
+  // Start polling to update error history
   errorPollingTimer = window.setInterval(updateErrorHistory, 1000);
 });
 
-// 组件卸载时恢复原始 console 方法
+// Restore the original console methods on component unmount
 onUnmounted(() => {
   restoreConsole();
   if (errorPollingTimer) {
@@ -327,7 +327,7 @@ onUnmounted(() => {
   }
 });
 
-// 获取图形名称
+// Get the graphic name
 const getGraphicName = (graphic: any) => {
   switch (graphic.type) {
     case 'button':
@@ -519,7 +519,7 @@ const getGraphicName = (graphic: any) => {
   color: var(--text-secondary);
 }
 
-/* 控制台日志样式 */
+/* Console log style */
 .panel-header {
   display: flex;
   justify-content: space-between;
@@ -594,7 +594,7 @@ const getGraphicName = (graphic: any) => {
   color: var(--text);
 }
 
-/* 日志级别样式 */
+/* Log level style */
 .log-item.log {
   border-left: 2px solid var(--text);
   padding-left: 5px;
@@ -615,7 +615,7 @@ const getGraphicName = (graphic: any) => {
   padding-left: 5px;
 }
 
-/* 错误历史样式 */
+/* Error history style */
 .error-history {
   max-height: 200px;
   overflow-y: auto;

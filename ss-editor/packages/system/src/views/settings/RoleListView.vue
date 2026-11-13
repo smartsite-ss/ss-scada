@@ -88,7 +88,7 @@
       </template>
     </SmartTable>
 
-    <!-- 对话框 -->
+    <!-- Dialog -->
     <div
       v-if="dialogVisible"
       class="modal-overlay"
@@ -141,7 +141,7 @@
             </button>
           </div>
 
-          <!-- 基本信息 Tab -->
+          <!-- Basic info tab -->
           <div
             v-show="dialogTab === 'basic'"
             class="tab-content"
@@ -170,7 +170,7 @@
             </div>
           </div>
 
-          <!-- 权限码 Tab -->
+          <!-- Permission-code tab -->
           <div
             v-show="dialogTab === 'permissions'"
             class="tab-content"
@@ -178,7 +178,7 @@
             <RolePermissionPanel v-model="form.permissions" />
           </div>
 
-          <!-- 菜单访问 Tab（仅编辑时可用） -->
+          <!-- Menu-access tab (only available when editing) -->
           <div
             v-show="dialogTab === 'menuAccess'"
             class="tab-content"
@@ -189,7 +189,7 @@
             />
           </div>
 
-          <!-- 按钮权限 Tab（仅编辑时可用） -->
+          <!-- Button-permission tab (only available when editing) -->
           <div
             v-show="dialogTab === 'buttonAccess'"
             class="tab-content"
@@ -200,7 +200,7 @@
             />
           </div>
 
-          <!-- 数据授权 Tab（仅编辑时可用） -->
+          <!-- Data-authorization tab (only available when editing) -->
           <div
             v-show="dialogTab === 'auth'"
             class="tab-content"

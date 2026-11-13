@@ -12,7 +12,7 @@
       :points="zPolygon"
     />
 
-    <!-- 左上角 -->
+    <!-- Top-left corner -->
     <g>
       <polygon
         :fill="showAnimation ? undefined : colors[0]"
@@ -46,7 +46,7 @@
       </polygon>
     </g>
 
-    <!-- 右上角 -->
+    <!-- Top-right corner -->
     <g :transform="`translate(${w}, 0) scale(-1, 1)`">
       <polygon
         :fill="showAnimation ? undefined : colors[0]"
@@ -80,7 +80,7 @@
       </polygon>
     </g>
 
-    <!-- 左下角 -->
+    <!-- Bottom-left corner -->
     <g :transform="`translate(0, ${h}) scale(1, -1)`">
       <polygon
         :fill="showAnimation ? undefined : colors[0]"
@@ -114,7 +114,7 @@
       </polygon>
     </g>
 
-    <!-- 右下角 -->
+    <!-- Bottom-right corner -->
     <g :transform="`translate(${w}, ${h}) scale(-1, -1)`">
       <polygon
         :fill="showAnimation ? undefined : colors[0]"

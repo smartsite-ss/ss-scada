@@ -1,8 +1,8 @@
 <template>
   <div class="realtime-trend-page">
-    <!-- 工具栏：按操作流分组 -->
+    <!-- Toolbar: grouped by operation flow -->
     <div class="query-bar">
-      <!-- ── 数据源 ── -->
+      <!-- ── Data source ── -->
       <div class="query-field">
         <label>{{ $t('system.realTimeTrend.project') }}</label>
         <select
@@ -109,7 +109,7 @@
 
       <div class="query-separator" />
 
-      <!-- ── 查询控制 ── -->
+      <!-- ── Query control ── -->
       <div class="query-field">
         <label>{{ $t('system.realTimeTrend.timeRange') }}</label>
         <TimeRangePicker
@@ -167,7 +167,7 @@
 
       <div class="query-separator" />
 
-      <!-- ── 方案管理 ── -->
+      <!-- ── Plan management ── -->
       <div class="query-field">
         <label>{{ $t('system.realTimeTrend.schemes') }}</label>
         <select
@@ -214,7 +214,7 @@
       </div>
     </div>
 
-    <!-- 保存方案弹框 -->
+    <!-- Save-plan dialog -->
     <div
       v-if="showSaveDialog"
       class="modal-overlay"
@@ -257,7 +257,7 @@
       </div>
     </div>
 
-    <!-- 图例 -->
+    <!-- Legend -->
     <div
       v-if="chartSeries.length"
       class="legend-bar"
@@ -278,7 +278,7 @@
       <span class="record-count">{{ $t('system.realTimeTrend.recordCount', { n: totalRecordCount }) }}</span>
     </div>
 
-    <!-- 图表 -->
+    <!-- Chart -->
     <div class="chart-wrapper">
       <div
         class="chart-container"
@@ -356,21 +356,21 @@ import { useProjectStore } from '../../stores';
 import type { TrendQueryScheme } from '../../api/modules/trend-query-scheme.api';
 import { SsLoading, TimeRangePicker } from '@scada-editor/shared';
 import { showError, showConfirm, showSuccess } from '../../utils/messageBox';
-// 跨端接口契约共享解包器（单一来源，详见 @scada-editor/contract）
+// Cross-end interface-contract shared unpacker (single source, see @scada-editor/contract)
 import { extractListData } from '@scada-editor/contract';
 
 const { t } = useI18n();
 const projectStore = useProjectStore();
 
-// 项目
+// Project
 const selectedProjectId = ref('');
 
-// 设备
+// Device
 interface DeviceInfo { id: string; deviceName: string; }
 const devices = ref<DeviceInfo[]>([]);
 const selectedDeviceId = ref('');
 
-// 标签
+// Tag
 const tagSearch = ref('');
 const showTagPicker = ref(false);
 const selectedTagIds = ref<string[]>([]);
@@ -389,7 +389,7 @@ const allTagsSelected = computed(() =>
   allTags.value.length > 0 && selectedTagIds.value.length === allTags.value.length,
 );
 
-// 时间范围
+// Time range
 const timeRangeMinutes = ref(60);
 
 const timeWindowOptions = computed(() => [
@@ -403,13 +403,13 @@ const timeWindowOptions = computed(() => [
 const refreshIntervalSec = ref(5);
 const autoRefresh = ref(true);
 
-// 查询
+// Query
 const queryLoading = ref(false);
 const chartSeries = ref<Array<{ tagId: string; tagName: string; data: Array<{ timestamp: number; value: number }> }>>([]);
 const visibleSeries = ref<Set<string>>(new Set());
 const totalRecordCount = ref(0);
 
-// 方案保存
+// Plan save
 const showSaveDialog = ref(false);
 const schemeName = ref('');
 const schemes = ref<TrendQueryScheme[]>([]);
@@ -417,13 +417,13 @@ const selectedSchemeId = ref('');
 
 const canQuery = computed(() => selectedProjectId.value && selectedDeviceId.value && selectedTagIds.value.length > 0);
 
-// 自动刷新定时器
+// Auto-refresh timer
 let refreshTimer: ReturnType<typeof setInterval> | null = null;
 
-// 滑动窗口：记录上次查询截至时间，用于增量拉取
+// Sliding window: record the last query end time for incremental fetch
 const lastQueryTime = ref<number>(0);
 
-// CSV 颜色色板
+// CSV color palette
 function getSeriesColor(index: number): string {
   const el = chartCanvas.value || document.documentElement;
   const style = getComputedStyle(el);
@@ -437,20 +437,20 @@ const sliderCanvas = ref<HTMLCanvasElement | null>(null);
 let resizeObserver: ResizeObserver | null = null;
 let sliderResizeObserver: ResizeObserver | null = null;
 
-// dataZoom 缩放状态
+// dataZoom zoom state
 const zoomRange = ref<{ start: number; end: number } | null>(null);
 
-// 主图表拖拽平移
+// Main chart drag pan
 const isPanning = ref(false);
 const panStartX = ref(0);
 const panStartRange = ref<{ start: number; end: number } | null>(null);
 
-// 滑块拖拽
+// Slider drag
 const sliderDragging = ref<'none' | 'window' | 'left' | 'right'>('none');
 const sliderDragStartX = ref(0);
 const sliderDragStartRange = ref<{ start: number; end: number } | null>(null);
 
-// 鼠标交互
+// Mouse interaction
 const mouseX = ref<number | null>(null);
 const mouseY = ref<number | null>(null);
 const pinnedTimestamp = ref<number | null>(null);
@@ -478,7 +478,7 @@ onUnmounted(() => {
   document.removeEventListener('mouseup', handleGlobalMouseUp);
 });
 
-// 监听自动刷新开关
+// Watch the auto-refresh toggle
 watch(autoRefresh, (on) => {
   if (on && canQuery.value) {
     startAutoRefresh();
@@ -487,7 +487,7 @@ watch(autoRefresh, (on) => {
   }
 });
 
-// 监听刷新间隔变化
+// Watch refresh-interval change
 watch(refreshIntervalSec, () => {
   if (autoRefresh.value) {
     stopAutoRefresh();
@@ -552,15 +552,15 @@ async function onDeviceChange() {
 async function loadTagsForDevice() {
   if (!selectedProjectId.value || !selectedDeviceId.value) return;
   try {
-    // 改用唯一权威入口 GET /devices/:deviceId/tags（替代误读 deviceApi.getById().tags，
-    // 后端 findOne 未关联 tags，旧实现取到 undefined）。详见架构设计 07-接口设计规范 §3.3。
+    // Switch to the single authoritative entry GET /devices/:deviceId/tags (replacing the misread deviceApi.getById().tags,
+    // the backend findOne does not join tags, so the old implementation got undefined). See architecture design 07-interface spec §3.3.
     const res: any = await deviceApi.listTagsByDevice(
       selectedProjectId.value,
       selectedDeviceId.value,
       { page: 1, pageSize: 100 },
     );
-    // 后端 TransformInterceptor 包装：{code, data:{data:[...], pagination}, message, timestamp}
-    // 统一走跨端共享解包器（详见 @smart-site/contract），消除历史扁平结构兼容分支。
+    // Backend TransformInterceptor wrapper: {code, data:{data:[...], pagination}, message, timestamp}
+    // Unified through the cross-end shared unpacker (see @smart-site/contract), removing the legacy flat-structure compatibility branches.
     const tagsArray = extractListData<TagInfo>(res?.data ?? res);
     const tags: TagInfo[] = tagsArray.map((tag: any) => ({
       id: tag.id,
@@ -590,7 +590,7 @@ async function queryTrendData(isAutoRefresh = false) {
   if (!canQuery.value) return;
   if (!isAutoRefresh) {
     queryLoading.value = true;
-    lastQueryTime.value = 0; // 手动查询重置，触发全量拉取
+    lastQueryTime.value = 0; // Manual query reset, triggering a full fetch
   }
   try {
     const now = Date.now();
@@ -598,7 +598,7 @@ async function queryTrendData(isAutoRefresh = false) {
     let startTime: Date;
     const endTime = new Date(now);
 
-    // 自动刷新且已有数据：增量拉取（从上次结束到当前）
+    // Auto-refresh with existing data: incremental fetch (from last end to now)
     const isIncremental = isAutoRefresh && lastQueryTime.value > 0 && chartSeries.value.length > 0;
     if (isIncremental) {
       startTime = new Date(lastQueryTime.value);
@@ -624,8 +624,8 @@ async function queryTrendData(isAutoRefresh = false) {
       }));
 
     if (isIncremental) {
-      // ── 增量模式：滑动窗口（进一个数据，出一个数据）──
-      // 步骤 1：将新数据追加到对应序列
+      // ── Incremental mode: sliding window (one in, one out) ──
+      // Step 1: append the new data to the corresponding series
       for (const page of pages) {
         const existing = chartSeries.value.find((s) => s.tagId === page.tagId);
         const newPoints = parsePoints(page);
@@ -633,24 +633,24 @@ async function queryTrendData(isAutoRefresh = false) {
           existing.data.push(...newPoints);
         }
       }
-      // 步骤 2：对所有序列统一执行滑动窗口裁剪 + 去重 + 排序
-      // 即使某序列本次无新数据，也要淘汰窗口外的旧数据，保证窗口持续滑动
+      // Step 2: uniformly apply sliding-window trimming + dedupe + sorting to all series
+      // Even if a series has no new data this round, evict out-of-window old data to keep the window sliding
       for (const s of chartSeries.value) {
-        // 淘汰窗口外的旧数据（左侧出）
+        // Evict out-of-window old data (out from the left)
         s.data = s.data.filter((d) => d.timestamp >= windowStart);
-        // 去重（按时间戳）
+        // Deduplicate (by timestamp)
         const seen = new Set<number>();
         s.data = s.data.filter((d) => {
           if (seen.has(d.timestamp)) return false;
           seen.add(d.timestamp);
           return true;
         });
-        // 按时间戳升序排序
+        // Sort by timestamp ascending
         s.data.sort((a, b) => a.timestamp - b.timestamp);
       }
       totalRecordCount.value = chartSeries.value.reduce((sum, s) => sum + s.data.length, 0);
     } else {
-      // ── 全量模式 ──
+      // ── Full mode ──
       const seriesMap = new Map<string, typeof chartSeries.value[0]>();
       for (const page of pages) {
         const tag = allTags.value.find((t) => t.id === page.tagId);
@@ -660,14 +660,14 @@ async function queryTrendData(isAutoRefresh = false) {
           data: parsePoints(page),
         });
       }
-      // 保留已有选中的标签顺序
+      // Keep the order of already-selected tags
       const ordered: typeof chartSeries.value = [];
       for (const tid of selectedTagIds.value) {
         const s = seriesMap.get(tid);
         if (s && s.data.length > 0) ordered.push(s);
         seriesMap.delete(tid);
       }
-      // 未在选中列表中的也追加
+      // Also append those not yet in the selected list
       for (const s of seriesMap.values()) {
         if (s.data.length > 0) ordered.push(s);
       }
@@ -689,7 +689,7 @@ async function queryTrendData(isAutoRefresh = false) {
   } finally { if (!isAutoRefresh) queryLoading.value = false; }
 }
 
-// ────────── 方案保存/加载 ──────────
+// ────────── Plan save/load ──────────
 
 async function loadSchemes() {
   if (!selectedProjectId.value) return;
@@ -765,7 +765,7 @@ function toggleSeries(tagId: string) {
   drawSlider();
 }
 
-// ========== 图表绘制 ==========
+// ========== Chart drawing ==========
 
 function drawChart() {
   const canvas = chartCanvas.value;
@@ -816,7 +816,7 @@ function drawChart() {
   const toX = (t: number) => margin.left + ((t - xMin) / xRange) * pw;
   const toY = (v: number) => margin.top + ph - ((v - yDrawMin) / yDrawRange) * ph;
 
-  // 网格线
+  // Grid line
   ctx.strokeStyle = 'var(--border, rgba(255,255,255,0.08))';
   ctx.lineWidth = 0.5;
   const gridLines = 5;
@@ -836,7 +836,7 @@ function drawChart() {
     ctx.fillText(label, margin.left - 8, y);
   }
 
-  // 曲线
+  // Curve
   for (let si = 0; si < visibleData.length; si++) {
     const s = visibleData[si];
     const points = s.data;
@@ -1027,11 +1027,11 @@ function drawSlider() {
   const range = tMax - tMin || 1;
   const toSX = (t: number) => ((t - tMin) / range) * w;
 
-  // 背景
+  // Background
   ctx.fillStyle = 'var(--surface, #1e293b)';
   ctx.fillRect(0, 0, w, h);
 
-  // 迷你曲线
+  // Mini curve
   const miniH = h * 0.5;
   const miniY = h * 0.25;
   for (let si = 0; si < visibleData.length; si++) {

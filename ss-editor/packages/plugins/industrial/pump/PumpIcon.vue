@@ -6,7 +6,7 @@
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >
-    <!-- 入口管道（左侧） -->
+    <!-- Inlet pipe (left) -->
     <rect
       x="1"
       y="10"
@@ -17,7 +17,7 @@
       opacity="0.85"
     />
     
-    <!-- 入口法兰 -->
+    <!-- Inlet flange -->
     <rect
       x="5.5"
       y="9.7"
@@ -27,7 +27,7 @@
       :fill="darkenColor"
     />
     
-    <!-- 泵体（方形圆角工业外壳） -->
+    <!-- Pump body (square-rounded industrial shell) -->
     <rect
       x="6.5"
       y="6"
@@ -36,7 +36,7 @@
       rx="2"
       :fill="color"
     />
-    <!-- 泵体高光 -->
+    <!-- Pump body highlight -->
     <rect
       x="7"
       y="6.5"
@@ -46,7 +46,7 @@
       :fill="highlightColor"
       fill-opacity="0.25"
     />
-    <!-- 叶轮舱凹槽 -->
+    <!-- Impeller housing groove -->
     <rect
       x="8.5"
       y="8"
@@ -57,7 +57,7 @@
       opacity="0.5"
     />
 
-    <!-- 出口法兰 -->
+    <!-- Outlet flange -->
     <rect
       x="17.3"
       y="9.6"
@@ -67,7 +67,7 @@
       :fill="darkenColor"
     />
 
-    <!-- 出口管道（右侧） -->
+    <!-- Outlet pipe (right) -->
     <rect
       x="18.5"
       y="10"
@@ -78,9 +78,9 @@
       opacity="0.85"
     />
 
-    <!-- 叶轮（8叶片 + 中心轴） -->
+    <!-- Impeller (8 blades + center shaft) -->
     <g :transform="`rotate(${rotation}, 12, 12)`">
-      <!-- 叶轮背板 -->
+      <!-- Impeller backplate -->
       <circle
         cx="12"
         cy="12"
@@ -88,7 +88,7 @@
         :fill="innerColor"
         opacity="0.6"
       />
-      <!-- 8片叶片 (简化表示) -->
+      <!-- 8 blades (simplified representation) -->
       <g :fill="innerColor">
         <rect
           x="11.7"
@@ -118,7 +118,7 @@
           height="0.6"
           rx="0.2"
         />
-        <!-- 斜向叶片 -->
+        <!-- Diagonal blade -->
         <rect
           x="9.2"
           y="9.2"
@@ -152,7 +152,7 @@
           transform="rotate(45 12 12)"
         />
       </g>
-      <!-- 中心轮毂 -->
+      <!-- Center hub -->
       <circle
         cx="12"
         cy="12"
@@ -167,7 +167,7 @@
       />
     </g>
 
-    <!-- 四角螺栓点 -->
+    <!-- Four-corner bolt dots -->
     <circle
       cx="8.2"
       cy="7.8"
@@ -201,7 +201,7 @@
       stroke-width="0.3"
     />
 
-    <!-- 底座 -->
+    <!-- Base -->
     <rect
       x="6"
       y="18.5"
@@ -229,7 +229,7 @@
       opacity="0.8"
     />
 
-    <!-- 标签区 -->
+    <!-- Tag area -->
     <rect
       x="9"
       y="19"
@@ -249,7 +249,7 @@
       fill="#567"
     >P-001</text>
 
-    <!-- 状态指示灯 -->
+    <!-- Status indicator light -->
     <circle
       cx="5.5"
       cy="9"

@@ -13,12 +13,12 @@
       </radialGradient>
     </defs>
 
-    <!-- 光晕 -->
+    <!-- Glow -->
     <g v-if="effectiveStatus !== 'off'" :style="blinkStyle">
       <circle :cx="cx" :cy="cy" :r="glowRadius" :fill="`url(#${glowGradientId})`" />
     </g>
 
-    <!-- 外壳 -->
+    <!-- Shell -->
     <circle
       :cx="cx"
       :cy="cy"
@@ -28,10 +28,10 @@
       stroke-width="1"
     />
 
-    <!-- 灯珠 -->
+    <!-- Lamp bead -->
     <g :style="blinkStyle">
       <circle :cx="cx" :cy="cy" :r="radius" :fill="lightColor" />
-      <!-- 高光 -->
+      <!-- Highlight -->
       <circle
         :cx="cx - radius * 0.25"
         :cy="cy - radius * 0.25"
@@ -40,7 +40,7 @@
       />
     </g>
 
-    <!-- 标签 -->
+    <!-- Tag -->
     <text
       v-if="showLabel"
       :x="cx"
@@ -88,7 +88,7 @@ const { currentValue, bindTitle } = useTagValue(props);
 
 const glowGradientId = `indicator-glow-gradient-${Math.random().toString(36).slice(2, 8)}`;
 
-/** 解析实时值 → 状态：未绑定时用手动 status；绑定时按「值→状态」映射，未命中用 defaultStatus */
+/** Parse live value → status: manual status when unbound; when bound, use the value→status mapping, falling back to defaultStatus on miss */
 const effectiveStatus = computed(() => {
   if (!props.tagId) return props.status;
   const raw = currentValue.value;

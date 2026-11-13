@@ -5,7 +5,7 @@
     @click.self="handleClose"
   >
     <div class="alarm-data-container">
-      <!-- 头部 -->
+      <!-- Header -->
       <div class="dialog-header">
         <div class="header-left">
           <span class="alarm-icon">
@@ -57,7 +57,7 @@
         </div>
       </div>
 
-      <!-- 告警信息条 -->
+      <!-- Alarm info bar -->
       <div class="alarm-info-bar">
         <div class="info-chip">
           <span class="chip-label">{{ $t('system.alarmData.device') }}</span>
@@ -107,7 +107,7 @@
         </template>
       </div>
 
-      <!-- 时间窗口 + 按钮 -->
+      <!-- Time window + button -->
       <div class="time-window-control">
         <div class="window-config">
           <label>{{ $t('system.alarmData.before') }}</label>
@@ -211,7 +211,7 @@
         </div>
       </div>
 
-      <!-- 内容区 -->
+      <!-- Content area -->
       <div class="dialog-body">
         <template v-if="queryLoading">
           <div class="loading-state">
@@ -224,7 +224,7 @@
           </div>
         </template>
         <template v-else>
-          <!-- 趋势视图 -->
+          <!-- Trend view -->
           <div
             v-if="viewMode === 'trend'"
             class="trend-view"
@@ -266,7 +266,7 @@
               </div>
             </div>
           </div>
-          <!-- 表格视图 -->
+          <!-- Table view -->
           <div
             v-else
             class="table-view"
@@ -357,7 +357,7 @@ const windowOptions = [5, 10, 20, 30, 60, 120, 240, 360, 720, 1440, 2880, 4320];
 const beforeMinutes = ref(5);
 const afterMinutes = ref(5);
 
-/** 将分钟数格式化为友好显示：5min / 30min / 1h / 2h / 1.5h */
+/** Format minutes into friendly display: 5min / 30min / 1h / 2h / 1.5h */
 function formatWindow(minutes: number): string {
   if (minutes < 60) return `${minutes}min`;
   const h = minutes / 60;
@@ -374,7 +374,7 @@ const zoomRange = ref<{ start: number; end: number } | null>(null);
 const thresholdUpper = computed(() => getThresholdUpper());
 const thresholdLower = computed(() => getThresholdLower());
 
-// 调试：打印阈值解析结果
+// Debug: print threshold-parse result
 if (import.meta.env.DEV) {
   watch([() => props.condition, () => props.conditionValue, () => props.message], ([c, cv, _msg]) => {
     const fromMsg = c ? null : parseThresholdFromMessage();
@@ -407,7 +407,7 @@ function levelLabel(l: string): string {
   return labels[l] || l;
 }
 
-// 阈值解析
+// Threshold parsing
 function parseConditionValues(): number[] {
   if (!props.condition || !props.conditionValue) return [];
   try {
@@ -419,11 +419,11 @@ function parseConditionValues(): number[] {
 }
 
 /**
- * 从告警消息中解析阈值（rule 不存在时的 fallback）
- * 消息格式示例：
+ * Parse the threshold from an alarm message (fallback when rule is absent)
+ * Message format examples:
  *   "[警告] Controller_Status 超过上限 55，当前值: 56.07"  →  55
  *   "[警告] Controller_Status 低于下限 30，当前值: 28.5"   →  30
- *   仅支持 "超过上限 N" / "低于下限 N" / "超过 N" / "低于 N" 四种模式
+ *   Only "超过上限 N" / "低于下限 N" / "超过 N" / "低于 N" four patterns are supported
  */
 function parseThresholdFromMessage(): { upper: number | null; lower: number | null } {
   const msg = props.message || '';
@@ -442,13 +442,13 @@ function parseThresholdFromMessage(): { upper: number | null; lower: number | nu
 function getThresholdUpper(): number | null {
   const vals = parseConditionValues();
   const cond = props.condition;
-  // gt/gte: 值超过阈值时告警 → 此阈值即上限线
+  // gt/gte: alarm when value exceeds threshold → this threshold is the upper limit line
   if (cond === 'gt' || cond === 'gte') return vals[0] ?? null;
-  // eq/neq: 参照线
+  // eq/neq: reference line
   if (cond === 'eq' || cond === 'neq') return vals[0] ?? null;
-  // range_in/range_out: 区间上界
+  // range_in/range_out: interval upper bound
   if (cond === 'range_in' || cond === 'range_out') return vals.length >= 2 ? Math.max(...vals) : null;
-  // 无 rule 时从消息解析
+  // Parse from the message when there is no rule
   if (!cond) {
     const msg = parseThresholdFromMessage();
     return msg.upper;
@@ -458,13 +458,13 @@ function getThresholdUpper(): number | null {
 function getThresholdLower(): number | null {
   const vals = parseConditionValues();
   const cond = props.condition;
-  // lt/lte: 值低于阈值时告警 → 此阈值即下限线
+  // lt/lte: alarm when value drops below threshold → this threshold is the lower limit line
   if (cond === 'lt' || cond === 'lte') return vals[0] ?? null;
-  // eq/neq: 参照线
+  // eq/neq: reference line
   if (cond === 'eq' || cond === 'neq') return vals[0] ?? null;
-  // range_in/range_out: 区间下界
+  // range_in/range_out: interval lower bound
   if (cond === 'range_in' || cond === 'range_out') return vals.length >= 2 ? Math.min(...vals) : null;
-  // 无 rule 时从消息解析
+  // Parse from the message when there is no rule
   if (!cond) {
     const msg = parseThresholdFromMessage();
     return msg.lower;
@@ -479,9 +479,9 @@ async function queryAlarmData() {
     const alarmMs = alarmTimeMs();
     const startMs = alarmMs - beforeMinutes.value * 60_000;
     const endMs = Math.min(alarmMs + afterMinutes.value * 60_000, Date.now());
-    // POST /data/trend/query — TransformInterceptor 通过 pagination 模式已扁平化响应：
+    // POST /data/trend/query — TransformInterceptor already flattens the response via pagination mode:
     //   { code, data: [...pages], pagination: { total }, message }
-    // dataQueryApi.queryTrend() 剥离 code 层 → { data: [...pages], pagination: { total } }
+    // dataQueryApi.queryTrend() strips the code layer → { data: [...pages], pagination: { total } }
     const res = await dataQueryApi.queryTrend({
       tagIds: [props.tagId],
       startTime: new Date(startMs).toISOString(),
@@ -502,7 +502,7 @@ async function queryAlarmData() {
     } else { historyData.value = []; hasData.value = false; }
     zoomRange.value = null;
     await nextTick();
-    // rAF 确保浏览器完成 layout 后再读取 canvas 尺寸
+    // rAF ensures the browser finishes layout before reading the canvas size
     requestAnimationFrame(() => drawChart());
   } catch { historyData.value = []; hasData.value = false; }
   finally { queryLoading.value = false; }
@@ -513,7 +513,7 @@ function readThemeVar(el: Element | null, name: string): string {
 }
 function resetZoom() { zoomRange.value = null; nextTick(drawChart); }
 
-/** 从历史数据中查找最接近指定时间戳的数据点 */
+/** Find the data point closest to the given timestamp from history */
 function findNearestDataPoint(ts: number): { value: number; timestamp: string } | null {
   const data = historyData.value.filter((d) => d.value !== null && d.value !== undefined);
   if (!data.length) return null;
@@ -533,7 +533,7 @@ function drawChart() {
   if (!parent) return;
   const rect = parent.getBoundingClientRect();
   const dpr = window.devicePixelRatio || 1;
-  // 确保最小尺寸：父容器可能尚未完成 flex layout，rect 为 0 时用 CSS 规定高度兜底
+  // Ensure a minimum size: the parent may not have finished flex layout; fall back to the CSS-defined height when rect is 0
   const w = Math.max(rect.width || 800, 400) * dpr;
   const h = Math.max(rect.height || 400, 200) * dpr;
   canvas.width = w;
@@ -575,7 +575,7 @@ function drawChart() {
   const warnClr = readThemeVar(canvas, '--status-warning') || '#f59e0b';
   const surfClr = readThemeVar(canvas, '--surface');
 
-  // 网格
+  // Grid
   ctx.strokeStyle = borderColor; ctx.lineWidth = 0.5 * dpr;
   for (let i = 0; i <= 5; i++) {
     const y = m.top + (ph / 5) * i;
@@ -585,7 +585,7 @@ function drawChart() {
     ctx.fillText(Number.isInteger(val) ? String(val) : val.toFixed(1), m.left - 6, y);
   }
 
-  // 阈值线
+  // Threshold line
   const drawTh = (val: number, color: string, label: string) => {
     const y = toY(val);
     ctx.save(); ctx.strokeStyle = color; ctx.lineWidth = 1 * dpr; ctx.setLineDash([6 * dpr, 4 * dpr]);
@@ -597,7 +597,7 @@ function drawChart() {
   if (thresholdLower.value !== null) drawTh(thresholdLower.value, warnClr, `L:${formatNum(thresholdLower.value)}`);
   if (thresholdUpper.value !== null) drawTh(thresholdUpper.value, errClr, `H:${formatNum(thresholdUpper.value)}`);
 
-  // 曲线
+  // Curve
   ctx.strokeStyle = primaryClr; ctx.lineWidth = 1.5 * dpr; ctx.beginPath();
   for (let i = 0; i < data.length; i++) {
     const x = toX(new Date(data[i].timestamp).getTime());
@@ -606,30 +606,30 @@ function drawChart() {
   }
   ctx.stroke();
 
-  // 事件标注（告警开始 / 人工确认 / 恢复）
+  // Event annotation (alarm start / manual confirmation / recovery)
   const ackClr = readThemeVar(canvas, '--status-info') || '#3b82f6';
   const recClr = readThemeVar(canvas, '--status-success') || '#22c55e';
 
   /**
-   * 在趋势图上标注事件点：垂直虚线 + 圆点 + 顶部标签
-   * @param ts 事件时间戳(ms)
-   * @param val 事件值(null 时从历史数据查找最近点)
-   * @param color 标注颜色
-   * @param label 顶部标签
+   * Mark event points on the trend chart: vertical dashed line + dot + top label
+   * @param ts event timestamp (ms)
+   * @param val event value (when null, find the nearest point from history)
+   * @param color annotation color
+   * @param label top label
    */
   const drawEventMarker = (ts: number, val: number | null, color: string, label: string) => {
     if (isNaN(ts)) return;
     const x = toX(ts);
     if (x < m.left || x > w - m.right) return;
-    // 值缺失时从历史数据查找最近点
+    // When the value is missing, find the nearest point from history
     if (val === null) {
       const nearest = findNearestDataPoint(ts);
       if (nearest) val = nearest.value;
     }
-    // 垂直虚线
+    // Vertical dashed line
     ctx.save(); ctx.strokeStyle = color; ctx.lineWidth = 1 * dpr; ctx.setLineDash([4 * dpr, 4 * dpr]);
     ctx.beginPath(); ctx.moveTo(x, m.top); ctx.lineTo(x, m.top + ph); ctx.stroke(); ctx.setLineDash([]); ctx.restore();
-    // 圆点 + 光环（有值时才画）
+    // Dot + halo (drawn only when there is a value)
     if (val !== null && !isNaN(val)) {
       const y = toY(val);
       ctx.beginPath(); ctx.arc(x, y, 6 * dpr, 0, Math.PI * 2); ctx.fillStyle = color; ctx.fill();
@@ -637,7 +637,7 @@ function drawChart() {
       ctx.beginPath(); ctx.arc(x, y, 10 * dpr, 0, Math.PI * 2);
       ctx.strokeStyle = color; ctx.lineWidth = 1 * dpr; ctx.globalAlpha = 0.4; ctx.stroke(); ctx.globalAlpha = 1;
     }
-    // 顶部标签
+    // Top tab
     ctx.save();
     ctx.fillStyle = color; ctx.font = `bold ${10 * dpr}px sans-serif`;
     ctx.textAlign = 'center'; ctx.textBaseline = 'top';
@@ -645,18 +645,18 @@ function drawChart() {
     ctx.restore();
   };
 
-  // 1) 告警开始（红色）
+  // 1) Alarm start (red)
   const alarmMs = alarmTimeMs();
   const tvNum = typeof props.triggerValue === 'string' ? parseFloat(props.triggerValue) : Number(props.triggerValue);
   drawEventMarker(alarmMs, isNaN(tvNum) ? null : tvNum, errClr, t('system.alarmData.triggered'));
 
-  // 2) 人工确认（蓝色，值从历史数据最近点获取）
+  // 2) Manual confirmation (blue; value taken from the nearest point in history)
   if (props.acknowledgedAt) {
     const ackMs = new Date(props.acknowledgedAt).getTime();
     drawEventMarker(ackMs, null, ackClr, t('system.alarmData.ackPoint'));
   }
 
-  // 3) 恢复（绿色，优先用 recoveredValue，缺失时从历史数据查找）
+  // 3) Recovery (green; prefer recoveredValue, fall back to searching history when missing)
   if (props.recoveredAt) {
     const recMs = new Date(props.recoveredAt).getTime();
     const recVal = props.recoveredValue != null && props.recoveredValue !== ''
@@ -665,7 +665,7 @@ function drawChart() {
     drawEventMarker(recMs, isNaN(recMs) ? null : recVal, recClr, t('system.alarmData.recoveryPoint'));
   }
 
-  // X 轴
+  // X axis
   ctx.fillStyle = textSec; ctx.font = `${10 * dpr}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
   for (let i = 0; i <= 4; i++) {
     const ts = xMin + (xRange / 4) * i;

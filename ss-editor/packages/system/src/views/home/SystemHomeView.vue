@@ -529,7 +529,7 @@ const alarmStats = ref({
 
 const recentAlarms = ref<AlarmRecord[]>([]);
 
-// 缓存：避免短时间内重复请求
+// Cache: avoid duplicate requests in a short time
 const CACHE_TTL_MS = 30_000;
 let lastLoadTime: number | null = null;
 
@@ -593,7 +593,7 @@ const alarmPercent = computed(() => {
 });
 
 async function loadOverviewData(force = false) {
-  // 30s 短期缓存：keep-alive 切回时避免重复请求
+  // 30s short-term cache: avoids duplicate requests when returning via keep-alive
   const now = Date.now();
   if (!force && lastLoadTime && now - lastLoadTime < CACHE_TTL_MS) {
     return;
@@ -601,7 +601,7 @@ async function loadOverviewData(force = false) {
 
   loading.value = true;
   try {
-    // 一次请求获取所有聚合统计（设备 + 报警 + 项目）
+    // Fetch all aggregated stats (devices + alarms + projects) in one request
     const result = await projectApi.getOverview();
     overview.value = result;
     deviceStats.value = result.deviceStats;
@@ -610,7 +610,7 @@ async function loadOverviewData(force = false) {
       active: result.alarmStats.active,
     };
 
-    // 最近告警：按项目获取并合并
+    // Recent alarms: fetch by project and merge
     await projectStore.fetchProjects(1, 100);
     const allProjects: Array<{ projectId: string; projectName: string }> = [...projectStore.projects];
     if (allProjects.length > 0) {
@@ -626,7 +626,7 @@ async function loadOverviewData(force = false) {
 
     lastLoadTime = Date.now();
   } catch {
-    // 静默失败
+    // Fail silently
   } finally {
     loading.value = false;
   }
@@ -636,7 +636,7 @@ onMounted(() => {
   loadOverviewData();
 });
 
-// keep-alive 缓存：切回时使用缓存（30s 内不重复请求）
+// keep-alive cache: use cache when switching back (no duplicate request within 30s)
 let wasActive = false;
 
 onDeactivated(() => {
@@ -646,7 +646,7 @@ onDeactivated(() => {
 onActivated(() => {
   if (wasActive) {
     wasActive = false;
-    loadOverviewData(); // 内部有 30s 缓存判断
+    loadOverviewData(); // Internally has a 30s cache check
   }
 });
 </script>
@@ -1043,7 +1043,7 @@ onActivated(() => {
   color: var(--text-secondary);
 }
 
-/* 响应式：小屏幕时减少列数 */
+/* Responsive: reduce columns on small screens */
 @media (max-width: 1400px) {
   .stats-grid {
     grid-template-columns: repeat(3, 1fr);

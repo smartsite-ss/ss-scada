@@ -11,7 +11,7 @@ export default defineConfig({
       '@': resolve(__dirname, 'src'),
       // Stub for @vite/env virtual module (needed by vue HMR in vitest)
       '@vite/env': resolve(__dirname, 'src/__mocks__/vite-env-stub.ts'),
-      // 指向源码入口，避免因 dist 未构建导致模块解析失败
+      // Point to the source entry to avoid module resolution failures when dist is not built
       '@scada-editor/system': resolve(__dirname, '../../packages/system/src/index.ts'),
     },
   },

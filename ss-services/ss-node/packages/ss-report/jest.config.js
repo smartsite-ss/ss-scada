@@ -17,10 +17,10 @@ module.exports = {
   moduleNameMapper: {
     '^@ss-node/ss-sdk$': '<rootDir>/packages/ss-sdk/src',
     '^@ss-node/ss-core$': '<rootDir>/packages/ss-core/src',
-    // ss-storage-influx 嵌套在 packages/ss-storage/ 下
+    // ss-storage-influx is nested under packages/ss-storage/
     '^@ss-node/ss-storage-influx$': '<rootDir>/packages/ss-storage/ss-storage-influx/src',
     '^@ss-node/ss-storage-influx/(.+)$': '<rootDir>/packages/ss-storage/ss-storage-influx/src/$1',
-    // ss-collector-* 嵌套在 packages/ss-collector/ 下
+    // ss-collector-* packages are nested under packages/ss-collector/
     '^@ss-node/(ss-collector-sdk|ss-collector-modbus|ss-collector-mqtt|ss-collector-opcua|ss-collector-s7|ss-collector-virtual)$':
       '<rootDir>/packages/ss-collector/$1/src',
     '^@ss-node/(ss-collector-sdk|ss-collector-modbus|ss-collector-mqtt|ss-collector-opcua|ss-collector-s7|ss-collector-virtual)/(.+)$':

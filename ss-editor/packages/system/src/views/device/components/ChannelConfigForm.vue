@@ -13,7 +13,7 @@
           >*</span>
         </label>
         <div class="kv-input-wrapper">
-          <!-- 字符串类型 -->
+          <!-- String type -->
           <input
             v-if="field.type === 'string'"
             :value="modelValue[key] ?? field.default ?? ''"
@@ -22,7 +22,7 @@
             :placeholder="field.title || key"
             @input="updateValue(key, $event)"
           >
-          <!-- 数值类型 -->
+          <!-- Numeric type -->
           <input
             v-else-if="field.type === 'number'"
             :value="modelValue[key] ?? field.default ?? ''"
@@ -32,7 +32,7 @@
             class="kv-input"
             @input="updateValue(key, $event, 'number')"
           >
-          <!-- 布尔类型 -->
+          <!-- Boolean type -->
           <input
             v-else-if="field.type === 'boolean'"
             :checked="modelValue[key] ?? field.default ?? false"
@@ -40,7 +40,7 @@
             class="kv-checkbox"
             @change="updateValue(key, ($event.target as HTMLInputElement).checked)"
           >
-          <!-- 枚举类型 -->
+          <!-- Enum type -->
           <select
             v-else-if="field.enum"
             :value="modelValue[key] ?? field.default ?? ''"
@@ -55,7 +55,7 @@
               {{ v }}
             </option>
           </select>
-          <!-- 未知类型 fallback -->
+          <!-- Unknown-type fallback -->
           <input
             v-else
             :value="modelValue[key] ?? ''"

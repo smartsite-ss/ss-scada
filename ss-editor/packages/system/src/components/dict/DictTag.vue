@@ -42,13 +42,13 @@ const titleText = computed(() => {
   return display !== props.value ? `${props.value} — ${display}` : display;
 });
 
-/** 内置色盘 */
+/** Built-in color palette */
 const COLOR_PALETTE = [
   '#1890ff', '#52c41a', '#faad14', '#f5222d', '#722ed1',
   '#13c2c2', '#eb2f96', '#fa8c16', '#a0d911', '#2f54eb',
 ];
 
-/** dictId 哈希索引，稳定分配颜色 */
+/** dictId hash index for stable color assignment */
 function hashIndex(dictId: string): number {
   let hash = 0;
   for (let i = 0; i < dictId.length; i++) {
@@ -58,14 +58,14 @@ function hashIndex(dictId: string): number {
   return Math.abs(hash);
 }
 
-/** 获取 value 对应的颜色 */
+/** Get the color corresponding to a value */
 function getValueColor(): string {
-  // 1. 优先使用自定义 colorMap
+  // 1. Prefer the custom colorMap
   if (props.colorMap?.[props.value]) {
     return props.colorMap[props.value];
   }
 
-  // 2. 内置映射
+  // 2. Built-in mapping
   const presetMap: Record<string, Record<string, string>> = {
     alarmStatus: {
       active: '#f5222d',
@@ -90,7 +90,7 @@ function getValueColor(): string {
     return presetMap[props.dictId][props.value];
   }
 
-  // 3. 按 dictId 哈希分配色环颜色
+  // 3. Assign the color-ring color by dictId hash
   const dict = getDict(props.dictId);
   if (dict) {
     const idx = dict.items.findIndex((it) => it.value === props.value);
@@ -99,7 +99,7 @@ function getValueColor(): string {
     }
   }
 
-  // 4. 兜底：基于 dictId 哈希分配
+  // 4. Fallback: assign based on dictId hash
   return COLOR_PALETTE[hashIndex(props.dictId) % COLOR_PALETTE.length];
 }
 

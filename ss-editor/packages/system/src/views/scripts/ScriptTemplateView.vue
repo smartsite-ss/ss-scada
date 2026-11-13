@@ -1,6 +1,6 @@
 <template>
   <div class="script-template-view">
-    <!-- 顶部工具栏 -->
+    <!-- Top toolbar -->
     <div class="template-toolbar">
       <div class="toolbar-left">
         <h2 class="toolbar-title">
@@ -66,7 +66,7 @@
       </div>
     </div>
 
-    <!-- 模板列表 -->
+    <!-- Template list -->
     <div class="template-content">
       <SsLoading
         v-if="loading"
@@ -88,7 +88,7 @@
           class="template-grid-item"
         >
           <div class="card template-card">
-            <!-- 卡片头部 -->
+            <!-- Card header -->
             <div class="card-header">
               <div class="card-title-row">
                 <span
@@ -115,7 +115,7 @@
               </div>
             </div>
 
-            <!-- 卡片描述 -->
+            <!-- Card description -->
             <div
               class="card-desc"
               :title="tpl.description || ''"
@@ -123,7 +123,7 @@
               {{ tpl.description || $t('system.scriptTemplates.noDescription') }}
             </div>
 
-            <!-- 标签列表 -->
+            <!-- Tag list -->
             <div
               v-if="tpl.tags && tpl.tags.length"
               class="card-tag-list"
@@ -137,7 +137,7 @@
               </span>
             </div>
 
-            <!-- 卡片底部信息 -->
+            <!-- Card bottom info -->
             <div class="card-footer">
               <div class="footer-meta">
                 <span
@@ -194,7 +194,7 @@
       </div>
     </div>
 
-    <!-- 查看代码对话框 -->
+    <!-- View-code dialog -->
     <div
       v-if="showCodeDialog"
       class="modal-overlay"
@@ -225,7 +225,7 @@
       </div>
     </div>
 
-    <!-- 从模板创建脚本对话框 -->
+    <!-- Create-script-from-template dialog -->
     <div
       v-if="showInstantiateDialog"
       class="modal-overlay"
@@ -320,7 +320,7 @@
       </div>
     </div>
 
-    <!-- 创建/编辑模板对话框 -->
+    <!-- Create/edit template dialog -->
     <div
       v-if="showEditDialog"
       class="modal-overlay"
@@ -487,13 +487,13 @@ const loading = ref(false);
 const keyword = ref('');
 const selectedCategory = ref<string | null>(null);
 
-// 项目选择
+// Project selection
 const projectLoading = ref(false);
 const projectOptions = computed(() =>
   projectStore.projects.map((p) => ({ label: p.projectName, value: p.projectId })),
 );
 
-// 分类选项
+// Category option
 const categoryOptions = computed(() => [
   { label: t('system.scriptTemplates.allCategories'), value: '' },
   { label: t('system.scriptTemplates.catDataTransform'), value: 'data_transform' },
@@ -511,7 +511,7 @@ const triggerTypeOptions = computed(() => [
 ]);
 
 
-// 过滤后的模板列表
+// Filtered template list
 const filteredTemplates = computed(() => {
   let result = templates.value;
   if (selectedCategory.value) {
@@ -562,7 +562,7 @@ function triggerLabel(type: ScriptTriggerType): string {
   return map[type] || type;
 }
 
-// ==================== 数据加载 ====================
+// ==================== Data loading ====================
 
 async function fetchTemplates() {
   loading.value = true;
@@ -588,7 +588,7 @@ function goBackToScripts() {
   router.push({ name: 'scripts' });
 }
 
-// ==================== 查看代码 ====================
+// ==================== View code ====================
 
 const showCodeDialog = ref(false);
 const codeDialogTemplate = ref<ScriptTemplate | null>(null);
@@ -598,7 +598,7 @@ function openCodeDialog(tpl: ScriptTemplate) {
   showCodeDialog.value = true;
 }
 
-// ==================== 从模板创建脚本 ====================
+// ==================== Create script from template ====================
 
 const showInstantiateDialog = ref(false);
 const instantiateTemplate = ref<ScriptTemplate | null>(null);
@@ -645,7 +645,7 @@ async function handleInstantiate() {
   }
 }
 
-// ==================== 创建/编辑模板 ====================
+// ==================== Create/edit template ====================
 
 const showEditDialog = ref(false);
 const editMode = ref<'create' | 'edit'>('create');
@@ -758,7 +758,7 @@ async function handleEditSubmit() {
   }
 }
 
-// ==================== 删除模板 ====================
+// ==================== Delete template ====================
 
 function confirmDelete(tpl: ScriptTemplate) {
   if (window.confirm(t('system.scriptTemplates.confirmDelete'))) {
@@ -781,7 +781,7 @@ async function handleDelete(tpl: ScriptTemplate) {
   }
 }
 
-// ==================== 初始化 ====================
+// ==================== Initialization ====================
 
 onMounted(async () => {
   if (!projectStore.projects.length) {
@@ -841,7 +841,7 @@ onMounted(async () => {
   padding: 20px;
 }
 
-/* ==================== 按钮 ==================== */
+/* ==================== Button ==================== */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -923,7 +923,7 @@ onMounted(async () => {
   background: var(--control-button-hover);
 }
 
-/* ==================== 输入框 ==================== */
+/* ==================== Input ==================== */
 .input {
   width: 100%;
   padding: 6px 10px;
@@ -952,7 +952,7 @@ textarea.input {
   font-family: inherit;
 }
 
-/* ==================== 搜索输入 ==================== */
+/* ==================== Search input ==================== */
 .search-input-wrapper {
   position: relative;
   display: flex;
@@ -970,7 +970,7 @@ textarea.input {
   padding-left: 28px;
 }
 
-/* ==================== 下拉选择 ==================== */
+/* ==================== Dropdown select ==================== */
 .select {
   width: 100%;
   padding: 6px 10px;
@@ -999,7 +999,7 @@ textarea.input {
   cursor: not-allowed;
 }
 
-/* ==================== 卡片 ==================== */
+/* ==================== Card ==================== */
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -1095,14 +1095,14 @@ textarea.input {
   flex-wrap: wrap;
 }
 
-/* ==================== 网格布局 ==================== */
+/* ==================== Grid layout ==================== */
 .template-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 16px;
 }
 
-/* ==================== 标签 ==================== */
+/* ==================== Tags ==================== */
 .tag {
   display: inline-flex;
   align-items: center;
@@ -1159,7 +1159,7 @@ textarea.input {
   color: var(--text-secondary);
 }
 
-/* ==================== 加载与空状态 ==================== */
+/* ==================== Loading and empty state ==================== */
 .loading-state {
   display: flex;
   justify-content: center;
@@ -1187,7 +1187,7 @@ textarea.input {
   font-size: 14px;
 }
 
-/* ==================== 模态框 ==================== */
+/* ==================== Modal ==================== */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -1254,7 +1254,7 @@ textarea.input {
   flex-shrink: 0;
 }
 
-/* ==================== 代码预览 ==================== */
+/* ==================== Code preview ==================== */
 .code-preview-info {
   font-size: 13px;
   color: var(--text-secondary);
@@ -1282,7 +1282,7 @@ textarea.input {
   overflow-y: auto;
 }
 
-/* ==================== 表单 ==================== */
+/* ==================== Form ==================== */
 .instantiate-form,
 .edit-form {
   display: flex;

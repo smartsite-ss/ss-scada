@@ -65,13 +65,13 @@
       </button>
     </div>
 
-    <!-- 项目信息 Tab -->
+    <!-- Project info tab -->
     <div
       v-else-if="activeTab === 'info'"
       class="tab-content"
     >
       <div class="info-panel">
-        <!-- 项目头部 -->
+        <!-- Project header -->
         <div class="info-header">
           <div class="header-left">
             <div class="project-icon">
@@ -225,9 +225,9 @@
           </div>
         </div>
 
-        <!-- 分组卡片 -->
+        <!-- Group card -->
         <div class="info-cards">
-          <!-- 标识信息 -->
+          <!-- Identification info -->
           <div class="info-card">
             <div class="card-header">
               <svg
@@ -306,7 +306,7 @@
             </div>
           </div>
 
-          <!-- 基本信息 -->
+          <!-- Basic info -->
           <div class="info-card">
             <div class="card-header">
               <svg
@@ -385,7 +385,7 @@
             </div>
           </div>
 
-          <!-- 存储路径 -->
+          <!-- Storage path -->
           <div class="info-card">
             <div class="card-header">
               <svg
@@ -527,7 +527,7 @@
             </div>
           </div>
 
-          <!-- 时间信息 -->
+          <!-- Time info -->
           <div class="info-card">
             <div class="card-header">
               <svg
@@ -579,13 +579,13 @@
       </div>
     </div>
 
-    <!-- 导入导出 Tab -->
+    <!-- Import/export tab -->
     <div
       v-else-if="activeTab === 'importExport'"
       class="tab-content"
     >
       <div class="import-export-panel">
-        <!-- 导出区域 -->
+        <!-- Export area -->
         <div class="section-card">
           <h3 class="section-title">
             {{ $t('system.projectManage.exportData') }}
@@ -636,7 +636,7 @@
           </div>
         </div>
 
-        <!-- 导入区域 -->
+        <!-- Import area -->
         <div class="section-card">
           <h3 class="section-title">
             {{ $t('system.projectManage.importData') }}
@@ -693,7 +693,7 @@
       </div>
     </div>
 
-    <!-- 资源诊断 Tab -->
+    <!-- Resource diagnostics tab -->
     <div
       v-else-if="activeTab === 'diagnose'"
       class="tab-content"
@@ -714,7 +714,7 @@
         </div>
 
         <template v-else>
-          <!-- 健康度头部 -->
+          <!-- Health header -->
           <div :class="['diagnose-health-header', `health-${diagnoseResult.health}`]">
             <span class="health-badge">{{ getHealthIcon(diagnoseResult.health) }}</span>
             <span class="health-label">{{ $t('system.projects.healthStatus') }}:</span>
@@ -722,7 +722,7 @@
             <span class="health-dbmode">({{ $t('system.projects.dbMode') }}: {{ diagnoseResult.dbMode }})</span>
           </div>
 
-          <!-- 资源清单 -->
+          <!-- Resource manifest -->
           <div class="diagnose-resource-list">
             <h4>{{ $t('system.projects.resourceList') }}</h4>
             <div
@@ -743,7 +743,7 @@
             </div>
           </div>
 
-          <!-- 问题列表 -->
+          <!-- Problem list -->
           <div
             v-if="(diagnoseResult.issues?.length ?? 0) > 0"
             class="diagnose-issues"
@@ -759,7 +759,7 @@
             </ol>
           </div>
 
-          <!-- 修复结果 -->
+          <!-- Fix result -->
           <div
             v-if="repairResult"
             class="diagnose-repair-result"
@@ -855,7 +855,7 @@ const exportOptions = ref({
   rtdb: true,
 });
 
-// 版本号编辑
+// Version number editing
 const versionEditing = ref(false);
 const versionDraft = ref('');
 const versionSaving = ref(false);
@@ -949,13 +949,13 @@ async function copyText(text: string): Promise<void> {
       document.body.removeChild(textarea);
     }
   } catch {
-    // 忽略复制失败
+    // Ignore copy failure
   }
 }
 
-// --- 项目信息 ---
-// 初始加载失败时不弹窗：页面已显示 error-state UI（含重试按钮），
-// 弹窗会阻塞用户操作且与错误状态 UI 重复。仅动作类失败（诊断/修复/导出/导入）才弹窗。
+// --- Project info ---
+// No popup on initial load failure: the page already shows the error-state UI (with retry button),
+// A dialog blocks the user and duplicates the error-state UI. Only action-class failures (diagnostics/fix/export/import) show a dialog.
 async function fetchData() {
   loading.value = true;
   error.value = '';
@@ -969,7 +969,7 @@ async function fetchData() {
   }
 }
 
-// --- 诊断 ---
+// --- Diagnostics ---
 async function handleDiagnose() {
   diagnosing.value = true;
   try {
@@ -1010,16 +1010,16 @@ async function handleRepair() {
   }
 }
 
-// --- 导出 ---
+// --- Export ---
 async function handleExportAll() {
-  // 至少需要选择一项
+  // At least one item must be selected
   if (!hasExportSelection.value) {
     showError(t('system.projectManage.exportNoSelection'));
     return;
   }
   exporting.value = true;
   try {
-    // 传递用户选择的导出项：未选的项传 false 排除
+    // Pass the user's selected export items: unselected items pass false to exclude
     const blob = await projectApi.exportProjectZip(projectId, {
       includePages: exportOptions.value.pages,
       includeProjectDb: exportOptions.value.projectDb,
@@ -1029,7 +1029,7 @@ async function handleExportAll() {
     showSuccess(t('system.projectManage.exportSuccess'));
   } catch (e: any) {
     if (!e._errorHandled) {
-      // Blob 响应的错误需要从 blob 中解析 JSON
+      // Errors in a Blob response must be parsed as JSON from the blob
       const msg = await extractBlobErrorMessage(e);
       showError(msg || t('system.projectManage.exportFailed'));
     }
@@ -1055,8 +1055,8 @@ async function handleExportPages() {
 }
 
 /**
- * 从 Blob 错误响应中提取后端返回的 message 字段。
- * 后端导出/导入失败时返回 JSON 错误，但前端 responseType:'blob' 无法直接解析。
+ * Extract the message field returned by the backend from a Blob error response.
+ * On export/import failure the backend returns a JSON error, but the frontend responseType:'blob' cannot parse it directly.
  */
 async function extractBlobErrorMessage(e: any): Promise<string> {
   const blob = e?.response?.data;
@@ -1083,7 +1083,7 @@ function downloadBlob(blob: Blob, fileName: string) {
   URL.revokeObjectURL(url);
 }
 
-// --- 导入 ---
+// --- Import ---
 function triggerImport() {
   importFileInput.value?.click();
 }
@@ -1115,7 +1115,7 @@ async function handleImportFile(event: Event) {
   }
 }
 
-// --- 诊断辅助函数 ---
+// --- Diagnostic helpers ---
 const RESOURCE_LABEL_KEY_MAP: Record<string, string> = {
   projectinfo: 'system.projectManage.resourceProjectinfo',
   dbDir: 'system.projectManage.resourceDbDir',
@@ -1239,7 +1239,7 @@ onMounted(() => {
 
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-/* 信息面板 */
+/* Info panel */
 .info-panel {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -1454,7 +1454,7 @@ onMounted(() => {
   color: var(--text);
 }
 
-/* 分组卡片：自适应平铺，340px 最小宽度确保 4 卡片在桌面端排成 2×2 整齐方阵 */
+/* Group card: responsive tiling; 340px min-width keeps 4 cards in a neat 2×2 grid on desktop */
 .info-cards {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
@@ -1634,7 +1634,7 @@ onMounted(() => {
   color: var(--text);
 }
 
-/* 导入导出面板 */
+/* Import/export panel */
 .import-export-panel {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -1713,7 +1713,7 @@ onMounted(() => {
   color: var(--status-error);
 }
 
-/* 诊断面板 */
+/* Diagnostics panel */
 .diagnose-panel {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -1879,7 +1879,7 @@ onMounted(() => {
 .health-label { font-size: 13px; }
 .health-dbmode { font-size: 12px; opacity: 0.7; margin-left: auto; }
 
-/* 通用按钮 */
+/* Generic button */
 .btn {
   display: inline-flex;
   align-items: center;

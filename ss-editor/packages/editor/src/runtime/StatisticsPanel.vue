@@ -18,7 +18,7 @@
     </div>
 
     <div class="panel-body">
-      <!-- 页面信息 -->
+      <!-- Page info -->
       <div class="stat-section">
         <div class="section-title">
           {{ t('statisticsPanel.pageInfo') }}
@@ -47,7 +47,7 @@
         </div>
       </div>
 
-      <!-- 图元统计 -->
+      <!-- Graphic statistics -->
       <div class="stat-section">
         <div class="section-title">
           {{ t('statisticsPanel.graphicStats') }}
@@ -94,7 +94,7 @@
         </div>
       </div>
 
-      <!-- 数据源统计 -->
+      <!-- Data-source statistics -->
       <div class="stat-section">
         <div class="section-title">
           {{ t('statisticsPanel.dataSource') }}
@@ -115,7 +115,7 @@
         </div>
       </div>
 
-      <!-- 定时任务统计 -->
+      <!-- Scheduled task statistics -->
       <div class="stat-section">
         <div class="section-title">
           {{ t('statisticsPanel.timers') }}
@@ -138,7 +138,7 @@
         </div>
       </div>
 
-      <!-- 组合/辅助统计 -->
+      <!-- Combined/auxiliary statistics -->
       <div class="stat-section">
         <div class="section-title">
           {{ t('statisticsPanel.other') }}

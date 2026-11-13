@@ -77,7 +77,7 @@ watch(
   () => props.visible,
   (val) => {
     if (val) {
-      // 默认全选
+      // Select all by default
       selectedIds.value = props.linkedPages.map(p => p.id);
     }
   },

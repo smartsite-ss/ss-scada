@@ -33,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-// TagVariableIcon 组件
+// TagVariableIcon component
 </script>
 
 <style scoped>

@@ -149,7 +149,7 @@
         </div>
       </div>
 
-      <!-- 运行时配置 -->
+      <!-- Runtime config -->
       <div class="config-panel">
         <h3 class="section-title">
           {{ $t('system.plugins.runtimeConfig') }}
@@ -320,13 +320,13 @@ const { t } = useI18n();
 
 const protocol = route.params.protocol as string;
 
-// ---- 运行时配置 ----
+// ---- Runtime config ----
 const configForm = ref({ isolationMode: '' });
 const configSaving = ref(false);
 const configSaved = ref(false);
 const configMessage = ref('');
 const configError = ref(false);
-const configLoaded = ref(false); // 标记是否已从服务端加载过配置
+const configLoaded = ref(false); // Flag whether config has been loaded from the server
 const restarting = ref(false);
 
 const configDirty = computed(() => {
@@ -334,7 +334,7 @@ const configDirty = computed(() => {
   return configForm.value.isolationMode !== currentMode && configForm.value.isolationMode !== '';
 });
 
-// 加载已持久化的配置
+// Load persisted config
 async function loadConfig() {
   try {
     const res = await pluginApi.getPluginConfig(protocol);
@@ -350,7 +350,7 @@ async function loadConfig() {
   configLoaded.value = true;
 }
 
-// 保存配置到服务端
+// Save config to the server
 async function handleSaveConfig() {
   configSaving.value = true;
   configMessage.value = '';
@@ -362,7 +362,7 @@ async function handleSaveConfig() {
     });
     const data = (res as any)?.data;
     if (data) {
-      // 同步更新 store 中的值
+      // Sync-update the value in the store
       if (store.currentPlugin) {
         store.currentPlugin.isolationMode = data.isolationMode || configForm.value.isolationMode;
       }
@@ -378,16 +378,16 @@ async function handleSaveConfig() {
   }
 }
 
-// 重启插件以应用隔离模式变更
+// Restart the plugin to apply isolation-mode changes
 async function handleRestartPlugin() {
-  // 弹确认框
+  // Show a confirmation dialog
   try {
     await showConfirm(
       t('system.plugins.isolationModeHint'),
       t('system.plugins.restartPlugin'),
     );
   } catch {
-    // 用户取消
+    // User cancelled
     return;
   }
 
@@ -398,7 +398,7 @@ async function handleRestartPlugin() {
     await pluginApi.restartPlugin(protocol);
     configMessage.value = t('system.plugins.restartSuccess');
     configSaved.value = false;
-    // 刷新 store 中的插件状态
+    // Refresh the plugin status in the store
     await store.fetchPlugin(protocol);
     await loadConfig();
   } catch (err: any) {
@@ -409,7 +409,7 @@ async function handleRestartPlugin() {
   }
 }
 
-// 切换插件后重新加载配置
+// Reload config after switching plugin
 watch(() => route.params.protocol, (newProtocol) => {
   if (newProtocol && store.currentPlugin) {
     configForm.value.isolationMode = '';
@@ -770,7 +770,7 @@ onMounted(() => {
   color: var(--text);
 }
 
-/* 运行时配置面板 */
+/* Runtime config panel */
 .config-grid {
   display: flex;
   flex-direction: column;

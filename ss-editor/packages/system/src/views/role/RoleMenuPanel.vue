@@ -37,7 +37,7 @@ import { useI18n } from 'vue-i18n';
 import type { SystemMenuItem } from '../../config/system-menu.config';
 import { menuApi } from '../../api/modules';
 
-// 递归菜单树节点组件
+// Recursive menu tree node component
 const MenuTreeNode: ReturnType<typeof defineComponent> = defineComponent({
   name: 'MenuTreeNode',
   props: {

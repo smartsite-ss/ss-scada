@@ -51,17 +51,17 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
-  /** 运行模式：'edit' | 'runtime' */
+  /** Runtime mode: 'edit' | 'runtime' */
   mode: {
     type: String as () => 'edit' | 'runtime',
     default: 'edit',
   },
-  /** 纵向缩放（stretch 非均匀缩放），缺省跟随 zoom（均匀缩放） */
+  /** Vertical zoom (stretch non-uniform scaling); defaults to following zoom (uniform scaling) */
   zoomY: {
     type: Number,
     default: null,
   },
-  /** 画布元素引用：用于计算图元相对画布的偏移（优化方案 P0-2） */
+  /** Canvas element reference: used to compute the graphic offset relative to the canvas (optimization P0-2) */
   canvasEl: {
     type: Object as PropType<HTMLCanvasElement | null>,
     default: null,
@@ -72,11 +72,11 @@ const { containerRef, calcItemStyle, updateCanvasOffset } = useContainerPosition
   canvasEl: toRef(props, 'canvasEl'),
 });
 
-// 供父组件在适配/容器尺寸变化后刷新画布偏移（优化方案 P0-2）
+// For the parent to refresh the canvas offset after fit/container size changes (optimization P0-2)
 defineExpose({ updateCanvasOffset });
 
-// 图元属性（含 customProps 变量绑定）通过 updateGraphic 原地更新，不改变 graphics 数组引用。
-// 依赖 GRAPHIC_UPDATED 事件驱动 componentList 重算，使 Vue 组件能拿到最新 props（编辑态与运行态一致）。
+// Graphic properties (including customProps variable bindings) are updated in place via updateGraphic, without changing the graphics array reference.
+// Rely on the GRAPHIC_UPDATED event to drive componentList recomputation, so Vue components get the latest props (consistent between edit and runtime).
 const refreshVersion = ref(0);
 
 function handleGraphicUpdated() {

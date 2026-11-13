@@ -31,39 +31,39 @@ const wrapperRef = ref<HTMLDivElement | null>(null);
 const engine = EventExecutionEngine.getInstance();
 
 /**
- * 编辑态下不注册事件监听器，保持编辑交互（选中/拖拽/缩放）
- * 运行态下注册 DOM 事件监听器并触发生命周期事件
+ * In edit mode, do not register event listeners to preserve editing interactions (select/drag/zoom)
+ * In runtime mode, register DOM event listeners and trigger lifecycle events
  */
 const isRuntime = computed(() => props.mode === 'runtime');
 
 const graphicStyle = computed(() => ({
   ...props.style,
-  // 运行态下允许鼠标事件穿透到子组件
+  // Allow mouse events to pass through to child components at runtime
   pointerEvents: (isRuntime.value ? 'auto' : undefined) as 'auto' | undefined,
 }));
 
-// 生命周期事件：vnodeBeforeMount
+// Lifecycle event: vnodeBeforeMount
 onBeforeMount(() => {
   if (isRuntime.value) {
     engine.triggerLifecycleEvent(props.graphic, 'vnodeBeforeMount');
   }
 });
 
-// 生命周期事件：vnodeMounted + DOM 事件注册
+// Lifecycle event: vnodeMounted + DOM event registration
 onMounted(() => {
   if (!isRuntime.value) return;
 
-  // 触发生命周期事件
+  // Trigger lifecycle events
   engine.triggerLifecycleEvent(props.graphic, 'vnodeMounted');
 
-  // 注册 DOM 事件监听器
+  // Register DOM event listeners
   if (wrapperRef.value) {
     const element = wrapperRef.value as HTMLElement;
     engine.registerGraphicEvents(props.graphic, element);
   }
 });
 
-// 卸载时清理事件监听器
+// Clean up event listeners on unmount
 onBeforeUnmount(() => {
   engine.unregisterGraphicEvents(props.graphic.id);
 });
@@ -71,8 +71,8 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .graphic-event-wrapper {
-  /* 继承父容器定位 */
+  /* Inherit the parent container's positioning */
   position: absolute;
-  /* pointer-events 由 graphicStyle 动态控制 */
+  /* pointer-events is dynamically controlled by graphicStyle */
 }
 </style>

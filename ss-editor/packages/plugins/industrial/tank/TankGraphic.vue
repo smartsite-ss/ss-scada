@@ -11,7 +11,7 @@
       </clipPath>
     </defs>
 
-    <!-- 罐体 -->
+    <!-- Tank body -->
     <rect :x="tankX" :y="tankY" :width="tankW" :height="tankH" :rx="6" :fill="bodyColor" />
     <rect
       :x="tankX + 1"
@@ -24,7 +24,7 @@
       stroke-width="3"
     />
 
-    <!-- 液体 -->
+    <!-- Liquid -->
     <g v-if="liquidH > 0" :clip-path="`url(#${clipId})`">
       <rect :x="tankX" :y="liquidTop" :width="tankW" :height="liquidH" :fill="liquidColor" />
       <path
@@ -36,7 +36,7 @@
       />
     </g>
 
-    <!-- 刻度线 -->
+    <!-- Tick marks -->
     <g v-if="showTicks">
       <line
         v-for="(tick, index) in tickLines"
@@ -50,7 +50,7 @@
       />
     </g>
 
-    <!-- 液位文本 -->
+    <!-- Liquid-level text -->
     <text
       v-if="showLevelText"
       :x="tankX + tankW / 2"
@@ -104,7 +104,7 @@ const tankY = 0;
 const tankW = computed(() => props.w - tankX.value * 2);
 const tankH = computed(() => props.h);
 
-/** 有效实时液位：绑定标签时读 WS 实时值，未绑定则回退静态 level */
+/** Effective live level: when a tag is bound, read the WS live value; otherwise fall back to the static level */
 const effectiveLevel = computed(() => {
   if (props.tagId) {
     const v = Number(currentValue.value);

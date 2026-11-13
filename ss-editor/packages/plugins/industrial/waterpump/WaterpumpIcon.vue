@@ -6,7 +6,7 @@
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >
-    <!-- 左侧管道 -->
+    <!-- Left pipe -->
     <rect
       x="0"
       y="10.5"
@@ -17,7 +17,7 @@
       opacity="0.9"
     />
 
-    <!-- 左侧法兰 -->
+    <!-- Left flange -->
     <rect
       x="5.5"
       y="10"
@@ -26,7 +26,7 @@
       rx="0.3"
       :fill="flangeColor"
     />
-    <!-- 左法兰螺栓 -->
+    <!-- Left flange bolts -->
     <circle
       cx="6.1"
       cy="11"
@@ -44,14 +44,14 @@
       stroke-width="0.2"
     />
 
-    <!-- 泵体（圆形） -->
+    <!-- Pump body (circular) -->
     <circle
       cx="12"
       cy="12"
       r="5.5"
       :fill="bodyColor"
     />
-    <!-- 泵体高光 -->
+    <!-- Pump body highlight -->
     <ellipse
       cx="10.5"
       cy="10"
@@ -60,7 +60,7 @@
       fill="white"
       fill-opacity="0.25"
     />
-    <!-- 内圈凹槽 -->
+    <!-- Inner ring groove -->
     <circle
       cx="12"
       cy="12"
@@ -69,7 +69,7 @@
       opacity="0.6"
     />
 
-    <!-- 右侧法兰 -->
+    <!-- Right flange -->
     <rect
       x="17.3"
       y="10"
@@ -78,7 +78,7 @@
       rx="0.3"
       :fill="flangeColor"
     />
-    <!-- 右法兰螺栓 -->
+    <!-- Right flange bolts -->
     <circle
       cx="17.9"
       cy="11"
@@ -96,7 +96,7 @@
       stroke-width="0.2"
     />
 
-    <!-- 右侧管道 -->
+    <!-- Right pipe -->
     <rect
       x="18.5"
       y="10.5"
@@ -107,9 +107,9 @@
       opacity="0.9"
     />
 
-    <!-- 风叶（6叶片 + 中心轴） -->
+    <!-- Fan blade (6 blades + center shaft) -->
     <g :transform="`rotate(${rotation}, 12, 12)`">
-      <!-- 6片风叶 -->
+      <!-- 6 fan blades -->
       <g :fill="impellerColor">
         <rect
           x="11.75"
@@ -139,7 +139,7 @@
           height="0.5"
           rx="0.15"
         />
-        <!-- 斜向风叶 -->
+        <!-- Diagonal fan blade -->
         <rect
           x="9.4"
           y="9.4"
@@ -173,7 +173,7 @@
           transform="rotate(45 12 12)"
         />
       </g>
-      <!-- 中心轮毂 -->
+      <!-- Center hub -->
       <circle
         cx="12"
         cy="12"

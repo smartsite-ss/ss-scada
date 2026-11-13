@@ -1,6 +1,6 @@
 <template>
   <div class="device-list-view">
-    <!-- 左侧：项目/分组/设备 三级树 -->
+    <!-- Left: project/group/device three-level tree -->
     <aside class="sidebar">
       <div class="sidebar-header">
         <span class="sidebar-title">{{ $t('system.devices.deviceTree') }}</span>
@@ -60,7 +60,7 @@
           v-for="proj in projectStore.projects"
           :key="proj.projectId"
         >
-          <!-- 项目节点 -->
+          <!-- Project node -->
           <div
             class="tree-node project-node"
             :class="{
@@ -96,19 +96,19 @@
             <span class="node-count">{{ getProjectDeviceCount(proj.projectId) }}</span>
           </div>
 
-          <!-- 展开后的分组和设备 -->
+          <!-- Expanded groups and devices -->
           <div
             v-if="expandedProjects.has(proj.projectId)"
             class="project-children"
           >
-            <!-- 加载中 -->
+            <!-- Loading -->
             <div
               v-if="loadingGroups.has(proj.projectId)"
               class="tree-loading"
             >
               {{ $t('common.loading') }}
             </div>
-            <!-- 递归分组树 -->
+            <!-- Recursive group tree -->
             <template
               v-for="group in getTopLevelGroups(proj.projectId)"
               v-else
@@ -130,7 +130,7 @@
                 @delete-group="confirmDeleteGroup"
               />
             </template>
-            <!-- 无分组时的设备 -->
+            <!-- Devices without a group -->
             <div
               v-if="getTopLevelGroups(proj.projectId).length === 0 && !loadingGroups.has(proj.projectId)"
               class="tree-empty-small"
@@ -142,7 +142,7 @@
       </div>
     </aside>
 
-    <!-- 右侧：主内容区 -->
+    <!-- Right: main content area -->
     <div class="main-content">
       <div class="page-header">
         <div class="header-left">
@@ -754,7 +754,7 @@
       </div>
     </div>
 
-    <!-- 分组创建/编辑对话框 -->
+    <!-- Group create/edit dialog -->
     <div
       v-if="showGroupDialog"
       class="modal-overlay"
@@ -833,7 +833,7 @@
       </div>
     </div>
 
-    <!-- 分组删除确认对话框 -->
+    <!-- Group delete confirmation dialog -->
     <div
       v-if="showDeleteGroupDialog"
       class="modal-overlay"
@@ -873,7 +873,7 @@
       </div>
     </div>
 
-    <!-- 移动设备到分组对话框 -->
+    <!-- Move-device-to-group dialog -->
     <div
       v-if="showMoveDialog"
       class="modal-overlay"
@@ -976,7 +976,7 @@
       </div>
     </div>
 
-    <!-- 设备点表数据查看面板 -->
+    <!-- Device point-table data view panel -->
     <DeviceDataPanel
       :visible="showDataPanel"
       :device="dataPanelDevice"
@@ -984,7 +984,7 @@
       @update:visible="showDataPanel = $event"
     />
 
-    <!-- 设备错误详情面板 -->
+    <!-- Device error detail panel -->
     <div
       v-if="showErrorPanel"
       class="modal-overlay"
@@ -1046,7 +1046,7 @@
             >
               <span class="error-message-empty">{{ $t('system.devices.noErrorMessage') }}</span>
             </div>
-            <!-- 采集诊断数据 -->
+            <!-- Acquisition diagnostics data -->
             <div
               v-if="errorPanelDevice?._diagnostics"
               class="error-info-divider"
@@ -1123,7 +1123,7 @@ import { templateApi } from '../../api/modules/template.api';
 import { SsLoading } from '@scada-editor/shared';
 import { useProjectContext } from '../../composables/useProjectContext';
 
-/** 树节点中的分组信息（来自 DeviceTree.group 的非完整字段） */
+/** Group info in a tree node (incomplete fields from DeviceTree.group) */
 interface TreeGroup {
   id: string;
   name: string;
@@ -1165,7 +1165,7 @@ function goToCardPage(page: number) {
   fetchData();
 }
 
-// 分组对话框
+// Group dialog
 const showGroupDialog = ref(false);
 const isEditingGroup = ref(false);
 const editingGroup = ref<DeviceGroup | null>(null);
@@ -1174,12 +1174,12 @@ const groupFormError = ref('');
 const showDeleteGroupDialog = ref(false);
 const deletingGroup = ref<DeviceGroup | null>(null);
 
-// 树展开状态
+// Tree expand state
 const expandedProjects = ref(new Set<string>());
 const expandedGroups = ref(new Set<string>());
 const loadingGroups = ref(new Set<string>());
 
-// 设备点表数据查看面板
+// Device point-table data view panel
 const showDataPanel = ref(false);
 const dataPanelDevice = ref<Device | null>(null);
 
@@ -1188,7 +1188,7 @@ function openDataPanel(device: Device) {
   showDataPanel.value = true;
 }
 
-// 设备错误详情面板
+// Device error detail panel
 const showErrorPanel = ref(false);
 const errorPanelDevice = ref<Device | null>(null);
 
@@ -1197,12 +1197,12 @@ function showErrorDetail(device: Device) {
   showErrorPanel.value = true;
 }
 
-// 缓存项目分组树数据: projectId -> groupTree
+// Cache project group-tree data: projectId -> groupTree
 const projectGroupTrees = ref<Map<string, DeviceTree[]>>(new Map());
-// 缓存项目设备列表: `${projectId}::${groupId}` -> DeviceSummary[]
+// Cache project device list: `${projectId}::${groupId}` -> DeviceSummary[]
 const groupDeviceCache = ref<Map<string, DeviceSummary[]>>(new Map());
 
-// 模板 ID -> 名称 映射（用于列表展示设备绑定的模板名称）
+// Template ID → name mapping (for listing the template name bound to a device)
 const templateNameMap = ref<Map<string, string>>(new Map());
 
 async function loadTemplateNames() {
@@ -1216,7 +1216,7 @@ async function loadTemplateNames() {
     }
     templateNameMap.value = map;
   } catch {
-    // 静默失败，不影响设备列表展示
+    // Fail silently; does not affect device-list display
   }
 }
 
@@ -1304,12 +1304,12 @@ function formatTime(val?: string | number | Date | null): string {
     if (val instanceof Date) {
       d = val;
     } else if (typeof val === 'number') {
-      // 数字时间戳（毫秒）
+      // Numeric timestamp (ms)
       d = new Date(val);
     } else if (typeof val === 'string') {
-      // SQLite 存储的日期格式 "YYYY-MM-DD HH:MM:SS" 无时区标记
-      // JavaScript 的 new Date() 会按本地时区解析，导致 UTC 时间显示偏差
-      // 检测此格式并视为 UTC 处理
+      // SQLite stored date format "YYYY-MM-DD HH:MM:SS" has no timezone marker
+      // JavaScript's new Date() parses in the local timezone, causing UTC time display deviations
+      // Detect this format and treat it as UTC
       const sqliteMatch = val.match(/^(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2})$/);
       if (sqliteMatch) {
         d = new Date(`${sqliteMatch[1]}T${sqliteMatch[2]}Z`);
@@ -1390,8 +1390,8 @@ async function fetchData() {
   await deviceStore.fetchDevices(projectId.value, currentPage.value, pageSize.value, searchQuery.value || undefined);
 }
 
-/** 定时静默刷新（更新 lastOnlineAt / lastDataAt 等实时字段） */
-const REFRESH_INTERVAL_MS = 30000; // 30秒
+/** Periodic silent refresh (updates real-time fields like lastOnlineAt / lastDataAt) */
+const REFRESH_INTERVAL_MS = 30000; // 30 seconds
 let refreshTimer: ReturnType<typeof setInterval> | null = null;
 
 function startAutoRefresh() {
@@ -1521,9 +1521,9 @@ async function handleDelete() {
   }
 }
 
-// ===== 分组管理 =====
+// ===== Group management =====
 
-// 父分组候选列表（编辑时排除自己）
+// Parent-group candidate list (exclude self when editing)
 const availableParentGroups = computed(() => {
   if (!projectId.value) return [];
   const allGroups = getProjectGroups(projectId.value);
@@ -1617,7 +1617,7 @@ async function handleDeleteGroup() {
   }
 }
 
-// ===== 移动设备到分组 =====
+// ===== Move device to group =====
 
 const showMoveDialog = ref(false);
 const movingDevice = ref<Device | null>(null);
@@ -1629,7 +1629,7 @@ interface FlatGroupOption {
   depth: number;
 }
 
-// 将分组树展平为带层级的列表，用于移动对话框中的分组选择
+// Flatten the group tree into a hierarchical list, for group selection in the move dialog
 const flattenedGroupOptions = computed<FlatGroupOption[]>(() => {
   if (!projectId.value) return [];
   const raw = projectGroupTrees.value.get(projectId.value);
@@ -1655,7 +1655,7 @@ function openMoveDialog(device: Device) {
     return;
   }
   movingDevice.value = device;
-  // 当前 groupId 作为默认选中（空字符串表示未分组）
+  // Use the current groupId as the default selection (empty string means ungrouped)
   moveTargetGroupId.value = device.groupId || '';
   showMoveDialog.value = true;
 }
@@ -1674,7 +1674,7 @@ async function handleMoveDevice() {
     await deviceStore.moveDevice(projectId.value, movingDevice.value.id, targetId);
     showMoveDialog.value = false;
     showSuccess(t('system.devices.moveSuccess'));
-    // 刷新设备列表和分组树
+    // Refresh the device list and group tree
     await fetchData();
     if (projectId.value) {
       await loadProjectTree(projectId.value);
@@ -1689,7 +1689,7 @@ async function handleMoveDevice() {
   }
 }
 
-// ===== 侧边栏树操作 =====
+// ===== Sidebar tree operations =====
 
 async function loadProjectTree(projId: string) {
   loadingGroups.value.add(projId);
@@ -1699,13 +1699,13 @@ async function loadProjectTree(projId: string) {
     const treeData: DeviceTree[] = Array.isArray(raw) ? raw : [];
     projectGroupTrees.value.set(projId, treeData);
 
-    // 递归收集所有 treeItem 的设备缓存，并自动展开所有有内容的分组
+    // Recursively collect device caches of all treeItems and auto-expand all non-empty groups
     const collectTreeItems = (items: DeviceTree[]) => {
       for (const item of items) {
         if (item.group) {
           const key = `${projId}::${item.group.id}`;
           groupDeviceCache.value.set(key, Array.isArray(item.devices) ? item.devices : []);
-          // 有子分组时自动展开该分组（设备在右侧表格展示，不在此树中显示）
+          // Auto-expand the group when it has subgroups (devices are shown in the right-side table, not in this tree)
           if (item.children && item.children.length > 0) {
             expandedGroups.value.add(item.group.id);
           }
@@ -1717,7 +1717,7 @@ async function loadProjectTree(projId: string) {
     };
     collectTreeItems(treeData);
 
-    // 未分组设备
+    // Ungrouped devices
     const allDevices = Array.isArray(deviceStore.devices) ? deviceStore.devices : [];
     groupDeviceCache.value.set(`${projId}::__unassigned__`, allDevices.filter((d) => !d.groupId));
   } catch (err: unknown) {
@@ -1730,7 +1730,7 @@ async function loadProjectTree(projId: string) {
 
 async function selectProject(projId: string) {
   if (projectId.value === projId && expandedProjects.value.has(projId)) {
-    // 再次点击同一个项目：折叠
+    // Click the same project again: collapse
     expandedProjects.value.delete(projId);
     stopAutoRefresh();
     return;
@@ -1791,18 +1791,18 @@ function selectDeviceNode(projId: string, groupId: string, deviceId: string) {
   projectId.value = projId;
   selectedGroupId.value = groupId;
   selectedDeviceId.value = deviceId;
-  // 这里可以导航到设备详情或高亮
+  // Here you can navigate to device details or highlight
 }
 
 function getTopLevelGroups(projId: string): TreeGroup[] {
   const raw = projectGroupTrees.value.get(projId);
   const tree: DeviceTree[] = Array.isArray(raw) ? raw : [];
-  // 后端 tree 的顶层元素即为根分组，group 对象中包含 parentId
-  // 多级分组通过 children 递归渲染
+  // The top-level elements of the backend tree are the root groups; the group object contains parentId
+  // Multi-level groups are rendered recursively via children
   return tree.map((t) => t.group).filter((g): g is TreeGroup => g !== null && typeof g === 'object' && 'id' in g);
 }
 
-// 从树结构中递归收集所有分组对象
+// Recursively collect all group objects from the tree structure
 function getProjectGroups(projId: string): TreeGroup[] {
   const raw = projectGroupTrees.value.get(projId);
   const tree: DeviceTree[] = Array.isArray(raw) ? raw : [];
@@ -1842,22 +1842,22 @@ function _getGroupDeviceCount(projId: string, groupId: string): number {
 
 async function handleRefresh() {
   await projectStore.fetchProjects();
-  // 刷新所有已展开项目的树数据
+  // Refresh tree data for all expanded projects
   for (const projId of expandedProjects.value) {
     await loadProjectTree(projId);
   }
-  // 刷新当前项目设备列表
+  // Refresh the current project's device list
   if (projectId.value) {
     await fetchData();
   }
 }
 
 onMounted(async () => {
-  // 设备树只需要启用项目；不复用项目管理页可能缓存的全量列表（含停用项目）
+  // The device tree only needs enabled projects; it does not reuse the possibly cached full list (including disabled) from the project management page
   await projectStore.fetchProjects();
-  // 加载设备模板名称映射（用于列表"设备模板"列展示）
+  // Load device template name mapping (for the list"设备模板" column display)
   loadTemplateNames();
-  // 优先使用默认项目，否则选中第一个
+  // Prefer the default project; otherwise select the first
   if (projectStore.projects.length > 0 && !projectId.value) {
     const { loadDefault } = useProjectContext();
     const defaultId = await loadDefault();
@@ -1874,7 +1874,7 @@ onUnmounted(() => {
   stopAutoRefresh();
 });
 
-// P1优化：keep-alive 缓存场景下，页面切换时停止/恢复定时器，避免泄漏
+// P1 optimization: in keep-alive cache scenarios, stop/restore timers on page switch to avoid leaks
 onDeactivated(() => {
   stopAutoRefresh();
 });
@@ -1893,7 +1893,7 @@ onActivated(() => {
   overflow: hidden;
 }
 
-/* ===== 侧边栏 ===== */
+/* ===== Sidebar ===== */
 .sidebar {
   width: 240px;
   min-width: 240px;
@@ -2109,7 +2109,7 @@ onActivated(() => {
   margin-left: 43px;
 }
 
-/* ===== 主内容区 ===== */
+/* ===== Main content area ===== */
 .main-content {
   flex: 1;
   display: flex;
@@ -2118,7 +2118,7 @@ onActivated(() => {
   min-width: 0;
 }
 
-/* SmartTable 填充剩余空间，表格内容溢出时显示横向+纵向滚动条 */
+/* SmartTable fills the remaining space and shows horizontal + vertical scrollbars when the table content overflows */
 .main-content > :deep(.smart-table-root) {
   flex: 1;
   min-height: 0;
@@ -2472,7 +2472,7 @@ onActivated(() => {
   margin: -4px 0 0 0;
 }
 
-/* ===== 移动设备到分组对话框 ===== */
+/* ===== Move-device-to-group dialog ===== */
 .move-device-name {
   font-size: 14px;
   font-weight: 600;
@@ -2516,7 +2516,7 @@ onActivated(() => {
   font-weight: 500;
 }
 
-/* ===== 错误详情面板 ===== */
+/* ===== Error detail panel ===== */
 .error-info {
   display: flex;
   flex-direction: column;
@@ -2604,7 +2604,7 @@ onActivated(() => {
   color: var(--status-error);
 }
 
-/* ===== 采集诊断 ===== */
+/* ===== Acquisition diagnostics ===== */
 .error-info-diagnostics {
   margin-top: 4px;
 }

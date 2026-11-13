@@ -9,7 +9,7 @@
       :key="event.id || eventIndex"
       class="event-card"
     >
-      <!-- 事件头部 -->
+      <!-- Event header -->
       <div class="event-header">
         <select
           v-model="event.eventType"
@@ -46,7 +46,7 @@
         </button>
       </div>
 
-      <!-- 动作列表 -->
+      <!-- Action list -->
       <div class="actions-section">
         <label class="subsection-title">{{ $t('propertyPanel.actions') }}</label>
         <div
@@ -54,20 +54,20 @@
           :key="action.id || actionIndex"
           class="action-card"
         >
-          <!-- 动作类型选择 -->
+          <!-- Action type selection -->
           <div class="action-header">
             <select
               v-model="action.actionType"
               class="action-type-select"
               @change="onActionTypeChange(eventIndex, actionIndex)"
             >
-              <!-- 一类：API 动作 -->
+              <!-- Category 1: API actions -->
               <optgroup :label="$t('propertyPanel.apiGroup')">
                 <option value="api">
                   {{ $t('propertyPanel.api') }}
                 </option>
               </optgroup>
-              <!-- 二类：脚本引擎动作 -->
+              <!-- Category 2: script-engine actions -->
               <optgroup :label="$t('propertyPanel.scriptGroup')">
                 <option value="script">
                   {{ $t('propertyPanel.script') }}
@@ -101,7 +101,7 @@
             </button>
           </div>
 
-          <!-- API 动作专属表单 -->
+          <!-- API action-specific form -->
           <template v-if="action.actionType === 'api'">
             <div class="form-row">
               <label>{{ $t('propertyPanel.apiPath') }}</label>
@@ -124,7 +124,7 @@
             </div>
           </template>
 
-          <!-- 脚本动作专属表单 -->
+          <!-- Script-action-specific form -->
           <template v-else-if="action.actionType === 'script'">
             <div class="form-row">
               <label>{{ $t('propertyPanel.scriptMethod') }}</label>
@@ -156,7 +156,7 @@
             </div>
           </template>
 
-          <!-- 自定义脚本动作专属表单 -->
+          <!-- Custom script-action-specific form -->
           <template v-else-if="action.actionType === 'customScript'">
             <div class="form-row">
               <label>{{ $t('propertyPanel.scriptPreview') }}</label>
@@ -176,7 +176,7 @@
             </div>
           </template>
 
-          <!-- 通用表单（show/hide/change/navigate/alert） -->
+          <!-- Generic form (show/hide/change/navigate/alert) -->
           <template v-else>
             <div
               v-if="needsTarget(action.actionType)"
@@ -204,7 +204,7 @@
             </div>
           </template>
 
-          <!-- 条件列表 -->
+          <!-- Condition list -->
           <div class="conditions-section">
             <label class="subsection-title">{{ $t('propertyPanel.conditions') }}</label>
             <div
@@ -312,7 +312,7 @@ const updateGraphicProperties = () => {
   emit('updateGraphicProperties');
 };
 
-// 切换动作类型时清空无关字段
+// Clear unrelated fields when switching action type
 const onActionTypeChange = (eventIndex: number, actionIndex: number) => {
   const action = props.graphicProperties?.events?.[eventIndex]?.actions?.[actionIndex];
   if (!action) return;
@@ -330,7 +330,7 @@ const onActionTypeChange = (eventIndex: number, actionIndex: number) => {
   updateGraphicProperties();
 };
 
-// 格式化 JSON 显示
+// Format JSON for display
 const formatActionValue = (value: any): string => {
   if (typeof value === 'object' && value !== null) {
     try { return JSON.stringify(value, null, 2); } catch { return ''; }
@@ -338,12 +338,12 @@ const formatActionValue = (value: any): string => {
   return value || '';
 };
 
-// 哪些动作需要 target 输入
+// Which actions need a target input
 const needsTarget = (actionType: string): boolean => {
   return ['show', 'hide', 'change', 'navigate'].includes(actionType);
 };
 
-// 哪些动作需要 value 输入
+// Which actions need a value input
 const needsValueInput = (actionType: string): boolean => {
   return ['change', 'alert'].includes(actionType);
 };
@@ -375,7 +375,7 @@ const getScriptParamsPlaceholder = (method: string): string => {
   }
 };
 
-/** 在底部抽屉中打开脚本编辑器 */
+/** Open the script editor in the bottom drawer */
 const openScriptInDrawer = (eventIndex: number, actionIndex: number) => {
   const action = props.graphicProperties?.events?.[eventIndex]?.actions?.[actionIndex];
   if (!action) return;
@@ -399,7 +399,7 @@ const openScriptInDrawer = (eventIndex: number, actionIndex: number) => {
   );
 };
 
-/** 脚本预览（截取前几行） */
+/** Script preview (first few lines) */
 const previewScript = (script: string): string => {
   if (!script) return '// 暂无脚本';
   const lines = script.split('\n').slice(0, 3);
@@ -469,7 +469,7 @@ const removeCondition = (eventIndex: number, actionIndex: number, conditionIndex
 </script>
 
 <style scoped>
-/* ── 面板容器 ── */
+/* ── Panel container ── */
 .interaction-panel {
   padding: 8px 0;
   display: flex;
@@ -493,7 +493,7 @@ const removeCondition = (eventIndex: number, actionIndex: number, conditionIndex
   display: block;
 }
 
-/* ── 事件卡（蓝色系） ── */
+/* ── Event card (blue tones) ── */
 .event-card {
   border: 1px solid var(--border);
   border-left: 3px solid var(--primary, #4a9ef8);
@@ -520,7 +520,7 @@ const removeCondition = (eventIndex: number, actionIndex: number, conditionIndex
   font-size: 12px;
 }
 
-/* ── 动作区域 ── */
+/* ── Action area ── */
 .actions-section {
   padding-left: 4px;
 }
@@ -551,7 +551,7 @@ const removeCondition = (eventIndex: number, actionIndex: number, conditionIndex
   font-size: 12px;
 }
 
-/* ── 表单行 ── */
+/* ── Form row ── */
 .form-row {
   display: flex;
   align-items: center;
@@ -592,7 +592,7 @@ const removeCondition = (eventIndex: number, actionIndex: number, conditionIndex
   box-shadow: 0 0 0 1px rgba(74, 158, 248, 0.2);
 }
 
-/* ── 条件区域（橙色系） ── */
+/* ── Condition area (orange tones) ── */
 .conditions-section {
   padding-left: 6px;
   margin-top: 6px;
@@ -607,7 +607,7 @@ const removeCondition = (eventIndex: number, actionIndex: number, conditionIndex
   background: var(--surface);
 }
 
-/* ── 按钮 ── */
+/* ── Button ── */
 .btn-delete {
   width: 22px;
   height: 22px;
@@ -671,7 +671,7 @@ const removeCondition = (eventIndex: number, actionIndex: number, conditionIndex
   font-size: 12px;
 }
 
-/* ── select/optgroup 主题适配 ── */
+/* ── select/optgroup theme adaptation ── */
 select {
   cursor: pointer;
 }
@@ -683,7 +683,7 @@ optgroup {
   font-size: 11px;
 }
 
-/* ── 脚本预览区域 ── */
+/* ── Script preview area ── */
 .script-preview-container {
   margin-bottom: 6px;
 }

@@ -30,7 +30,7 @@
     </div>
 
     <div class="dict-body">
-      <!-- ======================== 左侧分类树 ======================== -->
+      <!-- ======================== Left category tree ======================== -->
       <div class="dict-sidebar">
         <div class="sidebar-toolbar">
           <button
@@ -243,7 +243,7 @@
         </div>
       </div>
 
-      <!-- ======================== 右侧字典详情 ======================== -->
+      <!-- ======================== Right-side dictionary detail ======================== -->
       <div class="dict-content">
         <div
           v-if="!selectedDict && !error"
@@ -503,7 +503,7 @@
       </div>
     </div>
 
-    <!-- ======================== 分类弹窗（创建/重命名） ======================== -->
+    <!-- ======================== Category dialog (create/rename) ======================== -->
     <div
       v-if="showCategoryDialog"
       class="modal-overlay"
@@ -555,7 +555,7 @@
       </div>
     </div>
 
-    <!-- ======================== 字典表弹窗（创建/编辑元数据） ======================== -->
+    <!-- ======================== Dictionary table dialog (create/edit metadata) ======================== -->
     <div
       v-if="showTableDialog"
       class="modal-overlay"
@@ -645,7 +645,7 @@
       </div>
     </div>
 
-    <!-- ======================== 字典条目编辑弹窗 ======================== -->
+    <!-- ======================== Dictionary entry edit dialog ======================== -->
     <div
       v-if="showItemDialog"
       class="modal-overlay"
@@ -725,7 +725,7 @@
       </div>
     </div>
 
-    <!-- ======================== 导入弹窗 ======================== -->
+    <!-- ======================== Import dialog ======================== -->
     <div
       v-if="showImportDialog"
       class="modal-overlay"
@@ -791,7 +791,7 @@ const categories = ref<DictCategory[]>([]);
 const expandedCategories = ref<Record<string, boolean>>({});
 const selectedDictId = ref<string | null>(null);
 
-/** 选中的字典表 */
+/** The selected dictionary table */
 const selectedDict = computed(() => {
   if (!selectedDictId.value) return null;
   for (const cat of categories.value) {
@@ -801,7 +801,7 @@ const selectedDict = computed(() => {
   return null;
 });
 
-/** 选中字典表所属的分类名 */
+/** The category name of the selected dictionary table */
 const selectedCategoryName = computed(() => {
   if (!selectedDictId.value) return '';
   for (const cat of categories.value) {
@@ -810,7 +810,7 @@ const selectedCategoryName = computed(() => {
   return '';
 });
 
-// ==================== 数据加载 ====================
+// ==================== Data loading ====================
 
 async function fetchCategories() {
   loading.value = true;
@@ -851,7 +851,7 @@ function selectDict(dictId: string) {
   selectedDictId.value = dictId;
 }
 
-// ==================== 分类管理 ====================
+// ==================== Category management ====================
 
 const showCategoryDialog = ref(false);
 const categoryDialogMode = ref<'create' | 'rename'>('create');
@@ -915,7 +915,7 @@ async function confirmDeleteCategory(categoryName: string) {
   }
 }
 
-// ==================== 字典表管理 ====================
+// ==================== Dictionary table management ====================
 
 const showTableDialog = ref(false);
 const tableDialogMode = ref<'create' | 'edit'>('create');
@@ -1006,7 +1006,7 @@ async function confirmDeleteTable(category: string, table: DictTable) {
   }
 }
 
-// ==================== 导出 ====================
+// ==================== Export ====================
 
 async function exportTable(category: string, table: DictTable) {
   try {
@@ -1024,7 +1024,7 @@ async function exportTable(category: string, table: DictTable) {
   }
 }
 
-// ==================== 字典条目管理 ====================
+// ==================== Dictionary entry management ====================
 
 const showItemDialog = ref(false);
 const itemDialogMode = ref<'create' | 'edit'>('create');
@@ -1080,7 +1080,7 @@ async function submitItem() {
     items.sort((a, b) => a.sortOrder - b.sortOrder);
     await dictApi.updateTable(locale.value, selectedCategoryName.value, dict.dictId, { items } as any);
     closeItemDialog();
-    // 更新本地缓存
+    // Update the local cache
     if (selectedDict.value) {
       selectedDict.value.items = items;
     }
@@ -1105,7 +1105,7 @@ async function deleteItem(index: number) {
   }
 }
 
-// ==================== 导入 ====================
+// ==================== Import ====================
 
 const showImportDialog = ref(false);
 const importJson = ref('');
@@ -1192,7 +1192,7 @@ onMounted(() => {
   gap: 10px;
 }
 
-/* ===== 按钮 ===== */
+/* ===== Button ===== */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -1222,7 +1222,7 @@ onMounted(() => {
   overflow: hidden;
 }
 
-/* ===== 左侧分类树 ===== */
+/* ===== Left category tree ===== */
 .dict-sidebar {
   width: 240px;
   flex-shrink: 0;
@@ -1379,7 +1379,7 @@ onMounted(() => {
 .sidebar-empty { color: var(--text-secondary); }
 .sidebar-error { color: var(--status-error); }
 
-/* ===== 右侧内容 ===== */
+/* ===== Right content ===== */
 .dict-content {
   flex: 1;
   overflow-y: auto;
@@ -1440,7 +1440,7 @@ onMounted(() => {
   white-space: nowrap;
 }
 
-/* ===== 字典表工具栏 ===== */
+/* ===== Dictionary table toolbar ===== */
 .dict-table-toolbar {
   display: flex;
   align-items: center;
@@ -1459,7 +1459,7 @@ onMounted(() => {
   gap: 8px;
 }
 
-/* ===== 字典表 ===== */
+/* ===== Dictionary table ===== */
 .dict-table-wrap {
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -1510,7 +1510,7 @@ onMounted(() => {
   color: var(--text);
 }
 
-/* ===== 弹窗 ===== */
+/* ===== Dialog ===== */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -1582,7 +1582,7 @@ onMounted(() => {
   border-radius: 0 0 10px 10px;
 }
 
-/* ===== 表单 ===== */
+/* ===== Form ===== */
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;

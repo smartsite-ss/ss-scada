@@ -10,7 +10,7 @@
           class="project-count"
         >{{ $t('system.projects.projectCount', { count: store.pagination.total }) }}</span>
       </div>
-      <!-- 启用状态过滤下拉：位于搜索框左侧，前端过滤当前页项目 -->
+      <!-- Enable-state filter dropdown: left of the search box; frontend filters current-page projects -->
       <div class="filter-bar">
         <select
           v-model="enabledFilter"
@@ -160,7 +160,7 @@
         ]"
         @click="openProject(project.projectId)"
       >
-        <!-- 封面图：大图展示，无图时使用主题色渐变 + 首字母 -->
+        <!-- Cover image: large display; when no image, use theme-color gradient + initial -->
         <div class="card-cover">
           <img
             v-if="project.image"
@@ -175,7 +175,7 @@
           >
             <span class="cover-initial">{{ getInitial(project.projectName) }}</span>
           </div>
-          <!-- 停用状态角标：项目未启用时不采集、不在设备树/设备监控显示 -->
+          <!-- Disabled-status badge: when a project is not enabled, no acquisition and not shown in the device tree/monitoring -->
           <span
             v-if="!project.enabled"
             class="cover-chip cover-chip-disabled"
@@ -201,7 +201,7 @@
             /></svg>
             {{ $t('system.projects.disabled') }}
           </span>
-          <!-- 启用状态角标：项目正在采集 -->
+          <!-- Enable badge: project is being collected -->
           <span
             v-else
             class="cover-chip cover-chip-enabled"
@@ -210,7 +210,7 @@
             <span class="enabled-dot" />
             {{ $t('system.projects.enabled') }}
           </span>
-          <!-- 最近更新角标 -->
+          <!-- Recently-updated badge -->
           <span
             v-if="isRecentlyUpdated(project.updatedAt)"
             class="cover-chip cover-chip-recent"
@@ -218,7 +218,7 @@
             <span class="recent-dot" />
             {{ $t('system.projects.recentlyUpdated') }}
           </span>
-          <!-- 默认项目角标 -->
+          <!-- Default-project badge -->
           <span
             v-if="defaultProjectId === project.projectId"
             class="cover-chip cover-chip-default"
@@ -248,7 +248,7 @@
             </div>
           </div>
           <div class="card-actions">
-            <!-- 启用/停用快速切换：停用项目立即停止采集，启用项目立即开始采集 -->
+            <!-- Quick enable/disable toggle: disabling a project stops acquisition immediately; enabling starts it immediately -->
             <button
               class="btn-icon"
               :class="{ 'btn-icon-warning': project.enabled }"
@@ -332,7 +332,7 @@
         >
           {{ $t('system.projects.noDescription') }}
         </p>
-        <!-- 统计区：页面数 + 文件夹大小 + 版本 -->
+        <!-- Stats area: page count + folder size + version -->
         <div class="card-stats">
           <div class="stat-item">
             <span class="stat-value">{{ project.pageCount ?? 0 }}</span>
@@ -349,7 +349,7 @@
             <span class="stat-label">{{ $t('system.projects.versionLabel') }}</span>
           </div>
         </div>
-        <!-- 资源路径：精简参考信息 -->
+        <!-- Resource path: concise reference info -->
         <div
           v-if="project.projectPath || project.databasePath"
           class="card-resources"
@@ -637,7 +637,7 @@
               >
             </div>
           </div>
-          <!-- 地图选点：弹出地图点选经纬度，确认后自动反向地理编码填充地址 -->
+          <!-- Map point selection: pop up a map to pick lat/lng; after confirmation, auto reverse-geocode to fill the address -->
           <div class="geocode-row">
             <button
               type="button"
@@ -690,7 +690,7 @@
               rows="3"
             />
           </div>
-          <!-- 启用状态开关：新建默认停用，启用后才开始数据采集；切换立即生效 -->
+          <!-- Enable switch: new entries default to disabled; acquisition starts only after enabling; toggle takes effect immediately -->
           <div class="form-group form-group-switch">
             <label class="form-label">{{ $t('system.projects.enabledLabel') }}</label>
             <div class="switch-row">
@@ -779,7 +779,7 @@
       </div>
     </div>
 
-    <!-- 地图选点弹窗 -->
+    <!-- Map point-selection dialog -->
     <MapPickerDialog
       v-model:visible="showMapPicker"
       :initial-lng="form.longitude"
@@ -808,20 +808,20 @@ const { defaultProjectId, setDefaultProject: setDefault, clearDefaultProject: cl
 const keyword = ref('');
 
 /**
- * 启用状态过滤器
- * - 'all'      : 显示全部项目（默认）
- * - 'enabled'  : 仅显示已启用项目
- * - 'disabled' : 仅显示已停用项目
+ * Enabled-state filter
+ * - 'all'      : show all projects (default)
+ * - 'enabled'  : show only enabled projects
+ * - 'disabled' : show only disabled projects
  *
- * 后端 GET /projects 暂未支持 enabled 过滤参数，这里在前端对当前页数据做过滤。
- * 当切换分页时过滤器仍然生效，保证用户筛选上下文不丢失。
+ * The backend GET /projects does not yet support an enabled filter param, so filtering is done on the current page data on the frontend.
+ * The filter remains effective when paging, preserving the user's filter context.
  */
 type EnabledFilter = 'all' | 'enabled' | 'disabled';
 const enabledFilter = ref<EnabledFilter>('all');
 
 /**
- * 按启用状态过滤后的项目列表
- * 直接基于 store.projects 做前端过滤，避免改动后端 API 与 store 签名
+ * Project list filtered by enabled state
+ * Filtered on the frontend directly from store.projects, avoiding changes to the backend API and store signature
  */
 const displayProjects = computed<Project[]>(() => {
   if (enabledFilter.value === 'all') return store.projects;
@@ -837,15 +837,15 @@ const submitting = ref(false);
 const formError = ref('');
 const formSuccess = ref('');
 const loading = ref(false);
-/** 用户选择的项目封面图片文件（新建时暂存，提交后上传） */
+/** The project cover image file chosen by the user (staged when creating, uploaded after submit) */
 const imageFile = ref<File | null>(null);
-/** 图片预览 URL（新建时用 object URL，编辑时用后端 URL） */
+/** Image preview URL (object URL when creating, backend URL when editing) */
 const imagePreview = ref('');
-/** 反向地理编码加载状态 */
+/** Reverse geocoding loading state */
 const geocoding = ref(false);
-/** 反向地理编码结果提示 */
+/** Reverse geocoding result hint */
 const geocodeHint = ref('');
-/** 反向地理编码是否成功（用于提示样式） */
+/** Whether reverse geocoding succeeded (used for hint styling) */
 const geocodeOk = ref(false);
 const form = ref({
   name: '',
@@ -856,7 +856,7 @@ const form = ref({
   latitude: '',
   owner: '',
   description: '',
-  /** 启用状态：新建默认停用（false），需手动启用后才开始数据采集 */
+  /** Enabled state: new entries default to disabled (false); data acquisition starts only after manual enable */
   enabled: false,
 });
 
@@ -870,7 +870,7 @@ function formatDate(dateStr: string): string {
   return `${y}-${m}-${day} ${h}:${min}`;
 }
 
-/** 相对时间：刚刚 / N分钟前 / N小时前 / N天前 / 绝对日期 */
+/** Relative time: just now / N minutes ago / N hours ago / N days ago / absolute date */
 function formatRelativeTime(dateStr?: string): string {
   if (!dateStr) return '';
   const ts = new Date(dateStr).getTime();
@@ -888,7 +888,7 @@ function formatRelativeTime(dateStr?: string): string {
   return t('system.projects.daysAgo', { n: Math.floor(diff / ONE_DAY) });
 }
 
-/** 判断是否最近更新（24 小时内）—— 业务活跃度指标 */
+/** Determine whether recently updated (within 24h) — a business activity metric */
 function isRecentlyUpdated(dateStr?: string): boolean {
   if (!dateStr) return false;
   const ts = new Date(dateStr).getTime();
@@ -896,14 +896,14 @@ function isRecentlyUpdated(dateStr?: string): boolean {
   return Date.now() - ts < 86400000;
 }
 
-/** 获取项目名称首字母（优先取英文首字母，否则取中文首字） */
+/** Get the first letter of a project name (prefer the English initial, otherwise the first Chinese character) */
 function getInitial(name: string): string {
   if (!name) return '?';
   const trimmed = name.trim();
   return trimmed.charAt(0).toUpperCase();
 }
 
-/** 根据项目名哈希选取主题色（0-5 共 6 种） */
+/** Pick the theme color by project-name hash (6 variants, 0-5) */
 function getAccentColor(name: string): number {
   if (!name) return 0;
   let hash = 0;
@@ -913,7 +913,7 @@ function getAccentColor(name: string): number {
   return Math.abs(hash) % 6;
 }
 
-/** 缩短长路径，仅保留最后 2 级目录 */
+/** Shorten a long path, keeping only the last 2 directory levels */
 function shortenPath(p?: string): string {
   if (!p) return '';
   const parts = p.replace(/\\/g, '/').split('/').filter(Boolean);
@@ -921,7 +921,7 @@ function shortenPath(p?: string): string {
   return '.../' + parts.slice(-2).join('/');
 }
 
-/** 格式化文件大小：字节 → KB/MB/GB 自适应 */
+/** Format file size: bytes → KB/MB/GB adaptive */
 function formatFileSize(bytes?: number): string {
   if (bytes == null || bytes < 0) return '-';
   if (bytes === 0) return '0 B';
@@ -929,7 +929,7 @@ function formatFileSize(bytes?: number): string {
   const i = Math.floor(Math.log(bytes) / Math.log(1024));
   const idx = Math.min(i, units.length - 1);
   const val = bytes / Math.pow(1024, idx);
-  // B 显示整数，其余保留 1 位小数
+  // B shows an integer; the rest keep 1 decimal place
   return idx === 0 ? `${val} ${units[idx]}` : `${val.toFixed(1)} ${units[idx]}`;
 }
 
@@ -949,7 +949,7 @@ function openCreateDialog() {
     latitude: '',
     owner: '',
     description: '',
-    // 新建项目默认停用，需手动启用后才开始数据采集
+    // New projects default to disabled; data acquisition starts only after manual enable
     enabled: false,
   };
   imageFile.value = null;
@@ -970,7 +970,7 @@ function openEditDialog(project: Project) {
     latitude: project.latitude || '',
     owner: project.owner || '',
     description: project.description || '',
-    // 兼容旧 projectinfo.json 无 enabled 字段的情况，默认为停用
+    // Compatible with old projectinfo.json lacking the enabled field, defaulting to disabled
     enabled: project.enabled ?? false,
   };
   imageFile.value = null;
@@ -983,7 +983,7 @@ function openEditDialog(project: Project) {
 function closeCreateDialog() {
   showCreateDialog.value = false;
   editingProject.value = null;
-  // 释放 object URL 避免内存泄漏
+  // Release object URL to avoid memory leaks
   if (imageFile.value && imagePreview.value.startsWith('blob:')) {
     URL.revokeObjectURL(imagePreview.value);
   }
@@ -991,24 +991,24 @@ function closeCreateDialog() {
   imagePreview.value = '';
 }
 
-/** 处理图片文件选择 */
+/** Handle image file selection */
 function handleImageSelect(event: Event) {
   const input = event.target as HTMLInputElement;
   const file = input.files?.[0];
   if (!file) return;
-  // 校验文件类型
+  // Validate file type
   if (!file.type.startsWith('image/')) {
     formError.value = t('system.projects.errorImageType');
     input.value = '';
     return;
   }
-  // 校验文件大小（10MB）
+  // Validate file size (10MB)
   if (file.size > 10 * 1024 * 1024) {
     formError.value = t('system.projects.errorImageSize');
     input.value = '';
     return;
   }
-  // 释放旧的 object URL
+  // Release the old object URL
   if (imageFile.value && imagePreview.value.startsWith('blob:')) {
     URL.revokeObjectURL(imagePreview.value);
   }
@@ -1017,7 +1017,7 @@ function handleImageSelect(event: Event) {
   formError.value = '';
 }
 
-/** 移除已选择的图片 */
+/** Remove the selected image */
 function handleImageRemove() {
   if (imageFile.value && imagePreview.value.startsWith('blob:')) {
     URL.revokeObjectURL(imagePreview.value);
@@ -1027,9 +1027,9 @@ function handleImageRemove() {
 }
 
 /**
- * 反向地理编码：根据经纬度调用 OSM Nominatim 获取地址名称。
- * 公共端点限速 1 req/s，仅用于手动触发；accept-language=zh-CN 返回中文地址。
- * 数据来源 © OpenStreetMap 贡献者，遵循 ODbL 协议。
+ * Reverse geocoding: call OSM Nominatim with lat/lng to get the address name.
+ * Public endpoint is rate-limited to 1 req/s and is only for manual triggers; accept-language=zh-CN returns a Chinese address.
+ * Data © OpenStreetMap contributors, under the ODbL license.
  */
 async function reverseGeocode() {
   const lng = form.value.longitude.trim();
@@ -1053,7 +1053,7 @@ async function reverseGeocode() {
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const data = await resp.json();
     if (data && data.display_name) {
-      // display_name 为完整地址字符串，截断到字段最大长度 200
+      // display_name is a full address string, truncated to the field max length 200
       const name = String(data.display_name).slice(0, 200);
       form.value.address = name;
       geocodeOk.value = true;
@@ -1070,12 +1070,12 @@ async function reverseGeocode() {
   }
 }
 
-/** 地图选点确认回调：填充经纬度并自动触发反向地理编码获取地址 */
+/** Map point-selection confirm callback: fill lat/lng and auto-trigger reverse geocoding to fetch the address */
 function handleMapSelect(lng: number, lat: number) {
-  // 保留 6 位小数，去除尾随 0
+  // Keep 6 decimals, strip trailing zeros
   form.value.longitude = String(Number(lng.toFixed(6)));
   form.value.latitude = String(Number(lat.toFixed(6)));
-  // 选点后自动获取地址名称
+  // Auto-fetch the address name after point selection
   void reverseGeocode();
 }
 
@@ -1096,14 +1096,14 @@ async function handleSubmit() {
     formError.value = t('system.projects.errorNameEmpty');
     return;
   }
-  // 项目代码格式校验（仅新建时填写了代码）
+  // Project code format validation (only when code is filled on create)
   if (!editingProject.value && form.value.pid.trim()) {
     if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(form.value.pid.trim())) {
       formError.value = t('system.projects.errorPidInvalid');
       return;
     }
   }
-  // 经纬度格式校验（十进制数字）
+  // Lat/lng format validation (decimal numbers)
   const lng = form.value.longitude.trim();
   const lat = form.value.latitude.trim();
   const decimalRe = /^-?\d+(\.\d+)?$/;
@@ -1124,7 +1124,7 @@ async function handleSubmit() {
         owner: form.value.owner.trim() || undefined,
         enabled: form.value.enabled,
       });
-      // 编辑时：如果用户选择了新图片，上传到服务器
+      // On edit: if the user selected a new image, upload it to the server
       if (imageFile.value) {
         await projectApi.uploadImage(editingProject.value.projectId, imageFile.value);
       }
@@ -1145,12 +1145,12 @@ async function handleSubmit() {
         enabled: form.value.enabled,
       });
       if (project) {
-        // 新建时：项目创建成功后上传图片（如有）
+        // On create: upload the image after the project is created successfully (if any)
         if (imageFile.value) {
           try {
             await projectApi.uploadImage(project.projectId, imageFile.value);
           } catch (imgErr) {
-            // 图片上传失败不阻塞项目创建流程，仅提示
+            // Image upload failure does not block the project creation flow; only a hint is shown
             console.warn('Project image upload failed:', imgErr);
           }
         }
@@ -1199,7 +1199,7 @@ function handleManage(projectId: string) {
 }
 
 async function handleSetDefault(projectId: string) {
-  // 切换：如果已是默认则清除，否则设为默认
+  // Toggle: clear if already default, otherwise set as default
   if (defaultProjectId.value === projectId) {
     await clearDefault();
   } else {
@@ -1208,10 +1208,10 @@ async function handleSetDefault(projectId: string) {
 }
 
 /**
- * 切换项目启用状态
+ * Toggle a project's enabled state
  *
- * 启用 → 后端立即开始该项目所有设备的数据采集
- * 停用 → 后端立即停止该项目所有设备的采集任务，并从设备树/设备监控中隐藏
+ * Enable → the backend immediately starts data acquisition for all devices of the project
+ * Disable → the backend immediately stops acquisition tasks for all devices and hides them from the device tree/monitoring
  */
 async function handleToggleEnabled(project: Project) {
   const targetEnabled = !project.enabled;
@@ -1219,13 +1219,13 @@ async function handleToggleEnabled(project: Project) {
     await store.toggleProjectEnabled(project.projectId, targetEnabled);
   } catch (e: any) {
     formError.value = e?.response?.data?.message || t('system.projects.errorToggleEnabled');
-    // 错误提示 3 秒后自动清除
+    // Error hint auto-clears after 3 seconds
     setTimeout(() => { formError.value = ''; }, 3000);
   }
 }
 
 onMounted(() => {
-  // 项目管理页加载全部项目（包含停用项），便于切换启用状态
+  // The project management page loads all projects (including disabled) for switching the enabled state
   store.fetchProjects(1, 20, undefined, true);
   loadDefault();
 });
@@ -1310,7 +1310,7 @@ onMounted(() => {
   border-color: var(--primary);
 }
 
-/* ── 启用状态过滤下拉 ── */
+/* ── Enabled-state filter dropdown ── */
 .filter-bar {
   flex-shrink: 0;
 }
@@ -1328,7 +1328,7 @@ onMounted(() => {
   cursor: pointer;
   transition: border-color 0.2s, box-shadow 0.2s;
   box-sizing: border-box;
-  /* 用主题色箭头替代原生下拉箭头，保证跨平台视觉一致 */
+  /* Use a theme-color arrow instead of the native dropdown arrow for cross-platform visual consistency */
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -1394,7 +1394,7 @@ onMounted(() => {
   gap: 14px;
 }
 
-/* 主题色由 .cover-accent-N 提供（封面渐变背景），见下方封面样式 */
+/* Theme color is provided by .cover-accent-N (cover gradient background); see cover style below */
 
 .project-card {
   position: relative;
@@ -1415,7 +1415,7 @@ onMounted(() => {
   transform: translateY(-2px);
 }
 
-/* 最近更新卡片：左侧主题色微光强调业务活跃度 */
+/* Recent-update card: left theme-color glow emphasizes business activity */
 .project-card.is-recent {
   border-color: color-mix(in srgb, var(--status-success) 40%, var(--border-light));
 }
@@ -1430,7 +1430,7 @@ onMounted(() => {
   opacity: 0.6;
 }
 
-/* 停用项目卡片：整体降饱和度 + 左侧红色微光条，提示该项目不采集/不在设备树显示 */
+/* Disabled project card: overall desaturated + left red glow bar, indicating the project is not collected/not shown in the device tree */
 .project-card.is-disabled {
   opacity: 0.65;
   filter: saturate(0.6);
@@ -1455,11 +1455,11 @@ onMounted(() => {
   opacity: 1;
 }
 
-/* ===== 封面图：紧凑布局 — 小图 + 渐变回退 ===== */
+/* ===== Cover image: compact layout — small image + gradient fallback ===== */
 .card-cover {
   position: relative;
   height: 88px;
-  /* 负边距撑满卡片宽度（突破卡片内边距），顶部紧贴卡片上沿 */
+  /* Negative margin to fill the card width (breaking the card padding), top flush with the card's top edge */
   margin: -14px -14px 12px;
   overflow: hidden;
   background: var(--border-light);
@@ -1494,7 +1494,7 @@ onMounted(() => {
   user-select: none;
 }
 
-/* 封面渐变背景（6 种主题色，比头像更饱和以适配大面积） */
+/* Cover gradient background (6 theme colors, more saturated than the avatar for large areas) */
 .cover-accent-0 { background: linear-gradient(135deg, var(--primary), color-mix(in srgb, var(--primary) 55%, black)); }
 .cover-accent-1 { background: linear-gradient(135deg, var(--status-success), color-mix(in srgb, var(--status-success) 55%, black)); }
 .cover-accent-2 { background: linear-gradient(135deg, var(--status-warning), color-mix(in srgb, var(--status-warning) 55%, black)); }
@@ -1502,7 +1502,7 @@ onMounted(() => {
 .cover-accent-4 { background: linear-gradient(135deg, var(--status-info, var(--primary)), color-mix(in srgb, var(--status-info, var(--primary)) 55%, black)); }
 .cover-accent-5 { background: linear-gradient(135deg, var(--primary), color-mix(in srgb, var(--primary) 55%, black)); }
 
-/* 封面角标（半透明胶囊，叠在封面右上/左上） */
+/* Cover badge (semi-transparent pill, overlaid on the cover's top-right/top-left) */
 .cover-chip {
   position: absolute;
   display: inline-flex;
@@ -1520,13 +1520,13 @@ onMounted(() => {
 }
 
 .cover-chip-recent {
-  /* 最近更新角标放在左下角，避免与左上角的启用/停用角标重叠 */
+  /* Put the recently-updated badge at the bottom-left to avoid overlapping the enable/disable badge at the top-left */
   bottom: 6px;
   left: 6px;
   color: var(--status-success);
 }
 
-/* 停用状态角标：左上角，橙红填充背景 + 白色文字，对比强烈 */
+/* Disabled-status badge: top-left, orange-red filled background + white text, strong contrast */
 .cover-chip-disabled {
   top: 6px;
   left: 6px;
@@ -1535,7 +1535,7 @@ onMounted(() => {
   border: 1px solid color-mix(in srgb, var(--status-warning) 70%, white);
 }
 
-/* 启用状态角标：左上角，绿色填充背景 + 白色文字，表示项目正在采集 */
+/* Enable badge: top-left, green filled background + white text, indicating the project is being collected */
 .cover-chip-enabled {
   top: 6px;
   left: 6px;
@@ -1644,7 +1644,7 @@ onMounted(() => {
   color: var(--text);
 }
 
-/* 启用状态切换按钮：当前启用时高亮为警告色，提示点击会停用采集 */
+/* Enable-state toggle button: highlighted in warning color when currently enabled, hinting that clicking will stop acquisition */
 .btn-icon-warning {
   color: var(--status-warning);
   border-color: color-mix(in srgb, var(--status-warning) 40%, var(--border-light));
@@ -1675,7 +1675,7 @@ onMounted(() => {
   opacity: 0.7;
 }
 
-/* ===== 统计区：紧凑型 ===== */
+/* ===== Stats area: compact ===== */
 .card-stats {
   display: flex;
   align-items: center;
@@ -1932,7 +1932,7 @@ onMounted(() => {
   min-width: 0;
 }
 
-/* 反向地理编码按钮行 */
+/* Reverse-geocoding button row */
 .geocode-row {
   display: flex;
   align-items: center;
@@ -1960,7 +1960,7 @@ onMounted(() => {
   color: var(--status-error);
 }
 
-/* 项目封面图片上传区域 */
+/* Project cover image upload area */
 .image-upload-area {
   width: 100%;
 }
@@ -2075,7 +2075,7 @@ onMounted(() => {
   margin: 2px 0 0 0;
 }
 
-/* ===== 启用状态开关（toggle switch） ===== */
+/* ===== Enabled-state switch (toggle switch) ===== */
 .form-group-switch {
   padding: 8px 10px;
   background: var(--background, var(--border-light));
@@ -2104,7 +2104,7 @@ onMounted(() => {
   height: 0;
 }
 
-/* 滑块：未选中=灰色靠左，选中:绿色靠右 */
+/* Slider: unselected = grey to the left, selected = green to the right */
 .switch-slider {
   position: absolute;
   cursor: pointer;

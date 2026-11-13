@@ -1,6 +1,6 @@
 <template>
   <div class="page-management">
-    <!-- 页头（紧凑型：标题 + 项目选择 + 统计） -->
+    <!-- Page header (compact: title + project selector + stats) -->
     <div class="page-header">
       <div class="header-left">
         <h1 class="page-title">
@@ -22,7 +22,7 @@
         </span>
       </div>
 
-      <!-- 项目选择栏 -->
+      <!-- Project selector bar -->
       <div class="selector-bar">
         <svg
           class="selector-icon"
@@ -50,7 +50,7 @@
             {{ project.projectName }}
           </option>
         </select>
-        <!-- 手动刷新按钮：重新拉取项目列表，保持当前选中并刷新页面大纲 -->
+        <!-- Manual refresh button: re-fetch the project list, keep the current selection and refresh the page outline -->
         <button
           type="button"
           class="selector-refresh-btn"
@@ -80,7 +80,7 @@
         </span>
       </div>
 
-      <!-- 统计栏 -->
+      <!-- Stats bar -->
       <div
         v-if="selectedProjectId && !pagesLoading && totalPageCount > 0"
         class="stats-bar"
@@ -113,7 +113,7 @@
       </div>
     </div>
 
-    <!-- 加载中 -->
+    <!-- Loading -->
     <div
       v-if="pagesLoading"
       class="loading-container"
@@ -122,7 +122,7 @@
       <span>{{ t('system.pageManagement.loadingPages') }}</span>
     </div>
 
-    <!-- 空状态 -->
+    <!-- Empty state -->
     <div
       v-else-if="selectedProjectId && totalPageCount === 0"
       class="empty-state"
@@ -145,12 +145,12 @@
       </p>
     </div>
 
-    <!-- 页面列表 -->
+    <!-- Page list -->
     <div
       v-else-if="selectedProjectId"
       class="pages-content"
     >
-      <!-- 根目录页面 -->
+      <!-- Root directory page -->
       <div
         v-if="rootPages.length > 0"
         class="section"
@@ -256,7 +256,7 @@
         </div>
       </div>
 
-      <!-- 分组页面 -->
+      <!-- Group page -->
       <div
         v-for="group in groups"
         :key="group.name"
@@ -364,7 +364,7 @@
       </div>
     </div>
 
-    <!-- 未选择项目 -->
+    <!-- No project selected -->
     <div
       v-else
       class="empty-state"
@@ -434,8 +434,8 @@ const selectedProjectName = computed(() => {
 
 function getPreviewUrl(url: string): string {
   if (!url) return '';
-  // 预览图为后端 @Public 接口：<img> 不走 fetch/XHR 拦截器，
-  // 桌面端需改写为后端绝对地址，否则解析到页面源 404
+  // The preview image is a backend @Public endpoint: <img> does not go through the fetch/XHR interceptor,
+  // On desktop, rewrite to the backend absolute address; otherwise resolution hits the page origin and 404s
   return resolveBackendResourceUrl(url);
 }
 
@@ -461,7 +461,7 @@ function formatDate(isoStr: string): string {
 async function loadProjects() {
   projectsLoading.value = true;
   try {
-    // 页面管理属于项目管理子页，需列出全部项目（含停用项）以便切换管理
+    // Page management is a subpage of project management; it must list all projects (including disabled) to switch and manage
     const res = await projectApi.list({ page: 1, pageSize: 100 }, true);
     projects.value = res.data || [];
   } catch {
@@ -498,10 +498,10 @@ async function handleProjectChange() {
 }
 
 /**
- * 手动刷新项目列表
- * - 重新拉取项目列表
- * - 若刷新前选中的项目仍存在，保持选中并刷新其页面大纲
- * - 若刷新前选中的项目已不存在，清空选择与页面数据
+ * Manually refresh the project list
+ * - re-fetch the project list
+ * - if the previously selected project still exists, keep it selected and refresh its page outline
+ * - if it no longer exists, clear the selection and page data
  */
 async function handleRefreshProjects() {
   const previouslySelectedId = selectedProjectId.value;
@@ -532,7 +532,7 @@ function handlePreview(page: OutlinePage, groupName?: string) {
   if (!project) return;
   const query = new URLSearchParams({ projectId: project.projectId });
   if (groupName) query.set('group', groupName);
-  // 路径参数区分不同页面，query 携带 projectId 和 group
+  // Path params distinguish pages; query carries projectId and group
   router.push(`/system/preview/${encodeURIComponent(page.name)}?${query.toString()}`);
 }
 
@@ -541,7 +541,7 @@ onMounted(async () => {
   const defaultId = await loadDefault();
   if (defaultId && !selectedProjectId.value) {
     selectedProjectId.value = defaultId;
-    // 需要手动调用（v-model 不会触发 @change）
+    // Needs manual invocation (v-model does not trigger @change)
     handleProjectChange();
   }
 });
@@ -554,7 +554,7 @@ onMounted(async () => {
   width: auto;
 }
 
-/* ── 页头（紧凑型：标题 + 项目选择 + 统计） ── */
+/* ── Page header (compact: title + project selector + stats) ── */
 .page-header {
   display: flex;
   align-items: center;
@@ -590,7 +590,7 @@ onMounted(async () => {
   opacity: 0.7;
 }
 
-/* ── 项目选择栏 ── */
+/* ── Project selector bar ── */
 .selector-bar {
   position: relative;
   display: flex;
@@ -631,7 +631,7 @@ onMounted(async () => {
   border-color: var(--primary);
 }
 
-/* ── 手动刷新按钮 ── */
+/* ── Manual refresh button ── */
 .selector-refresh-btn {
   display: inline-flex;
   align-items: center;
@@ -685,7 +685,7 @@ onMounted(async () => {
   animation: spin 0.8s linear infinite;
 }
 
-/* ── 统计栏 ── */
+/* ── Stats bar ── */
 .stats-bar {
   display: flex;
   gap: 16px;
@@ -705,7 +705,7 @@ onMounted(async () => {
   white-space: nowrap;
 }
 
-/* ── 分区标题 ── */
+/* ── Section title ── */
 .section {
   margin-bottom: 32px;
 }
@@ -719,7 +719,7 @@ onMounted(async () => {
   border-bottom: 1px solid var(--border);
 }
 
-/* ── 页面卡片网格 ── */
+/* ── Page card grid ── */
 .page-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -740,7 +740,7 @@ onMounted(async () => {
   transform: translateY(-1px);
 }
 
-/* ── 预览区 ── */
+/* ── Preview area ── */
 .page-preview {
   position: relative;
   width: 100%;
@@ -768,7 +768,7 @@ onMounted(async () => {
   font-size: 12px;
 }
 
-/* ── 卡片内容 ── */
+/* ── Card content ── */
 .page-card-body {
   padding: 14px 16px;
 }
@@ -799,7 +799,7 @@ onMounted(async () => {
   color: var(--text-muted);
 }
 
-/* ── 操作按钮 ── */
+/* ── Action buttons ── */
 .page-actions {
   display: flex;
   gap: 8px;
@@ -840,7 +840,7 @@ onMounted(async () => {
   border-color: var(--text-muted);
 }
 
-/* ── 加载状态 ── */
+/* ── Loading state ── */
 .loading-container {
   display: flex;
   flex-direction: column;
@@ -865,7 +865,7 @@ onMounted(async () => {
   to { transform: rotate(360deg); }
 }
 
-/* ── 空状态 ── */
+/* ── Empty state ── */
 .empty-state {
   display: flex;
   flex-direction: column;

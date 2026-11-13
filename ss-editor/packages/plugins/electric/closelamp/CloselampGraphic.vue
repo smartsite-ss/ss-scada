@@ -62,7 +62,7 @@ const props = defineProps<{
 
 const { currentValue, bindTitle } = useTagValue(props);
 
-/** 解析实时值 → 开合：未绑定时用手动 closed；绑定时按「值→状态」映射，未命中用 defaultStatus */
+/** Parse live value → open/closed: manual closed when unbound; when bound, use the value→status mapping, falling back to defaultStatus on miss */
 const effectiveClosed = computed(() => {
   if (!props.tagId) return props.closed;
   const raw = currentValue.value;

@@ -111,7 +111,7 @@ describe('Device Management E2E', () => {
   }
 
   beforeAll(async () => {
-    // 创建 mock 服务
+    // Create mock services
     deviceService = {
       create: jest.fn(),
       findAll: jest.fn(),

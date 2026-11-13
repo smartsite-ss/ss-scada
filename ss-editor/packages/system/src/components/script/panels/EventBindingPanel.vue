@@ -1,7 +1,7 @@
 <template>
   <div class="event-binding-panel">
     <div class="binding-form">
-      <!-- 事件类型选择 -->
+      <!-- Event type selection -->
       <div class="form-group">
         <label class="form-label">{{ $t('eventBinding.selectEventType') }}</label>
         <select
@@ -28,7 +28,7 @@
         </select>
       </div>
 
-      <!-- 事件描述 -->
+      <!-- Event description -->
       <div
         v-if="selectedEvent"
         class="event-description"
@@ -37,7 +37,7 @@
         <span class="desc-text">{{ selectedEvent.description }}</span>
       </div>
 
-      <!-- 条件表达式（可选） -->
+      <!-- Condition expression (optional) -->
       <div class="form-group">
         <label class="form-label">
           {{ $t('eventBinding.condition') }}
@@ -52,7 +52,7 @@
         <span class="form-hint">{{ $t('eventBinding.conditionHint') }}</span>
       </div>
 
-      <!-- 脚本选择 -->
+      <!-- Script selection -->
       <div class="form-group">
         <label class="form-label">{{ $t('eventBinding.bindingScript') }}</label>
         <select
@@ -80,7 +80,7 @@
       </div>
     </div>
 
-    <!-- 已绑定列表 -->
+    <!-- Bound list -->
     <div
       v-if="bindings.length > 0"
       class="binding-list"
@@ -115,7 +115,7 @@
       </div>
     </div>
 
-    <!-- 操作按钮 -->
+    <!-- Action buttons -->
     <div class="binding-actions">
       <button
         class="btn btn-primary btn-sm"
@@ -240,7 +240,7 @@ function onEventTypeChange() {
 }
 
 function emitChange() {
-  // 不自动 emit，等待用户点击添加
+  // Do not emit automatically; wait for the user to click add
 }
 
 function addBinding() {
@@ -252,7 +252,7 @@ function addBinding() {
     condition: condition.value || undefined,
   };
 
-  // 避免重复绑定
+  // Avoid duplicate binding
   const exists = bindings.value.some(
     (b) =>
       b.eventFullName === newBinding.eventFullName &&
@@ -265,7 +265,7 @@ function addBinding() {
     emit('update:modelValue', [...bindings.value]);
   }
 
-  // 重置选择
+  // Reset selection
   selectedEventType.value = '';
   condition.value = '';
   selectedScriptId.value = '';

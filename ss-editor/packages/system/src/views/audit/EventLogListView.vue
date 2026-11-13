@@ -1,6 +1,6 @@
 <template>
   <div class="event-log-page">
-    <!-- 统一工具栏 -->
+    <!-- Unified toolbar -->
     <div class="toolbar">
       <h1 class="page-title">
         {{ $t('system.eventLogs.title') }}
@@ -119,7 +119,7 @@
       </div>
     </div>
 
-    <!-- 表格 -->
+    <!-- Table -->
     <SmartTable
       table-id="event-logs"
       :data="logs"
@@ -181,7 +181,7 @@
       </template>
     </SmartTable>
 
-    <!-- 行点击提示 -->
+    <!-- Row-click hint -->
     <div
       v-if="logs.length > 0 && !selectedLog"
       class="click-hint"
@@ -189,7 +189,7 @@
       {{ $t('system.eventLogs.clickToView') }}
     </div>
 
-    <!-- 事件详情面板 -->
+    <!-- Event detail panel -->
     <div
       v-if="selectedLog"
       class="detail-panel"
@@ -261,7 +261,7 @@
         </div>
       </div>
 
-      <!-- 错误信息高亮 -->
+      <!-- Error message highlight -->
       <div
         v-if="selectedLog.errorMessage"
         class="detail-error-section"
@@ -270,7 +270,7 @@
         <pre class="detail-error-code">{{ selectedLog.errorMessage }}</pre>
       </div>
 
-      <!-- Payload 展示 -->
+      <!-- Payload display -->
       <div class="detail-body-section">
         <div class="detail-section-header">
           <span class="detail-label">{{ $t('system.eventLogs.detailPayload') }}</span>
@@ -292,7 +292,7 @@
         >{{ $t('system.eventLogs.detailPayloadEmpty') }}</span>
       </div>
 
-      <!-- 订阅者时间线 -->
+      <!-- Subscriber timeline -->
       <div class="detail-body-section">
         <div class="detail-section-header">
           <span class="detail-label">{{ $t('system.eventLogs.detailSubscribers') }}</span>
@@ -383,7 +383,7 @@ const filters = reactive({
   hasSubscribers: false,
 });
 
-// 选中行详情
+// Selected row details
 const selectedLog = ref<EventLogItem | null>(null);
 const payloadExpanded = ref(false);
 
@@ -392,7 +392,7 @@ function handleRowClick(row: EventLogItem) {
   payloadExpanded.value = false;
 }
 
-// ===== 事件类型分组（与后端 PERSISTED_EVENTS 白名单对齐） =====
+// ===== Event type grouping (aligned with backend PERSISTED_EVENTS whitelist) =====
 const eventTypeGroups = computed(() => [
   {
     label: t('system.eventLogs.groupDevice'),
@@ -442,9 +442,9 @@ const eventTypeGroups = computed(() => [
   },
 ]);
 
-// ===== 工具函数 =====
+// ===== Utility functions =====
 
-/** 事件类型 CSS 类（按域着色） */
+/** Event type CSS class (colored by domain) */
 function getEventTypeClass(eventType: string): string {
   if (eventType.startsWith('device.')) return 'event-type-device';
   if (eventType.startsWith('project') || eventType.startsWith('project:')) return 'event-type-project';
@@ -456,7 +456,7 @@ function getEventTypeClass(eventType: string): string {
   return 'event-type-other';
 }
 
-/** 订阅者状态映射到徽章颜色类 */
+/** Map subscriber status to a badge color class */
 function mapSubscriberStatus(status: string): string {
   switch (status) {
     case 'processed':
@@ -495,7 +495,7 @@ function getSubscriberStatusLabel(status: string): string {
   return map[status] || status;
 }
 
-/** 计算订阅者最大耗时 */
+/** Compute the maximum subscriber duration */
 function getMaxDuration(subscribers?: EventLogItem['subscribers']): string {
   if (!subscribers || subscribers.length === 0) return '-';
   const max = subscribers.reduce((max, s) => {
@@ -504,7 +504,7 @@ function getMaxDuration(subscribers?: EventLogItem['subscribers']): string {
   return max > 0 ? `${max}ms` : '-';
 }
 
-/** 成功率 CSS 类 */
+/** Success-rate CSS class */
 function getRatioClass(ratio: string): string {
   const match = ratio.match(/^(\d+)\/(\d+)$/);
   if (!match) return '';
@@ -543,7 +543,7 @@ const subscriberCountText = computed(() => {
   return t('system.eventLogs.subscriberCount', { count });
 });
 
-// ===== 表格列定义 =====
+// ===== Table column definitions =====
 const eventLogColumns = computed<SmartTableColumn[]>(() => [
   {
     key: 'time',
@@ -654,7 +654,7 @@ onMounted(() => {
   overflow-y: auto;
 }
 
-/* ===== 统一工具栏 ===== */
+/* ===== Unified toolbar ===== */
 .toolbar {
   display: flex;
   align-items: center;
@@ -724,7 +724,7 @@ onMounted(() => {
   width: 120px;
 }
 
-/* 表格单元格 */
+/* Table cell */
 .badge-event-type {
   display: inline-block;
   padding: 2px 8px;
@@ -792,7 +792,7 @@ onMounted(() => {
   color: var(--text-secondary);
 }
 
-/* 按钮 */
+/* Button */
 .sys-btn {
   display: inline-flex;
   align-items: center;
@@ -821,7 +821,7 @@ onMounted(() => {
   color: var(--text);
 }
 
-/* 行点击提示 */
+/* Row-click hint */
 .click-hint {
   text-align: center;
   font-size: 12px;
@@ -830,7 +830,7 @@ onMounted(() => {
   opacity: 0.7;
 }
 
-/* 详情面板 */
+/* Detail panel */
 .detail-panel {
   margin-top: 16px;
   border: 1px solid var(--border);
@@ -898,7 +898,7 @@ onMounted(() => {
   word-break: break-all;
 }
 
-/* 错误信息高亮区 */
+/* Error message highlight area */
 .detail-error-section {
   padding: 12px 16px;
   background: color-mix(in srgb, var(--status-error) 5%, var(--surface));
@@ -987,7 +987,7 @@ onMounted(() => {
   font-style: italic;
 }
 
-/* 订阅者时间线 */
+/* Subscriber timeline */
 .subscriber-timeline {
   display: flex;
   flex-direction: column;

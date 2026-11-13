@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-// ButtonIcon 组件
+// ButtonIcon component
 </script>
 
 <style scoped>

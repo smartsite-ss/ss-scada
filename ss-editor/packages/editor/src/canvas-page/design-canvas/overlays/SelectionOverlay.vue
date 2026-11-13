@@ -5,7 +5,7 @@
     tabindex="0"
     @dblclick="handleDoubleClick"
   >
-    <!-- 实时鼠标辅助线 -->
+    <!-- Live mouse guide line -->
     <div
       v-if="showReferenceLines && mousePosition"
       class="reference-lines"
@@ -20,7 +20,7 @@
       />
     </div>
 
-    <!-- 用户创建的辅助线 -->
+    <!-- User-created guide line -->
     <div
       v-if="showReferenceLines"
       class="user-guide-lines"
@@ -36,7 +36,7 @@
       />
     </div>
 
-    <!-- ===== 智能对齐线（拖拽时显示） ===== -->
+    <!-- ===== Smart alignment lines (shown during drag) ===== -->
     <div
       v-if="alignTargets && alignTargets.length > 0"
       class="align-lines"
@@ -50,7 +50,7 @@
       />
     </div>
 
-    <!-- ===== 网格吸附指示器 ===== -->
+    <!-- ===== Grid-snap indicator ===== -->
     <div
       v-if="snapTargets && snapTargets.length > 0"
       class="snap-indicators"
@@ -66,7 +66,7 @@
       </div>
     </div>
 
-    <!-- 选择框 -->
+    <!-- Selection box -->
     <SelectionRectangle
       v-if="!useCanvasSelection && isSelecting"
       :is-selecting="true"
@@ -128,7 +128,7 @@ const props = defineProps<{
   mousePosition: { x: number; y: number } | null;
   guideLines?: GuideLine[];
   useCanvasSelection?: boolean;
-  // 智能对齐和网格吸附
+  // Smart alignment and grid snapping
   alignTargets?: any[];
   snapTargets?: any[];
 }>();
@@ -142,16 +142,16 @@ const emit = defineEmits<{
   'exit-group-edit': [];
 }>();
 
-// 辅助线拖拽状态
+// Guide-line drag state
 const isDraggingGuideLine = ref(false);
 const draggingGuideLineId = ref<string | null>(null);
 
-// ===== 组编辑模式支持 =====
+// ===== Group edit-mode support =====
 const isGroupEditingMode = ref(false);
 let lastClickTime = 0;
 const DOUBLE_CLICK_THRESHOLD = 300; // ms
 
-// 检测是否选中了组合图元
+// Detect whether a group graphic is selected
 const isSelectedGroup = computed(() => {
   if (props.selectedGraphicIds.length === 0) return false;
 
@@ -177,7 +177,7 @@ const isSelectedGroup = computed(() => {
   return false;
 });
 
-// 双击处理 - 进入组编辑模式
+// Double-click handling — enter group edit mode
 const handleDoubleClick = (event: MouseEvent) => {
   const currentTime = Date.now();
 
@@ -195,7 +195,7 @@ const handleDoubleClick = (event: MouseEvent) => {
         if (groupManager && props.selectedGraphicIds.length > 0) {
           const groupId = props.selectedGraphicIds[0];
 
-          // 检查是否是组ID或图元在组中
+          // Check whether it is a group ID or the graphic is in a group
           let targetGroupId = null;
           if (groupManager.isGroup(groupId)) {
             targetGroupId = groupId;
@@ -218,7 +218,7 @@ const handleDoubleClick = (event: MouseEvent) => {
   lastClickTime = currentTime;
 };
 
-// Esc键处理 - 退出组编辑模式
+// Esc key handling — exit group edit mode
 const handleKeyDown = (event: KeyboardEvent) => {
   if (event.key === 'Escape' && isGroupEditingMode.value) {
     event.preventDefault();
@@ -262,7 +262,7 @@ const updateCanvasOffset = () => {
   }
 };
 
-// ===== 智能对齐线样式计算 =====
+// ===== Smart alignment-line style calculation =====
 const getAlignLineClass = (target: any) => {
   if (target.type === 'left' || target.type === 'right' || target.type === 'centerX') {
     return 'vertical';
@@ -296,7 +296,7 @@ const getAlignLineStyle = (target: any) => {
   }
 };
 
-// ===== 网格吸附指示器样式计算 =====
+// ===== Grid-snap indicator style calculation =====
 const getSnapIndicatorClass = (target: any) => {
   return `snap-${target.type}`;
 };
@@ -337,7 +337,7 @@ const showOverlay = computed(
         (!props.useCanvasSelection && (props.isSelecting || props.selectedGraphicIds.length > 0))
 );
 
-// 获取辅助线样式
+// Get the guide-line style
 const getGuideLineStyle = (line: GuideLine) => {
   if (line.direction === 'horizontal') {
     return {
@@ -362,7 +362,7 @@ const getGuideLineStyle = (line: GuideLine) => {
   }
 };
 
-// 辅助线鼠标按下 - 开始拖拽
+// Guide-line mouse-down — start drag
 const handleGuideLineMouseDown = (event: MouseEvent, line: GuideLine) => {
   event.stopPropagation();
   event.preventDefault();
@@ -372,7 +372,7 @@ const handleGuideLineMouseDown = (event: MouseEvent, line: GuideLine) => {
 
   const handleMouseMove = (moveEvent: MouseEvent) => {
     if (isDraggingGuideLine.value && draggingGuideLineId.value) {
-      // 获取当前视口位置并转换为逻辑坐标
+      // Get the current viewport position and convert it to logical coordinates
       const rect = document.querySelector('.selection-overlay')?.getBoundingClientRect();
       if (!rect) return;
       
@@ -398,7 +398,7 @@ const handleGuideLineMouseDown = (event: MouseEvent, line: GuideLine) => {
   document.addEventListener('mouseup', handleMouseUp, { once: true });
 };
 
-// 辅助线双击 - 删除
+// Guide-line double-click — delete
 const handleGuideLineDoubleClick = (event: MouseEvent, lineId: string) => {
   event.stopPropagation();
   event.preventDefault();
@@ -465,7 +465,7 @@ const handleGuideLineDoubleClick = (event: MouseEvent, lineId: string) => {
   height: 100%;
 }
 
-/* ===== 智能对齐线样式 ===== */
+/* ===== Smart alignment-line style ===== */
 .align-lines {
   position: absolute;
   top: 0;
@@ -498,7 +498,7 @@ const handleGuideLineDoubleClick = (event: MouseEvent, lineId: string) => {
   50% { opacity: 1; }
 }
 
-/* ===== 网格吸附指示器样式 ===== */
+/* ===== Grid-snap indicator style ===== */
 .snap-indicators {
   position: absolute;
   top: 0;

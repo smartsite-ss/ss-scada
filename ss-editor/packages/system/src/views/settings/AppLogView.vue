@@ -1,6 +1,6 @@
 <template>
   <div class="app-log-page">
-    <!-- 统一工具栏 -->
+    <!-- Unified toolbar -->
     <div class="toolbar">
       <h1 class="page-title">
         {{ $t('system.appLogs.title') }}
@@ -123,7 +123,7 @@
       </div>
     </div>
 
-    <!-- 日志文件列表 -->
+    <!-- Log file list -->
     <div
       v-if="logFiles.length > 0"
       class="files-bar"
@@ -139,7 +139,7 @@
       </button>
     </div>
 
-    <!-- 日志终端 -->
+    <!-- Log terminal -->
     <div
       ref="logContainer"
       class="log-terminal"
@@ -224,7 +224,7 @@ async function loadFiles() {
     const data = (res as any)?.data || res || [];
     logFiles.value = Array.isArray(data) ? data : [];
   } catch {
-    // 静默失败
+    // Fail silently
   }
 }
 
@@ -273,7 +273,7 @@ function startStream() {
               return;
             }
             buffer += decoder.decode(value, { stream: true });
-            // SSE 事件以双换行符分隔
+            // SSE events are separated by double newlines
             const parts = buffer.split('\n\n');
             buffer = parts.pop() || '';
             for (const part of parts) {
@@ -288,7 +288,7 @@ function startStream() {
                         entries.value = entries.value.slice(-MAX_ENTRIES);
                       }
                     } catch {
-                      // 忽略解析失败的行
+                      // Ignore lines that fail to parse
                     }
                   }
                 }
@@ -301,11 +301,11 @@ function startStream() {
         return read();
       })
       .catch((err: unknown) => {
-        // AbortError 是用户主动停止流，属于正常行为
+        // AbortError is a user-initiated stream stop and is expected behavior
         if (err instanceof Error && err.name === 'AbortError') {
           return;
         }
-        // SSE 连接失败，降级为手动刷新模式
+        // SSE connection failed; degrade to manual refresh mode
         streaming.value = false;
       });
   } catch {
@@ -376,7 +376,7 @@ onUnmounted(() => {
   stopStream();
 });
 
-// keep-alive 缓存：离开页面时停止 SSE 流
+// keep-alive cache: stop the SSE stream when leaving the page
 let wasStreaming = false;
 
 onDeactivated(() => {
@@ -401,7 +401,7 @@ onActivated(() => {
   flex-direction: column;
 }
 
-/* ===== 统一工具栏 ===== */
+/* ===== Unified toolbar ===== */
 .toolbar {
   display: flex;
   align-items: center;
@@ -484,7 +484,7 @@ onActivated(() => {
   color: var(--primary);
 }
 
-/* 终端样式 */
+/* Terminal style */
 .log-terminal {
   flex: 1;
   min-height: 400px;

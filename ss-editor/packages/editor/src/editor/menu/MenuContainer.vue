@@ -1,6 +1,6 @@
 <template>
   <div class="menu-container">
-    <!-- 显示所有菜单项 -->
+    <!-- Show all menu items -->
     <MenuItem 
       v-for="item in menuConfig" 
       :key="item.id"
@@ -19,14 +19,14 @@ import { menuConfig, MenuItem as MenuItemType } from '../../config/menu.config';
 import { useGraphic } from '../../composables/useGraphic';
 import MenuItem from './MenuItem.vue';
 
-// 获取统一的图形操作方法
+// Get the unified graphic operation methods
 const {
   undo,
   redo,
   pasteGraphics
 } = useGraphic();
 
-// 定义事件发射器
+// Define the event emitter
 const emit = defineEmits<{
   (e: 'undo'): void;
   (e: 'redo'): void;
@@ -40,28 +40,28 @@ const emit = defineEmits<{
   (e: 'import-project'): void;
 }>();
 
-// 当前激活的菜单项
+// Currently active menu item
 const activeItem = ref('general');
 
-// 菜单项引用
+// Menu item reference
 const menuItems = ref<InstanceType<typeof MenuItem>[]>([]);
 
-// 处理菜单项点击
+// Handle menu item click
 const handleMenuItemClick = (menuItem: MenuItemType) => {
   
   
-  // 处理菜单项动作
+  // Handle menu item action
   if (menuItem.action) {
     handleAction(menuItem.action);
   }
 };
 
-// 处理菜单激活
+// Handle menu activation
 const handleMenuActivate = (menuId: string) => {
   activeItem.value = menuId;
 };
 
-// 处理菜单项动作
+// Handle menu item action
 const handleAction = (action: string) => {
   switch (action) {
     case 'undo':
@@ -102,11 +102,11 @@ const handleAction = (action: string) => {
   }
 };
 
-// 点击外部关闭菜单
+// Click outside to close the menu
 const handleClickOutside = (event: MouseEvent) => {
   const menuItemsElements = document.querySelectorAll('.menu-item');
   
-  // 检查点击是否在菜单项内部
+  // Check whether the click is inside a menu item
   let clickInsideMenuItem = false;
   menuItemsElements.forEach(item => {
     if (item.contains(event.target as Node)) {
@@ -114,9 +114,9 @@ const handleClickOutside = (event: MouseEvent) => {
     }
   });
   
-  // 如果点击在菜单项外部，关闭所有子菜单
+  // If the click is outside a menu item, close all submenus
   if (!clickInsideMenuItem) {
-    // 关闭所有子菜单
+    // Close all submenus
     menuItems.value.forEach(item => {
       if (item.closeSubmenu) {
         item.closeSubmenu();
@@ -125,12 +125,12 @@ const handleClickOutside = (event: MouseEvent) => {
   }
 };
 
-// 添加点击外部关闭菜单的事件监听
+// Add the click-outside-to-close-menu event listener
 onMounted(() => {
   document.addEventListener('click', handleClickOutside);
 });
 
-// 移除事件监听
+// Remove event listeners
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside);
 });

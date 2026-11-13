@@ -12,7 +12,7 @@
       </button>
     </div>
 
-    <!-- ────── 项目授权 ────── -->
+    <!-- ────── Project authorization ────── -->
     <div
       v-if="activeTab === 'project'"
       class="auth-tab-content"
@@ -74,7 +74,7 @@
       </div>
     </div>
 
-    <!-- ────── 设备授权 ────── -->
+    <!-- ────── Device authorization ────── -->
     <div
       v-if="activeTab === 'device'"
       class="auth-tab-content"
@@ -217,10 +217,10 @@ const tabs = [
 const { t } = useI18n();
 const projectStore = useProjectStore();
 
-// ──────── 公共数据 ────────
+// ──────── Common data ────────
 const projects = ref<Project[]>([]);
 
-// ──────── 项目授权 ────────
+// ──────── Project authorization ────────
 const projectAuthMap = reactive<Record<string, 'read' | 'write' | 'admin'>>({});
 
 function hasProjectAuth(pid: string): boolean {
@@ -249,7 +249,7 @@ function deselectAllProjects() {
   }
 }
 
-// ──────── 设备授权 ────────
+// ──────── Device authorization ────────
 const deviceProjectId = ref('');
 const deviceGroupFilter = ref('');
 const allDevices = ref<Device[]>([]);
@@ -295,7 +295,7 @@ function onDeviceGroupFilterChange() {
   // filteredDevices recomputes automatically
 }
 
-// ──────── 数据加载 ────────
+// ──────── Data loading ────────
 
 async function loadProjects() {
   try {
@@ -346,7 +346,7 @@ async function loadDeviceAuths() {
   } catch { showError(t('common.loadError')); }
 }
 
-// ──────── 统一保存 ────────
+// ──────── Unified save ────────
 
 async function saveAll() {
   saving.value = true;
@@ -358,7 +358,7 @@ async function saveAll() {
     }));
     await roleApi.setProjectAuths(props.roleId, projectAuthList);
 
-    // v8.0：设备分组授权已废弃，不再单独保存分组授权（分组可见性由设备授权推导）
+    // v8.0: device-group authorization is deprecated; group authorization is no longer saved separately (group visibility is derived from device authorization)
     // Save device auths
     if (deviceProjectId.value) {
       const deviceAuthList = Object.entries(deviceAuthMap).map(([deviceId, permission]) => ({
@@ -374,7 +374,7 @@ async function saveAll() {
   }
 }
 
-// ──────── 初始化 ────────
+// ──────── Initialization ────────
 
 onMounted(async () => {
   await loadProjects();

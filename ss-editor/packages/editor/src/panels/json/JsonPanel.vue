@@ -38,36 +38,36 @@ const {
   validateJson,
 } = useJsonEditor()
 
-// 应用更改
+// Apply changes
 const apply = () => {
   if (validateJson(jsonContent.value)) {
     applyJson(jsonContent.value)
   }
 }
 
-// 格式化
+// Format
 const format = () => {
   jsonContent.value = formatJson(jsonContent.value)
 }
 
-// 导出
+// Export
 const handleExport = () => {
   exportJson(jsonContent.value)
 }
 
-// 导入 - JsonEditor 组件已经处理了文件选择和内容更新，
-// 这里我们只需要在内容更新后应用更改
+// Import — the JsonEditor component already handles file selection and content update,
+// Here we only need to apply changes after the content updates
 const handleImport = () => {
-  // JsonEditor 组件会处理文件选择，然后通过 v-model 更新 jsonContent
-  // 当 jsonContent 更新后，我们可以考虑直接应用，但为了安全，
-  // 让用户手动点击应用按钮
+  // JsonEditor handles file selection, then updates jsonContent via v-model
+  // After jsonContent updates, we could apply directly, but for safety,
+  // Let the user manually click the apply button
 }
 
-// 生成测试图元 - 1000个button
+// Generate test graphics — 1000 buttons
 const handleGenerateTestGraphics = () => {
   const generator = new GraphicGenerator()
   
-  // 使用网格布局生成1000个button
+  // Generate 1000 buttons using a grid layout
   const result = generator.generate({
     type: 'button',
     count: 1000,
@@ -84,7 +84,7 @@ const handleGenerateTestGraphics = () => {
     randomColors: true,
   })
   
-  // 获取当前页面并添加图元
+  // Get the current page and add a graphic
   const pageStore = usePageStore()
   const currentPage = pageStore.currentPage
   
@@ -108,7 +108,7 @@ const handleGenerateTestGraphics = () => {
   height: 100%;
   padding: 0;
   background-color: var(--surface);
-  min-height: 0; /* 防止flex子元素溢出 */
+  min-height: 0; /* Prevent flex children from overflowing */
   overflow: hidden;
 }
 

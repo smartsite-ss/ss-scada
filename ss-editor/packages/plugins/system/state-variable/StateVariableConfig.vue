@@ -1,6 +1,6 @@
 <template>
   <div class="state-variable-config">
-    <!-- 1. 变量绑定 -->
+    <!-- 1. Variable binding -->
     <TagBindingEditor
       mode="flat"
       :project-id="projectId"
@@ -9,7 +9,7 @@
       @clear="clearBind"
     />
 
-    <!-- 2. 状态规则列表 -->
+    <!-- 2. Status rule list -->
     <div class="states-section">
       <div class="section-title">
         <span>{{ $t('stateVariable.config.states') }}</span>
@@ -105,7 +105,7 @@
       </div>
     </div>
 
-    <!-- 3. 默认图片 -->
+    <!-- 3. Default image -->
     <div class="default-section">
       <div class="section-title">
         {{ $t('stateVariable.config.defaultImage') }}
@@ -134,7 +134,7 @@
       </div>
     </div>
 
-    <!-- 4. 图片样式 -->
+    <!-- 4. Image style -->
     <PluginConfigPanel
       :schema="stateVariablePropertySchema"
       :values="values"
@@ -178,7 +178,7 @@ const { projectId, current, addVariable, clearBind } = useTagBinding(
   { mode: 'flat' },
 );
 
-/** 图片选择目标：'default' 或某条规则的 id */
+/** Image selection target: 'default' or a rule's id */
 const imagePickerTarget = ref<'default' | string>('default');
 
 const customProps = computed(() => props.graphicProperties?.config?.customProps ?? {});
@@ -188,10 +188,10 @@ const states = computed<StateRule[]>(() => customProps.value.states ?? []);
 const defaultImage = computed<string>(() => customProps.value.defaultImage ?? '');
 const dataType = computed<string>(() => customProps.value.dataType ?? 'float');
 
-/** 兜底刷新版本号：EventBus tagValueChanged 触发强制重算 */
+/** Fallback refresh version: EventBus tagValueChanged triggers forced recompute */
 const localVersion = ref(0);
 
-/** 绑定变量的实时值（用于「状态名称」只读展示） */
+/** Live value of the bound variable (used for the read-only "status name" display) */
 const currentValue = computed(() => {
   void wsStore.tagFlushVersion;
   void localVersion.value;
@@ -275,7 +275,7 @@ function setDefaultImage(image: string) {
   writeCustomProps({ defaultImage: image });
 }
 
-// ===== 订阅绑定变量实时值（用于「状态名称」只读展示） =====
+// ===== Subscribe to bound-variable live values (for read-only "status name" display) =====
 let unsubscribeEventBus: (() => void) | null = null;
 let registeredTagId: string | null = null;
 

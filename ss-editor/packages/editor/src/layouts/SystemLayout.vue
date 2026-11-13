@@ -27,7 +27,7 @@
           </nav>
         </div>
         <div class="topbar-right">
-          <!-- 主题切换 -->
+          <!-- Theme switch -->
           <div class="theme-switcher">
             <button
               class="topbar-btn theme-btn"
@@ -236,7 +236,7 @@
                   >{{ $t(item.labelKey) }}</span>
                 </a>
 
-                <!-- 子菜单展开/折叠按钮 -->
+                <!-- Submenu expand/collapse button -->
                 <button
                   v-if="item.children?.length && !sidebarCollapsed"
                   class="nav-sub-toggle"
@@ -256,7 +256,7 @@
                 </button>
               </div>
 
-              <!-- 子菜单（带折叠动画） -->
+              <!-- Submenu (with collapse animation) -->
               <div
                 v-if="item.children?.length && !sidebarCollapsed"
                 class="nav-sub-wrapper"
@@ -283,7 +283,7 @@
             </template>
           </nav>
 
-          <!-- 侧栏折叠按钮 -->
+          <!-- Sidebar collapse button -->
           <button
             class="sidebar-collapse-btn"
             :title="sidebarCollapsed ? $t('system.layout.expandSidebar') : $t('system.layout.collapseSidebar')"
@@ -304,7 +304,7 @@
         </aside>
 
         <main class="main-content">
-          <!-- 标签页栏 -->
+          <!-- Tab bar -->
           <div class="system-tab-bar">
             <div
               v-for="tab in tabs"
@@ -354,7 +354,7 @@
               </button>
             </div>
           </div>
-          <!-- 右键菜单 -->
+          <!-- Right-click menu -->
           <Teleport to="body">
             <div
               v-if="contextMenu.visible"
@@ -389,7 +389,7 @@
               </button>
             </div>
           </Teleport>
-          <!-- 标签页内容 -->
+          <!-- Tab page content -->
           <div class="system-tab-content">
             <router-view v-slot="{ Component, route: _route }">
               <keep-alive>
@@ -403,9 +403,9 @@
         </main>
       </div>
 
-      <!-- AI 助手浮动面板（受系统配置控制） -->
+      <!-- AI assistant floating panel (controlled by system config) -->
       <FloatingAiPanel v-if="aiAssistantVisible" />
-      <!-- 用户资料对话框 -->
+      <!-- User profile dialog -->
       <UserProfileDialog
         :visible="showProfileDialog"
         @close="showProfileDialog = false"
@@ -439,7 +439,7 @@ const sidebarCollapsed = ref(false);
 const showProfileDialog = ref(false);
 const currentTheme = computed(() => configStore.ui?.theme ?? 'dark');
 
-// 二级菜单折叠/展开状态：记录当前展开的父级菜单 id
+// Submenu collapse/expand state: records the currently expanded parent menu id
 const expandedMenus = ref<Set<string>>(new Set());
 
 function toggleSubmenu(id: string) {
@@ -452,22 +452,22 @@ function toggleSubmenu(id: string) {
   expandedMenus.value = next;
 }
 
-// AI 助手浮动面板显示开关（受系统配置控制）
+// AI assistant floating panel visibility toggle (controlled by system config)
 const aiAssistantVisible = computed(() => configStore.ui?.aiAssistantVisible !== false);
 
-// 布局配置 - 响应式样式
+// Layout config — responsive style
 const layoutStyle = computed(() => ({
   '--header-height': `${configStore.ui?.headerHeight ?? 60}px`,
   '--sidebar-width': `${configStore.ui?.sidebarWidth ?? 200}px`,
   '--sidebar-collapsed-width': '56px',
 }));
 
-// 按角色 menuIds 过滤后的菜单（v7.1：替代 filterByRole，admin 显示全部，非 admin 按 menuIds 过滤）
+// Menu filtered by role menuIds (v7.1: replaces filterByRole; admin sees all, non-admin filtered by menuIds)
 const filteredMenu = computed(() =>
   menuStore.filterByMenuIds(menuStore.items, authStore.menuIds, authStore.isAdmin),
 );
 
-// 菜单项（排除详情页和隐藏项）—— 必须在所有 watch 之前定义，避免 TDZ
+// Menu items (excluding detail pages and hidden items) — must be defined before all watch to avoid TDZ
 const sidebarMenuItems = computed(() =>
   filteredMenu.value.filter(item => item.showInSidebar !== false && !item.isDetail),
 );
@@ -476,13 +476,13 @@ const topbarMenuItems = computed(() =>
   filteredMenu.value.filter(item => item.showInTopbar !== false && !item.isDetail),
 );
 
-// 知识库链接（携带当前路由 path 作为上下文，用于路由匹配对应文章）
+// Knowledge-base link (carries the current route path as context for routing to the matching article)
 const knowledgeLink = computed(() => ({
   path: '/system/knowledge',
   query: route.path.startsWith('/system') ? { path: route.path } : {},
 }));
 
-// 路由变化时自动展开当前激活子菜单所在的父级
+// Auto-expand the parent of the currently active submenu on route change
 watch(() => route.path, () => {
   const next = new Set(expandedMenus.value);
   for (const item of sidebarMenuItems.value) {
@@ -496,25 +496,25 @@ watch(() => route.path, () => {
   expandedMenus.value = next;
 }, { immediate: true });
 
-/** 判断菜单项是否处于激活状态 */
+/** Determine whether a menu item is active */
 function isActive(item: SystemMenuItem): boolean {
-  // 有子菜单的父级：任意子项匹配即高亮
+  // Parent with a submenu: highlighted when any child matches
   if (item.children?.length) {
     return item.children.some(child => route.path === `/system${child.path}`);
   }
-  // 一级菜单：完全匹配
+  // Top-level menu: exact match
   if (item.path === '') return route.path === '/system';
   return route.path === `/system${item.path}` || route.path.startsWith(`/system${item.path}/`);
 }
 
-// ==================== 标签页管理 ====================
+// ==================== Tab management ====================
 
 interface SystemTab {
-  key: string;       // 唯一标识 = path
-  path: string;      // 路由路径 (如 /system, /system/devices)
-  title: string;     // 已翻译的标题
+  key: string;       // Unique id = path
+  path: string;      // Route path (e.g. /system, /system/devices)
+  title: string;     // Translated titles
   labelKey: string;  // i18n key
-  pinned?: boolean;  // 固定标签（不可关闭）
+  pinned?: boolean;  // Pinned tab (cannot be closed)
 }
 
 const OVERVIEW_PATH = '/system';
@@ -522,14 +522,14 @@ const OVERVIEW_KEY = 'system.nav.overview';
 const TABS_COOKIE_KEY = 'ss-system-tabs';
 
 interface SavedTabsState {
-  paths: string[];       // 已打开的标签路径（不含 pinned）
-  activePath: string;    // 当前激活的标签路径
+  paths: string[];       // Opened tab paths (excluding pinned)
+  activePath: string;    // Currently active tab path
 }
 
 const tabs = ref<SystemTab[]>([]);
 const activeTabKey = ref<string>('/system');
 
-/** 根据路径获取或创建 tab */
+/** Get or create a tab by path */
 function getOrCreateTab(path: string, labelKey: string): SystemTab {
   const key = path;
   let tab = tabs.value.find(t => t.key === key);
@@ -545,7 +545,7 @@ function getOrCreateTab(path: string, labelKey: string): SystemTab {
   return tab;
 }
 
-/** 点击菜单项：打开或切换到对应 tab */
+/** Click a menu item: open or switch to the corresponding tab */
 function handleMenuClick(item: SystemMenuItem) {
   const path = `/system${item.path}`;
   const tab = getOrCreateTab(path, item.labelKey);
@@ -553,7 +553,7 @@ function handleMenuClick(item: SystemMenuItem) {
   router.push(path);
 }
 
-/** 切换标签页 */
+/** Switch tab */
 function switchTab(tab: SystemTab) {
   activeTabKey.value = tab.key;
   if (route.path !== tab.path) {
@@ -561,9 +561,9 @@ function switchTab(tab: SystemTab) {
   }
 }
 
-/** 关闭标签页 */
+/** Close tab */
 function closeTab(tab: SystemTab) {
-  if (tab.pinned) return; // 固定标签不可关闭
+  if (tab.pinned) return; // Pinned tabs cannot be closed
   const idx = tabs.value.findIndex(t => t.key === tab.key);
   if (idx === -1) return;
 
@@ -571,7 +571,7 @@ function closeTab(tab: SystemTab) {
   newTabs.splice(idx, 1);
   tabs.value = newTabs;
 
-  // 如果关闭的是当前激活的 tab，切换到相邻 tab
+  // If the closed tab is the active one, switch to an adjacent tab
   if (activeTabKey.value === tab.key) {
     const newActive = newTabs[Math.min(idx, newTabs.length - 1)];
     if (newActive) {
@@ -581,9 +581,9 @@ function closeTab(tab: SystemTab) {
   }
 }
 
-// ==================== 标签页持久化（Cookie） ====================
+// ==================== Tab persistence (Cookie) ====================
 
-/** 将当前标签页状态保存到 Cookie */
+/** Save current tab state to Cookie */
 function saveTabsToCookie() {
   const nonPinnedTabs = tabs.value.filter(t => !t.pinned);
   const state: SavedTabsState = {
@@ -593,12 +593,12 @@ function saveTabsToCookie() {
   setJsonCookie(TABS_COOKIE_KEY, state);
 }
 
-/** 从 Cookie 恢复标签页状态 */
+/** Restore tab state from Cookie */
 function restoreTabsFromCookie(): boolean {
   const saved = getJsonCookie<SavedTabsState>(TABS_COOKIE_KEY);
   if (!saved || !saved.paths || saved.paths.length === 0) return false;
 
-  // 重建标签页列表
+  // Rebuild the tab list
   const restoredTabs: SystemTab[] = [
     {
       key: OVERVIEW_PATH,
@@ -610,7 +610,7 @@ function restoreTabsFromCookie(): boolean {
   ];
 
   for (const path of saved.paths) {
-    if (path === OVERVIEW_PATH) continue; // overview 已固定添加
+    if (path === OVERVIEW_PATH) continue; // overview is already fixed-added
     const resolved = router.resolve(path);
     const titleKey = (resolved.meta?.titleKey as string) || '';
     let title = titleKey ? _t(titleKey) : path;
@@ -628,7 +628,7 @@ function restoreTabsFromCookie(): boolean {
 
   tabs.value = restoredTabs;
 
-  // 导航到上次激活的标签页
+  // Navigate to the last activated tab
   const activePath = saved.activePath;
   if (activePath && activePath !== route.path) {
     activeTabKey.value = activePath;
@@ -639,7 +639,7 @@ function restoreTabsFromCookie(): boolean {
   return true;
 }
 
-// ==================== 右键菜单 ====================
+// ==================== Right-click menu ====================
 
 interface TabContextMenu {
   visible: boolean;
@@ -669,12 +669,12 @@ function hideContextMenu() {
   contextMenu.value.visible = false;
 }
 
-/** 关闭右侧所有标签 */
+/** Close all tabs to the right */
 function closeRightTabs(tab: SystemTab) {
   const idx = tabs.value.findIndex(t => t.key === tab.key);
   if (idx === -1) return;
   tabs.value = tabs.value.filter((t, i) => i <= idx || t.pinned);
-  // 如果当前激活 tab 被关闭，切换到当前 tab
+  // If the active tab is closed, switch to the current tab
   if (!tabs.value.some(t => t.key === activeTabKey.value)) {
     activeTabKey.value = tab.key;
     router.push(tab.path);
@@ -682,7 +682,7 @@ function closeRightTabs(tab: SystemTab) {
   hideContextMenu();
 }
 
-/** 关闭其他标签（保留当前和固定标签） */
+/** Close other tabs (keep current and pinned tabs) */
 function closeOtherTabs(tab: SystemTab) {
   tabs.value = tabs.value.filter(t => t.key === tab.key || t.pinned);
   if (activeTabKey.value !== tab.key) {
@@ -692,7 +692,7 @@ function closeOtherTabs(tab: SystemTab) {
   hideContextMenu();
 }
 
-/** 关闭所有标签（保留固定标签） */
+/** Close all tabs (keep pinned tabs) */
 function closeAllTabs() {
   tabs.value = tabs.value.filter(t => t.pinned);
   const pinned = tabs.value[0];
@@ -703,7 +703,7 @@ function closeAllTabs() {
   hideContextMenu();
 }
 
-/** 右键菜单点击"关闭" */
+/** Right-click menu click "关闭" */
 function handleContextClose() {
   if (contextMenu.value.tab) {
     closeTab(contextMenu.value.tab);
@@ -716,7 +716,7 @@ function handleClickOutside(event: MouseEvent) {
   if (themeSwitcher && !themeSwitcher.contains(event.target as Node)) {
     showThemeDropdown.value = false;
   }
-  // 关闭右键菜单
+  // Close the right-click menu
   if (contextMenu.value.visible) {
     const menu = document.querySelector('.tab-context-menu');
     if (menu && !menu.contains(event.target as Node)) {
@@ -725,18 +725,18 @@ function handleClickOutside(event: MouseEvent) {
   }
 }
 
-// 尝试从 Cookie 恢复标签页（在路由监听之前执行，避免重复创建 tab）
+// Try to restore tabs from Cookie (run before route watching to avoid duplicate tab creation)
 restoreTabsFromCookie();
 
-// 监听路由变化：保持 tab 状态与 URL 同步
+// Watch route change: keep tab state synced with the URL
 watch(() => route.path, (newPath) => {
   activeTabKey.value = newPath;
-  // 如果当前路径不在 tabs 中，自动新增 tab
+  // If the current path is not in tabs, auto-add a tab
   if (!tabs.value.some(t => t.key === newPath)) {
     const matchedRoute = router.resolve(newPath);
     const titleKey = (matchedRoute.meta?.titleKey as string) || 'system.nav.overview';
     const isOverview = newPath === OVERVIEW_PATH;
-    // 预览页面生成动态标题："预览-PageName"
+    // Preview page generates a dynamic title: "预览-PageName"
     let title = _t(titleKey);
     const previewMatch = newPath.match(/^\/system\/preview\/(.+)$/);
     if (previewMatch) {
@@ -750,7 +750,7 @@ watch(() => route.path, (newPath) => {
       labelKey: previewMatch ? '' : titleKey,
       pinned: isOverview,
     }];
-    // 首次初始化（刷新页面）：当前页面不是 overview 时，追加 overview 固定标签
+    // First init (page refresh): when the current page is not overview, append the overview pinned tab
     if (tabs.value.length === 1 && !isOverview) {
       tabs.value = [{
         key: OVERVIEW_PATH,
@@ -763,7 +763,7 @@ watch(() => route.path, (newPath) => {
   }
 }, { immediate: true });
 
-// 标签页变化时自动保存到 Cookie（300ms 防抖）
+// Auto-save to Cookie on tab change (300ms debounce)
 let saveTabsTimer: ReturnType<typeof setTimeout> | null = null;
 watch([tabs, activeTabKey], () => {
   if (saveTabsTimer) clearTimeout(saveTabsTimer);
@@ -801,7 +801,7 @@ onMounted(() => {
   }
   themeManager.applyThemeToDOM();
   document.addEventListener('click', handleClickOutside);
-  // 加载远程菜单（异步，默认菜单已立即可用）
+  // Load remote menu (async; default menu is available immediately)
   menuStore.loadMenu();
 });
 
@@ -839,7 +839,7 @@ function switchTheme(theme: string) {
   overflow: hidden;
 }
 
-/* ===== 顶部栏 ===== */
+/* ===== Top bar ===== */
 .system-topbar {
   display: flex;
   align-items: center;
@@ -1017,14 +1017,14 @@ function switchTheme(theme: string) {
   flex-shrink: 0;
 }
 
-/* ===== 主体区域 ===== */
+/* ===== Main body area ===== */
 .system-body {
   display: flex;
   flex: 1;
   overflow: hidden;
 }
 
-/* ===== 侧栏 ===== */
+/* ===== Sidebar ===== */
 .sidebar {
   width: var(--sidebar-width, 200px);
   min-width: var(--sidebar-width, 200px);
@@ -1130,7 +1130,7 @@ function switchTheme(theme: string) {
   display: none;
 }
 
-/* 子菜单展开/折叠按钮 */
+/* Submenu expand/collapse button */
 .nav-sub-toggle {
   display: flex;
   align-items: center;
@@ -1162,7 +1162,7 @@ function switchTheme(theme: string) {
   transform: rotate(180deg);
 }
 
-/* 子菜单折叠容器 */
+/* Submenu collapse container */
 .nav-sub-wrapper {
   display: grid;
   grid-template-rows: 0fr;
@@ -1174,7 +1174,7 @@ function switchTheme(theme: string) {
   grid-template-rows: 1fr;
 }
 
-/* 子菜单项容器 */
+/* Submenu item container */
 .nav-sub-items {
   display: flex;
   flex-direction: column;
@@ -1222,7 +1222,7 @@ function switchTheme(theme: string) {
   opacity: 1;
 }
 
-/* ===== 侧栏折叠按钮 ===== */
+/* ===== Sidebar collapse button ===== */
 .sidebar-collapse-btn {
   display: flex;
   align-items: center;
@@ -1251,7 +1251,7 @@ function switchTheme(theme: string) {
   transform: rotate(180deg);
 }
 
-/* ===== 主内容区 ===== */
+/* ===== Main content area ===== */
 .main-content {
   flex: 1;
   display: flex;
@@ -1260,7 +1260,7 @@ function switchTheme(theme: string) {
   background: var(--background);
 }
 
-/* ===== 标签页栏 ===== */
+/* ===== Tab bar ===== */
 .system-tab-bar {
   display: flex;
   align-items: stretch;
@@ -1352,7 +1352,7 @@ function switchTheme(theme: string) {
   color: var(--status-error);
 }
 
-/* ===== 标签页内容 ===== */
+/* ===== Tab page content ===== */
 .system-tab-content {
   flex: 1;
   display: flex;
@@ -1362,7 +1362,7 @@ function switchTheme(theme: string) {
   min-height: 0;
 }
 
-/* ===== 固定标签 ===== */
+/* ===== Pinned tab ===== */
 .system-tab-pin-icon {
   display: flex;
   align-items: center;
@@ -1378,7 +1378,7 @@ function switchTheme(theme: string) {
   padding-left: 8px;
 }
 
-/* ===== 右键菜单 ===== */
+/* ===== Right-click menu ===== */
 .tab-context-menu {
   position: fixed;
   z-index: 10000;
@@ -1423,7 +1423,7 @@ function switchTheme(theme: string) {
   cursor: not-allowed;
 }
 
-/* ===== 主题切换 ===== */
+/* ===== Theme switching ===== */
 .theme-switcher {
   position: relative;
   display: flex;
@@ -1478,7 +1478,7 @@ function switchTheme(theme: string) {
   color: var(--primary);
 }
 
-/* ===== 滚动条美化 ===== */
+/* ===== Scrollbar styling ===== */
 .sidebar-nav::-webkit-scrollbar {
   width: 3px;
 }

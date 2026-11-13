@@ -76,7 +76,7 @@
         </template>
       </CanvasCore>
     </CanvasRulerContainer>
-    <!-- 右键菜单 -->
+    <!-- Right-click menu -->
     <CanvasContextMenu
       v-if="showContextMenu"
       :visible="showContextMenu"
@@ -218,7 +218,7 @@ const {
 
 const { guideLines, handleCreateGuideLine, handleMoveGuideLine, handleDeleteGuideLine } = useGuideLines();
 
-// ── 光标/渲染 ──
+// ── Cursor/rendering ──
 const cursorStyle = ref('');
 watch(() => props.formatPainterManager?.mode, (mode) => {
   if (mode === 'pick' || mode === 'paint') {
@@ -277,7 +277,7 @@ const {
   handleGraphicRotate, handleGraphicResize,
 } = useGraphicSelection(drawCanvas);
 
-// ── 快捷键 ──
+// ── Shortcuts ──
 function moveSelectedGraphics(dx: number, dy: number) {
   const ids = pageStore.selectedGraphicIds;
   if (!ids?.length) return;

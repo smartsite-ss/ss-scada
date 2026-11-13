@@ -1,6 +1,6 @@
 <template>
   <div>
-    <!-- 浮动切换按钮 -->
+    <!-- Floating toggle button -->
     <button
       v-if="!panelOpen"
       class="ai-fab"
@@ -23,7 +23,7 @@
       </svg>
     </button>
 
-    <!-- 浮动面板（复用 AiAssistantPanel 的 header 作为拖拽手柄） -->
+    <!-- Floating panel (reuses AiAssistantPanel's header as the drag handle) -->
     <div
       v-if="panelOpen"
       ref="panelRef"
@@ -45,14 +45,14 @@ const configStore = useConfigStore();
 
 const panelOpen = ref(false);
 const panelRef = ref<HTMLElement | null>(null);
-// 拖拽手柄元素（AiAssistantPanel 内的 .ai-header）
+// Drag handle element (.ai-header inside AiAssistantPanel)
 let dragHeaderEl: HTMLElement | null = null;
 
-// 面板位置（像素，相对于 viewport）
+// Panel position (pixels, relative to viewport)
 const posX = ref<number>(0);
 const posY = ref<number>(0);
 
-// 拖拽状态
+// Drag state
 let dragging = false;
 let dragStartX = 0;
 let dragStartY = 0;
@@ -63,7 +63,7 @@ const PANEL_WIDTH = 380;
 const PANEL_HEIGHT = 520;
 const MARGIN = 10;
 
-/** 初始化位置：从配置读取或默认右下角 */
+/** Initial position: read from config or default to bottom-right */
 function initPosition() {
   const savedX = configStore.ui?.aiAssistantX;
   const savedY = configStore.ui?.aiAssistantY;
@@ -97,9 +97,9 @@ const fabStyle = computed(() => ({
 }));
 
 /**
- * 监听 panelOpen：面板打开后，nextTick 等待 DOM 渲染完成，
- * 再把 mousedown 事件绑定到 AiAssistantPanel 内的 .ai-header 元素上。
- * 同时给 header 加上 cursor: move 视觉提示。
+ * Watch panelOpen: after the panel opens, nextTick waits for DOM rendering to complete,
+ * then binds the mousedown event to the .ai-header element inside AiAssistantPanel.
+ * Also adds a cursor: move visual hint to the header.
  */
 watch(panelOpen, async (open) => {
   if (open) {
@@ -115,7 +115,7 @@ function bindHeaderDrag() {
   const header = panelRef.value.querySelector('.ai-header') as HTMLElement | null;
   if (!header) return;
   dragHeaderEl = header;
-  // 视觉提示：标题栏可拖动
+  // Visual hint: title bar is draggable
   header.style.cursor = 'move';
   header.style.userSelect = 'none';
   header.addEventListener('mousedown', startDrag);
@@ -131,7 +131,7 @@ function unbindHeaderDrag() {
 }
 
 function startDrag(e: MouseEvent) {
-  // 忽略 header 内按钮的点击（agent 模式切换、清空、关闭等）
+  // Ignore clicks on header buttons (agent mode switch, clear, close, etc.)
   const target = e.target as HTMLElement;
   if (target.closest('button')) return;
   dragging = true;
@@ -161,7 +161,7 @@ function stopDrag() {
   document.removeEventListener('mouseup', stopDrag);
   document.body.style.cursor = '';
   document.body.style.userSelect = '';
-  // 持久化位置
+  // Persist position
   configStore.updateUIConfig({
     aiAssistantX: posX.value,
     aiAssistantY: posY.value,
@@ -187,7 +187,7 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* 浮动按钮 */
+/* Floating button */
 .ai-fab {
   position: fixed;
   z-index: 9998;
@@ -214,7 +214,7 @@ onUnmounted(() => {
   transform: scale(0.95);
 }
 
-/* 浮动面板 */
+/* Floating panel */
 .ai-floating-panel {
   position: fixed;
   z-index: 9999;
@@ -227,7 +227,7 @@ onUnmounted(() => {
   overflow: hidden;
 }
 
-/* 面板主体 — AiAssistantPanel 将填满整个浮动面板 */
+/* Panel body — AiAssistantPanel fills the entire floating panel */
 .ai-floating-panel > :deep(.ai-assistant-panel) {
   flex: 1;
   border-left: none;
@@ -236,7 +236,7 @@ onUnmounted(() => {
   overflow: hidden;
 }
 
-/* 标题栏可拖动视觉提示（增强） */
+/* Title-bar draggable visual hint (enhanced) */
 .ai-floating-panel :deep(.ai-header) {
   cursor: move;
   user-select: none;

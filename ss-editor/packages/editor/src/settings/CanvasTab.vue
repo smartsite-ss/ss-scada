@@ -1,6 +1,6 @@
 <template>
   <div class="canvas-tab">
-    <!-- 网格设置 -->
+    <!-- Grid settings -->
     <div class="setting-group">
       <div class="group-title">
         <span class="group-icon">📏</span>
@@ -35,7 +35,7 @@
       </div>
     </div>
 
-    <!-- 缩放设置 -->
+    <!-- Zoom settings -->
     <div class="setting-group">
       <div class="group-title">
         <span class="group-icon">🔍</span>
@@ -91,7 +91,7 @@
       </div>
     </div>
 
-    <!-- 提示信息 -->
+    <!-- Hint message -->
     <div class="setting-group">
       <div class="group-title">
         <span class="group-icon">💡</span>

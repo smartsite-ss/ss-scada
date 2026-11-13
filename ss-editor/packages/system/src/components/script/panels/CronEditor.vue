@@ -12,7 +12,7 @@
       </button>
     </div>
 
-    <!-- 预设模式 -->
+    <!-- Preset mode -->
     <div
       v-if="activeTab === 'preset'"
       class="cron-presets"
@@ -29,7 +29,7 @@
       </div>
     </div>
 
-    <!-- 自定义模式 -->
+    <!-- Custom mode -->
     <div
       v-else
       class="cron-custom"
@@ -191,7 +191,7 @@
       </div>
     </div>
 
-    <!-- 描述与预览 -->
+    <!-- Description and preview -->
     <div class="cron-preview">
       <div class="preview-row">
         <span class="preview-label">{{ $t('cron.expression') }}</span>
@@ -443,7 +443,7 @@ function parseCronToFields(cron: string) {
   }
 }
 
-// 初始化
+// Initialization
 parseCronToFields(props.modelValue);
 cronInput.value = props.modelValue;
 

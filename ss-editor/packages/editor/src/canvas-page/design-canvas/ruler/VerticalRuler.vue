@@ -44,7 +44,7 @@
       aria-live="polite"
       :aria-label="t('ruler.mouseCoord', { axis: 'Y', value: Math.round(axisValue) })"
     />
-    <!-- 拖拽辅助线时的预览线 -->
+    <!-- Preview line when dragging guides -->
     <div 
       v-if="isDraggingNewGuide" 
       class="guide-line-preview vertical" 
@@ -53,7 +53,7 @@
       :aria-label="t('ruler.createHGuide', { value: Math.round(dragPosition) })"
     />
     
-    <!-- 视口范围指示器（垂直方向） -->
+    <!-- Viewport range indicator (vertical) -->
     <div 
       v-if="(containerHeight ?? 0) > 0 && canvasHeight > 0"
       class="viewport-indicator-vertical"
@@ -79,9 +79,9 @@ const props = defineProps<{
   scrollTop: number;
   mousePosition: { x: number; y: number } | null;
   containerHeight?: number;
-  canvasOriginOffset?: number;  // 画布原点距标尺上边缘的CSS像素偏移
-  unit?: string;           // P3: 单位类型 (px/cm/inch/mm/m)
-  gridSize?: number;       // P3: 网格大小（网格联动高亮）
+  canvasOriginOffset?: number;  // CSS-pixel offset of the canvas origin from the top ruler edge
+  unit?: string;           // P3: unit type (px/cm/inch/mm/m)
+  gridSize?: number;       // P3: grid size (grid-linked highlight)
 }>();
 
 const emit = defineEmits<{
@@ -90,7 +90,7 @@ const emit = defineEmits<{
   deleteLastGuideLine: [];
 }>();
 
-// 使用 Composable 提取共享逻辑
+// Use a Composable to extract shared logic
 const {
   rulerRef,
   rulerTrack,
@@ -110,7 +110,7 @@ const {
   onDeleteLastGuideLine: () => emit('deleteLastGuideLine'),
 });
 
-// ===== A11y: 键盘导航（垂直方向特有） =====
+// ===== A11y: keyboard navigation (vertical-specific) =====
 const handleKeyDown = (event: KeyboardEvent) => {
   const step = event.shiftKey ? 10 : 1;
 
@@ -154,7 +154,7 @@ const handleKeyDown = (event: KeyboardEvent) => {
   }
 };
 
-// ===== 刻度计算（垂直方向特有） =====
+// ===== Tick calculation (vertical-specific) =====
 const ticks = computed(() => {
   const safeScale = props.scale > 0 ? props.scale : 1;
   const originOffset = props.canvasOriginOffset ?? 0;
@@ -170,7 +170,7 @@ const ticks = computed(() => {
   });
 });
 
-// ===== 视口范围指示器样式（垂直标尺特有） =====
+// ===== Viewport-range indicator style (vertical ruler-specific) =====
 const viewportIndicatorStyle = computed(() => {
   if (!props.containerHeight || !props.canvasHeight || props.scale === 0) {
     return { display: 'none' };
@@ -227,7 +227,7 @@ const viewportIndicatorStyle = computed(() => {
   background-color: var(--text);
 }
 
-/* P2: 微刻度 - 高倍缩放时显示 */
+/* P2: minor ticks — shown at high zoom */
 .ruler-tick.micro {
   width: 3px;
   height: 1px;
@@ -235,7 +235,7 @@ const viewportIndicatorStyle = computed(() => {
   background-color: var(--text-tertiary, #999);
 }
 
-/* P3: 网格联动高亮 - 主刻度与网格线对齐时高亮 */
+/* P3: grid-linked highlight — highlight when major ticks align with grid lines */
 .ruler-tick.grid-aligned {
   background-color: var(--primary, #1890ff) !important;
   box-shadow: 0 0 4px rgba(24, 144, 255, 0.5);
@@ -294,7 +294,7 @@ const viewportIndicatorStyle = computed(() => {
   }
 }
 
-/* ===== 高对比度模式增强 ===== */
+/* ===== High-contrast mode enhancement ===== */
 [data-theme="high-contrast"] .vertical-ruler {
   border-width: 2px;
 }
@@ -329,7 +329,7 @@ const viewportIndicatorStyle = computed(() => {
   opacity: 1;
 }
 
-/* 视口范围指示器（垂直方向） */
+/* Viewport range indicator (vertical) */
 .viewport-indicator-vertical {
   position: absolute;
   left: 0;

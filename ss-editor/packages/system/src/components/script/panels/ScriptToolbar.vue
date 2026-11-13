@@ -107,9 +107,9 @@ const modeLabel = computed(() => {
 });
 
 /**
- * 安全插入代码片段。
- * 使用 requestAnimationFrame + setTimeout 双重延迟，
- * 确保原生 select 下拉框已完全关闭，避免 editor.focus() 导致浏览器卡死。
+ * Safely insert a code snippet.
+ * Uses requestAnimationFrame + setTimeout double delay
+ * to ensure the native select dropdown is fully closed, avoiding browser freeze caused by editor.focus().
  */
 function safeInsertSnippet(code: string) {
   requestAnimationFrame(() => {

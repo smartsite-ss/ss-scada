@@ -25,7 +25,7 @@
       </button>
     </div>
 
-    <!-- 语法检查状�?-->
+    <!-- Syntax check status -->
     <div class="debug-section">
       <div class="section-title">
         {{ t('system.scriptEditor.debug.syntaxCheck') }}
@@ -35,11 +35,11 @@
         :class="{ error: !valid }"
       >
         <span v-if="valid">{{ t('system.scriptEditor.debug.syntaxValid') }}</span>
-        <span v-else>�?{{ errors[0]?.message }}</span>
+        <span v-else>�?{{ errors[0]?.message }}</span>
       </div>
     </div>
 
-    <!-- 测试输入 -->
+    <!-- Test input -->
     <div class="debug-section">
       <div class="section-title">
         {{ t('system.scriptEditor.debug.testInput') }}
@@ -53,7 +53,7 @@
       />
     </div>
 
-    <!-- 执行结果 -->
+    <!-- Execution result -->
     <div
       v-if="result"
       class="debug-section"

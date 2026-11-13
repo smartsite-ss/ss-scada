@@ -3,13 +3,13 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 /**
- * 知识库导出脚本
+ * Knowledge-base export script
  *
- * 从 script-api-registry.ts 和 *.examples.ts 生成 kb-data.json
- * 同时扫描 plugins/ 目录提取图元属性 Schema
- * 用法：node scripts/export-kb.js [outputPath]
+ * Generates kb-data.json from script-api-registry.ts and *.examples.ts
+ * Also scans the plugins/ directory to extract graphic property Schema
+ * Usage: node scripts/export-kb.js [outputPath]
  *
- * 示例：
+ * Examples:
  *   node scripts/export-kb.js
  *   node scripts/export-kb.js ./dist/kb-data.json
  *   node scripts/export-kb.js ./public/knowledge-base/v2/kb-data.json
@@ -23,7 +23,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // ═══════════════════════════════════════════════════════════════
-// 配置
+// Config
 // ═══════════════════════════════════════════════════════════════
 
 const DEFAULT_OUTPUT = path.resolve(
@@ -41,7 +41,7 @@ const EXAMPLES_DIR = path.resolve(
 const PLUGINS_DIR = path.resolve(__dirname, "../packages/plugins");
 
 // ═══════════════════════════════════════════════════════════════
-// 额外输出路径（apps/web/public/static/ — Vite dev server 根目录）
+// Extra output path (apps/web/public/static/ — Vite dev server root)
 // ═══════════════════════════════════════════════════════════════
 
 const WEB_PUBLIC_STATIC_DIR = path.resolve(
@@ -50,7 +50,7 @@ const WEB_PUBLIC_STATIC_DIR = path.resolve(
 );
 
 /**
- * 将 kb-data.json 写入到指定版本目录 + latest 目录
+ * Write kb-data.json to the specified version directory + the latest directory
  */
 function writeToVersion(outputDir, kbData) {
   const versionPath = path.join(outputDir, "v2", "kb-data.json");
@@ -60,10 +60,10 @@ function writeToVersion(outputDir, kbData) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 辅助函数
+// Helper functions
 // ═══════════════════════════════════════════════════════════════
 
-/** 读取文件内容 */
+/** Read file content */
 function readFile(filePath) {
   if (!fs.existsSync(filePath)) {
     throw new Error(`File not found: ${filePath}`);
@@ -71,21 +71,21 @@ function readFile(filePath) {
   return fs.readFileSync(filePath, "utf-8");
 }
 
-/** 确保目录存在 */
+/** Ensure the directory exists */
 function ensureDir(dirPath) {
   if (!fs.existsSync(dirPath)) {
     fs.mkdirSync(dirPath, { recursive: true });
   }
 }
 
-/** 写入 JSON 文件 */
+/** Write JSON file */
 function writeJson(filePath, data) {
   ensureDir(path.dirname(filePath));
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf-8");
   console.log(`✓ Written: ${filePath}`);
 }
 
-/** 递归查找文件 */
+/** Recursively find files */
 function findFiles(dir, pattern) {
   const results = [];
   if (!fs.existsSync(dir)) return results;
@@ -103,17 +103,17 @@ function findFiles(dir, pattern) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 解析注册表
+// Parse the registry
 // ═══════════════════════════════════════════════════════════════
 
 /**
- * 从 TypeScript 文件解析 API_REGISTRY 数组
- * 使用正则提取，不依赖 TypeScript 编译器
+ * Parse the API_REGISTRY array from a TypeScript file
+ * Uses regex extraction; does not depend on the TypeScript compiler
  */
 function parseApiRegistry(tsContent) {
   const registry = [];
 
-  // 提取 API_REGISTRY 数组内容
+  // Extract the API_REGISTRY array content
   const arrayMatch = tsContent.match(
     /export\s+const\s+API_REGISTRY\s*:\s*ApiMethodDef\[\]\s*=\s*\[([\s\S]*?)\];/,
   );
@@ -125,7 +125,7 @@ function parseApiRegistry(tsContent) {
 
   const arrayContent = arrayMatch[1];
 
-  // 提取每个 API 对象（简化解析：按 { ... } 块分割）
+  // Extract each API object (simplified parsing: split by { ... } blocks)
   const objectRegex = /\{\s*name:\s*['"]([^'"]+)['"]\s*,[\s\S]*?\},?\n/g;
   let match;
 
@@ -154,21 +154,21 @@ function parseApiRegistry(tsContent) {
   return registry;
 }
 
-/** 提取字符串字段 */
+/** Extract a string field */
 function extractString(block, field) {
   const regex = new RegExp(`${field}:\\s*['"]([^'"]*)['"]`, "i");
   const match = block.match(regex);
   return match ? match[1] : "";
 }
 
-/** 提取可选字符串字段 */
+/** Extract an optional string field */
 function extractOptionalString(block, field) {
   const regex = new RegExp(`${field}:\\s*['"]([^'"]*)['"]`, "i");
   const match = block.match(regex);
   return match ? match[1] : undefined;
 }
 
-/** 提取数组字段 */
+/** Extract an array field */
 function extractArray(block, field) {
   const regex = new RegExp(`${field}:\\s*\\[([^\\]]*)\\]`, "i");
   const match = block.match(regex);
@@ -180,7 +180,7 @@ function extractArray(block, field) {
     .filter((s) => s.length > 0);
 }
 
-/** 提取参数数组 */
+/** Extract the parameter array */
 function extractParams(block) {
   const params = [];
   const paramsRegex = /params:\s*\[([\s\S]*?)\],\s*\n/;
@@ -207,16 +207,16 @@ function extractParams(block) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 解析示例
+// Parse examples
 // ═══════════════════════════════════════════════════════════════
 
 /**
- * 从示例文件解析 ScriptExample 数组
+ * Parse the ScriptExample array from example files
  */
 function parseExamples(tsContent) {
   const examples = [];
 
-  // 提取 export const xxxExamples: ScriptExample[] = [...]
+  // Extract export const xxxExamples: ScriptExample[] = [...]
   const arrayMatch = tsContent.match(
     /export\s+const\s+\w+Examples\s*:\s*ScriptExample\[\]\s*=\s*\[([\s\S]*?)\];/,
   );
@@ -224,7 +224,7 @@ function parseExamples(tsContent) {
 
   const arrayContent = arrayMatch[1];
 
-  // 使用括号计数解析器提取每个示例对象（替代正则，正确处理 code 模板字符串中的嵌套 { }）
+  // Use the bracket-counting parser to extract each example object (replaces regex; correctly handles nested { } inside code template literals)
   const objects = parseBraceBlocks(arrayContent);
   for (const block of objects) {
     const example = {
@@ -247,17 +247,17 @@ function parseExamples(tsContent) {
 }
 
 /**
- * 括号计数解析器：从文本中提取所有顶层 { ... } 块
- * 正确处理：
- *  - 嵌套的 {}（通过 depth 计数）
- *  - 模板字符串 ``（跳过其中的 {}）
- *  - 单引号/双引号字符串（跳过内部的 {}）
+ * Bracket-counting parser: extract all top-level { ... } blocks from text
+ * Correctly handles:
+ *  - nested {} (via depth counting)
+ *  - template literals `` (skipping {} inside)
+ *  - single/double-quoted strings (skipping {} inside)
  */
 function parseBraceBlocks(text) {
   const blocks = [];
   let i = 0;
   while (i < text.length) {
-    // 找到下一个顶层 { 开始位置
+    // Find the next top-level { start position
     const start = text.indexOf("{", i);
     if (start === -1) break;
 
@@ -273,8 +273,8 @@ function parseBraceBlocks(text) {
 }
 
 /**
- * 从指定位置提取一个完整的 { ... } 块
- * 返回包含外层 {} 的字符串
+ * Extract one complete { ... } block from the given position
+ * Returns the string including the outer {}
  */
 function extractBraceBlock(text, startPos) {
   if (text[startPos] !== "{") return null;
@@ -289,26 +289,26 @@ function extractBraceBlock(text, startPos) {
     const ch = text[i];
     const prev = i > 0 ? text[i - 1] : "";
 
-    // 处理转义字符
+    // Handle escape characters
     if (prev === "\\") {
       i++;
       continue;
     }
 
-    // 处理引号状态（不在模板字符串中时）
+    // Handle quote state (when not inside template literals)
     if (!inTemplate) {
       if (ch === "'" && !inDoubleQuote) { inSingleQuote = !inSingleQuote; i++; continue; }
       if (ch === '"' && !inSingleQuote) { inDoubleQuote = !inDoubleQuote; i++; continue; }
     }
 
-    // 处理模板字符串（反引号）
+    // Handle template literals (backticks)
     if (ch === "`" && !inSingleQuote && !inDoubleQuote) {
       inTemplate = !inTemplate;
       i++;
       continue;
     }
 
-    // 仅在非字符串、非模板状态下统计括号
+    // Count braces only outside strings and template literals
     if (!inSingleQuote && !inDoubleQuote && !inTemplate) {
       if (ch === "{") depth++;
       if (ch === "}") depth--;
@@ -316,7 +316,7 @@ function extractBraceBlock(text, startPos) {
 
     i++;
 
-    // depth 回到 0 表示顶层括号闭合
+    // depth back to 0 means top-level braces closed
     if (!inSingleQuote && !inDoubleQuote && !inTemplate && depth === 0) {
       return text.slice(startPos, i);
     }
@@ -325,9 +325,9 @@ function extractBraceBlock(text, startPos) {
   return null;
 }
 
-/** 提取代码块（支持模板字符串） */
+/** Extract code blocks (supports template literals) */
 function extractCode(block) {
-  // 先尝试匹配模板字符串
+  // Try matching template literals first
   const tplMatch = block.match(/code:\s*`([\s\S]*?)`\s*,?\s*\}/);
   if (tplMatch) {
     return tplMatch[1].trim();
@@ -342,27 +342,27 @@ function extractCode(block) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 解析图元属性 Schema
+// Parse the graphic property Schema
 // ═══════════════════════════════════════════════════════════════
 
 /**
- * 从 propertySchema.ts 文件解析图元属性定义
+ * Parse graphic property definitions from propertySchema.ts
  */
 function parseGraphicSchema(filePath) {
   try {
     const content = readFile(filePath);
 
-    // 提取 schema 名称
+    // Extract the schema name
     const nameMatch = content.match(/name:\s*['"]([^'"]+)['"]/);
     if (!nameMatch) return null;
 
     const displayName = nameMatch[1];
 
-    // 提取 pluginType（从文件路径推断）
+    // Extract pluginType (inferred from the file path)
     const dirParts = path.dirname(filePath).split(path.sep);
     const pluginType = dirParts[dirParts.length - 1];
 
-    // 提取分类
+    // Extract category
     const categoryParts = dirParts;
     let category = "other";
     const pluginsIdx = categoryParts.indexOf("plugins");
@@ -370,14 +370,14 @@ function parseGraphicSchema(filePath) {
       category = categoryParts[pluginsIdx + 1]; // industrial, electric, basic, etc.
     }
 
-    // 提取 fields 数组
+    // Extract the fields array
     const fieldsMatch = content.match(/fields:\s*\[([\s\S]*?)\]\s*,?\s*\}/);
     if (!fieldsMatch) return null;
 
     const fieldsContent = fieldsMatch[1];
     const fields = [];
 
-    // 提取每个字段
+    // Extract each field
     const fieldRegex =
       /\{\s*name:\s*['"]([^'"]+)['"]\s*,\s*label:\s*['"]([^'"]+)['"]\s*,[\s\S]*?\}/g;
     let fieldMatch;
@@ -397,7 +397,7 @@ function parseGraphicSchema(filePath) {
         group: extractString(fieldBlock, "group"),
       };
 
-      // 跳过空 name
+      // Skip empty name
       if (field.name) {
         fields.push(field);
       }
@@ -417,34 +417,34 @@ function parseGraphicSchema(filePath) {
   }
 }
 
-/** 提取字段默认值 */
+/** Extract a field's default value */
 function extractFieldDefaultValue(block) {
   const regex = /defaultValue:\s*([^,\s}]+)/;
   const match = block.match(regex);
   if (!match) return undefined;
 
   const val = match[1];
-  // 去除引号
+  // Strip quotes
   if (val.startsWith("'") || val.startsWith('"')) {
     return val.slice(1, -1);
   }
-  // 转换布尔值
+  // Convert boolean
   if (val === "true") return true;
   if (val === "false") return false;
-  // 转换数字
+  // Convert number
   const num = Number(val);
   if (!isNaN(num)) return num;
   return val;
 }
 
-/** 提取字段数字属性 */
+/** Extract a field's numeric property */
 function extractFieldNumber(block, field) {
   const regex = new RegExp(`${field}:\\s*(-?[\\d.]+)`, "i");
   const match = block.match(regex);
   return match ? Number(match[1]) : undefined;
 }
 
-/** 提取 select 字段的 options */
+/** Extract options of a select field */
 function extractFieldOptions(block) {
   const optionsMatch = block.match(/options:\s*\[([\s\S]*?)\]\s*,/);
   if (!optionsMatch) return undefined;
@@ -466,7 +466,7 @@ function extractFieldOptions(block) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 主流程
+// Main flow
 // ═══════════════════════════════════════════════════════════════
 
 function main() {
@@ -482,13 +482,13 @@ function main() {
   console.log();
 
   try {
-    // 1. 解析 API 注册表
+    // 1. Parse the API registry
     console.log("📖 Parsing API registry...");
     const registryContent = readFile(REGISTRY_PATH);
     const apiRegistry = parseApiRegistry(registryContent);
     console.log(`   ✓ Found ${apiRegistry.length} APIs`);
 
-    // 2. 解析示例文件
+    // 2. Parse the example file
     console.log("📖 Parsing examples...");
     const exampleFiles = fs
       .readdirSync(EXAMPLES_DIR)
@@ -529,7 +529,7 @@ function main() {
       }
     }
 
-    // 3. 解析图元属性 Schema
+    // 3. Parse the graphic property Schema
     console.log("📖 Parsing graphic schemas...");
     const schemaFiles = findFiles(PLUGINS_DIR, /PropertySchema\.ts$/);
     const graphicSchemas = [];
@@ -541,7 +541,7 @@ function main() {
       }
     }
 
-    // 去重（按 pluginType）
+    // Deduplicate (by pluginType)
     const seenTypes = new Set();
     const uniqueSchemas = graphicSchemas.filter((s) => {
       if (seenTypes.has(s.pluginType)) return false;
@@ -556,7 +556,7 @@ function main() {
       );
     }
 
-    // 4. 构建知识库 JSON
+    // 4. Build the knowledge-base JSON
     console.log();
     console.log("🔨 Building knowledge base JSON...");
 
@@ -574,24 +574,24 @@ function main() {
       graphicSchemas: uniqueSchemas,
     };
 
-    // 5. 写入文件
+    // 5. Write to file
     console.log();
     console.log("💾 Writing output...");
 
-    // 输出到 packages/editor/public/knowledge-base/（编辑器包）
+    // Output to packages/editor/public/knowledge-base/ (editor package)
     writeJson(outputPath, kbData);
 
-    // 输出到 apps/web/public/static/knowledge-base/（Web 应用 — Vite dev server 静态目录）
+    // Output to apps/web/public/static/knowledge-base/ (web app — Vite dev server static dir)
     writeToVersion(WEB_PUBLIC_STATIC_DIR, kbData);
 
-    // 6. 同时写入 latest（基于 editor 的输出目录）
+    // 6. Also write to latest (based on the editor's output directory)
     const latestPath = path.resolve(
       path.dirname(outputPath),
       "../latest/kb-data.json",
     );
     writeJson(latestPath, kbData);
 
-    // 7. 生成 versions.json
+    // 7. Generate versions.json
     const versionsPath = path.resolve(
       path.dirname(outputPath),
       "../versions.json",
@@ -615,7 +615,7 @@ function main() {
     };
     writeJson(versionsPath, versionsData);
 
-    // 同时写入 web 应用的 versions.json
+    // Also write to the web app's versions.json
     const webVersionsPath = path.join(WEB_PUBLIC_STATIC_DIR, "versions.json");
     writeJson(webVersionsPath, versionsData);
 

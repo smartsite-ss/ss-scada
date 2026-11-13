@@ -13,14 +13,14 @@
 import { ref, onMounted, watch, nextTick } from 'vue';
 import type { IGraphic } from '@scada-editor/core';
 
-// 发现问题了！rafThrottle函数使用了requestAnimationFrame来节流，
-// 这导致drawCanvas函数被延迟到下一个动画帧执行。当添加图元时，
-// 我们先修改graphics数组，然后立即选择图元，但是绘制操作被延迟了，
-// 所以图元没有立即显示。需要移除rafThrottle，让drawCanvas函数立即执行。
+// Found the issue! The rafThrottle function uses requestAnimationFrame for throttling,
+// This causes the drawCanvas function to be deferred to the next animation frame. When adding a graphic,
+// We first modify the graphics array, then immediately select the graphic, but the draw operation was deferred,
+// so the graphic was not shown immediately. We need to remove rafThrottle so drawCanvas runs immediately.
 
 /*
- * 图形渲染器组件
- * 用于渲染单个图形
+ * Graphic renderer component
+ * Used to render a single graphic
  */
 const props = defineProps({
   graphic: {
@@ -39,7 +39,7 @@ const props = defineProps({
 
 const canvasRef = ref<HTMLCanvasElement | null>(null);
 
-// 绘制图形
+// Draw graphics
 const drawGraphic = () => {
   const canvas = canvasRef.value;
   if (!canvas) return;
@@ -47,26 +47,26 @@ const drawGraphic = () => {
   const context = canvas.getContext('2d');
   if (!context) return;
 
-  // 清空画布
+  // Clear canvas
   context.clearRect(0, 0, props.width, props.height);
 
-  // 保存当前状态
+  // Save current state
   context.save();
 
-  // 移动到原点
+  // Move to origin
   context.translate(
     -props.graphic.config.geometry.x,
     -props.graphic.config.geometry.y
   );
 
-  // 绘制图形
+  // Draw graphics
   props.graphic.draw(context);
 
-  // 恢复状态
+  // Restore state
   context.restore();
 };
 
-// 监听图形变化
+// Watch graphic changes
 watch(
   () => props.graphic,
   () => {
@@ -75,7 +75,7 @@ watch(
   { deep: true }
 );
 
-// 组件挂载后绘制图形
+// Draw graphics after component mount
 onMounted(() => {
   nextTick(() => {
     drawGraphic();

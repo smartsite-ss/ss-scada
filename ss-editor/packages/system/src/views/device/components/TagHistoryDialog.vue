@@ -5,7 +5,7 @@
     @click.self="handleClose"
   >
     <div class="dialog-container">
-      <!-- 头部 -->
+      <!-- Header -->
       <div class="dialog-header">
         <div class="header-left">
           <svg
@@ -25,7 +25,7 @@
           </h2>
         </div>
         <div class="header-right">
-          <!-- 视图切换 -->
+          <!-- View switch -->
           <div class="view-toggle">
             <button
               class="view-toggle-btn"
@@ -120,7 +120,7 @@
         </div>
       </div>
 
-      <!-- 标签信息条 -->
+      <!-- Tag info bar -->
       <div class="tag-info-bar">
         <div class="tag-info-chip">
           <span class="chip-label">{{ $t('system.tagHistory.tagAddress') }}</span>
@@ -133,7 +133,7 @@
         </div>
       </div>
 
-      <!-- 查询工具栏：时间范围 + 查询方式 + 间隔 + 查询按钮（整合为一行） -->
+      <!-- Query toolbar: time range + query method + interval + query button (merged into one row) -->
       <div class="query-toolbar">
         <TimeRangePicker
           v-model="dateRange"
@@ -230,9 +230,9 @@
         </button>
       </div>
 
-      <!-- 内容区 -->
+      <!-- Content area -->
       <div class="content-area">
-        <!-- 加载状态 -->
+        <!-- Loading state -->
         <div
           v-if="queryLoading"
           class="loading-area"
@@ -243,7 +243,7 @@
           />
         </div>
 
-        <!-- 空状态 -->
+        <!-- Empty state -->
         <div
           v-else-if="historyData.length === 0 && hasQueried"
           class="empty-area"
@@ -264,9 +264,9 @@
           </p>
         </div>
 
-        <!-- 有数据 -->
+        <!-- Has data -->
         <template v-else-if="historyData.length > 0">
-          <!-- 工具栏 -->
+          <!-- Toolbar -->
           <div class="toolbar">
             <div class="data-count">
               <svg
@@ -363,7 +363,7 @@
             </div>
           </div>
 
-          <!-- 趋势图视图 -->
+          <!-- Trend chart view -->
           <div
             v-if="viewMode === 'trend'"
             class="trend-view"
@@ -391,7 +391,7 @@
             </div>
           </div>
 
-          <!-- 表格视图 -->
+          <!-- Table view -->
           <div
             v-else
             class="table-view"
@@ -461,11 +461,11 @@ const props = defineProps<{
   tagId: string;
   tagName: string;
   tagAddress: string;
-  /** 标签显示格式串（如 "%.2f"、"%d"、"%04X"），用于列表与趋势图 Y 轴的格式化 */
+  /** Tag display format string (e.g. "%.2f", "%d", "%04X"), used for list and trend-chart Y-axis formatting */
   displayFormat?: string;
-  /** 标签单位（如 "℃"、"kPa"），在列表值后与趋势图 Y 轴标题处显示 */
+  /** Tag unit (e.g. "℃", "kPa"), shown after the list value and on the trend chart Y-axis title */
   unit?: string;
-  /** 标签数据类型（如 "float32"、"uint16"），用于辅助展示 */
+  /** Tag data type (e.g. "float32", "uint16"), used for auxiliary display */
   dataType?: string;
   projectId: string;
 }>();
@@ -474,10 +474,10 @@ const emit = defineEmits<{
   (e: 'update:visible', val: boolean): void;
 }>();
 
-// ===== 视图模式 =====
+// ===== View mode =====
 const viewMode = ref<'trend' | 'table'>('trend');
 
-// ===== 时间预设 =====
+// ===== Time presets =====
 const presets = [
   { value: '1h', label: t('system.tagHistory.preset1h') },
   { value: '6h', label: t('system.tagHistory.preset6h') },
@@ -489,10 +489,10 @@ const selectedPreset = ref('1h');
 const startTime = ref('');
 const endTime = ref('');
 
-// TimeRangePicker 预设
+// TimeRangePicker presets
 const tagPresets = computed(() => presets.map((p) => ({ label: p.label, value: p.value })));
 
-// 双向绑定到 TimeRangePicker
+// Two-way bind to TimeRangePicker
 const dateRange = computed<TimeRange>({
   get: () => ({ start: startTime.value, end: endTime.value }),
   set: (val: TimeRange) => {
@@ -502,37 +502,37 @@ const dateRange = computed<TimeRange>({
   },
 });
 
-// ===== 查询状态 =====
+// ===== Query state =====
 const queryLoading = ref(false);
 const exportLoading = ref(false);
 const hasQueried = ref(false);
 const historyData = ref<{ value: number | null; timestamp: string }[]>([]);
 const totalRecordCount = ref(0);
 
-// ===== 插值 =====
+// ===== Interpolation =====
 const interpolationMode = ref<'raw' | 'linear' | 'step'>('raw');
 const interpolationInterval = ref(1000);
 
-// ===== Canvas 趋势图 =====
+// ===== Canvas trend chart =====
 const trendCanvasRef = ref<HTMLCanvasElement | null>(null);
 const sliderCanvasRef = ref<HTMLCanvasElement | null>(null);
 let resizeObserver: ResizeObserver | null = null;
 let sliderResizeObserver: ResizeObserver | null = null;
 
-// dataZoom 缩放状态
+// dataZoom zoom state
 const zoomRange = ref<{ start: number; end: number } | null>(null);
 
-// 主图表拖拽平移
+// Main chart drag pan
 const isPanning = ref(false);
 const panStartX = ref(0);
 const panStartRange = ref<{ start: number; end: number } | null>(null);
 
-// 滑块拖拽
+// Slider drag
 const sliderDragging = ref<'none' | 'window' | 'left' | 'right'>('none');
 const sliderDragStartX = ref(0);
 const sliderDragStartRange = ref<{ start: number; end: number } | null>(null);
 
-// 鼠标交互与 Tooltip（趋势图 hover/click 显示选中点位数据）
+// Mouse interaction and tooltip (trend chart hover/click shows selected point data)
 const mouseX = ref<number | null>(null);
 const mouseY = ref<number | null>(null);
 const pinnedTimestamp = ref<number | null>(null);
@@ -580,10 +580,10 @@ function formatTime(val?: string): string {
   }
 }
 
-// ===== 查询 =====
+// ===== Query =====
 async function queryHistory() {
   if (!props.tagId || !startTime.value || !endTime.value) {
-    // 参数不全时重置加载状态（避免 watch 预设的 queryLoading=true 卡住）
+    // Reset loading state when params are incomplete (avoid the watch-pres et queryLoading=true getting stuck)
     queryLoading.value = false;
     return;
   }
@@ -601,15 +601,15 @@ async function queryHistory() {
       interpolation: interpolationMode.value,
       interval: interpolationMode.value !== 'raw' ? interpolationInterval.value : undefined,
     });
-    // 响应结构：{ data: [{ tagId, data: [...] }], total } → 提取第一层的 data
+    // Response structure: { data: [{ tagId, data: [...] }], total } → extract the first-level data
     const data = (res as any)?.data ?? (res as any);
     // data = [{ tagId: "...", data: [...] }] | { tagId: "...", data: [...] }
     const pages: any[] = Array.isArray(data) ? data : [data];
     const page = pages.find((p: any) => p?.tagId === props.tagId);
     historyData.value = page?.data || [];
     totalRecordCount.value = (res as any)?.total ?? 0;
-    zoomRange.value = null; // 重置缩放
-    pinnedTimestamp.value = null; // 重置固定点位
+    zoomRange.value = null; // Reset zoom
+    pinnedTimestamp.value = null; // Reset the fixed point
     mouseX.value = null;
     mouseY.value = null;
     if (viewMode.value === 'trend') {
@@ -622,7 +622,7 @@ async function queryHistory() {
     historyData.value = [];
     totalRecordCount.value = 0;
   } finally {
-    // 确保加载状态至少显示 300ms，避免 API 响应过快导致 loading 闪烁不可见
+    // Ensure the loading state shows for at least 300ms to avoid loading flicker when the API responds too fast
     const elapsed = Date.now() - queryStartTime;
     const minLoadingMs = 300;
     if (elapsed < minLoadingMs) {
@@ -635,7 +635,7 @@ async function queryHistory() {
   }
 }
 
-// ===== Canvas 趋势图绘制 =====
+// ===== Canvas trend chart drawing =====
 function getCanvasSize() {
   const canvas = trendCanvasRef.value;
   if (!canvas) return { w: 0, h: 0, dpr: 1 };
@@ -665,7 +665,7 @@ function drawTrendChart() {
   const pw = w - padding.left - padding.right;
   const ph = h - padding.top - padding.bottom;
 
-  // 解析时间戳和值
+  // Parse timestamp and value
   const points = data
     .map((d) => ({
       t: new Date(d.timestamp).getTime(),
@@ -678,7 +678,7 @@ function drawTrendChart() {
   const tMin = points[0].t;
   const tMax = points[points.length - 1].t;
 
-  // 使用缩放范围
+  // Use the zoom range
   const zoomMin = zoomRange.value ? zoomRange.value.start : tMin;
   const zoomMax = zoomRange.value ? zoomRange.value.end : tMax;
   const tRange = zoomMax - zoomMin || 1;
@@ -693,12 +693,12 @@ function drawTrendChart() {
   const toX = (t: number) => padding.left + ((t - zoomMin) / tRange) * pw;
   const toY = (v: number) => padding.top + (1 - (v - vMin) / (vMax - vMin)) * ph;
 
-  // 根据 displayFormat 推断小数位；无格式时按值域自适应
+  // Infer decimal places from displayFormat; adapt by value range when no format
   const fmtDecimals = getDecimalsFromFormat(props.displayFormat);
   function formatAxisValue(v: number): string {
     if (props.displayFormat) return formatTagValue(v, props.displayFormat);
     if (fmtDecimals !== null) return v.toFixed(fmtDecimals);
-    // 自适应精度
+    // Adaptive precision
     const range = vMax - vMin || 1;
     if (range < 0.01) return v.toFixed(6);
     if (range < 1) return v.toFixed(4);
@@ -706,11 +706,11 @@ function drawTrendChart() {
     return v.toFixed(1);
   }
 
-  // 背景
+  // Background
     ctx.fillStyle = getComputedStyle(canvas).getPropertyValue('--surface') || '#0f172a';
     ctx.fillRect(0, 0, w, h);
 
-    // 网格线
+    // Grid line
     const gridColor = getComputedStyle(canvas).getPropertyValue('--border') || '#334155';
     ctx.strokeStyle = gridColor;
     ctx.lineWidth = 0.5;
@@ -723,7 +723,7 @@ function drawTrendChart() {
       ctx.stroke();
     }
 
-    // Y 轴标签
+    // Y-axis label
     ctx.fillStyle = getComputedStyle(canvas).getPropertyValue('--text-secondary') || '#94a3b8';
     ctx.font = '10px sans-serif';
     ctx.textAlign = 'right';
@@ -733,7 +733,7 @@ function drawTrendChart() {
       ctx.fillText(formatAxisValue(v), padding.left - 6, y + 3);
     }
 
-    // Y 轴单位标签
+    // Y-axis unit label
     if (props.unit) {
       ctx.save();
       ctx.fillStyle = getComputedStyle(canvas).getPropertyValue('--text-secondary') || '#94a3b8';
@@ -744,7 +744,7 @@ function drawTrendChart() {
       ctx.restore();
     }
 
-    // X 轴标签
+    // X-axis label
     ctx.textAlign = 'center';
     const xSteps = Math.min(6, Math.max(2, Math.floor(pw / 120)));
     const dateFormatter = new Intl.DateTimeFormat(undefined, {
@@ -758,7 +758,7 @@ function drawTrendChart() {
       const x = padding.left + (i / xSteps) * pw;
       const label = dateFormatter.format(new Date(t));
       ctx.fillText(label, x, h - padding.bottom + 16);
-      // 网格竖线
+      // Grid vertical line
       ctx.beginPath();
       ctx.moveTo(x, padding.top);
       ctx.lineTo(x, h - padding.bottom);
@@ -766,7 +766,7 @@ function drawTrendChart() {
       ctx.stroke();
     }
 
-    // 轴线
+    // Axis line
     ctx.strokeStyle = getComputedStyle(canvas).getPropertyValue('--text-secondary') || '#94a3b8';
     ctx.lineWidth = 1;
     ctx.beginPath();
@@ -775,7 +775,7 @@ function drawTrendChart() {
     ctx.lineTo(w - padding.right, h - padding.bottom);
     ctx.stroke();
 
-    // 折线
+    // Polyline
     const primaryColor = getComputedStyle(canvas).getPropertyValue('--primary') || '#2196F3';
     ctx.strokeStyle = primaryColor;
     ctx.lineWidth = 2;
@@ -789,7 +789,7 @@ function drawTrendChart() {
     }
     ctx.stroke();
 
-  // 渐变填充
+  // Gradient fill
   const gradient = ctx.createLinearGradient(0, padding.top, 0, h - padding.bottom);
   gradient.addColorStop(0, primaryColor + '40');
   gradient.addColorStop(1, primaryColor + '00');
@@ -806,7 +806,7 @@ function drawTrendChart() {
   ctx.closePath();
   ctx.fill();
 
-  // 数据点（仅在点数较少时）
+  // Data points (only when the point count is small)
   if (points.length <= 200) {
     for (const p of points) {
       ctx.beginPath();
@@ -816,11 +816,11 @@ function drawTrendChart() {
     }
   }
 
-  // ===== Tooltip：hover/click 显示选中点位数据 =====
+  // ===== Tooltip: show selected point data on hover/click =====
   drawTrendTooltip(ctx, canvas, points, toX, toY, padding, pw, ph, zoomMin, zoomMax, primaryColor);
 }
 
-/** 在趋势图上绘制 hover/click tooltip（垂直十字线 + 数据点圆圈 + 浮框） */
+/** Draw hover/click tooltip on the trend chart (vertical crosshair + data-point circle + floating box) */
 function drawTrendTooltip(
   ctx: CanvasRenderingContext2D,
   canvas: HTMLCanvasElement,
@@ -834,7 +834,7 @@ function drawTrendTooltip(
   zoomMax: number,
   primaryColor: string,
 ) {
-  // 优先使用固定时间点；其次使用鼠标位置
+  // Prefer the fixed time point; otherwise use the mouse position
   let tooltipTs: number | null = null;
   let tooltipX: number | null = null;
   let isPinned = false;
@@ -844,7 +844,7 @@ function drawTrendTooltip(
     tooltipX = toX(tooltipTs);
     isPinned = true;
   } else if (mouseX.value !== null && mouseY.value !== null) {
-    // mouseX/mouseY 是相对 canvas 左上角的 CSS 像素，与 ctx 当前坐标系一致（已 setTransform(dpr,...)）
+    // mouseX/mouseY are CSS pixels relative to the canvas top-left, consistent with the current ctx coordinate system (after setTransform(dpr,...))
     const cssX = mouseX.value;
     const cssY = mouseY.value;
     if (cssX >= padding.left && cssX <= padding.left + pw &&
@@ -860,7 +860,7 @@ function drawTrendTooltip(
   if (tooltipX === null || tooltipTs === null) return;
   if (points.length === 0) return;
 
-  // 二分查找最近的数据点
+  // Binary search for the nearest data point
   const pts = points;
   let lo = 0, hi = pts.length - 1;
   while (lo < hi) {
@@ -878,7 +878,7 @@ function drawTrendTooltip(
   const dotX = toX(pt.t);
   const dotY = toY(pt.v);
 
-  // 垂直十字线
+  // Vertical crosshair
   ctx.save();
   ctx.strokeStyle = isPinned ? primaryColor : (getComputedStyle(canvas).getPropertyValue('--text-secondary') || '#94a3b8');
   ctx.lineWidth = isPinned ? 1.5 : 0.8;
@@ -890,7 +890,7 @@ function drawTrendTooltip(
   ctx.setLineDash([]);
   ctx.restore();
 
-  // 数据点圆圈
+  // Data-point circle
   ctx.beginPath();
   ctx.arc(dotX, dotY, 4, 0, Math.PI * 2);
   ctx.fillStyle = primaryColor;
@@ -899,7 +899,7 @@ function drawTrendTooltip(
   ctx.lineWidth = 1.5;
   ctx.stroke();
 
-  // 浮框内容
+  // Popup content
   const timeLabel = formatTooltipTime(pt.t);
   const valueLabel = formatTagValue(pt.v, props.displayFormat);
   const valueLine = props.unit ? `${valueLabel} ${props.unit}` : valueLabel;
@@ -918,7 +918,7 @@ function drawTrendTooltip(
     ctx.measureText(valueLine).width + boxPaddingX * 2 + (tagNameLine ? 14 : 0),
   );
 
-  // 定位浮框（优先在十字线右侧，空间不足时在左侧）
+  // Positioning popup (prefer right of the crosshair; left when space is insufficient)
   let boxX = tooltipX + 12;
   if (boxX + boxW > pw + padding.left) {
     boxX = tooltipX - boxW - 12;
@@ -926,7 +926,7 @@ function drawTrendTooltip(
   if (boxX < padding.left) boxX = padding.left + 4;
   const boxY = Math.max(padding.top, Math.min(padding.top + ph - boxH, padding.top + 10));
 
-  // 浮框背景
+  // Popup background
   ctx.fillStyle = getComputedStyle(canvas).getPropertyValue('--surface') || '#0f172a';
   ctx.strokeStyle = getComputedStyle(canvas).getPropertyValue('--border') || '#334155';
   ctx.lineWidth = 1;
@@ -935,14 +935,14 @@ function drawTrendTooltip(
   ctx.fill();
   ctx.stroke();
 
-  // 时间标题
+  // Time title
   ctx.fillStyle = getComputedStyle(canvas).getPropertyValue('--text') || '#e2e8f0';
   ctx.font = 'bold 11px sans-serif';
   ctx.textAlign = 'left';
   ctx.textBaseline = 'top';
   ctx.fillText(timeLabel, boxX + boxPaddingX, boxY + boxPaddingY);
 
-  // 分隔线
+  // Divider
   const sepY = boxY + boxPaddingY + headerHeight;
   ctx.strokeStyle = getComputedStyle(canvas).getPropertyValue('--border-light') || '#1e293b';
   ctx.lineWidth = 0.5;
@@ -951,7 +951,7 @@ function drawTrendTooltip(
   ctx.lineTo(boxX + boxW - boxPaddingX, sepY);
   ctx.stroke();
 
-  // 标签名 + 值
+  // Tag name + value
   let cursorY = sepY + 2;
   ctx.font = '10px sans-serif';
   if (tagNameLine) {
@@ -959,17 +959,17 @@ function drawTrendTooltip(
     ctx.fillText(tagNameLine, boxX + boxPaddingX, cursorY);
     cursorY += lineHeight;
   }
-  // 颜色方块
+  // Color swatch
   ctx.fillStyle = primaryColor;
   ctx.fillRect(boxX + boxPaddingX, cursorY + 4, 10, 3);
-  // 值（右对齐）
+  // Value (right-aligned)
   ctx.fillStyle = getComputedStyle(canvas).getPropertyValue('--text') || '#e2e8f0';
   ctx.font = 'bold 11px sans-serif';
   ctx.textAlign = 'right';
   ctx.fillText(valueLine, boxX + boxW - boxPaddingX, cursorY);
   ctx.textAlign = 'left';
 
-  // 固定提示
+  // Pin hint
   if (isPinned) {
     ctx.fillStyle = getComputedStyle(canvas).getPropertyValue('--text-secondary') || '#94a3b8';
     ctx.font = '9px sans-serif';
@@ -978,7 +978,7 @@ function drawTrendTooltip(
   }
 }
 
-/** 格式化 Tooltip 时间 */
+/** Format the tooltip time */
 function formatTooltipTime(ts: number): string {
   const d = new Date(ts);
   if (isNaN(d.getTime())) return '-';
@@ -991,9 +991,9 @@ function formatTooltipTime(ts: number): string {
   return `${y}-${mo}-${day} ${h}:${mi}:${s}`;
 }
 
-// ===== dataZoom 功能 =====
+// ===== dataZoom feature =====
 
-/** 获取全量数据时间范围 */
+/** Get the full data time range */
 function getFullDataRange(): { start: number; end: number } | null {
   if (historyData.value.length === 0) return null;
   const pts = historyData.value
@@ -1003,7 +1003,7 @@ function getFullDataRange(): { start: number; end: number } | null {
   return { start: pts[0], end: pts[pts.length - 1] };
 }
 
-/** 绘制 dataZoom 滑块 */
+/** Draw the dataZoom slider */
 function drawSlider() {
   const canvas = sliderCanvasRef.value;
   if (!canvas || historyData.value.length === 0) return;
@@ -1028,14 +1028,14 @@ function drawSlider() {
   const padding = { top: 4, bottom: 4 };
   const ph = h - padding.top - padding.bottom;
 
-  // 背景
+  // Background
   ctx.fillStyle = 'var(--surface, #1e293b)';
   ctx.fillRect(0, 0, w, h);
 
   const range = fullRange.end - fullRange.start || 1;
   const toX = (t: number) => ((t - fullRange.start) / range) * w;
 
-  // 解析数据点
+  // Parse data points
   const pts = historyData.value
     .map((d) => ({ t: new Date(d.timestamp).getTime(), v: d.value }))
     .filter((p) => p.v !== null && !isNaN(p.t));
@@ -1047,7 +1047,7 @@ function drawSlider() {
   const vMax = Math.max(...vals);
   const vRange = vMax - vMin || 1;
 
-  // 绘制缩略曲线
+  // Draw thumbnail curve
   const primaryColor = getComputedStyle(canvas).getPropertyValue('--primary') || '#2196F3';
   ctx.strokeStyle = primaryColor;
   ctx.lineWidth = 0.8;
@@ -1064,28 +1064,28 @@ function drawSlider() {
   ctx.stroke();
   ctx.globalAlpha = 1;
 
-  // 缩放窗口
+  // Zoom window
   const zr = zoomRange.value || fullRange;
   const zLeft = ((zr.start - fullRange.start) / range) * w;
   const zRight = ((zr.end - fullRange.start) / range) * w;
 
-  // 未选中区域遮罩
+  // Unselected-area mask
   ctx.fillStyle = 'rgba(0,0,0,0.35)';
   ctx.fillRect(0, 0, zLeft, h);
   ctx.fillRect(zRight, 0, w - zRight, h);
 
-  // 选中区域边框
+  // Selected-area border
   ctx.strokeStyle = primaryColor;
   ctx.lineWidth = 1;
   ctx.strokeRect(zLeft, padding.top, zRight - zLeft, ph);
 
-  // 手柄
+  // Handle
   const handleW = 3;
   ctx.fillStyle = primaryColor;
   ctx.fillRect(zLeft - handleW / 2, padding.top, handleW, ph);
   ctx.fillRect(zRight - handleW / 2, padding.top, handleW, ph);
 
-  // 手柄热区
+  // Handle hotspot
   ctx.fillStyle = primaryColor;
   ctx.globalAlpha = 0.15;
   ctx.fillRect(zLeft - 4, 0, 8, h);
@@ -1093,7 +1093,7 @@ function drawSlider() {
   ctx.globalAlpha = 1;
 }
 
-/** 鼠标滚轮缩放 */
+/** Mouse wheel zoom */
 function handleChartWheel(e: WheelEvent) {
   const fullRange = getFullDataRange();
   if (!fullRange) return;
@@ -1125,7 +1125,7 @@ function handleChartWheel(e: WheelEvent) {
   drawSlider();
 }
 
-/** 主图表鼠标按下 —— 开始拖拽平移 */
+/** Main chart mouse down — start drag pan */
 function handleChartMouseDown(e: MouseEvent) {
   if (e.button !== 0) return;
   const fullRange = getFullDataRange();
@@ -1133,13 +1133,13 @@ function handleChartMouseDown(e: MouseEvent) {
   isPanning.value = true;
   panStartX.value = e.clientX;
   panStartRange.value = zoomRange.value ? { ...zoomRange.value } : { ...fullRange };
-  // 平移期间隐藏 hover tooltip，避免视觉抖动
+  // Hide the hover tooltip during panning to avoid visual jitter
   mouseX.value = null;
   mouseY.value = null;
   e.preventDefault();
 }
 
-/** 主图表鼠标移动 —— 更新 Tooltip 位置 */
+/** Main chart mouse move — update tooltip position */
 function handleChartMouseMove(e: MouseEvent) {
   if (isPanning.value) return;
   const canvas = trendCanvasRef.value;
@@ -1150,7 +1150,7 @@ function handleChartMouseMove(e: MouseEvent) {
   drawTrendChart();
 }
 
-/** 鼠标离开图表 —— 清除 hover Tooltip（保留 pinned） */
+/** Mouse leaves the chart — clear the hover tooltip (keep pinned) */
 function handleChartMouseLeave() {
   if (mouseX.value === null && mouseY.value === null) return;
   mouseX.value = null;
@@ -1158,7 +1158,7 @@ function handleChartMouseLeave() {
   drawTrendChart();
 }
 
-/** 点击图表 —— 固定/取消固定 Tooltip */
+/** Click the chart — pin/unpin the tooltip */
 function handleChartClick(e: MouseEvent) {
   if (isPanning.value) return;
   const canvas = trendCanvasRef.value;
@@ -1178,13 +1178,13 @@ function handleChartClick(e: MouseEvent) {
 
   // Toggle pin
   pinnedTimestamp.value = pinnedTimestamp.value !== null ? null : ts;
-  // 固定后清除 hover 状态，由 pinned 接管显示
+  // After pinning, clear the hover state; pinned takes over the display
   mouseX.value = null;
   mouseY.value = null;
   drawTrendChart();
 }
 
-/** 全局鼠标移动 */
+/** Global mouse move */
 function handleGlobalMouseMove(e: MouseEvent) {
   if (isPanning.value && panStartRange.value) {
     const canvas = trendCanvasRef.value;
@@ -1248,7 +1248,7 @@ function handleGlobalMouseUp(_e: MouseEvent) {
   sliderDragging.value = 'none';
 }
 
-/** 滑块鼠标按下 */
+/** Slider mouse down */
 function handleSliderMouseDown(e: MouseEvent) {
   if (e.button !== 0) return;
   const fullRange = getFullDataRange();
@@ -1291,9 +1291,9 @@ function handleSliderMouseDown(e: MouseEvent) {
   e.preventDefault();
 }
 
-// 监听视图切换重新绘制
+// Watch view switch to redraw
 watch(viewMode, async (mode) => {
-  // 切换视图时清理 tooltip 状态
+  // Clear tooltip state when switching views
   pinnedTimestamp.value = null;
   mouseX.value = null;
   mouseY.value = null;
@@ -1304,7 +1304,7 @@ watch(viewMode, async (mode) => {
   }
 });
 
-// ===== 导出 CSV =====
+// ===== Export CSV =====
 function generateCsv(): string {
   const valueHeader = props.unit
     ? `${t('system.tagHistory.csvHeaderValue')} (${props.unit})`
@@ -1312,7 +1312,7 @@ function generateCsv(): string {
   const header = `${t('system.tagHistory.csvHeaderTimestamp')},${valueHeader}`;
   const rows = historyData.value.map((d) => {
     const ts = d.timestamp ? new Date(d.timestamp).toISOString() : '';
-    // 与列表显示保持一致：按 displayFormat 格式化；空值留空
+    // Consistent with list display: format by displayFormat; leave empty values blank
     const v = (d.value === null || d.value === undefined)
       ? ''
       : formatTagValue(d.value, props.displayFormat);
@@ -1342,7 +1342,7 @@ async function exportAsCsv() {
   }
 }
 
-// ===== 保存图片 =====
+// ===== Save image =====
 function saveAsImage() {
   const canvas = trendCanvasRef.value;
   if (!canvas) return;
@@ -1352,19 +1352,19 @@ function saveAsImage() {
   link.click();
 }
 
-// ===== 缩放重置 =====
+// ===== Zoom reset =====
 function resetZoom() {
   zoomRange.value = null;
   drawTrendChart();
   drawSlider();
 }
 
-// ===== 关闭 =====
+// ===== Close =====
 function handleClose() {
   emit('update:visible', false);
 }
 
-// 打开弹窗时自动应用默认预设并查询一次
+// On dialog open, auto-apply the default preset and query once
 watch(
   () => props.visible,
   (val) => {
@@ -1378,12 +1378,12 @@ watch(
       mouseX.value = null;
       mouseY.value = null;
       applyPreset('1h');
-      // 立即显示加载状态，避免弹窗打开后到 queryHistory 执行前的空白
+      // Show the loading state immediately to avoid a blank between dialog open and queryHistory execution
       queryLoading.value = true;
       document.addEventListener('mousemove', handleGlobalMouseMove);
       document.addEventListener('mouseup', handleGlobalMouseUp);
-      // 直接调用（不包 nextTick）：queryHistory 内部的 await 会让出事件循环，
-      // Vue 得以在 API 响应前完成重渲染，确保 loading 区域可见
+      // Call directly (without nextTick): the await inside queryHistory yields the event loop,
+      // Vue can finish re-rendering before the API responds, ensuring the loading area is visible
       queryHistory();
     } else {
       document.removeEventListener('mousemove', handleGlobalMouseMove);
@@ -1427,7 +1427,7 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* ===== 遮罩 ===== */
+/* ===== Mask ===== */
 .dialog-overlay {
   position: fixed;
   inset: 0;
@@ -1445,7 +1445,7 @@ onUnmounted(() => {
   to { opacity: 1; }
 }
 
-/* ===== 容器 ===== */
+/* ===== Container ===== */
 .dialog-container {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -1465,7 +1465,7 @@ onUnmounted(() => {
   to { transform: translateY(0); opacity: 1; }
 }
 
-/* ===== 头部 ===== */
+/* ===== Header ===== */
 .dialog-header {
   display: flex;
   align-items: center;
@@ -1504,7 +1504,7 @@ onUnmounted(() => {
   flex-shrink: 0;
 }
 
-/* 视图切换 */
+/* View switch */
 .view-toggle {
   display: flex;
   background: var(--background);
@@ -1558,7 +1558,7 @@ onUnmounted(() => {
   background: var(--hover);
 }
 
-/* ===== 标签信息条 ===== */
+/* ===== Tag info bar ===== */
 .tag-info-bar {
   display: flex;
   align-items: center;
@@ -1608,7 +1608,7 @@ onUnmounted(() => {
   flex-shrink: 0;
 }
 
-/* ===== 查询工具栏（时间范围 + 查询方式 + 间隔 + 查询按钮，整合为一行） ===== */
+/* ===== Query toolbar (time range + query method + interval + query button, merged into one row) ===== */
 .query-toolbar {
   display: flex;
   align-items: flex-end;
@@ -1619,7 +1619,7 @@ onUnmounted(() => {
   flex-shrink: 0;
 }
 
-/* 查询按钮靠右对齐 */
+/* Query button right-aligned */
 .query-toolbar .query-btn {
   margin-left: auto;
 }
@@ -1742,7 +1742,7 @@ onUnmounted(() => {
   cursor: not-allowed;
 }
 
-/* ===== 插值方式（已整合到查询工具栏） ===== */
+/* ===== Interpolation method (merged into the query toolbar) ===== */
 .interp-field {
   display: flex;
   flex-direction: column;
@@ -1786,7 +1786,7 @@ onUnmounted(() => {
   to { transform: rotate(360deg); }
 }
 
-/* ===== 内容区 ===== */
+/* ===== Content area ===== */
 .content-area {
   flex: 1;
   display: flex;
@@ -1795,7 +1795,7 @@ onUnmounted(() => {
   min-height: 0;
 }
 
-/* 工具栏 */
+/* Toolbar */
 .toolbar {
   display: flex;
   align-items: center;
@@ -1851,7 +1851,7 @@ onUnmounted(() => {
   cursor: not-allowed;
 }
 
-/* ===== 加载 / 空状态 ===== */
+/* ===== Loading / empty state ===== */
 .loading-area,
 .empty-area {
   display: flex;
@@ -1874,7 +1874,7 @@ onUnmounted(() => {
   margin: 0;
 }
 
-/* ===== 趋势图视图 ===== */
+/* ===== Trend chart view ===== */
 .trend-view {
   flex: 1;
   display: flex;
@@ -1906,7 +1906,7 @@ onUnmounted(() => {
   border: 1px solid var(--border);
 }
 
-/* dataZoom 滑块 */
+/* dataZoom slider */
 .datazoom-slider {
   flex-shrink: 0;
   height: 44px;
@@ -1920,7 +1920,7 @@ onUnmounted(() => {
   border-radius: 4px;
 }
 
-/* ===== 表格视图 ===== */
+/* ===== Table view ===== */
 .table-view {
   flex: 1;
   overflow: hidden;

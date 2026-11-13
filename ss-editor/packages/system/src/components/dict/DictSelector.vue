@@ -35,7 +35,7 @@
         >{{ placeholder || $t('common.pleaseSelect') }}</span>
       </div>
 
-      <!-- 清除按钮 -->
+      <!-- Clear button -->
       <button
         v-if="allowClear && modelValue"
         class="dict-selector-clear"
@@ -66,7 +66,7 @@
         </svg>
       </button>
 
-      <!-- 箭头 -->
+      <!-- Arrow -->
       <svg
         class="dict-selector-arrow"
         :class="{ 'is-open': visible }"
@@ -81,7 +81,7 @@
       </svg>
     </div>
 
-    <!-- 下拉面板 -->
+    <!-- Dropdown panel -->
     <teleport to="body">
       <div
         v-if="visible"
@@ -158,10 +158,10 @@ const triggerRef = ref<HTMLDivElement>();
 const panelRef = ref<HTMLDivElement>();
 const panelStyle = ref({});
 
-// 已加载的选项
+// Loaded options
 const allOptions = computed(() => getOptions(props.dictId));
 
-// 过滤后的选项
+// Filtered options
 const filteredOptions = computed(() => {
   const options = allOptions.value;
   if (!filterText.value || !props.filterable) return options;
@@ -169,15 +169,15 @@ const filteredOptions = computed(() => {
   return options.filter((opt) => opt.label.toLowerCase().includes(keyword));
 });
 
-// 选中项的 label
+// Selected item's label
 const selectedLabel = computed(() => getLabel(props.dictId, props.modelValue ?? ''));
 
-// 初始化加载（字典可能尚未创建，捕获异常避免控制台报错）
+// Initial load (dictionary may not yet be created; catch exceptions to avoid console errors)
 onMounted(() => {
   loadDict(props.dictId, props.locale).catch(() => {});
 });
 
-// 语言切换时重新加载
+// Reload on language switch
 watch(
   () => props.locale,
   (locale) => {
@@ -185,7 +185,7 @@ watch(
   },
 );
 
-// 选中值变化后更新过滤文本
+// Update the filter text after the selected value changes
 watch(
   () => props.modelValue,
   (val) => {
@@ -210,7 +210,7 @@ function openOptions() {
 }
 
 function closeOptions() {
-  // 可编辑 combobox 在关闭时提交自定义输入值
+  // Editable combobox commits the custom input value on close
   if (props.filterable && props.allowCustom && filterText.value !== getLabel(props.dictId, props.modelValue ?? '')) {
     emit('update:modelValue', filterText.value);
   }
@@ -236,7 +236,7 @@ function clearValue() {
 }
 
 function onBlur() {
-  // 延迟关闭以允许点击选项
+  // Delay close to allow clicking options
   setTimeout(() => {
     if (!document.activeElement || !panelRef.value?.contains(document.activeElement)) {
       closeOptions();
@@ -245,7 +245,7 @@ function onBlur() {
 }
 
 function onFilterInput() {
-  // 输入时自动打开下拉
+  // Auto-open the dropdown on input
   if (!visible.value) {
     visible.value = true;
     updatePanelPosition();
@@ -263,7 +263,7 @@ function updatePanelPosition() {
   };
 }
 
-// 点击外部关闭
+// Click outside to close
 function onDocumentClick(e: MouseEvent) {
   const target = e.target as HTMLElement;
   if (!target.closest('.dict-selector')) {
@@ -279,7 +279,7 @@ onBeforeUnmount(() => {
   document.removeEventListener('mousedown', onDocumentClick);
 });
 
-// 窗口滚动/大小变化时更新位置
+// Update position on window scroll/resize
 function onScrollOrResize() {
   if (visible.value) updatePanelPosition();
 }
@@ -387,7 +387,7 @@ onBeforeUnmount(() => {
   transform: translateY(-50%) rotate(180deg);
 }
 
-/* 下拉面板 */
+/* Dropdown panel */
 .dict-selector-panel {
   position: fixed;
   z-index: 9999;

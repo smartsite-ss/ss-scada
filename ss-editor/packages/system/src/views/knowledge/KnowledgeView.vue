@@ -1,6 +1,6 @@
 <template>
   <div class="kb-page">
-    <!-- ========== 页头 ========== -->
+    <!-- ========== Page header ========== -->
     <div class="page-header">
       <h1 class="page-title">
         <svg
@@ -20,7 +20,7 @@
         {{ $t('system.nav.knowledge') }}
       </h1>
       <div class="header-actions">
-        <!-- 产品选择 -->
+        <!-- Product selection -->
         <select
           v-if="products.length > 1"
           v-model="selectedProduct"
@@ -35,7 +35,7 @@
             {{ p.nameI18n?.[locale] || p.name }}
           </option>
         </select>
-        <!-- 语言选择 -->
+        <!-- Language selection -->
         <select
           v-model="selectedLang"
           class="lang-select"
@@ -49,7 +49,7 @@
             {{ lang }}
           </option>
         </select>
-        <!-- 搜索 -->
+        <!-- Search -->
         <div class="search-box">
           <input
             v-model="searchQuery"
@@ -75,16 +75,16 @@
       </div>
     </div>
 
-    <!-- ========== 主体 ========== -->
+    <!-- ========== Main body ========== -->
     <div class="kb-body">
-      <!-- 左侧目录树 / 搜索结果 -->
+      <!-- Left directory tree / search results -->
       <aside class="kb-sidebar">
         <div class="sidebar-header">
           <span v-if="searchResults !== null">{{ $t('system.kb.searchResults') }} ({{ searchResults.length }})</span>
           <span v-else>{{ $t('system.kb.contents') }}</span>
         </div>
 
-        <!-- 搜索结果列表 -->
+        <!-- Search result list -->
         <div
           v-if="searchResults !== null"
           class="search-result-list"
@@ -115,7 +115,7 @@
           </div>
         </div>
 
-        <!-- 目录树 -->
+        <!-- Directory tree -->
         <div
           v-else
           class="tree-list"
@@ -160,7 +160,7 @@
         </div>
       </aside>
 
-      <!-- 右侧文章内容 -->
+      <!-- Right-side article content -->
       <main class="kb-content">
         <div
           v-if="loadingArticle"
@@ -202,14 +202,14 @@
             </div>
           </header>
 
-          <!-- 查看模式 -->
+          <!-- View mode -->
           <div
             v-if="!editing"
             class="article-content markdown-body"
             v-html="renderedContent"
           />
 
-          <!-- 编辑模式 -->
+          <!-- Edit mode -->
           <div
             v-else
             class="article-editor"
@@ -244,7 +244,7 @@
       </main>
     </div>
 
-    <!-- 图片上传对话框 -->
+    <!-- Image upload dialog -->
     <div
       v-if="imageDialogVisible"
       class="image-dialog-overlay"
@@ -299,7 +299,7 @@ const { t, locale } = useI18n();
 const route = useRoute();
 const { isAdmin } = usePermission();
 
-// ===== 状态 =====
+// ===== Status =====
 const products = ref<KbProductListItem[]>([]);
 const selectedProduct = ref<string>(DEFAULT_PRODUCT);
 const supportedLangs = ref<string[]>(['zh-CN']);
@@ -311,26 +311,26 @@ const loadingArticle = ref(false);
 const article = ref<KbArticle | null>(null);
 const currentArticleId = ref<string>('');
 
-// 搜索
+// Search
 const searchQuery = ref('');
 const searchResults = ref<KbSearchResult[] | null>(null);
 const searching = ref(false);
 
-// 编辑
+// Edit
 const editing = ref(false);
 const editContent = ref('');
 const saving = ref(false);
 
-// 树展开状态
+// Tree expand state
 const expanded = ref<Set<string>>(new Set());
 
-// 图片上传
+// Image upload
 const imageDialogVisible = ref(false);
 const imageFileInput = ref<HTMLInputElement | null>(null);
 const imageModuleName = ref('');
 
-// ===== 计算属性 =====
-/** 扁平化目录树（带 depth，支持折叠） */
+// ===== Computed properties =====
+/** Flattened directory tree (with depth, supports collapsing) */
 const flatTree = computed(() => {
   const result: Array<KbTreeNode & { depth: number }> = [];
   function walk(nodes: KbTreeNode[], depth: number) {
@@ -345,25 +345,25 @@ const flatTree = computed(() => {
   return result;
 });
 
-/** 渲染后的 Markdown HTML */
+/** Rendered Markdown HTML */
 const renderedContent = computed(() => {
   if (!article.value) return '';
   return renderMarkdown(article.value.content, article.value.lang);
 });
 
-// ===== 生命周期 =====
+// ===== Lifecycle =====
 onMounted(async () => {
   await loadProducts();
   await loadLangs();
   await loadTree();
-  // 如果 URL 带 ?path= 参数，尝试路由匹配后打开对应文章
+  // If the URL has a ?path= param, try route matching then open the corresponding article
   const routePath = route.query.path as string;
   if (routePath) {
     await matchAndOpen(routePath);
   }
 });
 
-// ===== 方法 =====
+// ===== Methods =====
 async function loadProducts() {
   try {
     const res = await kbApi.getProducts();
@@ -375,7 +375,7 @@ async function loadProducts() {
       }
     }
   } catch {
-    // 静默失败，使用默认产品
+    // Fail silently; use the default product
   }
 }
 
@@ -391,7 +391,7 @@ async function loadLangs() {
       }
     }
   } catch (e) {
-    // 静默失败，使用默认值
+    // Fail silently; use the default value
   }
 }
 
@@ -401,7 +401,7 @@ async function loadTree() {
     const res = await kbApi.getTree(selectedProduct.value, selectedLang.value);
     const data = (res as any)?.data ?? (res as any);
     tree.value = Array.isArray(data) ? data : [];
-    // 默认展开所有第一级文件夹
+    // Expand all first-level folders by default
     for (const node of tree.value) {
       if (node.type === 'folder') expanded.value.add(node.id);
     }
@@ -500,7 +500,7 @@ async function matchAndOpen(routePath: string) {
       await openArticle(data.knowledgePath);
     }
   } catch {
-    // 静默
+    // Silent
   }
 }
 
@@ -529,7 +529,7 @@ async function saveEdit() {
       article.value = data;
       editing.value = false;
       showSuccess(t('system.kb.saveSuccess'));
-      // 刷新目录树（标题可能变更）
+      // Refresh the directory tree (title may have changed)
       await loadTree();
     }
   } catch (e: any) {
@@ -563,7 +563,7 @@ async function onImageSelected(event: Event) {
     const data = (res as any)?.data ?? (res as any);
     const url = data?.url;
     if (url) {
-      // 在光标位置插入 Markdown 图片语法
+      // Insert Markdown image syntax at the cursor position
       const markdown = `![${file.name}](${url})`;
       editContent.value = (editContent.value || '') + '\n\n' + markdown + '\n';
       imageDialogVisible.value = false;
@@ -574,7 +574,7 @@ async function onImageSelected(event: Event) {
       showError(e?.message || t('system.kb.uploadFailed'));
     }
   }
-  // 重置 input 以便重复选同一文件
+  // Reset the input to allow selecting the same file again
   input.value = '';
 }
 
@@ -583,7 +583,7 @@ function fileToBase64(file: File): Promise<string> {
     const reader = new FileReader();
     reader.onload = () => {
       const result = reader.result as string;
-      // 去掉 data:image/xxx;base64, 前缀
+      // Strip the data:image/xxx;base64, prefix
       const comma = result.indexOf(',');
       resolve(comma >= 0 ? result.slice(comma + 1) : result);
     };
@@ -602,11 +602,11 @@ function formatDate(s: string): string {
   }
 }
 
-// ===== 简易 Markdown 渲染 =====
+// ===== Simple Markdown rendering =====
 /**
- * 将 Markdown 渲染为 HTML。
- * 支持：标题、粗体、斜体、行内代码、代码块、列表、链接、图片、引用、分隔线、段落。
- * 图片相对路径会被解析为后端 /kb/image 端点。
+ * Render Markdown to HTML.
+ * Supports: headings, bold, italic, inline code, code blocks, lists, links, images, blockquotes, horizontal rules, paragraphs.
+ * Image relative paths are resolved to the backend /kb/image endpoint.
  */
 function renderMarkdown(md: string, lang: string): string {
   if (!md) return '';
@@ -637,7 +637,7 @@ function renderMarkdown(md: string, lang: string): string {
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
-    // 代码块
+    // Code block
     if (line.trim().startsWith('```')) {
       if (inCodeBlock) {
         html.push(`<pre><code>${escapeHtml(codeBuffer.join('\n'))}</code></pre>`);
@@ -654,14 +654,14 @@ function renderMarkdown(md: string, lang: string): string {
       codeBuffer.push(line);
       continue;
     }
-    // 分隔线
+    // Divider
     if (/^---+$/.test(line.trim()) || /^\*\*\*+$/.test(line.trim())) {
       flushParagraph();
       flushList();
       html.push('<hr>');
       continue;
     }
-    // 标题
+    // Title
     const headingMatch = line.match(/^(#{1,6})\s+(.+)$/);
     if (headingMatch) {
       flushParagraph();
@@ -670,14 +670,14 @@ function renderMarkdown(md: string, lang: string): string {
       html.push(`<h${level}>${inlineFormat(headingMatch[2], lang)}</h${level}>`);
       continue;
     }
-    // 引用
+    // Reference
     if (line.trim().startsWith('> ')) {
       flushParagraph();
       flushList();
       html.push(`<blockquote>${inlineFormat(line.trim().slice(2), lang)}</blockquote>`);
       continue;
     }
-    // 列表项
+    // List item
     const listMatch = line.match(/^[\s]*[-*+]\s+(.+)$/);
     if (listMatch) {
       flushParagraph();
@@ -685,7 +685,7 @@ function renderMarkdown(md: string, lang: string): string {
       listBuffer.push(listMatch[1]);
       continue;
     }
-    // 有序列表
+    // Ordered list
     const olMatch = line.match(/^[\s]*\d+\.\s+(.+)$/);
     if (olMatch) {
       flushParagraph();
@@ -693,13 +693,13 @@ function renderMarkdown(md: string, lang: string): string {
       listBuffer.push(olMatch[1]);
       continue;
     }
-    // 空行
+    // Empty line
     if (line.trim() === '') {
       flushParagraph();
       flushList();
       continue;
     }
-    // 普通段落
+    // Normal paragraph
     if (inList) flushList();
     paragraphBuffer.push(line);
   }
@@ -711,37 +711,37 @@ function renderMarkdown(md: string, lang: string): string {
   return html.join('\n');
 }
 
-/** 行内格式化：粗体、斜体、行内代码、链接、图片 */
+/** Inline formatting: bold, italic, inline code, links, images */
 function inlineFormat(text: string, lang: string): string {
   let result = escapeHtml(text);
-  // 图片 ![alt](url)
+  // Image ![alt](url)
   result = result.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_m, alt, url) => {
     const resolved = resolveImageUrl(url, lang);
     return `<img src="${resolved}" alt="${alt}" loading="lazy" />`;
   });
-  // 链接 [text](url)
+  // Link [text](url)
   result = result.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
-  // 粗体 **text**
+  // Bold **text**
   result = result.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-  // 斜体 *text* 或 _text_
+  // Italic *text* or _text_
   result = result.replace(/\*([^*]+)\*/g, '<em>$1</em>');
   result = result.replace(/_([^_]+)_/g, '<em>$1</em>');
-  // 行内代码 `code`
+  // Inline code `code`
   result = result.replace(/`([^`]+)`/g, '<code>$1</code>');
   return result;
 }
 
-/** 解析图片 URL：相对路径 → 后端 /kb/image 端点 */
+/** Resolve an image URL: relative path → backend /kb/image endpoint */
 function resolveImageUrl(url: string, lang: string): string {
-  // 绝对 URL（http/https）或 data URI 直接使用
+  // Absolute URL (http/https) or data URI used directly
   if (/^https?:\/\//i.test(url) || url.startsWith('data:')) {
     return url;
   }
-  // 以 / 开头的站点绝对路径
+  // Site absolute path starting with /
   if (url.startsWith('/')) {
     return url;
   }
-  // 相对路径（如 03-device/images/foo.png）→ 通过后端 /kb/image 端点访问
+  // Relative path (e.g. 03-device/images/foo.png) → accessed via the backend /kb/image endpoint
   return kbApi.buildImageUrl(url, lang, selectedProduct.value);
 }
 
@@ -754,7 +754,7 @@ function escapeHtml(s: string): string {
     .replace(/'/g, '&#039;');
 }
 
-// 路由 query.path 变化时重新匹配
+// Re-match when the route query.path changes
 watch(() => route.query.path, (newPath) => {
   if (newPath && typeof newPath === 'string') {
     matchAndOpen(newPath);
@@ -770,7 +770,7 @@ watch(() => route.query.path, (newPath) => {
   min-height: 0;
 }
 
-/* ===== 页头 ===== */
+/* ===== Page header ===== */
 .page-header {
   display: flex;
   align-items: center;
@@ -857,7 +857,7 @@ watch(() => route.query.path, (newPath) => {
   box-shadow: 0 0 0 2px rgba(var(--primary-rgb, 26, 115, 232), 0.15);
 }
 
-/* ===== 通用按钮 ===== */
+/* ===== Generic button ===== */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -906,7 +906,7 @@ watch(() => route.query.path, (newPath) => {
   background: var(--surface-hover, rgba(255, 255, 255, 0.12));
 }
 
-/* ===== 主体 ===== */
+/* ===== Main body ===== */
 .kb-body {
   display: flex;
   flex: 1;
@@ -914,7 +914,7 @@ watch(() => route.query.path, (newPath) => {
   min-height: 0;
 }
 
-/* ===== 侧栏 ===== */
+/* ===== Sidebar ===== */
 .kb-sidebar {
   width: 280px;
   min-width: 240px;
@@ -951,7 +951,7 @@ watch(() => route.query.path, (newPath) => {
   font-size: 13px;
 }
 
-/* 树节点 */
+/* Tree node */
 .tree-item {
   display: flex;
   align-items: center;
@@ -1013,7 +1013,7 @@ watch(() => route.query.path, (newPath) => {
   font-style: italic;
 }
 
-/* 搜索结果 */
+/* Search results */
 .search-result-item {
   padding: 8px 10px;
   border-radius: 6px;
@@ -1055,7 +1055,7 @@ watch(() => route.query.path, (newPath) => {
   opacity: 0.7;
 }
 
-/* ===== 内容区 ===== */
+/* ===== Content area ===== */
 .kb-content {
   flex: 1;
   overflow-y: auto;
@@ -1121,7 +1121,7 @@ watch(() => route.query.path, (newPath) => {
   border-radius: 4px;
 }
 
-/* ===== Markdown 内容 ===== */
+/* ===== Markdown content ===== */
 .markdown-body {
   font-size: 14px;
   line-height: 1.7;
@@ -1211,7 +1211,7 @@ watch(() => route.query.path, (newPath) => {
   border-top: 1px solid var(--border);
 }
 
-/* ===== 编辑器 ===== */
+/* ===== Editor ===== */
 .article-editor {
   display: flex;
   flex-direction: column;
@@ -1249,7 +1249,7 @@ watch(() => route.query.path, (newPath) => {
   box-shadow: 0 0 0 2px rgba(var(--primary-rgb, 26, 115, 232), 0.15);
 }
 
-/* ===== 图片上传对话框 ===== */
+/* ===== Image upload dialog ===== */
 .image-dialog-overlay {
   position: fixed;
   top: 0;
@@ -1309,7 +1309,7 @@ watch(() => route.query.path, (newPath) => {
   gap: 8px;
 }
 
-/* ===== 滚动条 ===== */
+/* ===== Scrollbar ===== */
 .tree-list::-webkit-scrollbar,
 .search-result-list::-webkit-scrollbar,
 .kb-content::-webkit-scrollbar {

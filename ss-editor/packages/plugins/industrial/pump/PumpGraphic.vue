@@ -13,7 +13,7 @@
       </linearGradient>
     </defs>
 
-    <!-- 入口/出口管 -->
+    <!-- Inlet/outlet pipe -->
     <rect
       :x="cx - bw / 2 - pipeLength"
       :y="cy - pipeHeight / 2"
@@ -31,7 +31,7 @@
       :fill="pipeColor"
     />
 
-    <!-- 主体阴影 -->
+    <!-- Main body shadow -->
     <rect
       :x="bodyX + 3"
       :y="bodyY + 3"
@@ -41,7 +41,7 @@
       fill="rgba(0, 0, 0, 0.2)"
     />
 
-    <!-- 泵体 -->
+    <!-- Pump body -->
     <rect
       :x="bodyX"
       :y="bodyY"
@@ -52,7 +52,7 @@
       :stroke="bodyStroke"
       stroke-width="1.5"
     />
-    <!-- 泵体高光 -->
+    <!-- Pump body highlight -->
     <rect
       :x="bodyX + 2"
       :y="bodyY + 2"
@@ -62,7 +62,7 @@
       fill="rgba(255, 255, 255, 0.35)"
     />
 
-    <!-- 叶轮舱 -->
+    <!-- Impeller housing -->
     <rect
       :x="cx - chamberW / 2"
       :y="cy - chamberH / 2"
@@ -74,7 +74,7 @@
       stroke-width="1"
     />
 
-    <!-- 叶轮（运行状态旋转） -->
+    <!-- Impeller (rotating when running) -->
     <g :style="spinStyle">
       <circle :cx="cx" :cy="cy" :r="impellerRadius * 0.85" :fill="impellerColor" />
       <rect
@@ -91,7 +91,7 @@
       <circle :cx="cx" :cy="cy" :r="impellerRadius * 0.28" :fill="hubColor" />
     </g>
 
-    <!-- 法兰 -->
+    <!-- Flange -->
     <rect
       :x="cx - bw / 2 - flangeWidth"
       :y="cy - flangeHeight / 2"
@@ -109,7 +109,7 @@
       :fill="pipeColor"
     />
 
-    <!-- 螺栓 -->
+    <!-- Bolt -->
     <circle
       v-for="(bolt, index) in bolts"
       :key="index"
@@ -119,7 +119,7 @@
       fill="#BDC3C7"
     />
 
-    <!-- 底座 -->
+    <!-- Base -->
     <rect
       :x="w / 2 - baseW / 2"
       :y="baseY"
@@ -129,7 +129,7 @@
       :fill="pipeColor"
     />
 
-    <!-- 标签区 -->
+    <!-- Tag area -->
     <g v-if="showLabel">
       <rect
         :x="cx - labelW / 2"
@@ -149,7 +149,7 @@
       >{{ labelText }}</text>
     </g>
 
-    <!-- 状态灯（带光晕） -->
+    <!-- Status light (with glow) -->
     <circle
       :cx="statusLightX"
       :cy="statusLightY"
@@ -200,7 +200,7 @@ const { currentValue, bindTitle } = useTagValue(props);
 
 const bodyGradientId = `pump-body-gradient-${Math.random().toString(36).slice(2, 8)}`;
 
-/** 解析实时值 → 状态：未绑定时用手动 status；绑定时按「值→状态」映射，未命中用 defaultStatus */
+/** Parse live value → status: manual status when unbound; when bound, use the value→status mapping, falling back to defaultStatus on miss */
 const effectiveStatus = computed(() => {
   if (!props.tagId) return props.status;
   const raw = currentValue.value;

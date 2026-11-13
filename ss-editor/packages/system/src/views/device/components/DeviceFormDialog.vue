@@ -15,7 +15,7 @@
         </button>
       </div>
 
-      <!-- Tab 导航 -->
+      <!-- Tab navigation -->
       <div class="tab-bar">
         <div
           class="tab-item"
@@ -71,7 +71,7 @@
         </div>
       </div>
 
-      <!-- Tab 内容：基本信息 -->
+      <!-- Tab content: basic info -->
       <div
         v-show="activeTab === 'basic'"
         class="modal-body"
@@ -112,7 +112,7 @@
           >
         </div>
 
-        <!-- 设备模板选择 -->
+        <!-- Device template selection -->
         <div class="form-group">
           <label class="form-label">{{ $t('system.devices.template') }}</label>
           <div class="template-tree-box">
@@ -250,7 +250,7 @@
           </p>
         </div>
 
-        <!-- 采集驱动选择 -->
+        <!-- Acquisition driver selection -->
         <div class="form-group">
           <label class="form-label">{{ $t('system.devices.driver') }} <span class="required">*</span></label>
           <select
@@ -280,7 +280,7 @@
           </p>
         </div>
 
-        <!-- 分组选择 -->
+        <!-- Group selection -->
         <div class="form-group">
           <label class="form-label">{{ $t('system.devices.group') }}</label>
           <select
@@ -340,7 +340,7 @@
         </p>
       </div>
 
-      <!-- Tab 内容：通道配置 -->
+      <!-- Tab content: channel config -->
       <div
         v-show="activeTab === 'channel'"
         class="modal-body"
@@ -373,7 +373,7 @@
             @update:model-value="onConnectionChange"
           />
 
-          <!-- OPC UA 安全配置 -->
+          <!-- OPC UA security config -->
           <div
             v-if="form.driver === 'opc_ua'"
             class="driver-specific-config"
@@ -439,7 +439,7 @@
             </div>
           </div>
 
-          <!-- S7 配置 -->
+          <!-- S7 config -->
           <div
             v-if="form.driver === 'siemens_s7'"
             class="driver-specific-config"
@@ -576,7 +576,7 @@ const emit = defineEmits<{
 
 const { t, locale } = useI18n();
 
-// 模板树数据
+// Template tree data
 interface TreeNode {
   id: string;
   name: string;
@@ -600,7 +600,7 @@ const treeLoading = ref(false);
 const expandedNodes = ref(new Set<string>());
 const templateError = ref('');
 
-// 已选中的模板信息
+// Selected template info
 const selectedTemplate = ref<{ id: string; name: string; deviceType: string; description?: string } | null>(null);
 
 const form = ref({
@@ -620,24 +620,24 @@ const formError = ref('');
 const deviceCodeError = ref('');
 const driverError = ref('');
 
-// ⭐ 插件相关
+// ⭐ Plugin-related
 const pluginOptions = ref<PluginInfo[]>([]);
 const channelSchema = ref<PluginConnectionSchema | null>(null);
 const channelValidateErrors = ref<Array<{ field: string; message: string }>>([]);
 const channelValid = ref<boolean | null>(null);
 const validating = ref(false);
 
-// ⭐ Tab 状态
+// ⭐ Tab state
 const activeTab = ref<'basic' | 'channel'>('basic');
 const channelConfigured = ref(false);
 
-/** 驱动专属字段：这些字段由下方的增强 UI 渲染，需从通用 Schema 中过滤掉以避免重复 */
+/** Driver-specific fields: rendered by the enhanced UI below, so they are filtered out of the generic Schema to avoid duplication */
 const DRIVER_SPECIFIC_FIELDS: Record<string, string[]> = {
   opc_ua: ['securityMode', 'securityPolicy', 'username', 'password'],
   siemens_s7: ['rack', 'slot'],
 };
 
-/** 过滤后的通道 Schema（排除已由驱动专属 UI 渲染的字段） */
+/** Filtered channel Schema (excludes fields already rendered by the driver-specific UI) */
 const filteredChannelSchema = computed<PluginConnectionSchema>(() => {
   const schema = channelSchema.value;
   if (!schema) return { type: 'object', required: [], properties: {} };
@@ -650,14 +650,14 @@ const filteredChannelSchema = computed<PluginConnectionSchema>(() => {
   return { ...schema, properties: filteredProperties };
 });
 
-/** OPC UA 安全模式选项 */
+/** OPC UA security mode options */
 const opcuaSecurityModeOptions = computed(() => [
   { label: t('system.devices.securityModeNone'), value: 'None' },
   { label: t('system.devices.securityModeSign'), value: 'Sign' },
   { label: t('system.devices.securityModeSignAndEncrypt'), value: 'SignAndEncrypt' },
 ]);
 
-/** OPC UA 安全策略选项 */
+/** OPC UA security policy options */
 const opcuaSecurityPolicyOptions = computed(() => [
   { label: t('system.devices.securityPolicyNone'), value: 'None' },
   { label: t('system.devices.securityPolicyBasic128Rsa15'), value: 'Basic128Rsa15' },
@@ -665,7 +665,7 @@ const opcuaSecurityPolicyOptions = computed(() => [
   { label: t('system.devices.securityPolicyBasic256Sha256'), value: 'Basic256Sha256' },
 ]);
 
-/** 更新 connection 中单个字段 */
+/** Update a single field in connection */
 function updateConnectionField(field: string, value: unknown) {
   form.value.connection = { ...form.value.connection, [field]: value };
   channelValid.value = null;
@@ -680,7 +680,7 @@ function onConnectionChange(value: Record<string, any>) {
   channelConfigured.value = true;
 }
 
-// 分组选项
+// Group option
 const groupOptions = ref<Array<{ id: string; name: string }>>([]);
 
 async function loadGroupOptions() {
@@ -694,7 +694,7 @@ async function loadGroupOptions() {
   }
 }
 
-// ⭐ 加载采集插件列表
+// ⭐ Load the acquisition plugin list
 async function loadPlugins() {
   try {
     const res = await pluginApi.list();
@@ -705,7 +705,7 @@ async function loadPlugins() {
   }
 }
 
-// ⭐ 驱动变更时加载对应的 Schema + 初始化默认值
+// ⭐ On driver change, load the corresponding Schema + initialize defaults
 async function onDriverChange() {
   await loadSchemaForDriver(form.value.driver);
 }
@@ -721,10 +721,10 @@ async function loadSchemaForDriver(driver: string) {
     const schema = (res as any).data?.data || (res as any).data;
     if (schema?.properties) {
       channelSchema.value = schema;
-      // 初始化 connection 为插件的默认值
+      // Initialize connection to the plugin's default value
       const plugin = pluginOptions.value.find(p => p.protocol === driver);
       const defaults = plugin?.defaultConnection || {};
-      // 只设置尚未有值的字段
+      // Only set fields that have no value yet
       const current = form.value.connection || {};
       form.value.connection = { ...defaults, ...current };
     }
@@ -733,7 +733,7 @@ async function loadSchemaForDriver(driver: string) {
   }
 }
 
-// ⭐ 调用插件校验接口
+// ⭐ Call the plugin validation interface
 async function validateChannel() {
   if (!form.value.driver) return;
   channelValidateErrors.value = [];
@@ -792,7 +792,7 @@ function selectTemplateNode(tpl: { id: string; name: string; deviceType: string;
   templateError.value = '';
 }
 
-/** 从模板树中查找模板名称 */
+/** Find a template name in the template tree */
 function findTemplateName(templateId: string): string | undefined {
   for (const industry of treeData.value) {
     for (const category of industry.categories) {
@@ -839,7 +839,7 @@ watch(() => props.device, (val) => {
       ? { id: tplId, name: findTemplateName(tplId) || val.deviceName, deviceType: typeVal }
       : null;
 
-    // 回填时也加载对应 Schema
+    // Also load the corresponding Schema when backfilling
     if (driverVal) {
       loadSchemaForDriver(driverVal);
     }
@@ -998,7 +998,7 @@ function handleClose() {
 
 .modal-close:hover { color: var(--text); background: var(--border-light); }
 
-/* ===== Tab 导航 ===== */
+/* ===== Tab navigation ===== */
 .tab-bar {
   display: flex;
   border-bottom: 1px solid var(--border);
@@ -1035,7 +1035,7 @@ function handleClose() {
   flex-shrink: 0;
 }
 
-/* ===== 通道配置空状态 ===== */
+/* ===== Channel config empty state ===== */
 .channel-empty-tip {
   display: flex;
   flex-direction: column;
@@ -1051,7 +1051,7 @@ function handleClose() {
   margin: 0;
 }
 
-/* ===== 通道配置 section header ===== */
+/* ===== Channel config section header ===== */
 .channel-section-header {
   margin-bottom: 16px;
 }
@@ -1067,7 +1067,7 @@ function handleClose() {
   font-family: 'Courier New', monospace;
 }
 
-/* ===== 校验结果 ===== */
+/* ===== Validation result ===== */
 .channel-result {
   display: flex;
   align-items: center;
@@ -1123,7 +1123,7 @@ function handleClose() {
 
 .channel-config .form-group { margin-bottom: 0; }
 
-/* ===== 驱动专属配置区 ===== */
+/* ===== Driver-specific config area ===== */
 .driver-specific-config {
   margin-top: 12px;
   padding: 12px;
@@ -1239,7 +1239,7 @@ function handleClose() {
 .btn-secondary:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
 .btn-sm { padding: 4px 10px; font-size: 12px; }
 
-/* ===== 模板树 ===== */
+/* ===== Template tree ===== */
 .template-tree-box {
   border: 1px solid var(--border);
   border-radius: 8px;

@@ -16,7 +16,7 @@
       {{ $t('system.aiConfig.description') }}
     </div>
 
-    <!-- Provider 列表 -->
+    <!-- Provider list -->
     <SsLoading
       v-if="loading"
       :text="$t('system.aiConfig.loading')"
@@ -24,7 +24,7 @@
     />
 
     <div v-else>
-      <!-- 国内供应商 -->
+      <!-- Domestic providers -->
       <div class="section-title">
         {{ $t('system.aiConfig.domestic') }}
       </div>
@@ -151,7 +151,7 @@
         </div>
       </div>
 
-      <!-- 国际供应商 -->
+      <!-- International providers -->
       <div class="section-title">
         {{ $t('system.aiConfig.international') }}
       </div>
@@ -279,7 +279,7 @@
       </div>
     </div>
 
-    <!-- API Key 输入弹窗 -->
+    <!-- API Key input dialog -->
     <div
       v-if="apiKeyDialogVisible"
       class="modal-overlay"
@@ -333,7 +333,7 @@
             </p>
           </div>
 
-          <!-- 高级设置（可折叠） -->
+          <!-- Advanced settings (collapsible) -->
           <details class="advanced-settings">
             <summary class="advanced-summary">
               {{ $t('system.aiConfig.advancedSettings') }}
@@ -399,7 +399,7 @@ const saving = ref(false);
 const providers = ref<AiProviderConfig[]>([]);
 const presets = ref<ProviderPreset[]>([]);
 
-// API Key 弹窗
+// API Key dialog
 const apiKeyDialogVisible = ref(false);
 const editingProvider = ref<AiProviderConfig | null>(null);
 const apiKeyInput = ref('');
@@ -408,16 +408,16 @@ const advancedForm = reactive({
   defaultModel: '',
 });
 
-// 连接测试状态（按 provider id 记录最近一次测试结果）
+// Connection test state (records the latest test result by provider id)
 const testingId = ref<string | null>(null);
 const testResults = ref<Record<string, AiProviderTestResult>>({});
 
-/** 国内供应商（按 sortOrder 排序） */
+/** Domestic providers (sorted by sortOrder) */
 const domesticProviders = computed(() =>
   providers.value.filter((p) => getPreset(p.providerId)?.region === 'domestic'),
 );
 
-/** 国际供应商（按 sortOrder 排序） */
+/** International providers (sorted by sortOrder) */
 const internationalProviders = computed(() =>
   providers.value.filter((p) => getPreset(p.providerId)?.region === 'international'),
 );
@@ -434,11 +434,11 @@ function getApiKeyUrl(providerId: string): string {
   return getPreset(providerId)?.apiKeyUrl || '';
 }
 
-/** 是否已配置（有 API Key） */
+/** Whether configured (has API Key) */
 function isConfigured(item: AiProviderConfig | null): boolean {
   if (!item) return false;
-  // apiKey 为 '***' 表示已加密存储（后端返回脱敏值）
-  // apiKey 为空字符串表示未配置
+  // apiKey being '***' means it is stored encrypted (the backend returns a masked value)
+  // An empty apiKey string means it is not configured
   return item.apiKey === '***' || (item.apiKey !== '' && item.apiKey !== '—');
 }
 
@@ -451,7 +451,7 @@ async function loadProviders() {
     ]);
     providers.value = providerList;
     presets.value = presetList;
-    // 配置变更后旧的测试结果可能已失效，重新加载时清空
+    // Old test results may be stale after config change; clear them on reload
     testResults.value = {};
   } catch (err: any) {
     if (!err._errorHandled) {
@@ -483,7 +483,7 @@ async function handleSaveApiKey() {
   try {
     const item = editingProvider.value;
 
-    // 如果有高级设置，一并更新
+    // If there are advanced settings, update them too
     const hasAdvanced = advancedForm.apiBase.trim() || advancedForm.defaultModel.trim();
     if (hasAdvanced) {
       const payload: Record<string, any> = { apiKey: apiKeyInput.value };
@@ -491,7 +491,7 @@ async function handleSaveApiKey() {
       if (advancedForm.defaultModel.trim()) payload.defaultModel = advancedForm.defaultModel;
       await aiProviderApi.update(item.id, payload);
     } else {
-      // 仅更新 API Key
+      // Only update the API Key
       await aiProviderApi.updateApiKey(item.id, apiKeyInput.value);
     }
 
@@ -518,7 +518,7 @@ async function handleToggle(item: AiProviderConfig, enabled: boolean) {
   }
 }
 
-/** 测试供应商连接，结果内联展示在卡片上 */
+/** Test the provider connection; the result is displayed inline on the card */
 async function handleTest(item: AiProviderConfig) {
   if (testingId.value) return;
   testingId.value = item.id;
@@ -604,7 +604,7 @@ onMounted(() => {
   border-bottom: 1px solid var(--border);
 }
 
-/* Provider 卡片网格 */
+/* Provider card grid */
 .provider-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -704,7 +704,7 @@ onMounted(() => {
   border-top: 1px solid var(--border);
 }
 
-/* 标签 */
+/* Tag */
 .tag {
   display: inline-block;
   padding: 2px 8px;
@@ -717,7 +717,7 @@ onMounted(() => {
 .tag-muted { background: var(--elevated, rgba(128, 128, 128, 0.15)); color: var(--text-secondary); }
 .tag-info { background: rgba(59, 130, 246, 0.15); color: var(--status-info); }
 
-/* 按钮 */
+/* Button */
 .btn {
   padding: 6px 16px;
   border: none;
@@ -773,7 +773,7 @@ onMounted(() => {
   color: var(--text);
 }
 
-/* Toggle 开关 */
+/* Toggle switch */
 .toggle-switch {
   position: relative;
   display: inline-block;
@@ -820,7 +820,7 @@ onMounted(() => {
   transform: translateX(20px);
 }
 
-/* 弹窗 */
+/* Dialog */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -873,7 +873,7 @@ onMounted(() => {
   border-top: 1px solid var(--border);
 }
 
-/* 表单 */
+/* Form */
 .form-field {
   margin-bottom: 14px;
 }
@@ -909,7 +909,7 @@ onMounted(() => {
   border-color: var(--primary);
 }
 
-/* 高级设置折叠 */
+/* Advanced settings collapse */
 .advanced-settings {
   margin-top: 12px;
   border-top: 1px solid var(--border);

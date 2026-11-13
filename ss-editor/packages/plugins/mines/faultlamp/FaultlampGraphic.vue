@@ -144,7 +144,7 @@ const props = defineProps<{
 
 const { currentValue, bindTitle } = useTagValue(props);
 
-/** 解析实时值 → 报警：未绑定时用手动 dataset；绑定时按「值→状态」映射，未命中用 defaultStatus */
+/** Parse live value → alarm: manual dataset when unbound; when bound, use the value→status mapping, falling back to defaultStatus on miss */
 const effectiveAlarming = computed(() => {
   if (!props.tagId) return props.dataset > 0;
   const raw = currentValue.value;
