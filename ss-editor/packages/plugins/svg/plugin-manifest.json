@@ -1,14 +1,14 @@
 {
   "name": "scada-editor-plugins-svg",
   "version": "1.0.0",
-  "generatedAt": "2026-11-12T04:38:55.646Z",
+  "generatedAt": "2026-11-14T01:52:57.095Z",
   "entries": [
     {
       "type": "svg-pipe",
       "category": "svg",
       "label": "svg-pipe.label",
       "labelEn": "svg-pipe",
-      "url": "/plugins/svg/svg-pipe/0.1.0/index.mjs",
+      "url": "@plugins/svg/svg-pipe/index.ts",
       "version": "0.1.0",
       "checksum": "",
       "deployMode": "directory",

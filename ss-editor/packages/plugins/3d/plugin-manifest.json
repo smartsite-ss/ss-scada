@@ -1,14 +1,14 @@
 {
   "name": "scada-editor-plugins-3d",
   "version": "1.0.0",
-  "generatedAt": "2026-11-12T04:38:55.642Z",
+  "generatedAt": "2026-11-14T01:52:57.091Z",
   "entries": [
     {
       "type": "three-cube",
       "category": "3d",
       "label": "three-cube.label",
       "labelEn": "three-cube",
-      "url": "/plugins/3d/three-cube/1.0.0/index.mjs",
+      "url": "@plugins/3d/three-cube/index.ts",
       "version": "1.0.0",
       "checksum": "",
       "deployMode": "directory",
@@ -19,7 +19,7 @@
       "category": "3d",
       "label": "three-gauge.label",
       "labelEn": "three-gauge",
-      "url": "/plugins/3d/three-gauge/1.0.0/index.mjs",
+      "url": "@plugins/3d/three-gauge/index.ts",
       "version": "1.0.0",
       "checksum": "",
       "deployMode": "directory",

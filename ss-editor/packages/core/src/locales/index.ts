@@ -122,6 +122,9 @@ export const i18n = i18nInstance as unknown as II18nFacade;
 
 export { useI18n } from 'vue-i18n';
 
+/** Local storage key shared by all language switchers (login page, header, settings). */
+export const LANGUAGE_STORAGE_KEY = 'scada-language';
+
 export function getLocale(): string {
   return i18n.global.locale.value;
 }

@@ -59,6 +59,55 @@
       <div class="scan-line" />
     </div>
 
+    <!-- Language switch (top-right) -->
+    <div
+      ref="languageSwitcherRef"
+      class="login-language-switcher"
+    >
+      <button
+        type="button"
+        class="login-language-btn"
+        :title="$t('globalTools.switchLanguage')"
+        @click="toggleLanguageDropdown"
+      >
+        <svg
+          class="login-language-icon"
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <circle
+            cx="12"
+            cy="12"
+            r="9"
+          />
+          <path d="M3 12h18" />
+          <path d="M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18" />
+        </svg>
+        <span class="login-language-code">{{ currentLocaleBadge }}</span>
+      </button>
+
+      <div
+        v-if="showLanguageDropdown"
+        class="login-language-menu"
+      >
+        <button
+          v-for="locale in localeOptions"
+          :key="locale.code"
+          type="button"
+          class="login-language-item"
+          :class="{ active: currentLocale === locale.code }"
+          @click="switchLanguage(locale.code)"
+        >
+          <span class="login-language-item-code">{{ localeBadge(locale.code) }}</span>
+          <span class="login-language-item-label">{{ locale.label }}</span>
+        </button>
+      </div>
+    </div>
+
     <!-- Login card: with four-corner positioning box -->
     <div class="login-container">
       <!-- Four-corner positioning box (industrial rigor) -->
@@ -671,13 +720,70 @@
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { useI18n } from '@scada-editor/core';
+import { useI18n, getLocale, setLocale, LOCALE_OPTIONS, SUPPORTED_LOCALE_CODES, LANGUAGE_STORAGE_KEY } from '@scada-editor/core';
+import type { SupportedLocale } from '@scada-editor/core';
 import { useAuthStore } from '../stores/auth.store';
 import { authApi, type LoginFeatures } from '../api/modules/auth.api';
 
 const router = useRouter();
 const authStore = useAuthStore();
 const { t } = useI18n();
+
+// ==================== Language switch ====================
+const showLanguageDropdown = ref(false);
+const languageSwitcherRef = ref<HTMLElement | null>(null);
+const localeOptions = LOCALE_OPTIONS;
+const currentLocale = computed(() => getLocale());
+
+/** Short code shown in the button/badge, aligned with the language pack display convention. */
+const LOCALE_BADGES: Record<string, string> = {
+  'zh-CN': 'CN',
+  'en-US': 'EN',
+  'zh-TW': 'TW',
+  'ja-JP': 'JP',
+  'ko-KR': 'KR',
+  'th-TH': 'TH',
+  'de-DE': 'DE',
+  'fr-FR': 'FR',
+  'ru-RU': 'RU',
+  'pt-BR': 'PT',
+  'id-ID': 'ID',
+  'vi-VN': 'VN',
+  'es-MX': 'ES',
+  'tr-TR': 'TR',
+  'ms-MY': 'MS',
+};
+
+function localeBadge(code: string): string {
+  return LOCALE_BADGES[code] ?? code.split('-')[1] ?? code;
+}
+
+const currentLocaleBadge = computed(() => localeBadge(currentLocale.value));
+
+function toggleLanguageDropdown() {
+  showLanguageDropdown.value = !showLanguageDropdown.value;
+}
+
+function switchLanguage(locale: SupportedLocale) {
+  setLocale(locale);
+  localStorage.setItem(LANGUAGE_STORAGE_KEY, locale);
+  showLanguageDropdown.value = false;
+}
+
+function handleLanguageClickOutside(event: MouseEvent) {
+  if (!showLanguageDropdown.value) return;
+  if (languageSwitcherRef.value && !languageSwitcherRef.value.contains(event.target as Node)) {
+    showLanguageDropdown.value = false;
+  }
+}
+
+onMounted(() => {
+  const savedLocale = localStorage.getItem(LANGUAGE_STORAGE_KEY);
+  if (savedLocale && savedLocale !== getLocale() && (SUPPORTED_LOCALE_CODES as readonly string[]).includes(savedLocale)) {
+    setLocale(savedLocale as SupportedLocale);
+  }
+  document.addEventListener('click', handleLanguageClickOutside);
+});
 
 const isRegister = ref(false);
 const errorMsg = ref('');
@@ -844,6 +950,7 @@ function refreshQrcode() {
 // Clean up the polling timer on component unmount
 onUnmounted(() => {
   stopWechatPolling();
+  document.removeEventListener('click', handleLanguageClickOutside);
 });
 
 async function handleSubmit() {
@@ -2012,5 +2119,109 @@ async function handleSubmit() {
   .status-dot-online {
     display: none;
   }
+}
+
+/* ===== Language switch (top-right) ===== */
+.login-language-switcher {
+  position: fixed;
+  top: 20px;
+  right: 24px;
+  z-index: 20;
+}
+
+.login-language-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  background: rgba(15, 23, 42, 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: #cbd5e1;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.login-language-btn:hover {
+  border-color: rgba(59, 130, 246, 0.5);
+  color: #fff;
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.25);
+}
+
+.login-language-icon {
+  color: #60a5fa;
+}
+
+.login-language-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 190px;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 6px;
+
+  /* Glassmorphism + industrial dark */
+  border: 1px solid rgba(59, 130, 246, 0.28);
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+}
+
+.login-language-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 8px;
+  border: none;
+  border-radius: 5px;
+  background: transparent;
+  color: #cbd5e1;
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.login-language-item:hover {
+  background: rgba(59, 130, 246, 0.12);
+  color: #fff;
+}
+
+.login-language-item.active {
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+}
+
+.login-language-item-code {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 18px;
+  padding: 0 4px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.04);
+  font-family: 'Courier New', 'Consolas', monospace;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.login-language-item.active .login-language-item-code {
+  border-color: rgba(59, 130, 246, 0.6);
+}
+
+.login-language-item-label {
+  flex: 1;
 }
 </style>

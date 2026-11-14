@@ -21,5 +21,8 @@ publicHoistPattern:
   - 'typeorm'
 allowBuilds:
   '@nestjs/core': true
+  '@serialport/bindings-cpp': true
+  '@swc/core': true
   better-sqlite3: true
+  oracledb: true
   sqlite3: true

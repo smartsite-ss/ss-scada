@@ -106,6 +106,32 @@
             </div>
           </div>
 
+          <!-- Language switch -->
+          <div class="language-switcher">
+            <button
+              class="topbar-btn language-btn"
+              :title="$t('globalTools.switchLanguage')"
+              @click="toggleLanguageDropdown"
+            >
+              <span class="language-btn-code">{{ currentLocaleBadge }}</span>
+            </button>
+            <div
+              v-if="showLanguageDropdown"
+              class="theme-dropdown-menu language-dropdown-menu"
+            >
+              <button
+                v-for="locale in localeOptions"
+                :key="locale.code"
+                class="theme-dropdown-item language-dropdown-item"
+                :class="{ active: currentLocale === locale.code }"
+                @click="switchLanguage(locale.code)"
+              >
+                <span class="language-code">{{ localeBadge(locale.code) }}</span>
+                <span>{{ locale.label }}</span>
+              </button>
+            </div>
+          </div>
+
           <router-link
             :to="knowledgeLink"
             class="topbar-btn"
@@ -419,7 +445,8 @@ import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore, useMenuStore, ConnectionBanner } from '@scada-editor/system';
 import type { SystemMenuItem } from '@scada-editor/system';
-import { themeManager, useTheme, useConfigStore, useI18n, getJsonCookie, setJsonCookie } from '@scada-editor/core';
+import { themeManager, useTheme, useConfigStore, useI18n, getJsonCookie, setJsonCookie, getLocale, setLocale, LOCALE_OPTIONS, LANGUAGE_STORAGE_KEY } from '@scada-editor/core';
+import type { SupportedLocale } from '@scada-editor/core';
 import FloatingAiPanel from '../components/ai-assistant/FloatingAiPanel.vue';
 import UserProfileDialog from '../common/UserProfileDialog.vue';
 import EditorThemeProvider from '../common/theme/ThemeProvider.vue';
@@ -438,6 +465,62 @@ const showThemeDropdown = ref(false);
 const sidebarCollapsed = ref(false);
 const showProfileDialog = ref(false);
 const currentTheme = computed(() => configStore.ui?.theme ?? 'dark');
+
+// ==================== Language switch ====================
+const showLanguageDropdown = ref(false);
+const localeOptions = LOCALE_OPTIONS;
+const currentLocale = computed(() => getLocale());
+
+/** Short code shown in the button/badge, aligned with the language pack display convention. */
+const LOCALE_BADGES: Record<string, string> = {
+  'zh-CN': 'CN',
+  'en-US': 'EN',
+  'zh-TW': 'TW',
+  'ja-JP': 'JP',
+  'ko-KR': 'KR',
+  'th-TH': 'TH',
+  'de-DE': 'DE',
+  'fr-FR': 'FR',
+  'ru-RU': 'RU',
+  'pt-BR': 'PT',
+  'id-ID': 'ID',
+  'vi-VN': 'VN',
+  'es-MX': 'ES',
+  'tr-TR': 'TR',
+  'ms-MY': 'MS',
+};
+
+function localeBadge(code: string): string {
+  return LOCALE_BADGES[code] ?? code.split('-')[1] ?? code;
+}
+
+const currentLocaleBadge = computed(() => localeBadge(currentLocale.value));
+
+function toggleLanguageDropdown() {
+  showLanguageDropdown.value = !showLanguageDropdown.value;
+  showThemeDropdown.value = false;
+}
+
+function switchLanguage(locale: SupportedLocale) {
+  setLocale(locale);
+  configStore.updateUIConfig({ language: locale });
+  localStorage.setItem(LANGUAGE_STORAGE_KEY, locale);
+  showLanguageDropdown.value = false;
+}
+
+// Apply the persisted language and keep in sync with config changes
+watch(
+  () => configStore.ui?.language,
+  (language) => {
+    if (language && language !== getLocale()) {
+      setLocale(language as SupportedLocale);
+    }
+    if (language) {
+      localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
+    }
+  },
+  { immediate: true },
+);
 
 // Submenu collapse/expand state: records the currently expanded parent menu id
 const expandedMenus = ref<Set<string>>(new Set());
@@ -716,6 +799,11 @@ function handleClickOutside(event: MouseEvent) {
   if (themeSwitcher && !themeSwitcher.contains(event.target as Node)) {
     showThemeDropdown.value = false;
   }
+  // Close the language dropdown
+  const languageSwitcher = document.querySelector('.language-switcher');
+  if (languageSwitcher && !languageSwitcher.contains(event.target as Node)) {
+    showLanguageDropdown.value = false;
+  }
   // Close the right-click menu
   if (contextMenu.value.visible) {
     const menu = document.querySelector('.tab-context-menu');
@@ -822,6 +910,7 @@ async function handleLogout() {
 
 function toggleThemeDropdown() {
   showThemeDropdown.value = !showThemeDropdown.value;
+  showLanguageDropdown.value = false;
 }
 
 function switchTheme(theme: string) {
@@ -1475,6 +1564,55 @@ function switchTheme(theme: string) {
 
 .theme-dropdown-item.active {
   background: rgba(26, 115, 232, 0.15);
+  color: var(--primary);
+}
+
+/* ===== Language switching ===== */
+.language-switcher {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.language-btn {
+  min-width: 40px;
+  padding: 0 8px !important;
+  justify-content: center;
+}
+
+.language-btn-code {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.language-dropdown-menu {
+  min-width: 180px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.language-dropdown-item {
+  white-space: nowrap;
+}
+
+.language-code {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 18px;
+  padding: 0 4px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.language-dropdown-item.active .language-code {
+  border-color: var(--primary);
   color: var(--primary);
 }
 
