@@ -1,0 +1,42 @@
+{
+  "navigationButton": {
+    "label": "ปุ่มนำทาง",
+    "description": "ปุ่มนำทางที่รองรับการเปลี่ยนหน้า",
+    "properties": {
+      "text": "ข้อความปุ่ม",
+      "type": "ประเภทปุ่ม",
+      "size": "ขนาด",
+      "disabled": "ปิดใช้งาน",
+      "rounded": "มุมโค้ง",
+      "transparent": "โปร่งใส",
+      "targetType": "การกระทำเมื่อคลิก",
+      "targetPage": "หน้าเป้าหมาย",
+      "targetUrl": "URL เป้าหมาย"
+    },
+    "options": {
+      "type": {
+        "primary": "หลัก",
+        "success": "สำเร็จ",
+        "warning": "คำเตือน",
+        "danger": "อันตราย",
+        "default": "ค่าเริ่มต้น"
+      },
+      "size": {
+        "large": "ใหญ่",
+        "default": "กลาง",
+        "small": "เล็ก"
+      },
+      "targetType": {
+        "none": "ไม่มี",
+        "page": "เปิดหน้า",
+        "url": "เปิด URL"
+      }
+    },
+    "groups": {
+      "basic": "พื้นฐาน",
+      "status": "สถานะ",
+      "style": "รูปแบบ",
+      "action": "การโต้ตอบ"
+    }
+  }
+}

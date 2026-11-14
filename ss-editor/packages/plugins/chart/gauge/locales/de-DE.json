@@ -1,0 +1,66 @@
+{
+  "chartGauge": {
+    "label": "Messuhr",
+    "description": "Messuhr-Komponente für Echtzeit-Einzelwertanzeige und Schwellenwertalarm",
+    "panelTitle": "Messuhr-Konfiguration",
+    "config": {
+      "dataSource": "Datenquelle",
+      "noData": "Keine Daten",
+      "loadError": "Laden fehlgeschlagen"
+    },
+    "properties": {
+      "title": "Titel",
+      "titleColor": "Titelfarbe",
+      "titleFontSize": "Titel-Schriftgröße",
+      "value": "Aktueller Wert",
+      "minValue": "Minimum",
+      "maxValue": "Maximum",
+      "unit": "Einheit",
+      "startAngle": "Startwinkel",
+      "endAngle": "Endwinkel",
+      "backgroundColor": "Hintergrundfarbe",
+      "borderColor": "Rahmenfarbe",
+      "borderWidth": "Rahmenbreite",
+      "borderStyle": "Rahmenstil",
+      "borderRadius": "Eckenradius",
+      "faceColor": "Zifferblattfarbe",
+      "rimColor": "Außenringfarbe",
+      "normalColor": "Farbe Normalbereich",
+      "needleColor": "Zeigerfarbe",
+      "tickColor": "Skalenstrichfarbe",
+      "labelColor": "Beschriftungsfarbe",
+      "valueColor": "Wertfarbe",
+      "showTicks": "Skala anzeigen",
+      "showLabels": "Beschriftung anzeigen",
+      "showValue": "Wert anzeigen",
+      "majorTicks": "Hauptskalenstriche",
+      "minorTicks": "Nebenskalenstriche",
+      "warningValue": "Warnschwelle",
+      "dangerValue": "Gefahrenschwelle",
+      "warningColor": "Warnfarbe",
+      "dangerColor": "Gefahrenfarbe",
+      "shadowColor": "Schattenfarbe",
+      "shadowOffsetX": "Schattenversatz X",
+      "shadowOffsetY": "Schattenversatz Y",
+      "shadowBlur": "Schattenunschärfe"
+    },
+    "options": {
+      "borderStyle": {
+        "solid": "Durchgezogen",
+        "dashed": "Gestrichelt",
+        "dotted": "Gepunktet"
+      }
+    },
+    "groups": {
+      "basic": "Basis",
+      "value": "Wert",
+      "gauge": "Messuhr",
+      "style": "Stil",
+      "color": "Farbe",
+      "display": "Anzeige",
+      "ticks": "Skala",
+      "alarm": "Alarm",
+      "shadow": "Schatten"
+    }
+  }
+}

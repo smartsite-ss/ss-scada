@@ -1,0 +1,46 @@
+{
+  "shape": {
+    "label": "รูปร่าง",
+    "panelTitle": "คุณสมบัติรูปร่าง",
+    "properties": {
+      "shapeType": "ประเภทรูปร่าง",
+      "fillColor": "สีเติม",
+      "fillOpacity": "ความทึบแสงของการเติม",
+      "borderColor": "สีเส้นขอบ",
+      "borderWidth": "ความกว้างเส้นขอบ",
+      "borderStyle": "รูปแบบเส้นขอบ",
+      "borderRadius": "มุมโค้ง",
+      "shadowColor": "สีเงา",
+      "shadowOffsetX": "ระยะเลื่อนเงา X",
+      "shadowOffsetY": "ระยะเลื่อนเงา Y",
+      "shadowBlur": "ความเบลอของเงา"
+    },
+    "options": {
+      "shapeType": {
+        "rectangle": "สี่เหลี่ยมผืนผ้า",
+        "roundedRectangle": "สี่เหลี่ยมผืนผ้ามุมโค้ง",
+        "circle": "วงกลม",
+        "ellipse": "วงรี",
+        "triangle": "สามเหลี่ยม",
+        "diamond": "สี่เหลี่ยมข้าวหลามตัด",
+        "polygon": "รูปหลายเหลี่ยม",
+        "arrowUp": "ลูกศรขึ้น",
+        "arrowDown": "ลูกศรลง",
+        "arrowLeft": "ลูกศรซ้าย",
+        "arrowRight": "ลูกศรขวา",
+        "line": "เส้นตรง"
+      },
+      "borderStyle": {
+        "solid": "เส้นทึบ",
+        "dashed": "เส้นประ",
+        "dotted": "เส้นจุด"
+      }
+    },
+    "groups": {
+      "basic": "คุณสมบัติพื้นฐาน",
+      "style": "รูปแบบ",
+      "shadow": "เงา"
+    },
+    "description": "องค์ประกอบกราฟิกรูปร่าง"
+  }
+}

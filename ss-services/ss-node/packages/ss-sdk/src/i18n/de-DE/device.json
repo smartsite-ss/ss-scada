@@ -1,0 +1,27 @@
+{
+  "device": {
+    "create": {
+      "success": "Gerät erfolgreich erstellt",
+      "failed_name_exists": "Der Gerätename ist in diesem Projekt bereits vorhanden"
+    },
+    "update": {
+      "success": "Gerät erfolgreich aktualisiert"
+    },
+    "delete": {
+      "success": "Gerät erfolgreich gelöscht",
+      "failed_has_tags": "Das Gerät enthält noch Tags und kann nicht gelöscht werden"
+    },
+    "connect": {
+      "success": "Verbindung zum Gerät erfolgreich hergestellt",
+      "failed_timeout": "Zeitüberschreitung beim Verbindungsaufbau zum Gerät",
+      "failed_refused": "Das Gerät hat die Verbindung abgelehnt"
+    },
+    "disconnect": {
+      "success": "Die Verbindung zum Gerät wurde getrennt"
+    },
+    "offline": "Gerät {{name}} (ID: {{id}}) ist offline",
+    "online": "Gerät {{name}} (ID: {{id}}) ist online",
+    "read_error": "Lesen von Gerät {{name}} an Adresse {{address}} fehlgeschlagen: {{error}}",
+    "write_error": "Schreiben auf Gerät {{name}} an Adresse {{address}} fehlgeschlagen: {{error}}"
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "multiChart": {
+    "label": "Gráfico múltiple",
+    "description": "Componente de gráfico múltiple con barras, circular y mapa de calor",
+    "panelTitle": "Configuración del gráfico múltiple",
+    "properties": {
+      "title": "Título",
+      "titleColor": "Color del título",
+      "titleFontSize": "Tamaño de fuente del título",
+      "chartType": "Tipo de gráfico",
+      "backgroundColor": "Color de fondo",
+      "borderColor": "Color del borde",
+      "borderWidth": "Ancho del borde",
+      "borderRadius": "Radio de esquina",
+      "barColor": "Color de las barras",
+      "barGap": "Espacio entre barras",
+      "pieColors": "Secuencia de colores del gráfico circular",
+      "pieInnerRadius": "Proporción del radio interno",
+      "pieShowLabels": "Mostrar etiqueta",
+      "heatmapColorLow": "Color de valor bajo del mapa de calor",
+      "heatmapColorHigh": "Color de valor alto del mapa de calor",
+      "heatmapRows": "Número de filas",
+      "heatmapCols": "Número de columnas",
+      "showLegend": "Mostrar leyenda",
+      "shadowColor": "Color de sombra",
+      "shadowOffsetX": "Desplazamiento de sombra X",
+      "shadowOffsetY": "Desplazamiento de sombra Y",
+      "shadowBlur": "Desenfoque de sombra"
+    },
+    "options": {
+      "chartType": {
+        "bar": "Gráfico de barras",
+        "pie": "Gráfico circular",
+        "heatmap": "Mapa de calor"
+      }
+    },
+    "groups": {
+      "basic": "Básico",
+      "style": "Estilo",
+      "bar": "Gráfico de barras",
+      "pie": "Gráfico circular",
+      "heatmap": "Mapa de calor",
+      "display": "Visualización",
+      "shadow": "Sombra"
+    }
+  }
+}

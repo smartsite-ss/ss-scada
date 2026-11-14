@@ -1,0 +1,46 @@
+{
+  "input": {
+    "label": "Поле ввода",
+    "description": "Поле ввода для однострочного текста",
+    "panelTitle": "Настройка поля ввода",
+    "properties": {
+      "value": "Значение",
+      "placeholder": "Подсказка",
+      "backgroundColor": "Цвет фона",
+      "borderColor": "Цвет рамки",
+      "borderWidth": "Ширина рамки",
+      "borderStyle": "Стиль рамки",
+      "borderRadius": "Скругление",
+      "textColor": "Цвет текста",
+      "fontSize": "Размер шрифта",
+      "fontWeight": "Насыщенность шрифта",
+      "textAlign": "Выравнивание текста",
+      "shadowColor": "Цвет тени",
+      "shadowOffsetX": "Смещение тени X",
+      "shadowOffsetY": "Смещение тени Y",
+      "shadowBlur": "Размытие тени"
+    },
+    "options": {
+      "borderStyle": {
+        "solid": "Сплошная",
+        "dashed": "Штриховая",
+        "dotted": "Пунктирная"
+      },
+      "fontWeight": {
+        "normal": "Обычный",
+        "bold": "Жирный"
+      },
+      "textAlign": {
+        "left": "По левому краю",
+        "center": "По центру",
+        "right": "По правому краю"
+      }
+    },
+    "groups": {
+      "basic": "Основные свойства",
+      "style": "Стиль",
+      "text": "Текст",
+      "shadow": "Тень"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "head04": {
+    "label": "Decoración de encabezado 04",
+    "properties": {
+      "color1": "Color uno",
+      "color2": "Color dos",
+      "backgroundColor": "Color de fondo",
+      "reverse": "Invertir"
+    },
+    "description": "Decoración de líneas diagonales"
+  }
+}

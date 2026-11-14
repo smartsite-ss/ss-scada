@@ -1,0 +1,69 @@
+{
+  "label": {
+    "label": "Nhãn",
+    "panelTitle": "Thuộc tính nhãn",
+    "properties": {
+      "text": "Văn bản",
+      "textColor": "Màu văn bản",
+      "fontSize": "Cỡ phông chữ",
+      "fontWeight": "Độ đậm phông chữ",
+      "fontStyle": "Kiểu phông chữ",
+      "textDecoration": "Trang trí văn bản",
+      "textAlign": "Căn chỉnh văn bản",
+      "verticalAlignment": "Căn chỉnh dọc",
+      "lineHeight": "Chiều cao dòng",
+      "letterSpacing": "Khoảng cách chữ",
+      "wordWrap": "Tự động xuống dòng",
+      "maxLines": "Số dòng tối đa",
+      "backgroundColor": "Màu nền",
+      "borderColor": "Màu viền",
+      "borderWidth": "Độ rộng viền",
+      "borderRadius": "Bo góc",
+      "textShadowColor": "Màu bóng chữ",
+      "textShadowOffsetX": "Dịch chuyển bóng X",
+      "textShadowOffsetY": "Dịch chuyển bóng Y",
+      "textShadowBlur": "Độ mờ bóng",
+      "decimalPlaces": "Số chữ thập phân",
+      "unit": "Đơn vị",
+      "unitFontSize": "Cỡ phông chữ đơn vị",
+      "unitFontColor": "Màu phông chữ đơn vị",
+      "unitGap": "Khoảng cách đơn vị"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "Bình thường",
+        "bold": "Đậm"
+      },
+      "fontStyle": {
+        "normal": "Bình thường",
+        "italic": "Nghiêng"
+      },
+      "textDecoration": {
+        "none": "Không",
+        "underline": "Gạch chân",
+        "line-through": "Gạch ngang"
+      },
+      "textAlign": {
+        "left": "Căn trái",
+        "center": "Căn giữa",
+        "right": "Căn phải"
+      },
+      "verticalAlignment": {
+        "top": "Trên",
+        "middle": "Giữa",
+        "bottom": "Dưới"
+      }
+    },
+    "groups": {
+      "basic": "Thuộc tính cơ bản",
+      "style": "Kiểu dáng",
+      "text": "Chữ",
+      "unit": "Đơn vị",
+      "shadow": "Bóng đổ"
+    },
+    "hints": {
+      "maxLinesHint": "0 nghĩa là không giới hạn"
+    },
+    "description": "Phần tử đồ họa nhãn"
+  }
+}

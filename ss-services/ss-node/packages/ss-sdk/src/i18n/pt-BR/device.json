@@ -1,0 +1,27 @@
+{
+  "device": {
+    "create": {
+      "success": "Dispositivo criado com sucesso",
+      "failed_name_exists": "Já existe um dispositivo com esse nome neste projeto"
+    },
+    "update": {
+      "success": "Dispositivo atualizado com sucesso"
+    },
+    "delete": {
+      "success": "Dispositivo excluído com sucesso",
+      "failed_has_tags": "O dispositivo possui tags e não pode ser excluído"
+    },
+    "connect": {
+      "success": "Dispositivo conectado com sucesso",
+      "failed_timeout": "Tempo limite de conexão do dispositivo esgotado",
+      "failed_refused": "O dispositivo recusou a conexão"
+    },
+    "disconnect": {
+      "success": "Dispositivo desconectado"
+    },
+    "offline": "O dispositivo {{name}} (ID: {{id}}) está offline",
+    "online": "O dispositivo {{name}} (ID: {{id}}) está online",
+    "read_error": "Falha ao ler o endereço {{address}} do dispositivo {{name}}: {{error}}",
+    "write_error": "Falha ao gravar no endereço {{address}} do dispositivo {{name}}: {{error}}"
+  }
+}

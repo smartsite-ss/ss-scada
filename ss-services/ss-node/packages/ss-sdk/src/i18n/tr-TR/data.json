@@ -1,0 +1,23 @@
+{
+  "data": {
+    "acquisition": {
+      "started": "Veri toplama başlatıldı",
+      "stopped": "Veri toplama durduruldu",
+      "error": "Veri toplama hatası"
+    },
+    "transform": {
+      "success": "Veri dönüştürme başarılı",
+      "failed_invalid_value": "Geçersiz veri değeri: {{value}}",
+      "failed_scale_error": "Ölçek faktörü yapılandırması hatalı"
+    },
+    "persistence": {
+      "save_success": "Veriler kaydedildi",
+      "save_failed": "Veriler kaydedilemedi ({{detail}})"
+    },
+    "history": {
+      "query_success": "Geçmiş veri sorgusu başarılı",
+      "query_empty": "Belirtilen zaman aralığında geçmiş veri yok",
+      "time_range_error": "Zaman aralığı parametresi hatalı"
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "insulator": {
+    "label": "がいし",
+    "properties": {
+      "color": "線の色",
+      "backgroundColor": "背景色",
+      "lineWidth": "線幅"
+    },
+    "description": "がいし - 電気絶縁用の支持部品"
+  }
+}

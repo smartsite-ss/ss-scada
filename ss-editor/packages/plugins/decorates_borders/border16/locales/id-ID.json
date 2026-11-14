@@ -1,0 +1,15 @@
+{
+  "border16": {
+    "label": "Batas-16 (Minimalis Nordik)",
+    "description": "Komponen dekorasi batas-16 (Minimalis Nordik)",
+    "properties": {
+      "color1": "Warna utama",
+      "color2": "Warna pendukung",
+      "color3": "Warna dasar",
+      "backgroundColor": "Warna latar",
+      "showLeaves": "Ornamen daun",
+      "showDots": "Pola titik tekstur",
+      "animationSpeed": "Kecepatan animasi"
+    }
+  }
+}

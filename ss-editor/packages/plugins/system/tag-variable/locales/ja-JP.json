@@ -1,0 +1,21 @@
+{
+  "tagVariable": {
+    "label": "タグ変数",
+    "description": "デバイス変数のリアルタイム値を表示",
+    "config": {
+      "bindVariable": "変数をバインド",
+      "selectVariable": "変数を選択",
+      "clear": "クリア",
+      "unbound": "未バインド"
+    },
+    "selector": {
+      "title": "デバイス変数を選択",
+      "searchPlaceholder": "デバイスまたは変数を検索",
+      "deviceLabel": "デバイス",
+      "tagCount": "{count} 個の変数",
+      "loading": "読み込み中...",
+      "empty": "デバイス変数はありません",
+      "selectHint": "変数をクリックしてバインド"
+    }
+  }
+}

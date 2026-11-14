@@ -1,0 +1,11 @@
+{
+  "pt": {
+    "label": "Máy biến điện áp",
+    "properties": {
+      "color": "Màu đường nét",
+      "backgroundColor": "Màu nền",
+      "lineWidth": "Độ rộng nét"
+    },
+    "description": "Máy biến điện áp PT - thiết bị biến đổi điện áp dùng cho đo lường"
+  }
+}

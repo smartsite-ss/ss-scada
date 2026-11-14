@@ -1,0 +1,45 @@
+{
+  "valve": {
+    "label": "วาล์ว",
+    "description": "องค์ประกอบวาล์ว รองรับสถานะเปิด/ปิดและการสลับประเภท",
+    "panelTitle": "การกำหนดค่าวาล์ว",
+    "properties": {
+      "width": "ความกว้าง",
+      "height": "ความสูง",
+      "status": "สถานะ",
+      "valveType": "ประเภทวาล์ว",
+      "bodyColor": "สีตัวหลัก",
+      "stemColor": "สีก้านวาล์ว",
+      "openColor": "สีเปิด",
+      "closedColor": "สีปิด",
+      "faultColor": "สีข้อขัดข้อง",
+      "showLabel": "แสดงป้ายกำกับ",
+      "labelText": "ข้อความป้ายกำกับ",
+      "openValue": "ค่าที่สอดคล้องกับการเปิด",
+      "closedValue": "ค่าที่สอดคล้องกับการปิด",
+      "faultValue": "ค่าที่สอดคล้องกับข้อขัดข้อง",
+      "defaultStatus": "สถานะเริ่มต้น"
+    },
+    "options": {
+      "status": {
+        "open": "เปิด",
+        "closed": "ปิด",
+        "opening": "กำลังเปิด",
+        "closing": "กำลังปิด",
+        "fault": "ข้อขัดข้อง"
+      },
+      "valveType": {
+        "butterfly": "วาล์วผีเสื้อ",
+        "gate": "ประตูน้ำ"
+      }
+    },
+    "groups": {
+      "basic": "พื้นฐาน",
+      "status": "สถานะ",
+      "color": "สี",
+      "statusColor": "สีสถานะ",
+      "label": "ป้ายกำกับ",
+      "binding": "การแมปการผูก"
+    }
+  }
+}

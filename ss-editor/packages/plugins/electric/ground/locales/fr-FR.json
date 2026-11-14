@@ -1,0 +1,11 @@
+{
+  "ground": {
+    "label": "Symbole de terre",
+    "properties": {
+      "color": "Couleur du trait",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "lineWidth": "Épaisseur du trait"
+    },
+    "description": "Symbole électrique standard de mise à la terre"
+  }
+}

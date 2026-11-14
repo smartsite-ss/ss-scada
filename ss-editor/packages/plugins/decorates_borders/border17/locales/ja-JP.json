@@ -1,0 +1,15 @@
+{
+  "border17": {
+    "label": "枠線-17（サイバーパンク・ネオン）",
+    "description": "枠線-17 装飾コンポーネント（サイバーパンク・ネオン）",
+    "properties": {
+      "color1": "ネオンシアン",
+      "color2": "ネオンピンク",
+      "color3": "ベースカラー",
+      "backgroundColor": "背景色",
+      "showCircuit": "回路テクスチャ",
+      "showScanline": "スキャンライン",
+      "animationSpeed": "アニメーション速度"
+    }
+  }
+}

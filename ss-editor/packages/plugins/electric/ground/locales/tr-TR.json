@@ -1,0 +1,11 @@
+{
+  "ground": {
+    "label": "Topraklama sembolü",
+    "properties": {
+      "color": "Çizgi rengi",
+      "backgroundColor": "Arka plan rengi",
+      "lineWidth": "Çizgi kalınlığı"
+    },
+    "description": "Standart elektrik topraklama sembolü"
+  }
+}

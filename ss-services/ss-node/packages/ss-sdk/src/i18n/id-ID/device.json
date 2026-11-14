@@ -1,0 +1,27 @@
+{
+  "device": {
+    "create": {
+      "success": "Perangkat berhasil dibuat",
+      "failed_name_exists": "Nama perangkat sudah ada di proyek ini"
+    },
+    "update": {
+      "success": "Perangkat berhasil diperbarui"
+    },
+    "delete": {
+      "success": "Perangkat berhasil dihapus",
+      "failed_has_tags": "Perangkat masih memiliki tag, tidak dapat dihapus"
+    },
+    "connect": {
+      "success": "Perangkat berhasil terhubung",
+      "failed_timeout": "Koneksi perangkat timeout",
+      "failed_refused": "Perangkat menolak koneksi"
+    },
+    "disconnect": {
+      "success": "Perangkat telah terputus"
+    },
+    "offline": "Perangkat {{name}} (ID: {{id}}) offline",
+    "online": "Perangkat {{name}} (ID: {{id}}) online",
+    "read_error": "Gagal membaca perangkat {{name}} alamat {{address}}: {{error}}",
+    "write_error": "Gagal menulis perangkat {{name}} alamat {{address}}: {{error}}"
+  }
+}

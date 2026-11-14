@@ -1,0 +1,12 @@
+{
+  "head02": {
+    "label": "Kopfdekoration-02",
+    "properties": {
+      "color1": "Farbe 1",
+      "color2": "Farbe 2",
+      "dur": "Animationsdauer (Sekunden)",
+      "lineHeight": "Linienhöhe"
+    },
+    "description": "Horizontale Linie mit gestrichelter Animation"
+  }
+}

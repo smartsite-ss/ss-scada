@@ -1,0 +1,62 @@
+{
+  "track-move": {
+    "label": "궤적 이동",
+    "description": "사용자 정의 궤도를 따라 이동하는 애니메이션 점, 절곡 경로 및 이미지 대체 지원",
+    "panelTitle": "궤적 이동 구성",
+    "properties": {
+      "speed": "속도(px/s)",
+      "dotStyle": "점 스타일",
+      "dotColor": "점 색상",
+      "dotSize": "점 크기",
+      "dotImage": "이미지 URL",
+      "imageWidth": "이미지 너비",
+      "imageHeight": "이미지 높이",
+      "trackColor": "궤도 색상",
+      "trackWidth": "궤도 너비",
+      "trackStyle": "궤도 스타일",
+      "status": "애니메이션 상태",
+      "direction": "이동 방향",
+      "loopMode": "반복 모드"
+    },
+    "options": {
+      "dotStyle": {
+        "circle": "원",
+        "image": "이미지"
+      },
+      "trackStyle": {
+        "solid": "실선",
+        "dashed": "파선"
+      },
+      "direction": {
+        "forward": "정방향",
+        "backward": "역방향"
+      },
+      "loopMode": {
+        "loop": "반복",
+        "once": "1회",
+        "bounce": "왕복"
+      }
+    },
+    "groups": {
+      "dot": "애니메이션 점",
+      "track": "궤도",
+      "motion": "동작"
+    },
+    "hints": {
+      "dotImage": "이미지 URL 주소 입력"
+    },
+    "editor": {
+      "pathPoints": "경로 점",
+      "index": "#",
+      "coordX": "X",
+      "coordY": "Y",
+      "type": "유형",
+      "action": "작업",
+      "startPoint": "시작점",
+      "endPoint": "끝점",
+      "bendPoint": "절곡점",
+      "addBendPoint": "+ 절곡점 추가",
+      "reversePath": "경로 반전"
+    }
+  }
+}

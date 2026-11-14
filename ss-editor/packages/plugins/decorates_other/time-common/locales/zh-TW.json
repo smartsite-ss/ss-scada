@@ -1,0 +1,19 @@
+{
+  "time-common": {
+    "label": "通用時間",
+    "properties": {
+      "textColor": "文字顏色",
+      "fontSize": "字級",
+      "fontWeight": "字重",
+      "shadow": "陰影"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "正常",
+        "bold": "加粗",
+        "lighter": "細體"
+      }
+    },
+    "description": "通用時間顯示"
+  }
+}

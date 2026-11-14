@@ -1,0 +1,15 @@
+{
+  "border14": {
+    "label": "枠線-14",
+    "description": "枠線-14 装飾コンポーネント",
+    "properties": {
+      "color1": "メインカラー",
+      "color2": "サブカラー",
+      "backgroundColor": "背景色",
+      "showHexGrid": "六角形グリッド",
+      "showScanLine": "スキャンライン",
+      "showCoreLines": "中央の十字線",
+      "animationSpeed": "アニメーション速度"
+    }
+  }
+}

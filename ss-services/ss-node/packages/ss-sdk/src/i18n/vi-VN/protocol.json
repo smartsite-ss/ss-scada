@@ -1,0 +1,29 @@
+{
+  "protocol": {
+    "modbus": {
+      "connect_success": "Kết nối Modbus TCP thành công",
+      "connect_failed": "Kết nối Modbus TCP thất bại: {{detail}}",
+      "read_success": "Đọc Modbus thành công",
+      "read_failed": "Đọc Modbus thất bại: {{detail}}",
+      "write_success": "Ghi Modbus thành công",
+      "write_failed": "Ghi Modbus thất bại: {{detail}}"
+    },
+    "mqtt": {
+      "connect_success": "Kết nối MQTT thành công",
+      "connect_failed": "Kết nối MQTT thất bại: {{detail}}",
+      "publish_success": "Xuất bản tin nhắn MQTT thành công",
+      "publish_failed": "Xuất bản tin nhắn MQTT thất bại: {{detail}}"
+    },
+    "opcua": {
+      "connect_success": "Kết nối OPC UA thành công",
+      "connect_failed": "Kết nối OPC UA thất bại: {{detail}}",
+      "read_success": "Đọc OPC UA thành công",
+      "read_failed": "Đọc OPC UA thất bại: {{detail}}"
+    },
+    "common": {
+      "timeout": "Giao thức liên lạc quá thời gian chờ ({{timeout}}ms)",
+      "connection_refused": "Kết nối bị từ chối",
+      "authentication_failed": "Xác thực thất bại"
+    }
+  }
+}

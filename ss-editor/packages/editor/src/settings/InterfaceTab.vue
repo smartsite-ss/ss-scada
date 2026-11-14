@@ -63,11 +63,12 @@
           class="setting-select"
           @change="handleLanguageChange"
         >
-          <option value="zh-CN">
-            {{ $t('settings.languageOptions.zhCN') }}
-          </option>
-          <option value="en-US">
-            {{ $t('settings.languageOptions.enUS') }}
+          <option
+            v-for="locale in localeOptions"
+            :key="locale.code"
+            :value="locale.code"
+          >
+            {{ locale.label }}
           </option>
         </select>
       </div>
@@ -173,7 +174,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue';
-import { useConfigStore, useTheme, getLocale, setLocale, i18n, clearStorage } from '@scada-editor/core';
+import { useConfigStore, useTheme, getLocale, setLocale, i18n, clearStorage, LOCALE_OPTIONS } from '@scada-editor/core';
+import type { SupportedLocale } from '@scada-editor/core';
 import { showConfirm } from '../utils/messageBox';
 
 const configStore = useConfigStore();
@@ -184,8 +186,8 @@ const { t } = i18n.global;
 const selectedTheme = ref('dark');
 
 // Language
-type LocaleType = 'zh-CN' | 'en-US';
-const selectedLanguage = ref<LocaleType>('zh-CN');
+const localeOptions = LOCALE_OPTIONS;
+const selectedLanguage = ref<SupportedLocale>('zh-CN');
 
 // Display settings
 const showRulers = ref(true);
@@ -205,8 +207,8 @@ onMounted(() => {
   }
   // Restore the saved language and apply it to the i18n instance
   if (configStore.ui?.language) {
-    selectedLanguage.value = configStore.ui.language as LocaleType;
-    setLocale(configStore.ui.language as LocaleType);
+    selectedLanguage.value = configStore.ui.language as SupportedLocale;
+    setLocale(configStore.ui.language as SupportedLocale);
   }
   // Restore canvas settings
   if (configStore.canvas?.showRulers) {
@@ -233,8 +235,8 @@ onMounted(() => {
 // Watch the language change in configStore (to avoid missing it due to async loading)
 watch(() => configStore.ui?.language, (newLang) => {
   if (newLang && newLang !== getLocale()) {
-    selectedLanguage.value = newLang as LocaleType;
-    setLocale(newLang as LocaleType);
+    selectedLanguage.value = newLang as SupportedLocale;
+    setLocale(newLang as SupportedLocale);
   }
 });
 

@@ -1,0 +1,42 @@
+{
+  "indicator": {
+    "label": "Anzeigeleuchte",
+    "description": "Anzeigeleuchten-Komponente für Zustandsanzeige und Alarm",
+    "panelTitle": "Anzeigeleuchten-Konfiguration",
+    "properties": {
+      "width": "Breite",
+      "height": "Höhe",
+      "status": "Zustand",
+      "onColor": "Farbe eingeschaltet",
+      "offColor": "Farbe ausgeschaltet",
+      "warningColor": "Warnfarbe",
+      "faultColor": "Störungsfarbe",
+      "blinkOnAlarm": "Blinken bei Alarm",
+      "blinkInterval": "Blinkintervall (ms)",
+      "showLabel": "Beschriftung anzeigen",
+      "labelText": "Beschriftungstext",
+      "labelColor": "Beschriftungsfarbe",
+      "onValue": "Wert für eingeschaltet",
+      "offValue": "Wert für ausgeschaltet",
+      "warningValue": "Wert für Warnung",
+      "faultValue": "Wert für Störung",
+      "defaultStatus": "Standardzustand"
+    },
+    "options": {
+      "status": {
+        "on": "Eingeschaltet",
+        "off": "Ausgeschaltet",
+        "warning": "Warnung",
+        "fault": "Störung"
+      }
+    },
+    "groups": {
+      "basic": "Basis",
+      "status": "Zustand",
+      "color": "Farbe",
+      "animation": "Animation",
+      "label": "Beschriftung",
+      "binding": "Bindungszuordnung"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "faultlamp": {
+    "label": "Lampu alarm gangguan",
+    "properties": {
+      "color": "Warna",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garis",
+      "alarming": "Status alarm",
+      "alarmValue": "Nilai untuk alarm",
+      "normalValue": "Nilai untuk normal",
+      "defaultStatus": "Status default"
+    },
+    "options": {
+      "alarming": {
+        "yes": "Dalam alarm",
+        "no": "Normal"
+      }
+    },
+    "description": "Lampu indikator alarm gangguan - berkedip merah saat alarm"
+  }
+}

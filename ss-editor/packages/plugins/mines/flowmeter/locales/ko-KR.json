@@ -1,0 +1,16 @@
+{
+  "flowmeter": {
+    "label": "유량계",
+    "properties": {
+      "color": "색상",
+      "backgroundColor": "배경색",
+      "lineWidth": "선 너비",
+      "dataset": "데이터 값(0-100)",
+      "showDigital": "숫자 판독값 표시",
+      "rangeMax": "측정 범위 최댓값",
+      "decimalPlaces": "소수 자릿수",
+      "unit": "단위"
+    },
+    "description": "유량계 - 원형 다이얼식 유량 계기, 바늘 각도는 데이터 값으로 구동"
+  }
+}

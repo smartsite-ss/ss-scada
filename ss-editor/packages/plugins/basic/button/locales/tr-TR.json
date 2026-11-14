@@ -1,0 +1,54 @@
+{
+  "button": {
+    "label": "Düğme",
+    "panelTitle": "Düğme özellikleri",
+    "properties": {
+      "text": "Metin",
+      "backgroundColor": "Arka plan rengi",
+      "fontColor": "Metin rengi",
+      "borderColor": "Kenarlık rengi",
+      "borderWidth": "Kenarlık genişliği",
+      "borderStyle": "Kenarlık stili",
+      "borderRadius": "Köşe yuvarlatma",
+      "fontSize": "Yazı tipi boyutu",
+      "fontWeight": "Yazı tipi kalınlığı",
+      "textAlign": "Metin hizalaması",
+      "shadowColor": "Gölge rengi",
+      "shadowOffsetX": "Gölge kayması X",
+      "shadowOffsetY": "Gölge kayması Y",
+      "shadowBlur": "Gölge bulanıklığı",
+      "targetType": "Tıklama eylemi",
+      "targetPage": "Hedef sayfa",
+      "targetUrl": "Hedef URL"
+    },
+    "options": {
+      "borderStyle": {
+        "solid": "Düz çizgi",
+        "dashed": "Kesikli çizgi",
+        "dotted": "Noktalı çizgi"
+      },
+      "fontWeight": {
+        "normal": "Normal",
+        "bold": "Kalın"
+      },
+      "textAlign": {
+        "left": "Sola hizala",
+        "center": "Ortala",
+        "right": "Sağa hizala"
+      },
+      "targetType": {
+        "none": "Yok",
+        "page": "Sayfa aç",
+        "url": "URL aç"
+      }
+    },
+    "groups": {
+      "basic": "Temel özellikler",
+      "style": "Stil",
+      "text": "Yazı",
+      "shadow": "Gölge",
+      "action": "Etkileşim eylemi"
+    },
+    "description": "Düğme grafik öğesi"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "busbar": {
+    "label": "Segmen busbar",
+    "properties": {
+      "color": "Warna garis",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garis",
+      "labelText": "Teks label"
+    },
+    "description": "Segmen busbar - busbar pengumpul dan distribusi daya"
+  }
+}

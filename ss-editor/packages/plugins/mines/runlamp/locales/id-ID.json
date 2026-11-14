@@ -1,0 +1,23 @@
+{
+  "runlamp": {
+    "label": "Lampu indikator berjalan",
+    "properties": {
+      "lampColor": "Warna lampu",
+      "glowing": "Efek cahaya",
+      "blinkSpeed": "Kecepatan kedip",
+      "backgroundColor": "Warna latar",
+      "runningValue": "Nilai pemetaan berjalan",
+      "stoppedValue": "Nilai pemetaan berhenti",
+      "faultValue": "Nilai pemetaan gangguan",
+      "defaultStatus": "Status default"
+    },
+    "options": {
+      "lampColor": {
+        "green": "Hijau",
+        "red": "Merah",
+        "yellow": "Kuning"
+      }
+    },
+    "description": "Lampu indikator berjalan - animasi cahaya pulsa status warna bohlam bundar"
+  }
+}

@@ -1,0 +1,126 @@
+{
+  "common": {
+    "ok": "確定",
+    "cancel": "取消",
+    "save": "儲存",
+    "delete": "刪除",
+    "edit": "編輯",
+    "add": "新增",
+    "search": "搜尋",
+    "reset": "重設",
+    "export": "匯出",
+    "import": "匯入",
+    "confirm": "確認",
+    "close": "關閉",
+    "refresh": "重新整理",
+    "upload": "上傳",
+    "download": "下載",
+    "preview": "預覽",
+    "copy": "複製",
+    "paste": "貼上",
+    "undo": "復原",
+    "redo": "取消復原",
+    "settings": "設定",
+    "theme": "主題",
+    "language": "語言"
+  },
+  "category": {
+    "basic": "基礎元件",
+    "form": "表單元件",
+    "chart": "圖表元件",
+    "industrial": "工業元件",
+    "media": "媒體元件",
+    "layout": "版面配置元件",
+    "3d": "3D 元件",
+    "svg": "SVG 元件"
+  },
+  "editor": {
+    "toolbar": "工具列",
+    "canvas": "畫布",
+    "properties": "屬性面板",
+    "layers": "圖層面板",
+    "plugin": "外掛管理",
+    "zoomIn": "放大",
+    "zoomOut": "縮小",
+    "fitToScreen": "符合螢幕",
+    "undo": "復原",
+    "redo": "取消復原",
+    "delete": "刪除選取",
+    "selectAll": "全選",
+    "copy": "複製",
+    "paste": "貼上",
+    "group": "群組",
+    "ungroup": "取消群組",
+    "bringToFront": "移至最上層",
+    "sendToBack": "移至最下層",
+    "align": "對齊"
+  },
+  "plugin": {
+    "noPluginSelected": "未選取圖元",
+    "propertiesMissing": "屬性缺失",
+    "schemaVersion": "Schema 版本",
+    "pluginType": "圖元類型",
+    "position": "位置",
+    "size": "大小",
+    "width": "寬度",
+    "height": "高度",
+    "x": "X 座標",
+    "y": "Y 座標",
+    "rotation": "旋轉",
+    "opacity": "透明度",
+    "visible": "可見",
+    "locked": "鎖定"
+  },
+  "language": {
+    "zhCN": "中文",
+    "enUS": "英文"
+  },
+  "threeStage": {
+    "label": "3D 場景容器",
+    "description": "提供 Three.js 3D 場景容器，支援載入模型、燈光與相機控制"
+  },
+  "validation": {
+    "requiredFieldMissingDefault": "必填欄位 \"{field}\" 缺少預設值 (required=true 但 defaultValue 為空)",
+    "requiredFieldMissing": "必填欄位 \"{field}\" 缺失",
+    "schemaMissingName": "[{pluginName}] Schema 缺少 name",
+    "schemaMissingFields": "[{pluginName}] Schema 缺少 fields 定義",
+    "fieldDuplicate": "欄位 \"{field}\" 重複定義",
+    "fieldMissingName": "欄位缺少 name",
+    "fieldMissingLabel": "欄位缺少 label",
+    "fieldMissingType": "欄位缺少 type",
+    "selectMissingOptions": "select 欄位 \"{field}\" 缺少 options",
+    "minGreaterThanMax": "min({min}) 大於 max({max})",
+    "invalidColorDefault": "顏色預設值 \"{value}\" 格式無效",
+    "fieldMissingDefault": "欄位缺少 defaultValue",
+    "fieldCannotBeEmpty": "欄位 \"{field}\" 不能為空",
+    "fieldExpectedNumber": "欄位 \"{field}\" 期望數字類型，實際為 {actual}",
+    "fieldValueLessThanMin": "欄位 \"{field}\" 值 {value} 小於最小值 {min}",
+    "fieldValueGreaterThanMax": "欄位 \"{field}\" 值 {value} 大於最大值 {max}",
+    "fieldExpectedString": "欄位 \"{field}\" 期望字串類型，實際為 {actual}",
+    "fieldExpectedBoolean": "欄位 \"{field}\" 期望布林類型，實際為 {actual}",
+    "fieldValueNotInOptions": "欄位 \"{field}\" 值 \"{value}\" 不在合法選項 [{options}] 中",
+    "fieldExpectedColor": "欄位 \"{field}\" 期望顏色字串，實際為 {actual}",
+    "invalidColorFormat": "欄位 \"{field}\" 值 \"{value}\" 不是合法的顏色格式 (應為 #RGB / #RRGGBB / #RRGGBBAA)"
+  },
+  "pluginSdk": {
+    "readme": {
+      "type": "類型",
+      "category": "分類",
+      "renderBackend": "渲染方式",
+      "properties": "屬性清單",
+      "default": "預設",
+      "development": "開發"
+    },
+    "pluginStyle": "外掛樣式",
+    "backendDescriptions": {
+      "vueComponent": "以 Vue 元件渲染，適合複雜的互動式元件",
+      "canvas2d": "以 Canvas 2D 渲染，適合高效能的圖形繪製",
+      "svgDom": "以 SVG DOM 渲染，適合向量圖形與動畫",
+      "cssDom": "以 CSS DOM 渲染，適合 HTML 元素與樣式",
+      "three3d": "以 Three.js 3D 渲染，適合三維場景與模型"
+    }
+  },
+  "createPlugin": {
+    "cannotExtractComponentName": "無法擷取元件名稱，請透過 graphicComponentName 明確指定"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "three-cube": {
+    "label": "3D-куб",
+    "panelTitle": "Настройка 3D-куба",
+    "properties": {
+      "cubeColor": "Цвет куба",
+      "cubeSize": "Размер куба",
+      "rotationSpeed": "Скорость вращения",
+      "showGrid": "Показать сетку",
+      "showAxes": "Показать оси"
+    },
+    "groups": {
+      "basic": "Основные свойства"
+    },
+    "description": "Графический элемент «3D-куб» с анимацией вращения"
+  }
+}

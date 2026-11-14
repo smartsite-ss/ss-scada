@@ -1,0 +1,12 @@
+{
+  "clock": {
+    "label": "Relógio",
+    "properties": {
+      "color1": "Cor do ponteiro",
+      "color2": "Fundo do mostrador",
+      "color3": "Cor da borda",
+      "borderWidth": "Largura da borda"
+    },
+    "description": "Relógio analógico"
+  }
+}

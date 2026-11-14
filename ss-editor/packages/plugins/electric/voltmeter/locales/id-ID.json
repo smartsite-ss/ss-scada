@@ -1,0 +1,15 @@
+{
+  "voltmeter": {
+    "label": "Voltmeter",
+    "properties": {
+      "color": "Warna garis",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garis",
+      "dataset": "Nilai data statis",
+      "showDigital": "Tampilkan bacaan digital",
+      "decimalPlaces": "Jumlah desimal",
+      "unit": "Satuan"
+    },
+    "description": "Voltmeter - instrumen pengukur tegangan"
+  }
+}

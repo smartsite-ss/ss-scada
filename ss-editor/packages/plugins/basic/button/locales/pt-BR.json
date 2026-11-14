@@ -1,0 +1,54 @@
+{
+  "button": {
+    "label": "Botão",
+    "panelTitle": "Propriedades do botão",
+    "properties": {
+      "text": "Texto",
+      "backgroundColor": "Cor de fundo",
+      "fontColor": "Cor do texto",
+      "borderColor": "Cor da borda",
+      "borderWidth": "Largura da borda",
+      "borderStyle": "Estilo da borda",
+      "borderRadius": "Raio da borda",
+      "fontSize": "Tamanho da fonte",
+      "fontWeight": "Peso da fonte",
+      "textAlign": "Alinhamento do texto",
+      "shadowColor": "Cor da sombra",
+      "shadowOffsetX": "Deslocamento X da sombra",
+      "shadowOffsetY": "Deslocamento Y da sombra",
+      "shadowBlur": "Desfoque da sombra",
+      "targetType": "Ação ao clicar",
+      "targetPage": "Página de destino",
+      "targetUrl": "URL de destino"
+    },
+    "options": {
+      "borderStyle": {
+        "solid": "Sólida",
+        "dashed": "Tracejada",
+        "dotted": "Pontilhada"
+      },
+      "fontWeight": {
+        "normal": "Normal",
+        "bold": "Negrito"
+      },
+      "textAlign": {
+        "left": "Alinhar à esquerda",
+        "center": "Centralizar",
+        "right": "Alinhar à direita"
+      },
+      "targetType": {
+        "none": "Nenhum",
+        "page": "Abrir página",
+        "url": "Abrir URL"
+      }
+    },
+    "groups": {
+      "basic": "Propriedades básicas",
+      "style": "Estilo",
+      "text": "Texto",
+      "shadow": "Sombra",
+      "action": "Ação de interação"
+    },
+    "description": "Elemento gráfico de botão"
+  }
+}

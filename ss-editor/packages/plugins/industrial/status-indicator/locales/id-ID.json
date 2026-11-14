@@ -1,0 +1,36 @@
+{
+  "statusIndicator": {
+    "label": "Lampu indikator status",
+    "description": "Komponen lampu indikator status untuk tampilan multi-status dan alarm",
+    "properties": {
+      "status": "Status",
+      "normalColor": "Warna normal",
+      "warningColor": "Warna peringatan",
+      "errorColor": "Warna gangguan",
+      "offlineColor": "Warna offline",
+      "size": "Ukuran lampu indikator",
+      "showGlow": "Tampilkan cahaya",
+      "pulseSpeed": "Kecepatan pulsa (detik)",
+      "normalValue": "Nilai pemetaan normal",
+      "warningValue": "Nilai pemetaan peringatan",
+      "errorValue": "Nilai pemetaan gangguan",
+      "offlineValue": "Nilai pemetaan offline",
+      "defaultStatus": "Status default"
+    },
+    "options": {
+      "status": {
+        "normal": "Normal",
+        "warning": "Peringatan",
+        "error": "Gangguan",
+        "offline": "Offline"
+      }
+    },
+    "groups": {
+      "basic": "Dasar",
+      "color": "Warna",
+      "style": "Gaya",
+      "animation": "Animasi",
+      "binding": "Pemetaan pengikatan"
+    }
+  }
+}

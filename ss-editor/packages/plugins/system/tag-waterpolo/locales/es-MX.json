@@ -1,0 +1,40 @@
+{
+  "tagWaterpolo": {
+    "label": "Gráfico de esfera de agua de variable",
+    "description": "Enlaza una variable de etiqueta y muestra el porcentaje de nivel en tiempo real como esfera de agua",
+    "config": {
+      "bindVariable": "Variables enlazadas",
+      "addVariable": "Seleccionar variable",
+      "removeVariable": "Eliminar",
+      "unbound": "Sin variables enlazadas"
+    },
+    "properties": {
+      "title": "Título",
+      "titleColor": "Color del título",
+      "titleFontSize": "Tamaño de fuente del título",
+      "unit": "Unidad",
+      "minValue": "Valor mínimo",
+      "maxValue": "Valor máximo",
+      "showValue": "Mostrar valor",
+      "valueColor": "Color del valor",
+      "waterColor": "Color de la esfera de agua",
+      "trackColor": "Color de la pista",
+      "backgroundColor": "Color de fondo",
+      "borderColor": "Color del borde",
+      "borderWidth": "Ancho del borde",
+      "borderStyle": "Estilo del borde",
+      "borderRadius": "Radio de esquina",
+      "shadowColor": "Color de sombra",
+      "shadowOffsetX": "Desplazamiento de sombra X",
+      "shadowOffsetY": "Desplazamiento de sombra Y",
+      "shadowBlur": "Desenfoque de sombra"
+    },
+    "options": {
+      "borderStyle": {
+        "solid": "Sólida",
+        "dashed": "Discontinua",
+        "dotted": "Punteada"
+      }
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "fuse": {
+    "label": "Sekring",
+    "properties": {
+      "color": "Warna garis",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garis"
+    },
+    "description": "Sekring daya - komponen proteksi arus lebih"
+  }
+}

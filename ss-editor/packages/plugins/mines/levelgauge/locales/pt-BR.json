@@ -1,0 +1,15 @@
+{
+  "levelgauge": {
+    "label": "Medidor de nível",
+    "properties": {
+      "color": "Cor",
+      "backgroundColor": "Cor de fundo",
+      "lineWidth": "Espessura da linha",
+      "dataset": "Valor de dados (0-100)",
+      "showNumeric": "Mostrar valor",
+      "decimalPlaces": "Casas decimais",
+      "unit": "Unidade"
+    },
+    "description": "Medidor de nível - coluna de líquido em tubo de vidro vertical com escala e exibição de valor"
+  }
+}

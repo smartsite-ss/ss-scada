@@ -1,0 +1,40 @@
+{
+  "tagWaterpolo": {
+    "label": "変数ウォーターボールチャート",
+    "description": "単一のタグ変数をバインドし、ウォーターボール形式で液位の割合をリアルタイム表示",
+    "config": {
+      "bindVariable": "変数をバインド",
+      "addVariable": "変数を選択",
+      "removeVariable": "削除",
+      "unbound": "変数が未バインド"
+    },
+    "properties": {
+      "title": "タイトル",
+      "titleColor": "タイトルの色",
+      "titleFontSize": "タイトルのフォントサイズ",
+      "unit": "単位",
+      "minValue": "最小値",
+      "maxValue": "最大値",
+      "showValue": "数値を表示",
+      "valueColor": "数値の色",
+      "waterColor": "水の色",
+      "trackColor": "トラックの色",
+      "backgroundColor": "背景色",
+      "borderColor": "枠線色",
+      "borderWidth": "枠線幅",
+      "borderStyle": "枠線スタイル",
+      "borderRadius": "角の丸み",
+      "shadowColor": "影の色",
+      "shadowOffsetX": "影のオフセットX",
+      "shadowOffsetY": "影のオフセットY",
+      "shadowBlur": "影のぼかし"
+    },
+    "options": {
+      "borderStyle": {
+        "solid": "実線",
+        "dashed": "破線",
+        "dotted": "点線"
+      }
+    }
+  }
+}

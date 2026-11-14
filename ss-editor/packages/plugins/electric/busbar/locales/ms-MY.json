@@ -1,0 +1,12 @@
+{
+  "busbar": {
+    "label": "Bahagian basbar",
+    "properties": {
+      "color": "Warna garisan",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garisan",
+      "labelText": "Teks label"
+    },
+    "description": "Bahagian basbar - basbar pengumpulan dan pengagihan tenaga"
+  }
+}

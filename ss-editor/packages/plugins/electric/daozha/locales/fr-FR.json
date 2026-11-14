@@ -1,0 +1,22 @@
+{
+  "daozha": {
+    "label": "Sectionneur",
+    "properties": {
+      "color": "Couleur du trait",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "lineWidth": "Épaisseur du trait",
+      "terminalRadius": "Rayon des bornes",
+      "closed": "État fermé",
+      "closedValue": "Valeur de fermeture",
+      "openValue": "Valeur d'ouverture",
+      "defaultStatus": "État par défaut"
+    },
+    "options": {
+      "closed": {
+        "yes": "Fermé",
+        "no": "Ouvert"
+      }
+    },
+    "description": "Sectionneur électrique - Élément graphique interrupteur-sectionneur avec basculement fermé/ouvert"
+  }
+}

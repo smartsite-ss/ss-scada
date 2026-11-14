@@ -1,0 +1,15 @@
+{
+  "border14": {
+    "label": "Viền-14",
+    "description": "Thành phần trang trí viền-14",
+    "properties": {
+      "color1": "Màu chính",
+      "color2": "Màu phụ",
+      "backgroundColor": "Màu nền",
+      "showHexGrid": "Lưới lục giác",
+      "showScanLine": "Đường quét",
+      "showCoreLines": "Đường chữ thập trung tâm",
+      "animationSpeed": "Tốc độ hoạt ảnh"
+    }
+  }
+}

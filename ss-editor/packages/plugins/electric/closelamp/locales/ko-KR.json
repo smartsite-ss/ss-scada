@@ -1,0 +1,21 @@
+{
+  "closelamp": {
+    "label": "투입 표시등",
+    "properties": {
+      "lampColor": "램프 색상",
+      "backgroundColor": "배경색",
+      "radius": "반지름",
+      "closed": "투입 상태",
+      "closedValue": "닫힘 대응 값",
+      "openValue": "열림 대응 값",
+      "defaultStatus": "기본 상태"
+    },
+    "options": {
+      "closed": {
+        "yes": "투입",
+        "no": "차단"
+      }
+    },
+    "description": "투입 위치 표시등"
+  }
+}

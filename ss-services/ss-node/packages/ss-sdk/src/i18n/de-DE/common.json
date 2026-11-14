@@ -1,0 +1,19 @@
+{
+  "common": {
+    "success": "Aktion erfolgreich",
+    "failed": "Aktion fehlgeschlagen",
+    "created": "{{resource}} wurde erfolgreich erstellt",
+    "updated": "{{resource}} wurde erfolgreich aktualisiert",
+    "deleted": "{{resource}} wurde erfolgreich gelöscht",
+    "not_found": "{{resource}} ist nicht vorhanden",
+    "unauthorized": "Unzulässiger Zugriff",
+    "forbidden": "Unzureichende Berechtigung",
+    "bad_request": "Ungültige Anforderungsparameter",
+    "internal_error": "Interner Serverfehler",
+    "pagination": {
+      "page": "Die Seitenzahl muss größer als 0 sein",
+      "limit": "Die Anzahl pro Seite muss zwischen 1 und 100 liegen",
+      "invalid_sort_field": "Ungültiges Sortierfeld: {{field}}"
+    }
+  }
+}

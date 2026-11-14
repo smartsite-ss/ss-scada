@@ -1,0 +1,11 @@
+{
+  "arrester": {
+    "label": "Parafudr",
+    "properties": {
+      "color": "Çizgi rengi",
+      "backgroundColor": "Arka plan rengi",
+      "lineWidth": "Çizgi kalınlığı"
+    },
+    "description": "Parafudr - Aşırı gerilim koruma cihazı"
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "plugins": {
+    "groups": {
+      "shape": "Forma",
+      "name": "Nome",
+      "decoration": "Decoração"
+    }
+  },
+  "tagValue": {
+    "label": "Variáveis de etiqueta decorativa",
+    "description": "Exibe o valor em tempo real da variável do dispositivo (quadrado/círculo)",
+    "config": {
+      "bindVariable": "Vincular variável",
+      "selectVariable": "Selecionar variável",
+      "clear": "Limpar",
+      "unbound": "Não vinculado",
+      "decorationImage": "Imagem decorativa",
+      "backgroundImage": "Imagem de fundo",
+      "selectImage": "Selecionar imagem"
+    },
+    "selector": {
+      "title": "Selecionar variável do dispositivo",
+      "searchPlaceholder": "Pesquisar dispositivo ou variável",
+      "tagCount": "{count} variáveis",
+      "loading": "Carregando...",
+      "empty": "Nenhuma variável de dispositivo"
+    },
+    "properties": {
+      "shape": "Forma",
+      "alias": "Alias",
+      "showName": "Nome de exibição",
+      "nameColor": "Cor do nome",
+      "nameFontSize": "Tamanho da fonte do nome",
+      "nameFontWeight": "Peso da fonte do nome",
+      "nameGap": "Espaçamento do nome",
+      "decorationImagePosition": "Posição da imagem decorativa",
+      "decorationImageSize": "Tamanho da imagem decorativa",
+      "decorationImageOpacity": "Opacidade da imagem decorativa",
+      "backgroundRepeat": "Repetição do fundo",
+      "backgroundImageFit": "Estilo de preenchimento"
+    },
+    "options": {
+      "shape": {
+        "rectangle": "Quadrado",
+        "circle": "Círculo"
+      },
+      "decorationPosition": {
+        "left": "Esquerda",
+        "right": "Direita",
+        "background": "Fundo",
+        "center": "Centralizar"
+      },
+      "backgroundRepeat": {
+        "repeat": "Repetir",
+        "no-repeat": "Não repetir",
+        "repeat-x": "Repetir horizontalmente",
+        "repeat-y": "Repetir verticalmente"
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "busbar": {
+    "label": "모선 구간",
+    "properties": {
+      "color": "선 색상",
+      "backgroundColor": "배경색",
+      "lineWidth": "선 너비",
+      "labelText": "레이블 텍스트"
+    },
+    "description": "모선 구간 - 전력 집합 및 분배 모선"
+  }
+}

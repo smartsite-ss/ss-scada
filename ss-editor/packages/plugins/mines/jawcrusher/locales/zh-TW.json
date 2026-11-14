@@ -1,0 +1,30 @@
+{
+  "jawcrusher": {
+    "label": "顎式破碎機",
+    "properties": {
+      "colors": "顏色1",
+      "colors2": "顏色2",
+      "flowColor": "流動顏色",
+      "pipeColor": "管道顏色",
+      "backgroundColor": "背景色",
+      "bgWidth": "背景寬度",
+      "boardWidth": "邊框寬度",
+      "roate": "旋轉角度",
+      "cls": "動畫方向",
+      "dur": "動畫週期(秒)",
+      "dataset": "資料值",
+      "forwardValue": "正轉對應值",
+      "backwardValue": "反轉對應值",
+      "stopValue": "停止對應值",
+      "defaultCls": "預設動畫方向",
+      "decimalPlaces": "小數位數"
+    },
+    "options": {
+      "cls": {
+        "run": "運轉",
+        "stop": "停止"
+      }
+    },
+    "description": "顎式破碎機 - 固定顎板+活動顎板擺動破碎，支援運轉/停止動畫控制"
+  }
+}

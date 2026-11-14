@@ -1,0 +1,23 @@
+{
+  "runlamp": {
+    "label": "Лампа работы",
+    "properties": {
+      "lampColor": "Цвет лампы",
+      "glowing": "Эффект свечения",
+      "blinkSpeed": "Скорость мигания",
+      "backgroundColor": "Цвет фона",
+      "runningValue": "Значение «работа»",
+      "stoppedValue": "Значение «стоп»",
+      "faultValue": "Значение «авария»",
+      "defaultStatus": "Состояние по умолчанию"
+    },
+    "options": {
+      "lampColor": {
+        "green": "Зелёный",
+        "red": "Красный",
+        "yellow": "Жёлтый"
+      }
+    },
+    "description": "Лампа работы — круглая, свечение и мигание по состоянию"
+  }
+}

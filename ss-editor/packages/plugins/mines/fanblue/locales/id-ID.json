@@ -1,0 +1,33 @@
+{
+  "fanblue": {
+    "label": "Kipas angin - biru",
+    "properties": {
+      "dataset": "Kumpulan data",
+      "dur": "Periode animasi (detik)",
+      "colors": "Grup warna",
+      "flowColor": "Warna aliran",
+      "pipeColor": "Warna pipa",
+      "bgWidth": "Lebar latar",
+      "boardWidth": "Lebar batas",
+      "roate": "Sudut rotasi",
+      "cls": "Arah rotasi",
+      "clsLeft": "Searah jarum jam",
+      "clsRight": "Berlawanan arah jarum jam",
+      "clsStop": "Berhenti",
+      "backgroundColor": "Warna latar",
+      "forwardValue": "Nilai pemetaan putaran maju",
+      "backwardValue": "Nilai pemetaan putaran balik",
+      "stopValue": "Nilai pemetaan berhenti",
+      "defaultCls": "Arah animasi default",
+      "decimalPlaces": "Jumlah desimal"
+    },
+    "options": {
+      "cls": {
+        "left": "Putaran maju",
+        "right": "Putaran balik",
+        "stop": "Berhenti"
+      }
+    },
+    "description": "Kipas tambang biru - kipas ventilasi industri besar dengan animasi rotasi"
+  }
+}

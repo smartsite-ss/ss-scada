@@ -1,0 +1,11 @@
+{
+  "fuse": {
+    "label": "Sicherung",
+    "properties": {
+      "color": "Linienfarbe",
+      "backgroundColor": "Hintergrundfarbe",
+      "lineWidth": "Linienbreite"
+    },
+    "description": "Sicherung – Überstromschutzelement"
+  }
+}

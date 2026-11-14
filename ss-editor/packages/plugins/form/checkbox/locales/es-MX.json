@@ -1,0 +1,31 @@
+{
+  "checkbox": {
+    "label": "Casilla de verificación",
+    "description": "Componente de casilla de verificación para selección múltiple",
+    "panelTitle": "Configuración de la casilla de verificación",
+    "properties": {
+      "checked": "Estado marcado",
+      "label": "Texto de etiqueta",
+      "disabled": "Deshabilitado",
+      "indeterminate": "Estado indeterminado",
+      "color": "Color de selección",
+      "labelPosition": "Posición de la etiqueta",
+      "size": "Tamaño"
+    },
+    "options": {
+      "labelPosition": {
+        "right": "Derecha",
+        "left": "Izquierda"
+      },
+      "size": {
+        "small": "Pequeño",
+        "medium": "Mediano",
+        "large": "Grande"
+      }
+    },
+    "groups": {
+      "basic": "Propiedades básicas",
+      "style": "Estilo"
+    }
+  }
+}

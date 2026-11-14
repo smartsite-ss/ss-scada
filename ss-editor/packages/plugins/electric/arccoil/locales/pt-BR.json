@@ -1,0 +1,11 @@
+{
+  "arccoil": {
+    "label": "Bobina de extinção de arco",
+    "properties": {
+      "color": "Cor da linha",
+      "backgroundColor": "Cor de fundo",
+      "lineWidth": "Espessura da linha"
+    },
+    "description": "Bobina de extinção de arco - dispositivo de compensação de aterramento do neutro"
+  }
+}

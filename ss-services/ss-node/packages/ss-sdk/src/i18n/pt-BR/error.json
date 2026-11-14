@@ -1,0 +1,59 @@
+{
+  "error": {
+    "auth": {
+      "AUTH_001": "Nome de usuário ou senha incorretos",
+      "AUTH_002": "A conta está desativada. Entre em contato com o administrador",
+      "AUTH_003": "O Token expirou. Faça login novamente",
+      "AUTH_004": "Token inválido ou adulterado",
+      "AUTH_005": "O nome de usuário ou o e-mail já existe",
+      "AUTH_006": "Formato de e-mail incorreto",
+      "AUTH_007": "Senha muito fraca (mínimo de 8 caracteres, com letras e números)",
+      "AUTH_008": "Usuário não encontrado"
+    },
+    "project": {
+      "PROJ_001": "O projeto não existe",
+      "PROJ_002": "Sem permissão para acessar este projeto",
+      "PROJ_003": "O nome do projeto não pode ficar vazio",
+      "PROJ_004": "O nome do projeto é muito longo (máximo de 100 caracteres)",
+      "PROJ_005": "Só é possível excluir projetos criados por você"
+    },
+    "device": {
+      "DEV_001": "O dispositivo não existe",
+      "DEV_002": "O dispositivo {{name}} (ID: {{id}}) está offline",
+      "DEV_003": "Falha ao ler o endereço {{address}} do dispositivo {{deviceId}}: {{detail}}",
+      "DEV_004": "Falha ao gravar dados no dispositivo",
+      "DEV_005": "Tempo limite de conexão do dispositivo esgotado ({{timeout}} ms)",
+      "DEV_006": "Comunicação com o dispositivo interrompida",
+      "DEV_007": "Configuração do dispositivo inválida: {{detail}}"
+    },
+    "data": {
+      "DATA_001": "Erro na coleta de dados",
+      "DATA_002": "Tempo limite de comunicação do protocolo {{protocol}} esgotado ({{timeout}} ms)",
+      "DATA_003": "Falha na persistência dos dados (armazenamento: {{storage}}, detalhes: {{detail}})",
+      "DATA_004": "Problema de qualidade nos dados da tag {{tagId}}: {{quality}}",
+      "DATA_005": "Os dados históricos não existem",
+      "DATA_006": "Intervalo de tempo inválido (o horário inicial deve ser anterior ao final)"
+    },
+    "alarm": {
+      "ALM_001": "Erro de alarme: {{detail}}",
+      "ALM_002": "Falha ao enviar a notificação de alarme (canal: {{channel}}, detalhes: {{detail}})",
+      "ALM_003": "A regra de alarme não existe",
+      "ALM_004": "Configuração da condição de alarme inválida",
+      "ALM_005": "O registro do evento não existe ou já foi limpo"
+    },
+    "protocol": {
+      "PROTO_001": "Tipo de protocolo não suportado: {{type}}",
+      "PROTO_002": "Falha na conexão do protocolo: {{detail}}",
+      "PROTO_003": "Falha ao desconectar o protocolo: {{detail}}",
+      "PROTO_004": "Tempo limite de leitura do protocolo esgotado",
+      "PROTO_005": "Falha na gravação pelo protocolo"
+    },
+    "system": {
+      "SYS_001": "Erro interno do sistema",
+      "SYS_002": "Erro de configuração ({{key}}: {{detail}})",
+      "SYS_003": "Erro de armazenamento ({{storage}}: {{detail}})",
+      "SYS_004": "Serviço indisponível",
+      "SYS_005": "Falha na conexão com o banco de dados"
+    }
+  }
+}

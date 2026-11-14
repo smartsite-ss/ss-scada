@@ -1,0 +1,15 @@
+{
+  "border14": {
+    "label": "Rahmen-14",
+    "description": "Dekorationselement Rahmen-14",
+    "properties": {
+      "color1": "Hauptfarbe",
+      "color2": "Sekundärfarbe",
+      "backgroundColor": "Hintergrundfarbe",
+      "showHexGrid": "Hexagon-Raster",
+      "showScanLine": "Scanlinie",
+      "showCoreLines": "Zentrale Fadenkreuzlinien",
+      "animationSpeed": "Animationsgeschwindigkeit"
+    }
+  }
+}

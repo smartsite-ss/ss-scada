@@ -1,0 +1,16 @@
+{
+  "border04": {
+    "label": "Rahmen-04",
+    "description": "Dekorationselement Rahmen-04",
+    "properties": {
+      "colors": "Farbe 1",
+      "colors2": "Farbe 2",
+      "backgroundColor": "Hintergrundfarbe",
+      "borderTitle": "Titeltext",
+      "borderTitleColor": "Titelfarbe",
+      "borderTitleSize": "Titel-Schriftgröße",
+      "borderTitleWidth": "Breite des Titelbereichs",
+      "borderTitleHeight": "Titelhöhe"
+    }
+  }
+}

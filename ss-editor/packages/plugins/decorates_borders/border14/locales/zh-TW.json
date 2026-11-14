@@ -1,0 +1,15 @@
+{
+  "border14": {
+    "label": "邊框-14",
+    "description": "邊框-14裝飾元件",
+    "properties": {
+      "color1": "主色調",
+      "color2": "輔助色",
+      "backgroundColor": "背景色",
+      "showHexGrid": "六邊形網格",
+      "showScanLine": "掃描線",
+      "showCoreLines": "中心十字線",
+      "animationSpeed": "動畫速度"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "border04": {
+    "label": "Borde 04",
+    "description": "Componente decorativo de borde 04",
+    "properties": {
+      "colors": "Color uno",
+      "colors2": "Color dos",
+      "backgroundColor": "Color de fondo",
+      "borderTitle": "Texto del título",
+      "borderTitleColor": "Color del título",
+      "borderTitleSize": "Tamaño de fuente del título",
+      "borderTitleWidth": "Ancho del área del título",
+      "borderTitleHeight": "Alto del título"
+    }
+  }
+}

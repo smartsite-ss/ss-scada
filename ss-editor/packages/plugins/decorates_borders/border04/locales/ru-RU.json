@@ -1,0 +1,16 @@
+{
+  "border04": {
+    "label": "Рамка-04",
+    "description": "Декоративный компонент «Рамка-04»",
+    "properties": {
+      "colors": "Цвет 1",
+      "colors2": "Цвет 2",
+      "backgroundColor": "Цвет фона",
+      "borderTitle": "Текст заголовка",
+      "borderTitleColor": "Цвет заголовка",
+      "borderTitleSize": "Размер шрифта заголовка",
+      "borderTitleWidth": "Ширина области заголовка",
+      "borderTitleHeight": "Высота заголовка"
+    }
+  }
+}

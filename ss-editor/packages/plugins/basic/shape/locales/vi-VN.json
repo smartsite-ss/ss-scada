@@ -1,0 +1,46 @@
+{
+  "shape": {
+    "label": "Hình dạng",
+    "panelTitle": "Thuộc tính hình dạng",
+    "properties": {
+      "shapeType": "Loại hình dạng",
+      "fillColor": "Màu tô",
+      "fillOpacity": "Độ mờ màu tô",
+      "borderColor": "Màu viền",
+      "borderWidth": "Độ rộng viền",
+      "borderStyle": "Kiểu viền",
+      "borderRadius": "Bo góc",
+      "shadowColor": "Màu bóng đổ",
+      "shadowOffsetX": "Dịch chuyển bóng X",
+      "shadowOffsetY": "Dịch chuyển bóng Y",
+      "shadowBlur": "Độ mờ bóng"
+    },
+    "options": {
+      "shapeType": {
+        "rectangle": "Hình chữ nhật",
+        "roundedRectangle": "Hình chữ nhật bo góc",
+        "circle": "Hình tròn",
+        "ellipse": "Hình elip",
+        "triangle": "Hình tam giác",
+        "diamond": "Hình thoi",
+        "polygon": "Đa giác",
+        "arrowUp": "Mũi tên lên",
+        "arrowDown": "Mũi tên xuống",
+        "arrowLeft": "Mũi tên trái",
+        "arrowRight": "Mũi tên phải",
+        "line": "Đường thẳng"
+      },
+      "borderStyle": {
+        "solid": "Nét liền",
+        "dashed": "Nét đứt",
+        "dotted": "Nét chấm"
+      }
+    },
+    "groups": {
+      "basic": "Thuộc tính cơ bản",
+      "style": "Kiểu dáng",
+      "shadow": "Bóng đổ"
+    },
+    "description": "Phần tử đồ họa hình dạng"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "countdown": {
+    "label": "Geri sayım",
+    "properties": {
+      "dataset": "Geri sayım (saniye)",
+      "showDay": "Günleri göster",
+      "color1": "Arka plan rengi",
+      "color2": "Metin rengi",
+      "flipperWidth": "Rakam genişliği",
+      "flipperHeight": "Rakam yüksekliği",
+      "flipperGap": "Aralık"
+    },
+    "description": "Geri sayım dekorasyon eklentisi"
+  }
+}

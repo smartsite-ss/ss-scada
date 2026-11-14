@@ -1,0 +1,13 @@
+{
+  "head06": {
+    "label": "Décoration d'en-tête-06",
+    "properties": {
+      "color1": "Couleur de remplissage",
+      "color2": "Couleur de bordure",
+      "dataset": "Texte",
+      "textColor": "Couleur du texte",
+      "textSize": "Taille du texte"
+    },
+    "description": "Décoration à cadre polygonal"
+  }
+}

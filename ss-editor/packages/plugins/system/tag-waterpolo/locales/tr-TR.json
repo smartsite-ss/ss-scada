@@ -1,0 +1,40 @@
+{
+  "tagWaterpolo": {
+    "label": "Değişken su topu grafiği",
+    "description": "Tek bir etiket değişkeni bağlayarak seviye yüzdesini su topu biçiminde gerçek zamanlı gösterir",
+    "config": {
+      "bindVariable": "Değişken bağla",
+      "addVariable": "Değişken seç",
+      "removeVariable": "Sil",
+      "unbound": "Bağlı değişken yok"
+    },
+    "properties": {
+      "title": "Başlık",
+      "titleColor": "Başlık rengi",
+      "titleFontSize": "Başlık yazı boyutu",
+      "unit": "Birim",
+      "minValue": "Minimum değer",
+      "maxValue": "Maksimum değer",
+      "showValue": "Değeri göster",
+      "valueColor": "Değer rengi",
+      "waterColor": "Su topu rengi",
+      "trackColor": "Yörünge rengi",
+      "backgroundColor": "Arka plan rengi",
+      "borderColor": "Kenarlık rengi",
+      "borderWidth": "Kenarlık genişliği",
+      "borderStyle": "Kenarlık stili",
+      "borderRadius": "Köşe yuvarlatma",
+      "shadowColor": "Gölge rengi",
+      "shadowOffsetX": "Gölge kayması X",
+      "shadowOffsetY": "Gölge kayması Y",
+      "shadowBlur": "Gölge bulanıklığı"
+    },
+    "options": {
+      "borderStyle": {
+        "solid": "Düz çizgi",
+        "dashed": "Kesikli çizgi",
+        "dotted": "Noktalı çizgi"
+      }
+    }
+  }
+}

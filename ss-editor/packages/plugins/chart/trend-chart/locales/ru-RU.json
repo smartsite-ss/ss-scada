@@ -1,0 +1,50 @@
+{
+  "trendChart": {
+    "label": "График трендов",
+    "description": "График трендов в реальном времени/по истории с сравнением нескольких кривых и прореживанием LTTB",
+    "properties": {
+      "title": "Заголовок",
+      "titleColor": "Цвет заголовка",
+      "titleFontSize": "Размер шрифта заголовка",
+      "titleFontWeight": "Насыщенность шрифта заголовка",
+      "backgroundColor": "Цвет фона",
+      "borderColor": "Цвет рамки",
+      "borderWidth": "Ширина рамки",
+      "borderStyle": "Стиль рамки",
+      "borderRadius": "Скругление",
+      "gridColor": "Цвет линий сетки",
+      "axisColor": "Цвет осей",
+      "lineColors": "Цвета кривых",
+      "lineWidth": "Толщина кривой",
+      "showPoints": "Показать точки данных",
+      "pointRadius": "Радиус точки данных",
+      "showLegend": "Показать легенду",
+      "legendPosition": "Положение легенды",
+      "maxPens": "Максимум кривых",
+      "timeWindow": "Временное окно (с)",
+      "showTooltip": "Показать подсказку",
+      "yAxisLabel": "Подпись оси Y",
+      "shadowColor": "Цвет тени",
+      "shadowOffsetX": "Смещение тени X",
+      "shadowOffsetY": "Смещение тени Y",
+      "shadowBlur": "Размытие тени"
+    },
+    "options": {
+      "titleFontWeight": {
+        "normal": "Обычный",
+        "bold": "Жирный"
+      },
+      "borderStyle": {
+        "solid": "Сплошная",
+        "dashed": "Штриховая",
+        "dotted": "Пунктирная"
+      },
+      "legendPosition": {
+        "top": "Сверху",
+        "bottom": "Снизу",
+        "left": "Слева",
+        "right": "Справа"
+      }
+    }
+  }
+}

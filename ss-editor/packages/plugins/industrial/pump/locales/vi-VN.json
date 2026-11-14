@@ -1,0 +1,43 @@
+{
+  "pump": {
+    "label": "Máy bơm",
+    "description": "Thành phần máy bơm, hỗ trợ hoạt ảnh xoay và hiển thị trạng thái",
+    "panelTitle": "Cấu hình máy bơm",
+    "properties": {
+      "width": "Chiều rộng",
+      "height": "Chiều cao",
+      "status": "Trạng thái",
+      "bodyColor": "Màu thân",
+      "impellerColor": "Màu cánh quạt",
+      "highlightColor": "Màu làm nổi",
+      "showAnimation": "Hiển thị hoạt ảnh",
+      "animationSpeed": "Tốc độ quay",
+      "rotationDirection": "Hướng quay",
+      "showLabel": "Hiển thị nhãn",
+      "labelText": "Văn bản nhãn",
+      "runningValue": "Giá trị tương ứng chạy",
+      "stoppedValue": "Giá trị tương ứng dừng",
+      "faultValue": "Giá trị tương ứng sự cố",
+      "defaultStatus": "Trạng thái mặc định"
+    },
+    "options": {
+      "status": {
+        "running": "Đang chạy",
+        "stopped": "Đã dừng",
+        "fault": "Sự cố"
+      },
+      "rotationDirection": {
+        "clockwise": "Chiều kim đồng hồ",
+        "counterclockwise": "Ngược chiều kim đồng hồ"
+      }
+    },
+    "groups": {
+      "basic": "Cơ bản",
+      "status": "Trạng thái",
+      "color": "Màu",
+      "animation": "Hoạt ảnh",
+      "label": "Nhãn",
+      "binding": "Ánh xạ liên kết"
+    }
+  }
+}

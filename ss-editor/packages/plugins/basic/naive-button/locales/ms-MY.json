@@ -1,0 +1,34 @@
+{
+  "naiveButton": {
+    "label": "Butang Naive",
+    "panelTitle": "Sifat butang Naive",
+    "properties": {
+      "text": "Teks butang",
+      "type": "Jenis butang",
+      "size": "Saiz",
+      "round": "Butang bersudut bulat",
+      "circle": "Butang bulat",
+      "disabled": "Dilumpuhkan",
+      "loading": "Status memuat"
+    },
+    "options": {
+      "type": {
+        "default": "Lalai",
+        "primary": "Utama",
+        "success": "Berjaya",
+        "warning": "Amaran",
+        "error": "Ralat",
+        "info": "Maklumat"
+      },
+      "size": {
+        "small": "Kecil",
+        "medium": "Sederhana",
+        "large": "Besar"
+      }
+    },
+    "groups": {
+      "basic": "Sifat asas"
+    },
+    "description": "Elemen grafik butang Naive dengan render mundur Canvas"
+  }
+}

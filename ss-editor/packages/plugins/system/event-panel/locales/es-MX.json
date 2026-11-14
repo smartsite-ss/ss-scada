@@ -1,0 +1,61 @@
+{
+  "eventPanel": {
+    "label": "Panel de eventos",
+    "description": "Muestra el registro de eventos del sistema, filtrado por proyecto, tipo y estado",
+    "loading": "Cargando...",
+    "empty": "Sin eventos",
+    "loadFailed": "Error al cargar",
+    "systemLevel": "Nivel de sistema",
+    "config": {
+      "project": "Proyecto",
+      "allProjects": "Todos los proyectos",
+      "eventType": "Tipo de evento",
+      "allEventTypes": "Todos los tipos",
+      "status": "Estado",
+      "allStatus": "Todos los estados"
+    },
+    "columns": {
+      "time": "Hora",
+      "eventType": "Tipo de evento",
+      "project": "Proyecto",
+      "operator": "Operador",
+      "status": "Estado",
+      "successRatio": "Tasa de éxito",
+      "duration": "Duración"
+    },
+    "groups": {
+      "device": "Equipo",
+      "project": "Proyecto",
+      "alarm": "Alarma",
+      "config": "Configuración y temporizadores",
+      "plugin": "Complemento"
+    },
+    "status": {
+      "emitted": "Emitido",
+      "processing": "En proceso",
+      "processed": "Procesado",
+      "partial": "Parcialmente fallido",
+      "failed": "Fallido",
+      "no_subscribers": "Sin suscriptores"
+    },
+    "properties": {
+      "pageSize": "Elementos por página",
+      "refreshInterval": "Intervalo de actualización (s)",
+      "showHeader": "Mostrar encabezado de columna",
+      "showTime": "Columna de hora",
+      "showEventType": "Columna de tipo de evento",
+      "showProject": "Columna de proyecto",
+      "showOperator": "Columna de operador",
+      "showStatus": "Columna de estado",
+      "showSuccessRatio": "Columna de tasa de éxito",
+      "showDuration": "Columna de duración",
+      "fontSize": "Tamaño de fuente",
+      "rowHeight": "Altura de línea",
+      "headerBackgroundColor": "Fondo del encabezado",
+      "rowBackgroundColor": "Fondo de fila",
+      "alternatingRowColor": "Fondo alterno",
+      "textColor": "Color del texto",
+      "backgroundColor": "Color de fondo"
+    }
+  }
+}

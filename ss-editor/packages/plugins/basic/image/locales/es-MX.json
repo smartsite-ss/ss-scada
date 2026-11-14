@@ -1,0 +1,56 @@
+{
+  "image": {
+    "label": "Imagen",
+    "panelTitle": "Propiedades de la imagen",
+    "properties": {
+      "src": "Dirección de la imagen",
+      "alt": "Texto alternativo",
+      "opacity": "Opacidad",
+      "imageScale": "Escala de zoom",
+      "imageRotation": "Ángulo de rotación",
+      "imageFilter": "Efecto de filtro",
+      "imageFit": "Modo de ajuste",
+      "borderColor": "Color del borde",
+      "borderWidth": "Ancho del borde",
+      "borderStyle": "Estilo del borde",
+      "borderRadius": "Radio de esquina",
+      "shadowColor": "Color de sombra",
+      "shadowOffsetX": "Desplazamiento de sombra X",
+      "shadowOffsetY": "Desplazamiento de sombra Y",
+      "shadowBlur": "Desenfoque de sombra",
+      "imageUpload": "Subir imagen"
+    },
+    "options": {
+      "imageFilter": {
+        "none": "Ninguno",
+        "grayscale": "Escala de grises",
+        "sepia": "Vintage",
+        "invert": "Invertir",
+        "brightness": "Brillo",
+        "contrast": "Contraste",
+        "saturate": "Saturación"
+      },
+      "imageFit": {
+        "contain": "Contener",
+        "cover": "Cubrir",
+        "fill": "Rellenar",
+        "none": "Original",
+        "scale-down": "Reducir"
+      },
+      "borderStyle": {
+        "solid": "Sólida",
+        "dashed": "Discontinua",
+        "dotted": "Punteada"
+      }
+    },
+    "groups": {
+      "basic": "Propiedades básicas",
+      "style": "Estilo",
+      "shadow": "Sombra"
+    },
+    "hints": {
+      "clickToUpload": "Haga clic para seleccionar una imagen"
+    },
+    "description": "Elemento gráfico de imagen"
+  }
+}

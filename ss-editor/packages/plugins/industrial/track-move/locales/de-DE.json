@@ -1,0 +1,62 @@
+{
+  "track-move": {
+    "label": "Bewegungsbahn",
+    "description": "Animationspunkt entlang einer eigenen Bahn, mit Knickpunkten und Bildersatz",
+    "panelTitle": "Bewegungsbahn-Konfiguration",
+    "properties": {
+      "speed": "Geschwindigkeit (px/s)",
+      "dotStyle": "Punktstil",
+      "dotColor": "Punktfarbe",
+      "dotSize": "Punktgröße",
+      "dotImage": "Bild-URL",
+      "imageWidth": "Bildbreite",
+      "imageHeight": "Bildhöhe",
+      "trackColor": "Bahnfarbe",
+      "trackWidth": "Bahnbreite",
+      "trackStyle": "Bahnstil",
+      "status": "Animationszustand",
+      "direction": "Bewegungsrichtung",
+      "loopMode": "Wiederholungsmodus"
+    },
+    "options": {
+      "dotStyle": {
+        "circle": "Kreis",
+        "image": "Bild"
+      },
+      "trackStyle": {
+        "solid": "Durchgezogen",
+        "dashed": "Gestrichelt"
+      },
+      "direction": {
+        "forward": "Vorwärts",
+        "backward": "Rückwärts"
+      },
+      "loopMode": {
+        "loop": "Endlos",
+        "once": "Einmalig",
+        "bounce": "Hin und her"
+      }
+    },
+    "groups": {
+      "dot": "Animationspunkt",
+      "track": "Bahn",
+      "motion": "Bewegung"
+    },
+    "hints": {
+      "dotImage": "Bild-URL eingeben"
+    },
+    "editor": {
+      "pathPoints": "Bahnpunkte",
+      "index": "#",
+      "coordX": "X",
+      "coordY": "Y",
+      "type": "Typ",
+      "action": "Aktion",
+      "startPoint": "Startpunkt",
+      "endPoint": "Endpunkt",
+      "bendPoint": "Knickpunkt",
+      "addBendPoint": "+ Knickpunkt hinzufügen",
+      "reversePath": "Pfad umkehren"
+    }
+  }
+}

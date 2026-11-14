@@ -1,0 +1,126 @@
+{
+  "common": {
+    "ok": "ตกลง",
+    "cancel": "ยกเลิก",
+    "save": "บันทึก",
+    "delete": "ลบ",
+    "edit": "แก้ไข",
+    "add": "เพิ่ม",
+    "search": "ค้นหา",
+    "reset": "รีเซ็ต",
+    "export": "ส่งออก",
+    "import": "นำเข้า",
+    "confirm": "ยืนยัน",
+    "close": "ปิด",
+    "refresh": "รีเฟรช",
+    "upload": "อัปโหลด",
+    "download": "ดาวน์โหลด",
+    "preview": "ดูตัวอย่าง",
+    "copy": "คัดลอก",
+    "paste": "วาง",
+    "undo": "เลิกทำ",
+    "redo": "ทำซ้ำ",
+    "settings": "การตั้งค่า",
+    "theme": "ธีม",
+    "language": "ภาษา"
+  },
+  "category": {
+    "basic": "คอมโพเนนต์พื้นฐาน",
+    "form": "คอมโพเนนต์แบบฟอร์ม",
+    "chart": "คอมโพเนนต์แผนภูมิ",
+    "industrial": "คอมโพเนนต์อุตสาหกรรม",
+    "media": "คอมโพเนนต์สื่อ",
+    "layout": "คอมโพเนนต์เลย์เอาต์",
+    "3d": "คอมโพเนนต์ 3D",
+    "svg": "คอมโพเนนต์ SVG"
+  },
+  "editor": {
+    "toolbar": "แถบเครื่องมือ",
+    "canvas": "แคนวาส",
+    "properties": "แผงคุณสมบัติ",
+    "layers": "แผงเลเยอร์",
+    "plugin": "การจัดการปลั๊กอิน",
+    "zoomIn": "ขยาย",
+    "zoomOut": "ย่อ",
+    "fitToScreen": "พอดีหน้าจอ",
+    "undo": "เลิกทำ",
+    "redo": "ทำซ้ำ",
+    "delete": "ลบรายการที่เลือก",
+    "selectAll": "เลือกทั้งหมด",
+    "copy": "คัดลอก",
+    "paste": "วาง",
+    "group": "จัดกลุ่ม",
+    "ungroup": "ยกเลิกการจัดกลุ่ม",
+    "bringToFront": "ย้ายไปชั้นบนสุด",
+    "sendToBack": "ย้ายไปชั้นล่างสุด",
+    "align": "จัดแนว"
+  },
+  "plugin": {
+    "noPluginSelected": "ยังไม่ได้เลือกกราฟิก",
+    "propertiesMissing": "คุณสมบัติขาดหาย",
+    "schemaVersion": "เวอร์ชัน Schema",
+    "pluginType": "ประเภทกราฟิก",
+    "position": "ตำแหน่ง",
+    "size": "ขนาด",
+    "width": "ความกว้าง",
+    "height": "ความสูง",
+    "x": "พิกัด X",
+    "y": "พิกัด Y",
+    "rotation": "หมุน",
+    "opacity": "ความทึบ",
+    "visible": "มองเห็น",
+    "locked": "ล็อก"
+  },
+  "language": {
+    "zhCN": "จีน",
+    "enUS": "อังกฤษ"
+  },
+  "threeStage": {
+    "label": "คอนเทนเนอร์ฉาก 3D",
+    "description": "ให้คอนเทนเนอร์ฉาก 3D ของ Three.js รองรับการโหลดโมเดล ไฟล์แสง และการควบคุมกล้อง"
+  },
+  "validation": {
+    "requiredFieldMissingDefault": "ฟิลด์ที่จำเป็น \"{field}\" ขาดค่าเริ่มต้น (required=true แต่ defaultValue ว่าง)",
+    "requiredFieldMissing": "ฟิลด์ที่จำเป็น \"{field}\" หายไป",
+    "schemaMissingName": "[{pluginName}] Schema ขาด name",
+    "schemaMissingFields": "[{pluginName}] Schema ขาดการกำหนด fields",
+    "fieldDuplicate": "ฟิลด์ \"{field}\" ถูกกำหนดซ้ำ",
+    "fieldMissingName": "ฟิลด์ขาด name",
+    "fieldMissingLabel": "ฟิลด์ขาด label",
+    "fieldMissingType": "ฟิลด์ขาด type",
+    "selectMissingOptions": "ฟิลด์ select \"{field}\" ขาด options",
+    "minGreaterThanMax": "min({min}) มากกว่า max({max})",
+    "invalidColorDefault": "ค่าเริ่มต้นสี \"{value}\" รูปแบบไม่ถูกต้อง",
+    "fieldMissingDefault": "ฟิลด์ขาด defaultValue",
+    "fieldCannotBeEmpty": "ฟิลด์ \"{field}\" ต้องไม่ว่าง",
+    "fieldExpectedNumber": "ฟิลด์ \"{field}\" ต้องเป็นชนิดตัวเลข แต่เป็น {actual}",
+    "fieldValueLessThanMin": "ค่าของฟิลด์ \"{field}\" คือ {value} น้อยกว่าค่าต่ำสุด {min}",
+    "fieldValueGreaterThanMax": "ค่าของฟิลด์ \"{field}\" คือ {value} มากกว่าค่าสูงสุด {max}",
+    "fieldExpectedString": "ฟิลด์ \"{field}\" ต้องเป็นชนิดสตริง แต่เป็น {actual}",
+    "fieldExpectedBoolean": "ฟิลด์ \"{field}\" ต้องเป็นชนิดบูลีน แต่เป็น {actual}",
+    "fieldValueNotInOptions": "ค่าของฟิลด์ \"{field}\" คือ \"{value}\" ไม่อยู่ในตัวเลือกที่ถูกต้อง [{options}]",
+    "fieldExpectedColor": "ฟิลด์ \"{field}\" ต้องเป็นสตริงสี แต่เป็น {actual}",
+    "invalidColorFormat": "ค่าของฟิลด์ \"{field}\" คือ \"{value}\" ไม่ใช่รูปแบบสีที่ถูกต้อง (ควรเป็น #RGB / #RRGGBB / #RRGGBBAA)"
+  },
+  "pluginSdk": {
+    "readme": {
+      "type": "ประเภท",
+      "category": "หมวดหมู่",
+      "renderBackend": "วิธีการเรนเดอร์",
+      "properties": "รายการคุณสมบัติ",
+      "default": "ค่าเริ่มต้น",
+      "development": "การพัฒนา"
+    },
+    "pluginStyle": "สไตล์ปลั๊กอิน",
+    "backendDescriptions": {
+      "vueComponent": "เรนเดอร์ด้วยคอมโพเนนต์ Vue เหมาะกับคอมโพเนนต์โต้ตอบซับซ้อน",
+      "canvas2d": "เรนเดอร์ด้วย Canvas 2D เหมาะกับการวาดกราฟิกประสิทธิภาพสูง",
+      "svgDom": "เรนเดอร์ด้วย SVG DOM เหมาะกับกราฟิกเวกเตอร์และแอนิเมชัน",
+      "cssDom": "เรนเดอร์ด้วย CSS DOM เหมาะกับองค์ประกอบ HTML และสไตล์",
+      "three3d": "เรนเดอร์ด้วย Three.js 3D เหมาะกับฉากและโมเดลสามมิติ"
+    }
+  },
+  "createPlugin": {
+    "cannotExtractComponentName": "ไม่สามารถดึงชื่อคอมโพเนนต์ได้ กรุณาระบุผ่าน graphicComponentName อย่างชัดเจน"
+  }
+}

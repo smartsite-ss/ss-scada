@@ -1,0 +1,56 @@
+{
+  "image": {
+    "label": "画像",
+    "panelTitle": "画像のプロパティ",
+    "properties": {
+      "src": "画像のパス",
+      "alt": "代替テキスト",
+      "opacity": "不透明度",
+      "imageScale": "拡大率",
+      "imageRotation": "回転角度",
+      "imageFilter": "フィルター効果",
+      "imageFit": "フィットモード",
+      "borderColor": "枠線色",
+      "borderWidth": "枠線幅",
+      "borderStyle": "枠線スタイル",
+      "borderRadius": "角の丸み",
+      "shadowColor": "影の色",
+      "shadowOffsetX": "影のオフセットX",
+      "shadowOffsetY": "影のオフセットY",
+      "shadowBlur": "影のぼかし",
+      "imageUpload": "画像をアップロード"
+    },
+    "options": {
+      "imageFilter": {
+        "none": "なし",
+        "grayscale": "グレースケール",
+        "sepia": "セピア",
+        "invert": "反転",
+        "brightness": "明るさ",
+        "contrast": "コントラスト",
+        "saturate": "彩度"
+      },
+      "imageFit": {
+        "contain": "全体を表示",
+        "cover": "領域を埋める",
+        "fill": "引き伸ばし",
+        "none": "元のサイズ",
+        "scale-down": "縮小のみ"
+      },
+      "borderStyle": {
+        "solid": "実線",
+        "dashed": "破線",
+        "dotted": "点線"
+      }
+    },
+    "groups": {
+      "basic": "基本プロパティ",
+      "style": "スタイル",
+      "shadow": "影"
+    },
+    "hints": {
+      "clickToUpload": "クリックして画像を選択"
+    },
+    "description": "画像の図形要素"
+  }
+}

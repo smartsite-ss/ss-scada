@@ -1,0 +1,68 @@
+{
+  "svg-pipe": {
+    "label": "ท่อ SVG",
+    "panelTitle": "การกำหนดค่าท่อ SVG",
+    "properties": {
+      "status": "สถานะ",
+      "flowDirection": "ทิศทางการไหล",
+      "strokeColor": "สีท่อ",
+      "flowingColor": "สีการไหล",
+      "stoppedColor": "สีหยุด",
+      "blockedColor": "สีการอุดตัน",
+      "strokeWidth": "เส้นผ่านศูนย์กลางท่อ",
+      "strokeLinecap": "รูปแบบปลายเส้น",
+      "strokeLinejoin": "รูปแบบการเชื่อมต่อ",
+      "strokeDasharray": "เส้นประ",
+      "gradientType": "ประเภทการไล่ระดับสี",
+      "gradientStartColor": "สีเริ่มต้นการไล่ระดับ",
+      "gradientEndColor": "สีสิ้นสุดการไล่ระดับ",
+      "filterShadow": "เงา",
+      "shadowColor": "สีเงา",
+      "shadowBlur": "ความเบลอของเงา",
+      "showFlowAnimation": "แอนิเมชันการไหล",
+      "flowSpeed": "ความเร็วการไหล",
+      "arrowSpacing": "ระยะห่างลูกศร",
+      "arrowSize": "ขนาดลูกศร",
+      "arrowStyle": "รูปแบบลูกศร"
+    },
+    "options": {
+      "status": {
+        "flowing": "กำลังไหล",
+        "stopped": "หยุด",
+        "blocked": "อุดตัน"
+      },
+      "flowDirection": {
+        "forward": "ทิศตรง",
+        "backward": "ทิศกลับ",
+        "bidirectional": "สองทิศทาง"
+      },
+      "strokeLinecap": {
+        "butt": "หัวแบน",
+        "round": "หัวกลม",
+        "square": "หัวเหลี่ยม"
+      },
+      "strokeLinejoin": {
+        "miter": "มุมแหลม",
+        "round": "มุมโค้ง",
+        "bevel": "มุมตัด"
+      },
+      "gradientType": {
+        "none": "สีทึบ",
+        "linear": "การไล่ระดับสีเชิงเส้น",
+        "radial": "การไล่ระดับสีแบบรัศมี"
+      },
+      "arrowStyle": {
+        "triangle": "บล็อกสามเหลี่ยม",
+        "rectangle": "สี่เหลี่ยมผืนผ้า",
+        "square": "สี่เหลี่ยมจัตุรัส"
+      }
+    },
+    "groups": {
+      "status": "สถานะ",
+      "color": "สี",
+      "style": "รูปแบบ",
+      "animation": "แอนิเมชัน"
+    },
+    "description": "องค์ประกอบท่ออิงตาม SVG Path รองรับแอนิเมชันการไหล การไล่ระดับสี และการกำหนดค่ารูปแบบ"
+  }
+}

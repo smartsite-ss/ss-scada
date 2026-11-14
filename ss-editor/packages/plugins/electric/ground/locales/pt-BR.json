@@ -1,0 +1,11 @@
+{
+  "ground": {
+    "label": "Símbolo de aterramento",
+    "properties": {
+      "color": "Cor da linha",
+      "backgroundColor": "Cor de fundo",
+      "lineWidth": "Espessura da linha"
+    },
+    "description": "Símbolo padrão de aterramento elétrico"
+  }
+}

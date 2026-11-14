@@ -1,0 +1,21 @@
+{
+  "breaker": {
+    "label": "Interruptor automático",
+    "properties": {
+      "color": "Color de línea",
+      "backgroundColor": "Color de fondo",
+      "lineWidth": "Grosor de línea",
+      "closed": "Estado cerrado",
+      "closedValue": "Valor para cerrado",
+      "openValue": "Valor para abierto",
+      "defaultStatus": "Estado predeterminado"
+    },
+    "options": {
+      "closed": {
+        "yes": "Cerrado",
+        "no": "Abierto"
+      }
+    },
+    "description": "Interruptor automático de potencia de alta/baja tensión con conmutación de estado cerrado/abierto"
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "error": {
+    "auth": {
+      "AUTH_001": "Nombre de usuario o contraseña incorrectos",
+      "AUTH_002": "La cuenta está deshabilitada. Comuníquese con el administrador",
+      "AUTH_003": "El Token expiró. Inicie sesión de nuevo",
+      "AUTH_004": "El Token no es válido o fue alterado",
+      "AUTH_005": "El nombre de usuario o el correo ya existen",
+      "AUTH_006": "El formato del correo no es correcto",
+      "AUTH_007": "La contraseña es demasiado débil (mínimo 8 caracteres, con letras y números)",
+      "AUTH_008": "El usuario no existe"
+    },
+    "project": {
+      "PROJ_001": "El proyecto no existe",
+      "PROJ_002": "No tiene permiso para acceder a este proyecto",
+      "PROJ_003": "El nombre del proyecto no puede estar vacío",
+      "PROJ_004": "El nombre del proyecto es demasiado largo (máximo 100 caracteres)",
+      "PROJ_005": "Solo puede eliminar los proyectos que usted creó"
+    },
+    "device": {
+      "DEV_001": "El dispositivo no existe",
+      "DEV_002": "El dispositivo {{name}} (ID: {{id}}) está fuera de línea",
+      "DEV_003": "No se pudo leer la dirección {{address}} del dispositivo {{deviceId}}: {{detail}}",
+      "DEV_004": "No se pudieron escribir los datos del dispositivo",
+      "DEV_005": "Se agotó el tiempo de conexión con el dispositivo ({{timeout}}ms)",
+      "DEV_006": "Se interrumpió la comunicación con el dispositivo",
+      "DEV_007": "La configuración del dispositivo no es válida: {{detail}}"
+    },
+    "data": {
+      "DATA_001": "Error de recolección de datos",
+      "DATA_002": "Se agotó el tiempo de comunicación del protocolo {{protocol}} ({{timeout}}ms)",
+      "DATA_003": "No se pudieron persistir los datos (almacenamiento: {{storage}}, detalle: {{detail}})",
+      "DATA_004": "Problema de calidad de datos en la etiqueta {{tagId}}: {{quality}}",
+      "DATA_005": "Los datos históricos no existen",
+      "DATA_006": "Rango de tiempo no válido (la hora inicial debe ser anterior a la final)"
+    },
+    "alarm": {
+      "ALM_001": "Error de alarma: {{detail}}",
+      "ALM_002": "No se pudo enviar la notificación de alarma (canal: {{channel}}, detalle: {{detail}})",
+      "ALM_003": "La regla de alarma no existe",
+      "ALM_004": "La configuración de la condición de alarma no es válida",
+      "ALM_005": "El registro del evento no existe o ya fue borrado"
+    },
+    "protocol": {
+      "PROTO_001": "Tipo de protocolo no compatible: {{type}}",
+      "PROTO_002": "Falló la conexión del protocolo: {{detail}}",
+      "PROTO_003": "Falló la desconexión del protocolo: {{detail}}",
+      "PROTO_004": "Se agotó el tiempo de lectura del protocolo",
+      "PROTO_005": "Falló la escritura del protocolo"
+    },
+    "system": {
+      "SYS_001": "Error interno del sistema",
+      "SYS_002": "Error de configuración ({{key}}: {{detail}})",
+      "SYS_003": "Error de almacenamiento ({{storage}}: {{detail}})",
+      "SYS_004": "El servicio no está disponible",
+      "SYS_005": "Falló la conexión con la base de datos"
+    }
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "textbox": {
+    "label": "Текстовое поле",
+    "panelTitle": "Настройка текстового поля",
+    "properties": {
+      "text": "Содержимое текста",
+      "placeholder": "Подсказка",
+      "fontSize": "Размер шрифта",
+      "fontWeight": "Насыщенность шрифта",
+      "fontStyle": "Стиль шрифта",
+      "textColor": "Цвет текста",
+      "backgroundColor": "Цвет фона",
+      "borderColor": "Цвет рамки",
+      "borderWidth": "Ширина рамки",
+      "borderStyle": "Стиль рамки",
+      "borderRadius": "Скругление",
+      "textAlign": "Выравнивание текста",
+      "verticalAlignment": "Вертикальное выравнивание",
+      "padding": "Внутренний отступ",
+      "multiline": "Многострочный режим",
+      "readOnly": "Только для чтения"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "Обычный",
+        "bold": "Жирный"
+      },
+      "fontStyle": {
+        "normal": "Обычный",
+        "italic": "Курсив"
+      },
+      "borderStyle": {
+        "solid": "Сплошная",
+        "dashed": "Штриховая",
+        "dotted": "Пунктирная",
+        "none": "Нет"
+      },
+      "textAlign": {
+        "left": "По левому краю",
+        "center": "По центру",
+        "right": "По правому краю"
+      },
+      "verticalAlignment": {
+        "top": "Сверху",
+        "middle": "По центру",
+        "bottom": "Снизу"
+      }
+    },
+    "groups": {
+      "basic": "Основные свойства",
+      "style": "Стиль",
+      "text": "Текст"
+    },
+    "description": "Графический элемент «Текстовое поле»"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "system": {
+    "health_check": {
+      "success": "Kiểm tra sức khỏe hệ thống đạt",
+      "failed": "Kiểm tra sức khỏe hệ thống thất bại: {{detail}}"
+    },
+    "config": {
+      "reload_success": "Tải lại cấu hình thành công",
+      "reload_failed": "Tải lại cấu hình thất bại: {{detail}}",
+      "validation_error": "Xác thực cấu hình thất bại: {{detail}}"
+    },
+    "storage": {
+      "database_connected": "Kết nối cơ sở dữ liệu thành công",
+      "database_connection_failed": "Kết nối cơ sở dữ liệu thất bại: {{detail}}",
+      "redis_connected": "Kết nối Redis thành công",
+      "redis_connection_failed": "Kết nối Redis thất bại: {{detail}}"
+    },
+    "maintenance": {
+      "mode_enabled": "Đã bật chế độ bảo trì",
+      "mode_disabled": "Đã tắt chế độ bảo trì"
+    }
+  }
+}

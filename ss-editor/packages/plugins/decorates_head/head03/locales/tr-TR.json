@@ -1,0 +1,13 @@
+{
+  "head03": {
+    "label": "Başlık dekorasyonu-03",
+    "properties": {
+      "color1": "Birinci renk",
+      "color2": "İkinci renk",
+      "dataset": "Görünen metin",
+      "textColor": "Metin rengi",
+      "textSize": "Yazı boyutu"
+    },
+    "description": "Ortasında metin bulunan sol/sağ ok şeklinde dekorasyon"
+  }
+}

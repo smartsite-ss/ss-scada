@@ -1,0 +1,51 @@
+{
+  "tagRadar": {
+    "label": "Biểu đồ radar biến",
+    "description": "Liên kết nhiều biến thẻ, hiển thị thời gian thực mức độ lành mạnh đa chiều bằng biểu đồ radar",
+    "config": {
+      "bindVariables": "Liên kết biến",
+      "addVariable": "Thêm biến",
+      "removeVariable": "Xóa",
+      "unbound": "Chưa liên kết biến",
+      "loadError": "Tải thất bại"
+    },
+    "properties": {
+      "title": "Tiêu đề",
+      "titleColor": "Màu tiêu đề",
+      "titleFontSize": "Cỡ chữ tiêu đề",
+      "titleFontWeight": "Độ đậm tiêu đề",
+      "indicatorMax": "Giá trị lớn nhất chỉ số",
+      "gridColor": "Màu lưới",
+      "axisColor": "Màu trục tọa độ",
+      "showLegend": "Hiển thị chú giải",
+      "legendPosition": "Vị trí chú giải",
+      "showTooltip": "Hiển thị chú thích",
+      "backgroundColor": "Màu nền",
+      "borderColor": "Màu viền",
+      "borderWidth": "Độ rộng viền",
+      "borderStyle": "Kiểu viền",
+      "borderRadius": "Bo góc",
+      "shadowColor": "Màu bóng đổ",
+      "shadowOffsetX": "Dịch chuyển bóng X",
+      "shadowOffsetY": "Dịch chuyển bóng Y",
+      "shadowBlur": "Độ mờ bóng"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "Bình thường",
+        "bold": "Đậm"
+      },
+      "legendPosition": {
+        "top": "Trên",
+        "bottom": "Dưới",
+        "left": "Trái",
+        "right": "Phải"
+      },
+      "borderStyle": {
+        "solid": "Nét liền",
+        "dashed": "Nét đứt",
+        "dotted": "Nét chấm"
+      }
+    }
+  }
+}

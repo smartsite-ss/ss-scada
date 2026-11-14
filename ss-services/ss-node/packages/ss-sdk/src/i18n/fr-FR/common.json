@@ -1,0 +1,19 @@
+{
+  "common": {
+    "success": "Opération réussie",
+    "failed": "Échec de l'opération",
+    "created": "{{resource}} créé avec succès",
+    "updated": "{{resource}} mis à jour avec succès",
+    "deleted": "{{resource}} supprimé avec succès",
+    "not_found": "{{resource}} inexistant",
+    "unauthorized": "Accès non autorisé",
+    "forbidden": "Autorisations insuffisantes",
+    "bad_request": "Paramètres de requête incorrects",
+    "internal_error": "Erreur interne du serveur",
+    "pagination": {
+      "page": "Le numéro de page doit être supérieur à 0",
+      "limit": "Le nombre par page doit être compris entre 1 et 100",
+      "invalid_sort_field": "Champ de tri non valide : {{field}}"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "tagVariable": {
+    "label": "Tag-Variable",
+    "description": "Zeigt den Echtzeitwert einer Gerätevariable",
+    "config": {
+      "bindVariable": "Variable binden",
+      "selectVariable": "Variable auswählen",
+      "clear": "Zurücksetzen",
+      "unbound": "Nicht gebunden"
+    },
+    "selector": {
+      "title": "Gerätevariable auswählen",
+      "searchPlaceholder": "Gerät oder Variable suchen",
+      "deviceLabel": "Gerät",
+      "tagCount": "{count} Variablen",
+      "loading": "Wird geladen...",
+      "empty": "Keine Gerätevariablen",
+      "selectHint": "Variable zum Binden anklicken"
+    }
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "validation": {
+    "common": {
+      "is_string": "{{property}} phải là chuỗi",
+      "is_number": "{{property}} phải là số",
+      "is_boolean": "{{property}} phải là giá trị boolean",
+      "is_date": "{{property}} phải là ngày hợp lệ",
+      "min_length": "Độ dài {{property}} không được nhỏ hơn {{constraints.0}} ký tự",
+      "max_length": "Độ dài {{property}} không được vượt quá {{constraints.0}} ký tự",
+      "is_email": "{{property}} không phải địa chỉ email đúng định dạng",
+      "matches": "{{property}} không đúng định dạng yêu cầu"
+    },
+    "user": {
+      "username": {
+        "required": "Tên người dùng không được để trống",
+        "length": "Độ dài tên người dùng phải từ {{min}}-{{max}} ký tự",
+        "pattern": "Tên người dùng chỉ được chứa chữ cái, số và dấu gạch dưới",
+        "unique": "Tên người dùng này đã được sử dụng"
+      },
+      "email": {
+        "required": "Email không được để trống",
+        "is_email": "Định dạng email không đúng",
+        "unique": "Email này đã được đăng ký"
+      },
+      "password": {
+        "required": "Mật khẩu không được để trống",
+        "weak": "Mật khẩu chưa đủ mạnh (ít nhất 8 ký tự, gồm chữ hoa, chữ thường và số)",
+        "mismatch": "Hai lần nhập mật khẩu không khớp"
+      }
+    },
+    "project": {
+      "name": {
+        "required": "Tên dự án không được để trống",
+        "length": "Độ dài tên dự án phải từ {{min}}-{{max}} ký tự"
+      },
+      "description": {
+        "maxlength": "Mô tả dự án không được vượt quá {{max}} ký tự"
+      }
+    },
+    "device": {
+      "name": {
+        "required": "Tên thiết bị không được để trống"
+      },
+      "config": {
+        "host_required": "Địa chỉ IP thiết bị không được để trống",
+        "port_range": "Cổng phải nằm trong khoảng 1-65535",
+        "unitId_range": "Unit ID phải nằm trong khoảng 1-247"
+      }
+    },
+    "tag": {
+      "name": {
+        "required": "Tên thẻ không được để trống",
+        "unique": "Tên thẻ đã tồn tại trong thiết bị này"
+      },
+      "address": {
+        "required": "Địa chỉ thanh ghi không được để trống",
+        "format": "Định dạng địa chỉ không hợp lệ (phải là số hoặc định dạng địa chỉ Modbus)"
+      },
+      "scanRate": {
+        "range": "Chu kỳ quét phải từ {{min}}-{{max}} ms"
+      }
+    },
+    "alarm": {
+      "rule": {
+        "name": {
+          "required": "Tên quy tắc cảnh báo không được để trống"
+        },
+        "threshold": {
+          "required": "Ngưỡng cảnh báo không được để trống",
+          "number": "Ngưỡng phải là số hợp lệ"
+        },
+        "debounceTime": {
+          "range": "Thời gian chống rung phải từ {{min}}-{{max}} ms"
+        }
+      }
+    }
+  }
+}

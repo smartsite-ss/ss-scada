@@ -1,0 +1,28 @@
+{
+  "three-gauge": {
+    "label": "3D-Messuhr",
+    "panelTitle": "3D-Messuhr-Konfiguration",
+    "properties": {
+      "value": "Aktueller Wert",
+      "min": "Minimum",
+      "max": "Maximum",
+      "gaugeColor": "Normalfarbe",
+      "warningColor": "Warnfarbe",
+      "dangerColor": "Gefahrenfarbe",
+      "warningThreshold": "Warnschwelle",
+      "dangerThreshold": "Gefahrenschwelle",
+      "showTicks": "Skala anzeigen",
+      "showLabels": "Beschriftung anzeigen",
+      "needleColor": "Zeigerfarbe",
+      "backgroundColor": "Hintergrundfarbe",
+      "rimColor": "Rahmenfarbe"
+    },
+    "groups": {
+      "数据": "Daten",
+      "颜色": "Farbe",
+      "阈值": "Schwellenwert",
+      "显示": "Anzeige"
+    },
+    "description": "3D-Messuhr-Grafikelement mit datengesteuerter Zeigerdrehung"
+  }
+}

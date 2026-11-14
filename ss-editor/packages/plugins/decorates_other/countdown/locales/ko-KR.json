@@ -1,0 +1,15 @@
+{
+  "countdown": {
+    "label": "카운트다운",
+    "properties": {
+      "dataset": "카운트다운(초)",
+      "showDay": "일수 표시",
+      "color1": "배경색",
+      "color2": "텍스트 색상",
+      "flipperWidth": "숫자 너비",
+      "flipperHeight": "숫자 높이",
+      "flipperGap": "간격"
+    },
+    "description": "카운트다운 장식 플러그인"
+  }
+}

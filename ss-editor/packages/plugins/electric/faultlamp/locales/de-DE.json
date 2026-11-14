@@ -1,0 +1,21 @@
+{
+  "faultlamp": {
+    "label": "Störungsleuchte",
+    "properties": {
+      "color": "Farbe",
+      "backgroundColor": "Hintergrundfarbe",
+      "lineWidth": "Linienbreite",
+      "alarming": "Alarmzustand",
+      "alarmValue": "Wert für Alarm",
+      "normalValue": "Wert für Normal",
+      "defaultStatus": "Standardzustand"
+    },
+    "options": {
+      "alarming": {
+        "yes": "Alarm aktiv",
+        "no": "Normal"
+      }
+    },
+    "description": "Störungsleuchte – blinkt bei Alarm rot"
+  }
+}

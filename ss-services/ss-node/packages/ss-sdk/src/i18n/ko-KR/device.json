@@ -1,0 +1,27 @@
+{
+  "device": {
+    "create": {
+      "success": "디바이스 생성 성공",
+      "failed_name_exists": "해당 프로젝트에 디바이스 이름이 이미 존재합니다"
+    },
+    "update": {
+      "success": "디바이스 업데이트 성공"
+    },
+    "delete": {
+      "success": "디바이스 삭제 성공",
+      "failed_has_tags": "디바이스에 태그가 남아 있어 삭제할 수 없습니다"
+    },
+    "connect": {
+      "success": "디바이스 연결 성공",
+      "failed_timeout": "디바이스 연결 시간 초과",
+      "failed_refused": "디바이스가 연결을 거부했습니다"
+    },
+    "disconnect": {
+      "success": "디바이스 연결이 끊겼습니다"
+    },
+    "offline": "디바이스 {{name}} (ID: {{id}})이(가) 오프라인 상태입니다",
+    "online": "디바이스 {{name}} (ID: {{id}})이(가) 온라인 상태입니다",
+    "read_error": "디바이스 {{name}} 주소 {{address}} 읽기 실패: {{error}}",
+    "write_error": "디바이스 {{name}} 주소 {{address}} 쓰기 실패: {{error}}"
+  }
+}

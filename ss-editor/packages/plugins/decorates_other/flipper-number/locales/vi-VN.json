@@ -1,0 +1,14 @@
+{
+  "flipper-number": {
+    "label": "Số lật",
+    "properties": {
+      "dataset": "Giá trị",
+      "flipperLength": "Số chữ số",
+      "color1": "Màu chữ",
+      "flipperWidth": "Chiều rộng",
+      "flipperHeight": "Chiều cao",
+      "flipperGap": "Khoảng cách"
+    },
+    "description": "Plugin hiển thị số kiểu lật"
+  }
+}

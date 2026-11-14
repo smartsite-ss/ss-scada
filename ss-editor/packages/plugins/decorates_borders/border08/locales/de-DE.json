@@ -1,0 +1,13 @@
+{
+  "border08": {
+    "label": "Rahmen-08",
+    "description": "Dekorationselement Rahmen-08",
+    "properties": {
+      "color1": "Farbe 1",
+      "color2": "Farbe 2",
+      "backgroundColor": "Hintergrundfarbe",
+      "dur": "Animationsdauer (Sekunden)",
+      "reverse": "Rückwärtslauf"
+    }
+  }
+}

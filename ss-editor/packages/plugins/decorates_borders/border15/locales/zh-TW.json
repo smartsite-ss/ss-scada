@@ -1,0 +1,15 @@
+{
+  "border15": {
+    "label": "邊框-15（裝飾藝術）",
+    "description": "邊框-15裝飾元件（裝飾藝術）",
+    "properties": {
+      "color1": "主金色",
+      "color2": "深金色",
+      "color3": "暗色",
+      "backgroundColor": "背景色",
+      "showSunburst": "放射光芒",
+      "showCorners": "角飾",
+      "animationSpeed": "動畫速度"
+    }
+  }
+}

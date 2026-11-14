@@ -1,0 +1,11 @@
+{
+  "cablehead": {
+    "label": "Terminal de cabo",
+    "properties": {
+      "color": "Cor da linha",
+      "backgroundColor": "Cor de fundo",
+      "lineWidth": "Espessura da linha"
+    },
+    "description": "Terminal de cabo - extremidade de conexão entre cabo e equipamento"
+  }
+}

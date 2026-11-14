@@ -1,0 +1,42 @@
+{
+  "gauge": {
+    "label": "Gösterge paneli",
+    "description": "Değer gösterimi ve alarm için gösterge paneli bileşeni",
+    "panelTitle": "Gösterge paneli yapılandırması",
+    "properties": {
+      "width": "Genişlik",
+      "height": "Yükseklik",
+      "value": "Geçerli değer",
+      "minValue": "Minimum değer",
+      "maxValue": "Maksimum değer",
+      "unit": "Birim",
+      "decimalPlaces": "Ondalık basamak sayısı",
+      "startAngle": "Başlangıç açısı",
+      "endAngle": "Bitiş açısı",
+      "faceColor": "Kadran rengi",
+      "rimColor": "Kenarlık rengi",
+      "needleColor": "İbre rengi",
+      "tickColor": "Ölçek işareti rengi",
+      "labelColor": "Etiket rengi",
+      "valueColor": "Değer rengi",
+      "showTicks": "Ölçek işaretlerini göster",
+      "showLabels": "Etiketleri göster",
+      "showValue": "Değeri göster",
+      "majorTicks": "Ana ölçek sayısı",
+      "minorTicks": "Alt ölçek sayısı",
+      "warningValue": "Uyarı eşiği",
+      "dangerValue": "Tehlike eşiği",
+      "warningColor": "Uyarı rengi",
+      "dangerColor": "Tehlike rengi"
+    },
+    "groups": {
+      "basic": "Temel",
+      "value": "Değer",
+      "gauge": "Gösterge",
+      "color": "Renk",
+      "display": "Görünüm",
+      "ticks": "Ölçek",
+      "alarm": "Alarm"
+    }
+  }
+}

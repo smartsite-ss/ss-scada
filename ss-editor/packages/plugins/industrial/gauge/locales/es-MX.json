@@ -1,0 +1,42 @@
+{
+  "gauge": {
+    "label": "Indicador",
+    "description": "Componente de indicador para visualización de valores y alarmas",
+    "panelTitle": "Configuración del indicador",
+    "properties": {
+      "width": "Ancho",
+      "height": "Alto",
+      "value": "Valor actual",
+      "minValue": "Valor mínimo",
+      "maxValue": "Valor máximo",
+      "unit": "Unidad",
+      "decimalPlaces": "Decimales",
+      "startAngle": "Ángulo inicial",
+      "endAngle": "Ángulo final",
+      "faceColor": "Color del dial",
+      "rimColor": "Color del borde",
+      "needleColor": "Color de la aguja",
+      "tickColor": "Color de las marcas de escala",
+      "labelColor": "Color de la etiqueta",
+      "valueColor": "Color del valor",
+      "showTicks": "Mostrar marcas",
+      "showLabels": "Mostrar etiqueta",
+      "showValue": "Mostrar valor",
+      "majorTicks": "Número de marcas principales",
+      "minorTicks": "Número de marcas secundarias",
+      "warningValue": "Umbral de advertencia",
+      "dangerValue": "Umbral de peligro",
+      "warningColor": "Color de advertencia",
+      "dangerColor": "Color de peligro"
+    },
+    "groups": {
+      "basic": "Básico",
+      "value": "Valor",
+      "gauge": "Medidor",
+      "color": "Color",
+      "display": "Visualización",
+      "ticks": "Escala",
+      "alarm": "Alarma"
+    }
+  }
+}

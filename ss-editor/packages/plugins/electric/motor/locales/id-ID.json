@@ -1,0 +1,22 @@
+{
+  "motor": {
+    "label": "Motor listrik",
+    "properties": {
+      "color": "Warna garis",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garis",
+      "running": "Status operasi",
+      "runningValue": "Nilai untuk berjalan",
+      "stoppedValue": "Nilai untuk berhenti",
+      "faultValue": "Nilai untuk gangguan",
+      "defaultStatus": "Status default"
+    },
+    "options": {
+      "running": {
+        "yes": "Berjalan",
+        "no": "Berhenti"
+      }
+    },
+    "description": "Motor listrik - dengan indikator status berputar"
+  }
+}

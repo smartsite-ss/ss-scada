@@ -1,0 +1,11 @@
+{
+  "arrester": {
+    "label": "Penangkap kilat",
+    "properties": {
+      "color": "Warna garisan",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garisan"
+    },
+    "description": "Penangkap kilat - peranti perlindungan voltan lebih"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "levelgauge": {
+    "label": "Meter paras",
+    "properties": {
+      "color": "Warna",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garisan",
+      "dataset": "Nilai data (0-100)",
+      "showNumeric": "Tunjuk nilai",
+      "decimalPlaces": "Bilangan perpuluhan",
+      "unit": "Unit"
+    },
+    "description": "Meter paras - paparan nilai turus cecair dalam tiub kaca menegak berskala"
+  }
+}

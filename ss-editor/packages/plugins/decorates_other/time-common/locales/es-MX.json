@@ -1,0 +1,19 @@
+{
+  "time-common": {
+    "label": "Hora general",
+    "properties": {
+      "textColor": "Color del texto",
+      "fontSize": "Tamaño de fuente",
+      "fontWeight": "Grosor de fuente",
+      "shadow": "Sombra"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "Normal",
+        "bold": "Negrita",
+        "lighter": "Fina"
+      }
+    },
+    "description": "Visualización de hora general"
+  }
+}

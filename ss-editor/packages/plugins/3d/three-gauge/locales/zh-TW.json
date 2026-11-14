@@ -1,0 +1,28 @@
+{
+  "three-gauge": {
+    "label": "3D 儀表板",
+    "panelTitle": "3D 儀表板設定",
+    "properties": {
+      "value": "目前值",
+      "min": "最小值",
+      "max": "最大值",
+      "gaugeColor": "正常顏色",
+      "warningColor": "警告顏色",
+      "dangerColor": "危險顏色",
+      "warningThreshold": "警告閾值",
+      "dangerThreshold": "危險閾值",
+      "showTicks": "顯示刻度",
+      "showLabels": "顯示標籤",
+      "needleColor": "指針顏色",
+      "backgroundColor": "背景顏色",
+      "rimColor": "邊框顏色"
+    },
+    "groups": {
+      "数据": "資料",
+      "颜色": "顏色",
+      "阈值": "閾值",
+      "显示": "顯示"
+    },
+    "description": "3D 儀表板圖形元素，支援資料驅動指針旋轉"
+  }
+}

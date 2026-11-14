@@ -1,0 +1,46 @@
+{
+  "input": {
+    "label": "Eingabefeld",
+    "description": "Eingabefeld-Komponente für einzeilige Texteingabe",
+    "panelTitle": "Eingabefeld-Konfiguration",
+    "properties": {
+      "value": "Wert",
+      "placeholder": "Platzhalter",
+      "backgroundColor": "Hintergrundfarbe",
+      "borderColor": "Rahmenfarbe",
+      "borderWidth": "Rahmenbreite",
+      "borderStyle": "Rahmenstil",
+      "borderRadius": "Eckenradius",
+      "textColor": "Textfarbe",
+      "fontSize": "Schriftgröße",
+      "fontWeight": "Schriftstärke",
+      "textAlign": "Textausrichtung",
+      "shadowColor": "Schattenfarbe",
+      "shadowOffsetX": "Schattenversatz X",
+      "shadowOffsetY": "Schattenversatz Y",
+      "shadowBlur": "Schattenunschärfe"
+    },
+    "options": {
+      "borderStyle": {
+        "solid": "Durchgezogen",
+        "dashed": "Gestrichelt",
+        "dotted": "Gepunktet"
+      },
+      "fontWeight": {
+        "normal": "Normal",
+        "bold": "Fett"
+      },
+      "textAlign": {
+        "left": "Linksbündig",
+        "center": "Zentriert",
+        "right": "Rechtsbündig"
+      }
+    },
+    "groups": {
+      "basic": "Grundeigenschaften",
+      "style": "Stil",
+      "text": "Text",
+      "shadow": "Schatten"
+    }
+  }
+}

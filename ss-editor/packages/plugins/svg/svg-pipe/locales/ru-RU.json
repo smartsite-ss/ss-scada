@@ -1,0 +1,68 @@
+{
+  "svg-pipe": {
+    "label": "Труба SVG",
+    "panelTitle": "Настройка трубы SVG",
+    "properties": {
+      "status": "Состояние",
+      "flowDirection": "Направление потока",
+      "strokeColor": "Цвет трубы",
+      "flowingColor": "Цвет потока",
+      "stoppedColor": "Цвет останова",
+      "blockedColor": "Цвет засора",
+      "strokeWidth": "Диаметр трубы",
+      "strokeLinecap": "Стиль концов",
+      "strokeLinejoin": "Стиль соединений",
+      "strokeDasharray": "Штрих",
+      "gradientType": "Тип градиента",
+      "gradientStartColor": "Начальный цвет градиента",
+      "gradientEndColor": "Конечный цвет градиента",
+      "filterShadow": "Тень",
+      "shadowColor": "Цвет тени",
+      "shadowBlur": "Размытие тени",
+      "showFlowAnimation": "Анимация потока",
+      "flowSpeed": "Скорость потока",
+      "arrowSpacing": "Шаг стрелок",
+      "arrowSize": "Размер стрелок",
+      "arrowStyle": "Стиль стрелок"
+    },
+    "options": {
+      "status": {
+        "flowing": "Поток",
+        "stopped": "Стоп",
+        "blocked": "Засор"
+      },
+      "flowDirection": {
+        "forward": "Вперёд",
+        "backward": "Назад",
+        "bidirectional": "Двунаправленный"
+      },
+      "strokeLinecap": {
+        "butt": "Плоский",
+        "round": "Круглый",
+        "square": "Квадратный"
+      },
+      "strokeLinejoin": {
+        "miter": "Острый",
+        "round": "Скруглённый",
+        "bevel": "Срезанный"
+      },
+      "gradientType": {
+        "none": "Сплошной цвет",
+        "linear": "Линейный градиент",
+        "radial": "Радиальный градиент"
+      },
+      "arrowStyle": {
+        "triangle": "Треугольник",
+        "rectangle": "Прямоугольник",
+        "square": "Квадрат"
+      }
+    },
+    "groups": {
+      "status": "Состояние",
+      "color": "Цвет",
+      "style": "Стиль",
+      "animation": "Анимация"
+    },
+    "description": "Компонент трубы на основе SVG Path с анимацией потока, градиентами и стилями"
+  }
+}

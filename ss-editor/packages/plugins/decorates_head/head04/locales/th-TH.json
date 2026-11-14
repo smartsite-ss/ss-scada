@@ -1,0 +1,12 @@
+{
+  "head04": {
+    "label": "ตกแต่งส่วนหัว-04",
+    "properties": {
+      "color1": "สีที่หนึ่ง",
+      "color2": "สีที่สอง",
+      "backgroundColor": "สีพื้นหลัง",
+      "reverse": "พลิก"
+    },
+    "description": "ตกแต่งเส้นเฉียง"
+  }
+}

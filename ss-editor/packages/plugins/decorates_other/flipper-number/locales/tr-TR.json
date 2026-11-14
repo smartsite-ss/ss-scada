@@ -1,0 +1,14 @@
+{
+  "flipper-number": {
+    "label": "Flipper rakam",
+    "properties": {
+      "dataset": "Değer",
+      "flipperLength": "Basamak sayısı",
+      "color1": "Metin rengi",
+      "flipperWidth": "Genişlik",
+      "flipperHeight": "Yükseklik",
+      "flipperGap": "Aralık"
+    },
+    "description": "Rakam flipper göstergesi eklentisi"
+  }
+}

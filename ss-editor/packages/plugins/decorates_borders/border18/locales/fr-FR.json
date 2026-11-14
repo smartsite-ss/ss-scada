@@ -1,0 +1,15 @@
+{
+  "border18": {
+    "label": "Bordure-18 (Arabesque marocaine)",
+    "description": "Composant décoratif Bordure-18 (Arabesque marocaine)",
+    "properties": {
+      "color1": "Bleu joaillerie",
+      "color2": "Couleur terre cuite",
+      "color3": "Or",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "showStars": "Motif d'étoiles",
+      "showArches": "Ornement d'arches",
+      "animationSpeed": "Vitesse d'animation"
+    }
+  }
+}

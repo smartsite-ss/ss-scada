@@ -1,0 +1,11 @@
+{
+  "insulator": {
+    "label": "Isolator",
+    "properties": {
+      "color": "Warna garis",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garis"
+    },
+    "description": "Isolator - penopang isolasi listrik"
+  }
+}

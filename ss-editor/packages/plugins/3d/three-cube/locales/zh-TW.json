@@ -1,0 +1,17 @@
+{
+  "three-cube": {
+    "label": "3D 立方體",
+    "panelTitle": "3D 立方體設定",
+    "properties": {
+      "cubeColor": "立方體顏色",
+      "cubeSize": "立方體大小",
+      "rotationSpeed": "旋轉速度",
+      "showGrid": "顯示網格",
+      "showAxes": "顯示座標軸"
+    },
+    "groups": {
+      "basic": "基本屬性"
+    },
+    "description": "3D 立方體圖形元素，支援旋轉動畫"
+  }
+}

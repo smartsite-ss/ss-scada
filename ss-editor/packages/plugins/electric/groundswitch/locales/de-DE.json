@@ -1,0 +1,21 @@
+{
+  "groundswitch": {
+    "label": "Erdungsschalter",
+    "properties": {
+      "color": "Linienfarbe",
+      "backgroundColor": "Hintergrundfarbe",
+      "lineWidth": "Linienbreite",
+      "closed": "Geschlossener Zustand",
+      "closedValue": "Wert für geschlossen",
+      "openValue": "Wert für offen",
+      "defaultStatus": "Standardzustand"
+    },
+    "options": {
+      "closed": {
+        "yes": "Eingeschaltet",
+        "no": "Ausgeschaltet"
+      }
+    },
+    "description": "Erdungsschalter – Schalter für Leitungserdungsschutz"
+  }
+}

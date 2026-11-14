@@ -1,0 +1,15 @@
+{
+  "border14": {
+    "label": "테두리-14",
+    "description": "테두리-14 장식 컴포넌트",
+    "properties": {
+      "color1": "주요 색상",
+      "color2": "보조 색상",
+      "backgroundColor": "배경색",
+      "showHexGrid": "육각형 그리드",
+      "showScanLine": "스캔 라인",
+      "showCoreLines": "중앙 십자선",
+      "animationSpeed": "애니메이션 속도"
+    }
+  }
+}

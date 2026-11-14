@@ -1,0 +1,11 @@
+{
+  "arccoil": {
+    "label": "Gegelung penekan arka",
+    "properties": {
+      "color": "Warna garisan",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garisan"
+    },
+    "description": "Gegelung penekan arka - peranti pampasan pembumian titik neutral"
+  }
+}

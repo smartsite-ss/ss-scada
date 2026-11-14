@@ -1,0 +1,34 @@
+{
+  "naiveButton": {
+    "label": "Nút Naive",
+    "panelTitle": "Thuộc tính nút Naive",
+    "properties": {
+      "text": "Văn bản nút",
+      "type": "Loại nút",
+      "size": "Kích cỡ",
+      "round": "Nút bo góc",
+      "circle": "Nút tròn",
+      "disabled": "Vô hiệu hóa",
+      "loading": "Trạng thái tải"
+    },
+    "options": {
+      "type": {
+        "default": "Mặc định",
+        "primary": "Chính",
+        "success": "Thành công",
+        "warning": "Cảnh báo",
+        "error": "Lỗi",
+        "info": "Thông tin"
+      },
+      "size": {
+        "small": "Nhỏ",
+        "medium": "Vừa",
+        "large": "Lớn"
+      }
+    },
+    "groups": {
+      "basic": "Thuộc tính cơ bản"
+    },
+    "description": "Phần tử đồ họa nút Naive, hỗ trợ kết xuất dự phòng Canvas"
+  }
+}

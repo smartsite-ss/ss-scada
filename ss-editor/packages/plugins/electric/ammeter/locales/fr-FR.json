@@ -1,0 +1,15 @@
+{
+  "ammeter": {
+    "label": "Ampèremètre",
+    "properties": {
+      "color": "Couleur du trait",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "lineWidth": "Épaisseur du trait",
+      "dataset": "Valeur de données statique",
+      "showDigital": "Afficher la lecture numérique",
+      "decimalPlaces": "Nombre de décimales",
+      "unit": "Unité"
+    },
+    "description": "Ampèremètre - Instrument de mesure du courant"
+  }
+}

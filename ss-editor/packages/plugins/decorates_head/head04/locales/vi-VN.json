@@ -1,0 +1,12 @@
+{
+  "head04": {
+    "label": "Trang trí đầu-04",
+    "properties": {
+      "color1": "Màu thứ nhất",
+      "color2": "Màu thứ hai",
+      "backgroundColor": "Màu nền",
+      "reverse": "Lật"
+    },
+    "description": "Trang trí đường chéo"
+  }
+}

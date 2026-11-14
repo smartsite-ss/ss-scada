@@ -1,0 +1,13 @@
+{
+  "head06": {
+    "label": "頭部裝飾-06",
+    "properties": {
+      "color1": "填滿色",
+      "color2": "邊框色",
+      "dataset": "文字",
+      "textColor": "文字色",
+      "textSize": "文字大小"
+    },
+    "description": "多邊形外框裝飾"
+  }
+}

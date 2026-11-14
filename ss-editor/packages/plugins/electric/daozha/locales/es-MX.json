@@ -1,0 +1,22 @@
+{
+  "daozha": {
+    "label": "Seccionador de cuchillas",
+    "properties": {
+      "color": "Color de línea",
+      "backgroundColor": "Color de fondo",
+      "lineWidth": "Grosor de línea",
+      "terminalRadius": "Radio de la terminal",
+      "closed": "Estado cerrado",
+      "closedValue": "Valor para cerrado",
+      "openValue": "Valor para abierto",
+      "defaultStatus": "Estado predeterminado"
+    },
+    "options": {
+      "closed": {
+        "yes": "Cerrado",
+        "no": "Abierto"
+      }
+    },
+    "description": "Seccionador de potencia: elemento gráfico de seccionador con conmutación cerrado/abierto"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "tag": {
+    "create": {
+      "success": "Tag de dados criada com sucesso",
+      "failed_name_exists": "Já existe uma tag com esse nome neste dispositivo"
+    },
+    "update": {
+      "success": "Tag de dados atualizada com sucesso"
+    },
+    "delete": {
+      "success": "Tag de dados excluída com sucesso"
+    },
+    "read": {
+      "success": "Leitura dos dados da tag bem-sucedida",
+      "failed_device_offline": "O dispositivo está offline e não é possível ler",
+      "failed_timeout": "Tempo limite de leitura esgotado"
+    },
+    "write": {
+      "success": "Gravação dos dados da tag bem-sucedida",
+      "failed_readonly": "Esta tag é somente leitura e não pode ser gravada",
+      "failed_device_offline": "O dispositivo está offline e não é possível gravar"
+    },
+    "quality": {
+      "good": "Boa",
+      "uncertain": "Incerta",
+      "bad": "Ruim",
+      "config_error": "Erro de configuração",
+      "device_offline": "Dispositivo offline"
+    }
+  }
+}

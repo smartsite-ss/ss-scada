@@ -1,0 +1,12 @@
+{
+  "busbar": {
+    "label": "Barramento",
+    "properties": {
+      "color": "Cor da linha",
+      "backgroundColor": "Cor de fundo",
+      "lineWidth": "Espessura da linha",
+      "labelText": "Texto do rótulo"
+    },
+    "description": "Barramento - barra de coleta e distribuição de energia"
+  }
+}

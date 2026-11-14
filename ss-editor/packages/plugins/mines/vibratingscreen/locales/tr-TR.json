@@ -1,0 +1,31 @@
+{
+  "vibratingscreen": {
+    "label": "Titreşimli elek",
+    "properties": {
+      "colors": "Renk 1",
+      "colors2": "Renk 2",
+      "flowColor": "Akış rengi",
+      "pipeColor": "Boru rengi",
+      "backgroundColor": "Arka plan rengi",
+      "bgWidth": "Arka plan genişliği",
+      "boardWidth": "Kenarlık genişliği",
+      "roate": "Döndürme açısı",
+      "cls": "Animasyon yönü",
+      "dur": "Animasyon döngüsü (saniye)",
+      "dataset": "Veri değeri",
+      "forwardValue": "İleri dönüş durum değeri",
+      "backwardValue": "Geri dönüş durum değeri",
+      "stopValue": "Durma durum değeri",
+      "defaultCls": "Varsayılan animasyon yönü",
+      "decimalPlaces": "Ondalık basamak sayısı"
+    },
+    "options": {
+      "cls": {
+        "left": "İleri dönüş",
+        "right": "Geri dönüş",
+        "stop": "Durdu"
+      }
+    },
+    "description": "Titreşimli elek - Yay destekli çok katmanlı elek çerçevesi, titreşim animasyonunu destekler"
+  }
+}

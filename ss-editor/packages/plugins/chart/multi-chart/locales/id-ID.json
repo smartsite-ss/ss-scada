@@ -1,0 +1,47 @@
+{
+  "multiChart": {
+    "label": "Multi grafik",
+    "description": "Komponen multi grafik dengan diagram batang, diagram pai, dan heatmap",
+    "panelTitle": "Konfigurasi multi grafik",
+    "properties": {
+      "title": "Judul",
+      "titleColor": "Warna judul",
+      "titleFontSize": "Ukuran font judul",
+      "chartType": "Jenis grafik",
+      "backgroundColor": "Warna latar",
+      "borderColor": "Warna batas",
+      "borderWidth": "Lebar batas",
+      "borderRadius": "Sudut membulat",
+      "barColor": "Warna diagram batang",
+      "barGap": "Jarak batang",
+      "pieColors": "Urutan warna diagram pai",
+      "pieInnerRadius": "Rasio radius dalam",
+      "pieShowLabels": "Tampilkan label",
+      "heatmapColorLow": "Warna nilai rendah heatmap",
+      "heatmapColorHigh": "Warna nilai tinggi heatmap",
+      "heatmapRows": "Jumlah baris",
+      "heatmapCols": "Jumlah kolom",
+      "showLegend": "Tampilkan legenda",
+      "shadowColor": "Warna bayangan",
+      "shadowOffsetX": "Offset bayangan X",
+      "shadowOffsetY": "Offset bayangan Y",
+      "shadowBlur": "Blur bayangan"
+    },
+    "options": {
+      "chartType": {
+        "bar": "Diagram batang",
+        "pie": "Diagram pai",
+        "heatmap": "Heatmap"
+      }
+    },
+    "groups": {
+      "basic": "Dasar",
+      "style": "Gaya",
+      "bar": "Diagram batang",
+      "pie": "Diagram pai",
+      "heatmap": "Heatmap",
+      "display": "Tampilan",
+      "shadow": "Bayangan"
+    }
+  }
+}

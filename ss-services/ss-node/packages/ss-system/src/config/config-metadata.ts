@@ -526,7 +526,7 @@ export const CONFIG_METADATA_REGISTRY: ConfigMetadata[] = [
     key: 'I18N_SUPPORTED_LANGUAGES',
     category: 'i18n',
     description: '支持的语言列表（逗号分隔）',
-    defaultValue: 'zh-CN,en-US,zh-TW',
+    defaultValue: 'zh-CN,en-US,zh-TW,ja-JP,ko-KR,th-TH,de-DE,fr-FR,ru-RU,pt-BR,id-ID,vi-VN,es-MX,tr-TR,ms-MY',
     type: 'string',
     sensitive: false,
     editable: true,

@@ -1,0 +1,102 @@
+{
+  "historyTrend": {
+    "label": "履歴トレンド",
+    "description": "指定した期間で 1 つ以上の変数の履歴トレンドを照会",
+    "config": {
+      "bindVariables": "変数をバインド",
+      "addVariable": "変数を追加",
+      "removeVariable": "削除",
+      "unbound": "変数が未バインド",
+      "timeRange": "期間",
+      "queryMethod": "照会方式",
+      "query": "照会",
+      "querying": "照会中…"
+    },
+    "series": {
+      "lineWidth": "線の幅",
+      "lineType": "線の種類",
+      "lineColor": "線の色",
+      "symbolSize": "マーカーのサイズ",
+      "labelShow": "ラベルを表示",
+      "labelFontSize": "ラベルのフォントサイズ",
+      "labelColor": "ラベルの色",
+      "labelPosition": "ラベルの位置",
+      "areaShow": "領域の塗りを表示",
+      "areaStartColor": "開始色",
+      "areaMiddleColor": "中間色",
+      "areaEndColor": "終了色",
+      "areaOpacity": "不透明度"
+    },
+    "options": {
+      "interpolation": {
+        "raw": "生の値",
+        "linear": "線形補間",
+        "step": "階段補間"
+      },
+      "presetRange": {
+        "1h": "直近 1 時間",
+        "6h": "直近 6 時間",
+        "24h": "直近 24 時間",
+        "7d": "直近 7 日",
+        "custom": "カスタム"
+      },
+      "lineType": {
+        "solid": "実線",
+        "dashed": "破線",
+        "dotted": "点線"
+      },
+      "labelPosition": {
+        "top": "上",
+        "left": "左",
+        "right": "右",
+        "bottom": "下"
+      },
+      "legendPosition": {
+        "top": "上",
+        "bottom": "下",
+        "left": "左",
+        "right": "右"
+      },
+      "borderStyle": {
+        "solid": "実線",
+        "dashed": "破線",
+        "dotted": "点線"
+      },
+      "fontWeight": {
+        "normal": "標準",
+        "bold": "太字"
+      }
+    },
+    "properties": {
+      "defaultInterpolation": "既定の照会方式",
+      "defaultInterval": "既定の補間間隔（ms）",
+      "defaultPresetRange": "既定の期間",
+      "defaultCustomStart": "カスタム開始時刻",
+      "defaultCustomEnd": "カスタム終了時刻",
+      "maxPoints": "最大表示点数",
+      "title": "タイトル",
+      "titleColor": "タイトルの色",
+      "titleFontSize": "タイトルのフォントサイズ",
+      "titleFontWeight": "タイトルの太さ",
+      "gridColor": "グリッドの色",
+      "axisColor": "座標軸の色",
+      "showLegend": "凡例を表示",
+      "legendPosition": "凡例の位置",
+      "showTooltip": "ツールチップを表示",
+      "showDataZoom": "時間軸ズーム",
+      "showXAxis": "時間軸を表示",
+      "xAxisLineColor": "時間軸の色",
+      "xAxisLabelFontSize": "時間軸のフォントサイズ",
+      "xAxisLabelRotate": "時間軸ラベルの傾き",
+      "backgroundColor": "背景色",
+      "borderColor": "枠線色",
+      "borderWidth": "枠線幅",
+      "borderStyle": "枠線スタイル",
+      "borderRadius": "角の丸み",
+      "shadowColor": "影の色",
+      "shadowOffsetX": "影のオフセットX",
+      "shadowOffsetY": "影のオフセットY",
+      "shadowBlur": "影のぼかし"
+    }
+  }
+}

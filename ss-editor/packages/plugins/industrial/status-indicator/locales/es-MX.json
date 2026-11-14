@@ -1,0 +1,36 @@
+{
+  "statusIndicator": {
+    "label": "Luz indicadora de estado",
+    "description": "Componente de luz indicadora de estado para múltiples estados y alarmas",
+    "properties": {
+      "status": "Estado",
+      "normalColor": "Color normal",
+      "warningColor": "Color de advertencia",
+      "errorColor": "Color de falla",
+      "offlineColor": "Color sin conexión",
+      "size": "Tamaño de la luz indicadora",
+      "showGlow": "Mostrar halo",
+      "pulseSpeed": "Velocidad de pulso (s)",
+      "normalValue": "Valor para normal",
+      "warningValue": "Valor para advertencia",
+      "errorValue": "Valor para falla",
+      "offlineValue": "Valor para sin conexión",
+      "defaultStatus": "Estado predeterminado"
+    },
+    "options": {
+      "status": {
+        "normal": "Normal",
+        "warning": "Advertencia",
+        "error": "Falla",
+        "offline": "Sin conexión"
+      }
+    },
+    "groups": {
+      "basic": "Básico",
+      "color": "Color",
+      "style": "Estilo",
+      "animation": "Animación",
+      "binding": "Asignación de enlaces"
+    }
+  }
+}

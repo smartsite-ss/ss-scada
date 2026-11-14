@@ -1,0 +1,11 @@
+{
+  "capacitor": {
+    "label": "Bank kapasitor",
+    "properties": {
+      "color": "Warna garis",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garis"
+    },
+    "description": "Bank kapasitor - kapasitor kompensasi daya reaktif"
+  }
+}

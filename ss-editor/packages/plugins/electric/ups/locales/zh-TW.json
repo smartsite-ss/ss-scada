@@ -1,0 +1,19 @@
+{
+  "ups": {
+    "label": "UPS 電源",
+    "properties": {
+      "color": "線條顏色",
+      "backgroundColor": "背景色",
+      "lineWidth": "線寬",
+      "state": "工作狀態"
+    },
+    "options": {
+      "state": {
+        "online": "線上",
+        "bypass": "旁路",
+        "fault": "故障"
+      }
+    },
+    "description": "UPS 不斷電系統 - 線上/旁路/故障狀態"
+  }
+}

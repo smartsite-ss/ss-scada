@@ -1,0 +1,29 @@
+{
+  "protocol": {
+    "modbus": {
+      "connect_success": "Modbus TCP 接続に成功しました",
+      "connect_failed": "Modbus TCP 接続に失敗しました: {{detail}}",
+      "read_success": "Modbus 読み取りに成功しました",
+      "read_failed": "Modbus 読み取りに失敗しました: {{detail}}",
+      "write_success": "Modbus 書き込みに成功しました",
+      "write_failed": "Modbus 書き込みに失敗しました: {{detail}}"
+    },
+    "mqtt": {
+      "connect_success": "MQTT 接続に成功しました",
+      "connect_failed": "MQTT 接続に失敗しました: {{detail}}",
+      "publish_success": "MQTT メッセージの送信に成功しました",
+      "publish_failed": "MQTT メッセージの送信に失敗しました: {{detail}}"
+    },
+    "opcua": {
+      "connect_success": "OPC UA 接続に成功しました",
+      "connect_failed": "OPC UA 接続に失敗しました: {{detail}}",
+      "read_success": "OPC UA 読み取りに成功しました",
+      "read_failed": "OPC UA 読み取りに失敗しました: {{detail}}"
+    },
+    "common": {
+      "timeout": "プロトコル通信がタイムアウトしました ({{timeout}}ms)",
+      "connection_refused": "接続が拒否されました",
+      "authentication_failed": "認証に失敗しました"
+    }
+  }
+}

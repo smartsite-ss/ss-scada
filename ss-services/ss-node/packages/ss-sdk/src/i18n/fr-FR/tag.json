@@ -1,0 +1,31 @@
+{
+  "tag": {
+    "create": {
+      "success": "Étiquette de données créée avec succès",
+      "failed_name_exists": "Une étiquette portant ce nom existe déjà pour cet appareil"
+    },
+    "update": {
+      "success": "Étiquette de données mise à jour avec succès"
+    },
+    "delete": {
+      "success": "Étiquette de données supprimée avec succès"
+    },
+    "read": {
+      "success": "Données de l'étiquette lues avec succès",
+      "failed_device_offline": "Appareil hors ligne, lecture impossible",
+      "failed_timeout": "Délai de lecture dépassé"
+    },
+    "write": {
+      "success": "Données écrites dans l'étiquette avec succès",
+      "failed_readonly": "Cette étiquette est en lecture seule, écriture impossible",
+      "failed_device_offline": "Appareil hors ligne, écriture impossible"
+    },
+    "quality": {
+      "good": "Bonne",
+      "uncertain": "Incertaine",
+      "bad": "Mauvaise",
+      "config_error": "Erreur de configuration",
+      "device_offline": "Appareil hors ligne"
+    }
+  }
+}

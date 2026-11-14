@@ -1,0 +1,21 @@
+{
+  "breaker": {
+    "label": "Disjuntor",
+    "properties": {
+      "color": "Cor da linha",
+      "backgroundColor": "Cor de fundo",
+      "lineWidth": "Espessura da linha",
+      "closed": "Estado fechado",
+      "closedValue": "Valor correspondente a fechado",
+      "openValue": "Valor correspondente a aberto",
+      "defaultStatus": "Estado padrão"
+    },
+    "options": {
+      "closed": {
+        "yes": "Fechado",
+        "no": "Aberto"
+      }
+    },
+    "description": "Disjuntor de potência - disjuntor de alta/baixa tensão com alternância entre fechado e aberto"
+  }
+}

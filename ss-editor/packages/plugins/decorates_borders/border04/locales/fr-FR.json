@@ -1,0 +1,16 @@
+{
+  "border04": {
+    "label": "Bordure-04",
+    "description": "Composant décoratif Bordure-04",
+    "properties": {
+      "colors": "Couleur 1",
+      "colors2": "Couleur 2",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "borderTitle": "Texte du titre",
+      "borderTitleColor": "Couleur du titre",
+      "borderTitleSize": "Taille de police du titre",
+      "borderTitleWidth": "Largeur de la zone de titre",
+      "borderTitleHeight": "Hauteur du titre"
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "ground": {
+    "label": "Символ заземления",
+    "properties": {
+      "color": "Цвет линии",
+      "backgroundColor": "Цвет фона",
+      "lineWidth": "Толщина линии"
+    },
+    "description": "Стандартный символ заземления"
+  }
+}

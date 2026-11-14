@@ -1,0 +1,21 @@
+{
+  "gatevalve": {
+    "label": "Katup gerbang listrik",
+    "properties": {
+      "colors": "Warna 1",
+      "colors2": "Warna 2",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garis",
+      "closed": "Status tertutup",
+      "state": "Status katup"
+    },
+    "options": {
+      "state": {
+        "open": "Buka",
+        "closed": "Tutup",
+        "fault": "Gangguan"
+      }
+    },
+    "description": "Katup gerbang listrik - aktuator listrik badan katup kupu-kupu, status buka/tutup/gangguan"
+  }
+}

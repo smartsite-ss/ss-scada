@@ -5,6 +5,7 @@
 import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { I18nService } from './i18n.service';
+import { normalizeLanguage } from './i18n.constants';
 
 @Injectable()
 export class I18nInterceptor implements NestInterceptor {
@@ -88,10 +89,6 @@ export class I18nInterceptor implements NestInterceptor {
   }
 
   private normalizeLang(lang: string): string {
-    if (!lang) return '';
-    const normalized = lang.toLowerCase();
-    if (normalized.startsWith('zh')) return 'zh-CN';
-    if (normalized.startsWith('en')) return 'en-US';
-    return lang;
+    return normalizeLanguage(lang);
   }
 }

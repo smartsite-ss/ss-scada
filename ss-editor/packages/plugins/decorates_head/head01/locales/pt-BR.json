@@ -1,0 +1,13 @@
+{
+  "head01": {
+    "label": "Decoração de cabeçalho-01",
+    "properties": {
+      "color1": "Cor 1",
+      "color2": "Cor 2",
+      "dur": "Período da animação (s)",
+      "lineHeight": "Altura da linha",
+      "endWidth": "Largura do bloco deslizante"
+    },
+    "description": "Barra retangular animada com bloco de cor deslizante"
+  }
+}

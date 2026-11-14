@@ -1,0 +1,69 @@
+{
+  "label": {
+    "label": "Label",
+    "panelTitle": "Properti label",
+    "properties": {
+      "text": "Teks",
+      "textColor": "Warna teks",
+      "fontSize": "Ukuran font",
+      "fontWeight": "Ketebalan font",
+      "fontStyle": "Gaya font",
+      "textDecoration": "Dekorasi teks",
+      "textAlign": "Perataan teks",
+      "verticalAlignment": "Perataan vertikal",
+      "lineHeight": "Tinggi baris",
+      "letterSpacing": "Jarak huruf",
+      "wordWrap": "Bungkus teks otomatis",
+      "maxLines": "Baris maksimum",
+      "backgroundColor": "Warna latar",
+      "borderColor": "Warna batas",
+      "borderWidth": "Lebar batas",
+      "borderRadius": "Sudut membulat",
+      "textShadowColor": "Warna bayangan teks",
+      "textShadowOffsetX": "Offset bayangan X",
+      "textShadowOffsetY": "Offset bayangan Y",
+      "textShadowBlur": "Blur bayangan",
+      "decimalPlaces": "Jumlah desimal",
+      "unit": "Satuan",
+      "unitFontSize": "Ukuran font satuan",
+      "unitFontColor": "Warna font satuan",
+      "unitGap": "Jarak satuan"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "Normal",
+        "bold": "Tebal"
+      },
+      "fontStyle": {
+        "normal": "Normal",
+        "italic": "Miring"
+      },
+      "textDecoration": {
+        "none": "Tidak ada",
+        "underline": "Garis bawah",
+        "line-through": "Coret"
+      },
+      "textAlign": {
+        "left": "Rata kiri",
+        "center": "Tengah",
+        "right": "Rata kanan"
+      },
+      "verticalAlignment": {
+        "top": "Atas",
+        "middle": "Tengah",
+        "bottom": "Bawah"
+      }
+    },
+    "groups": {
+      "basic": "Properti dasar",
+      "style": "Gaya",
+      "text": "Teks",
+      "unit": "Satuan",
+      "shadow": "Bayangan"
+    },
+    "hints": {
+      "maxLinesHint": "0 berarti tanpa batas"
+    },
+    "description": "Elemen grafis label"
+  }
+}

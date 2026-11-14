@@ -1,0 +1,42 @@
+{
+  "indicator": {
+    "label": "Voyant",
+    "description": "Composant voyant pour l'affichage d'état et l'alarme",
+    "panelTitle": "Configuration du voyant",
+    "properties": {
+      "width": "Largeur",
+      "height": "Hauteur",
+      "status": "État",
+      "onColor": "Couleur allumée",
+      "offColor": "Couleur éteinte",
+      "warningColor": "Couleur d'avertissement",
+      "faultColor": "Couleur de défaut",
+      "blinkOnAlarm": "Clignotement en alarme",
+      "blinkInterval": "Intervalle de clignotement (ms)",
+      "showLabel": "Afficher l'étiquette",
+      "labelText": "Texte de l'étiquette",
+      "labelColor": "Couleur de l'étiquette",
+      "onValue": "Valeur d'allumage",
+      "offValue": "Valeur d'extinction",
+      "warningValue": "Valeur d'avertissement",
+      "faultValue": "Valeur de défaut",
+      "defaultStatus": "État par défaut"
+    },
+    "options": {
+      "status": {
+        "on": "Allumé",
+        "off": "Éteint",
+        "warning": "Avertissement",
+        "fault": "Défaut"
+      }
+    },
+    "groups": {
+      "basic": "Base",
+      "status": "État",
+      "color": "Couleur",
+      "animation": "Animation",
+      "label": "Étiquette",
+      "binding": "Mappage de liaison"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "breaker": {
+    "label": "Pemutus sirkuit",
+    "properties": {
+      "color": "Warna garis",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garis",
+      "closed": "Status tertutup",
+      "closedValue": "Nilai untuk tertutup",
+      "openValue": "Nilai untuk terbuka",
+      "defaultStatus": "Status default"
+    },
+    "options": {
+      "closed": {
+        "yes": "Tutup",
+        "no": "Buka"
+      }
+    },
+    "description": "Pemutus sirkuit daya - pemutus tegangan tinggi/rendah dengan peralihan status tutup/buka"
+  }
+}

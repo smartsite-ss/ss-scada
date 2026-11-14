@@ -1,0 +1,22 @@
+{
+  "motor": {
+    "label": "Motor",
+    "properties": {
+      "color": "Linienfarbe",
+      "backgroundColor": "Hintergrundfarbe",
+      "lineWidth": "Linienbreite",
+      "running": "Betriebszustand",
+      "runningValue": "Wert für Betrieb",
+      "stoppedValue": "Wert für Stopp",
+      "faultValue": "Wert für Störung",
+      "defaultStatus": "Standardzustand"
+    },
+    "options": {
+      "running": {
+        "yes": "In Betrieb",
+        "no": "Gestoppt"
+      }
+    },
+    "description": "Motor – mit Anzeige des Drehzustands"
+  }
+}

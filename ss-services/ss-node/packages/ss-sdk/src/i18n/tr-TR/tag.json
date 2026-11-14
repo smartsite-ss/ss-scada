@@ -1,0 +1,31 @@
+{
+  "tag": {
+    "create": {
+      "success": "Veri etiketi oluşturuldu",
+      "failed_name_exists": "Etiket adı bu cihazda zaten mevcut"
+    },
+    "update": {
+      "success": "Veri etiketi güncellendi"
+    },
+    "delete": {
+      "success": "Veri etiketi silindi"
+    },
+    "read": {
+      "success": "Etiket verisi okundu",
+      "failed_device_offline": "Cihaz çevrimdışı, okuma yapılamıyor",
+      "failed_timeout": "Okuma zaman aşımına uğradı"
+    },
+    "write": {
+      "success": "Etiket verisi yazıldı",
+      "failed_readonly": "Bu etiket salt okunur, yazılamıyor",
+      "failed_device_offline": "Cihaz çevrimdışı, yazma yapılamıyor"
+    },
+    "quality": {
+      "good": "İyi",
+      "uncertain": "Belirsiz",
+      "bad": "Kötü",
+      "config_error": "Yapılandırma hatası",
+      "device_offline": "Cihaz çevrimdışı"
+    }
+  }
+}

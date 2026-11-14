@@ -1,0 +1,51 @@
+{
+  "tagRadar": {
+    "label": "Gráfico radar de variáveis",
+    "description": "Vincula múltiplas variáveis de etiqueta e exibe a saúde multidimensional em tempo real em um gráfico radar",
+    "config": {
+      "bindVariables": "Vincular variável",
+      "addVariable": "Adicionar variável",
+      "removeVariable": "Excluir",
+      "unbound": "Variável não vinculada",
+      "loadError": "Falha ao carregar"
+    },
+    "properties": {
+      "title": "Título",
+      "titleColor": "Cor do título",
+      "titleFontSize": "Tamanho da fonte do título",
+      "titleFontWeight": "Peso da fonte do título",
+      "indicatorMax": "Valor máximo do indicador",
+      "gridColor": "Cor das linhas de grade",
+      "axisColor": "Cor dos eixos",
+      "showLegend": "Mostrar legenda",
+      "legendPosition": "Posição da legenda",
+      "showTooltip": "Mostrar dica",
+      "backgroundColor": "Cor de fundo",
+      "borderColor": "Cor da borda",
+      "borderWidth": "Largura da borda",
+      "borderStyle": "Estilo da borda",
+      "borderRadius": "Raio da borda",
+      "shadowColor": "Cor da sombra",
+      "shadowOffsetX": "Deslocamento X da sombra",
+      "shadowOffsetY": "Deslocamento Y da sombra",
+      "shadowBlur": "Desfoque da sombra"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "Normal",
+        "bold": "Negrito"
+      },
+      "legendPosition": {
+        "top": "Topo",
+        "bottom": "Base",
+        "left": "Esquerda",
+        "right": "Direita"
+      },
+      "borderStyle": {
+        "solid": "Sólida",
+        "dashed": "Tracejada",
+        "dotted": "Pontilhada"
+      }
+    }
+  }
+}

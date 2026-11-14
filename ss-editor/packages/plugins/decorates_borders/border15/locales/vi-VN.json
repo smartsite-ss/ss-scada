@@ -1,0 +1,15 @@
+{
+  "border15": {
+    "label": "Viền-15 (Art Deco)",
+    "description": "Thành phần trang trí viền-15 (Art Deco)",
+    "properties": {
+      "color1": "Vàng chính",
+      "color2": "Vàng đậm",
+      "color3": "Màu tối",
+      "backgroundColor": "Màu nền",
+      "showSunburst": "Tia sáng tỏa",
+      "showCorners": "Trang trí góc",
+      "animationSpeed": "Tốc độ hoạt ảnh"
+    }
+  }
+}

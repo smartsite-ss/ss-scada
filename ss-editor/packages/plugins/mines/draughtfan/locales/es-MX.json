@@ -1,0 +1,33 @@
+{
+  "draughtfan": {
+    "label": "Ventilador",
+    "properties": {
+      "dataset": "Conjunto de datos",
+      "dur": "Ciclo de animación (s)",
+      "colors": "Grupo de colores",
+      "flowColor": "Color de flujo",
+      "pipeColor": "Color de la tubería",
+      "bgWidth": "Ancho del fondo",
+      "boardWidth": "Ancho del borde",
+      "roate": "Ángulo de rotación",
+      "cls": "Dirección de rotación",
+      "clsLeft": "Horario",
+      "clsRight": "Antihorario",
+      "clsStop": "Detenido",
+      "backgroundColor": "Color de fondo",
+      "forwardValue": "Valor para giro directo",
+      "backwardValue": "Valor para giro inverso",
+      "stopValue": "Valor para detenido",
+      "defaultCls": "Dirección de animación predeterminada",
+      "decimalPlaces": "Decimales"
+    },
+    "options": {
+      "cls": {
+        "left": "Giro directo",
+        "right": "Giro inverso",
+        "stop": "Detenido"
+      }
+    },
+    "description": "Ventilador de minería: extractor con animación de rotación"
+  }
+}

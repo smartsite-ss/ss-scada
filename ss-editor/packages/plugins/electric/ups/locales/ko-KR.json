@@ -1,0 +1,19 @@
+{
+  "ups": {
+    "label": "UPS 전원",
+    "properties": {
+      "color": "선 색상",
+      "backgroundColor": "배경색",
+      "lineWidth": "선 너비",
+      "state": "작동 상태"
+    },
+    "options": {
+      "state": {
+        "online": "온라인",
+        "bypass": "바이패스",
+        "fault": "고장"
+      }
+    },
+    "description": "UPS 무정전 전원 - 온라인/바이패스/고장 상태"
+  }
+}

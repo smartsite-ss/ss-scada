@@ -1,0 +1,61 @@
+{
+  "plugins": {
+    "groups": {
+      "shape": "Biçim",
+      "name": "Ad",
+      "decoration": "Dekorasyon"
+    }
+  },
+  "tagValue": {
+    "label": "Dekoratif etiket değişkeni",
+    "description": "Cihaz değişkeninin gerçek zamanlı değerini gösterir (kare/daire)",
+    "config": {
+      "bindVariable": "Değişken bağla",
+      "selectVariable": "Değişken seç",
+      "clear": "Temizle",
+      "unbound": "Bağlı değil",
+      "decorationImage": "Dekorasyon görseli",
+      "backgroundImage": "Arka plan görseli",
+      "selectImage": "Görsel seç"
+    },
+    "selector": {
+      "title": "Cihaz değişkeni seç",
+      "searchPlaceholder": "Cihaz veya değişken ara",
+      "tagCount": "{count} değişken",
+      "loading": "Yükleniyor...",
+      "empty": "Cihaz değişkeni yok"
+    },
+    "properties": {
+      "shape": "Biçim",
+      "alias": "Takma ad",
+      "showName": "Adı göster",
+      "nameColor": "Ad rengi",
+      "nameFontSize": "Ad yazı boyutu",
+      "nameFontWeight": "Ad kalınlığı",
+      "nameGap": "Ad aralığı",
+      "decorationImagePosition": "Dekorasyon görseli konumu",
+      "decorationImageSize": "Dekorasyon görseli boyutu",
+      "decorationImageOpacity": "Dekorasyon görseli opaklığı",
+      "backgroundRepeat": "Arka plan döşemesi",
+      "backgroundImageFit": "Dolgu stili"
+    },
+    "options": {
+      "shape": {
+        "rectangle": "Kare",
+        "circle": "Daire"
+      },
+      "decorationPosition": {
+        "left": "Sol",
+        "right": "Sağ",
+        "background": "Arka plan",
+        "center": "Ortala"
+      },
+      "backgroundRepeat": {
+        "repeat": "Döşe",
+        "no-repeat": "Döşeme yok",
+        "repeat-x": "Yatay döşe",
+        "repeat-y": "Dikey döşe"
+      }
+    }
+  }
+}

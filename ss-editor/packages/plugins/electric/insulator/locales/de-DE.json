@@ -1,0 +1,11 @@
+{
+  "insulator": {
+    "label": "Isolator",
+    "properties": {
+      "color": "Linienfarbe",
+      "backgroundColor": "Hintergrundfarbe",
+      "lineWidth": "Linienbreite"
+    },
+    "description": "Isolator – elektrisches Isolierbauteil"
+  }
+}

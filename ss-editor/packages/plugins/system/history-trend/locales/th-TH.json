@@ -1,0 +1,102 @@
+{
+  "historyTrend": {
+    "label": "แนวโน้มย้อนหลัง",
+    "description": "สอบถามแนวโน้มย้อนหลังของตัวแปรหนึ่งตัวหรือหลายตัวตามช่วงเวลา",
+    "config": {
+      "bindVariables": "ตัวแปรที่ผูก",
+      "addVariable": "เพิ่มตัวแปร",
+      "removeVariable": "ลบ",
+      "unbound": "ตัวแปรที่ยังไม่ผูก",
+      "timeRange": "ช่วงเวลา",
+      "queryMethod": "วิธีสอบถาม",
+      "query": "สอบถาม",
+      "querying": "กำลังสอบถาม…"
+    },
+    "series": {
+      "lineWidth": "ความกว้างเส้น",
+      "lineType": "ประเภทเส้น",
+      "lineColor": "สีเส้น",
+      "symbolSize": "ขนาดจุดทึบ",
+      "labelShow": "แสดงป้ายกำกับ",
+      "labelFontSize": "ขนาดตัวอักษรป้ายกำกับ",
+      "labelColor": "สีป้ายกำกับ",
+      "labelPosition": "ตำแหน่งป้ายกำกับ",
+      "areaShow": "แสดงการเติมพื้นที่",
+      "areaStartColor": "สีเริ่มต้น",
+      "areaMiddleColor": "สีตรงกลาง",
+      "areaEndColor": "สีสิ้นสุด",
+      "areaOpacity": "ความทึบแสง"
+    },
+    "options": {
+      "interpolation": {
+        "raw": "ค่าต้นฉบับ",
+        "linear": "การประมาณค่าเชิงเส้น",
+        "step": "การประมาณค่าแบบขั้นบันได"
+      },
+      "presetRange": {
+        "1h": "1 ชั่วโมงล่าสุด",
+        "6h": "6 ชั่วโมงล่าสุด",
+        "24h": "24 ชั่วโมงล่าสุด",
+        "7d": "7 วันล่าสุด",
+        "custom": "กำหนดเอง"
+      },
+      "lineType": {
+        "solid": "เส้นทึบ",
+        "dashed": "เส้นประ",
+        "dotted": "เส้นจุด"
+      },
+      "labelPosition": {
+        "top": "บน",
+        "left": "ซ้าย",
+        "right": "ขวา",
+        "bottom": "ล่าง"
+      },
+      "legendPosition": {
+        "top": "บน",
+        "bottom": "ล่าง",
+        "left": "ซ้าย",
+        "right": "ขวา"
+      },
+      "borderStyle": {
+        "solid": "เส้นทึบ",
+        "dashed": "เส้นประ",
+        "dotted": "เส้นจุด"
+      },
+      "fontWeight": {
+        "normal": "ปกติ",
+        "bold": "ตัวหนา"
+      }
+    },
+    "properties": {
+      "defaultInterpolation": "วิธีสอบถามเริ่มต้น",
+      "defaultInterval": "ช่วงการประมาณค่าเริ่มต้น (ms)",
+      "defaultPresetRange": "ช่วงเวลาเริ่มต้น",
+      "defaultCustomStart": "เวลาเริ่มต้นกำหนดเอง",
+      "defaultCustomEnd": "เวลาสิ้นสุดกำหนดเอง",
+      "maxPoints": "แสดงจำนวนจุดสูงสุด",
+      "title": "หัวข้อ",
+      "titleColor": "สีหัวข้อ",
+      "titleFontSize": "ขนาดตัวอักษรหัวข้อ",
+      "titleFontWeight": "ความหนาหัวข้อ",
+      "gridColor": "สีตาราง",
+      "axisColor": "สีแกนพิกัด",
+      "showLegend": "แสดงคำอธิบายสัญลักษณ์",
+      "legendPosition": "ตำแหน่งคำอธิบายสัญลักษณ์",
+      "showTooltip": "แสดงกล่องคำอธิบาย",
+      "showDataZoom": "การซูมแกนเวลา",
+      "showXAxis": "แสดงแกนเวลา",
+      "xAxisLineColor": "สีแกนเวลา",
+      "xAxisLabelFontSize": "ขนาดตัวอักษรแกนเวลา",
+      "xAxisLabelRotate": "ความเอียงตัวอักษรแกนเวลา",
+      "backgroundColor": "สีพื้นหลัง",
+      "borderColor": "สีเส้นขอบ",
+      "borderWidth": "ความกว้างเส้นขอบ",
+      "borderStyle": "รูปแบบเส้นขอบ",
+      "borderRadius": "มุมโค้ง",
+      "shadowColor": "สีเงา",
+      "shadowOffsetX": "ระยะเลื่อนเงา X",
+      "shadowOffsetY": "ระยะเลื่อนเงา Y",
+      "shadowBlur": "ความเบลอของเงา"
+    }
+  }
+}

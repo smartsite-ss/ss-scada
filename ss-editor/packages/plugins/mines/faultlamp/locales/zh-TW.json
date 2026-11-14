@@ -1,0 +1,24 @@
+{
+  "faultlamp": {
+    "label": "故障警報燈",
+    "properties": {
+      "alarmColor": "警報顏色",
+      "backgroundColor": "背景色",
+      "dataset": "資料值(0=正常,>0=警報)",
+      "flashing": "閃爍效果",
+      "flashSpeed": "閃爍速度(秒)",
+      "showBuzzer": "顯示蜂鳴器",
+      "alarmValue": "警報對應值",
+      "normalValue": "正常對應值",
+      "defaultStatus": "預設狀態"
+    },
+    "options": {
+      "alarmColor": {
+        "red": "紅色",
+        "amber": "琥珀色",
+        "off": "關閉"
+      }
+    },
+    "description": "故障警報燈 - 菱形/三角形警示圖示，支援閃爍與蜂鳴器顯示"
+  }
+}

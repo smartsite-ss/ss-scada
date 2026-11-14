@@ -1,0 +1,61 @@
+{
+  "eventPanel": {
+    "label": "이벤트 패널",
+    "description": "시스템 이벤트 로그 표시(프로젝트/유형/상태별 필터)",
+    "loading": "로딩 중...",
+    "empty": "이벤트 없음",
+    "loadFailed": "로드 실패",
+    "systemLevel": "시스템 레벨",
+    "config": {
+      "project": "프로젝트",
+      "allProjects": "전체 프로젝트",
+      "eventType": "이벤트 유형",
+      "allEventTypes": "전체 유형",
+      "status": "상태",
+      "allStatus": "전체 상태"
+    },
+    "columns": {
+      "time": "시간",
+      "eventType": "이벤트 유형",
+      "project": "프로젝트",
+      "operator": "작업자",
+      "status": "상태",
+      "successRatio": "성공률",
+      "duration": "소요 시간"
+    },
+    "groups": {
+      "device": "설비",
+      "project": "프로젝트",
+      "alarm": "알람",
+      "config": "구성 및 타이머",
+      "plugin": "플러그인"
+    },
+    "status": {
+      "emitted": "발행됨",
+      "processing": "처리 중",
+      "processed": "처리됨",
+      "partial": "일부 실패",
+      "failed": "실패",
+      "no_subscribers": "구독자 없음"
+    },
+    "properties": {
+      "pageSize": "페이지당 항목 수",
+      "refreshInterval": "새로 고침 간격(초)",
+      "showHeader": "열 머리글 표시",
+      "showTime": "시간 열",
+      "showEventType": "이벤트 유형 열",
+      "showProject": "프로젝트 열",
+      "showOperator": "작업자 열",
+      "showStatus": "상태 열",
+      "showSuccessRatio": "성공률 열",
+      "showDuration": "소요 시간 열",
+      "fontSize": "글꼴 크기",
+      "rowHeight": "줄 높이",
+      "headerBackgroundColor": "열 머리글 배경",
+      "rowBackgroundColor": "행 배경",
+      "alternatingRowColor": "줄무늬 배경",
+      "textColor": "본문 색상",
+      "backgroundColor": "배경색"
+    }
+  }
+}

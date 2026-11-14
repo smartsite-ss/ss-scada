@@ -1,0 +1,15 @@
+{
+  "wattmeter": {
+    "label": "Medidor de potência",
+    "properties": {
+      "color": "Cor da linha",
+      "backgroundColor": "Cor de fundo",
+      "lineWidth": "Espessura da linha",
+      "dataset": "Valor de dados estático",
+      "showDigital": "Mostrar leitura digital",
+      "decimalPlaces": "Casas decimais",
+      "unit": "Unidade"
+    },
+    "description": "Medidor de potência - instrumento de medição de potência ativa"
+  }
+}

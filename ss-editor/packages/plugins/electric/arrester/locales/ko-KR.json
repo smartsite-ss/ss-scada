@@ -1,0 +1,11 @@
+{
+  "arrester": {
+    "label": "피뢰기",
+    "properties": {
+      "color": "선 색상",
+      "backgroundColor": "배경색",
+      "lineWidth": "선 너비"
+    },
+    "description": "피뢰기 - 과전압 보호 장치"
+  }
+}

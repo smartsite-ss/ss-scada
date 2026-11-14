@@ -1,0 +1,61 @@
+{
+  "eventPanel": {
+    "label": "แผงเหตุการณ์",
+    "description": "แสดงบันทึกเหตุการณ์ระบบ (กรองตามโครงการ/ประเภท/สถานะ)",
+    "loading": "กำลังโหลด...",
+    "empty": "ไม่มีเหตุการณ์",
+    "loadFailed": "โหลดไม่สำเร็จ",
+    "systemLevel": "ระดับระบบ",
+    "config": {
+      "project": "โครงการ",
+      "allProjects": "ทุกโครงการ",
+      "eventType": "ประเภทเหตุการณ์",
+      "allEventTypes": "ทุกประเภท",
+      "status": "สถานะ",
+      "allStatus": "ทุกสถานะ"
+    },
+    "columns": {
+      "time": "เวลา",
+      "eventType": "ประเภทเหตุการณ์",
+      "project": "โครงการ",
+      "operator": "ผู้ดำเนินการ",
+      "status": "สถานะ",
+      "successRatio": "อัตราความสำเร็จ",
+      "duration": "ระยะเวลาที่ใช้"
+    },
+    "groups": {
+      "device": "อุปกรณ์",
+      "project": "โครงการ",
+      "alarm": "การแจ้งเตือน",
+      "config": "การกำหนดค่าและตัวจับเวลา",
+      "plugin": "ปลั๊กอิน"
+    },
+    "status": {
+      "emitted": "ยิงแล้ว",
+      "processing": "กำลังประมวลผล",
+      "processed": "ดำเนินการแล้ว",
+      "partial": "ล้มเหลวบางส่วน",
+      "failed": "ล้มเหลว",
+      "no_subscribers": "ไม่มีผู้รับข้อมูล"
+    },
+    "properties": {
+      "pageSize": "จำนวนรายการต่อหน้า",
+      "refreshInterval": "ช่วงรีเฟรช (วินาที)",
+      "showHeader": "แสดงหัวคอลัมน์",
+      "showTime": "คอลัมน์เวลา",
+      "showEventType": "คอลัมน์ประเภทเหตุการณ์",
+      "showProject": "คอลัมน์โครงการ",
+      "showOperator": "คอลัมน์ผู้ดำเนินการ",
+      "showStatus": "คอลัมน์สถานะ",
+      "showSuccessRatio": "คอลัมน์อัตราความสำเร็จ",
+      "showDuration": "คอลัมน์ระยะเวลาที่ใช้",
+      "fontSize": "ขนาดตัวอักษร",
+      "rowHeight": "ความสูงบรรทัด",
+      "headerBackgroundColor": "พื้นหลังหัวคอลัมน์",
+      "rowBackgroundColor": "พื้นหลังแถว",
+      "alternatingRowColor": "พื้นหลังสลับแถว",
+      "textColor": "สีเนื้อความ",
+      "backgroundColor": "สีพื้นหลัง"
+    }
+  }
+}

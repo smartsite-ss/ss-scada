@@ -1,0 +1,46 @@
+{
+  "input": {
+    "label": "Giriş alanı",
+    "description": "Tek satırlı metin girişi için giriş alanı bileşeni",
+    "panelTitle": "Giriş alanı yapılandırması",
+    "properties": {
+      "value": "Değer",
+      "placeholder": "Yer tutucu",
+      "backgroundColor": "Arka plan rengi",
+      "borderColor": "Kenarlık rengi",
+      "borderWidth": "Kenarlık genişliği",
+      "borderStyle": "Kenarlık stili",
+      "borderRadius": "Köşe yuvarlatma",
+      "textColor": "Metin rengi",
+      "fontSize": "Yazı tipi boyutu",
+      "fontWeight": "Yazı tipi kalınlığı",
+      "textAlign": "Metin hizalaması",
+      "shadowColor": "Gölge rengi",
+      "shadowOffsetX": "Gölge kayması X",
+      "shadowOffsetY": "Gölge kayması Y",
+      "shadowBlur": "Gölge bulanıklığı"
+    },
+    "options": {
+      "borderStyle": {
+        "solid": "Düz çizgi",
+        "dashed": "Kesikli çizgi",
+        "dotted": "Noktalı çizgi"
+      },
+      "fontWeight": {
+        "normal": "Normal",
+        "bold": "Kalın"
+      },
+      "textAlign": {
+        "left": "Sola hizala",
+        "center": "Ortala",
+        "right": "Sağa hizala"
+      }
+    },
+    "groups": {
+      "basic": "Temel özellikler",
+      "style": "Stil",
+      "text": "Yazı",
+      "shadow": "Gölge"
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "border05": {
+    "label": "Kenarlık-05",
+    "description": "Kenarlık-05 dekoratif bileşeni",
+    "properties": {
+      "colors": "Birinci renk",
+      "colors2": "İkinci renk",
+      "backgroundColor": "Arka plan rengi"
+    }
+  }
+}

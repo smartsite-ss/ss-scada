@@ -1,0 +1,11 @@
+{
+  "fuse": {
+    "label": "Fius",
+    "properties": {
+      "color": "Warna garisan",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garisan"
+    },
+    "description": "Fius kuasa - komponen perlindungan arus lebih"
+  }
+}

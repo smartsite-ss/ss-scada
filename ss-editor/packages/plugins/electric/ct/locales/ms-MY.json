@@ -1,0 +1,11 @@
+{
+  "ct": {
+    "label": "Transformer arus",
+    "properties": {
+      "color": "Warna garisan",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garisan"
+    },
+    "description": "Transformer arus CT - peranti penukar arus untuk pengukuran"
+  }
+}

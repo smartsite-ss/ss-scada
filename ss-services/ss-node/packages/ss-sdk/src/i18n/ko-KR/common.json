@@ -1,0 +1,19 @@
+{
+  "common": {
+    "success": "작업 성공",
+    "failed": "작업 실패",
+    "created": "{{resource}} 생성 성공",
+    "updated": "{{resource}} 업데이트 성공",
+    "deleted": "{{resource}} 삭제 성공",
+    "not_found": "{{resource}}이(가) 존재하지 않습니다",
+    "unauthorized": "인증되지 않은 접근입니다",
+    "forbidden": "권한이 부족합니다",
+    "bad_request": "요청 매개변수가 올바르지 않습니다",
+    "internal_error": "서버 내부 오류",
+    "pagination": {
+      "page": "페이지 번호는 0보다 커야 합니다",
+      "limit": "페이지당 개수는 1-100 사이여야 합니다",
+      "invalid_sort_field": "유효하지 않은 정렬 필드: {{field}}"
+    }
+  }
+}

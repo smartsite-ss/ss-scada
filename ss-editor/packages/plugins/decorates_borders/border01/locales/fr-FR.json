@@ -1,0 +1,14 @@
+{
+  "border01": {
+    "label": "Bordure-01",
+    "description": "Composant décoratif Bordure-01",
+    "properties": {
+      "color1": "Couleur 1",
+      "color2": "Couleur 2",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "borderColor": "Couleur du trait de bordure",
+      "dur": "Cycle d'animation (s)",
+      "showAnimation": "Activer l'animation"
+    }
+  }
+}

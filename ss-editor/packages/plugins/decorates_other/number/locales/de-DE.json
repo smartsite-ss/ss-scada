@@ -1,0 +1,19 @@
+{
+  "number": {
+    "label": "Zahl",
+    "properties": {
+      "dataset": "Zielwert",
+      "from": "Startwert",
+      "dur": "Animationsdauer (Sekunden)",
+      "precision": "Dezimalstellen",
+      "showSeparator": "Tausendertrennzeichen",
+      "numberSize": "Schriftgröße",
+      "color1": "Ziffernfarbe",
+      "prefixText": "Präfix",
+      "color2": "Präfixfarbe",
+      "suffixText": "Suffix",
+      "color3": "Suffixfarbe"
+    },
+    "description": "Zahlenzähl-Animations-Plugin"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "transformer3w": {
+    "label": "Transformator tiga belitan",
+    "properties": {
+      "color": "Warna garis",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garis"
+    },
+    "description": "Transformator daya tiga belitan - susunan tiga kumparan tipe Y"
+  }
+}

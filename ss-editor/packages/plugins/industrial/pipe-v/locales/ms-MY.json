@@ -1,0 +1,39 @@
+{
+  "pipe-v": {
+    "label": "Paip - Menegak",
+    "description": "Komponen paip menegak dengan animasi aliran dan kawalan arah",
+    "panelTitle": "Konfigurasi paip",
+    "properties": {
+      "width": "Lebar",
+      "height": "Tinggi",
+      "status": "Status",
+      "direction": "Arah aliran",
+      "pipeColor": "Warna paip",
+      "flowingColor": "Warna aliran",
+      "stoppedColor": "Warna berhenti",
+      "blockedColor": "Warna tersekat",
+      "pipeThickness": "Ketebalan paip",
+      "showFlange": "Tunjuk bebibir",
+      "flowSpeed": "Kelajuan aliran",
+      "showFlowAnimation": "Tunjuk animasi aliran"
+    },
+    "options": {
+      "status": {
+        "flowing": "Mengalir",
+        "stopped": "Berhenti",
+        "blocked": "Tersekat"
+      },
+      "direction": {
+        "up": "Ke atas",
+        "down": "Ke bawah"
+      }
+    },
+    "groups": {
+      "basic": "Asas",
+      "status": "Status",
+      "color": "Warna",
+      "style": "Gaya",
+      "animation": "Animasi"
+    }
+  }
+}

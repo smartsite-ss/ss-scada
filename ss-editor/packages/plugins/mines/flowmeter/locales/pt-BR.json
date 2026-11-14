@@ -1,0 +1,16 @@
+{
+  "flowmeter": {
+    "label": "Medidor de vazão",
+    "properties": {
+      "color": "Cor",
+      "backgroundColor": "Cor de fundo",
+      "lineWidth": "Espessura da linha",
+      "dataset": "Valor de dados (0-100)",
+      "showDigital": "Mostrar leitura digital",
+      "rangeMax": "Faixa máxima",
+      "decimalPlaces": "Casas decimais",
+      "unit": "Unidade"
+    },
+    "description": "Medidor de vazão - instrumento de vazão com mostrador circular e ângulo do ponteiro acionado pelo valor de dados"
+  }
+}

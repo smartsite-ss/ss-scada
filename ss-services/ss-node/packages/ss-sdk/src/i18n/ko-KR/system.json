@@ -1,0 +1,23 @@
+{
+  "system": {
+    "health_check": {
+      "success": "시스템 상태 검사 통과",
+      "failed": "시스템 상태 검사 실패: {{detail}}"
+    },
+    "config": {
+      "reload_success": "구성을 다시 불러왔습니다",
+      "reload_failed": "구성 다시 불러오기 실패: {{detail}}",
+      "validation_error": "구성 검증 실패: {{detail}}"
+    },
+    "storage": {
+      "database_connected": "데이터베이스 연결 성공",
+      "database_connection_failed": "데이터베이스 연결 실패: {{detail}}",
+      "redis_connected": "Redis 연결 성공",
+      "redis_connection_failed": "Redis 연결 실패: {{detail}}"
+    },
+    "maintenance": {
+      "mode_enabled": "유지보수 모드가 활성화되었습니다",
+      "mode_disabled": "유지보수 모드가 비활성화되었습니다"
+    }
+  }
+}

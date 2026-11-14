@@ -1,0 +1,11 @@
+{
+  "reactor": {
+    "label": "リアクトル",
+    "properties": {
+      "color": "線の色",
+      "backgroundColor": "背景色",
+      "lineWidth": "線幅"
+    },
+    "description": "リアクトル - 限流リアクトル"
+  }
+}

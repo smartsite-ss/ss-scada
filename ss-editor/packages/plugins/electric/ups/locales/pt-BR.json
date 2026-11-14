@@ -1,0 +1,19 @@
+{
+  "ups": {
+    "label": "Fonte UPS",
+    "properties": {
+      "color": "Cor da linha",
+      "backgroundColor": "Cor de fundo",
+      "lineWidth": "Espessura da linha",
+      "state": "Estado de trabalho"
+    },
+    "options": {
+      "state": {
+        "online": "Online",
+        "bypass": "Bypass",
+        "fault": "Falha"
+      }
+    },
+    "description": "Nobreak UPS - estados online/bypass/falha"
+  }
+}

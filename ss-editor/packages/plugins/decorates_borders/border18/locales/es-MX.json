@@ -1,0 +1,15 @@
+{
+  "border18": {
+    "label": "Borde 18 (arabesco marroquí)",
+    "description": "Componente decorativo de borde 18 (arabesco marroquí)",
+    "properties": {
+      "color1": "Azul zafiro",
+      "color2": "Color terracota",
+      "color3": "Dorado",
+      "backgroundColor": "Color de fondo",
+      "showStars": "Patrón de estrellas",
+      "showArches": "Arcos decorativos",
+      "animationSpeed": "Velocidad de animación"
+    }
+  }
+}

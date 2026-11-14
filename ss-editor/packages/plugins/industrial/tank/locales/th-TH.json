@@ -1,0 +1,42 @@
+{
+  "tank": {
+    "label": "ถังเก็บ",
+    "description": "องค์ประกอบถังเก็บ สำหรับแสดงระดับของเหลวและการแจ้งเตือน",
+    "panelTitle": "การกำหนดค่าถังเก็บ",
+    "properties": {
+      "width": "ความกว้าง",
+      "height": "ความสูง",
+      "level": "ระดับของเหลวปัจจุบัน",
+      "maxLevel": "ระดับของเหลวสูงสุด",
+      "unit": "หน่วย",
+      "decimalPlaces": "จำนวนตำแหน่งทศนิยม",
+      "status": "สถานะ",
+      "warningLevel": "ระดับของเหลวคำเตือน",
+      "dangerLevel": "ระดับของเหลวอันตราย",
+      "bodyColor": "สีตัวถัง",
+      "liquidColor": "สีของเหลว",
+      "warningLiquidColor": "สีของเหลวคำเตือน",
+      "dangerLiquidColor": "สีของเหลวอันตราย",
+      "rimColor": "สีเส้นขอบ",
+      "showLevelText": "แสดงข้อความระดับของเหลว",
+      "showTicks": "แสดงขีดสเกล",
+      "showAnimation": "แอนิเมชันการแกว่ง",
+      "tickCount": "จำนวนขีดสเกล"
+    },
+    "options": {
+      "status": {
+        "normal": "ปกติ",
+        "warning": "คำเตือน",
+        "danger": "อันตราย"
+      }
+    },
+    "groups": {
+      "basic": "พื้นฐาน",
+      "level": "ระดับของเหลว",
+      "status": "สถานะ",
+      "threshold": "ค่าเกณฑ์",
+      "color": "สี",
+      "display": "แสดง"
+    }
+  }
+}

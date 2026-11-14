@@ -1,0 +1,35 @@
+{
+  "fan4": {
+    "label": "Ventilateur 4",
+    "properties": {
+      "colors": "Groupe de couleurs",
+      "flowColor": "Couleur du conduit d'air",
+      "pipeColor": "Couleur du tuyau",
+      "bgWidth": "Largeur du socle",
+      "boardWidth": "Épaisseur de la plaque",
+      "roate": "Angle de rotation",
+      "cls": "Sens de rotation",
+      "dur": "Période d'animation (s)",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "dataset": "Jeu de données",
+      "forwardValue": "Valeur pour marche avant",
+      "backwardValue": "Valeur pour marche arrière",
+      "stopValue": "Valeur pour l'arrêt",
+      "defaultCls": "Sens d'animation par défaut",
+      "decimalPlaces": "Nombre de décimales",
+      "clsOptions": {
+        "right": "Rotation à droite",
+        "left": "Rotation à gauche",
+        "stop": "Arrêt"
+      }
+    },
+    "options": {
+      "cls": {
+        "left": "Marche avant",
+        "right": "Marche arrière",
+        "stop": "Arrêt"
+      }
+    },
+    "description": "Ventilateur 4 - variante de ventilateur centrifuge avec gaine, contrôle du sens de rotation et de la vitesse"
+  }
+}

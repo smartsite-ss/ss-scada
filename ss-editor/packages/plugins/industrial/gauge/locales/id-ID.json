@@ -1,0 +1,42 @@
+{
+  "gauge": {
+    "label": "Panel pengukur",
+    "description": "Komponen panel pengukur untuk tampilan nilai dan alarm",
+    "panelTitle": "Konfigurasi panel pengukur",
+    "properties": {
+      "width": "Lebar",
+      "height": "Tinggi",
+      "value": "Nilai saat ini",
+      "minValue": "Nilai minimum",
+      "maxValue": "Nilai maksimum",
+      "unit": "Satuan",
+      "decimalPlaces": "Jumlah desimal",
+      "startAngle": "Sudut awal",
+      "endAngle": "Sudut akhir",
+      "faceColor": "Warna dial",
+      "rimColor": "Warna batas",
+      "needleColor": "Warna jarum",
+      "tickColor": "Warna garis skala",
+      "labelColor": "Warna label",
+      "valueColor": "Warna nilai",
+      "showTicks": "Tampilkan skala",
+      "showLabels": "Tampilkan label",
+      "showValue": "Tampilkan nilai",
+      "majorTicks": "Jumlah skala mayor",
+      "minorTicks": "Jumlah skala minor",
+      "warningValue": "Ambang peringatan",
+      "dangerValue": "Ambang bahaya",
+      "warningColor": "Warna peringatan",
+      "dangerColor": "Warna bahaya"
+    },
+    "groups": {
+      "basic": "Dasar",
+      "value": "Nilai",
+      "gauge": "Pengukur",
+      "color": "Warna",
+      "display": "Tampilan",
+      "ticks": "Skala",
+      "alarm": "Alarm"
+    }
+  }
+}

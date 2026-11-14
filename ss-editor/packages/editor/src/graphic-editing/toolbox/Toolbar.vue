@@ -181,7 +181,6 @@ onMounted(() => {
   if (languageSwitcherContainer.value) {
     languageSwitcher = new LanguageSwitcher({
       container: languageSwitcherContainer.value,
-      supportedLocales: ['zh-CN', 'en-US'],
     });
     languageSwitcher.mount(languageSwitcherContainer.value);
   }

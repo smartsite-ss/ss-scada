@@ -1,0 +1,45 @@
+{
+  "websocket": {
+    "connected": "WebSocket 接続に成功しました",
+    "disconnected": "WebSocket が切断されました",
+    "pong": "Pong - ハートビート応答",
+    "event": {
+      "data_update": "データ更新イベント (タグ: {{tagId}})",
+      "alarm_triggered": "アラーム発報イベント",
+      "alarm_acknowledged": "アラーム確認イベント",
+      "alarm_cleared": "アラームクリアイベント",
+      "device_status_change": "設備状態変更イベント"
+    },
+    "error": {
+      "authentication_failed": "WebSocket 認証に失敗しました",
+      "rate_limit_exceeded": "メッセージ頻度が上限を超えました",
+      "invalid_message_format": "無効なメッセージ形式です"
+    },
+    "room": {
+      "joined": "ユーザー {{username}} がルーム {{room}} に参加しました",
+      "left": "ユーザー {{username}} がルーム {{room}} から退出しました",
+      "permission_denied": "プロジェクトルーム {{projectId}} への参加権限がありません",
+      "not_authenticated": "未認証ユーザーはプロジェクトルームに参加できません"
+    },
+    "connection": {
+      "limit_exceeded": "接続数が上限に達しました ({{current}}/{{max}})",
+      "user_limit_exceeded": "ユーザー {{username}} の接続数が上限に達しました ({{current}}/{{max}})",
+      "ip_limit_exceeded": "IP {{ip}} の接続数が上限に達しました ({{current}}/{{max}})",
+      "idle_timeout": "接続がアイドルタイムアウトしました ({{minutes}} 分間ビジネスメッセージなし)",
+      "force_disconnected": "管理者により強制切断されました",
+      "global_limit_exceeded": "全体の接続数が上限に達しました ({{current}}/{{max}})"
+    },
+    "monitor": {
+      "online_count": "オンライン接続数",
+      "message_rate": "メッセージレート",
+      "connection_duration": "接続時間",
+      "abnormal_detected": "異常な接続を検出しました"
+    },
+    "offline": {
+      "message_cached": "オフラインメッセージをキャッシュしました",
+      "message_replayed": "オフラインメッセージを再送しました ({{count}} 件)",
+      "message_expired": "期限切れメッセージを削除しました",
+      "message_confirmed": "メッセージを確認しました"
+    }
+  }
+}

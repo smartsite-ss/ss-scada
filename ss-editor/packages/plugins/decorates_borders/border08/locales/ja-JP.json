@@ -1,0 +1,13 @@
+{
+  "border08": {
+    "label": "枠線-08",
+    "description": "枠線-08 装飾コンポーネント",
+    "properties": {
+      "color1": "色1",
+      "color2": "色2",
+      "backgroundColor": "背景色",
+      "dur": "アニメーション周期（秒）",
+      "reverse": "逆方向に移動"
+    }
+  }
+}

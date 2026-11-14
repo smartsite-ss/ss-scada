@@ -1,0 +1,46 @@
+{
+  "input": {
+    "label": "入力フィールド",
+    "description": "入力フィールドコンポーネント。1 行のテキスト入力に使用",
+    "panelTitle": "入力フィールドの設定",
+    "properties": {
+      "value": "値",
+      "placeholder": "プレースホルダー",
+      "backgroundColor": "背景色",
+      "borderColor": "枠線色",
+      "borderWidth": "枠線幅",
+      "borderStyle": "枠線スタイル",
+      "borderRadius": "角の丸み",
+      "textColor": "文字色",
+      "fontSize": "フォントサイズ",
+      "fontWeight": "フォントの太さ",
+      "textAlign": "テキストの配置",
+      "shadowColor": "影の色",
+      "shadowOffsetX": "影のオフセットX",
+      "shadowOffsetY": "影のオフセットY",
+      "shadowBlur": "影のぼかし"
+    },
+    "options": {
+      "borderStyle": {
+        "solid": "実線",
+        "dashed": "破線",
+        "dotted": "点線"
+      },
+      "fontWeight": {
+        "normal": "標準",
+        "bold": "太字"
+      },
+      "textAlign": {
+        "left": "左揃え",
+        "center": "中央揃え",
+        "right": "右揃え"
+      }
+    },
+    "groups": {
+      "basic": "基本プロパティ",
+      "style": "スタイル",
+      "text": "文字",
+      "shadow": "影"
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "pressuregauge": {
+    "label": "Manomètre",
+    "properties": {
+      "color": "Couleur",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "lineWidth": "Épaisseur de ligne",
+      "dataset": "Valeur de données (0-100)",
+      "maxPressure": "Plage maximale (MPa)",
+      "decimalPlaces": "Nombre de décimales",
+      "unit": "Unité"
+    },
+    "description": "Manomètre - cadran circulaire dont l'aiguille pilotée par la valeur de données indique la pression en MPa"
+  }
+}

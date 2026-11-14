@@ -1,0 +1,11 @@
+{
+  "transformer2w": {
+    "label": "Transformator dua belitan",
+    "properties": {
+      "color": "Warna garis",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garis"
+    },
+    "description": "Transformator daya dua belitan - simbol dua kumparan"
+  }
+}

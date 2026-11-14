@@ -1,0 +1,40 @@
+{
+  "tagWaterpolo": {
+    "label": "Bola air variabel",
+    "description": "Mengikat satu variabel tag dan menampilkan persentase level secara real-time sebagai bola air",
+    "config": {
+      "bindVariable": "Variabel terikat",
+      "addVariable": "Pilih variabel",
+      "removeVariable": "Hapus",
+      "unbound": "Variabel belum terikat"
+    },
+    "properties": {
+      "title": "Judul",
+      "titleColor": "Warna judul",
+      "titleFontSize": "Ukuran font judul",
+      "unit": "Satuan",
+      "minValue": "Nilai minimum",
+      "maxValue": "Nilai maksimum",
+      "showValue": "Tampilkan nilai",
+      "valueColor": "Warna nilai",
+      "waterColor": "Warna bola air",
+      "trackColor": "Warna jalur",
+      "backgroundColor": "Warna latar",
+      "borderColor": "Warna batas",
+      "borderWidth": "Lebar batas",
+      "borderStyle": "Gaya batas",
+      "borderRadius": "Sudut membulat",
+      "shadowColor": "Warna bayangan",
+      "shadowOffsetX": "Offset bayangan X",
+      "shadowOffsetY": "Offset bayangan Y",
+      "shadowBlur": "Blur bayangan"
+    },
+    "options": {
+      "borderStyle": {
+        "solid": "Garis solid",
+        "dashed": "Garis putus-putus",
+        "dotted": "Garis titik"
+      }
+    }
+  }
+}

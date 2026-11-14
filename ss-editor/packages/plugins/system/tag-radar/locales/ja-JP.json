@@ -1,0 +1,51 @@
+{
+  "tagRadar": {
+    "label": "変数レーダーチャート",
+    "description": "複数のタグ変数をバインドし、レーダーチャートで多次元の健全度をリアルタイム表示",
+    "config": {
+      "bindVariables": "変数をバインド",
+      "addVariable": "変数を追加",
+      "removeVariable": "削除",
+      "unbound": "変数が未バインド",
+      "loadError": "読み込みに失敗しました"
+    },
+    "properties": {
+      "title": "タイトル",
+      "titleColor": "タイトルの色",
+      "titleFontSize": "タイトルのフォントサイズ",
+      "titleFontWeight": "タイトルの太さ",
+      "indicatorMax": "指標の最大値",
+      "gridColor": "グリッドの色",
+      "axisColor": "座標軸の色",
+      "showLegend": "凡例を表示",
+      "legendPosition": "凡例の位置",
+      "showTooltip": "ツールチップを表示",
+      "backgroundColor": "背景色",
+      "borderColor": "枠線色",
+      "borderWidth": "枠線幅",
+      "borderStyle": "枠線スタイル",
+      "borderRadius": "角の丸み",
+      "shadowColor": "影の色",
+      "shadowOffsetX": "影のオフセットX",
+      "shadowOffsetY": "影のオフセットY",
+      "shadowBlur": "影のぼかし"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "標準",
+        "bold": "太字"
+      },
+      "legendPosition": {
+        "top": "上",
+        "bottom": "下",
+        "left": "左",
+        "right": "右"
+      },
+      "borderStyle": {
+        "solid": "実線",
+        "dashed": "破線",
+        "dotted": "点線"
+      }
+    }
+  }
+}

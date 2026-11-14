@@ -1,0 +1,21 @@
+{
+  "breaker": {
+    "label": "Máy cắt",
+    "properties": {
+      "color": "Màu đường nét",
+      "backgroundColor": "Màu nền",
+      "lineWidth": "Độ rộng nét",
+      "closed": "Trạng thái đóng",
+      "closedValue": "Giá trị tương ứng đóng",
+      "openValue": "Giá trị tương ứng mở",
+      "defaultStatus": "Trạng thái mặc định"
+    },
+    "options": {
+      "closed": {
+        "yes": "Đóng",
+        "no": "Mở"
+      }
+    },
+    "description": "Máy cắt điện - máy cắt cao áp/hạ áp, hỗ trợ chuyển trạng thái đóng/mở"
+  }
+}

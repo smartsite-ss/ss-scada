@@ -1,0 +1,22 @@
+{
+  "daozha": {
+    "label": "Chave seccionadora",
+    "properties": {
+      "color": "Cor da linha",
+      "backgroundColor": "Cor de fundo",
+      "lineWidth": "Espessura da linha",
+      "terminalRadius": "Raio do terminal",
+      "closed": "Estado fechado",
+      "closedValue": "Valor correspondente a fechado",
+      "openValue": "Valor correspondente a aberto",
+      "defaultStatus": "Estado padrão"
+    },
+    "options": {
+      "closed": {
+        "yes": "Fechado",
+        "no": "Aberto"
+      }
+    },
+    "description": "Chave seccionadora de potência - elemento gráfico de seccionador com alternância entre fechado e aberto"
+  }
+}

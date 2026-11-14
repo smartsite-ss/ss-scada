@@ -1,0 +1,36 @@
+{
+  "alarm": {
+    "rule": {
+      "created": "Aturan alarm berhasil dibuat",
+      "updated": "Aturan alarm berhasil diperbarui",
+      "deleted": "Aturan alarm telah dihapus",
+      "enabled": "Aturan alarm telah diaktifkan",
+      "disabled": "Aturan alarm telah dinonaktifkan",
+      "not_found": "Aturan alarm tidak ditemukan"
+    },
+    "record": {
+      "triggered": "Alarm terpicu: {{message}}",
+      "acknowledged": "Alarm telah dikonfirmasi (operator: {{operator}})",
+      "cleared": "Alarm telah dibersihkan (alasan: {{reason}})",
+      "not_found": "Catatan peristiwa tidak ditemukan",
+      "already_acknowledged": "Alarm ini sudah dikonfirmasi",
+      "already_cleared": "Alarm ini sudah dibersihkan"
+    },
+    "condition": {
+      "gt": "Nilai {{value}} dari {{tag}} melebihi batas atas {{threshold}}",
+      "lt": "Nilai {{value}} dari {{tag}} di bawah batas bawah {{threshold}}",
+      "range_in": "Nilai {{value}} dari {{tag}} berada dalam rentang normal",
+      "range_out": "Nilai {{value}} dari {{tag}} di luar rentang normal"
+    },
+    "level": {
+      "info": "Info",
+      "warning": "Peringatan",
+      "error": "Kesalahan",
+      "critical": "Kritis"
+    },
+    "notification": {
+      "send_success": "Notifikasi alarm berhasil dikirim",
+      "send_failed": "Notifikasi alarm gagal dikirim"
+    }
+  }
+}

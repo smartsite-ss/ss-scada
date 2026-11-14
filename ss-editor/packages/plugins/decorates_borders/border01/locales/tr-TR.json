@@ -1,0 +1,14 @@
+{
+  "border01": {
+    "label": "Kenarlık-01",
+    "description": "Kenarlık-01 dekoratif bileşeni",
+    "properties": {
+      "color1": "Birinci renk",
+      "color2": "İkinci renk",
+      "backgroundColor": "Arka plan rengi",
+      "borderColor": "Kenarlık çizgisi rengi",
+      "dur": "Animasyon döngüsü (saniye)",
+      "showAnimation": "Animasyonu etkinleştir"
+    }
+  }
+}

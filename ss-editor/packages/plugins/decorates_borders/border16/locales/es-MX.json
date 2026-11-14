@@ -1,0 +1,15 @@
+{
+  "border16": {
+    "label": "Borde 16 (minimalista nórdico)",
+    "description": "Componente decorativo de borde 16 (minimalista nórdico)",
+    "properties": {
+      "color1": "Color principal",
+      "color2": "Color secundario",
+      "color3": "Color base",
+      "backgroundColor": "Color de fondo",
+      "showLeaves": "Decoración de hojas",
+      "showDots": "Trama de puntos",
+      "animationSpeed": "Velocidad de animación"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "groundswitch": {
+    "label": "Sectionneur de terre",
+    "properties": {
+      "color": "Couleur du trait",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "lineWidth": "Épaisseur du trait",
+      "closed": "État fermé",
+      "closedValue": "Valeur de fermeture",
+      "openValue": "Valeur d'ouverture",
+      "defaultStatus": "État par défaut"
+    },
+    "options": {
+      "closed": {
+        "yes": "Fermé",
+        "no": "Ouvert"
+      }
+    },
+    "description": "Sectionneur de terre - Interrupteur de protection par mise à la terre de la ligne"
+  }
+}

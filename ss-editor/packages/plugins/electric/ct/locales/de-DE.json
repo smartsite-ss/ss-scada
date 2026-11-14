@@ -1,0 +1,11 @@
+{
+  "ct": {
+    "label": "Stromwandler",
+    "properties": {
+      "color": "Linienfarbe",
+      "backgroundColor": "Hintergrundfarbe",
+      "lineWidth": "Linienbreite"
+    },
+    "description": "Stromwandler CT – Messwandler für Strom"
+  }
+}

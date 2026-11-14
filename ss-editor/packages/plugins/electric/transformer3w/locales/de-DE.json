@@ -1,0 +1,11 @@
+{
+  "transformer3w": {
+    "label": "Dreiwicklungstransformator",
+    "properties": {
+      "color": "Linienfarbe",
+      "backgroundColor": "Hintergrundfarbe",
+      "lineWidth": "Linienbreite"
+    },
+    "description": "Dreiwicklungs-Leistungstransformator – drei Wicklungen in Y-Anordnung"
+  }
+}

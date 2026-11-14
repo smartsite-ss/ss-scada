@@ -1,0 +1,39 @@
+{
+  "pipe-v": {
+    "label": "ท่อ-แนวตั้ง",
+    "description": "องค์ประกอบท่อแนวตั้ง รองรับแอนิเมชันการไหลและการควบคุมทิศทาง",
+    "panelTitle": "การกำหนดค่าท่อ",
+    "properties": {
+      "width": "ความกว้าง",
+      "height": "ความสูง",
+      "status": "สถานะ",
+      "direction": "ทิศทางการไหล",
+      "pipeColor": "สีท่อ",
+      "flowingColor": "สีการไหล",
+      "stoppedColor": "สีหยุด",
+      "blockedColor": "สีการอุดตัน",
+      "pipeThickness": "ความหนาท่อ",
+      "showFlange": "แสดงหน้าแปลน",
+      "flowSpeed": "ความเร็วการไหล",
+      "showFlowAnimation": "แสดงแอนิเมชันการไหล"
+    },
+    "options": {
+      "status": {
+        "flowing": "กำลังไหล",
+        "stopped": "หยุด",
+        "blocked": "อุดตัน"
+      },
+      "direction": {
+        "up": "ขึ้น",
+        "down": "ลง"
+      }
+    },
+    "groups": {
+      "basic": "พื้นฐาน",
+      "status": "สถานะ",
+      "color": "สี",
+      "style": "รูปแบบ",
+      "animation": "แอนิเมชัน"
+    }
+  }
+}

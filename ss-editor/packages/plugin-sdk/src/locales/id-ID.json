@@ -1,0 +1,126 @@
+{
+  "common": {
+    "ok": "OK",
+    "cancel": "Batal",
+    "save": "Simpan",
+    "delete": "Hapus",
+    "edit": "Edit",
+    "add": "Tambah",
+    "search": "Cari",
+    "reset": "Atur ulang",
+    "export": "Ekspor",
+    "import": "Impor",
+    "confirm": "Konfirmasi",
+    "close": "Tutup",
+    "refresh": "Muat ulang",
+    "upload": "Unggah",
+    "download": "Unduh",
+    "preview": "Pratinjau",
+    "copy": "Salin",
+    "paste": "Tempel",
+    "undo": "Urungkan",
+    "redo": "Ulangi",
+    "settings": "Pengaturan",
+    "theme": "Tema",
+    "language": "Bahasa"
+  },
+  "category": {
+    "basic": "Komponen dasar",
+    "form": "Komponen formulir",
+    "chart": "Komponen diagram",
+    "industrial": "Komponen industri",
+    "media": "Komponen media",
+    "layout": "Komponen tata letak",
+    "3d": "Komponen 3D",
+    "svg": "Komponen SVG"
+  },
+  "editor": {
+    "toolbar": "Bilah alat",
+    "canvas": "Kanvas",
+    "properties": "Panel properti",
+    "layers": "Panel lapisan",
+    "plugin": "Manajemen plugin",
+    "zoomIn": "Perbesar",
+    "zoomOut": "Perkecil",
+    "fitToScreen": "Sesuaikan layar",
+    "undo": "Urungkan",
+    "redo": "Ulangi",
+    "delete": "Hapus pilihan",
+    "selectAll": "Pilih semua",
+    "copy": "Salin",
+    "paste": "Tempel",
+    "group": "Kelompokkan",
+    "ungroup": "Batal kelompokkan",
+    "bringToFront": "Bawa ke depan",
+    "sendToBack": "Kirim ke belakang",
+    "align": "Ratakan"
+  },
+  "plugin": {
+    "noPluginSelected": "Tidak ada grafik dipilih",
+    "propertiesMissing": "Properti tidak lengkap",
+    "schemaVersion": "Versi Schema",
+    "pluginType": "Jenis grafik",
+    "position": "Posisi",
+    "size": "Ukuran",
+    "width": "Lebar",
+    "height": "Tinggi",
+    "x": "Koordinat X",
+    "y": "Koordinat Y",
+    "rotation": "Rotasi",
+    "opacity": "Opasitas",
+    "visible": "Terlihat",
+    "locked": "Terkunci"
+  },
+  "language": {
+    "zhCN": "Tionghoa",
+    "enUS": "Inggris"
+  },
+  "threeStage": {
+    "label": "Kontainer adegan 3D",
+    "description": "Menyediakan kontainer adegan 3D Three.js, mendukung pemuatan model, pencahayaan, dan kontrol kamera"
+  },
+  "validation": {
+    "requiredFieldMissingDefault": "Kolom wajib \"{field}\" tidak memiliki nilai bawaan (required=true tetapi defaultValue kosong)",
+    "requiredFieldMissing": "Kolom wajib \"{field}\" tidak ada",
+    "schemaMissingName": "Schema [{pluginName}] tidak memiliki name",
+    "schemaMissingFields": "Schema [{pluginName}] tidak memiliki definisi fields",
+    "fieldDuplicate": "Kolom \"{field}\" didefinisikan ganda",
+    "fieldMissingName": "Kolom tidak memiliki name",
+    "fieldMissingLabel": "Kolom tidak memiliki label",
+    "fieldMissingType": "Kolom tidak memiliki type",
+    "selectMissingOptions": "Kolom select \"{field}\" tidak memiliki options",
+    "minGreaterThanMax": "min({min}) lebih besar dari max({max})",
+    "invalidColorDefault": "Format nilai bawaan warna \"{value}\" tidak valid",
+    "fieldMissingDefault": "Kolom tidak memiliki defaultValue",
+    "fieldCannotBeEmpty": "Kolom \"{field}\" tidak boleh kosong",
+    "fieldExpectedNumber": "Kolom \"{field}\" mengharapkan tipe angka, aktual: {actual}",
+    "fieldValueLessThanMin": "Nilai kolom \"{field}\" {value} kurang dari nilai minimum {min}",
+    "fieldValueGreaterThanMax": "Nilai kolom \"{field}\" {value} melebihi nilai maksimum {max}",
+    "fieldExpectedString": "Kolom \"{field}\" mengharapkan tipe string, aktual: {actual}",
+    "fieldExpectedBoolean": "Kolom \"{field}\" mengharapkan tipe boolean, aktual: {actual}",
+    "fieldValueNotInOptions": "Nilai \"{value}\" pada kolom \"{field}\" tidak ada dalam opsi yang valid [{options}]",
+    "fieldExpectedColor": "Kolom \"{field}\" mengharapkan string warna, aktual: {actual}",
+    "invalidColorFormat": "Nilai \"{value}\" pada kolom \"{field}\" bukan format warna yang valid (harus #RGB / #RRGGBB / #RRGGBBAA)"
+  },
+  "pluginSdk": {
+    "readme": {
+      "type": "Tipe",
+      "category": "Kategori",
+      "renderBackend": "Metode render",
+      "properties": "Daftar properti",
+      "default": "Bawaan",
+      "development": "Pengembangan"
+    },
+    "pluginStyle": "Gaya plugin",
+    "backendDescriptions": {
+      "vueComponent": "Dirender berdasarkan komponen Vue, cocok untuk komponen interaktif yang kompleks",
+      "canvas2d": "Dirender berdasarkan Canvas 2D, cocok untuk penggambaran grafik berperforma tinggi",
+      "svgDom": "Dirender berdasarkan DOM SVG, cocok untuk grafik vektor dan animasi",
+      "cssDom": "Dirender berdasarkan DOM CSS, cocok untuk elemen dan gaya HTML",
+      "three3d": "Dirender berdasarkan 3D Three.js, cocok untuk adegan dan model tiga dimensi"
+    }
+  },
+  "createPlugin": {
+    "cannotExtractComponentName": "Tidak dapat mengekstrak nama komponen, silakan tentukan secara eksplisit melalui graphicComponentName"
+  }
+}

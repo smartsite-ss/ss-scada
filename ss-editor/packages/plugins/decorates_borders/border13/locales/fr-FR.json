@@ -1,0 +1,11 @@
+{
+  "border13": {
+    "label": "Bordure-13",
+    "description": "Composant décoratif Bordure-13",
+    "properties": {
+      "color1": "Couleur 1",
+      "color2": "Couleur 2",
+      "backgroundColor": "Couleur d'arrière-plan"
+    }
+  }
+}

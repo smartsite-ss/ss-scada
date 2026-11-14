@@ -1,0 +1,13 @@
+{
+  "head01": {
+    "label": "Décoration d'en-tête-01",
+    "properties": {
+      "color1": "Couleur 1",
+      "color2": "Couleur 2",
+      "dur": "Cycle d'animation (s)",
+      "lineHeight": "Hauteur de ligne",
+      "endWidth": "Largeur du curseur"
+    },
+    "description": "Barre rectangulaire animée avec bloc de couleur coulissant"
+  }
+}

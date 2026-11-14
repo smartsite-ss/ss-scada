@@ -1,0 +1,27 @@
+{
+  "device": {
+    "create": {
+      "success": "設備建立成功",
+      "failed_name_exists": "設備名稱在該專案下已存在"
+    },
+    "update": {
+      "success": "設備更新成功"
+    },
+    "delete": {
+      "success": "設備刪除成功",
+      "failed_has_tags": "設備下仍有標籤，無法刪除"
+    },
+    "connect": {
+      "success": "設備連線成功",
+      "failed_timeout": "設備連線逾時",
+      "failed_refused": "設備拒絕連線"
+    },
+    "disconnect": {
+      "success": "設備已中斷連線"
+    },
+    "offline": "設備 {{name}} (ID: {{id}}) 已離線",
+    "online": "設備 {{name}} (ID: {{id}}) 已上線",
+    "read_error": "讀取設備 {{name}} 位址 {{address}} 失敗：{{error}}",
+    "write_error": "寫入設備 {{name}} 位址 {{address}} 失敗：{{error}}"
+  }
+}

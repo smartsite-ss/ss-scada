@@ -1,0 +1,11 @@
+{
+  "border13": {
+    "label": "Borde 13",
+    "description": "Componente decorativo de borde 13",
+    "properties": {
+      "color1": "Color uno",
+      "color2": "Color dos",
+      "backgroundColor": "Color de fondo"
+    }
+  }
+}

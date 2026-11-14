@@ -1,0 +1,13 @@
+{
+  "border08": {
+    "label": "Borda-08",
+    "description": "Componente decorativo Borda-08",
+    "properties": {
+      "color1": "Cor 1",
+      "color2": "Cor 2",
+      "backgroundColor": "Cor de fundo",
+      "dur": "Período da animação (s)",
+      "reverse": "Movimento inverso"
+    }
+  }
+}

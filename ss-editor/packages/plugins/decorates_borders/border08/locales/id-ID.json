@@ -1,0 +1,13 @@
+{
+  "border08": {
+    "label": "Batas-08",
+    "description": "Komponen dekorasi batas-08",
+    "properties": {
+      "color1": "Warna pertama",
+      "color2": "Warna kedua",
+      "backgroundColor": "Warna latar",
+      "dur": "Siklus animasi (detik)",
+      "reverse": "Gerak terbalik"
+    }
+  }
+}

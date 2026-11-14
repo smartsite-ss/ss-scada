@@ -1,0 +1,61 @@
+{
+  "plugins": {
+    "groups": {
+      "shape": "形態",
+      "name": "名稱",
+      "decoration": "裝飾"
+    }
+  },
+  "tagValue": {
+    "label": "裝飾標籤變數",
+    "description": "顯示設備變數即時值（方形/圓形）",
+    "config": {
+      "bindVariable": "綁定變數",
+      "selectVariable": "選擇變數",
+      "clear": "清除",
+      "unbound": "未綁定",
+      "decorationImage": "裝飾圖片",
+      "backgroundImage": "背景圖片",
+      "selectImage": "選擇圖片"
+    },
+    "selector": {
+      "title": "選擇設備變數",
+      "searchPlaceholder": "搜尋設備或變數",
+      "tagCount": "{count} 個變數",
+      "loading": "載入中...",
+      "empty": "暫無設備變數"
+    },
+    "properties": {
+      "shape": "形態",
+      "alias": "別名",
+      "showName": "顯示名稱",
+      "nameColor": "名稱顏色",
+      "nameFontSize": "名稱字級",
+      "nameFontWeight": "名稱粗細",
+      "nameGap": "名稱間距",
+      "decorationImagePosition": "裝飾圖位置",
+      "decorationImageSize": "裝飾圖尺寸",
+      "decorationImageOpacity": "裝飾圖透明度",
+      "backgroundRepeat": "背景並排",
+      "backgroundImageFit": "填滿樣式"
+    },
+    "options": {
+      "shape": {
+        "rectangle": "方形",
+        "circle": "圓形"
+      },
+      "decorationPosition": {
+        "left": "左側",
+        "right": "右側",
+        "background": "背景",
+        "center": "置中"
+      },
+      "backgroundRepeat": {
+        "repeat": "並排",
+        "no-repeat": "不並排",
+        "repeat-x": "水平並排",
+        "repeat-y": "垂直並排"
+      }
+    }
+  }
+}

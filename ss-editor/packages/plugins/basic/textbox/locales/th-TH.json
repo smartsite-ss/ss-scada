@@ -1,0 +1,56 @@
+{
+  "textbox": {
+    "label": "กล่องข้อความ",
+    "panelTitle": "การกำหนดค่ากล่องข้อความ",
+    "properties": {
+      "text": "เนื้อหาข้อความ",
+      "placeholder": "ตัวยึดตำแหน่ง",
+      "fontSize": "ขนาดแบบอักษร",
+      "fontWeight": "ความหนาแบบอักษร",
+      "fontStyle": "รูปแบบแบบอักษร",
+      "textColor": "สีข้อความ",
+      "backgroundColor": "สีพื้นหลัง",
+      "borderColor": "สีเส้นขอบ",
+      "borderWidth": "ความกว้างเส้นขอบ",
+      "borderStyle": "รูปแบบเส้นขอบ",
+      "borderRadius": "มุมโค้ง",
+      "textAlign": "การจัดข้อความ",
+      "verticalAlignment": "การจัดแนวตั้ง",
+      "padding": "ระยะห่างภายใน",
+      "multiline": "โหมดหลายบรรทัด",
+      "readOnly": "อ่านอย่างเดียว"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "ปกติ",
+        "bold": "ตัวหนา"
+      },
+      "fontStyle": {
+        "normal": "ปกติ",
+        "italic": "ตัวเอียง"
+      },
+      "borderStyle": {
+        "solid": "เส้นทึบ",
+        "dashed": "เส้นประ",
+        "dotted": "เส้นจุด",
+        "none": "ไม่มี"
+      },
+      "textAlign": {
+        "left": "ชิดซ้าย",
+        "center": "กึ่งกลาง",
+        "right": "ชิดขวา"
+      },
+      "verticalAlignment": {
+        "top": "บน",
+        "middle": "กึ่งกลาง",
+        "bottom": "ล่าง"
+      }
+    },
+    "groups": {
+      "basic": "คุณสมบัติพื้นฐาน",
+      "style": "รูปแบบ",
+      "text": "ข้อความ"
+    },
+    "description": "องค์ประกอบกราฟิกกล่องข้อความ"
+  }
+}

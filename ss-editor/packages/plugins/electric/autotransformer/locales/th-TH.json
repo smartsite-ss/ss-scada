@@ -1,0 +1,11 @@
+{
+  "autotransformer": {
+    "label": "หม้อแปลงออโต้",
+    "properties": {
+      "color": "สีเส้น",
+      "backgroundColor": "สีพื้นหลัง",
+      "lineWidth": "ความกว้างเส้น"
+    },
+    "description": "หม้อแปลงออโต้ - ขดลวดเดี่ยวแบบมีแทป"
+  }
+}

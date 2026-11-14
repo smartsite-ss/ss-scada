@@ -1,0 +1,11 @@
+{
+  "border09": {
+    "label": "Viền-09",
+    "description": "Thành phần trang trí viền-09",
+    "properties": {
+      "color1": "Màu thứ nhất",
+      "color2": "Màu thứ hai",
+      "backgroundColor": "Màu nền"
+    }
+  }
+}

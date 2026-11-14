@@ -1,0 +1,42 @@
+{
+  "navigationButton": {
+    "label": "Gezinme düğmesi",
+    "description": "Sayfa geçişini destekleyen gezinme düğmesi",
+    "properties": {
+      "text": "Düğme metni",
+      "type": "Düğme türü",
+      "size": "Boyut",
+      "disabled": "Devre dışı",
+      "rounded": "Yuvarlak köşe",
+      "transparent": "Saydam",
+      "targetType": "Tıklama eylemi",
+      "targetPage": "Hedef sayfa",
+      "targetUrl": "Hedef URL"
+    },
+    "options": {
+      "type": {
+        "primary": "Birincil",
+        "success": "Başarılı",
+        "warning": "Uyarı",
+        "danger": "Tehlike",
+        "default": "Varsayılan"
+      },
+      "size": {
+        "large": "Büyük",
+        "default": "Orta",
+        "small": "Küçük"
+      },
+      "targetType": {
+        "none": "Yok",
+        "page": "Sayfa aç",
+        "url": "URL aç"
+      }
+    },
+    "groups": {
+      "basic": "Temel",
+      "status": "Durum",
+      "style": "Stil",
+      "action": "Etkileşim"
+    }
+  }
+}

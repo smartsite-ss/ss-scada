@@ -1,0 +1,19 @@
+{
+  "time-common": {
+    "label": "Waktu umum",
+    "properties": {
+      "textColor": "Warna teks",
+      "fontSize": "Ukuran font",
+      "fontWeight": "Ketebalan font",
+      "shadow": "Bayangan"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "Normal",
+        "bold": "Tebal",
+        "lighter": "Tipis"
+      }
+    },
+    "description": "Tampilan waktu umum"
+  }
+}

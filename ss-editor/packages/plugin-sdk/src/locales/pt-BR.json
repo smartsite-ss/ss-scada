@@ -1,0 +1,126 @@
+{
+  "common": {
+    "ok": "OK",
+    "cancel": "Cancelar",
+    "save": "Salvar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "add": "Adicionar",
+    "search": "Pesquisar",
+    "reset": "Redefinir",
+    "export": "Exportar",
+    "import": "Importar",
+    "confirm": "Confirmar",
+    "close": "Fechar",
+    "refresh": "Atualizar",
+    "upload": "Enviar",
+    "download": "Baixar",
+    "preview": "Visualizar",
+    "copy": "Copiar",
+    "paste": "Colar",
+    "undo": "Desfazer",
+    "redo": "Refazer",
+    "settings": "Configurações",
+    "theme": "Tema",
+    "language": "Idioma"
+  },
+  "category": {
+    "basic": "Componentes básicos",
+    "form": "Componentes de formulário",
+    "chart": "Componentes de gráfico",
+    "industrial": "Componentes industriais",
+    "media": "Componentes de mídia",
+    "layout": "Componentes de layout",
+    "3d": "Componentes 3D",
+    "svg": "Componentes SVG"
+  },
+  "editor": {
+    "toolbar": "Barra de ferramentas",
+    "canvas": "Tela",
+    "properties": "Painel de propriedades",
+    "layers": "Painel de camadas",
+    "plugin": "Gerenciamento de plugins",
+    "zoomIn": "Ampliar",
+    "zoomOut": "Reduzir",
+    "fitToScreen": "Ajustar à tela",
+    "undo": "Desfazer",
+    "redo": "Refazer",
+    "delete": "Excluir selecionados",
+    "selectAll": "Selecionar tudo",
+    "copy": "Copiar",
+    "paste": "Colar",
+    "group": "Agrupar",
+    "ungroup": "Desagrupar",
+    "bringToFront": "Trazer para frente",
+    "sendToBack": "Enviar para o fundo",
+    "align": "Alinhar"
+  },
+  "plugin": {
+    "noPluginSelected": "Nenhum elemento selecionado",
+    "propertiesMissing": "Propriedades ausentes",
+    "schemaVersion": "Versão do Schema",
+    "pluginType": "Tipo de elemento",
+    "position": "Posição",
+    "size": "Tamanho",
+    "width": "Largura",
+    "height": "Altura",
+    "x": "Coordenada X",
+    "y": "Coordenada Y",
+    "rotation": "Rotação",
+    "opacity": "Opacidade",
+    "visible": "Visível",
+    "locked": "Bloqueado"
+  },
+  "language": {
+    "zhCN": "Chinês",
+    "enUS": "Inglês"
+  },
+  "threeStage": {
+    "label": "Contêiner de cena 3D",
+    "description": "Fornece um contêiner de cena 3D Three.js, com suporte a carregamento de modelos, iluminação e controle de câmera"
+  },
+  "validation": {
+    "requiredFieldMissingDefault": "O campo obrigatório \"{field}\" não possui valor padrão (required=true, mas defaultValue está vazio)",
+    "requiredFieldMissing": "Campo obrigatório \"{field}\" ausente",
+    "schemaMissingName": "[{pluginName}] O Schema não possui name",
+    "schemaMissingFields": "[{pluginName}] O Schema não possui a definição fields",
+    "fieldDuplicate": "O campo \"{field}\" está definido em duplicidade",
+    "fieldMissingName": "O campo não possui name",
+    "fieldMissingLabel": "O campo não possui label",
+    "fieldMissingType": "O campo não possui type",
+    "selectMissingOptions": "O campo select \"{field}\" não possui options",
+    "minGreaterThanMax": "min({min}) é maior que max({max})",
+    "invalidColorDefault": "O valor padrão de cor \"{value}\" tem formato inválido",
+    "fieldMissingDefault": "O campo não possui defaultValue",
+    "fieldCannotBeEmpty": "O campo \"{field}\" não pode ficar vazio",
+    "fieldExpectedNumber": "O campo \"{field}\" deve ser numérico, mas recebeu {actual}",
+    "fieldValueLessThanMin": "O valor {value} do campo \"{field}\" é menor que o mínimo {min}",
+    "fieldValueGreaterThanMax": "O valor {value} do campo \"{field}\" é maior que o máximo {max}",
+    "fieldExpectedString": "O campo \"{field}\" deve ser uma string, mas recebeu {actual}",
+    "fieldExpectedBoolean": "O campo \"{field}\" deve ser booleano, mas recebeu {actual}",
+    "fieldValueNotInOptions": "O valor \"{value}\" do campo \"{field}\" não está entre as opções válidas [{options}]",
+    "fieldExpectedColor": "O campo \"{field}\" deve ser uma string de cor, mas recebeu {actual}",
+    "invalidColorFormat": "O valor \"{value}\" do campo \"{field}\" não é um formato de cor válido (deve ser #RGB / #RRGGBB / #RRGGBBAA)"
+  },
+  "pluginSdk": {
+    "readme": {
+      "type": "Tipo",
+      "category": "Categoria",
+      "renderBackend": "Modo de renderização",
+      "properties": "Lista de propriedades",
+      "default": "Padrão",
+      "development": "Desenvolvimento"
+    },
+    "pluginStyle": "Estilo do plugin",
+    "backendDescriptions": {
+      "vueComponent": "Renderizado com componentes Vue, ideal para componentes interativos complexos",
+      "canvas2d": "Renderizado com Canvas 2D, ideal para desenhos de alto desempenho",
+      "svgDom": "Renderizado com SVG DOM, ideal para gráficos vetoriais e animações",
+      "cssDom": "Renderizado com CSS DOM, ideal para elementos e estilos HTML",
+      "three3d": "Renderizado com Three.js 3D, ideal para cenas e modelos tridimensionais"
+    }
+  },
+  "createPlugin": {
+    "cannotExtractComponentName": "Não foi possível extrair o nome do componente. Especifique-o explicitamente via graphicComponentName"
+  }
+}

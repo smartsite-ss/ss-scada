@@ -1,0 +1,21 @@
+{
+  "gatevalve": {
+    "label": "Van cổng điện",
+    "properties": {
+      "colors": "Màu 1",
+      "colors2": "Màu 2",
+      "backgroundColor": "Màu nền",
+      "lineWidth": "Độ rộng nét",
+      "closed": "Trạng thái đóng",
+      "state": "Trạng thái van"
+    },
+    "options": {
+      "state": {
+        "open": "Mở",
+        "closed": "Đóng",
+        "fault": "Sự cố"
+      }
+    },
+    "description": "Van cổng điện - thân van bướm với cơ cấu chấp hành điện, hỗ trợ trạng thái mở/đóng/sự cố"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "websocket": {
+    "connected": "WebSocket bağlantısı kuruldu",
+    "disconnected": "WebSocket bağlantısı kesildi",
+    "pong": "Pong - canlılık yanıtı",
+    "event": {
+      "data_update": "Veri güncelleme olayı (etiket: {{tagId}})",
+      "alarm_triggered": "Alarm tetiklendi olayı",
+      "alarm_acknowledged": "Alarm onaylandı olayı",
+      "alarm_cleared": "Alarm temizlendi olayı",
+      "device_status_change": "Cihaz durumu değişti olayı"
+    },
+    "error": {
+      "authentication_failed": "WebSocket kimlik doğrulaması başarısız",
+      "rate_limit_exceeded": "Mesaj hızı sınırı aşıldı",
+      "invalid_message_format": "Geçersiz mesaj biçimi"
+    },
+    "room": {
+      "joined": "{{username}} kullanıcısı {{room}} odasına katıldı",
+      "left": "{{username}} kullanıcısı {{room}} odasından ayrıldı",
+      "permission_denied": "{{projectId}} proje odasına katılma yetkiniz yok",
+      "not_authenticated": "Kimliği doğrulanmamış kullanıcılar proje odasına katılamaz"
+    },
+    "connection": {
+      "limit_exceeded": "Bağlantı sayısı üst sınıra ulaştı ({{current}}/{{max}})",
+      "user_limit_exceeded": "{{username}} kullanıcısının bağlantı sayısı üst sınıra ulaştı ({{current}}/{{max}})",
+      "ip_limit_exceeded": "{{ip}} IP adresinin bağlantı sayısı üst sınıra ulaştı ({{current}}/{{max}})",
+      "idle_timeout": "Bağlantı boşta kalma zaman aşımı ({{minutes}} dakika iş mesajı yok)",
+      "force_disconnected": "Yönetici bağlantıyı zorla kesti",
+      "global_limit_exceeded": "Genel bağlantı sayısı üst sınıra ulaştı ({{current}}/{{max}})"
+    },
+    "monitor": {
+      "online_count": "Çevrimiçi bağlantı sayısı",
+      "message_rate": "Mesaj hızı",
+      "connection_duration": "Bağlantı süresi",
+      "abnormal_detected": "Anormal bağlantı tespit edildi"
+    },
+    "offline": {
+      "message_cached": "Çevrimdışı mesaj önbelleğe alındı",
+      "message_replayed": "Çevrimdışı mesajlar yeniden gönderildi ({{count}} adet)",
+      "message_expired": "Süresi dolan mesajlar temizlendi",
+      "message_confirmed": "Mesaj onaylandı"
+    }
+  }
+}

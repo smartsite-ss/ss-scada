@@ -1,0 +1,15 @@
+{
+  "countdown": {
+    "label": "Countdown",
+    "properties": {
+      "dataset": "Countdown (Sekunden)",
+      "showDay": "Tage anzeigen",
+      "color1": "Hintergrundfarbe",
+      "color2": "Textfarbe",
+      "flipperWidth": "Ziffernbreite",
+      "flipperHeight": "Ziffernhöhe",
+      "flipperGap": "Abstand"
+    },
+    "description": "Countdown-Dekorations-Plugin"
+  }
+}

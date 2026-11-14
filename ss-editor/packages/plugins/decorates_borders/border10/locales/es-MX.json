@@ -1,0 +1,11 @@
+{
+  "border10": {
+    "label": "Borde 10",
+    "description": "Componente decorativo de borde 10",
+    "properties": {
+      "color1": "Color uno",
+      "color2": "Color dos",
+      "backgroundColor": "Color de fondo"
+    }
+  }
+}

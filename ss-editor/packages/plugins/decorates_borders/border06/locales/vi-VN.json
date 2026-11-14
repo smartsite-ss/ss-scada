@@ -1,0 +1,11 @@
+{
+  "border06": {
+    "label": "Viền-06",
+    "description": "Thành phần trang trí viền-06",
+    "properties": {
+      "color1": "Màu thứ nhất",
+      "color2": "Màu thứ hai",
+      "backgroundColor": "Màu nền"
+    }
+  }
+}

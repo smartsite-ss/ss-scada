@@ -1,0 +1,15 @@
+{
+  "border16": {
+    "label": "Bordure-16 (Minimalisme nordique)",
+    "description": "Composant décoratif Bordure-16 (Minimalisme nordique)",
+    "properties": {
+      "color1": "Couleur principale",
+      "color2": "Couleur secondaire",
+      "color3": "Couleur de fond",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "showLeaves": "Décoration de feuilles",
+      "showDots": "Trame de points",
+      "animationSpeed": "Vitesse d'animation"
+    }
+  }
+}

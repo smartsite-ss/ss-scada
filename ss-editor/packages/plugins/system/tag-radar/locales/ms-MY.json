@@ -1,0 +1,51 @@
+{
+  "tagRadar": {
+    "label": "Carta radar pemboleh ubah",
+    "description": "Ikat berbilang pemboleh ubah tag dan papar kesihatan berbilang dimensi secara masa nyata melalui carta radar",
+    "config": {
+      "bindVariables": "Ikat pemboleh ubah",
+      "addVariable": "Tambah pemboleh ubah",
+      "removeVariable": "Hapus",
+      "unbound": "Pemboleh ubah tidak terikat",
+      "loadError": "Gagal memuat"
+    },
+    "properties": {
+      "title": "Tajuk",
+      "titleColor": "Warna tajuk",
+      "titleFontSize": "Saiz fon tajuk",
+      "titleFontWeight": "Ketebalan tajuk",
+      "indicatorMax": "Nilai maksimum penunjuk",
+      "gridColor": "Warna grid",
+      "axisColor": "Warna paksi",
+      "showLegend": "Tunjuk legenda",
+      "legendPosition": "Kedudukan legenda",
+      "showTooltip": "Tunjuk tip alat",
+      "backgroundColor": "Warna latar",
+      "borderColor": "Warna sempadan",
+      "borderWidth": "Lebar sempadan",
+      "borderStyle": "Gaya sempadan",
+      "borderRadius": "Sudut bulat",
+      "shadowColor": "Warna bayang",
+      "shadowOffsetX": "Offset bayang X",
+      "shadowOffsetY": "Offset bayang Y",
+      "shadowBlur": "Kabur bayang"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "Normal",
+        "bold": "Tebal"
+      },
+      "legendPosition": {
+        "top": "Atas",
+        "bottom": "Bawah",
+        "left": "Kiri",
+        "right": "Kanan"
+      },
+      "borderStyle": {
+        "solid": "Garisan pepejal",
+        "dashed": "Garisan putus-putus",
+        "dotted": "Garisan bertitik"
+      }
+    }
+  }
+}

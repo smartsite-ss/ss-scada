@@ -1,0 +1,36 @@
+{
+  "alarm": {
+    "rule": {
+      "created": "Alarm kuralı oluşturuldu",
+      "updated": "Alarm kuralı güncellendi",
+      "deleted": "Alarm kuralı silindi",
+      "enabled": "Alarm kuralı etkinleştirildi",
+      "disabled": "Alarm kuralı devre dışı bırakıldı",
+      "not_found": "Alarm kuralı bulunamadı"
+    },
+    "record": {
+      "triggered": "Alarm tetiklendi: {{message}}",
+      "acknowledged": "Alarm onaylandı (İşlemi yapan: {{operator}})",
+      "cleared": "Alarm temizlendi (Neden: {{reason}})",
+      "not_found": "Olay kaydı bulunamadı",
+      "already_acknowledged": "Bu alarm zaten onaylandı",
+      "already_cleared": "Bu alarm zaten temizlendi"
+    },
+    "condition": {
+      "gt": "{{tag}} değeri {{value}}, üst sınır {{threshold}} değerini aşıyor",
+      "lt": "{{tag}} değeri {{value}}, alt sınır {{threshold}} değerinin altında",
+      "range_in": "{{tag}} değeri {{value}} normal aralıkta",
+      "range_out": "{{tag}} değeri {{value}} normal aralığın dışında"
+    },
+    "level": {
+      "info": "Bilgi",
+      "warning": "Uyarı",
+      "error": "Hata",
+      "critical": "Kritik"
+    },
+    "notification": {
+      "send_success": "Alarm bildirimi gönderildi",
+      "send_failed": "Alarm bildirimi gönderilemedi"
+    }
+  }
+}

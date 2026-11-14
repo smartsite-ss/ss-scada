@@ -1,0 +1,22 @@
+{
+  "generator": {
+    "label": "발전기",
+    "properties": {
+      "color": "선 색상",
+      "backgroundColor": "배경색",
+      "lineWidth": "선 너비",
+      "running": "운전 상태",
+      "runningValue": "운전 대응 값",
+      "stoppedValue": "정지 대응 값",
+      "faultValue": "고장 대응 값",
+      "defaultStatus": "기본 상태"
+    },
+    "options": {
+      "running": {
+        "yes": "운전 중",
+        "no": "정지"
+      }
+    },
+    "description": "발전기 - 회전 상태 표시 지원"
+  }
+}

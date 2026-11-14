@@ -1,0 +1,15 @@
+{
+  "border17": {
+    "label": "Borde 17 (neón ciberpunk)",
+    "description": "Componente decorativo de borde 17 (neón ciberpunk)",
+    "properties": {
+      "color1": "Cian neón",
+      "color2": "Rosa neón",
+      "color3": "Color base",
+      "backgroundColor": "Color de fondo",
+      "showCircuit": "Trama de circuito",
+      "showScanline": "Línea de barrido",
+      "animationSpeed": "Velocidad de animación"
+    }
+  }
+}

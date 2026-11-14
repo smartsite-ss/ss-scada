@@ -1,0 +1,22 @@
+{
+  "motor": {
+    "label": "Elektrik motoru",
+    "properties": {
+      "color": "Çizgi rengi",
+      "backgroundColor": "Arka plan rengi",
+      "lineWidth": "Çizgi kalınlığı",
+      "running": "Çalışma durumu",
+      "runningValue": "Çalışıyor durum değeri",
+      "stoppedValue": "Durdu durum değeri",
+      "faultValue": "Arıza durum değeri",
+      "defaultStatus": "Varsayılan durum"
+    },
+    "options": {
+      "running": {
+        "yes": "Çalışıyor",
+        "no": "Durdu"
+      }
+    },
+    "description": "Elektrik motoru - Döndürme durumu göstergeli"
+  }
+}

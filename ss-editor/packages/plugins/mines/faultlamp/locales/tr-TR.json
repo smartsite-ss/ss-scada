@@ -1,0 +1,24 @@
+{
+  "faultlamp": {
+    "label": "Arıza alarm lambası",
+    "properties": {
+      "alarmColor": "Alarm rengi",
+      "backgroundColor": "Arka plan rengi",
+      "dataset": "Veri değeri (0=normal, >0=alarm)",
+      "flashing": "Yanıp sönme efekti",
+      "flashSpeed": "Yanıp sönme hızı (saniye)",
+      "showBuzzer": "Sesli uyarıyı göster",
+      "alarmValue": "Alarm durum değeri",
+      "normalValue": "Normal durum değeri",
+      "defaultStatus": "Varsayılan durum"
+    },
+    "options": {
+      "alarmColor": {
+        "red": "Kırmızı",
+        "amber": "Amber",
+        "off": "Kapalı"
+      }
+    },
+    "description": "Arıza alarm lambası - Eşkenar dörtgen/üçgen uyarı simgesi, yanıp sönme ve sesli uyarı gösterimini destekler"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "busbar": {
+    "label": "母線",
+    "properties": {
+      "color": "線の色",
+      "backgroundColor": "背景色",
+      "lineWidth": "線幅",
+      "labelText": "ラベルテキスト"
+    },
+    "description": "母線 - 電力を集約・分配する母線"
+  }
+}

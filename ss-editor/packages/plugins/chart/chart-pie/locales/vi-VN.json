@@ -1,0 +1,11 @@
+{
+  "chartPie": {
+    "label": "Biểu đồ tròn",
+    "description": "Biểu đồ tròn với nguồn dữ liệu tĩnh/API",
+    "config": {
+      "dataSource": "Nguồn dữ liệu",
+      "noData": "Chưa có dữ liệu",
+      "loadError": "Tải thất bại"
+    }
+  }
+}

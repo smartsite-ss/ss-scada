@@ -1,0 +1,78 @@
+{
+  "validation": {
+    "common": {
+      "is_string": "{{property}} mesti rentetan",
+      "is_number": "{{property}} mesti nombor",
+      "is_boolean": "{{property}} mesti boolean",
+      "is_date": "{{property}} mesti tarikh yang sah",
+      "min_length": "Panjang {{property}} tidak boleh kurang daripada {{constraints.0}} aksara",
+      "max_length": "Panjang {{property}} tidak boleh melebihi {{constraints.0}} aksara",
+      "is_email": "{{property}} format alamat e-mel tidak betul",
+      "matches": "{{property}} format tidak memenuhi keperluan"
+    },
+    "user": {
+      "username": {
+        "required": "Nama pengguna tidak boleh kosong",
+        "length": "Panjang nama pengguna mesti antara {{min}}-{{max}} aksara",
+        "pattern": "Nama pengguna hanya boleh mengandungi huruf, nombor dan garis bawah",
+        "unique": "Nama pengguna ini telah digunakan"
+      },
+      "email": {
+        "required": "E-mel tidak boleh kosong",
+        "is_email": "Format e-mel tidak betul",
+        "unique": "E-mel ini telah didaftarkan"
+      },
+      "password": {
+        "required": "Kata laluan tidak boleh kosong",
+        "weak": "Kekuatan kata laluan tidak mencukupi (sekurang-kurangnya 8 aksara, mengandungi huruf besar, huruf kecil dan nombor)",
+        "mismatch": "Kata laluan yang dimasukkan dua kali tidak sepadan"
+      }
+    },
+    "project": {
+      "name": {
+        "required": "Nama projek tidak boleh kosong",
+        "length": "Panjang nama projek mesti antara {{min}}-{{max}} aksara"
+      },
+      "description": {
+        "maxlength": "Keterangan projek tidak boleh melebihi {{max}} aksara"
+      }
+    },
+    "device": {
+      "name": {
+        "required": "Nama peranti tidak boleh kosong"
+      },
+      "config": {
+        "host_required": "Alamat IP peranti tidak boleh kosong",
+        "port_range": "Nombor port mesti antara 1-65535",
+        "unitId_range": "Unit ID mesti antara 1-247"
+      }
+    },
+    "tag": {
+      "name": {
+        "required": "Nama tag tidak boleh kosong",
+        "unique": "Nama tag sudah wujud dalam peranti ini"
+      },
+      "address": {
+        "required": "Alamat daftar tidak boleh kosong",
+        "format": "Format alamat tidak sah (sepatutnya nombor atau format alamat Modbus)"
+      },
+      "scanRate": {
+        "range": "Kitaran imbasan mesti antara {{min}}-{{max}} ms"
+      }
+    },
+    "alarm": {
+      "rule": {
+        "name": {
+          "required": "Nama peraturan penggera tidak boleh kosong"
+        },
+        "threshold": {
+          "required": "Ambang penggera tidak boleh kosong",
+          "number": "Ambang mesti nombor yang sah"
+        },
+        "debounceTime": {
+          "range": "Masa nyahlantun mesti antara {{min}}-{{max}} ms"
+        }
+      }
+    }
+  }
+}

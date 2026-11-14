@@ -1,0 +1,46 @@
+{
+  "input": {
+    "label": "Champ de saisie",
+    "description": "Composant champ de saisie pour la saisie de texte sur une ligne",
+    "panelTitle": "Configuration du champ de saisie",
+    "properties": {
+      "value": "Valeur",
+      "placeholder": "Texte indicatif",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "borderColor": "Couleur de bordure",
+      "borderWidth": "Largeur de bordure",
+      "borderStyle": "Style de bordure",
+      "borderRadius": "Rayon d'arrondi",
+      "textColor": "Couleur du texte",
+      "fontSize": "Taille de police",
+      "fontWeight": "Graisse de police",
+      "textAlign": "Alignement du texte",
+      "shadowColor": "Couleur d'ombre",
+      "shadowOffsetX": "Décalage d'ombre X",
+      "shadowOffsetY": "Décalage d'ombre Y",
+      "shadowBlur": "Flou d'ombre"
+    },
+    "options": {
+      "borderStyle": {
+        "solid": "Trait plein",
+        "dashed": "Tirets",
+        "dotted": "Pointillés"
+      },
+      "fontWeight": {
+        "normal": "Normal",
+        "bold": "Gras"
+      },
+      "textAlign": {
+        "left": "Aligner à gauche",
+        "center": "Centrer",
+        "right": "Aligner à droite"
+      }
+    },
+    "groups": {
+      "basic": "Propriétés de base",
+      "style": "Style",
+      "text": "Texte",
+      "shadow": "Ombre"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "runlamp": {
+    "label": "Çalışma gösterge lambası",
+    "properties": {
+      "lampColor": "Lamba rengi",
+      "glowing": "Parlama efekti",
+      "blinkSpeed": "Yanıp sönme hızı",
+      "backgroundColor": "Arka plan rengi",
+      "runningValue": "Çalışıyor durum değeri",
+      "stoppedValue": "Durdu durum değeri",
+      "faultValue": "Arıza durum değeri",
+      "defaultStatus": "Varsayılan durum"
+    },
+    "options": {
+      "lampColor": {
+        "green": "Yeşil",
+        "red": "Kırmızı",
+        "yellow": "Sarı"
+      }
+    },
+    "description": "Çalışma gösterge lambası - Dairesel ampul, renk durumuna göre darbeli parlama animasyonu"
+  }
+}

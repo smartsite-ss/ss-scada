@@ -1,0 +1,66 @@
+{
+  "chartGauge": {
+    "label": "Индикатор",
+    "description": "Компонент индикатора для отображения одного значения в реальном времени и пороговых тревог",
+    "panelTitle": "Настройка индикатора",
+    "config": {
+      "dataSource": "Источник данных",
+      "noData": "Нет данных",
+      "loadError": "Ошибка загрузки"
+    },
+    "properties": {
+      "title": "Заголовок",
+      "titleColor": "Цвет заголовка",
+      "titleFontSize": "Размер шрифта заголовка",
+      "value": "Текущее значение",
+      "minValue": "Минимум",
+      "maxValue": "Максимум",
+      "unit": "Единица измерения",
+      "startAngle": "Начальный угол",
+      "endAngle": "Конечный угол",
+      "backgroundColor": "Цвет фона",
+      "borderColor": "Цвет рамки",
+      "borderWidth": "Ширина рамки",
+      "borderStyle": "Стиль рамки",
+      "borderRadius": "Скругление",
+      "faceColor": "Цвет циферблата",
+      "rimColor": "Цвет обода",
+      "normalColor": "Цвет нормальной зоны",
+      "needleColor": "Цвет стрелки",
+      "tickColor": "Цвет делений",
+      "labelColor": "Цвет подписей",
+      "valueColor": "Цвет значения",
+      "showTicks": "Показать деления",
+      "showLabels": "Показать подписи",
+      "showValue": "Показать значение",
+      "majorTicks": "Число основных делений",
+      "minorTicks": "Число дополнительных делений",
+      "warningValue": "Порог предупреждения",
+      "dangerValue": "Порог опасности",
+      "warningColor": "Цвет предупреждения",
+      "dangerColor": "Цвет опасности",
+      "shadowColor": "Цвет тени",
+      "shadowOffsetX": "Смещение тени X",
+      "shadowOffsetY": "Смещение тени Y",
+      "shadowBlur": "Размытие тени"
+    },
+    "options": {
+      "borderStyle": {
+        "solid": "Сплошная",
+        "dashed": "Штриховая",
+        "dotted": "Пунктирная"
+      }
+    },
+    "groups": {
+      "basic": "Основное",
+      "value": "Значение",
+      "gauge": "Индикатор",
+      "style": "Стиль",
+      "color": "Цвет",
+      "display": "Отображение",
+      "ticks": "Деления",
+      "alarm": "Тревога",
+      "shadow": "Тень"
+    }
+  }
+}

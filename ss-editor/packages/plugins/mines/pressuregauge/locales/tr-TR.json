@@ -1,0 +1,15 @@
+{
+  "pressuregauge": {
+    "label": "Basınç göstergesi",
+    "properties": {
+      "color": "Renk",
+      "backgroundColor": "Arka plan rengi",
+      "lineWidth": "Çizgi kalınlığı",
+      "dataset": "Veri değeri (0-100)",
+      "maxPressure": "Maksimum ölçüm aralığı (MPa)",
+      "decimalPlaces": "Ondalık basamak sayısı",
+      "unit": "Birim"
+    },
+    "description": "Basınç göstergesi - Dairesel basınç göstergesi, ibre veri değeriyle MPa basıncını gösterir"
+  }
+}

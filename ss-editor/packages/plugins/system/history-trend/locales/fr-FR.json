@@ -1,0 +1,102 @@
+{
+  "historyTrend": {
+    "label": "Tendance historique",
+    "description": "Interroge la tendance historique d'une ou plusieurs variables sur une période",
+    "config": {
+      "bindVariables": "Lier une variable",
+      "addVariable": "Ajouter une variable",
+      "removeVariable": "Supprimer",
+      "unbound": "Aucune variable liée",
+      "timeRange": "Période",
+      "queryMethod": "Mode de requête",
+      "query": "Interroger",
+      "querying": "Interrogation…"
+    },
+    "series": {
+      "lineWidth": "Épaisseur de ligne",
+      "lineType": "Type de ligne",
+      "lineColor": "Couleur de ligne",
+      "symbolSize": "Taille des points",
+      "labelShow": "Afficher les étiquettes",
+      "labelFontSize": "Taille de police des étiquettes",
+      "labelColor": "Couleur des étiquettes",
+      "labelPosition": "Position des étiquettes",
+      "areaShow": "Afficher le remplissage de zone",
+      "areaStartColor": "Couleur de début",
+      "areaMiddleColor": "Couleur intermédiaire",
+      "areaEndColor": "Couleur de fin",
+      "areaOpacity": "Opacité"
+    },
+    "options": {
+      "interpolation": {
+        "raw": "Valeur brute",
+        "linear": "Interpolation linéaire",
+        "step": "Interpolation en escalier"
+      },
+      "presetRange": {
+        "1h": "Dernière heure",
+        "6h": "6 dernières heures",
+        "24h": "24 dernières heures",
+        "7d": "7 derniers jours",
+        "custom": "Personnalisé"
+      },
+      "lineType": {
+        "solid": "Trait plein",
+        "dashed": "Tirets",
+        "dotted": "Pointillés"
+      },
+      "labelPosition": {
+        "top": "Haut",
+        "left": "Gauche",
+        "right": "Droite",
+        "bottom": "Bas"
+      },
+      "legendPosition": {
+        "top": "Haut",
+        "bottom": "Bas",
+        "left": "Gauche",
+        "right": "Droite"
+      },
+      "borderStyle": {
+        "solid": "Trait plein",
+        "dashed": "Tirets",
+        "dotted": "Pointillés"
+      },
+      "fontWeight": {
+        "normal": "Normal",
+        "bold": "Gras"
+      }
+    },
+    "properties": {
+      "defaultInterpolation": "Mode de requête par défaut",
+      "defaultInterval": "Intervalle d'interpolation par défaut (ms)",
+      "defaultPresetRange": "Plage de temps par défaut",
+      "defaultCustomStart": "Heure de début personnalisée",
+      "defaultCustomEnd": "Heure de fin personnalisée",
+      "maxPoints": "Nombre maximal de points affichés",
+      "title": "Titre",
+      "titleColor": "Couleur du titre",
+      "titleFontSize": "Taille de police du titre",
+      "titleFontWeight": "Graisse du titre",
+      "gridColor": "Couleur de la grille",
+      "axisColor": "Couleur des axes",
+      "showLegend": "Afficher la légende",
+      "legendPosition": "Position de la légende",
+      "showTooltip": "Afficher l'infobulle",
+      "showDataZoom": "Zoom de l'axe temporel",
+      "showXAxis": "Afficher l'axe temporel",
+      "xAxisLineColor": "Couleur de l'axe temporel",
+      "xAxisLabelFontSize": "Taille de police de l'axe temporel",
+      "xAxisLabelRotate": "Inclinaison du texte de l'axe temporel",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "borderColor": "Couleur de bordure",
+      "borderWidth": "Largeur de bordure",
+      "borderStyle": "Style de bordure",
+      "borderRadius": "Rayon d'arrondi",
+      "shadowColor": "Couleur d'ombre",
+      "shadowOffsetX": "Décalage d'ombre X",
+      "shadowOffsetY": "Décalage d'ombre Y",
+      "shadowBlur": "Flou d'ombre"
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "arccoil": {
+    "label": "Sönümleme bobini",
+    "properties": {
+      "color": "Çizgi rengi",
+      "backgroundColor": "Arka plan rengi",
+      "lineWidth": "Çizgi kalınlığı"
+    },
+    "description": "Sönümleme bobini - Nötr topraklama kompanzasyon cihazı"
+  }
+}

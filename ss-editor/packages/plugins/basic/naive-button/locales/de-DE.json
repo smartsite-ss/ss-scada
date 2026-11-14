@@ -1,0 +1,34 @@
+{
+  "naiveButton": {
+    "label": "Naive-Schaltfläche",
+    "panelTitle": "Naive-Schaltflächen-Eigenschaften",
+    "properties": {
+      "text": "Schaltflächentext",
+      "type": "Schaltflächentyp",
+      "size": "Größe",
+      "round": "Abgerundete Schaltfläche",
+      "circle": "Runde Schaltfläche",
+      "disabled": "Deaktiviert",
+      "loading": "Ladezustand"
+    },
+    "options": {
+      "type": {
+        "default": "Standard",
+        "primary": "Primär",
+        "success": "Erfolg",
+        "warning": "Warnung",
+        "error": "Fehler",
+        "info": "Info"
+      },
+      "size": {
+        "small": "Klein",
+        "medium": "Mittel",
+        "large": "Groß"
+      }
+    },
+    "groups": {
+      "basic": "Grundeigenschaften"
+    },
+    "description": "Naive-Schaltflächen-Grafikelement mit Canvas-Fallback-Rendering"
+  }
+}

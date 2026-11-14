@@ -1,0 +1,66 @@
+{
+  "chartGauge": {
+    "label": "Gösterge paneli",
+    "description": "Tek değerin gerçek zamanlı gösterimi ve eşik alarmı için gösterge paneli bileşeni",
+    "panelTitle": "Gösterge paneli yapılandırması",
+    "config": {
+      "dataSource": "Veri kaynağı",
+      "noData": "Veri yok",
+      "loadError": "Yükleme başarısız"
+    },
+    "properties": {
+      "title": "Başlık",
+      "titleColor": "Başlık rengi",
+      "titleFontSize": "Başlık yazı boyutu",
+      "value": "Geçerli değer",
+      "minValue": "Minimum değer",
+      "maxValue": "Maksimum değer",
+      "unit": "Birim",
+      "startAngle": "Başlangıç açısı",
+      "endAngle": "Bitiş açısı",
+      "backgroundColor": "Arka plan rengi",
+      "borderColor": "Kenarlık rengi",
+      "borderWidth": "Kenarlık genişliği",
+      "borderStyle": "Kenarlık stili",
+      "borderRadius": "Köşe yuvarlatma",
+      "faceColor": "Kadran rengi",
+      "rimColor": "Dış halka rengi",
+      "normalColor": "Normal bölge rengi",
+      "needleColor": "İbre rengi",
+      "tickColor": "Ölçek işareti rengi",
+      "labelColor": "Etiket rengi",
+      "valueColor": "Değer rengi",
+      "showTicks": "Ölçek işaretlerini göster",
+      "showLabels": "Etiketleri göster",
+      "showValue": "Değeri göster",
+      "majorTicks": "Ana ölçek sayısı",
+      "minorTicks": "Alt ölçek sayısı",
+      "warningValue": "Uyarı eşiği",
+      "dangerValue": "Tehlike eşiği",
+      "warningColor": "Uyarı rengi",
+      "dangerColor": "Tehlike rengi",
+      "shadowColor": "Gölge rengi",
+      "shadowOffsetX": "Gölge kayması X",
+      "shadowOffsetY": "Gölge kayması Y",
+      "shadowBlur": "Gölge bulanıklığı"
+    },
+    "options": {
+      "borderStyle": {
+        "solid": "Düz çizgi",
+        "dashed": "Kesikli çizgi",
+        "dotted": "Noktalı çizgi"
+      }
+    },
+    "groups": {
+      "basic": "Temel",
+      "value": "Değer",
+      "gauge": "Gösterge",
+      "style": "Stil",
+      "color": "Renk",
+      "display": "Görünüm",
+      "ticks": "Ölçek",
+      "alarm": "Alarm",
+      "shadow": "Gölge"
+    }
+  }
+}

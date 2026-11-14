@@ -1,0 +1,35 @@
+{
+  "fan3": {
+    "label": "Ventilador 3",
+    "properties": {
+      "colors": "Grupo de cores",
+      "flowColor": "Cor do duto de ar",
+      "pipeColor": "Cor da tubulação",
+      "bgWidth": "Largura da base",
+      "boardWidth": "Espessura da chapa",
+      "roate": "Ângulo de rotação",
+      "cls": "Direção de rotação",
+      "dur": "Período da animação (s)",
+      "backgroundColor": "Cor de fundo",
+      "dataset": "Conjunto de dados",
+      "forwardValue": "Valor correspondente a rotação direta",
+      "backwardValue": "Valor correspondente a rotação inversa",
+      "stopValue": "Valor correspondente a parado",
+      "defaultCls": "Direção padrão da animação",
+      "decimalPlaces": "Casas decimais",
+      "clsOptions": {
+        "right": "Girar à direita",
+        "left": "Girar à esquerda",
+        "stop": "Parado"
+      }
+    },
+    "options": {
+      "cls": {
+        "left": "Rotação direta",
+        "right": "Rotação inversa",
+        "stop": "Parado"
+      }
+    },
+    "description": "Ventilador 3 de mineração - ventilador centrífugo com duto de ar e controle de direção e velocidade de rotação"
+  }
+}

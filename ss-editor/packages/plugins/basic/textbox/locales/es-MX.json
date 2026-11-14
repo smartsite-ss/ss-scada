@@ -1,0 +1,56 @@
+{
+  "textbox": {
+    "label": "Cuadro de texto",
+    "panelTitle": "Configuración del cuadro de texto",
+    "properties": {
+      "text": "Contenido del texto",
+      "placeholder": "Marcador de posición",
+      "fontSize": "Tamaño de fuente",
+      "fontWeight": "Grosor de fuente",
+      "fontStyle": "Estilo de fuente",
+      "textColor": "Color del texto",
+      "backgroundColor": "Color de fondo",
+      "borderColor": "Color del borde",
+      "borderWidth": "Ancho del borde",
+      "borderStyle": "Estilo del borde",
+      "borderRadius": "Radio de esquina",
+      "textAlign": "Alineación del texto",
+      "verticalAlignment": "Alineación vertical",
+      "padding": "Relleno interno",
+      "multiline": "Modo multilínea",
+      "readOnly": "Solo lectura"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "Normal",
+        "bold": "Negrita"
+      },
+      "fontStyle": {
+        "normal": "Normal",
+        "italic": "Cursiva"
+      },
+      "borderStyle": {
+        "solid": "Sólida",
+        "dashed": "Discontinua",
+        "dotted": "Punteada",
+        "none": "Ninguno"
+      },
+      "textAlign": {
+        "left": "Alinear a la izquierda",
+        "center": "Centrar",
+        "right": "Alinear a la derecha"
+      },
+      "verticalAlignment": {
+        "top": "Arriba",
+        "middle": "Centrar",
+        "bottom": "Abajo"
+      }
+    },
+    "groups": {
+      "basic": "Propiedades básicas",
+      "style": "Estilo",
+      "text": "Texto"
+    },
+    "description": "Elemento gráfico de cuadro de texto"
+  }
+}

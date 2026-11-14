@@ -1,0 +1,47 @@
+{
+  "multiChart": {
+    "label": "多圖表",
+    "description": "多圖表元件，支援長條圖、圓餅圖、熱力圖",
+    "panelTitle": "多圖表設定",
+    "properties": {
+      "title": "標題",
+      "titleColor": "標題顏色",
+      "titleFontSize": "標題字級",
+      "chartType": "圖表類型",
+      "backgroundColor": "背景色",
+      "borderColor": "邊框色",
+      "borderWidth": "邊框寬度",
+      "borderRadius": "圓角",
+      "barColor": "長條圖顏色",
+      "barGap": "柱間距",
+      "pieColors": "圓餅圖顏色序列",
+      "pieInnerRadius": "內半徑比例",
+      "pieShowLabels": "顯示標籤",
+      "heatmapColorLow": "熱力圖低值顏色",
+      "heatmapColorHigh": "熱力圖高值顏色",
+      "heatmapRows": "列數",
+      "heatmapCols": "欄數",
+      "showLegend": "顯示圖例",
+      "shadowColor": "陰影顏色",
+      "shadowOffsetX": "陰影偏移X",
+      "shadowOffsetY": "陰影偏移Y",
+      "shadowBlur": "陰影模糊"
+    },
+    "options": {
+      "chartType": {
+        "bar": "長條圖",
+        "pie": "圓餅圖",
+        "heatmap": "熱力圖"
+      }
+    },
+    "groups": {
+      "basic": "基本",
+      "style": "樣式",
+      "bar": "長條圖",
+      "pie": "圓餅圖",
+      "heatmap": "熱力圖",
+      "display": "顯示",
+      "shadow": "陰影"
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "pipe": {
+    "label": "Tuyau vertical",
+    "description": "Composant tuyau vertical avec animation d'écoulement et contrôle du sens",
+    "panelTitle": "Configuration du tuyau",
+    "properties": {
+      "width": "Largeur",
+      "height": "Hauteur",
+      "status": "État",
+      "direction": "Sens d'écoulement",
+      "pipeColor": "Couleur du tuyau",
+      "flowingColor": "Couleur d'écoulement",
+      "stoppedColor": "Couleur à l'arrêt",
+      "blockedColor": "Couleur de blocage",
+      "pipeThickness": "Épaisseur du tuyau",
+      "showFlange": "Afficher la bride",
+      "flowSpeed": "Vitesse d'écoulement",
+      "showFlowAnimation": "Afficher l'animation d'écoulement"
+    },
+    "options": {
+      "status": {
+        "flowing": "En écoulement",
+        "stopped": "Arrêté",
+        "blocked": "Bloqué"
+      },
+      "direction": {
+        "up": "Vers le haut",
+        "down": "Vers le bas"
+      }
+    },
+    "groups": {
+      "basic": "Base",
+      "status": "État",
+      "color": "Couleur",
+      "style": "Style",
+      "animation": "Animation"
+    }
+  }
+}

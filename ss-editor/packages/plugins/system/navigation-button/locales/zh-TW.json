@@ -1,0 +1,42 @@
+{
+  "navigationButton": {
+    "label": "導覽按鈕",
+    "description": "支援頁面跳轉的導覽按鈕",
+    "properties": {
+      "text": "按鈕文字",
+      "type": "按鈕類型",
+      "size": "尺寸",
+      "disabled": "停用",
+      "rounded": "圓角",
+      "transparent": "透明",
+      "targetType": "點擊動作",
+      "targetPage": "目標頁面",
+      "targetUrl": "目標URL"
+    },
+    "options": {
+      "type": {
+        "primary": "主要",
+        "success": "成功",
+        "warning": "警告",
+        "danger": "危險",
+        "default": "預設"
+      },
+      "size": {
+        "large": "大",
+        "default": "中",
+        "small": "小"
+      },
+      "targetType": {
+        "none": "無",
+        "page": "開啟頁面",
+        "url": "開啟URL"
+      }
+    },
+    "groups": {
+      "basic": "基本",
+      "status": "狀態",
+      "style": "樣式",
+      "action": "互動"
+    }
+  }
+}

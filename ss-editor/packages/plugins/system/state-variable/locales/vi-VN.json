@@ -1,0 +1,49 @@
+{
+  "stateVariable": {
+    "label": "Biến trạng thái",
+    "description": "Hiển thị hình ảnh trạng thái khác nhau theo giá trị biến",
+    "graphic": {
+      "placeholder": "Chưa liên kết / không khớp"
+    },
+    "config": {
+      "bindVariable": "Liên kết biến",
+      "selectVariable": "Chọn biến",
+      "clear": "Xóa bỏ",
+      "unbound": "Chưa liên kết",
+      "states": "Quy tắc trạng thái",
+      "addRule": "Thêm quy tắc",
+      "stateName": "Tên trạng thái",
+      "value": "Giá trị so sánh",
+      "value2": "Giá trị kết thúc",
+      "selectImage": "Chọn hình ảnh",
+      "defaultImage": "Hình ảnh mặc định",
+      "deleteRule": "Xóa"
+    },
+    "imagePicker": {
+      "title": "Chọn hình ảnh",
+      "sourceGallery": "Thư viện ảnh",
+      "sourceUrl": "URL",
+      "sourceUpload": "Tải lên",
+      "urlPlaceholder": "Nhập URL hình ảnh",
+      "confirm": "Xác nhận",
+      "cancel": "Hủy",
+      "loading": "Đang tải...",
+      "empty": "Chưa có hình ảnh",
+      "selectCategory": "Vui lòng chọn danh mục",
+      "uploadHint": "Chọn tệp hình ảnh cục bộ",
+      "fileSizeError": "Kích thước hình ảnh không được vượt quá 10MB"
+    },
+    "operator": {
+      "equal": "=",
+      "notEqual": "≠",
+      "greaterThan": ">",
+      "greaterOrEqual": "≥",
+      "lessThan": "<",
+      "lessOrEqual": "≤",
+      "between": "∈",
+      "contains": "contains",
+      "startsWith": "starts with",
+      "endsWith": "ends with"
+    }
+  }
+}

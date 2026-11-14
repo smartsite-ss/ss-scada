@@ -1,0 +1,14 @@
+{
+  "flipper-number": {
+    "label": "Dígitos tipo flip",
+    "properties": {
+      "dataset": "Valor",
+      "flipperLength": "Número de dígitos",
+      "color1": "Color del texto",
+      "flipperWidth": "Ancho",
+      "flipperHeight": "Alto",
+      "flipperGap": "Espaciado"
+    },
+    "description": "Complemento de visualización de dígitos tipo flip"
+  }
+}

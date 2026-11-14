@@ -1,0 +1,11 @@
+{
+  "border13": {
+    "label": "Kenarlık-13",
+    "description": "Kenarlık-13 dekoratif bileşeni",
+    "properties": {
+      "color1": "Birinci renk",
+      "color2": "İkinci renk",
+      "backgroundColor": "Arka plan rengi"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "runlamp": {
+    "label": "Voyant de marche",
+    "properties": {
+      "lampColor": "Couleur de la lampe",
+      "glowing": "Effet lumineux",
+      "blinkSpeed": "Vitesse de clignotement",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "runningValue": "Valeur de marche",
+      "stoppedValue": "Valeur pour l'arrêt",
+      "faultValue": "Valeur de défaut",
+      "defaultStatus": "État par défaut"
+    },
+    "options": {
+      "lampColor": {
+        "green": "Vert",
+        "red": "Rouge",
+        "yellow": "Jaune"
+      }
+    },
+    "description": "Voyant de marche - ampoule circulaire avec animation de lueur pulsée selon l'état"
+  }
+}

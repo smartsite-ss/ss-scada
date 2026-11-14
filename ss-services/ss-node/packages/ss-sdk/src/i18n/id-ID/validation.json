@@ -1,0 +1,78 @@
+{
+  "validation": {
+    "common": {
+      "is_string": "{{property}} harus berupa string",
+      "is_number": "{{property}} harus berupa angka",
+      "is_boolean": "{{property}} harus berupa nilai boolean",
+      "is_date": "{{property}} harus berupa tanggal yang valid",
+      "min_length": "Panjang {{property}} tidak boleh kurang dari {{constraints.0}} karakter",
+      "max_length": "Panjang {{property}} tidak boleh melebihi {{constraints.0}} karakter",
+      "is_email": "{{property}} bukan alamat email dengan format yang benar",
+      "matches": "Format {{property}} tidak sesuai persyaratan"
+    },
+    "user": {
+      "username": {
+        "required": "Nama pengguna tidak boleh kosong",
+        "length": "Panjang nama pengguna harus antara {{min}}-{{max}} karakter",
+        "pattern": "Nama pengguna hanya boleh berisi huruf, angka, dan garis bawah",
+        "unique": "Nama pengguna ini sudah digunakan"
+      },
+      "email": {
+        "required": "Email tidak boleh kosong",
+        "is_email": "Format email tidak benar",
+        "unique": "Email ini sudah terdaftar"
+      },
+      "password": {
+        "required": "Kata sandi tidak boleh kosong",
+        "weak": "Kekuatan kata sandi tidak memadai (minimal 8 karakter, berisi huruf besar, huruf kecil, dan angka)",
+        "mismatch": "Kata sandi yang dimasukkan dua kali tidak sama"
+      }
+    },
+    "project": {
+      "name": {
+        "required": "Nama proyek tidak boleh kosong",
+        "length": "Panjang nama proyek harus antara {{min}}-{{max}} karakter"
+      },
+      "description": {
+        "maxlength": "Deskripsi proyek tidak boleh melebihi {{max}} karakter"
+      }
+    },
+    "device": {
+      "name": {
+        "required": "Nama perangkat tidak boleh kosong"
+      },
+      "config": {
+        "host_required": "Alamat IP perangkat tidak boleh kosong",
+        "port_range": "Nomor port harus antara 1-65535",
+        "unitId_range": "Unit ID harus antara 1-247"
+      }
+    },
+    "tag": {
+      "name": {
+        "required": "Nama tag tidak boleh kosong",
+        "unique": "Nama tag sudah ada di perangkat ini"
+      },
+      "address": {
+        "required": "Alamat register tidak boleh kosong",
+        "format": "Format alamat tidak valid (harus berupa angka atau format alamat Modbus)"
+      },
+      "scanRate": {
+        "range": "Periode pemindaian harus antara {{min}}-{{max}} ms"
+      }
+    },
+    "alarm": {
+      "rule": {
+        "name": {
+          "required": "Nama aturan alarm tidak boleh kosong"
+        },
+        "threshold": {
+          "required": "Ambang alarm tidak boleh kosong",
+          "number": "Ambang harus berupa angka yang valid"
+        },
+        "debounceTime": {
+          "range": "Waktu debounce harus antara {{min}}-{{max}} ms"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "gatevalve": {
+    "label": "Elektrikli sürgülü vana",
+    "properties": {
+      "colors": "Renk 1",
+      "colors2": "Renk 2",
+      "backgroundColor": "Arka plan rengi",
+      "lineWidth": "Çizgi kalınlığı",
+      "closed": "Kapalı durum",
+      "state": "Vana durumu"
+    },
+    "options": {
+      "state": {
+        "open": "Açık",
+        "closed": "Kapalı",
+        "fault": "Arıza"
+      }
+    },
+    "description": "Elektrikli sürgülü vana - Kelebek vana gövdeli elektrikli aktüatör, açık/kapalı/arıza durumlarını destekler"
+  }
+}

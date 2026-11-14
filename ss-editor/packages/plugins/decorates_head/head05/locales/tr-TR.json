@@ -1,0 +1,11 @@
+{
+  "head05": {
+    "label": "Başlık dekorasyonu-05",
+    "properties": {
+      "color1": "Birinci renk",
+      "color2": "İkinci renk",
+      "dur": "Animasyon döngüsü (saniye)"
+    },
+    "description": "Parçalı animasyon dekorasyonu"
+  }
+}

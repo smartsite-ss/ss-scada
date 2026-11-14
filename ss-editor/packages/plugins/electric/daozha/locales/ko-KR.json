@@ -1,0 +1,22 @@
+{
+  "daozha": {
+    "label": "단로기",
+    "properties": {
+      "color": "선 색상",
+      "backgroundColor": "배경색",
+      "lineWidth": "선 너비",
+      "terminalRadius": "단자 반지름",
+      "closed": "닫힘 상태",
+      "closedValue": "닫힘 대응 값",
+      "openValue": "열림 대응 값",
+      "defaultStatus": "기본 상태"
+    },
+    "options": {
+      "closed": {
+        "yes": "닫힘",
+        "no": "열림"
+      }
+    },
+    "description": "전력 단로기 - 단로 스위치 도형 요소, 닫힘/열림 상태 전환 지원"
+  }
+}

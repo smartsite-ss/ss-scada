@@ -1,0 +1,68 @@
+{
+  "svg-pipe": {
+    "label": "SVG 파이프",
+    "panelTitle": "SVG 파이프 구성",
+    "properties": {
+      "status": "상태",
+      "flowDirection": "흐름 방향",
+      "strokeColor": "파이프 색상",
+      "flowingColor": "유동 색상",
+      "stoppedColor": "정지 색상",
+      "blockedColor": "막힘 색상",
+      "strokeWidth": "관경",
+      "strokeLinecap": "끝점 스타일",
+      "strokeLinejoin": "연결 스타일",
+      "strokeDasharray": "파선",
+      "gradientType": "그라데이션 유형",
+      "gradientStartColor": "그라데이션 시작 색상",
+      "gradientEndColor": "그라데이션 종료 색상",
+      "filterShadow": "그림자",
+      "shadowColor": "그림자 색상",
+      "shadowBlur": "그림자 흐림",
+      "showFlowAnimation": "유동 애니메이션",
+      "flowSpeed": "유속",
+      "arrowSpacing": "화살표 간격",
+      "arrowSize": "화살표 크기",
+      "arrowStyle": "화살표 스타일"
+    },
+    "options": {
+      "status": {
+        "flowing": "유동 중",
+        "stopped": "정지",
+        "blocked": "막힘"
+      },
+      "flowDirection": {
+        "forward": "정방향",
+        "backward": "역방향",
+        "bidirectional": "양방향"
+      },
+      "strokeLinecap": {
+        "butt": "평평한 끝",
+        "round": "둥근 끝",
+        "square": "사각 끝"
+      },
+      "strokeLinejoin": {
+        "miter": "뾰족한 모서리",
+        "round": "둥근 모서리",
+        "bevel": "깎인 모서리"
+      },
+      "gradientType": {
+        "none": "단색",
+        "linear": "선형 그라데이션",
+        "radial": "방사형 그라데이션"
+      },
+      "arrowStyle": {
+        "triangle": "삼각형 블록",
+        "rectangle": "직사각형",
+        "square": "정사각형"
+      }
+    },
+    "groups": {
+      "status": "상태",
+      "color": "색상",
+      "style": "스타일",
+      "animation": "애니메이션"
+    },
+    "description": "SVG Path 기반 파이프 컴포넌트, 유동 애니메이션, 그라데이션 및 스타일 구성 지원"
+  }
+}

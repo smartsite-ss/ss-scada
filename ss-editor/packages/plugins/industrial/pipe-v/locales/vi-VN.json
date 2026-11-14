@@ -1,0 +1,39 @@
+{
+  "pipe-v": {
+    "label": "Đường ống - dọc",
+    "description": "Thành phần đường ống dọc, hỗ trợ hoạt ảnh dòng chảy và điều khiển hướng",
+    "panelTitle": "Cấu hình đường ống",
+    "properties": {
+      "width": "Chiều rộng",
+      "height": "Chiều cao",
+      "status": "Trạng thái",
+      "direction": "Hướng dòng chảy",
+      "pipeColor": "Màu đường ống",
+      "flowingColor": "Màu dòng chảy",
+      "stoppedColor": "Màu dừng",
+      "blockedColor": "Màu tắc nghẽn",
+      "pipeThickness": "Độ dày đường ống",
+      "showFlange": "Hiển thị mặt bích",
+      "flowSpeed": "Tốc độ dòng chảy",
+      "showFlowAnimation": "Hiển thị hoạt ảnh dòng chảy"
+    },
+    "options": {
+      "status": {
+        "flowing": "Đang chảy",
+        "stopped": "Dừng",
+        "blocked": "Tắc nghẽn"
+      },
+      "direction": {
+        "up": "Lên",
+        "down": "Xuống"
+      }
+    },
+    "groups": {
+      "basic": "Cơ bản",
+      "status": "Trạng thái",
+      "color": "Màu",
+      "style": "Kiểu dáng",
+      "animation": "Hoạt ảnh"
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "three-cube": {
+    "label": "3D 큐브",
+    "panelTitle": "3D 큐브 구성",
+    "properties": {
+      "cubeColor": "큐브 색상",
+      "cubeSize": "큐브 크기",
+      "rotationSpeed": "회전 속도",
+      "showGrid": "그리드 표시",
+      "showAxes": "좌표축 표시"
+    },
+    "groups": {
+      "basic": "기본 속성"
+    },
+    "description": "3D 큐브 도형 요소, 회전 애니메이션 지원"
+  }
+}

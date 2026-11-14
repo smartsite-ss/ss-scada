@@ -1,0 +1,126 @@
+{
+  "common": {
+    "ok": "OK",
+    "cancel": "Batal",
+    "save": "Simpan",
+    "delete": "Padam",
+    "edit": "Sunting",
+    "add": "Tambah",
+    "search": "Cari",
+    "reset": "Set semula",
+    "export": "Eksport",
+    "import": "Import",
+    "confirm": "Sahkan",
+    "close": "Tutup",
+    "refresh": "Muat semula",
+    "upload": "Muat naik",
+    "download": "Muat turun",
+    "preview": "Pratonton",
+    "copy": "Salin",
+    "paste": "Tampal",
+    "undo": "Buat asal",
+    "redo": "Buat semula",
+    "settings": "Tetapan",
+    "theme": "Tema",
+    "language": "Bahasa"
+  },
+  "category": {
+    "basic": "Komponen asas",
+    "form": "Komponen borang",
+    "chart": "Komponen carta",
+    "industrial": "Komponen industri",
+    "media": "Komponen media",
+    "layout": "Komponen susun atur",
+    "3d": "Komponen 3D",
+    "svg": "Komponen SVG"
+  },
+  "editor": {
+    "toolbar": "Bar alat",
+    "canvas": "Kanvas",
+    "properties": "Panel sifat",
+    "layers": "Panel lapisan",
+    "plugin": "Pengurusan pemalam",
+    "zoomIn": "Zum masuk",
+    "zoomOut": "Zum keluar",
+    "fitToScreen": "Sesuaikan skrin",
+    "undo": "Buat asal",
+    "redo": "Buat semula",
+    "delete": "Padam pilihan",
+    "selectAll": "Pilih semua",
+    "copy": "Salin",
+    "paste": "Tampal",
+    "group": "Kumpulkan",
+    "ungroup": "Nyahkumpul",
+    "bringToFront": "Ke lapisan teratas",
+    "sendToBack": "Ke lapisan terbawah",
+    "align": "Jajar"
+  },
+  "plugin": {
+    "noPluginSelected": "Tiada elemen grafik dipilih",
+    "propertiesMissing": "Sifat hilang",
+    "schemaVersion": "Versi Schema",
+    "pluginType": "Jenis elemen grafik",
+    "position": "Kedudukan",
+    "size": "Saiz",
+    "width": "Lebar",
+    "height": "Tinggi",
+    "x": "Koordinat X",
+    "y": "Koordinat Y",
+    "rotation": "Putaran",
+    "opacity": "Kelegapan",
+    "visible": "Kelihatan",
+    "locked": "Dikunci"
+  },
+  "language": {
+    "zhCN": "Cina",
+    "enUS": "Inggeris"
+  },
+  "threeStage": {
+    "label": "Bekas senario 3D",
+    "description": "Menyediakan bekas senario 3D Three.js, menyokong pemuatan model, pencahayaan dan kawalan kamera"
+  },
+  "validation": {
+    "requiredFieldMissingDefault": "Medan wajib \"{field}\" kekurangan nilai lalai (required=true tetapi defaultValue kosong)",
+    "requiredFieldMissing": "Medan wajib \"{field}\" tiada",
+    "schemaMissingName": "[{pluginName}] Schema kekurangan name",
+    "schemaMissingFields": "[{pluginName}] Schema kekurangan definisi fields",
+    "fieldDuplicate": "Medan \"{field}\" ditakrifkan berulang",
+    "fieldMissingName": "Medan kekurangan name",
+    "fieldMissingLabel": "Medan kekurangan label",
+    "fieldMissingType": "Medan kekurangan type",
+    "selectMissingOptions": "Medan select \"{field}\" kekurangan options",
+    "minGreaterThanMax": "min({min}) lebih besar daripada max({max})",
+    "invalidColorDefault": "Format nilai lalai warna \"{value}\" tidak sah",
+    "fieldMissingDefault": "Medan kekurangan defaultValue",
+    "fieldCannotBeEmpty": "Medan \"{field}\" tidak boleh kosong",
+    "fieldExpectedNumber": "Medan \"{field}\" menjangkakan jenis nombor, sebenarnya {actual}",
+    "fieldValueLessThanMin": "Nilai medan \"{field}\" {value} kurang daripada nilai minimum {min}",
+    "fieldValueGreaterThanMax": "Nilai medan \"{field}\" {value} lebih besar daripada nilai maksimum {max}",
+    "fieldExpectedString": "Medan \"{field}\" menjangkakan jenis rentetan, sebenarnya {actual}",
+    "fieldExpectedBoolean": "Medan \"{field}\" menjangkakan jenis boolean, sebenarnya {actual}",
+    "fieldValueNotInOptions": "Nilai medan \"{field}\" \"{value}\" bukan dalam pilihan sah [{options}]",
+    "fieldExpectedColor": "Medan \"{field}\" menjangkakan rentetan warna, sebenarnya {actual}",
+    "invalidColorFormat": "Nilai medan \"{field}\" \"{value}\" bukan format warna yang sah (sepatutnya #RGB / #RRGGBB / #RRGGBBAA)"
+  },
+  "pluginSdk": {
+    "readme": {
+      "type": "Jenis",
+      "category": "Kategori",
+      "renderBackend": "Cara pemaparan",
+      "properties": "Senarai sifat",
+      "default": "Lalai",
+      "development": "Pembangunan"
+    },
+    "pluginStyle": "Gaya pemalam",
+    "backendDescriptions": {
+      "vueComponent": "Dipaparkan berdasarkan komponen Vue, sesuai untuk komponen interaktif yang kompleks",
+      "canvas2d": "Dipaparkan berdasarkan Canvas 2D, sesuai untuk lukisan grafik berprestasi tinggi",
+      "svgDom": "Dipaparkan berdasarkan SVG DOM, sesuai untuk grafik vektor dan animasi",
+      "cssDom": "Dipaparkan berdasarkan CSS DOM, sesuai untuk elemen dan gaya HTML",
+      "three3d": "Dipaparkan berdasarkan 3D Three.js, sesuai untuk senario dan model tiga dimensi"
+    }
+  },
+  "createPlugin": {
+    "cannotExtractComponentName": "Tidak dapat mengekstrak nama komponen, sila nyatakan secara eksplisit melalui graphicComponentName"
+  }
+}

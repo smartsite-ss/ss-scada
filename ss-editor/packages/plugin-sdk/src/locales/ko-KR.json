@@ -1,0 +1,126 @@
+{
+  "common": {
+    "ok": "확인",
+    "cancel": "취소",
+    "save": "저장",
+    "delete": "삭제",
+    "edit": "편집",
+    "add": "추가",
+    "search": "검색",
+    "reset": "초기화",
+    "export": "내보내기",
+    "import": "가져오기",
+    "confirm": "확인",
+    "close": "닫기",
+    "refresh": "새로고침",
+    "upload": "업로드",
+    "download": "다운로드",
+    "preview": "미리보기",
+    "copy": "복사",
+    "paste": "붙여넣기",
+    "undo": "실행 취소",
+    "redo": "다시 실행",
+    "settings": "설정",
+    "theme": "테마",
+    "language": "언어"
+  },
+  "category": {
+    "basic": "기본 컴포넌트",
+    "form": "폼 컴포넌트",
+    "chart": "차트 컴포넌트",
+    "industrial": "산업 컴포넌트",
+    "media": "미디어 컴포넌트",
+    "layout": "레이아웃 컴포넌트",
+    "3d": "3D 컴포넌트",
+    "svg": "SVG 컴포넌트"
+  },
+  "editor": {
+    "toolbar": "도구 모음",
+    "canvas": "캔버스",
+    "properties": "속성 패널",
+    "layers": "레이어 패널",
+    "plugin": "플러그인 관리",
+    "zoomIn": "확대",
+    "zoomOut": "축소",
+    "fitToScreen": "화면에 맞춤",
+    "undo": "실행 취소",
+    "redo": "다시 실행",
+    "delete": "선택 항목 삭제",
+    "selectAll": "모두 선택",
+    "copy": "복사",
+    "paste": "붙여넣기",
+    "group": "그룹",
+    "ungroup": "그룹 해제",
+    "bringToFront": "맨 위로 이동",
+    "sendToBack": "맨 아래로 이동",
+    "align": "정렬"
+  },
+  "plugin": {
+    "noPluginSelected": "도형 요소가 선택되지 않았습니다",
+    "propertiesMissing": "속성이 없습니다",
+    "schemaVersion": "Schema 버전",
+    "pluginType": "도형 요소 유형",
+    "position": "위치",
+    "size": "크기",
+    "width": "너비",
+    "height": "높이",
+    "x": "X 좌표",
+    "y": "Y 좌표",
+    "rotation": "회전",
+    "opacity": "불투명도",
+    "visible": "표시됨",
+    "locked": "잠김"
+  },
+  "language": {
+    "zhCN": "중국어",
+    "enUS": "영어"
+  },
+  "threeStage": {
+    "label": "3D 장면 컨테이너",
+    "description": "Three.js 3D 장면 컨테이너를 제공하며 모델 로드, 조명, 카메라 제어를 지원합니다"
+  },
+  "validation": {
+    "requiredFieldMissingDefault": "필수 필드 \"{field}\"에 기본값이 없습니다 (required=true이지만 defaultValue가 비어 있음)",
+    "requiredFieldMissing": "필수 필드 \"{field}\"이(가) 없습니다",
+    "schemaMissingName": "[{pluginName}] Schema에 name이 없습니다",
+    "schemaMissingFields": "[{pluginName}] Schema에 fields 정의가 없습니다",
+    "fieldDuplicate": "필드 \"{field}\"이(가) 중복 정의되었습니다",
+    "fieldMissingName": "필드에 name이 없습니다",
+    "fieldMissingLabel": "필드에 label이 없습니다",
+    "fieldMissingType": "필드에 type이 없습니다",
+    "selectMissingOptions": "select 필드 \"{field}\"에 options가 없습니다",
+    "minGreaterThanMax": "min({min})이(가) max({max})보다 큽니다",
+    "invalidColorDefault": "색상 기본값 \"{value}\"의 형식이 올바르지 않습니다",
+    "fieldMissingDefault": "필드에 defaultValue가 없습니다",
+    "fieldCannotBeEmpty": "필드 \"{field}\"은(는) 비워둘 수 없습니다",
+    "fieldExpectedNumber": "필드 \"{field}\"은(는) 숫자 유형이어야 하지만 실제 값은 {actual}입니다",
+    "fieldValueLessThanMin": "필드 \"{field}\"의 값 {value}이(가) 최소값 {min}보다 작습니다",
+    "fieldValueGreaterThanMax": "필드 \"{field}\"의 값 {value}이(가) 최대값 {max}보다 큽니다",
+    "fieldExpectedString": "필드 \"{field}\"은(는) 문자열 유형이어야 하지만 실제 값은 {actual}입니다",
+    "fieldExpectedBoolean": "필드 \"{field}\"은(는) 불리언 유형이어야 하지만 실제 값은 {actual}입니다",
+    "fieldValueNotInOptions": "필드 \"{field}\"의 값 \"{value}\"이(가) 허용된 옵션 [{options}]에 없습니다",
+    "fieldExpectedColor": "필드 \"{field}\"은(는) 색상 문자열이어야 하지만 실제 값은 {actual}입니다",
+    "invalidColorFormat": "필드 \"{field}\"의 값 \"{value}\"은(는) 올바른 색상 형식이 아닙니다 (#RGB / #RRGGBB / #RRGGBBAA 형식이어야 함)"
+  },
+  "pluginSdk": {
+    "readme": {
+      "type": "유형",
+      "category": "분류",
+      "renderBackend": "렌더링 방식",
+      "properties": "속성 목록",
+      "default": "기본값",
+      "development": "개발"
+    },
+    "pluginStyle": "플러그인 스타일",
+    "backendDescriptions": {
+      "vueComponent": "Vue 컴포넌트 기반 렌더링으로 복잡한 상호작용 컴포넌트에 적합합니다",
+      "canvas2d": "Canvas 2D 기반 렌더링으로 고성능 그래픽 렌더링에 적합합니다",
+      "svgDom": "SVG DOM 기반 렌더링으로 벡터 그래픽과 애니메이션에 적합합니다",
+      "cssDom": "CSS DOM 기반 렌더링으로 HTML 요소와 스타일에 적합합니다",
+      "three3d": "Three.js 3D 기반 렌더링으로 3차원 장면과 모델에 적합합니다"
+    }
+  },
+  "createPlugin": {
+    "cannotExtractComponentName": "컴포넌트 이름을 추출할 수 없습니다. graphicComponentName으로 명시적으로 지정하세요"
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "hikvisionVideo": {
+    "label": "Hikvision 映像",
+    "description": "Hikvision カメラの RTSP ビデオウォール（1/4/9 画面）",
+    "properties": {
+      "layout": "映像レイアウト",
+      "autoPlay": "自動再生",
+      "muted": "ミュート",
+      "objectFit": "画面のフィット",
+      "showChannelName": "チャンネル名を表示",
+      "nameColor": "チャンネル名の色",
+      "nameFontSize": "チャンネル名のフォントサイズ",
+      "nameBackgroundColor": "チャンネル名の背景",
+      "backgroundColor": "背景色",
+      "gap": "チャンネル間隔"
+    },
+    "options": {
+      "layout": {
+        "1x1": "1 画面",
+        "2x2": "4 画面",
+        "3x3": "9 画面"
+      },
+      "objectFit": {
+        "contain": "全体を表示",
+        "cover": "領域を埋める",
+        "fill": "引き伸ばし"
+      }
+    },
+    "config": {
+      "channels": "映像チャンネル",
+      "channelsEmpty": "チャンネルはありません",
+      "addChannel": "チャンネルを追加",
+      "channelName": "チャンネル名",
+      "sourceUrl": "RTSP ソースアドレス",
+      "playUrl": "再生アドレス",
+      "username": "ユーザー名",
+      "password": "パスワード",
+      "enabled": "有効",
+      "deleteChannel": "削除"
+    },
+    "player": {
+      "loading": "読み込み中...",
+      "loadFailed": "読み込みに失敗しました",
+      "needFlv": "HTTP-FLV には flv.js の読み込みが必要です",
+      "needWebrtc": "WebRTC には jessibuca の読み込みが必要です"
+    }
+  }
+}

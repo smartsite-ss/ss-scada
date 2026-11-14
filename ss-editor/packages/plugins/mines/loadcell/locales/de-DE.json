@@ -1,0 +1,32 @@
+{
+  "loadcell": {
+    "label": "Wägezelle",
+    "properties": {
+      "colors": "Farbe 1",
+      "colors2": "Farbe 2",
+      "flowColor": "Strömungsfarbe",
+      "pipeColor": "Rohrfarbe",
+      "backgroundColor": "Hintergrundfarbe",
+      "bgWidth": "Hintergrundbreite",
+      "boardWidth": "Rahmenbreite",
+      "roate": "Drehwinkel",
+      "cls": "Animationsrichtung",
+      "dur": "Animationsdauer (Sekunden)",
+      "dataset": "Datenwert",
+      "decimalPlaces": "Dezimalstellen",
+      "unit": "Einheit",
+      "forwardValue": "Wert für Vorwärtslauf",
+      "backwardValue": "Wert für Rückwärtslauf",
+      "stopValue": "Wert für Stopp",
+      "defaultCls": "Standard-Animationsrichtung"
+    },
+    "options": {
+      "cls": {
+        "left": "Vorwärtslauf",
+        "right": "Rückwärtslauf",
+        "stop": "Stopp"
+      }
+    },
+    "description": "Wägezelle – Symbol mit Gewichtsanzeige (Tonnen)"
+  }
+}

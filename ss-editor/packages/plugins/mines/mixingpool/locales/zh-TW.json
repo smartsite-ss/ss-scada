@@ -1,0 +1,24 @@
+{
+  "mixingpool": {
+    "label": "攪拌桶",
+    "properties": {
+      "color1": "顏色一",
+      "color2": "顏色二",
+      "flowColor": "流動色",
+      "pipeColor": "管道色",
+      "backgroundColor": "背景色",
+      "bgWidth": "背景寬度",
+      "boardWidth": "邊框寬度",
+      "roate": "旋轉角度",
+      "cls": "動畫樣式",
+      "dur": "動畫週期(秒)",
+      "dataset": "資料值",
+      "forwardValue": "正轉對應值",
+      "backwardValue": "反轉對應值",
+      "stopValue": "停止對應值",
+      "defaultCls": "預設動畫樣式",
+      "decimalPlaces": "小數位數"
+    },
+    "description": "礦產攪拌桶 - 帶攪拌器的混合容器，支援旋轉動畫"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "faultlamp": {
+    "label": "고장 알람 램프",
+    "properties": {
+      "alarmColor": "알람 색상",
+      "backgroundColor": "배경색",
+      "dataset": "데이터 값(0=정상, >0=알람)",
+      "flashing": "점멸 효과",
+      "flashSpeed": "점멸 속도(초)",
+      "showBuzzer": "버저 표시",
+      "alarmValue": "알람 대응 값",
+      "normalValue": "정상 대응 값",
+      "defaultStatus": "기본 상태"
+    },
+    "options": {
+      "alarmColor": {
+        "red": "빨강",
+        "amber": "앰버",
+        "off": "끔"
+      }
+    },
+    "description": "고장 알람 램프 - 마름모/삼각형 경고 아이콘, 점멸 및 버저 표시 지원"
+  }
+}

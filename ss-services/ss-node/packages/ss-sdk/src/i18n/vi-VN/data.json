@@ -1,0 +1,23 @@
+{
+  "data": {
+    "acquisition": {
+      "started": "Khởi chạy thu thập dữ liệu thành công",
+      "stopped": "Đã dừng thu thập dữ liệu",
+      "error": "Thu thập dữ liệu bị lỗi"
+    },
+    "transform": {
+      "success": "Chuyển đổi dữ liệu thành công",
+      "failed_invalid_value": "Giá trị dữ liệu không hợp lệ: {{value}}",
+      "failed_scale_error": "Cấu hình hệ số tỉ lệ không đúng"
+    },
+    "persistence": {
+      "save_success": "Lưu dữ liệu thành công",
+      "save_failed": "Lưu dữ liệu thất bại ({{detail}})"
+    },
+    "history": {
+      "query_success": "Truy vấn dữ liệu lịch sử thành công",
+      "query_empty": "Không có dữ liệu lịch sử trong khoảng thời gian chỉ định",
+      "time_range_error": "Tham số khoảng thời gian không hợp lệ"
+    }
+  }
+}

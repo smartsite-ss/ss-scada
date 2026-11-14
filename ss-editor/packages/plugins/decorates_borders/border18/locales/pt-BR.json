@@ -1,0 +1,15 @@
+{
+  "border18": {
+    "label": "Borda-18 (Arabesco marroquino)",
+    "description": "Componente decorativo Borda-18 (Arabesco marroquino)",
+    "properties": {
+      "color1": "Azul joia",
+      "color2": "Cor de terracota",
+      "color3": "Dourado",
+      "backgroundColor": "Cor de fundo",
+      "showStars": "Padrão de estrelas",
+      "showArches": "Ornamento em arco",
+      "animationSpeed": "Velocidade da animação"
+    }
+  }
+}

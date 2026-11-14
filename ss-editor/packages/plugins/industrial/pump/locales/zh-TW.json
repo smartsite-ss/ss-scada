@@ -1,0 +1,43 @@
+{
+  "pump": {
+    "label": "泵浦",
+    "description": "泵浦元件，支援旋轉動畫與狀態顯示",
+    "panelTitle": "泵浦設定",
+    "properties": {
+      "width": "寬度",
+      "height": "高度",
+      "status": "狀態",
+      "bodyColor": "主體顏色",
+      "impellerColor": "葉輪顏色",
+      "highlightColor": "高亮顏色",
+      "showAnimation": "顯示動畫",
+      "animationSpeed": "轉速",
+      "rotationDirection": "旋轉方向",
+      "showLabel": "顯示標籤",
+      "labelText": "標籤文字",
+      "runningValue": "運轉對應值",
+      "stoppedValue": "停止對應值",
+      "faultValue": "故障對應值",
+      "defaultStatus": "預設狀態"
+    },
+    "options": {
+      "status": {
+        "running": "運轉中",
+        "stopped": "已停止",
+        "fault": "故障"
+      },
+      "rotationDirection": {
+        "clockwise": "順時針",
+        "counterclockwise": "逆時針"
+      }
+    },
+    "groups": {
+      "basic": "基本",
+      "status": "狀態",
+      "color": "顏色",
+      "animation": "動畫",
+      "label": "標籤",
+      "binding": "綁定對應"
+    }
+  }
+}

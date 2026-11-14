@@ -1,0 +1,23 @@
+{
+  "data": {
+    "acquisition": {
+      "started": "La recolección de datos se inició correctamente",
+      "stopped": "La recolección de datos se detuvo",
+      "error": "Error en la recolección de datos"
+    },
+    "transform": {
+      "success": "Los datos se transformaron correctamente",
+      "failed_invalid_value": "Valor de datos no válido: {{value}}",
+      "failed_scale_error": "La configuración del factor de escala es incorrecta"
+    },
+    "persistence": {
+      "save_success": "Los datos se guardaron correctamente",
+      "save_failed": "No se pudieron guardar los datos ({{detail}})"
+    },
+    "history": {
+      "query_success": "La consulta de datos históricos se realizó correctamente",
+      "query_empty": "No hay datos históricos en el rango de tiempo indicado",
+      "time_range_error": "Los parámetros del rango de tiempo son incorrectos"
+    }
+  }
+}

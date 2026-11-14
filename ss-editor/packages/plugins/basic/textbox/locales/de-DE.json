@@ -1,0 +1,56 @@
+{
+  "textbox": {
+    "label": "Textfeld",
+    "panelTitle": "Textfeld-Konfiguration",
+    "properties": {
+      "text": "Textinhalt",
+      "placeholder": "Platzhalter",
+      "fontSize": "Schriftgröße",
+      "fontWeight": "Schriftstärke",
+      "fontStyle": "Schriftstil",
+      "textColor": "Textfarbe",
+      "backgroundColor": "Hintergrundfarbe",
+      "borderColor": "Rahmenfarbe",
+      "borderWidth": "Rahmenbreite",
+      "borderStyle": "Rahmenstil",
+      "borderRadius": "Eckenradius",
+      "textAlign": "Textausrichtung",
+      "verticalAlignment": "Vertikale Ausrichtung",
+      "padding": "Innenabstand",
+      "multiline": "Mehrzeiliger Modus",
+      "readOnly": "Schreibgeschützt"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "Normal",
+        "bold": "Fett"
+      },
+      "fontStyle": {
+        "normal": "Normal",
+        "italic": "Kursiv"
+      },
+      "borderStyle": {
+        "solid": "Durchgezogen",
+        "dashed": "Gestrichelt",
+        "dotted": "Gepunktet",
+        "none": "Keine"
+      },
+      "textAlign": {
+        "left": "Linksbündig",
+        "center": "Zentriert",
+        "right": "Rechtsbündig"
+      },
+      "verticalAlignment": {
+        "top": "Oben",
+        "middle": "Zentriert",
+        "bottom": "Unten"
+      }
+    },
+    "groups": {
+      "basic": "Grundeigenschaften",
+      "style": "Stil",
+      "text": "Text"
+    },
+    "description": "Textfeld-Grafikelement"
+  }
+}

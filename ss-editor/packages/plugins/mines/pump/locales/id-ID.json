@@ -1,0 +1,32 @@
+{
+  "pump": {
+    "label": "Pompa air",
+    "properties": {
+      "colors": "Warna badan pompa 1",
+      "colors2": "Warna badan pompa 2",
+      "colors3": "Warna badan pompa 3",
+      "flowColor": "Warna aliran",
+      "pipeColor": "Warna pipa",
+      "backgroundColor": "Warna latar",
+      "bgWidth": "Lebar latar",
+      "boardWidth": "Lebar batas",
+      "roate": "Sudut rotasi",
+      "cls": "Arah animasi",
+      "dur": "Periode animasi (detik)",
+      "dataset": "Nilai data",
+      "forwardValue": "Nilai pemetaan putaran maju",
+      "backwardValue": "Nilai pemetaan putaran balik",
+      "stopValue": "Nilai pemetaan berhenti",
+      "defaultCls": "Arah animasi default",
+      "decimalPlaces": "Jumlah desimal"
+    },
+    "options": {
+      "cls": {
+        "left": "Putaran maju",
+        "right": "Putaran balik",
+        "stop": "Berhenti"
+      }
+    },
+    "description": "Pompa air tambang - pompa sentrifugal badan ganda dengan animasi rotasi"
+  }
+}

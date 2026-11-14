@@ -1,0 +1,36 @@
+{
+  "statusIndicator": {
+    "label": "Đèn báo trạng thái",
+    "description": "Thành phần đèn báo trạng thái, dùng để hiển thị nhiều trạng thái và cảnh báo",
+    "properties": {
+      "status": "Trạng thái",
+      "normalColor": "Màu bình thường",
+      "warningColor": "Màu cảnh báo",
+      "errorColor": "Màu sự cố",
+      "offlineColor": "Màu mất kết nối",
+      "size": "Kích thước đèn báo",
+      "showGlow": "Hiển thị quầng sáng",
+      "pulseSpeed": "Tốc độ nhấp nháy (giây)",
+      "normalValue": "Giá trị tương ứng bình thường",
+      "warningValue": "Giá trị tương ứng cảnh báo",
+      "errorValue": "Giá trị tương ứng sự cố",
+      "offlineValue": "Giá trị tương ứng mất kết nối",
+      "defaultStatus": "Trạng thái mặc định"
+    },
+    "options": {
+      "status": {
+        "normal": "Bình thường",
+        "warning": "Cảnh báo",
+        "error": "Sự cố",
+        "offline": "Mất kết nối"
+      }
+    },
+    "groups": {
+      "basic": "Cơ bản",
+      "color": "Màu",
+      "style": "Kiểu dáng",
+      "animation": "Hoạt ảnh",
+      "binding": "Ánh xạ liên kết"
+    }
+  }
+}

@@ -1,0 +1,126 @@
+{
+  "common": {
+    "ok": "Đồng ý",
+    "cancel": "Hủy",
+    "save": "Lưu",
+    "delete": "Xóa",
+    "edit": "Sửa",
+    "add": "Thêm",
+    "search": "Tìm kiếm",
+    "reset": "Đặt lại",
+    "export": "Xuất",
+    "import": "Nhập",
+    "confirm": "Xác nhận",
+    "close": "Đóng",
+    "refresh": "Làm mới",
+    "upload": "Tải lên",
+    "download": "Tải xuống",
+    "preview": "Xem trước",
+    "copy": "Sao chép",
+    "paste": "Dán",
+    "undo": "Hoàn tác",
+    "redo": "Làm lại",
+    "settings": "Cài đặt",
+    "theme": "Chủ đề",
+    "language": "Ngôn ngữ"
+  },
+  "category": {
+    "basic": "Thành phần cơ bản",
+    "form": "Thành phần biểu mẫu",
+    "chart": "Thành phần biểu đồ",
+    "industrial": "Thành phần công nghiệp",
+    "media": "Thành phần đa phương tiện",
+    "layout": "Thành phần bố cục",
+    "3d": "Thành phần 3D",
+    "svg": "Thành phần SVG"
+  },
+  "editor": {
+    "toolbar": "Thanh công cụ",
+    "canvas": "Canvas",
+    "properties": "Bảng thuộc tính",
+    "layers": "Bảng lớp",
+    "plugin": "Quản lý plugin",
+    "zoomIn": "Phóng to",
+    "zoomOut": "Thu nhỏ",
+    "fitToScreen": "Vừa màn hình",
+    "undo": "Hoàn tác",
+    "redo": "Làm lại",
+    "delete": "Xóa mục đã chọn",
+    "selectAll": "Chọn tất cả",
+    "copy": "Sao chép",
+    "paste": "Dán",
+    "group": "Nhóm",
+    "ungroup": "Bỏ nhóm",
+    "bringToFront": "Đưa lên trên cùng",
+    "sendToBack": "Đưa xuống dưới cùng",
+    "align": "Căn chỉnh"
+  },
+  "plugin": {
+    "noPluginSelected": "Chưa chọn phần tử đồ họa",
+    "propertiesMissing": "Thiếu thuộc tính",
+    "schemaVersion": "Phiên bản Schema",
+    "pluginType": "Loại phần tử đồ họa",
+    "position": "Vị trí",
+    "size": "Kích thước",
+    "width": "Chiều rộng",
+    "height": "Chiều cao",
+    "x": "Tọa độ X",
+    "y": "Tọa độ Y",
+    "rotation": "Xoay",
+    "opacity": "Độ trong suốt",
+    "visible": "Hiển thị",
+    "locked": "Khóa"
+  },
+  "language": {
+    "zhCN": "Tiếng Trung",
+    "enUS": "Tiếng Anh"
+  },
+  "threeStage": {
+    "label": "Vùng chứa cảnh 3D",
+    "description": "Cung cấp vùng chứa cảnh 3D Three.js, hỗ trợ tải mô hình, ánh sáng và điều khiển camera"
+  },
+  "validation": {
+    "requiredFieldMissingDefault": "Trường bắt buộc \"{field}\" thiếu giá trị mặc định (required=true nhưng defaultValue trống)",
+    "requiredFieldMissing": "Thiếu trường bắt buộc \"{field}\"",
+    "schemaMissingName": "[{pluginName}] Schema thiếu name",
+    "schemaMissingFields": "[{pluginName}] Schema thiếu định nghĩa fields",
+    "fieldDuplicate": "Trường \"{field}\" được định nghĩa trùng lặp",
+    "fieldMissingName": "Trường thiếu name",
+    "fieldMissingLabel": "Trường thiếu label",
+    "fieldMissingType": "Trường thiếu type",
+    "selectMissingOptions": "Trường select \"{field}\" thiếu options",
+    "minGreaterThanMax": "min({min}) lớn hơn max({max})",
+    "invalidColorDefault": "Giá trị mặc định màu \"{value}\" không đúng định dạng",
+    "fieldMissingDefault": "Trường thiếu defaultValue",
+    "fieldCannotBeEmpty": "Trường \"{field}\" không được để trống",
+    "fieldExpectedNumber": "Trường \"{field}\" yêu cầu kiểu số, thực tế là {actual}",
+    "fieldValueLessThanMin": "Trường \"{field}\" có giá trị {value} nhỏ hơn giá trị nhỏ nhất {min}",
+    "fieldValueGreaterThanMax": "Trường \"{field}\" có giá trị {value} lớn hơn giá trị lớn nhất {max}",
+    "fieldExpectedString": "Trường \"{field}\" yêu cầu kiểu chuỗi, thực tế là {actual}",
+    "fieldExpectedBoolean": "Trường \"{field}\" yêu cầu kiểu boolean, thực tế là {actual}",
+    "fieldValueNotInOptions": "Trường \"{field}\" có giá trị \"{value}\" không nằm trong các tùy chọn hợp lệ [{options}]",
+    "fieldExpectedColor": "Trường \"{field}\" yêu cầu chuỗi màu, thực tế là {actual}",
+    "invalidColorFormat": "Trường \"{field}\" có giá trị \"{value}\" không phải định dạng màu hợp lệ (phải là #RGB / #RRGGBB / #RRGGBBAA)"
+  },
+  "pluginSdk": {
+    "readme": {
+      "type": "Loại",
+      "category": "Danh mục",
+      "renderBackend": "Cách kết xuất",
+      "properties": "Danh sách thuộc tính",
+      "default": "Mặc định",
+      "development": "Phát triển"
+    },
+    "pluginStyle": "Kiểu plugin",
+    "backendDescriptions": {
+      "vueComponent": "Kết xuất dựa trên thành phần Vue, phù hợp với thành phần tương tác phức tạp",
+      "canvas2d": "Kết xuất dựa trên Canvas 2D, phù hợp với vẽ đồ họa hiệu năng cao",
+      "svgDom": "Kết xuất dựa trên SVG DOM, phù hợp với đồ họa vector và hoạt ảnh",
+      "cssDom": "Kết xuất dựa trên CSS DOM, phù hợp với phần tử HTML và kiểu dáng",
+      "three3d": "Kết xuất 3D dựa trên Three.js, phù hợp với cảnh và mô hình ba chiều"
+    }
+  },
+  "createPlugin": {
+    "cannotExtractComponentName": "Không thể trích xuất tên thành phần, vui lòng chỉ định rõ qua graphicComponentName"
+  }
+}

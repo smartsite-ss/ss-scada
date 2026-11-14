@@ -1,0 +1,11 @@
+{
+  "capacitor": {
+    "label": "콘덴서 뱅크",
+    "properties": {
+      "color": "선 색상",
+      "backgroundColor": "배경색",
+      "lineWidth": "선 너비"
+    },
+    "description": "콘덴서 뱅크 - 무효 전력 보상 콘덴서"
+  }
+}

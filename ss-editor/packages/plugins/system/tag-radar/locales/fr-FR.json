@@ -1,0 +1,51 @@
+{
+  "tagRadar": {
+    "label": "Radar de variables",
+    "description": "Lie plusieurs variables de tag et affiche la santé multidimensionnelle en temps réel sous forme de radar",
+    "config": {
+      "bindVariables": "Lier une variable",
+      "addVariable": "Ajouter une variable",
+      "removeVariable": "Supprimer",
+      "unbound": "Aucune variable liée",
+      "loadError": "Échec du chargement"
+    },
+    "properties": {
+      "title": "Titre",
+      "titleColor": "Couleur du titre",
+      "titleFontSize": "Taille de police du titre",
+      "titleFontWeight": "Graisse du titre",
+      "indicatorMax": "Valeur maximale de l'indicateur",
+      "gridColor": "Couleur de la grille",
+      "axisColor": "Couleur des axes",
+      "showLegend": "Afficher la légende",
+      "legendPosition": "Position de la légende",
+      "showTooltip": "Afficher l'infobulle",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "borderColor": "Couleur de bordure",
+      "borderWidth": "Largeur de bordure",
+      "borderStyle": "Style de bordure",
+      "borderRadius": "Rayon d'arrondi",
+      "shadowColor": "Couleur d'ombre",
+      "shadowOffsetX": "Décalage d'ombre X",
+      "shadowOffsetY": "Décalage d'ombre Y",
+      "shadowBlur": "Flou d'ombre"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "Normal",
+        "bold": "Gras"
+      },
+      "legendPosition": {
+        "top": "Haut",
+        "bottom": "Bas",
+        "left": "Gauche",
+        "right": "Droite"
+      },
+      "borderStyle": {
+        "solid": "Trait plein",
+        "dashed": "Tirets",
+        "dotted": "Pointillés"
+      }
+    }
+  }
+}

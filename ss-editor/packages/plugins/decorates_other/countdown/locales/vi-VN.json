@@ -1,0 +1,15 @@
+{
+  "countdown": {
+    "label": "Đếm ngược",
+    "properties": {
+      "dataset": "Đếm ngược (giây)",
+      "showDay": "Hiển thị số ngày",
+      "color1": "Màu nền",
+      "color2": "Màu chữ",
+      "flipperWidth": "Chiều rộng chữ số",
+      "flipperHeight": "Chiều cao chữ số",
+      "flipperGap": "Khoảng cách"
+    },
+    "description": "Plugin trang trí đếm ngược"
+  }
+}

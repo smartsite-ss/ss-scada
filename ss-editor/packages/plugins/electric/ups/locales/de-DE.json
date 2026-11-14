@@ -1,0 +1,19 @@
+{
+  "ups": {
+    "label": "UPS-Stromversorgung",
+    "properties": {
+      "color": "Linienfarbe",
+      "backgroundColor": "Hintergrundfarbe",
+      "lineWidth": "Linienbreite",
+      "state": "Betriebszustand"
+    },
+    "options": {
+      "state": {
+        "online": "Online",
+        "bypass": "Bypass",
+        "fault": "Störung"
+      }
+    },
+    "description": "Unterbrechungsfreie Stromversorgung (UPS) – Zustände Online/Bypass/Störung"
+  }
+}

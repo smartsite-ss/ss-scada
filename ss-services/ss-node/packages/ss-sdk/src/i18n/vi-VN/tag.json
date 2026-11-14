@@ -1,0 +1,31 @@
+{
+  "tag": {
+    "create": {
+      "success": "Tạo thẻ dữ liệu thành công",
+      "failed_name_exists": "Tên thẻ đã tồn tại trong thiết bị này"
+    },
+    "update": {
+      "success": "Cập nhật thẻ dữ liệu thành công"
+    },
+    "delete": {
+      "success": "Xóa thẻ dữ liệu thành công"
+    },
+    "read": {
+      "success": "Đọc dữ liệu thẻ thành công",
+      "failed_device_offline": "Thiết bị offline, không thể đọc",
+      "failed_timeout": "Đọc quá thời gian chờ"
+    },
+    "write": {
+      "success": "Ghi dữ liệu thẻ thành công",
+      "failed_readonly": "Thẻ này chỉ đọc, không thể ghi",
+      "failed_device_offline": "Thiết bị offline, không thể ghi"
+    },
+    "quality": {
+      "good": "Tốt",
+      "uncertain": "Không chắc chắn",
+      "bad": "Kém",
+      "config_error": "Cấu hình không đúng",
+      "device_offline": "Thiết bị offline"
+    }
+  }
+}

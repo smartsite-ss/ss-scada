@@ -1,0 +1,45 @@
+{
+  "valve": {
+    "label": "Ventil",
+    "description": "Ventil-Komponente mit Schaltzustand und Typauswahl",
+    "panelTitle": "Ventil-Konfiguration",
+    "properties": {
+      "width": "Breite",
+      "height": "Höhe",
+      "status": "Zustand",
+      "valveType": "Ventiltyp",
+      "bodyColor": "Gehäusefarbe",
+      "stemColor": "Spindelfarbe",
+      "openColor": "Farbe offen",
+      "closedColor": "Farbe geschlossen",
+      "faultColor": "Störungsfarbe",
+      "showLabel": "Beschriftung anzeigen",
+      "labelText": "Beschriftungstext",
+      "openValue": "Wert für offen",
+      "closedValue": "Wert für geschlossen",
+      "faultValue": "Wert für Störung",
+      "defaultStatus": "Standardzustand"
+    },
+    "options": {
+      "status": {
+        "open": "Offen",
+        "closed": "Geschlossen",
+        "opening": "Öffnet",
+        "closing": "Schließt",
+        "fault": "Störung"
+      },
+      "valveType": {
+        "butterfly": "Absperrklappe",
+        "gate": "Absperrschieber"
+      }
+    },
+    "groups": {
+      "basic": "Basis",
+      "status": "Zustand",
+      "color": "Farbe",
+      "statusColor": "Statusfarbe",
+      "label": "Beschriftung",
+      "binding": "Bindungszuordnung"
+    }
+  }
+}

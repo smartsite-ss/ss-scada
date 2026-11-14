@@ -1,0 +1,102 @@
+{
+  "historyTrend": {
+    "label": "Tendencia histórica",
+    "description": "Consulta la tendencia histórica de una o varias variables por intervalo de tiempo",
+    "config": {
+      "bindVariables": "Variables enlazadas",
+      "addVariable": "Agregar variable",
+      "removeVariable": "Eliminar",
+      "unbound": "Sin variables enlazadas",
+      "timeRange": "Intervalo de tiempo",
+      "queryMethod": "Método de consulta",
+      "query": "Consultar",
+      "querying": "Consultando…"
+    },
+    "series": {
+      "lineWidth": "Ancho de línea",
+      "lineType": "Tipo de línea",
+      "lineColor": "Color de línea",
+      "symbolSize": "Tamaño del punto relleno",
+      "labelShow": "Mostrar etiqueta",
+      "labelFontSize": "Tamaño de fuente de la etiqueta",
+      "labelColor": "Color de la etiqueta",
+      "labelPosition": "Posición de la etiqueta",
+      "areaShow": "Mostrar relleno de área",
+      "areaStartColor": "Color inicial",
+      "areaMiddleColor": "Color intermedio",
+      "areaEndColor": "Color final",
+      "areaOpacity": "Opacidad"
+    },
+    "options": {
+      "interpolation": {
+        "raw": "Valor original",
+        "linear": "Interpolación lineal",
+        "step": "Interpolación escalonada"
+      },
+      "presetRange": {
+        "1h": "Última hora",
+        "6h": "Últimas 6 horas",
+        "24h": "Últimas 24 horas",
+        "7d": "Últimos 7 días",
+        "custom": "Personalizado"
+      },
+      "lineType": {
+        "solid": "Sólida",
+        "dashed": "Discontinua",
+        "dotted": "Punteada"
+      },
+      "labelPosition": {
+        "top": "Arriba",
+        "left": "Izquierda",
+        "right": "Derecha",
+        "bottom": "Abajo"
+      },
+      "legendPosition": {
+        "top": "Arriba",
+        "bottom": "Abajo",
+        "left": "Izquierda",
+        "right": "Derecha"
+      },
+      "borderStyle": {
+        "solid": "Sólida",
+        "dashed": "Discontinua",
+        "dotted": "Punteada"
+      },
+      "fontWeight": {
+        "normal": "Normal",
+        "bold": "Negrita"
+      }
+    },
+    "properties": {
+      "defaultInterpolation": "Método de consulta predeterminado",
+      "defaultInterval": "Intervalo de interpolación predeterminado (ms)",
+      "defaultPresetRange": "Rango de tiempo predeterminado",
+      "defaultCustomStart": "Hora de inicio personalizada",
+      "defaultCustomEnd": "Hora de fin personalizada",
+      "maxPoints": "Máximo de puntos mostrados",
+      "title": "Título",
+      "titleColor": "Color del título",
+      "titleFontSize": "Tamaño de fuente del título",
+      "titleFontWeight": "Grosor del título",
+      "gridColor": "Color de la cuadrícula",
+      "axisColor": "Color de los ejes",
+      "showLegend": "Mostrar leyenda",
+      "legendPosition": "Posición de la leyenda",
+      "showTooltip": "Mostrar información emergente",
+      "showDataZoom": "Zoom del eje de tiempo",
+      "showXAxis": "Mostrar eje de tiempo",
+      "xAxisLineColor": "Color del eje de tiempo",
+      "xAxisLabelFontSize": "Tamaño de fuente del eje de tiempo",
+      "xAxisLabelRotate": "Inclinación del texto del eje de tiempo",
+      "backgroundColor": "Color de fondo",
+      "borderColor": "Color del borde",
+      "borderWidth": "Ancho del borde",
+      "borderStyle": "Estilo del borde",
+      "borderRadius": "Radio de esquina",
+      "shadowColor": "Color de sombra",
+      "shadowOffsetX": "Desplazamiento de sombra X",
+      "shadowOffsetY": "Desplazamiento de sombra Y",
+      "shadowBlur": "Desenfoque de sombra"
+    }
+  }
+}

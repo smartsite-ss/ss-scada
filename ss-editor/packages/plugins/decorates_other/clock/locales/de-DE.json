@@ -1,0 +1,12 @@
+{
+  "clock": {
+    "label": "Uhr",
+    "properties": {
+      "color1": "Zeigerfarbe",
+      "color2": "Zifferblatthintergrund",
+      "color3": "Rahmenfarbe",
+      "borderWidth": "Rahmenbreite"
+    },
+    "description": "Analoge Uhr"
+  }
+}

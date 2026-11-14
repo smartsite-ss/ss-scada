@@ -1,0 +1,15 @@
+{
+  "countdown": {
+    "label": "Cuenta regresiva",
+    "properties": {
+      "dataset": "Cuenta regresiva (s)",
+      "showDay": "Mostrar días",
+      "color1": "Color de fondo",
+      "color2": "Color del texto",
+      "flipperWidth": "Ancho del dígito",
+      "flipperHeight": "Alto del dígito",
+      "flipperGap": "Espaciado"
+    },
+    "description": "Complemento decorativo de cuenta regresiva"
+  }
+}

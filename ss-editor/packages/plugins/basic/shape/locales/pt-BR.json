@@ -1,0 +1,46 @@
+{
+  "shape": {
+    "label": "Forma",
+    "panelTitle": "Propriedades da forma",
+    "properties": {
+      "shapeType": "Tipo de forma",
+      "fillColor": "Cor de preenchimento",
+      "fillOpacity": "Opacidade do preenchimento",
+      "borderColor": "Cor da borda",
+      "borderWidth": "Largura da borda",
+      "borderStyle": "Estilo da borda",
+      "borderRadius": "Raio da borda",
+      "shadowColor": "Cor da sombra",
+      "shadowOffsetX": "Deslocamento X da sombra",
+      "shadowOffsetY": "Deslocamento Y da sombra",
+      "shadowBlur": "Desfoque da sombra"
+    },
+    "options": {
+      "shapeType": {
+        "rectangle": "Retângulo",
+        "roundedRectangle": "Retângulo arredondado",
+        "circle": "Círculo",
+        "ellipse": "Elipse",
+        "triangle": "Triângulo",
+        "diamond": "Losango",
+        "polygon": "Polígono",
+        "arrowUp": "Seta para cima",
+        "arrowDown": "Seta para baixo",
+        "arrowLeft": "Seta para a esquerda",
+        "arrowRight": "Seta para a direita",
+        "line": "Linha"
+      },
+      "borderStyle": {
+        "solid": "Sólida",
+        "dashed": "Tracejada",
+        "dotted": "Pontilhada"
+      }
+    },
+    "groups": {
+      "basic": "Propriedades básicas",
+      "style": "Estilo",
+      "shadow": "Sombra"
+    },
+    "description": "Elemento gráfico de forma"
+  }
+}

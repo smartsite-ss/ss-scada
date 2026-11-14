@@ -1,0 +1,15 @@
+{
+  "border17": {
+    "label": "Rahmen-17 (Cyberpunk-Neon)",
+    "description": "Dekorationselement Rahmen-17 (Cyberpunk-Neon)",
+    "properties": {
+      "color1": "Neon-Cyan",
+      "color2": "Neon-Pink",
+      "color3": "Grundfarbe",
+      "backgroundColor": "Hintergrundfarbe",
+      "showCircuit": "Schaltkreis-Textur",
+      "showScanline": "Scanlinie",
+      "animationSpeed": "Animationsgeschwindigkeit"
+    }
+  }
+}

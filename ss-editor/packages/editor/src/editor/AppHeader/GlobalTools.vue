@@ -38,20 +38,14 @@
           class="language-dropdown-menu"
         >
           <button
+            v-for="locale in localeOptions"
+            :key="locale.code"
             class="language-dropdown-item"
-            :class="{ active: currentLanguage === 'zh-CN' }"
-            @click="switchLanguage('zh-CN')"
+            :class="{ active: currentLanguage === locale.code }"
+            @click="switchLanguage(locale.code)"
           >
-            <span class="language-icon">🇨🇳</span>
-            <span>{{ $t('globalTools.chinese') }}</span>
-          </button>
-          <button
-            class="language-dropdown-item"
-            :class="{ active: currentLanguage === 'en-US' }"
-            @click="switchLanguage('en-US')"
-          >
-            <span class="language-icon">🇺🇸</span>
-            <span>{{ $t('globalTools.english') }}</span>
+            <span class="language-icon">{{ locale.flag }}</span>
+            <span>{{ locale.label }}</span>
           </button>
         </div>
       </div>
@@ -119,7 +113,8 @@
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import { useConfigStore, useTheme, setLocale, getLocale } from '@scada-editor/core';
+import { useConfigStore, useTheme, setLocale, getLocale, LOCALE_OPTIONS } from '@scada-editor/core';
+import type { SupportedLocale } from '@scada-editor/core';
 import Icon from '../../common/Icon.vue';
 import {
   ExpandOutline,
@@ -129,7 +124,7 @@ import {
   GridOutline
 } from '@vicons/ionicons5';
 
-type LocaleType = 'zh-CN' | 'en-US';
+const localeOptions = LOCALE_OPTIONS;
 
 // Global toolbar area component
 // Responsible for auxiliary functions such as search, message notifications, fullscreen toggle, theme switch, language switch, etc.
@@ -189,14 +184,14 @@ const currentLanguage = computed(() => getLocale());
 onMounted(() => {
   const savedLang = configStore.ui?.language;
   if (savedLang && savedLang !== getLocale()) {
-    setLocale(savedLang as 'zh-CN' | 'en-US');
+    setLocale(savedLang as SupportedLocale);
   }
 });
 
 // Watch the language change in configStore
 watch(() => configStore.ui?.language, (newLang) => {
   if (newLang && newLang !== getLocale()) {
-    setLocale(newLang as 'zh-CN' | 'en-US');
+    setLocale(newLang as SupportedLocale);
   }
 });
 
@@ -207,7 +202,7 @@ const switchTheme = (theme: string) => {
 };
 
 // Switch language
-const switchLanguage = (language: LocaleType) => {
+const switchLanguage = (language: SupportedLocale) => {
   setLocale(language);
   configStore.updateUIConfig({ language });
   showLanguageDropdown.value = false;
@@ -480,6 +475,8 @@ const navigateToSystem = () => {
   gap: 4px;
   z-index: 1000;
   min-width: 120px;
+  max-height: 70vh;
+  overflow-y: auto;
 }
 
 .language-dropdown-item {

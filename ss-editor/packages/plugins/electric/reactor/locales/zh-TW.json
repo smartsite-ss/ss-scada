@@ -1,0 +1,11 @@
+{
+  "reactor": {
+    "label": "電抗器",
+    "properties": {
+      "color": "線條顏色",
+      "backgroundColor": "背景色",
+      "lineWidth": "線寬"
+    },
+    "description": "電抗器 - 限流電抗器"
+  }
+}

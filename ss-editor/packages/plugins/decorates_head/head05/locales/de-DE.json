@@ -1,0 +1,11 @@
+{
+  "head05": {
+    "label": "Kopfdekoration-05",
+    "properties": {
+      "color1": "Farbe 1",
+      "color2": "Farbe 2",
+      "dur": "Animationsdauer (Sekunden)"
+    },
+    "description": "Segmentierte Animation"
+  }
+}

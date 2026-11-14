@@ -1,0 +1,11 @@
+{
+  "border09": {
+    "label": "Bordure-09",
+    "description": "Composant décoratif Bordure-09",
+    "properties": {
+      "color1": "Couleur 1",
+      "color2": "Couleur 2",
+      "backgroundColor": "Couleur d'arrière-plan"
+    }
+  }
+}

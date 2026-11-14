@@ -1,0 +1,11 @@
+{
+  "reactor": {
+    "label": "Drosselspule",
+    "properties": {
+      "color": "Linienfarbe",
+      "backgroundColor": "Hintergrundfarbe",
+      "lineWidth": "Linienbreite"
+    },
+    "description": "Drosselspule – Strombegrenzungsdrossel"
+  }
+}

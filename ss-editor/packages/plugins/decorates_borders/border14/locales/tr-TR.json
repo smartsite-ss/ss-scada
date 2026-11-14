@@ -1,0 +1,15 @@
+{
+  "border14": {
+    "label": "Kenarlık-14",
+    "description": "Kenarlık-14 dekoratif bileşeni",
+    "properties": {
+      "color1": "Ana renk",
+      "color2": "Yardımcı renk",
+      "backgroundColor": "Arka plan rengi",
+      "showHexGrid": "Altıgen kılavuz",
+      "showScanLine": "Tarama çizgisi",
+      "showCoreLines": "Merkez artı çizgisi",
+      "animationSpeed": "Animasyon hızı"
+    }
+  }
+}

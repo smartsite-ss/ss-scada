@@ -1,0 +1,31 @@
+{
+  "aircompressor": {
+    "label": "Pemampat udara",
+    "properties": {
+      "colors": "Warna 1",
+      "colors2": "Warna 2",
+      "flowColor": "Warna aliran",
+      "pipeColor": "Warna paip",
+      "backgroundColor": "Warna latar",
+      "bgWidth": "Lebar latar",
+      "boardWidth": "Lebar sempadan",
+      "roate": "Sudut putaran",
+      "cls": "Arah animasi",
+      "dur": "Kitaran animasi (saat)",
+      "dataset": "Nilai data",
+      "forwardValue": "Nilai padanan putaran ke hadapan",
+      "backwardValue": "Nilai padanan putaran songsang",
+      "stopValue": "Nilai padanan berhenti",
+      "defaultCls": "Arah animasi lalai",
+      "decimalPlaces": "Bilangan perpuluhan"
+    },
+    "options": {
+      "cls": {
+        "left": "Putaran ke hadapan",
+        "right": "Putaran songsang",
+        "stop": "Berhenti"
+      }
+    },
+    "description": "Pemampat udara - pemampat udara jenis skru dengan kawalan arah operasi dan kelajuan"
+  }
+}

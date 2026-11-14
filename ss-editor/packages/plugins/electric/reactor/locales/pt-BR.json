@@ -1,0 +1,11 @@
+{
+  "reactor": {
+    "label": "Reator",
+    "properties": {
+      "color": "Cor da linha",
+      "backgroundColor": "Cor de fundo",
+      "lineWidth": "Espessura da linha"
+    },
+    "description": "Reator - reator limitador de corrente"
+  }
+}

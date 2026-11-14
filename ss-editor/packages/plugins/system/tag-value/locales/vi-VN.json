@@ -1,0 +1,61 @@
+{
+  "plugins": {
+    "groups": {
+      "shape": "Hình dạng",
+      "name": "Tên",
+      "decoration": "Trang trí"
+    }
+  },
+  "tagValue": {
+    "label": "Biến thẻ trang trí",
+    "description": "Hiển thị giá trị thời gian thực của biến thiết bị (vuông/tròn)",
+    "config": {
+      "bindVariable": "Liên kết biến",
+      "selectVariable": "Chọn biến",
+      "clear": "Xóa bỏ",
+      "unbound": "Chưa liên kết",
+      "decorationImage": "Hình ảnh trang trí",
+      "backgroundImage": "Hình ảnh nền",
+      "selectImage": "Chọn hình ảnh"
+    },
+    "selector": {
+      "title": "Chọn biến thiết bị",
+      "searchPlaceholder": "Tìm kiếm thiết bị hoặc biến",
+      "tagCount": "{count} biến",
+      "loading": "Đang tải...",
+      "empty": "Chưa có biến thiết bị"
+    },
+    "properties": {
+      "shape": "Hình dạng",
+      "alias": "Bí danh",
+      "showName": "Hiển thị tên",
+      "nameColor": "Màu tên",
+      "nameFontSize": "Cỡ chữ tên",
+      "nameFontWeight": "Độ đậm tên",
+      "nameGap": "Khoảng cách tên",
+      "decorationImagePosition": "Vị trí hình trang trí",
+      "decorationImageSize": "Kích thước hình trang trí",
+      "decorationImageOpacity": "Độ mờ hình trang trí",
+      "backgroundRepeat": "Lặp nền",
+      "backgroundImageFit": "Kiểu lấp đầy"
+    },
+    "options": {
+      "shape": {
+        "rectangle": "Hình vuông",
+        "circle": "Hình tròn"
+      },
+      "decorationPosition": {
+        "left": "Trái",
+        "right": "Phải",
+        "background": "Nền",
+        "center": "Giữa"
+      },
+      "backgroundRepeat": {
+        "repeat": "Lặp",
+        "no-repeat": "Không lặp",
+        "repeat-x": "Lặp ngang",
+        "repeat-y": "Lặp dọc"
+      }
+    }
+  }
+}

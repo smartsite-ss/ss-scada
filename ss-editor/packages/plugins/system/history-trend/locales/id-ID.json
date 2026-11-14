@@ -1,0 +1,102 @@
+{
+  "historyTrend": {
+    "label": "Tren historis",
+    "description": "Menanyakan tren historis satu atau beberapa variabel berdasarkan rentang waktu",
+    "config": {
+      "bindVariables": "Variabel terikat",
+      "addVariable": "Tambah variabel",
+      "removeVariable": "Hapus",
+      "unbound": "Variabel belum terikat",
+      "timeRange": "Rentang waktu",
+      "queryMethod": "Metode kueri",
+      "query": "Kueri",
+      "querying": "Memuat kueri…"
+    },
+    "series": {
+      "lineWidth": "Lebar garis",
+      "lineType": "Tipe garis",
+      "lineColor": "Warna garis",
+      "symbolSize": "Ukuran titik solid",
+      "labelShow": "Tampilkan label",
+      "labelFontSize": "Ukuran font label",
+      "labelColor": "Warna label",
+      "labelPosition": "Posisi label",
+      "areaShow": "Isi area tampilan",
+      "areaStartColor": "Warna awal",
+      "areaMiddleColor": "Warna tengah",
+      "areaEndColor": "Warna akhir",
+      "areaOpacity": "Opasitas"
+    },
+    "options": {
+      "interpolation": {
+        "raw": "Nilai mentah",
+        "linear": "Interpolasi linear",
+        "step": "Interpolasi bertahap"
+      },
+      "presetRange": {
+        "1h": "1 jam terakhir",
+        "6h": "6 jam terakhir",
+        "24h": "24 jam terakhir",
+        "7d": "7 hari terakhir",
+        "custom": "Kustom"
+      },
+      "lineType": {
+        "solid": "Garis solid",
+        "dashed": "Garis putus-putus",
+        "dotted": "Garis titik"
+      },
+      "labelPosition": {
+        "top": "Atas",
+        "left": "Kiri",
+        "right": "Kanan",
+        "bottom": "Bawah"
+      },
+      "legendPosition": {
+        "top": "Atas",
+        "bottom": "Bawah",
+        "left": "Kiri",
+        "right": "Kanan"
+      },
+      "borderStyle": {
+        "solid": "Garis solid",
+        "dashed": "Garis putus-putus",
+        "dotted": "Garis titik"
+      },
+      "fontWeight": {
+        "normal": "Normal",
+        "bold": "Tebal"
+      }
+    },
+    "properties": {
+      "defaultInterpolation": "Metode kueri default",
+      "defaultInterval": "Interval interpolasi default (ms)",
+      "defaultPresetRange": "Rentang waktu default",
+      "defaultCustomStart": "Waktu mulai kustom",
+      "defaultCustomEnd": "Waktu selesai kustom",
+      "maxPoints": "Tampilkan jumlah titik maksimum",
+      "title": "Judul",
+      "titleColor": "Warna judul",
+      "titleFontSize": "Ukuran font judul",
+      "titleFontWeight": "Ketebalan judul",
+      "gridColor": "Warna grid",
+      "axisColor": "Warna sumbu",
+      "showLegend": "Tampilkan legenda",
+      "legendPosition": "Posisi legenda",
+      "showTooltip": "Tampilkan tooltip",
+      "showDataZoom": "Zoom sumbu waktu",
+      "showXAxis": "Tampilkan sumbu waktu",
+      "xAxisLineColor": "Warna sumbu waktu",
+      "xAxisLabelFontSize": "Ukuran font sumbu waktu",
+      "xAxisLabelRotate": "Kemiringan teks sumbu waktu",
+      "backgroundColor": "Warna latar",
+      "borderColor": "Warna batas",
+      "borderWidth": "Lebar batas",
+      "borderStyle": "Gaya batas",
+      "borderRadius": "Sudut membulat",
+      "shadowColor": "Warna bayangan",
+      "shadowOffsetX": "Offset bayangan X",
+      "shadowOffsetY": "Offset bayangan Y",
+      "shadowBlur": "Blur bayangan"
+    }
+  }
+}

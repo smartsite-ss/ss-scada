@@ -1,0 +1,12 @@
+{
+  "clock": {
+    "label": "Saat",
+    "properties": {
+      "color1": "İbre rengi",
+      "color2": "Kadran arka planı",
+      "color3": "Kenarlık rengi",
+      "borderWidth": "Kenarlık genişliği"
+    },
+    "description": "Analog saat"
+  }
+}

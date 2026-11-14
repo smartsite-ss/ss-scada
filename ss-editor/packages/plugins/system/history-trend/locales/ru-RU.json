@@ -1,0 +1,102 @@
+{
+  "historyTrend": {
+    "label": "История трендов",
+    "description": "Запрос истории трендов одной или нескольких переменных за период",
+    "config": {
+      "bindVariables": "Привязать переменные",
+      "addVariable": "Добавить переменную",
+      "removeVariable": "Удалить",
+      "unbound": "Переменная не привязана",
+      "timeRange": "Период",
+      "queryMethod": "Способ запроса",
+      "query": "Запрос",
+      "querying": "Запрос…"
+    },
+    "series": {
+      "lineWidth": "Толщина линии",
+      "lineType": "Тип линии",
+      "lineColor": "Цвет линии",
+      "symbolSize": "Размер маркера",
+      "labelShow": "Показать подписи",
+      "labelFontSize": "Размер шрифта подписей",
+      "labelColor": "Цвет подписей",
+      "labelPosition": "Положение подписей",
+      "areaShow": "Показать заливку области",
+      "areaStartColor": "Начальный цвет",
+      "areaMiddleColor": "Средний цвет",
+      "areaEndColor": "Конечный цвет",
+      "areaOpacity": "Прозрачность"
+    },
+    "options": {
+      "interpolation": {
+        "raw": "Исходные значения",
+        "linear": "Линейная интерполяция",
+        "step": "Ступенчатая интерполяция"
+      },
+      "presetRange": {
+        "1h": "Последний час",
+        "6h": "Последние 6 часов",
+        "24h": "Последние 24 часа",
+        "7d": "Последние 7 дней",
+        "custom": "Настраиваемый"
+      },
+      "lineType": {
+        "solid": "Сплошная",
+        "dashed": "Штриховая",
+        "dotted": "Пунктирная"
+      },
+      "labelPosition": {
+        "top": "Сверху",
+        "left": "Слева",
+        "right": "Справа",
+        "bottom": "Снизу"
+      },
+      "legendPosition": {
+        "top": "Сверху",
+        "bottom": "Снизу",
+        "left": "Слева",
+        "right": "Справа"
+      },
+      "borderStyle": {
+        "solid": "Сплошная",
+        "dashed": "Штриховая",
+        "dotted": "Пунктирная"
+      },
+      "fontWeight": {
+        "normal": "Обычный",
+        "bold": "Жирный"
+      }
+    },
+    "properties": {
+      "defaultInterpolation": "Способ запроса по умолчанию",
+      "defaultInterval": "Интервал интерполяции по умолчанию (мс)",
+      "defaultPresetRange": "Период по умолчанию",
+      "defaultCustomStart": "Настраиваемое начало",
+      "defaultCustomEnd": "Настраиваемый конец",
+      "maxPoints": "Максимум точек",
+      "title": "Заголовок",
+      "titleColor": "Цвет заголовка",
+      "titleFontSize": "Размер шрифта заголовка",
+      "titleFontWeight": "Насыщенность шрифта заголовка",
+      "gridColor": "Цвет сетки",
+      "axisColor": "Цвет осей",
+      "showLegend": "Показать легенду",
+      "legendPosition": "Положение легенды",
+      "showTooltip": "Показать подсказку",
+      "showDataZoom": "Масштаб оси времени",
+      "showXAxis": "Показать ось времени",
+      "xAxisLineColor": "Цвет оси времени",
+      "xAxisLabelFontSize": "Размер шрифта оси времени",
+      "xAxisLabelRotate": "Наклон подписей оси времени",
+      "backgroundColor": "Цвет фона",
+      "borderColor": "Цвет рамки",
+      "borderWidth": "Ширина рамки",
+      "borderStyle": "Стиль рамки",
+      "borderRadius": "Скругление",
+      "shadowColor": "Цвет тени",
+      "shadowOffsetX": "Смещение тени X",
+      "shadowOffsetY": "Смещение тени Y",
+      "shadowBlur": "Размытие тени"
+    }
+  }
+}

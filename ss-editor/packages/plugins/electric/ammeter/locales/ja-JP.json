@@ -1,0 +1,15 @@
+{
+  "ammeter": {
+    "label": "電流計",
+    "properties": {
+      "color": "線の色",
+      "backgroundColor": "背景色",
+      "lineWidth": "線幅",
+      "dataset": "静的データ値",
+      "showDigital": "デジタル値を表示",
+      "decimalPlaces": "小数点以下の桁数",
+      "unit": "単位"
+    },
+    "description": "電流計 - 電流を測定する計器"
+  }
+}

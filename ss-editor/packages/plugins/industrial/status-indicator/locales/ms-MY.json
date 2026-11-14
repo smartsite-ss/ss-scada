@@ -1,0 +1,36 @@
+{
+  "statusIndicator": {
+    "label": "Lampu penunjuk status",
+    "description": "Komponen lampu penunjuk status untuk paparan berbilang keadaan dan penggera",
+    "properties": {
+      "status": "Status",
+      "normalColor": "Warna normal",
+      "warningColor": "Warna amaran",
+      "errorColor": "Warna kerosakan",
+      "offlineColor": "Warna luar talian",
+      "size": "Saiz lampu penunjuk",
+      "showGlow": "Tunjuk halo",
+      "pulseSpeed": "Kelajuan denyut (saat)",
+      "normalValue": "Nilai padanan normal",
+      "warningValue": "Nilai padanan amaran",
+      "errorValue": "Nilai padanan kerosakan",
+      "offlineValue": "Nilai padanan luar talian",
+      "defaultStatus": "Status lalai"
+    },
+    "options": {
+      "status": {
+        "normal": "Normal",
+        "warning": "Amaran",
+        "error": "Kerosakan",
+        "offline": "Luar talian"
+      }
+    },
+    "groups": {
+      "basic": "Asas",
+      "color": "Warna",
+      "style": "Gaya",
+      "animation": "Animasi",
+      "binding": "Pemetaan ikatan"
+    }
+  }
+}

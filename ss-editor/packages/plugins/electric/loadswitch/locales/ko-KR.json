@@ -1,0 +1,21 @@
+{
+  "loadswitch": {
+    "label": "부하 개폐기",
+    "properties": {
+      "color": "선 색상",
+      "backgroundColor": "배경색",
+      "lineWidth": "선 너비",
+      "closed": "닫힘 상태",
+      "closedValue": "닫힘 대응 값",
+      "openValue": "열림 대응 값",
+      "defaultStatus": "기본 상태"
+    },
+    "options": {
+      "closed": {
+        "yes": "닫힘",
+        "no": "열림"
+      }
+    },
+    "description": "전력 부하 개폐기 - 아크 소호 기능이 있는 부하 개폐기"
+  }
+}

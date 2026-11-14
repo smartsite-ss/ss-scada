@@ -1,0 +1,15 @@
+{
+  "border18": {
+    "label": "Sempadan-18 (Arabesque Maghribi)",
+    "description": "Komponen hiasan sempadan-18 (Arabesque Maghribi)",
+    "properties": {
+      "color1": "Biru permata",
+      "color2": "Warna tanah liat",
+      "color3": "Emas",
+      "backgroundColor": "Warna latar",
+      "showStars": "Corak bintang",
+      "showArches": "Hiasan gerbang",
+      "animationSpeed": "Kelajuan animasi"
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "border19": {
+    "label": "Viền-19 (Typo Thụy Sĩ)",
+    "description": "Thành phần trang trí viền-19 (Typo Thụy Sĩ)",
+    "properties": {
+      "color1": "Đen đậm",
+      "color2": "Đỏ sáng",
+      "color3": "Trắng",
+      "backgroundColor": "Màu nền",
+      "showBlocks": "Khối hình học",
+      "showAccents": "Chấm trang trí",
+      "animationSpeed": "Tốc độ hoạt ảnh"
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "motor": {
+    "label": "Электродвигатель",
+    "properties": {
+      "color": "Цвет линии",
+      "backgroundColor": "Цвет фона",
+      "lineWidth": "Толщина линии",
+      "running": "Состояние работы",
+      "runningValue": "Значение «работа»",
+      "stoppedValue": "Значение «стоп»",
+      "faultValue": "Значение «авария»",
+      "defaultStatus": "Состояние по умолчанию"
+    },
+    "options": {
+      "running": {
+        "yes": "Работа",
+        "no": "Стоп"
+      }
+    },
+    "description": "Электродвигатель — с индикацией вращения"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "busbar": {
+    "label": "Đoạn thanh cái",
+    "properties": {
+      "color": "Màu đường nét",
+      "backgroundColor": "Màu nền",
+      "lineWidth": "Độ rộng nét",
+      "labelText": "Văn bản nhãn"
+    },
+    "description": "Đoạn thanh cái - thanh cái tập trung và phân phối điện năng"
+  }
+}

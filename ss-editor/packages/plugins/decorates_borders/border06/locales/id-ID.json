@@ -1,0 +1,11 @@
+{
+  "border06": {
+    "label": "Batas-06",
+    "description": "Komponen dekorasi batas-06",
+    "properties": {
+      "color1": "Warna pertama",
+      "color2": "Warna kedua",
+      "backgroundColor": "Warna latar"
+    }
+  }
+}

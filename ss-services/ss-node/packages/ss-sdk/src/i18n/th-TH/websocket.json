@@ -1,0 +1,45 @@
+{
+  "websocket": {
+    "connected": "เชื่อมต่อ WebSocket สำเร็จ",
+    "disconnected": "ตัดการเชื่อมต่อ WebSocket แล้ว",
+    "pong": "Pong - การตอบสนอง heartbeat",
+    "event": {
+      "data_update": "เหตุการณ์อัปเดตข้อมูล (แท็ก: {{tagId}})",
+      "alarm_triggered": "เหตุการณ์ทริกเกอร์การแจ้งเตือน",
+      "alarm_acknowledged": "เหตุการณ์รับทราบการแจ้งเตือน",
+      "alarm_cleared": "เหตุการณ์ล้างการแจ้งเตือน",
+      "device_status_change": "เหตุการณ์เปลี่ยนสถานะอุปกรณ์"
+    },
+    "error": {
+      "authentication_failed": "การยืนยันตัวตน WebSocket ล้มเหลว",
+      "rate_limit_exceeded": "ความถี่ของข้อความเกินขีดจำกัด",
+      "invalid_message_format": "รูปแบบข้อความไม่ถูกต้อง"
+    },
+    "room": {
+      "joined": "ผู้ใช้ {{username}} เข้าร่วมห้อง {{room}}",
+      "left": "ผู้ใช้ {{username}} ออกจากห้อง {{room}}",
+      "permission_denied": "ไม่มีสิทธิ์เข้าร่วมห้องโปรเจกต์ {{projectId}}",
+      "not_authenticated": "ผู้ใช้ที่ยังไม่ยืนยันตัวตนไม่สามารถเข้าร่วมห้องโปรเจกต์ได้"
+    },
+    "connection": {
+      "limit_exceeded": "จำนวนการเชื่อมต่อถึงขีดจำกัดสูงสุดแล้ว ({{current}}/{{max}})",
+      "user_limit_exceeded": "จำนวนการเชื่อมต่อของผู้ใช้ {{username}} ถึงขีดจำกัดสูงสุดแล้ว ({{current}}/{{max}})",
+      "ip_limit_exceeded": "จำนวนการเชื่อมต่อของ IP {{ip}} ถึงขีดจำกัดสูงสุดแล้ว ({{current}}/{{max}})",
+      "idle_timeout": "การเชื่อมต่อว่างเกินเวลา (ไม่มีข้อความทางธุรกิจ {{minutes}} นาที)",
+      "force_disconnected": "ผู้ดูแลระบบบังคับตัดการเชื่อมต่อ",
+      "global_limit_exceeded": "จำนวนการเชื่อมต่อทั้งหมดถึงขีดจำกัดสูงสุดแล้ว ({{current}}/{{max}})"
+    },
+    "monitor": {
+      "online_count": "จำนวนการเชื่อมต่อออนไลน์",
+      "message_rate": "อัตราข้อความ",
+      "connection_duration": "ระยะเวลาการเชื่อมต่อ",
+      "abnormal_detected": "ตรวจพบการเชื่อมต่อที่ผิดปกติ"
+    },
+    "offline": {
+      "message_cached": "แคชข้อความออฟไลน์แล้ว",
+      "message_replayed": "ส่งข้อความออฟไลน์ซ้ำแล้ว ({{count}} รายการ)",
+      "message_expired": "ข้อความหมดอายุและถูกล้างแล้ว",
+      "message_confirmed": "ยืนยันข้อความแล้ว"
+    }
+  }
+}

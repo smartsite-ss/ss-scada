@@ -1,0 +1,11 @@
+{
+  "border02": {
+    "label": "Viền-02",
+    "description": "Thành phần trang trí viền-02",
+    "properties": {
+      "colors": "Màu thứ nhất",
+      "colors2": "Màu thứ hai",
+      "backgroundColor": "Màu nền"
+    }
+  }
+}

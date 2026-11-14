@@ -1,0 +1,15 @@
+{
+  "ammeter": {
+    "label": "Ampermetre",
+    "properties": {
+      "color": "Çizgi rengi",
+      "backgroundColor": "Arka plan rengi",
+      "lineWidth": "Çizgi kalınlığı",
+      "dataset": "Statik veri değeri",
+      "showDigital": "Dijital okumayı göster",
+      "decimalPlaces": "Ondalık basamak sayısı",
+      "unit": "Birim"
+    },
+    "description": "Ampermetre - Akım ölçüm göstergesi"
+  }
+}

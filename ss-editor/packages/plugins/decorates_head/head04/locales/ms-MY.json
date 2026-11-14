@@ -1,0 +1,12 @@
+{
+  "head04": {
+    "label": "Hiasan kepala-04",
+    "properties": {
+      "color1": "Warna satu",
+      "color2": "Warna dua",
+      "backgroundColor": "Warna latar",
+      "reverse": "Balikkan"
+    },
+    "description": "Hiasan garis serong"
+  }
+}

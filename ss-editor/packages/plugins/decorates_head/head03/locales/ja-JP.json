@@ -1,0 +1,13 @@
+{
+  "head03": {
+    "label": "ヘッダー装飾-03",
+    "properties": {
+      "color1": "色1",
+      "color2": "色2",
+      "dataset": "表示テキスト",
+      "textColor": "文字色",
+      "textSize": "フォントサイズ"
+    },
+    "description": "左右の矢印形装飾と中央のテキスト"
+  }
+}

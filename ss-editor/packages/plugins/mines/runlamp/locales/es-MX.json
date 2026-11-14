@@ -1,0 +1,23 @@
+{
+  "runlamp": {
+    "label": "Luz indicadora de marcha",
+    "properties": {
+      "lampColor": "Color de la lámpara",
+      "glowing": "Efecto de brillo",
+      "blinkSpeed": "Velocidad de parpadeo",
+      "backgroundColor": "Color de fondo",
+      "runningValue": "Valor para en marcha",
+      "stoppedValue": "Valor para detenido",
+      "faultValue": "Valor para falla",
+      "defaultStatus": "Estado predeterminado"
+    },
+    "options": {
+      "lampColor": {
+        "green": "Verde",
+        "red": "Rojo",
+        "yellow": "Amarillo"
+      }
+    },
+    "description": "Luz indicadora de marcha: bombilla circular con animación de pulso luminoso según el estado"
+  }
+}

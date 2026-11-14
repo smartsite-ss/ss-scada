@@ -1,0 +1,11 @@
+{
+  "capacitor": {
+    "label": "コンデンサバンク",
+    "properties": {
+      "color": "線の色",
+      "backgroundColor": "背景色",
+      "lineWidth": "線幅"
+    },
+    "description": "コンデンサバンク - 無効電力補償用コンデンサ"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "statusIndicator": {
+    "label": "ไฟแสดงสถานะ",
+    "description": "องค์ประกอบไฟแสดงสถานะ สำหรับแสดงหลายสถานะและการแจ้งเตือน",
+    "properties": {
+      "status": "สถานะ",
+      "normalColor": "สีปกติ",
+      "warningColor": "สีคำเตือน",
+      "errorColor": "สีข้อขัดข้อง",
+      "offlineColor": "สีออฟไลน์",
+      "size": "ขนาดไฟแสดงสถานะ",
+      "showGlow": "แสดงรัศมีเรืองแสง",
+      "pulseSpeed": "ความเร็วพัลส์ (วินาที)",
+      "normalValue": "ค่าที่สอดคล้องกับปกติ",
+      "warningValue": "ค่าที่สอดคล้องกับคำเตือน",
+      "errorValue": "ค่าที่สอดคล้องกับข้อขัดข้อง",
+      "offlineValue": "ค่าที่สอดคล้องกับออฟไลน์",
+      "defaultStatus": "สถานะเริ่มต้น"
+    },
+    "options": {
+      "status": {
+        "normal": "ปกติ",
+        "warning": "คำเตือน",
+        "error": "ข้อขัดข้อง",
+        "offline": "ออฟไลน์"
+      }
+    },
+    "groups": {
+      "basic": "พื้นฐาน",
+      "color": "สี",
+      "style": "รูปแบบ",
+      "animation": "แอนิเมชัน",
+      "binding": "การแมปการผูก"
+    }
+  }
+}

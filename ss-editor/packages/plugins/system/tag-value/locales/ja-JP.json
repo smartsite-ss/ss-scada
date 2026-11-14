@@ -1,0 +1,61 @@
+{
+  "plugins": {
+    "groups": {
+      "shape": "形状",
+      "name": "名前",
+      "decoration": "装飾"
+    }
+  },
+  "tagValue": {
+    "label": "装飾タグ変数",
+    "description": "デバイス変数のリアルタイム値を表示（四角/円）",
+    "config": {
+      "bindVariable": "変数をバインド",
+      "selectVariable": "変数を選択",
+      "clear": "クリア",
+      "unbound": "未バインド",
+      "decorationImage": "装飾画像",
+      "backgroundImage": "背景画像",
+      "selectImage": "画像を選択"
+    },
+    "selector": {
+      "title": "デバイス変数を選択",
+      "searchPlaceholder": "デバイスまたは変数を検索",
+      "tagCount": "{count} 個の変数",
+      "loading": "読み込み中...",
+      "empty": "デバイス変数はありません"
+    },
+    "properties": {
+      "shape": "形状",
+      "alias": "別名",
+      "showName": "名前を表示",
+      "nameColor": "名前の色",
+      "nameFontSize": "名前のフォントサイズ",
+      "nameFontWeight": "名前の太さ",
+      "nameGap": "名前の間隔",
+      "decorationImagePosition": "装飾画像の位置",
+      "decorationImageSize": "装飾画像のサイズ",
+      "decorationImageOpacity": "装飾画像の不透明度",
+      "backgroundRepeat": "背景の繰り返し",
+      "backgroundImageFit": "塗りつぶしスタイル"
+    },
+    "options": {
+      "shape": {
+        "rectangle": "四角",
+        "circle": "円"
+      },
+      "decorationPosition": {
+        "left": "左",
+        "right": "右",
+        "background": "背景",
+        "center": "中央"
+      },
+      "backgroundRepeat": {
+        "repeat": "繰り返し",
+        "no-repeat": "繰り返しなし",
+        "repeat-x": "横方向に繰り返し",
+        "repeat-y": "縦方向に繰り返し"
+      }
+    }
+  }
+}

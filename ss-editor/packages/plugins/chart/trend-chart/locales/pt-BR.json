@@ -1,0 +1,50 @@
+{
+  "trendChart": {
+    "label": "Gráfico de tendência",
+    "description": "Gráfico de tendência em tempo real/histórico com comparação de múltiplas séries e subamostragem LTTB",
+    "properties": {
+      "title": "Título",
+      "titleColor": "Cor do título",
+      "titleFontSize": "Tamanho da fonte do título",
+      "titleFontWeight": "Peso da fonte do título",
+      "backgroundColor": "Cor de fundo",
+      "borderColor": "Cor da borda",
+      "borderWidth": "Largura da borda",
+      "borderStyle": "Estilo da borda",
+      "borderRadius": "Raio da borda",
+      "gridColor": "Cor das linhas de grade",
+      "axisColor": "Cor dos eixos",
+      "lineColors": "Cor das curvas",
+      "lineWidth": "Espessura das curvas",
+      "showPoints": "Mostrar pontos de dados",
+      "pointRadius": "Raio dos pontos de dados",
+      "showLegend": "Mostrar legenda",
+      "legendPosition": "Posição da legenda",
+      "maxPens": "Número máximo de séries",
+      "timeWindow": "Janela de tempo (s)",
+      "showTooltip": "Mostrar dica",
+      "yAxisLabel": "Rótulo do eixo Y",
+      "shadowColor": "Cor da sombra",
+      "shadowOffsetX": "Deslocamento X da sombra",
+      "shadowOffsetY": "Deslocamento Y da sombra",
+      "shadowBlur": "Desfoque da sombra"
+    },
+    "options": {
+      "titleFontWeight": {
+        "normal": "Normal",
+        "bold": "Negrito"
+      },
+      "borderStyle": {
+        "solid": "Sólida",
+        "dashed": "Tracejada",
+        "dotted": "Pontilhada"
+      },
+      "legendPosition": {
+        "top": "Topo",
+        "bottom": "Base",
+        "left": "Esquerda",
+        "right": "Direita"
+      }
+    }
+  }
+}

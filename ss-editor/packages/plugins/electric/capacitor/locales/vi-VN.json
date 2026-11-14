@@ -1,0 +1,11 @@
+{
+  "capacitor": {
+    "label": "Bộ tụ điện",
+    "properties": {
+      "color": "Màu đường nét",
+      "backgroundColor": "Màu nền",
+      "lineWidth": "Độ rộng nét"
+    },
+    "description": "Bộ tụ điện - tụ bù công suất phản kháng"
+  }
+}

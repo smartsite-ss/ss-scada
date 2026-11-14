@@ -1,0 +1,17 @@
+{
+  "three-cube": {
+    "label": "3D-Würfel",
+    "panelTitle": "3D-Würfel-Konfiguration",
+    "properties": {
+      "cubeColor": "Würfelfarbe",
+      "cubeSize": "Würfelgröße",
+      "rotationSpeed": "Drehgeschwindigkeit",
+      "showGrid": "Raster anzeigen",
+      "showAxes": "Achsen anzeigen"
+    },
+    "groups": {
+      "basic": "Grundeigenschaften"
+    },
+    "description": "3D-Würfel-Grafikelement mit Drehanimation"
+  }
+}

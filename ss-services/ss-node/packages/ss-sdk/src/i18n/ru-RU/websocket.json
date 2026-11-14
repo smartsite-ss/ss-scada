@@ -1,0 +1,45 @@
+{
+  "websocket": {
+    "connected": "WebSocket: подключение установлено",
+    "disconnected": "WebSocket: соединение разорвано",
+    "pong": "Pong — ответ на heartbeat",
+    "event": {
+      "data_update": "Событие обновления данных (тег: {{tagId}})",
+      "alarm_triggered": "Событие тревоги",
+      "alarm_acknowledged": "Событие подтверждения тревоги",
+      "alarm_cleared": "Событие снятия тревоги",
+      "device_status_change": "Событие изменения состояния устройства"
+    },
+    "error": {
+      "authentication_failed": "Ошибка аутентификации WebSocket",
+      "rate_limit_exceeded": "Превышена частота сообщений",
+      "invalid_message_format": "Неверный формат сообщения"
+    },
+    "room": {
+      "joined": "Пользователь {{username}} присоединился к комнате {{room}}",
+      "left": "Пользователь {{username}} покинул комнату {{room}}",
+      "permission_denied": "Нет прав на присоединение к комнате проекта {{projectId}}",
+      "not_authenticated": "Неаутентифицированный пользователь не может присоединиться к комнате проекта"
+    },
+    "connection": {
+      "limit_exceeded": "Достигнут предел подключений ({{current}}/{{max}})",
+      "user_limit_exceeded": "Достигнут предел подключений пользователя {{username}} ({{current}}/{{max}})",
+      "ip_limit_exceeded": "Достигнут предел подключений с IP {{ip}} ({{current}}/{{max}})",
+      "idle_timeout": "Тайм-аут простоя соединения ({{minutes}} мин без сообщений)",
+      "force_disconnected": "Администратор принудительно разорвал соединение",
+      "global_limit_exceeded": "Достигнут глобальный предел подключений ({{current}}/{{max}})"
+    },
+    "monitor": {
+      "online_count": "Активных подключений",
+      "message_rate": "Скорость сообщений",
+      "connection_duration": "Длительность соединения",
+      "abnormal_detected": "Обнаружено аномальное подключение"
+    },
+    "offline": {
+      "message_cached": "Офлайн-сообщение сохранено в кеше",
+      "message_replayed": "Офлайн-сообщения доставлены ({{count}})",
+      "message_expired": "Срок хранения сообщения истёк, оно удалено",
+      "message_confirmed": "Сообщение подтверждено"
+    }
+  }
+}

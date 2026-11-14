@@ -1,0 +1,19 @@
+{
+  "ups": {
+    "label": "ИБП",
+    "properties": {
+      "color": "Цвет линии",
+      "backgroundColor": "Цвет фона",
+      "lineWidth": "Толщина линии",
+      "state": "Рабочее состояние"
+    },
+    "options": {
+      "state": {
+        "online": "Онлайн",
+        "bypass": "Байпас",
+        "fault": "Авария"
+      }
+    },
+    "description": "ИБП — режимы онлайн/байпас/авария"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "three-cube": {
+    "label": "3D küp",
+    "panelTitle": "3D küp yapılandırması",
+    "properties": {
+      "cubeColor": "Küp rengi",
+      "cubeSize": "Küp boyutu",
+      "rotationSpeed": "Döndürme hızı",
+      "showGrid": "Kılavuz çizgilerini göster",
+      "showAxes": "Eksenleri göster"
+    },
+    "groups": {
+      "basic": "Temel özellikler"
+    },
+    "description": "Döndürme animasyonunu destekleyen 3D küp grafik öğesi"
+  }
+}

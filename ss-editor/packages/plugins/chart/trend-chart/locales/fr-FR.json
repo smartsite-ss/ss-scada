@@ -1,0 +1,50 @@
+{
+  "trendChart": {
+    "label": "Courbe de tendance",
+    "description": "Courbe de tendance temps réel/historique avec comparaison multi-stylos et sous-échantillonnage LTTB",
+    "properties": {
+      "title": "Titre",
+      "titleColor": "Couleur du titre",
+      "titleFontSize": "Taille de police du titre",
+      "titleFontWeight": "Graisse du titre",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "borderColor": "Couleur de bordure",
+      "borderWidth": "Largeur de bordure",
+      "borderStyle": "Style de bordure",
+      "borderRadius": "Rayon d'arrondi",
+      "gridColor": "Couleur des lignes de grille",
+      "axisColor": "Couleur des axes",
+      "lineColors": "Couleur des courbes",
+      "lineWidth": "Largeur des courbes",
+      "showPoints": "Afficher les points de données",
+      "pointRadius": "Rayon des points de données",
+      "showLegend": "Afficher la légende",
+      "legendPosition": "Position de la légende",
+      "maxPens": "Nombre maximal de stylos",
+      "timeWindow": "Fenêtre temporelle (s)",
+      "showTooltip": "Afficher l'infobulle",
+      "yAxisLabel": "Étiquette de l'axe Y",
+      "shadowColor": "Couleur d'ombre",
+      "shadowOffsetX": "Décalage d'ombre X",
+      "shadowOffsetY": "Décalage d'ombre Y",
+      "shadowBlur": "Flou d'ombre"
+    },
+    "options": {
+      "titleFontWeight": {
+        "normal": "Normal",
+        "bold": "Gras"
+      },
+      "borderStyle": {
+        "solid": "Trait plein",
+        "dashed": "Tirets",
+        "dotted": "Pointillés"
+      },
+      "legendPosition": {
+        "top": "Haut",
+        "bottom": "Bas",
+        "left": "Gauche",
+        "right": "Droite"
+      }
+    }
+  }
+}

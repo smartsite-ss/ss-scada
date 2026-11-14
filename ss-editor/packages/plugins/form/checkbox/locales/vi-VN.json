@@ -1,0 +1,31 @@
+{
+  "checkbox": {
+    "label": "Hộp kiểm",
+    "description": "Thành phần hộp kiểm, dùng cho thao tác chọn nhiều",
+    "panelTitle": "Cấu hình hộp kiểm",
+    "properties": {
+      "checked": "Trạng thái chọn",
+      "label": "Văn bản nhãn",
+      "disabled": "Vô hiệu hóa",
+      "indeterminate": "Trạng thái chọn một phần",
+      "color": "Màu khi chọn",
+      "labelPosition": "Vị trí nhãn",
+      "size": "Kích thước"
+    },
+    "options": {
+      "labelPosition": {
+        "right": "Bên phải",
+        "left": "Bên trái"
+      },
+      "size": {
+        "small": "Nhỏ",
+        "medium": "Vừa",
+        "large": "Lớn"
+      }
+    },
+    "groups": {
+      "basic": "Thuộc tính cơ bản",
+      "style": "Kiểu dáng"
+    }
+  }
+}

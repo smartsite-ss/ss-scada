@@ -1,0 +1,47 @@
+{
+  "multiChart": {
+    "label": "複合グラフ",
+    "description": "複合グラフコンポーネント。棒グラフ、円グラフ、ヒートマップに対応",
+    "panelTitle": "複合グラフの設定",
+    "properties": {
+      "title": "タイトル",
+      "titleColor": "タイトルの色",
+      "titleFontSize": "タイトルのフォントサイズ",
+      "chartType": "グラフの種類",
+      "backgroundColor": "背景色",
+      "borderColor": "枠線色",
+      "borderWidth": "枠線幅",
+      "borderRadius": "角の丸み",
+      "barColor": "棒の色",
+      "barGap": "棒の間隔",
+      "pieColors": "円グラフの色シーケンス",
+      "pieInnerRadius": "内側半径の比率",
+      "pieShowLabels": "ラベルを表示",
+      "heatmapColorLow": "ヒートマップ低値の色",
+      "heatmapColorHigh": "ヒートマップ高値の色",
+      "heatmapRows": "行数",
+      "heatmapCols": "列数",
+      "showLegend": "凡例を表示",
+      "shadowColor": "影の色",
+      "shadowOffsetX": "影のオフセットX",
+      "shadowOffsetY": "影のオフセットY",
+      "shadowBlur": "影のぼかし"
+    },
+    "options": {
+      "chartType": {
+        "bar": "棒グラフ",
+        "pie": "円グラフ",
+        "heatmap": "ヒートマップ"
+      }
+    },
+    "groups": {
+      "basic": "基本",
+      "style": "スタイル",
+      "bar": "棒グラフ",
+      "pie": "円グラフ",
+      "heatmap": "ヒートマップ",
+      "display": "表示",
+      "shadow": "影"
+    }
+  }
+}

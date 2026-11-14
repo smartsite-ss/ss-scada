@@ -1,0 +1,19 @@
+{
+  "time-common": {
+    "label": "공통 시간",
+    "properties": {
+      "textColor": "텍스트 색상",
+      "fontSize": "글꼴 크기",
+      "fontWeight": "글꼴 두께",
+      "shadow": "그림자"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "보통",
+        "bold": "굵게",
+        "lighter": "얇게"
+      }
+    },
+    "description": "공통 시간 표시"
+  }
+}

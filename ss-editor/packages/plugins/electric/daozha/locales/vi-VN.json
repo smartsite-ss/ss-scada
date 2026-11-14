@@ -1,0 +1,22 @@
+{
+  "daozha": {
+    "label": "Dao cách ly",
+    "properties": {
+      "color": "Màu đường nét",
+      "backgroundColor": "Màu nền",
+      "lineWidth": "Độ rộng nét",
+      "terminalRadius": "Bán kính đầu cực",
+      "closed": "Trạng thái đóng",
+      "closedValue": "Giá trị tương ứng đóng",
+      "openValue": "Giá trị tương ứng mở",
+      "defaultStatus": "Trạng thái mặc định"
+    },
+    "options": {
+      "closed": {
+        "yes": "Đóng",
+        "no": "Mở"
+      }
+    },
+    "description": "Dao cách ly điện - phần tử đồ họa dao cách ly, hỗ trợ chuyển trạng thái đóng/mở"
+  }
+}

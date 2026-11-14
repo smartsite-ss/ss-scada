@@ -1,0 +1,23 @@
+{
+  "system": {
+    "health_check": {
+      "success": "La verificación de estado del sistema fue satisfactoria",
+      "failed": "Falló la verificación de estado del sistema: {{detail}}"
+    },
+    "config": {
+      "reload_success": "La configuración se recargó correctamente",
+      "reload_failed": "No se pudo recargar la configuración: {{detail}}",
+      "validation_error": "Falló la validación de la configuración: {{detail}}"
+    },
+    "storage": {
+      "database_connected": "Conexión con la base de datos establecida",
+      "database_connection_failed": "Falló la conexión con la base de datos: {{detail}}",
+      "redis_connected": "Conexión con Redis establecida",
+      "redis_connection_failed": "Falló la conexión con Redis: {{detail}}"
+    },
+    "maintenance": {
+      "mode_enabled": "El modo de mantenimiento está habilitado",
+      "mode_disabled": "El modo de mantenimiento está deshabilitado"
+    }
+  }
+}

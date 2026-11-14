@@ -1,0 +1,40 @@
+{
+  "tagWaterpolo": {
+    "label": "Жидкостная диаграмма",
+    "description": "Привязка одной переменной с отображением уровня в виде волны",
+    "config": {
+      "bindVariable": "Привязать переменную",
+      "addVariable": "Выбрать переменную",
+      "removeVariable": "Удалить",
+      "unbound": "Переменная не привязана"
+    },
+    "properties": {
+      "title": "Заголовок",
+      "titleColor": "Цвет заголовка",
+      "titleFontSize": "Размер шрифта заголовка",
+      "unit": "Единица измерения",
+      "minValue": "Минимум",
+      "maxValue": "Максимум",
+      "showValue": "Показать значение",
+      "valueColor": "Цвет значения",
+      "waterColor": "Цвет жидкости",
+      "trackColor": "Цвет дорожки",
+      "backgroundColor": "Цвет фона",
+      "borderColor": "Цвет рамки",
+      "borderWidth": "Ширина рамки",
+      "borderStyle": "Стиль рамки",
+      "borderRadius": "Скругление",
+      "shadowColor": "Цвет тени",
+      "shadowOffsetX": "Смещение тени X",
+      "shadowOffsetY": "Смещение тени Y",
+      "shadowBlur": "Размытие тени"
+    },
+    "options": {
+      "borderStyle": {
+        "solid": "Сплошная",
+        "dashed": "Штриховая",
+        "dotted": "Пунктирная"
+      }
+    }
+  }
+}

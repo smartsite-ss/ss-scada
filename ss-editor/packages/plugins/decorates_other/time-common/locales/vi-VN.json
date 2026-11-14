@@ -1,0 +1,19 @@
+{
+  "time-common": {
+    "label": "Thời gian thông dụng",
+    "properties": {
+      "textColor": "Màu chữ",
+      "fontSize": "Cỡ chữ",
+      "fontWeight": "Độ đậm chữ",
+      "shadow": "Bóng đổ"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "Bình thường",
+        "bold": "Đậm",
+        "lighter": "Mảnh"
+      }
+    },
+    "description": "Hiển thị thời gian thông dụng"
+  }
+}

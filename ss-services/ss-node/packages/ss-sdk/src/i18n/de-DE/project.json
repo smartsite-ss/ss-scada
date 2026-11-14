@@ -1,0 +1,24 @@
+{
+  "project": {
+    "create": {
+      "success": "Projekt erfolgreich erstellt",
+      "failed_name_exists": "Der Projektname ist bereits vorhanden"
+    },
+    "update": {
+      "success": "Projekt erfolgreich aktualisiert",
+      "failed_not_owner": "Keine Berechtigung zum Ändern dieses Projekts"
+    },
+    "delete": {
+      "success": "Projekt erfolgreich gelöscht",
+      "failed_has_devices": "Das Projekt enthält noch Geräte und kann nicht gelöscht werden"
+    },
+    "get": {
+      "success": "Projektinformationen erfolgreich abgerufen",
+      "not_found": "Projekt nicht vorhanden"
+    },
+    "list": {
+      "success": "Projektliste erfolgreich abgerufen",
+      "empty": "Keine Projekte vorhanden"
+    }
+  }
+}

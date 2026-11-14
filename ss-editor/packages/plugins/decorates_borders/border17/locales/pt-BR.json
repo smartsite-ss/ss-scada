@@ -1,0 +1,15 @@
+{
+  "border17": {
+    "label": "Borda-17 (Neon cyberpunk)",
+    "description": "Componente decorativo Borda-17 (Neon cyberpunk)",
+    "properties": {
+      "color1": "Ciano neon",
+      "color2": "Rosa neon",
+      "color3": "Cor de fundo",
+      "backgroundColor": "Cor de fundo",
+      "showCircuit": "Textura de circuito",
+      "showScanline": "Linha de varredura",
+      "animationSpeed": "Velocidade da animação"
+    }
+  }
+}

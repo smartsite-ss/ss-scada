@@ -1,0 +1,45 @@
+{
+  "waterpump": {
+    "label": "ปั๊มน้ำ",
+    "description": "องค์ประกอบปั๊มน้ำ รองรับแอนิเมชันการหมุนและการแสดงสถานะ",
+    "panelTitle": "การกำหนดค่าปั๊มน้ำ",
+    "properties": {
+      "width": "ความกว้าง",
+      "height": "ความสูง",
+      "status": "สถานะ",
+      "bodyColor": "สีกรอบ",
+      "impellerColor": "สีใบพัด",
+      "pipeColor": "สีท่อ",
+      "flangeColor": "สีหน้าแปลน",
+      "highlightColor": "สีไฮไลต์",
+      "showAnimation": "แสดงแอนิเมชัน",
+      "rotationSpeed": "ความเร็วรอบ",
+      "rotationDirection": "ทิศทางการหมุน",
+      "showLabel": "แสดงป้ายกำกับ",
+      "labelText": "ข้อความป้ายกำกับ",
+      "runningValue": "ค่าที่สอดคล้องกับการทำงาน",
+      "stoppedValue": "ค่าที่สอดคล้องกับหยุด",
+      "faultValue": "ค่าที่สอดคล้องกับข้อขัดข้อง",
+      "defaultStatus": "สถานะเริ่มต้น"
+    },
+    "options": {
+      "status": {
+        "running": "กำลังทำงาน",
+        "stopped": "หยุดแล้ว",
+        "fault": "ข้อขัดข้อง"
+      },
+      "rotationDirection": {
+        "clockwise": "ตามเข็มนาฬิกา",
+        "counterclockwise": "ทวนเข็มนาฬิกา"
+      }
+    },
+    "groups": {
+      "basic": "พื้นฐาน",
+      "status": "สถานะ",
+      "color": "สี",
+      "animation": "แอนิเมชัน",
+      "label": "ป้ายกำกับ",
+      "binding": "การแมปการผูก"
+    }
+  }
+}

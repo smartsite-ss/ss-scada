@@ -1,0 +1,23 @@
+{
+  "system": {
+    "health_check": {
+      "success": "การตรวจสอบสุขภาพระบบผ่าน",
+      "failed": "การตรวจสอบสุขภาพระบบไม่ผ่าน: {{detail}}"
+    },
+    "config": {
+      "reload_success": "โหลดการกำหนดค่าใหม่สำเร็จ",
+      "reload_failed": "โหลดการกำหนดค่าใหม่ไม่สำเร็จ: {{detail}}",
+      "validation_error": "ตรวจสอบการกำหนดค่าไม่ผ่าน: {{detail}}"
+    },
+    "storage": {
+      "database_connected": "เชื่อมต่อฐานข้อมูลสำเร็จ",
+      "database_connection_failed": "เชื่อมต่อฐานข้อมูลไม่สำเร็จ: {{detail}}",
+      "redis_connected": "เชื่อมต่อ Redis สำเร็จ",
+      "redis_connection_failed": "เชื่อมต่อ Redis ไม่สำเร็จ: {{detail}}"
+    },
+    "maintenance": {
+      "mode_enabled": "เปิดโหมดบำรุงรักษาแล้ว",
+      "mode_disabled": "ปิดโหมดบำรุงรักษาแล้ว"
+    }
+  }
+}

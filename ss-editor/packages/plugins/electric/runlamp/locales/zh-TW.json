@@ -1,0 +1,23 @@
+{
+  "runlamp": {
+    "label": "運轉指示燈",
+    "properties": {
+      "lampColor": "燈色",
+      "backgroundColor": "背景色",
+      "radius": "半徑",
+      "state": "運轉狀態",
+      "runningValue": "運轉對應值",
+      "stoppedValue": "停止對應值",
+      "faultValue": "故障對應值",
+      "defaultStatus": "預設狀態"
+    },
+    "options": {
+      "state": {
+        "running": "運轉",
+        "stopped": "停止",
+        "fault": "故障"
+      }
+    },
+    "description": "運轉狀態指示燈 - 支援運轉/停止/故障三態"
+  }
+}

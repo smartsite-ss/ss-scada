@@ -1,0 +1,23 @@
+{
+  "runlamp": {
+    "label": "운전 표시등",
+    "properties": {
+      "lampColor": "램프 색상",
+      "glowing": "발광 효과",
+      "blinkSpeed": "점멸 속도",
+      "backgroundColor": "배경색",
+      "runningValue": "운전 대응 값",
+      "stoppedValue": "정지 대응 값",
+      "faultValue": "고장 대응 값",
+      "defaultStatus": "기본 상태"
+    },
+    "options": {
+      "lampColor": {
+        "green": "녹색",
+        "red": "빨강",
+        "yellow": "노랑"
+      }
+    },
+    "description": "운전 표시등 - 원형 전구 색상 상태 펄스 발광 애니메이션"
+  }
+}

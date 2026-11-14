@@ -1,0 +1,51 @@
+{
+  "tagRadar": {
+    "label": "Радарная диаграмма переменных",
+    "description": "Привязка нескольких переменных с отображением многомерного состояния на радарной диаграмме",
+    "config": {
+      "bindVariables": "Привязать переменные",
+      "addVariable": "Добавить переменную",
+      "removeVariable": "Удалить",
+      "unbound": "Переменные не привязаны",
+      "loadError": "Ошибка загрузки"
+    },
+    "properties": {
+      "title": "Заголовок",
+      "titleColor": "Цвет заголовка",
+      "titleFontSize": "Размер шрифта заголовка",
+      "titleFontWeight": "Насыщенность шрифта заголовка",
+      "indicatorMax": "Максимум показателя",
+      "gridColor": "Цвет сетки",
+      "axisColor": "Цвет осей",
+      "showLegend": "Показать легенду",
+      "legendPosition": "Положение легенды",
+      "showTooltip": "Показать подсказку",
+      "backgroundColor": "Цвет фона",
+      "borderColor": "Цвет рамки",
+      "borderWidth": "Ширина рамки",
+      "borderStyle": "Стиль рамки",
+      "borderRadius": "Скругление",
+      "shadowColor": "Цвет тени",
+      "shadowOffsetX": "Смещение тени X",
+      "shadowOffsetY": "Смещение тени Y",
+      "shadowBlur": "Размытие тени"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "Обычный",
+        "bold": "Жирный"
+      },
+      "legendPosition": {
+        "top": "Сверху",
+        "bottom": "Снизу",
+        "left": "Слева",
+        "right": "Справа"
+      },
+      "borderStyle": {
+        "solid": "Сплошная",
+        "dashed": "Штриховая",
+        "dotted": "Пунктирная"
+      }
+    }
+  }
+}

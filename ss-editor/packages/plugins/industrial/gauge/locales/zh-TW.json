@@ -1,0 +1,42 @@
+{
+  "gauge": {
+    "label": "儀表板",
+    "description": "儀表板元件，用於數值顯示與警報",
+    "panelTitle": "儀表板設定",
+    "properties": {
+      "width": "寬度",
+      "height": "高度",
+      "value": "目前值",
+      "minValue": "最小值",
+      "maxValue": "最大值",
+      "unit": "單位",
+      "decimalPlaces": "小數位數",
+      "startAngle": "起始角度",
+      "endAngle": "結束角度",
+      "faceColor": "錶面顏色",
+      "rimColor": "邊框顏色",
+      "needleColor": "指針顏色",
+      "tickColor": "刻度線顏色",
+      "labelColor": "標籤顏色",
+      "valueColor": "數值顏色",
+      "showTicks": "顯示刻度",
+      "showLabels": "顯示標籤",
+      "showValue": "顯示數值",
+      "majorTicks": "主刻度數",
+      "minorTicks": "副刻度數",
+      "warningValue": "警告閾值",
+      "dangerValue": "危險閾值",
+      "warningColor": "警告顏色",
+      "dangerColor": "危險顏色"
+    },
+    "groups": {
+      "basic": "基本",
+      "value": "數值",
+      "gauge": "儀表",
+      "color": "顏色",
+      "display": "顯示",
+      "ticks": "刻度",
+      "alarm": "警報"
+    }
+  }
+}

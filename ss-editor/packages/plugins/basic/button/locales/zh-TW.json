@@ -1,0 +1,54 @@
+{
+  "button": {
+    "label": "按鈕",
+    "panelTitle": "按鈕屬性",
+    "properties": {
+      "text": "文字",
+      "backgroundColor": "背景色",
+      "fontColor": "文字色",
+      "borderColor": "邊框色",
+      "borderWidth": "邊框寬度",
+      "borderStyle": "邊框樣式",
+      "borderRadius": "圓角",
+      "fontSize": "字型大小",
+      "fontWeight": "字型粗細",
+      "textAlign": "文字對齊",
+      "shadowColor": "陰影顏色",
+      "shadowOffsetX": "陰影偏移X",
+      "shadowOffsetY": "陰影偏移Y",
+      "shadowBlur": "陰影模糊",
+      "targetType": "點擊動作",
+      "targetPage": "目標頁面",
+      "targetUrl": "目標URL"
+    },
+    "options": {
+      "borderStyle": {
+        "solid": "實線",
+        "dashed": "虛線",
+        "dotted": "點線"
+      },
+      "fontWeight": {
+        "normal": "正常",
+        "bold": "粗體"
+      },
+      "textAlign": {
+        "left": "靠左對齊",
+        "center": "置中",
+        "right": "靠右對齊"
+      },
+      "targetType": {
+        "none": "無",
+        "page": "開啟頁面",
+        "url": "開啟URL"
+      }
+    },
+    "groups": {
+      "basic": "基本屬性",
+      "style": "樣式",
+      "text": "文字",
+      "shadow": "陰影",
+      "action": "互動動作"
+    },
+    "description": "按鈕圖形元素"
+  }
+}

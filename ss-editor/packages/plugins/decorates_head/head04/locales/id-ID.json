@@ -1,0 +1,12 @@
+{
+  "head04": {
+    "label": "Dekorasi kepala-04",
+    "properties": {
+      "color1": "Warna pertama",
+      "color2": "Warna kedua",
+      "backgroundColor": "Warna latar",
+      "reverse": "Balik"
+    },
+    "description": "Dekorasi garis miring"
+  }
+}

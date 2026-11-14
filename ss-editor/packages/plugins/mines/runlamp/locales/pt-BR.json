@@ -1,0 +1,23 @@
+{
+  "runlamp": {
+    "label": "Luz indicadora de operação",
+    "properties": {
+      "lampColor": "Cor da luz",
+      "glowing": "Efeito de brilho",
+      "blinkSpeed": "Velocidade de piscar",
+      "backgroundColor": "Cor de fundo",
+      "runningValue": "Valor correspondente a operação",
+      "stoppedValue": "Valor correspondente a parado",
+      "faultValue": "Valor correspondente a falha",
+      "defaultStatus": "Estado padrão"
+    },
+    "options": {
+      "lampColor": {
+        "green": "Verde",
+        "red": "Vermelho",
+        "yellow": "Amarelo"
+      }
+    },
+    "description": "Luz indicadora de operação - lâmpada circular com animação pulsante de brilho conforme o estado de cor"
+  }
+}

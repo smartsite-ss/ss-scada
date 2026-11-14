@@ -1,0 +1,31 @@
+{
+  "tag": {
+    "create": {
+      "success": "Tag data berhasil dibuat",
+      "failed_name_exists": "Nama tag sudah ada di perangkat ini"
+    },
+    "update": {
+      "success": "Tag data berhasil diperbarui"
+    },
+    "delete": {
+      "success": "Tag data berhasil dihapus"
+    },
+    "read": {
+      "success": "Data tag berhasil dibaca",
+      "failed_device_offline": "Perangkat offline, tidak dapat membaca",
+      "failed_timeout": "Pembacaan timeout"
+    },
+    "write": {
+      "success": "Data tag berhasil ditulis",
+      "failed_readonly": "Tag ini hanya-baca, tidak dapat ditulis",
+      "failed_device_offline": "Perangkat offline, tidak dapat menulis"
+    },
+    "quality": {
+      "good": "Baik",
+      "uncertain": "Tidak pasti",
+      "bad": "Buruk",
+      "config_error": "Kesalahan konfigurasi",
+      "device_offline": "Perangkat offline"
+    }
+  }
+}

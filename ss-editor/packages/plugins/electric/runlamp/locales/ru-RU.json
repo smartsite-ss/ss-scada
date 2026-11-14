@@ -1,0 +1,23 @@
+{
+  "runlamp": {
+    "label": "Лампа работы",
+    "properties": {
+      "lampColor": "Цвет лампы",
+      "backgroundColor": "Цвет фона",
+      "radius": "Радиус",
+      "state": "Состояние работы",
+      "runningValue": "Значение «работа»",
+      "stoppedValue": "Значение «стоп»",
+      "faultValue": "Значение «авария»",
+      "defaultStatus": "Состояние по умолчанию"
+    },
+    "options": {
+      "state": {
+        "running": "Работа",
+        "stopped": "Стоп",
+        "fault": "Авария"
+      }
+    },
+    "description": "Индикатор состояния — работа/стоп/авария"
+  }
+}

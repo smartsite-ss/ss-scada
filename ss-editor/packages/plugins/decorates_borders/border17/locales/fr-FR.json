@@ -1,0 +1,15 @@
+{
+  "border17": {
+    "label": "Bordure-17 (Néon cyberpunk)",
+    "description": "Composant décoratif Bordure-17 (Néon cyberpunk)",
+    "properties": {
+      "color1": "Cyan néon",
+      "color2": "Rose néon",
+      "color3": "Couleur de fond",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "showCircuit": "Texture de circuit",
+      "showScanline": "Ligne de balayage",
+      "animationSpeed": "Vitesse d'animation"
+    }
+  }
+}

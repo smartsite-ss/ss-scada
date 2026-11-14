@@ -1,0 +1,31 @@
+{
+  "tag": {
+    "create": {
+      "success": "Tag data berjaya dicipta",
+      "failed_name_exists": "Nama tag sudah wujud dalam peranti ini"
+    },
+    "update": {
+      "success": "Tag data berjaya dikemas kini"
+    },
+    "delete": {
+      "success": "Tag data berjaya dipadam"
+    },
+    "read": {
+      "success": "Bacaan data tag berjaya",
+      "failed_device_offline": "Peranti luar talian, tidak dapat membaca",
+      "failed_timeout": "Bacaan tamat masa"
+    },
+    "write": {
+      "success": "Penulisan data tag berjaya",
+      "failed_readonly": "Tag ini baca sahaja, tidak boleh ditulis",
+      "failed_device_offline": "Peranti luar talian, tidak dapat menulis"
+    },
+    "quality": {
+      "good": "Baik",
+      "uncertain": "Tidak pasti",
+      "bad": "Buruk",
+      "config_error": "Ralat konfigurasi",
+      "device_offline": "Peranti luar talian"
+    }
+  }
+}

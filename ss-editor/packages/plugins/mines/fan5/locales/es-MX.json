@@ -1,0 +1,35 @@
+{
+  "fan5": {
+    "label": "Ventilador 5",
+    "properties": {
+      "colors": "Grupo de colores",
+      "flowColor": "Color del conducto",
+      "pipeColor": "Color de la tubería",
+      "bgWidth": "Ancho de la base",
+      "boardWidth": "Espesor de la placa",
+      "roate": "Ángulo de rotación",
+      "cls": "Dirección de rotación",
+      "dur": "Ciclo de animación (s)",
+      "backgroundColor": "Color de fondo",
+      "dataset": "Conjunto de datos",
+      "forwardValue": "Valor para giro directo",
+      "backwardValue": "Valor para giro inverso",
+      "stopValue": "Valor para detenido",
+      "defaultCls": "Dirección de animación predeterminada",
+      "decimalPlaces": "Decimales",
+      "clsOptions": {
+        "right": "Giro a la derecha",
+        "left": "Giro a la izquierda",
+        "stop": "Detenido"
+      }
+    },
+    "options": {
+      "cls": {
+        "left": "Giro directo",
+        "right": "Giro inverso",
+        "stop": "Detenido"
+      }
+    },
+    "description": "Ventilador 5 de minería: ventilador axial de conducto con control de dirección de giro y velocidad"
+  }
+}

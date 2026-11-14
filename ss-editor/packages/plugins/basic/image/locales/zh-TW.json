@@ -1,0 +1,56 @@
+{
+  "image": {
+    "label": "圖片",
+    "panelTitle": "圖像屬性",
+    "properties": {
+      "src": "圖片位址",
+      "alt": "替代文字",
+      "opacity": "不透明度",
+      "imageScale": "縮放比例",
+      "imageRotation": "旋轉角度",
+      "imageFilter": "濾鏡效果",
+      "imageFit": "適應模式",
+      "borderColor": "邊框顏色",
+      "borderWidth": "邊框寬度",
+      "borderStyle": "邊框樣式",
+      "borderRadius": "圓角",
+      "shadowColor": "陰影顏色",
+      "shadowOffsetX": "陰影偏移X",
+      "shadowOffsetY": "陰影偏移Y",
+      "shadowBlur": "陰影模糊",
+      "imageUpload": "上傳圖片"
+    },
+    "options": {
+      "imageFilter": {
+        "none": "無",
+        "grayscale": "灰階",
+        "sepia": "復古",
+        "invert": "負片",
+        "brightness": "亮度",
+        "contrast": "對比度",
+        "saturate": "飽和度"
+      },
+      "imageFit": {
+        "contain": "包含",
+        "cover": "覆蓋",
+        "fill": "填滿",
+        "none": "原始",
+        "scale-down": "縮小"
+      },
+      "borderStyle": {
+        "solid": "實線",
+        "dashed": "虛線",
+        "dotted": "點線"
+      }
+    },
+    "groups": {
+      "basic": "基本屬性",
+      "style": "樣式",
+      "shadow": "陰影"
+    },
+    "hints": {
+      "clickToUpload": "點擊選擇圖片"
+    },
+    "description": "圖像圖形元素"
+  }
+}

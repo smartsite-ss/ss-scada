@@ -1,0 +1,35 @@
+{
+  "fan3": {
+    "label": "Kipas 3",
+    "properties": {
+      "colors": "Kumpulan warna",
+      "flowColor": "Warna salur udara",
+      "pipeColor": "Warna paip",
+      "bgWidth": "Lebar tapak",
+      "boardWidth": "Ketebalan plat",
+      "roate": "Sudut putaran",
+      "cls": "Arah putaran",
+      "dur": "Kitaran animasi (saat)",
+      "backgroundColor": "Warna latar",
+      "dataset": "Set data",
+      "forwardValue": "Nilai padanan putaran ke hadapan",
+      "backwardValue": "Nilai padanan putaran songsang",
+      "stopValue": "Nilai padanan berhenti",
+      "defaultCls": "Arah animasi lalai",
+      "decimalPlaces": "Bilangan perpuluhan",
+      "clsOptions": {
+        "right": "Putar kanan",
+        "left": "Putar kiri",
+        "stop": "Berhenti"
+      }
+    },
+    "options": {
+      "cls": {
+        "left": "Putaran ke hadapan",
+        "right": "Putaran songsang",
+        "stop": "Berhenti"
+      }
+    },
+    "description": "Kipas mineral 3 - kipas emparan dengan salur udara serta kawalan arah putaran dan kelajuan"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "gatevalve": {
+    "label": "전동 게이트 밸브",
+    "properties": {
+      "colors": "색상 1",
+      "colors2": "색상 2",
+      "backgroundColor": "배경색",
+      "lineWidth": "선 너비",
+      "closed": "닫힘 상태",
+      "state": "밸브 상태"
+    },
+    "options": {
+      "state": {
+        "open": "열림",
+        "closed": "닫힘",
+        "fault": "고장"
+      }
+    },
+    "description": "전동 게이트 밸브 - 버터플라이 밸브 본체 전동 액추에이터, 열림/닫힘/고장 상태 지원"
+  }
+}

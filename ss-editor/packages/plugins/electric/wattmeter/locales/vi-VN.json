@@ -1,0 +1,15 @@
+{
+  "wattmeter": {
+    "label": "Oát kế",
+    "properties": {
+      "color": "Màu đường nét",
+      "backgroundColor": "Màu nền",
+      "lineWidth": "Độ rộng nét",
+      "dataset": "Giá trị dữ liệu tĩnh",
+      "showDigital": "Hiển thị số đọc",
+      "decimalPlaces": "Số chữ thập phân",
+      "unit": "Đơn vị"
+    },
+    "description": "Oát kế - đồng hồ đo công suất tác dụng"
+  }
+}

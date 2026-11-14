@@ -1,0 +1,46 @@
+{
+  "input": {
+    "label": "Kolom input",
+    "description": "Komponen kolom input untuk teks satu baris",
+    "panelTitle": "Konfigurasi kolom input",
+    "properties": {
+      "value": "Nilai",
+      "placeholder": "Placeholder",
+      "backgroundColor": "Warna latar",
+      "borderColor": "Warna batas",
+      "borderWidth": "Lebar batas",
+      "borderStyle": "Gaya batas",
+      "borderRadius": "Sudut membulat",
+      "textColor": "Warna teks",
+      "fontSize": "Ukuran font",
+      "fontWeight": "Ketebalan font",
+      "textAlign": "Perataan teks",
+      "shadowColor": "Warna bayangan",
+      "shadowOffsetX": "Offset bayangan X",
+      "shadowOffsetY": "Offset bayangan Y",
+      "shadowBlur": "Blur bayangan"
+    },
+    "options": {
+      "borderStyle": {
+        "solid": "Garis solid",
+        "dashed": "Garis putus-putus",
+        "dotted": "Garis titik"
+      },
+      "fontWeight": {
+        "normal": "Normal",
+        "bold": "Tebal"
+      },
+      "textAlign": {
+        "left": "Rata kiri",
+        "center": "Tengah",
+        "right": "Rata kanan"
+      }
+    },
+    "groups": {
+      "basic": "Properti dasar",
+      "style": "Gaya",
+      "text": "Teks",
+      "shadow": "Bayangan"
+    }
+  }
+}

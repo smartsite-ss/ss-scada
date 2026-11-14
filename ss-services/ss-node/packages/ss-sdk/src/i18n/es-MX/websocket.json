@@ -1,0 +1,45 @@
+{
+  "websocket": {
+    "connected": "Conexión WebSocket establecida",
+    "disconnected": "La conexión WebSocket se cerró",
+    "pong": "Pong - respuesta de latido",
+    "event": {
+      "data_update": "Evento de actualización de datos (etiqueta: {{tagId}})",
+      "alarm_triggered": "Evento de activación de alarma",
+      "alarm_acknowledged": "Evento de confirmación de alarma",
+      "alarm_cleared": "Evento de borrado de alarma",
+      "device_status_change": "Evento de cambio de estado del dispositivo"
+    },
+    "error": {
+      "authentication_failed": "Falló la autenticación de WebSocket",
+      "rate_limit_exceeded": "Se superó el límite de frecuencia de mensajes",
+      "invalid_message_format": "Formato de mensaje no válido"
+    },
+    "room": {
+      "joined": "El usuario {{username}} se unió a la sala {{room}}",
+      "left": "El usuario {{username}} salió de la sala {{room}}",
+      "permission_denied": "Sin permiso para unirse a la sala del proyecto {{projectId}}",
+      "not_authenticated": "Los usuarios no autenticados no pueden unirse a la sala del proyecto"
+    },
+    "connection": {
+      "limit_exceeded": "Se alcanzó el límite de conexiones ({{current}}/{{max}})",
+      "user_limit_exceeded": "El usuario {{username}} alcanzó el límite de conexiones ({{current}}/{{max}})",
+      "ip_limit_exceeded": "La IP {{ip}} alcanzó el límite de conexiones ({{current}}/{{max}})",
+      "idle_timeout": "La conexión superó el tiempo de inactividad ({{minutes}} minutos sin mensajes de actividad)",
+      "force_disconnected": "El administrador cerró la conexión",
+      "global_limit_exceeded": "Se alcanzó el límite global de conexiones ({{current}}/{{max}})"
+    },
+    "monitor": {
+      "online_count": "Conexiones en línea",
+      "message_rate": "Tasa de mensajes",
+      "connection_duration": "Duración de la conexión",
+      "abnormal_detected": "Se detectó una conexión anómala"
+    },
+    "offline": {
+      "message_cached": "El mensaje sin conexión se guardó en caché",
+      "message_replayed": "Se reenviaron los mensajes sin conexión ({{count}} mensajes)",
+      "message_expired": "El mensaje expiró y se eliminó",
+      "message_confirmed": "Mensaje confirmado"
+    }
+  }
+}

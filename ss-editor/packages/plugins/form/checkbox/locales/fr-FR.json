@@ -1,0 +1,31 @@
+{
+  "checkbox": {
+    "label": "Case à cocher",
+    "description": "Composant case à cocher pour les sélections multiples",
+    "panelTitle": "Configuration de la case à cocher",
+    "properties": {
+      "checked": "État coché",
+      "label": "Texte de l'étiquette",
+      "disabled": "Désactivé",
+      "indeterminate": "État indéterminé",
+      "color": "Couleur cochée",
+      "labelPosition": "Position de l'étiquette",
+      "size": "Taille"
+    },
+    "options": {
+      "labelPosition": {
+        "right": "Droite",
+        "left": "Gauche"
+      },
+      "size": {
+        "small": "Petite",
+        "medium": "Moyenne",
+        "large": "Grande"
+      }
+    },
+    "groups": {
+      "basic": "Propriétés de base",
+      "style": "Style"
+    }
+  }
+}

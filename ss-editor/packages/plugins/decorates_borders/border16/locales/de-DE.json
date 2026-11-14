@@ -1,0 +1,15 @@
+{
+  "border16": {
+    "label": "Rahmen-16 (Nordisch minimal)",
+    "description": "Dekorationselement Rahmen-16 (Nordisch minimal)",
+    "properties": {
+      "color1": "Hauptfarbe",
+      "color2": "Sekundärfarbe",
+      "color3": "Grundfarbe",
+      "backgroundColor": "Hintergrundfarbe",
+      "showLeaves": "Blattornamente",
+      "showDots": "Punktraster-Textur",
+      "animationSpeed": "Animationsgeschwindigkeit"
+    }
+  }
+}

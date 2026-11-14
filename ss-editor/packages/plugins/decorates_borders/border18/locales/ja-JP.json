@@ -1,0 +1,15 @@
+{
+  "border18": {
+    "label": "枠線-18（モロッコのアラベスク）",
+    "description": "枠線-18 装飾コンポーネント（モロッコのアラベスク）",
+    "properties": {
+      "color1": "ジュエルブルー",
+      "color2": "テラコッタ",
+      "color3": "ゴールド",
+      "backgroundColor": "背景色",
+      "showStars": "星の模様",
+      "showArches": "アーチ飾り",
+      "animationSpeed": "アニメーション速度"
+    }
+  }
+}

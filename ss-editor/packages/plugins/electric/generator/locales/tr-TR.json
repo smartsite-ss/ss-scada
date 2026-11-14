@@ -1,0 +1,22 @@
+{
+  "generator": {
+    "label": "Jeneratör",
+    "properties": {
+      "color": "Çizgi rengi",
+      "backgroundColor": "Arka plan rengi",
+      "lineWidth": "Çizgi kalınlığı",
+      "running": "Çalışma durumu",
+      "runningValue": "Çalışıyor durum değeri",
+      "stoppedValue": "Durdu durum değeri",
+      "faultValue": "Arıza durum değeri",
+      "defaultStatus": "Varsayılan durum"
+    },
+    "options": {
+      "running": {
+        "yes": "Çalışıyor",
+        "no": "Durdu"
+      }
+    },
+    "description": "Jeneratör - Döndürme durumu göstergeli"
+  }
+}

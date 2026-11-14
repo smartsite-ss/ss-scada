@@ -1,0 +1,15 @@
+{
+  "border15": {
+    "label": "Bordure-15 (Art déco)",
+    "description": "Composant décoratif Bordure-15 (Art déco)",
+    "properties": {
+      "color1": "Or principal",
+      "color2": "Or foncé",
+      "color3": "Couleur sombre",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "showSunburst": "Rayonnement solaire",
+      "showCorners": "Ornements d'angle",
+      "animationSpeed": "Vitesse d'animation"
+    }
+  }
+}

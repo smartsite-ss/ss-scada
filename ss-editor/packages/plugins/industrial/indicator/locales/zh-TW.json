@@ -1,0 +1,42 @@
+{
+  "indicator": {
+    "label": "指示燈",
+    "description": "指示燈元件，用於狀態顯示與警報",
+    "panelTitle": "指示燈設定",
+    "properties": {
+      "width": "寬度",
+      "height": "高度",
+      "status": "狀態",
+      "onColor": "亮燈顏色",
+      "offColor": "熄燈顏色",
+      "warningColor": "警告顏色",
+      "faultColor": "故障顏色",
+      "blinkOnAlarm": "警報閃爍",
+      "blinkInterval": "閃爍間隔(ms)",
+      "showLabel": "顯示標籤",
+      "labelText": "標籤文字",
+      "labelColor": "標籤顏色",
+      "onValue": "亮燈對應值",
+      "offValue": "熄燈對應值",
+      "warningValue": "警告對應值",
+      "faultValue": "故障對應值",
+      "defaultStatus": "預設狀態"
+    },
+    "options": {
+      "status": {
+        "on": "亮燈",
+        "off": "熄燈",
+        "warning": "警告",
+        "fault": "故障"
+      }
+    },
+    "groups": {
+      "basic": "基本",
+      "status": "狀態",
+      "color": "顏色",
+      "animation": "動畫",
+      "label": "標籤",
+      "binding": "綁定對應"
+    }
+  }
+}

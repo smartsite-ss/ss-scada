@@ -1,0 +1,11 @@
+{
+  "cablehead": {
+    "label": "電纜終端頭",
+    "properties": {
+      "color": "線條顏色",
+      "backgroundColor": "背景色",
+      "lineWidth": "線寬"
+    },
+    "description": "電纜終端頭 - 電纜與設備連接端頭"
+  }
+}

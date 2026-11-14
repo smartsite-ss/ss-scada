@@ -1,0 +1,42 @@
+{
+  "tank": {
+    "label": "タンク",
+    "description": "タンクコンポーネント。液位表示とアラームに使用",
+    "panelTitle": "タンクの設定",
+    "properties": {
+      "width": "幅",
+      "height": "高さ",
+      "level": "現在の液位",
+      "maxLevel": "最大液位",
+      "unit": "単位",
+      "decimalPlaces": "小数点以下の桁数",
+      "status": "状態",
+      "warningLevel": "警告液位",
+      "dangerLevel": "危険液位",
+      "bodyColor": "タンク本体の色",
+      "liquidColor": "液体の色",
+      "warningLiquidColor": "警告時の液体色",
+      "dangerLiquidColor": "危険時の液体色",
+      "rimColor": "枠線の色",
+      "showLevelText": "液位テキストを表示",
+      "showTicks": "目盛りを表示",
+      "showAnimation": "波のアニメーション",
+      "tickCount": "目盛りの数"
+    },
+    "options": {
+      "status": {
+        "normal": "正常",
+        "warning": "警告",
+        "danger": "危険"
+      }
+    },
+    "groups": {
+      "basic": "基本",
+      "level": "液位",
+      "status": "状態",
+      "threshold": "しきい値",
+      "color": "色",
+      "display": "表示"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "alarm": {
+    "rule": {
+      "created": "警報規則建立成功",
+      "updated": "警報規則更新成功",
+      "deleted": "警報規則已刪除",
+      "enabled": "警報規則已啟用",
+      "disabled": "警報規則已停用",
+      "not_found": "警報規則不存在"
+    },
+    "record": {
+      "triggered": "警報觸發：{{message}}",
+      "acknowledged": "警報已確認（操作人：{{operator}}）",
+      "cleared": "警報已清除（原因：{{reason}}）",
+      "not_found": "事件記錄不存在",
+      "already_acknowledged": "該警報已確認",
+      "already_cleared": "該警報已清除"
+    },
+    "condition": {
+      "gt": "{{tag}} 的值 {{value}} 大於上限 {{threshold}}",
+      "lt": "{{tag}} 的值 {{value}} 小於下限 {{threshold}}",
+      "range_in": "{{tag}} 的值 {{value}} 在正常範圍內",
+      "range_out": "{{tag}} 的值 {{value}} 超出正常範圍"
+    },
+    "level": {
+      "info": "資訊",
+      "warning": "警告",
+      "error": "錯誤",
+      "critical": "嚴重"
+    },
+    "notification": {
+      "send_success": "警報通知傳送成功",
+      "send_failed": "警報通知傳送失敗"
+    }
+  }
+}

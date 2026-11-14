@@ -1,0 +1,12 @@
+{
+  "clock": {
+    "label": "Jam",
+    "properties": {
+      "color1": "Warna jarum",
+      "color2": "Latar dail",
+      "color3": "Warna sempadan",
+      "borderWidth": "Lebar sempadan"
+    },
+    "description": "Jam analog"
+  }
+}

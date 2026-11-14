@@ -1,0 +1,21 @@
+{
+  "gatevalve": {
+    "label": "Válvula gaveta motorizada",
+    "properties": {
+      "colors": "Cor 1",
+      "colors2": "Cor 2",
+      "backgroundColor": "Cor de fundo",
+      "lineWidth": "Espessura da linha",
+      "closed": "Estado fechado",
+      "state": "Estado da válvula"
+    },
+    "options": {
+      "state": {
+        "open": "Aberto",
+        "closed": "Fechado",
+        "fault": "Falha"
+      }
+    },
+    "description": "Válvula gaveta motorizada - corpo de válvula tipo borboleta com atuador elétrico e estados aberto/fechado/falha"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "busbar": {
+    "label": "Section de jeu de barres",
+    "properties": {
+      "color": "Couleur du trait",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "lineWidth": "Épaisseur du trait",
+      "labelText": "Texte de l'étiquette"
+    },
+    "description": "Section de jeu de barres - Jeu de barres de collecte et de distribution"
+  }
+}

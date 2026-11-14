@@ -1,0 +1,50 @@
+{
+  "trendChart": {
+    "label": "趨勢圖",
+    "description": "即時/歷史趨勢圖，支援多筆對比、LTTB 降取樣",
+    "properties": {
+      "title": "標題",
+      "titleColor": "標題顏色",
+      "titleFontSize": "標題字級",
+      "titleFontWeight": "標題粗細",
+      "backgroundColor": "背景色",
+      "borderColor": "邊框色",
+      "borderWidth": "邊框寬度",
+      "borderStyle": "邊框樣式",
+      "borderRadius": "圓角",
+      "gridColor": "網格線顏色",
+      "axisColor": "座標軸顏色",
+      "lineColors": "曲線顏色",
+      "lineWidth": "曲線寬度",
+      "showPoints": "顯示資料點",
+      "pointRadius": "資料點半徑",
+      "showLegend": "顯示圖例",
+      "legendPosition": "圖例位置",
+      "maxPens": "最大筆數",
+      "timeWindow": "時間視窗（秒）",
+      "showTooltip": "顯示提示框",
+      "yAxisLabel": "Y 軸標籤",
+      "shadowColor": "陰影顏色",
+      "shadowOffsetX": "陰影偏移X",
+      "shadowOffsetY": "陰影偏移Y",
+      "shadowBlur": "陰影模糊"
+    },
+    "options": {
+      "titleFontWeight": {
+        "normal": "正常",
+        "bold": "粗體"
+      },
+      "borderStyle": {
+        "solid": "實線",
+        "dashed": "虛線",
+        "dotted": "點線"
+      },
+      "legendPosition": {
+        "top": "頂部",
+        "bottom": "底部",
+        "left": "左側",
+        "right": "右側"
+      }
+    }
+  }
+}

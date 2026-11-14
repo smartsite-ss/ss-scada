@@ -1,0 +1,40 @@
+{
+  "tagWaterpolo": {
+    "label": "Biểu đồ quả cầu nước biến",
+    "description": "Liên kết một biến thẻ, hiển thị thời gian thực phần trăm mức chất lỏng dạng quả cầu nước",
+    "config": {
+      "bindVariable": "Liên kết biến",
+      "addVariable": "Chọn biến",
+      "removeVariable": "Xóa",
+      "unbound": "Chưa liên kết biến"
+    },
+    "properties": {
+      "title": "Tiêu đề",
+      "titleColor": "Màu tiêu đề",
+      "titleFontSize": "Cỡ chữ tiêu đề",
+      "unit": "Đơn vị",
+      "minValue": "Giá trị nhỏ nhất",
+      "maxValue": "Giá trị lớn nhất",
+      "showValue": "Hiển thị giá trị",
+      "valueColor": "Màu giá trị",
+      "waterColor": "Màu quả cầu nước",
+      "trackColor": "Màu đường ray",
+      "backgroundColor": "Màu nền",
+      "borderColor": "Màu viền",
+      "borderWidth": "Độ rộng viền",
+      "borderStyle": "Kiểu viền",
+      "borderRadius": "Bo góc",
+      "shadowColor": "Màu bóng đổ",
+      "shadowOffsetX": "Dịch chuyển bóng X",
+      "shadowOffsetY": "Dịch chuyển bóng Y",
+      "shadowBlur": "Độ mờ bóng"
+    },
+    "options": {
+      "borderStyle": {
+        "solid": "Nét liền",
+        "dashed": "Nét đứt",
+        "dotted": "Nét chấm"
+      }
+    }
+  }
+}

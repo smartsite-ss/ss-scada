@@ -1,0 +1,15 @@
+{
+  "border15": {
+    "label": "枠線-15（アールデコ）",
+    "description": "枠線-15 装飾コンポーネント（アールデコ）",
+    "properties": {
+      "color1": "メインゴールド",
+      "color2": "濃いゴールド",
+      "color3": "ダークカラー",
+      "backgroundColor": "背景色",
+      "showSunburst": "放射状の光",
+      "showCorners": "コーナー装飾",
+      "animationSpeed": "アニメーション速度"
+    }
+  }
+}

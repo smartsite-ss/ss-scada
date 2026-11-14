@@ -1,0 +1,21 @@
+{
+  "loadswitch": {
+    "label": "Suis beban",
+    "properties": {
+      "color": "Warna garisan",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garisan",
+      "closed": "Status tertutup",
+      "closedValue": "Nilai padanan tertutup",
+      "openValue": "Nilai padanan terbuka",
+      "defaultStatus": "Status lalai"
+    },
+    "options": {
+      "closed": {
+        "yes": "Tertutup",
+        "no": "Terbuka"
+      }
+    },
+    "description": "Suis beban kuasa dengan keupayaan pemadam arka"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "border16": {
+    "label": "邊框-16（北歐極簡）",
+    "description": "邊框-16裝飾元件（北歐極簡）",
+    "properties": {
+      "color1": "主色調",
+      "color2": "輔助色",
+      "color3": "底色",
+      "backgroundColor": "背景色",
+      "showLeaves": "葉片裝飾",
+      "showDots": "紋理點陣",
+      "animationSpeed": "動畫速度"
+    }
+  }
+}

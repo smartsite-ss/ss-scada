@@ -1,0 +1,34 @@
+{
+  "naiveButton": {
+    "label": "Tombol Naive",
+    "panelTitle": "Properti tombol Naive",
+    "properties": {
+      "text": "Teks tombol",
+      "type": "Jenis tombol",
+      "size": "Ukuran",
+      "round": "Tombol sudut membulat",
+      "circle": "Tombol bulat",
+      "disabled": "Nonaktif",
+      "loading": "Status memuat"
+    },
+    "options": {
+      "type": {
+        "default": "Default",
+        "primary": "Primer",
+        "success": "Sukses",
+        "warning": "Peringatan",
+        "error": "Error",
+        "info": "Info"
+      },
+      "size": {
+        "small": "Kecil",
+        "medium": "Sedang",
+        "large": "Besar"
+      }
+    },
+    "groups": {
+      "basic": "Properti dasar"
+    },
+    "description": "Elemen grafis tombol Naive dengan rendering fallback Canvas"
+  }
+}

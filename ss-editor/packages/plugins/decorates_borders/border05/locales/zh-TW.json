@@ -1,0 +1,11 @@
+{
+  "border05": {
+    "label": "邊框-05",
+    "description": "邊框-05裝飾元件",
+    "properties": {
+      "colors": "顏色一",
+      "colors2": "顏色二",
+      "backgroundColor": "背景色"
+    }
+  }
+}

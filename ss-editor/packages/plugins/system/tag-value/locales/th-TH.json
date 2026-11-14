@@ -1,0 +1,61 @@
+{
+  "plugins": {
+    "groups": {
+      "shape": "รูปร่าง",
+      "name": "ชื่อ",
+      "decoration": "ตกแต่ง"
+    }
+  },
+  "tagValue": {
+    "label": "ตัวแปรป้ายกำกับตกแต่ง",
+    "description": "แสดงค่าตัวแปรอุปกรณ์แบบเรียลไทม์ (สี่เหลี่ยม/วงกลม)",
+    "config": {
+      "bindVariable": "ตัวแปรที่ผูก",
+      "selectVariable": "เลือกตัวแปร",
+      "clear": "ล้าง",
+      "unbound": "ยังไม่ผูก",
+      "decorationImage": "รูปภาพตกแต่ง",
+      "backgroundImage": "รูปภาพพื้นหลัง",
+      "selectImage": "เลือกรูปภาพ"
+    },
+    "selector": {
+      "title": "เลือกตัวแปรอุปกรณ์",
+      "searchPlaceholder": "ค้นหาอุปกรณ์หรือตัวแปร",
+      "tagCount": "{count} ตัวแปร",
+      "loading": "กำลังโหลด...",
+      "empty": "ไม่มีตัวแปรอุปกรณ์"
+    },
+    "properties": {
+      "shape": "รูปร่าง",
+      "alias": "นามแฝง",
+      "showName": "แสดงชื่อ",
+      "nameColor": "สีชื่อ",
+      "nameFontSize": "ขนาดตัวอักษรชื่อ",
+      "nameFontWeight": "ความหนาชื่อ",
+      "nameGap": "ระยะห่างชื่อ",
+      "decorationImagePosition": "ตำแหน่งรูปตกแต่ง",
+      "decorationImageSize": "ขนาดรูปตกแต่ง",
+      "decorationImageOpacity": "ความทึบแสงรูปตกแต่ง",
+      "backgroundRepeat": "ปูพื้นหลังซ้ำ",
+      "backgroundImageFit": "รูปแบบการเติม"
+    },
+    "options": {
+      "shape": {
+        "rectangle": "สี่เหลี่ยม",
+        "circle": "วงกลม"
+      },
+      "decorationPosition": {
+        "left": "ซ้าย",
+        "right": "ขวา",
+        "background": "พื้นหลัง",
+        "center": "กึ่งกลาง"
+      },
+      "backgroundRepeat": {
+        "repeat": "ปูซ้ำ",
+        "no-repeat": "ไม่ปูซ้ำ",
+        "repeat-x": "ปูซ้ำแนวนอน",
+        "repeat-y": "ปูซ้ำแนวตั้ง"
+      }
+    }
+  }
+}

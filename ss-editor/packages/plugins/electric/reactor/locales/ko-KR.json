@@ -1,0 +1,11 @@
+{
+  "reactor": {
+    "label": "리액터",
+    "properties": {
+      "color": "선 색상",
+      "backgroundColor": "배경색",
+      "lineWidth": "선 너비"
+    },
+    "description": "리액터 - 한류 리액터"
+  }
+}

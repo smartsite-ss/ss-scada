@@ -1,0 +1,21 @@
+{
+  "closelamp": {
+    "label": "Einschaltleuchte",
+    "properties": {
+      "lampColor": "Lampenfarbe",
+      "backgroundColor": "Hintergrundfarbe",
+      "radius": "Radius",
+      "closed": "Einschaltzustand",
+      "closedValue": "Wert für geschlossen",
+      "openValue": "Wert für offen",
+      "defaultStatus": "Standardzustand"
+    },
+    "options": {
+      "closed": {
+        "yes": "Eingeschaltet",
+        "no": "Ausgeschaltet"
+      }
+    },
+    "description": "Anzeigeleuchte für Einschaltstellung"
+  }
+}

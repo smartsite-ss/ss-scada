@@ -1,0 +1,32 @@
+{
+  "conveyerbelt": {
+    "label": "Esteira transportadora",
+    "properties": {
+      "color1": "Cor 1",
+      "color2": "Cor 2",
+      "color3": "Cor 3",
+      "flowColor": "Cor do fluxo",
+      "pipeColor": "Cor da tubulação",
+      "backgroundColor": "Cor de fundo",
+      "bgWidth": "Largura do fundo",
+      "boardWidth": "Largura da borda",
+      "roate": "Ângulo de rotação",
+      "cls": "Direção da animação",
+      "dur": "Período da animação (s)",
+      "dataset": "Valor de dados",
+      "forwardValue": "Valor correspondente a rotação direta",
+      "backwardValue": "Valor correspondente a rotação inversa",
+      "stopValue": "Valor correspondente a parado",
+      "defaultCls": "Direção padrão da animação",
+      "decimalPlaces": "Casas decimais"
+    },
+    "options": {
+      "cls": {
+        "left": "Rotação direta",
+        "right": "Rotação inversa",
+        "stop": "Parado"
+      }
+    },
+    "description": "Esteira transportadora de mineração - transportador de material com roletes e animação de fluxo"
+  }
+}

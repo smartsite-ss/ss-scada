@@ -1,0 +1,12 @@
+{
+  "head04": {
+    "label": "Decoração de cabeçalho-04",
+    "properties": {
+      "color1": "Cor 1",
+      "color2": "Cor 2",
+      "backgroundColor": "Cor de fundo",
+      "reverse": "Inverter"
+    },
+    "description": "Decoração em linhas diagonais"
+  }
+}

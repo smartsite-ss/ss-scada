@@ -1,0 +1,62 @@
+{
+  "track-move": {
+    "label": "軌跡動態",
+    "description": "沿自訂軌道移動的動畫點，支援折彎路徑與圖片替代",
+    "panelTitle": "軌跡動態設定",
+    "properties": {
+      "speed": "速度(px/s)",
+      "dotStyle": "點樣式",
+      "dotColor": "點顏色",
+      "dotSize": "點大小",
+      "dotImage": "圖片URL",
+      "imageWidth": "圖片寬度",
+      "imageHeight": "圖片高度",
+      "trackColor": "軌道顏色",
+      "trackWidth": "軌道寬度",
+      "trackStyle": "軌道樣式",
+      "status": "動畫狀態",
+      "direction": "移動方向",
+      "loopMode": "循環模式"
+    },
+    "options": {
+      "dotStyle": {
+        "circle": "圓形",
+        "image": "圖片"
+      },
+      "trackStyle": {
+        "solid": "實線",
+        "dashed": "虛線"
+      },
+      "direction": {
+        "forward": "正向",
+        "backward": "反向"
+      },
+      "loopMode": {
+        "loop": "循環",
+        "once": "單次",
+        "bounce": "來回彈跳"
+      }
+    },
+    "groups": {
+      "dot": "動畫點",
+      "track": "軌道",
+      "motion": "運動"
+    },
+    "hints": {
+      "dotImage": "輸入圖片URL位址"
+    },
+    "editor": {
+      "pathPoints": "路徑點",
+      "index": "#",
+      "coordX": "X",
+      "coordY": "Y",
+      "type": "類型",
+      "action": "操作",
+      "startPoint": "起點",
+      "endPoint": "終點",
+      "bendPoint": "折彎點",
+      "addBendPoint": "+ 新增折彎點",
+      "reversePath": "反轉路徑"
+    }
+  }
+}

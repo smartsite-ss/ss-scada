@@ -1,0 +1,19 @@
+{
+  "common": {
+    "success": "İşlem başarılı",
+    "failed": "İşlem başarısız",
+    "created": "{{resource}} oluşturuldu",
+    "updated": "{{resource}} güncellendi",
+    "deleted": "{{resource}} silindi",
+    "not_found": "{{resource}} bulunamadı",
+    "unauthorized": "Yetkisiz erişim",
+    "forbidden": "Yetersiz yetki",
+    "bad_request": "İstek parametreleri hatalı",
+    "internal_error": "Sunucu iç hatası",
+    "pagination": {
+      "page": "Sayfa numarası 0'dan büyük olmalıdır",
+      "limit": "Sayfa boyutu 1-100 arasında olmalıdır",
+      "invalid_sort_field": "Geçersiz sıralama alanı: {{field}}"
+    }
+  }
+}

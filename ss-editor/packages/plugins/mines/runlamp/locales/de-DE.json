@@ -1,0 +1,23 @@
+{
+  "runlamp": {
+    "label": "Betriebsleuchte",
+    "properties": {
+      "lampColor": "Lampenfarbe",
+      "glowing": "Leuchteffekt",
+      "blinkSpeed": "Blinkgeschwindigkeit",
+      "backgroundColor": "Hintergrundfarbe",
+      "runningValue": "Wert für Betrieb",
+      "stoppedValue": "Wert für Stopp",
+      "faultValue": "Wert für Störung",
+      "defaultStatus": "Standardzustand"
+    },
+    "options": {
+      "lampColor": {
+        "green": "Grün",
+        "red": "Rot",
+        "yellow": "Gelb"
+      }
+    },
+    "description": "Betriebsleuchte – runde Lampe mit farbabhängigem Puls-Leuchteffekt"
+  }
+}

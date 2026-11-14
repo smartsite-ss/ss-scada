@@ -1,0 +1,33 @@
+{
+  "draughtfan": {
+    "label": "Lüfter",
+    "properties": {
+      "dataset": "Datensatz",
+      "dur": "Animationsdauer (Sekunden)",
+      "colors": "Farbgruppe",
+      "flowColor": "Strömungsfarbe",
+      "pipeColor": "Rohrfarbe",
+      "bgWidth": "Hintergrundbreite",
+      "boardWidth": "Rahmenbreite",
+      "roate": "Drehwinkel",
+      "cls": "Drehrichtung",
+      "clsLeft": "Im Uhrzeigersinn",
+      "clsRight": "Gegen den Uhrzeigersinn",
+      "clsStop": "Stopp",
+      "backgroundColor": "Hintergrundfarbe",
+      "forwardValue": "Wert für Vorwärtslauf",
+      "backwardValue": "Wert für Rückwärtslauf",
+      "stopValue": "Wert für Stopp",
+      "defaultCls": "Standard-Animationsrichtung",
+      "decimalPlaces": "Dezimalstellen"
+    },
+    "options": {
+      "cls": {
+        "left": "Vorwärtslauf",
+        "right": "Rückwärtslauf",
+        "stop": "Stopp"
+      }
+    },
+    "description": "Lüfter – Sauglüfter mit Drehanimation"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "websocket": {
+    "connected": "Koneksi WebSocket berhasil",
+    "disconnected": "WebSocket telah terputus",
+    "pong": "Pong - respons heartbeat",
+    "event": {
+      "data_update": "Peristiwa pembaruan data (tag: {{tagId}})",
+      "alarm_triggered": "Peristiwa alarm terpicu",
+      "alarm_acknowledged": "Peristiwa konfirmasi alarm",
+      "alarm_cleared": "Peristiwa pembersihan alarm",
+      "device_status_change": "Peristiwa perubahan status perangkat"
+    },
+    "error": {
+      "authentication_failed": "Autentikasi WebSocket gagal",
+      "rate_limit_exceeded": "Frekuensi pesan melebihi batas",
+      "invalid_message_format": "Format pesan tidak valid"
+    },
+    "room": {
+      "joined": "Pengguna {{username}} bergabung ke ruang {{room}}",
+      "left": "Pengguna {{username}} keluar dari ruang {{room}}",
+      "permission_denied": "Tidak berizin bergabung ke ruang proyek {{projectId}}",
+      "not_authenticated": "Pengguna yang belum terautentikasi tidak dapat bergabung ke ruang proyek"
+    },
+    "connection": {
+      "limit_exceeded": "Jumlah koneksi telah mencapai batas ({{current}}/{{max}})",
+      "user_limit_exceeded": "Jumlah koneksi pengguna {{username}} telah mencapai batas ({{current}}/{{max}})",
+      "ip_limit_exceeded": "Jumlah koneksi IP {{ip}} telah mencapai batas ({{current}}/{{max}})",
+      "idle_timeout": "Koneksi menganggur timeout ({{minutes}} menit tanpa pesan)",
+      "force_disconnected": "Administrator memutus koneksi secara paksa",
+      "global_limit_exceeded": "Jumlah koneksi global telah mencapai batas ({{current}}/{{max}})"
+    },
+    "monitor": {
+      "online_count": "Jumlah koneksi online",
+      "message_rate": "Laju pesan",
+      "connection_duration": "Durasi koneksi",
+      "abnormal_detected": "Terdeteksi koneksi tidak normal"
+    },
+    "offline": {
+      "message_cached": "Pesan offline telah di-cache",
+      "message_replayed": "Pesan offline telah dikirim ulang ({{count}} pesan)",
+      "message_expired": "Pesan kedaluwarsa telah dibersihkan",
+      "message_confirmed": "Pesan telah dikonfirmasi"
+    }
+  }
+}

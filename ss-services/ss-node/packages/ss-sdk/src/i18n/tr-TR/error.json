@@ -1,0 +1,59 @@
+{
+  "error": {
+    "auth": {
+      "AUTH_001": "Kullanıcı adı veya şifre hatalı",
+      "AUTH_002": "Hesap devre dışı bırakıldı, lütfen yöneticinizle iletişime geçin",
+      "AUTH_003": "Token süresi doldu, lütfen tekrar giriş yapın",
+      "AUTH_004": "Token geçersiz veya değiştirilmiş",
+      "AUTH_005": "Kullanıcı adı veya e-posta zaten kayıtlı",
+      "AUTH_006": "E-posta biçimi hatalı",
+      "AUTH_007": "Şifre gücü yetersiz (en az 8 karakter, harf ve rakam içermeli)",
+      "AUTH_008": "Kullanıcı bulunamadı"
+    },
+    "project": {
+      "PROJ_001": "Proje bulunamadı",
+      "PROJ_002": "Bu projeye erişim yetkiniz yok",
+      "PROJ_003": "Proje adı boş olamaz",
+      "PROJ_004": "Proje adı çok uzun (en fazla 100 karakter)",
+      "PROJ_005": "Yalnızca kendi oluşturduğunuz projeleri silebilirsiniz"
+    },
+    "device": {
+      "DEV_001": "Cihaz bulunamadı",
+      "DEV_002": "{{name}} cihazı (ID: {{id}}) çevrimdışı",
+      "DEV_003": "{{deviceId}} cihazının {{address}} adresinden okuma başarısız: {{detail}}",
+      "DEV_004": "Cihaz verisi yazma başarısız",
+      "DEV_005": "Cihaz bağlantısı zaman aşımına uğradı ({{timeout}}ms)",
+      "DEV_006": "Cihaz iletişimi kesildi",
+      "DEV_007": "Cihaz yapılandırması geçersiz: {{detail}}"
+    },
+    "data": {
+      "DATA_001": "Veri toplama hatası",
+      "DATA_002": "{{protocol}} protokolü iletişim zaman aşımı ({{timeout}}ms)",
+      "DATA_003": "Veri kalıcılaştırma başarısız (depolama: {{storage}}, ayrıntı: {{detail}})",
+      "DATA_004": "{{tagId}} etiketinin veri kalitesi sorunu: {{quality}}",
+      "DATA_005": "Geçmiş veri bulunamadı",
+      "DATA_006": "Zaman aralığı geçersiz (başlangıç zamanı bitiş zamanından önce olmalıdır)"
+    },
+    "alarm": {
+      "ALM_001": "Alarm hatası: {{detail}}",
+      "ALM_002": "Alarm bildirimi gönderilemedi (kanal: {{channel}}, ayrıntı: {{detail}})",
+      "ALM_003": "Alarm kuralı bulunamadı",
+      "ALM_004": "Alarm koşulu yapılandırması geçersiz",
+      "ALM_005": "Olay kaydı bulunamadı veya temizlenmiş"
+    },
+    "protocol": {
+      "PROTO_001": "Desteklenmeyen protokol türü: {{type}}",
+      "PROTO_002": "Protokol bağlantısı başarısız: {{detail}}",
+      "PROTO_003": "Protokol bağlantısı kesilemedi: {{detail}}",
+      "PROTO_004": "Protokol okuma zaman aşımı",
+      "PROTO_005": "Protokol yazma başarısız"
+    },
+    "system": {
+      "SYS_001": "Sistem iç hatası",
+      "SYS_002": "Yapılandırma hatası ({{key}}: {{detail}})",
+      "SYS_003": "Depolama hatası ({{storage}}: {{detail}})",
+      "SYS_004": "Hizmet kullanılamıyor",
+      "SYS_005": "Veritabanı bağlantısı başarısız"
+    }
+  }
+}

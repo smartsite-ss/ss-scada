@@ -1,0 +1,21 @@
+{
+  "tagVariable": {
+    "label": "Biến thẻ",
+    "description": "Hiển thị giá trị thời gian thực của biến thiết bị",
+    "config": {
+      "bindVariable": "Liên kết biến",
+      "selectVariable": "Chọn biến",
+      "clear": "Xóa bỏ",
+      "unbound": "Chưa liên kết"
+    },
+    "selector": {
+      "title": "Chọn biến thiết bị",
+      "searchPlaceholder": "Tìm kiếm thiết bị hoặc biến",
+      "deviceLabel": "Thiết bị",
+      "tagCount": "{count} biến",
+      "loading": "Đang tải...",
+      "empty": "Chưa có biến thiết bị",
+      "selectHint": "Nhấp vào biến để liên kết"
+    }
+  }
+}

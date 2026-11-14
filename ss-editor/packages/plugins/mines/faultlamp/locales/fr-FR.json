@@ -1,0 +1,24 @@
+{
+  "faultlamp": {
+    "label": "Voyant d'alarme de défaut",
+    "properties": {
+      "alarmColor": "Couleur d'alarme",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "dataset": "Valeur de données (0=normal, >0=alarme)",
+      "flashing": "Effet de clignotement",
+      "flashSpeed": "Vitesse de clignotement (s)",
+      "showBuzzer": "Afficher le buzzer",
+      "alarmValue": "Valeur d'alarme",
+      "normalValue": "Valeur normale",
+      "defaultStatus": "État par défaut"
+    },
+    "options": {
+      "alarmColor": {
+        "red": "Rouge",
+        "amber": "Ambre",
+        "off": "Éteint"
+      }
+    },
+    "description": "Voyant d'alarme de défaut - icône d'avertissement losange/triangle avec clignotement et affichage du buzzer"
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "historyTrend": {
+    "label": "Geçmiş trend",
+    "description": "Bir veya daha fazla değişkenin geçmiş trendini zaman aralığına göre sorgular",
+    "config": {
+      "bindVariables": "Değişken bağla",
+      "addVariable": "Değişken ekle",
+      "removeVariable": "Sil",
+      "unbound": "Bağlı değişken yok",
+      "timeRange": "Zaman aralığı",
+      "queryMethod": "Sorgulama yöntemi",
+      "query": "Sorgula",
+      "querying": "Sorgulanıyor…"
+    },
+    "series": {
+      "lineWidth": "Çizgi genişliği",
+      "lineType": "Çizgi türü",
+      "lineColor": "Çizgi rengi",
+      "symbolSize": "Dolgulu nokta boyutu",
+      "labelShow": "Etiketleri göster",
+      "labelFontSize": "Etiket yazı boyutu",
+      "labelColor": "Etiket rengi",
+      "labelPosition": "Etiket konumu",
+      "areaShow": "Alan dolgusunu göster",
+      "areaStartColor": "Başlangıç rengi",
+      "areaMiddleColor": "Orta renk",
+      "areaEndColor": "Bitiş rengi",
+      "areaOpacity": "Opaklık"
+    },
+    "options": {
+      "interpolation": {
+        "raw": "Ham değer",
+        "linear": "Doğrusal interpolasyon",
+        "step": "Kademeli interpolasyon"
+      },
+      "presetRange": {
+        "1h": "Son 1 saat",
+        "6h": "Son 6 saat",
+        "24h": "Son 24 saat",
+        "7d": "Son 7 gün",
+        "custom": "Özel"
+      },
+      "lineType": {
+        "solid": "Düz çizgi",
+        "dashed": "Kesikli çizgi",
+        "dotted": "Noktalı çizgi"
+      },
+      "labelPosition": {
+        "top": "Üst",
+        "left": "Sol",
+        "right": "Sağ",
+        "bottom": "Alt"
+      },
+      "legendPosition": {
+        "top": "Üst",
+        "bottom": "Alt",
+        "left": "Sol",
+        "right": "Sağ"
+      },
+      "borderStyle": {
+        "solid": "Düz çizgi",
+        "dashed": "Kesikli çizgi",
+        "dotted": "Noktalı çizgi"
+      },
+      "fontWeight": {
+        "normal": "Normal",
+        "bold": "Kalın"
+      }
+    },
+    "properties": {
+      "defaultInterpolation": "Varsayılan sorgulama yöntemi",
+      "defaultInterval": "Varsayılan interpolasyon aralığı (ms)",
+      "defaultPresetRange": "Varsayılan zaman aralığı",
+      "defaultCustomStart": "Özel başlangıç zamanı",
+      "defaultCustomEnd": "Özel bitiş zamanı",
+      "maxPoints": "Maksimum nokta sayısı",
+      "title": "Başlık",
+      "titleColor": "Başlık rengi",
+      "titleFontSize": "Başlık yazı boyutu",
+      "titleFontWeight": "Başlık kalınlığı",
+      "gridColor": "Kılavuz rengi",
+      "axisColor": "Eksen rengi",
+      "showLegend": "Lejantı göster",
+      "legendPosition": "Lejant konumu",
+      "showTooltip": "İpucunu göster",
+      "showDataZoom": "Zaman ekseni yakınlaştırma",
+      "showXAxis": "Zaman eksenini göster",
+      "xAxisLineColor": "Zaman ekseni rengi",
+      "xAxisLabelFontSize": "Zaman ekseni yazı boyutu",
+      "xAxisLabelRotate": "Zaman ekseni metin eğimi",
+      "backgroundColor": "Arka plan rengi",
+      "borderColor": "Kenarlık rengi",
+      "borderWidth": "Kenarlık genişliği",
+      "borderStyle": "Kenarlık stili",
+      "borderRadius": "Köşe yuvarlatma",
+      "shadowColor": "Gölge rengi",
+      "shadowOffsetX": "Gölge kayması X",
+      "shadowOffsetY": "Gölge kayması Y",
+      "shadowBlur": "Gölge bulanıklığı"
+    }
+  }
+}

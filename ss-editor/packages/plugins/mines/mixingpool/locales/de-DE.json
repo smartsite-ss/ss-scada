@@ -1,0 +1,24 @@
+{
+  "mixingpool": {
+    "label": "Rührbehälter",
+    "properties": {
+      "color1": "Farbe 1",
+      "color2": "Farbe 2",
+      "flowColor": "Strömungsfarbe",
+      "pipeColor": "Rohrfarbe",
+      "backgroundColor": "Hintergrundfarbe",
+      "bgWidth": "Hintergrundbreite",
+      "boardWidth": "Rahmenbreite",
+      "roate": "Drehwinkel",
+      "cls": "Animationsstil",
+      "dur": "Animationsdauer (Sekunden)",
+      "dataset": "Datenwert",
+      "forwardValue": "Wert für Vorwärtslauf",
+      "backwardValue": "Wert für Rückwärtslauf",
+      "stopValue": "Wert für Stopp",
+      "defaultCls": "Standard-Animationsstil",
+      "decimalPlaces": "Dezimalstellen"
+    },
+    "description": "Rührbehälter – Mischbehälter mit Rührwerk, mit Drehanimation"
+  }
+}

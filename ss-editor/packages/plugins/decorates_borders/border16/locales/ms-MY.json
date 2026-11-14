@@ -1,0 +1,15 @@
+{
+  "border16": {
+    "label": "Sempadan-16 (Minimalis Nordik)",
+    "description": "Komponen hiasan sempadan-16 (Minimalis Nordik)",
+    "properties": {
+      "color1": "Warna utama",
+      "color2": "Warna sokongan",
+      "color3": "Warna asas",
+      "backgroundColor": "Warna latar",
+      "showLeaves": "Hiasan daun",
+      "showDots": "Titik tekstur",
+      "animationSpeed": "Kelajuan animasi"
+    }
+  }
+}

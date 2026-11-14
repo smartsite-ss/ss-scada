@@ -1,0 +1,17 @@
+{
+  "three-cube": {
+    "label": "Kubus 3D",
+    "panelTitle": "Konfigurasi kubus 3D",
+    "properties": {
+      "cubeColor": "Warna kubus",
+      "cubeSize": "Ukuran kubus",
+      "rotationSpeed": "Kecepatan rotasi",
+      "showGrid": "Tampilkan grid",
+      "showAxes": "Tampilkan sumbu"
+    },
+    "groups": {
+      "basic": "Properti dasar"
+    },
+    "description": "Elemen grafis kubus 3D dengan animasi rotasi"
+  }
+}

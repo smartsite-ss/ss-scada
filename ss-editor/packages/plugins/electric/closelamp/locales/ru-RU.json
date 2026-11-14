@@ -1,0 +1,21 @@
+{
+  "closelamp": {
+    "label": "Лампа «включено»",
+    "properties": {
+      "lampColor": "Цвет лампы",
+      "backgroundColor": "Цвет фона",
+      "radius": "Радиус",
+      "closed": "Состояние «включено»",
+      "closedValue": "Значение «включено»",
+      "openValue": "Значение «отключено»",
+      "defaultStatus": "Состояние по умолчанию"
+    },
+    "options": {
+      "closed": {
+        "yes": "Включено",
+        "no": "Отключено"
+      }
+    },
+    "description": "Индикатор положения «включено»"
+  }
+}

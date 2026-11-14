@@ -1,0 +1,11 @@
+{
+  "cablehead": {
+    "label": "ケーブル終端",
+    "properties": {
+      "color": "線の色",
+      "backgroundColor": "背景色",
+      "lineWidth": "線幅"
+    },
+    "description": "ケーブル終端 - ケーブルと機器の接続端"
+  }
+}

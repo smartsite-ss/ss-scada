@@ -1,0 +1,41 @@
+{
+  "chart": {
+    "label": "Gráfico",
+    "description": "Componente de gráfico para visualização de dados",
+    "panelTitle": "Configuração do gráfico",
+    "properties": {
+      "title": "Título",
+      "titleColor": "Cor do título",
+      "titleFontSize": "Tamanho da fonte do título",
+      "titleFontWeight": "Peso da fonte do título",
+      "backgroundColor": "Cor de fundo",
+      "borderColor": "Cor da borda",
+      "borderWidth": "Largura da borda",
+      "borderStyle": "Estilo da borda",
+      "borderRadius": "Raio da borda",
+      "gridColor": "Cor das linhas de grade",
+      "axisColor": "Cor dos eixos",
+      "shadowColor": "Cor da sombra",
+      "shadowOffsetX": "Deslocamento X da sombra",
+      "shadowOffsetY": "Deslocamento Y da sombra",
+      "shadowBlur": "Desfoque da sombra"
+    },
+    "options": {
+      "titleFontWeight": {
+        "normal": "Normal",
+        "bold": "Negrito"
+      },
+      "borderStyle": {
+        "solid": "Sólida",
+        "dashed": "Tracejada",
+        "dotted": "Pontilhada"
+      }
+    },
+    "groups": {
+      "basic": "Propriedades básicas",
+      "visual": "Estilo visual",
+      "style": "Estilo",
+      "shadow": "Sombra"
+    }
+  }
+}

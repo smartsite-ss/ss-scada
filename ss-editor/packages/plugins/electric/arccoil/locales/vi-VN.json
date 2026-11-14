@@ -1,0 +1,11 @@
+{
+  "arccoil": {
+    "label": "Cuộn dập hồ quang",
+    "properties": {
+      "color": "Màu đường nét",
+      "backgroundColor": "Màu nền",
+      "lineWidth": "Độ rộng nét"
+    },
+    "description": "Cuộn dập hồ quang - thiết bị bù nối đất điểm trung tính"
+  }
+}

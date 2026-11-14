@@ -1,0 +1,11 @@
+{
+  "transformer2w": {
+    "label": "Máy biến áp hai cuộn dây",
+    "properties": {
+      "color": "Màu đường nét",
+      "backgroundColor": "Màu nền",
+      "lineWidth": "Độ rộng nét"
+    },
+    "description": "Máy biến áp điện hai cuộn dây - ký hiệu hai cuộn"
+  }
+}

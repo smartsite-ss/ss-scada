@@ -1,0 +1,35 @@
+{
+  "fan3": {
+    "label": "ファン3",
+    "properties": {
+      "colors": "色グループ",
+      "flowColor": "ダクトの色",
+      "pipeColor": "配管の色",
+      "bgWidth": "ベースの幅",
+      "boardWidth": "板厚",
+      "roate": "回転角度",
+      "cls": "回転方向",
+      "dur": "アニメーション周期（秒）",
+      "backgroundColor": "背景色",
+      "dataset": "データセット",
+      "forwardValue": "正転に対応する値",
+      "backwardValue": "逆転に対応する値",
+      "stopValue": "停止に対応する値",
+      "defaultCls": "既定のアニメーション方向",
+      "decimalPlaces": "小数点以下の桁数",
+      "clsOptions": {
+        "right": "右回転",
+        "left": "左回転",
+        "stop": "停止"
+      }
+    },
+    "options": {
+      "cls": {
+        "left": "正転",
+        "right": "逆転",
+        "stop": "停止"
+      }
+    },
+    "description": "鉱山用ファン3 - ダクト付き遠心ファン。回転方向と速度制御に対応"
+  }
+}

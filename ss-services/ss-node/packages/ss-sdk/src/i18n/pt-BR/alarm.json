@@ -1,0 +1,36 @@
+{
+  "alarm": {
+    "rule": {
+      "created": "Regra de alarme criada com sucesso",
+      "updated": "Regra de alarme atualizada com sucesso",
+      "deleted": "Regra de alarme excluída",
+      "enabled": "Regra de alarme ativada",
+      "disabled": "Regra de alarme desativada",
+      "not_found": "A regra de alarme não existe"
+    },
+    "record": {
+      "triggered": "Alarme disparado: {{message}}",
+      "acknowledged": "Alarme confirmado (operador: {{operator}})",
+      "cleared": "Alarme limpo (motivo: {{reason}})",
+      "not_found": "O registro do evento não existe",
+      "already_acknowledged": "Este alarme já foi confirmado",
+      "already_cleared": "Este alarme já foi limpo"
+    },
+    "condition": {
+      "gt": "O valor {{value}} de {{tag}} é maior que o limite superior {{threshold}}",
+      "lt": "O valor {{value}} de {{tag}} é menor que o limite inferior {{threshold}}",
+      "range_in": "O valor {{value}} de {{tag}} está dentro da faixa normal",
+      "range_out": "O valor {{value}} de {{tag}} está fora da faixa normal"
+    },
+    "level": {
+      "info": "Informação",
+      "warning": "Advertência",
+      "error": "Erro",
+      "critical": "Crítico"
+    },
+    "notification": {
+      "send_success": "Notificação de alarme enviada com sucesso",
+      "send_failed": "Falha ao enviar a notificação de alarme"
+    }
+  }
+}

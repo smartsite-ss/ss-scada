@@ -1,0 +1,11 @@
+{
+  "border10": {
+    "label": "Рамка-10",
+    "description": "Декоративный компонент «Рамка-10»",
+    "properties": {
+      "color1": "Цвет 1",
+      "color2": "Цвет 2",
+      "backgroundColor": "Цвет фона"
+    }
+  }
+}

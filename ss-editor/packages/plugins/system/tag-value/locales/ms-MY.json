@@ -1,0 +1,61 @@
+{
+  "plugins": {
+    "groups": {
+      "shape": "Bentuk",
+      "name": "Nama",
+      "decoration": "Hiasan"
+    }
+  },
+  "tagValue": {
+    "label": "Pemboleh ubah tag berhias",
+    "description": "Papar nilai masa nyata pemboleh ubah peranti (segi empat/bulat)",
+    "config": {
+      "bindVariable": "Ikat pemboleh ubah",
+      "selectVariable": "Pilih pemboleh ubah",
+      "clear": "Kosongkan",
+      "unbound": "Tidak terikat",
+      "decorationImage": "Imej hiasan",
+      "backgroundImage": "Imej latar",
+      "selectImage": "Pilih imej"
+    },
+    "selector": {
+      "title": "Pilih pemboleh ubah peranti",
+      "searchPlaceholder": "Cari peranti atau pemboleh ubah",
+      "tagCount": "{count} pemboleh ubah",
+      "loading": "Memuat...",
+      "empty": "Tiada pemboleh ubah peranti"
+    },
+    "properties": {
+      "shape": "Bentuk",
+      "alias": "Alias",
+      "showName": "Tunjuk nama",
+      "nameColor": "Warna nama",
+      "nameFontSize": "Saiz fon nama",
+      "nameFontWeight": "Ketebalan nama",
+      "nameGap": "Jarak nama",
+      "decorationImagePosition": "Kedudukan imej hiasan",
+      "decorationImageSize": "Saiz imej hiasan",
+      "decorationImageOpacity": "Kelegapan imej hiasan",
+      "backgroundRepeat": "Jubin latar",
+      "backgroundImageFit": "Gaya isian"
+    },
+    "options": {
+      "shape": {
+        "rectangle": "Segi empat",
+        "circle": "Bulat"
+      },
+      "decorationPosition": {
+        "left": "Kiri",
+        "right": "Kanan",
+        "background": "Latar",
+        "center": "Tengah"
+      },
+      "backgroundRepeat": {
+        "repeat": "Jubin",
+        "no-repeat": "Tiada jubin",
+        "repeat-x": "Jubin mendatar",
+        "repeat-y": "Jubin menegak"
+      }
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "ammeter": {
+    "label": "แอมมิเตอร์",
+    "properties": {
+      "color": "สีเส้น",
+      "backgroundColor": "สีพื้นหลัง",
+      "lineWidth": "ความกว้างเส้น",
+      "dataset": "ค่าข้อมูลแบบคงที่",
+      "showDigital": "แสดงค่าตัวเลขอ่าน",
+      "decimalPlaces": "จำนวนตำแหน่งทศนิยม",
+      "unit": "หน่วย"
+    },
+    "description": "แอมมิเตอร์ - เครื่องมือวัดกระแสไฟฟ้า"
+  }
+}

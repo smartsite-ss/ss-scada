@@ -1,0 +1,62 @@
+{
+  "track-move": {
+    "label": "Trajetória dinâmica",
+    "description": "Ponto animado que se move ao longo de uma trajetória personalizada, com suporte a caminhos com curvas e imagem substituta",
+    "panelTitle": "Configuração da trajetória dinâmica",
+    "properties": {
+      "speed": "Velocidade (px/s)",
+      "dotStyle": "Estilo do ponto",
+      "dotColor": "Cor do ponto",
+      "dotSize": "Tamanho do ponto",
+      "dotImage": "URL da imagem",
+      "imageWidth": "Largura da imagem",
+      "imageHeight": "Altura da imagem",
+      "trackColor": "Cor da trajetória",
+      "trackWidth": "Largura da trajetória",
+      "trackStyle": "Estilo da trajetória",
+      "status": "Estado da animação",
+      "direction": "Direção do movimento",
+      "loopMode": "Modo de repetição"
+    },
+    "options": {
+      "dotStyle": {
+        "circle": "Círculo",
+        "image": "Imagem"
+      },
+      "trackStyle": {
+        "solid": "Sólida",
+        "dashed": "Tracejada"
+      },
+      "direction": {
+        "forward": "Direto",
+        "backward": "Inverso"
+      },
+      "loopMode": {
+        "loop": "Repetir",
+        "once": "Uma vez",
+        "bounce": "Vai e volta"
+      }
+    },
+    "groups": {
+      "dot": "Ponto animado",
+      "track": "Trajetória",
+      "motion": "Movimento"
+    },
+    "hints": {
+      "dotImage": "Informe o endereço URL da imagem"
+    },
+    "editor": {
+      "pathPoints": "Pontos do caminho",
+      "index": "#",
+      "coordX": "X",
+      "coordY": "Y",
+      "type": "Tipo",
+      "action": "Operação",
+      "startPoint": "Início",
+      "endPoint": "Fim",
+      "bendPoint": "Ponto de curvatura",
+      "addBendPoint": "+ Adicionar ponto de curvatura",
+      "reversePath": "Inverter caminho"
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "border14": {
+    "label": "Bordure-14",
+    "description": "Composant décoratif Bordure-14",
+    "properties": {
+      "color1": "Couleur principale",
+      "color2": "Couleur secondaire",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "showHexGrid": "Grille hexagonale",
+      "showScanLine": "Ligne de balayage",
+      "showCoreLines": "Croix centrale",
+      "animationSpeed": "Vitesse d'animation"
+    }
+  }
+}

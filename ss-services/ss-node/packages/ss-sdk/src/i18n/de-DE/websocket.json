@@ -1,0 +1,45 @@
+{
+  "websocket": {
+    "connected": "WebSocket erfolgreich verbunden",
+    "disconnected": "Die WebSocket-Verbindung wurde getrennt",
+    "pong": "Pong – Heartbeat-Antwort",
+    "event": {
+      "data_update": "Ereignis zur Datenaktualisierung (Tag: {{tagId}})",
+      "alarm_triggered": "Ereignis zur Alarmauslösung",
+      "alarm_acknowledged": "Ereignis zur Alarmquittierung",
+      "alarm_cleared": "Ereignis zur Alarmlöschung",
+      "device_status_change": "Ereignis zur Änderung des Gerätestatus"
+    },
+    "error": {
+      "authentication_failed": "WebSocket-Authentifizierung fehlgeschlagen",
+      "rate_limit_exceeded": "Nachrichtenfrequenz überschritten",
+      "invalid_message_format": "Ungültiges Nachrichtenformat"
+    },
+    "room": {
+      "joined": "Benutzer {{username}} ist dem Raum {{room}} beigetreten",
+      "left": "Benutzer {{username}} hat den Raum {{room}} verlassen",
+      "permission_denied": "Keine Berechtigung für den Projektraum {{projectId}}",
+      "not_authenticated": "Nicht authentifizierte Benutzer können keinem Projektraum beitreten"
+    },
+    "connection": {
+      "limit_exceeded": "Die maximale Anzahl an Verbindungen ist erreicht ({{current}}/{{max}})",
+      "user_limit_exceeded": "Die maximale Anzahl an Verbindungen für Benutzer {{username}} ist erreicht ({{current}}/{{max}})",
+      "ip_limit_exceeded": "Die maximale Anzahl an Verbindungen für IP {{ip}} ist erreicht ({{current}}/{{max}})",
+      "idle_timeout": "Zeitüberschreitung wegen Inaktivität ({{minutes}} Minuten ohne fachliche Nachricht)",
+      "force_disconnected": "Die Verbindung wurde vom Administrator getrennt",
+      "global_limit_exceeded": "Die globale maximale Anzahl an Verbindungen ist erreicht ({{current}}/{{max}})"
+    },
+    "monitor": {
+      "online_count": "Online-Verbindungen",
+      "message_rate": "Nachrichtenrate",
+      "connection_duration": "Verbindungsdauer",
+      "abnormal_detected": "Auffällige Verbindung erkannt"
+    },
+    "offline": {
+      "message_cached": "Die Offline-Nachricht wurde zwischengespeichert",
+      "message_replayed": "Offline-Nachrichten wurden nachgesendet ({{count}} Stück)",
+      "message_expired": "Abgelaufene Nachrichten wurden bereinigt",
+      "message_confirmed": "Nachricht bestätigt"
+    }
+  }
+}

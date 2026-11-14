@@ -1,0 +1,21 @@
+{
+  "groundswitch": {
+    "label": "接地開閉器",
+    "properties": {
+      "color": "線の色",
+      "backgroundColor": "背景色",
+      "lineWidth": "線幅",
+      "closed": "閉状態",
+      "closedValue": "閉に対応する値",
+      "openValue": "開に対応する値",
+      "defaultStatus": "既定の状態"
+    },
+    "options": {
+      "closed": {
+        "yes": "投入",
+        "no": "開放"
+      }
+    },
+    "description": "接地開閉器 - 線路接地保護用の開閉器"
+  }
+}

@@ -1,0 +1,126 @@
+{
+  "common": {
+    "ok": "OK",
+    "cancel": "Отмена",
+    "save": "Сохранить",
+    "delete": "Удалить",
+    "edit": "Редактировать",
+    "add": "Добавить",
+    "search": "Поиск",
+    "reset": "Сбросить",
+    "export": "Экспорт",
+    "import": "Импорт",
+    "confirm": "Подтвердить",
+    "close": "Закрыть",
+    "refresh": "Обновить",
+    "upload": "Загрузить",
+    "download": "Скачать",
+    "preview": "Предпросмотр",
+    "copy": "Копировать",
+    "paste": "Вставить",
+    "undo": "Отменить",
+    "redo": "Повторить",
+    "settings": "Настройки",
+    "theme": "Тема",
+    "language": "Язык"
+  },
+  "category": {
+    "basic": "Базовые компоненты",
+    "form": "Компоненты форм",
+    "chart": "Компоненты диаграмм",
+    "industrial": "Промышленные компоненты",
+    "media": "Медиа-компоненты",
+    "layout": "Компоненты макета",
+    "3d": "Компоненты 3D",
+    "svg": "Компоненты SVG"
+  },
+  "editor": {
+    "toolbar": "Панель инструментов",
+    "canvas": "Холст",
+    "properties": "Панель свойств",
+    "layers": "Панель слоёв",
+    "plugin": "Управление плагинами",
+    "zoomIn": "Увеличить",
+    "zoomOut": "Уменьшить",
+    "fitToScreen": "По размеру экрана",
+    "undo": "Отменить",
+    "redo": "Повторить",
+    "delete": "Удалить выделенное",
+    "selectAll": "Выделить всё",
+    "copy": "Копировать",
+    "paste": "Вставить",
+    "group": "Сгруппировать",
+    "ungroup": "Разгруппировать",
+    "bringToFront": "На передний план",
+    "sendToBack": "На задний план",
+    "align": "Выравнивание"
+  },
+  "plugin": {
+    "noPluginSelected": "Элемент не выбран",
+    "propertiesMissing": "Свойства отсутствуют",
+    "schemaVersion": "Версия Schema",
+    "pluginType": "Тип элемента",
+    "position": "Положение",
+    "size": "Размер",
+    "width": "Ширина",
+    "height": "Высота",
+    "x": "Координата X",
+    "y": "Координата Y",
+    "rotation": "Поворот",
+    "opacity": "Прозрачность",
+    "visible": "Видимый",
+    "locked": "Заблокировано"
+  },
+  "language": {
+    "zhCN": "Китайский",
+    "enUS": "Английский"
+  },
+  "threeStage": {
+    "label": "3D-контейнер сцены",
+    "description": "Контейнер 3D-сцены Three.js с поддержкой загрузки моделей, освещения и управления камерой"
+  },
+  "validation": {
+    "requiredFieldMissingDefault": "У обязательного поля «{field}» нет значения по умолчанию (required=true, но defaultValue пусто)",
+    "requiredFieldMissing": "Обязательное поле «{field}» отсутствует",
+    "schemaMissingName": "[{pluginName}] в Schema отсутствует name",
+    "schemaMissingFields": "[{pluginName}] в Schema отсутствует определение fields",
+    "fieldDuplicate": "Поле «{field}» объявлено повторно",
+    "fieldMissingName": "В поле отсутствует name",
+    "fieldMissingLabel": "В поле отсутствует label",
+    "fieldMissingType": "В поле отсутствует type",
+    "selectMissingOptions": "У поля select «{field}» отсутствует options",
+    "minGreaterThanMax": "min({min}) больше max({max})",
+    "invalidColorDefault": "Неверный формат цвета по умолчанию «{value}»",
+    "fieldMissingDefault": "В поле отсутствует defaultValue",
+    "fieldCannotBeEmpty": "Поле «{field}» не может быть пустым",
+    "fieldExpectedNumber": "Поле «{field}»: ожидается число, получено {actual}",
+    "fieldValueLessThanMin": "Значение поля «{field}» {value} меньше минимума {min}",
+    "fieldValueGreaterThanMax": "Значение поля «{field}» {value} больше максимума {max}",
+    "fieldExpectedString": "Поле «{field}»: ожидается строка, получено {actual}",
+    "fieldExpectedBoolean": "Поле «{field}»: ожидается логическое значение, получено {actual}",
+    "fieldValueNotInOptions": "Значение «{value}» поля «{field}» отсутствует в списке допустимых [{options}]",
+    "fieldExpectedColor": "Поле «{field}»: ожидается строка цвета, получено {actual}",
+    "invalidColorFormat": "Значение «{value}» поля «{field}» не является корректным цветом (ожидается #RGB / #RRGGBB / #RRGGBBAA)"
+  },
+  "pluginSdk": {
+    "readme": {
+      "type": "Тип",
+      "category": "Категория",
+      "renderBackend": "Способ отрисовки",
+      "properties": "Список свойств",
+      "default": "По умолчанию",
+      "development": "Разработка"
+    },
+    "pluginStyle": "Стиль плагина",
+    "backendDescriptions": {
+      "vueComponent": "Отрисовка на основе Vue-компонента, подходит для сложных интерактивных компонентов",
+      "canvas2d": "Отрисовка на основе Canvas 2D, подходит для высокопроизводительной графики",
+      "svgDom": "Отрисовка на основе SVG DOM, подходит для векторной графики и анимации",
+      "cssDom": "Отрисовка на основе CSS DOM, подходит для HTML-элементов и стилей",
+      "three3d": "Отрисовка на основе Three.js 3D, подходит для трёхмерных сцен и моделей"
+    }
+  },
+  "createPlugin": {
+    "cannotExtractComponentName": "Не удалось определить имя компонента. Укажите его явно через graphicComponentName"
+  }
+}

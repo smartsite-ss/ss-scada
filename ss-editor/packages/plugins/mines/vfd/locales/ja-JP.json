@@ -1,0 +1,38 @@
+{
+  "vfd": {
+    "label": "インバータ/VFD",
+    "properties": {
+      "colors": "色1",
+      "colors2": "色2",
+      "flowColor": "流動色",
+      "pipeColor": "配管の色",
+      "backgroundColor": "背景色",
+      "bgWidth": "背景の幅",
+      "boardWidth": "枠線幅",
+      "roate": "回転角度",
+      "cls": "アニメーション方向",
+      "dur": "アニメーション周期（秒）",
+      "dataset": "データ値",
+      "frequency": "周波数（Hz）",
+      "runState": "運転状態",
+      "forwardValue": "正転に対応する値",
+      "backwardValue": "逆転に対応する値",
+      "stopValue": "停止に対応する値",
+      "defaultCls": "既定のアニメーション方向",
+      "decimalPlaces": "小数点以下の桁数"
+    },
+    "options": {
+      "cls": {
+        "left": "正転",
+        "right": "逆転",
+        "stop": "停止"
+      },
+      "runState": {
+        "run": "運転",
+        "stop": "停止",
+        "fault": "故障"
+      }
+    },
+    "description": "インバータ/VFD - 可変周波数ドライブ。周波数表示と運転状態表示に対応"
+  }
+}

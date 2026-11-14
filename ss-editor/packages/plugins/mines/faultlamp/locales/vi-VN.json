@@ -1,0 +1,24 @@
+{
+  "faultlamp": {
+    "label": "Đèn báo sự cố",
+    "properties": {
+      "alarmColor": "Màu cảnh báo",
+      "backgroundColor": "Màu nền",
+      "dataset": "Giá trị dữ liệu (0 = bình thường, > 0 = cảnh báo)",
+      "flashing": "Hiệu ứng nhấp nháy",
+      "flashSpeed": "Tốc độ nhấp nháy (giây)",
+      "showBuzzer": "Hiển thị còi báo",
+      "alarmValue": "Giá trị tương ứng cảnh báo",
+      "normalValue": "Giá trị tương ứng bình thường",
+      "defaultStatus": "Trạng thái mặc định"
+    },
+    "options": {
+      "alarmColor": {
+        "red": "Đỏ",
+        "amber": "Hổ phách",
+        "off": "Tắt"
+      }
+    },
+    "description": "Đèn báo sự cố - biểu tượng cảnh báo hình thoi/tam giác, hỗ trợ hiển thị nhấp nháy và còi báo"
+  }
+}

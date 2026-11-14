@@ -1,0 +1,11 @@
+{
+  "arccoil": {
+    "label": "消弧リアクトル",
+    "properties": {
+      "color": "線の色",
+      "backgroundColor": "背景色",
+      "lineWidth": "線幅"
+    },
+    "description": "消弧リアクトル - 中性点接地補償装置"
+  }
+}

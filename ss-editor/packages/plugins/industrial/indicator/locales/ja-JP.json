@@ -1,0 +1,42 @@
+{
+  "indicator": {
+    "label": "表示灯",
+    "description": "表示灯コンポーネント。状態表示とアラームに使用",
+    "panelTitle": "表示灯の設定",
+    "properties": {
+      "width": "幅",
+      "height": "高さ",
+      "status": "状態",
+      "onColor": "点灯時の色",
+      "offColor": "消灯時の色",
+      "warningColor": "警告の色",
+      "faultColor": "故障の色",
+      "blinkOnAlarm": "アラーム時に点滅",
+      "blinkInterval": "点滅間隔（ms）",
+      "showLabel": "ラベルを表示",
+      "labelText": "ラベルテキスト",
+      "labelColor": "ラベルの色",
+      "onValue": "点灯に対応する値",
+      "offValue": "消灯に対応する値",
+      "warningValue": "警告に対応する値",
+      "faultValue": "故障に対応する値",
+      "defaultStatus": "既定の状態"
+    },
+    "options": {
+      "status": {
+        "on": "点灯",
+        "off": "消灯",
+        "warning": "警告",
+        "fault": "故障"
+      }
+    },
+    "groups": {
+      "basic": "基本",
+      "status": "状態",
+      "color": "色",
+      "animation": "アニメーション",
+      "label": "ラベル",
+      "binding": "バインドマッピング"
+    }
+  }
+}

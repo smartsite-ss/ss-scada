@@ -1,0 +1,21 @@
+{
+  "tagVariable": {
+    "label": "태그 변수",
+    "description": "설비 변수 실시간 값 표시",
+    "config": {
+      "bindVariable": "변수 바인딩",
+      "selectVariable": "변수 선택",
+      "clear": "지우기",
+      "unbound": "바인딩되지 않음"
+    },
+    "selector": {
+      "title": "설비 변수 선택",
+      "searchPlaceholder": "설비 또는 변수 검색",
+      "deviceLabel": "설비",
+      "tagCount": "변수 {count}개",
+      "loading": "로딩 중...",
+      "empty": "설비 변수 없음",
+      "selectHint": "변수를 클릭하여 바인딩"
+    }
+  }
+}

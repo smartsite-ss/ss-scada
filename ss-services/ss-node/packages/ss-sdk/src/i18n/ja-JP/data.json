@@ -1,0 +1,23 @@
+{
+  "data": {
+    "acquisition": {
+      "started": "データ収集を開始しました",
+      "stopped": "データ収集を停止しました",
+      "error": "データ収集の異常"
+    },
+    "transform": {
+      "success": "データ変換に成功しました",
+      "failed_invalid_value": "無効なデータ値: {{value}}",
+      "failed_scale_error": "スケール係数の設定が正しくありません"
+    },
+    "persistence": {
+      "save_success": "データの保存に成功しました",
+      "save_failed": "データの保存に失敗しました ({{detail}})"
+    },
+    "history": {
+      "query_success": "履歴データのクエリに成功しました",
+      "query_empty": "指定した期間に履歴データがありません",
+      "time_range_error": "期間パラメータが正しくありません"
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "valve": {
+    "label": "밸브",
+    "description": "개폐 상태 및 유형 전환을 지원하는 밸브 컴포넌트",
+    "panelTitle": "밸브 구성",
+    "properties": {
+      "width": "너비",
+      "height": "높이",
+      "status": "상태",
+      "valveType": "밸브 유형",
+      "bodyColor": "본체 색상",
+      "stemColor": "밸브 스템 색상",
+      "openColor": "열림 색상",
+      "closedColor": "닫힘 색상",
+      "faultColor": "고장 색상",
+      "showLabel": "레이블 표시",
+      "labelText": "레이블 텍스트",
+      "openValue": "열림 대응 값",
+      "closedValue": "닫힘 대응 값",
+      "faultValue": "고장 대응 값",
+      "defaultStatus": "기본 상태"
+    },
+    "options": {
+      "status": {
+        "open": "열림",
+        "closed": "닫힘",
+        "opening": "여는 중",
+        "closing": "닫는 중",
+        "fault": "고장"
+      },
+      "valveType": {
+        "butterfly": "버터플라이 밸브",
+        "gate": "게이트 밸브"
+      }
+    },
+    "groups": {
+      "basic": "기본",
+      "status": "상태",
+      "color": "색상",
+      "statusColor": "상태 색상",
+      "label": "레이블",
+      "binding": "바인딩 매핑"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "faultlamp": {
+    "label": "Lámpara de alarma de falla",
+    "properties": {
+      "color": "Color",
+      "backgroundColor": "Color de fondo",
+      "lineWidth": "Grosor de línea",
+      "alarming": "Estado de alarma",
+      "alarmValue": "Valor para alarma",
+      "normalValue": "Valor para normal",
+      "defaultStatus": "Estado predeterminado"
+    },
+    "options": {
+      "alarming": {
+        "yes": "En alarma",
+        "no": "Normal"
+      }
+    },
+    "description": "Luz de alarma de falla: parpadea en rojo durante la alarma"
+  }
+}

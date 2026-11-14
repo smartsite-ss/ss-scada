@@ -1,0 +1,19 @@
+{
+  "time-common": {
+    "label": "Genel saat",
+    "properties": {
+      "textColor": "Metin rengi",
+      "fontSize": "Yazı boyutu",
+      "fontWeight": "Yazı kalınlığı",
+      "shadow": "Gölge"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "Normal",
+        "bold": "Kalın",
+        "lighter": "İnce"
+      }
+    },
+    "description": "Genel saat gösterimi"
+  }
+}

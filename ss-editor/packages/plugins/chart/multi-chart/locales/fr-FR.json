@@ -1,0 +1,47 @@
+{
+  "multiChart": {
+    "label": "Graphiques multiples",
+    "description": "Composant multi-graphiques prenant en charge l'histogramme, le diagramme circulaire et la carte thermique",
+    "panelTitle": "Configuration des graphiques multiples",
+    "properties": {
+      "title": "Titre",
+      "titleColor": "Couleur du titre",
+      "titleFontSize": "Taille de police du titre",
+      "chartType": "Type de graphique",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "borderColor": "Couleur de bordure",
+      "borderWidth": "Largeur de bordure",
+      "borderRadius": "Rayon d'arrondi",
+      "barColor": "Couleur de l'histogramme",
+      "barGap": "Espacement des barres",
+      "pieColors": "Série de couleurs du diagramme circulaire",
+      "pieInnerRadius": "Ratio du rayon interne",
+      "pieShowLabels": "Afficher les étiquettes",
+      "heatmapColorLow": "Couleur de valeur basse de la carte thermique",
+      "heatmapColorHigh": "Couleur de valeur haute de la carte thermique",
+      "heatmapRows": "Nombre de lignes",
+      "heatmapCols": "Nombre de colonnes",
+      "showLegend": "Afficher la légende",
+      "shadowColor": "Couleur d'ombre",
+      "shadowOffsetX": "Décalage d'ombre X",
+      "shadowOffsetY": "Décalage d'ombre Y",
+      "shadowBlur": "Flou d'ombre"
+    },
+    "options": {
+      "chartType": {
+        "bar": "Histogramme",
+        "pie": "Diagramme circulaire",
+        "heatmap": "Carte thermique"
+      }
+    },
+    "groups": {
+      "basic": "Base",
+      "style": "Style",
+      "bar": "Histogramme",
+      "pie": "Diagramme circulaire",
+      "heatmap": "Carte thermique",
+      "display": "Affichage",
+      "shadow": "Ombre"
+    }
+  }
+}

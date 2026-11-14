@@ -1,0 +1,15 @@
+{
+  "border16": {
+    "label": "테두리-16(북유럽 미니멀)",
+    "description": "테두리-16 장식 컴포넌트(북유럽 미니멀)",
+    "properties": {
+      "color1": "주요 색상",
+      "color2": "보조 색상",
+      "color3": "바탕색",
+      "backgroundColor": "배경색",
+      "showLeaves": "잎 장식",
+      "showDots": "텍스처 도트",
+      "animationSpeed": "애니메이션 속도"
+    }
+  }
+}

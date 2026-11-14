@@ -1,0 +1,22 @@
+{
+  "motor": {
+    "label": "電動機",
+    "properties": {
+      "color": "線條顏色",
+      "backgroundColor": "背景色",
+      "lineWidth": "線寬",
+      "running": "運轉狀態",
+      "runningValue": "運轉對應值",
+      "stoppedValue": "停止對應值",
+      "faultValue": "故障對應值",
+      "defaultStatus": "預設狀態"
+    },
+    "options": {
+      "running": {
+        "yes": "運轉中",
+        "no": "停止"
+      }
+    },
+    "description": "電動機 - 帶旋轉狀態指示"
+  }
+}

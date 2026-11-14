@@ -1,0 +1,49 @@
+{
+  "stateVariable": {
+    "label": "狀態變數",
+    "description": "依變數值顯示不同狀態圖片",
+    "graphic": {
+      "placeholder": "未綁定 / 無相符"
+    },
+    "config": {
+      "bindVariable": "綁定變數",
+      "selectVariable": "選擇變數",
+      "clear": "清除",
+      "unbound": "未綁定",
+      "states": "狀態規則",
+      "addRule": "新增規則",
+      "stateName": "狀態名稱",
+      "value": "比較值",
+      "value2": "結束值",
+      "selectImage": "選擇圖片",
+      "defaultImage": "預設圖片",
+      "deleteRule": "刪除"
+    },
+    "imagePicker": {
+      "title": "選擇圖片",
+      "sourceGallery": "圖庫",
+      "sourceUrl": "URL",
+      "sourceUpload": "上傳",
+      "urlPlaceholder": "輸入圖片 URL",
+      "confirm": "確定",
+      "cancel": "取消",
+      "loading": "載入中...",
+      "empty": "暫無圖片",
+      "selectCategory": "請選擇分類",
+      "uploadHint": "選擇本機圖片檔案",
+      "fileSizeError": "圖片大小不能超過 10MB"
+    },
+    "operator": {
+      "equal": "=",
+      "notEqual": "≠",
+      "greaterThan": ">",
+      "greaterOrEqual": "≥",
+      "lessThan": "<",
+      "lessOrEqual": "≤",
+      "between": "∈",
+      "contains": "包含",
+      "startsWith": "開頭為",
+      "endsWith": "結尾為"
+    }
+  }
+}

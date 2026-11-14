@@ -1,0 +1,28 @@
+{
+  "three-gauge": {
+    "label": "Đồng hồ đo 3D",
+    "panelTitle": "Cấu hình đồng hồ đo 3D",
+    "properties": {
+      "value": "Giá trị hiện tại",
+      "min": "Giá trị nhỏ nhất",
+      "max": "Giá trị lớn nhất",
+      "gaugeColor": "Màu bình thường",
+      "warningColor": "Màu cảnh báo",
+      "dangerColor": "Màu nguy hiểm",
+      "warningThreshold": "Ngưỡng cảnh báo",
+      "dangerThreshold": "Ngưỡng nguy hiểm",
+      "showTicks": "Hiển thị vạch chia",
+      "showLabels": "Hiển thị nhãn",
+      "needleColor": "Màu kim chỉ",
+      "backgroundColor": "Màu nền",
+      "rimColor": "Màu viền"
+    },
+    "groups": {
+      "数据": "Dữ liệu",
+      "颜色": "Màu",
+      "阈值": "Ngưỡng",
+      "显示": "Hiển thị"
+    },
+    "description": "Phần tử đồ họa đồng hồ đo 3D, hỗ trợ kim xoay theo dữ liệu"
+  }
+}

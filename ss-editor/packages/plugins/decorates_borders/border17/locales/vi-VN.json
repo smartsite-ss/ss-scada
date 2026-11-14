@@ -1,0 +1,15 @@
+{
+  "border17": {
+    "label": "Viền-17 (Neon Cyberpunk)",
+    "description": "Thành phần trang trí viền-17 (Neon Cyberpunk)",
+    "properties": {
+      "color1": "Xanh lục neon",
+      "color2": "Hồng neon",
+      "color3": "Màu nền tảng",
+      "backgroundColor": "Màu nền",
+      "showCircuit": "Họa tiết mạch điện",
+      "showScanline": "Đường quét",
+      "animationSpeed": "Tốc độ hoạt ảnh"
+    }
+  }
+}

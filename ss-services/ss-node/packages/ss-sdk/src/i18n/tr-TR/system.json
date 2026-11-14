@@ -1,0 +1,23 @@
+{
+  "system": {
+    "health_check": {
+      "success": "Sistem sağlık kontrolü başarılı",
+      "failed": "Sistem sağlık kontrolü başarısız: {{detail}}"
+    },
+    "config": {
+      "reload_success": "Yapılandırma yeniden yüklendi",
+      "reload_failed": "Yapılandırma yeniden yüklenemedi: {{detail}}",
+      "validation_error": "Yapılandırma doğrulaması başarısız: {{detail}}"
+    },
+    "storage": {
+      "database_connected": "Veritabanı bağlantısı kuruldu",
+      "database_connection_failed": "Veritabanı bağlantısı başarısız: {{detail}}",
+      "redis_connected": "Redis bağlantısı kuruldu",
+      "redis_connection_failed": "Redis bağlantısı başarısız: {{detail}}"
+    },
+    "maintenance": {
+      "mode_enabled": "Bakım modu etkinleştirildi",
+      "mode_disabled": "Bakım modu devre dışı bırakıldı"
+    }
+  }
+}

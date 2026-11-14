@@ -1,0 +1,15 @@
+{
+  "border14": {
+    "label": "Sempadan-14",
+    "description": "Komponen hiasan sempadan-14",
+    "properties": {
+      "color1": "Warna utama",
+      "color2": "Warna sokongan",
+      "backgroundColor": "Warna latar",
+      "showHexGrid": "Grid heksagon",
+      "showScanLine": "Garisan imbas",
+      "showCoreLines": "Garis silang tengah",
+      "animationSpeed": "Kelajuan animasi"
+    }
+  }
+}

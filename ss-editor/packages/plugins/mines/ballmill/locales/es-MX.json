@@ -1,0 +1,31 @@
+{
+  "ballmill": {
+    "label": "Molino de bolas",
+    "properties": {
+      "colors": "Color 1",
+      "colors2": "Color 2",
+      "flowColor": "Color de flujo",
+      "pipeColor": "Color de la tubería",
+      "backgroundColor": "Color de fondo",
+      "bgWidth": "Ancho del fondo",
+      "boardWidth": "Ancho del borde",
+      "roate": "Ángulo de rotación",
+      "cls": "Dirección de la animación",
+      "dur": "Ciclo de animación (s)",
+      "dataset": "Valor de datos",
+      "forwardValue": "Valor para giro directo",
+      "backwardValue": "Valor para giro inverso",
+      "stopValue": "Valor para detenido",
+      "defaultCls": "Dirección de animación predeterminada",
+      "decimalPlaces": "Decimales"
+    },
+    "options": {
+      "cls": {
+        "left": "Giro directo",
+        "right": "Giro inverso",
+        "stop": "Detenido"
+      }
+    },
+    "description": "Molino de bolas: cilindro horizontal accionado por engranaje grande con rotación continua y animación de giro directo e inverso"
+  }
+}

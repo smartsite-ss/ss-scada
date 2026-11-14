@@ -1,0 +1,42 @@
+{
+  "indicator": {
+    "label": "Lampu penunjuk",
+    "description": "Komponen lampu penunjuk untuk paparan status dan penggera",
+    "panelTitle": "Konfigurasi lampu penunjuk",
+    "properties": {
+      "width": "Lebar",
+      "height": "Tinggi",
+      "status": "Status",
+      "onColor": "Warna menyala",
+      "offColor": "Warna padam",
+      "warningColor": "Warna amaran",
+      "faultColor": "Warna kerosakan",
+      "blinkOnAlarm": "Berkelip semasa penggera",
+      "blinkInterval": "Selang kelipan (ms)",
+      "showLabel": "Tunjuk label",
+      "labelText": "Teks label",
+      "labelColor": "Warna label",
+      "onValue": "Nilai padanan menyala",
+      "offValue": "Nilai padanan padam",
+      "warningValue": "Nilai padanan amaran",
+      "faultValue": "Nilai padanan kerosakan",
+      "defaultStatus": "Status lalai"
+    },
+    "options": {
+      "status": {
+        "on": "Menyala",
+        "off": "Padam",
+        "warning": "Amaran",
+        "fault": "Kerosakan"
+      }
+    },
+    "groups": {
+      "basic": "Asas",
+      "status": "Status",
+      "color": "Warna",
+      "animation": "Animasi",
+      "label": "Label",
+      "binding": "Pemetaan ikatan"
+    }
+  }
+}

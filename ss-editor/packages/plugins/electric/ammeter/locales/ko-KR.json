@@ -1,0 +1,15 @@
+{
+  "ammeter": {
+    "label": "전류계",
+    "properties": {
+      "color": "선 색상",
+      "backgroundColor": "배경색",
+      "lineWidth": "선 너비",
+      "dataset": "정적 데이터 값",
+      "showDigital": "숫자 판독값 표시",
+      "decimalPlaces": "소수 자릿수",
+      "unit": "단위"
+    },
+    "description": "전류계 - 전류 측정 계기"
+  }
+}

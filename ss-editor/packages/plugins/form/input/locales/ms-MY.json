@@ -1,0 +1,46 @@
+{
+  "input": {
+    "label": "Kotak input",
+    "description": "Komponen kotak input untuk kemasukan teks satu baris",
+    "panelTitle": "Konfigurasi kotak input",
+    "properties": {
+      "value": "Nilai",
+      "placeholder": "Pemegang tempat",
+      "backgroundColor": "Warna latar",
+      "borderColor": "Warna sempadan",
+      "borderWidth": "Lebar sempadan",
+      "borderStyle": "Gaya sempadan",
+      "borderRadius": "Sudut bulat",
+      "textColor": "Warna teks",
+      "fontSize": "Saiz fon",
+      "fontWeight": "Ketebalan fon",
+      "textAlign": "Jajaran teks",
+      "shadowColor": "Warna bayang",
+      "shadowOffsetX": "Offset bayang X",
+      "shadowOffsetY": "Offset bayang Y",
+      "shadowBlur": "Kabur bayang"
+    },
+    "options": {
+      "borderStyle": {
+        "solid": "Garisan pepejal",
+        "dashed": "Garisan putus-putus",
+        "dotted": "Garisan bertitik"
+      },
+      "fontWeight": {
+        "normal": "Normal",
+        "bold": "Tebal"
+      },
+      "textAlign": {
+        "left": "Jajar kiri",
+        "center": "Tengah",
+        "right": "Jajar kanan"
+      }
+    },
+    "groups": {
+      "basic": "Sifat asas",
+      "style": "Gaya",
+      "text": "Teks",
+      "shadow": "Bayang"
+    }
+  }
+}

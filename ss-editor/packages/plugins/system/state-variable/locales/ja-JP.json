@@ -1,0 +1,49 @@
+{
+  "stateVariable": {
+    "label": "状態変数",
+    "description": "変数の値に応じて異なる状態画像を表示",
+    "graphic": {
+      "placeholder": "未バインド / 一致なし"
+    },
+    "config": {
+      "bindVariable": "変数をバインド",
+      "selectVariable": "変数を選択",
+      "clear": "クリア",
+      "unbound": "未バインド",
+      "states": "状態ルール",
+      "addRule": "ルールを追加",
+      "stateName": "状態名",
+      "value": "比較値",
+      "value2": "終了値",
+      "selectImage": "画像を選択",
+      "defaultImage": "既定の画像",
+      "deleteRule": "削除"
+    },
+    "imagePicker": {
+      "title": "画像を選択",
+      "sourceGallery": "ギャラリー",
+      "sourceUrl": "URL",
+      "sourceUpload": "アップロード",
+      "urlPlaceholder": "画像 URL を入力",
+      "confirm": "OK",
+      "cancel": "キャンセル",
+      "loading": "読み込み中...",
+      "empty": "画像はありません",
+      "selectCategory": "カテゴリを選択してください",
+      "uploadHint": "ローカルの画像ファイルを選択",
+      "fileSizeError": "画像サイズは 10MB を超えられません"
+    },
+    "operator": {
+      "equal": "=",
+      "notEqual": "≠",
+      "greaterThan": ">",
+      "greaterOrEqual": "≥",
+      "lessThan": "<",
+      "lessOrEqual": "≤",
+      "between": "∈",
+      "contains": "contains",
+      "startsWith": "starts with",
+      "endsWith": "ends with"
+    }
+  }
+}

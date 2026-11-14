@@ -1,0 +1,11 @@
+{
+  "cablehead": {
+    "label": "Kepala terminal kabel",
+    "properties": {
+      "color": "Warna garisan",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garisan"
+    },
+    "description": "Kepala terminal kabel - hujung sambungan kabel ke peralatan"
+  }
+}

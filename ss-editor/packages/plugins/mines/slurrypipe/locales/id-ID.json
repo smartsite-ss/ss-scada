@@ -1,0 +1,31 @@
+{
+  "slurrypipe": {
+    "label": "Pipa bubur",
+    "properties": {
+      "colors": "Warna 1",
+      "colors2": "Warna 2",
+      "flowColor": "Warna aliran",
+      "pipeColor": "Warna pipa",
+      "backgroundColor": "Warna latar",
+      "bgWidth": "Lebar latar",
+      "boardWidth": "Lebar batas",
+      "roate": "Sudut rotasi",
+      "cls": "Arah animasi",
+      "dur": "Periode animasi (detik)",
+      "dataset": "Nilai data",
+      "forwardValue": "Nilai pemetaan putaran maju",
+      "backwardValue": "Nilai pemetaan putaran balik",
+      "stopValue": "Nilai pemetaan berhenti",
+      "defaultCls": "Arah animasi default",
+      "decimalPlaces": "Jumlah desimal"
+    },
+    "options": {
+      "cls": {
+        "left": "Putaran maju",
+        "right": "Putaran balik",
+        "stop": "Berhenti"
+      }
+    },
+    "description": "Pipa bubur tambang - pipa tebal dengan panah arah aliran dan animasi partikel bubur padat"
+  }
+}

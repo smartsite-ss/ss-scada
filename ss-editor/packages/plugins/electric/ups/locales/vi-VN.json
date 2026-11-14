@@ -1,0 +1,19 @@
+{
+  "ups": {
+    "label": "Nguồn UPS",
+    "properties": {
+      "color": "Màu đường nét",
+      "backgroundColor": "Màu nền",
+      "lineWidth": "Độ rộng nét",
+      "state": "Trạng thái làm việc"
+    },
+    "options": {
+      "state": {
+        "online": "Trực tuyến",
+        "bypass": "Bypass",
+        "fault": "Sự cố"
+      }
+    },
+    "description": "Nguồn điện liên tục UPS - trạng thái trực tuyến/bypass/sự cố"
+  }
+}

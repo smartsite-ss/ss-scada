@@ -1,0 +1,15 @@
+{
+  "border18": {
+    "label": "Viền-18 (Họa tiết Arabesque Morocco)",
+    "description": "Thành phần trang trí viền-18 (Họa tiết Arabesque Morocco)",
+    "properties": {
+      "color1": "Xanh lam ngọc",
+      "color2": "Màu đất nung",
+      "color3": "Màu vàng",
+      "backgroundColor": "Màu nền",
+      "showStars": "Họa tiết ngôi sao",
+      "showArches": "Viền hình vòm",
+      "animationSpeed": "Tốc độ hoạt ảnh"
+    }
+  }
+}

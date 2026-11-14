@@ -1,0 +1,19 @@
+{
+  "number": {
+    "label": "數字",
+    "properties": {
+      "dataset": "目標值",
+      "from": "起始值",
+      "dur": "動畫時長(秒)",
+      "precision": "小數位數",
+      "showSeparator": "千分位",
+      "numberSize": "字級",
+      "color1": "數字色",
+      "prefixText": "前綴",
+      "color2": "前綴色",
+      "suffixText": "後綴",
+      "color3": "後綴色"
+    },
+    "description": "數字計數動畫外掛"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "gauge": {
+    "label": "Jauge",
+    "description": "Composant jauge pour l'affichage de valeurs et l'alarme",
+    "panelTitle": "Configuration de la jauge",
+    "properties": {
+      "width": "Largeur",
+      "height": "Hauteur",
+      "value": "Valeur actuelle",
+      "minValue": "Valeur minimale",
+      "maxValue": "Valeur maximale",
+      "unit": "Unité",
+      "decimalPlaces": "Nombre de décimales",
+      "startAngle": "Angle de départ",
+      "endAngle": "Angle de fin",
+      "faceColor": "Couleur du cadran",
+      "rimColor": "Couleur de bordure",
+      "needleColor": "Couleur de l'aiguille",
+      "tickColor": "Couleur des graduations",
+      "labelColor": "Couleur des étiquettes",
+      "valueColor": "Couleur de la valeur",
+      "showTicks": "Afficher les graduations",
+      "showLabels": "Afficher les étiquettes",
+      "showValue": "Afficher la valeur",
+      "majorTicks": "Nombre de graduations principales",
+      "minorTicks": "Nombre de graduations secondaires",
+      "warningValue": "Seuil d'avertissement",
+      "dangerValue": "Seuil de danger",
+      "warningColor": "Couleur d'avertissement",
+      "dangerColor": "Couleur de danger"
+    },
+    "groups": {
+      "basic": "Base",
+      "value": "Valeur",
+      "gauge": "Jauge",
+      "color": "Couleur",
+      "display": "Affichage",
+      "ticks": "Graduations",
+      "alarm": "Alarme"
+    }
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "svg-pipe": {
+    "label": "SVG-Rohr",
+    "panelTitle": "SVG-Rohr-Konfiguration",
+    "properties": {
+      "status": "Zustand",
+      "flowDirection": "Flussrichtung",
+      "strokeColor": "Rohrfarbe",
+      "flowingColor": "Strömungsfarbe",
+      "stoppedColor": "Farbe stehend",
+      "blockedColor": "Farbe verstopft",
+      "strokeWidth": "Rohrdurchmesser",
+      "strokeLinecap": "Linienenden-Stil",
+      "strokeLinejoin": "Linienverbindungs-Stil",
+      "strokeDasharray": "Gestrichelte Linie",
+      "gradientType": "Verlaufstyp",
+      "gradientStartColor": "Verlaufsstartfarbe",
+      "gradientEndColor": "Verlaufsendfarbe",
+      "filterShadow": "Schatten",
+      "shadowColor": "Schattenfarbe",
+      "shadowBlur": "Schattenunschärfe",
+      "showFlowAnimation": "Strömungsanimation",
+      "flowSpeed": "Strömungsgeschwindigkeit",
+      "arrowSpacing": "Pfeilabstand",
+      "arrowSize": "Pfeilgröße",
+      "arrowStyle": "Pfeilstil"
+    },
+    "options": {
+      "status": {
+        "flowing": "Strömend",
+        "stopped": "Gestoppt",
+        "blocked": "Verstopft"
+      },
+      "flowDirection": {
+        "forward": "Vorwärts",
+        "backward": "Rückwärts",
+        "bidirectional": "Beidseitig"
+      },
+      "strokeLinecap": {
+        "butt": "Flach",
+        "round": "Rund",
+        "square": "Quadratisch"
+      },
+      "strokeLinejoin": {
+        "miter": "Spitz",
+        "round": "Rund",
+        "bevel": "Abgeschrägt"
+      },
+      "gradientType": {
+        "none": "Einfarbig",
+        "linear": "Linearer Verlauf",
+        "radial": "Radialer Verlauf"
+      },
+      "arrowStyle": {
+        "triangle": "Dreieck",
+        "rectangle": "Rechteck",
+        "square": "Quadrat"
+      }
+    },
+    "groups": {
+      "status": "Zustand",
+      "color": "Farbe",
+      "style": "Stil",
+      "animation": "Animation"
+    },
+    "description": "Rohr-Komponente auf Basis von SVG-Pfaden mit Strömungsanimation, Verläufen und Stilkonfiguration"
+  }
+}

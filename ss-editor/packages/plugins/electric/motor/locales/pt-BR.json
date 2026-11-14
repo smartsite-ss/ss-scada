@@ -1,0 +1,22 @@
+{
+  "motor": {
+    "label": "Motor elétrico",
+    "properties": {
+      "color": "Cor da linha",
+      "backgroundColor": "Cor de fundo",
+      "lineWidth": "Espessura da linha",
+      "running": "Estado de operação",
+      "runningValue": "Valor correspondente a operação",
+      "stoppedValue": "Valor correspondente a parado",
+      "faultValue": "Valor correspondente a falha",
+      "defaultStatus": "Estado padrão"
+    },
+    "options": {
+      "running": {
+        "yes": "Em operação",
+        "no": "Parado"
+      }
+    },
+    "description": "Motor elétrico - com indicação de estado rotativo"
+  }
+}

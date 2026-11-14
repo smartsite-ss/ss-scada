@@ -1,0 +1,31 @@
+{
+  "checkbox": {
+    "label": "チェックボックス",
+    "description": "チェックボックスコンポーネント。複数選択に使用",
+    "panelTitle": "チェックボックスの設定",
+    "properties": {
+      "checked": "チェック状態",
+      "label": "ラベルテキスト",
+      "disabled": "無効",
+      "indeterminate": "不確定状態",
+      "color": "チェック時の色",
+      "labelPosition": "ラベルの位置",
+      "size": "サイズ"
+    },
+    "options": {
+      "labelPosition": {
+        "right": "右",
+        "left": "左"
+      },
+      "size": {
+        "small": "小",
+        "medium": "中",
+        "large": "大"
+      }
+    },
+    "groups": {
+      "basic": "基本プロパティ",
+      "style": "スタイル"
+    }
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "stateVariable": {
+    "label": "Variável de estado",
+    "description": "Exibe imagens de estado diferentes conforme o valor da variável",
+    "graphic": {
+      "placeholder": "Não vinculado / sem correspondência"
+    },
+    "config": {
+      "bindVariable": "Vincular variável",
+      "selectVariable": "Selecionar variável",
+      "clear": "Limpar",
+      "unbound": "Não vinculado",
+      "states": "Regras de estado",
+      "addRule": "Adicionar regra",
+      "stateName": "Nome do estado",
+      "value": "Valor de comparação",
+      "value2": "Valor final",
+      "selectImage": "Selecionar imagem",
+      "defaultImage": "Imagem padrão",
+      "deleteRule": "Excluir"
+    },
+    "imagePicker": {
+      "title": "Selecionar imagem",
+      "sourceGallery": "Galeria",
+      "sourceUrl": "URL",
+      "sourceUpload": "Enviar",
+      "urlPlaceholder": "Informe a URL da imagem",
+      "confirm": "Confirmar",
+      "cancel": "Cancelar",
+      "loading": "Carregando...",
+      "empty": "Nenhuma imagem",
+      "selectCategory": "Selecione a categoria",
+      "uploadHint": "Selecione um arquivo de imagem local",
+      "fileSizeError": "O tamanho da imagem não pode exceder 10MB"
+    },
+    "operator": {
+      "equal": "=",
+      "notEqual": "≠",
+      "greaterThan": ">",
+      "greaterOrEqual": "≥",
+      "lessThan": "<",
+      "lessOrEqual": "≤",
+      "between": "∈",
+      "contains": "contains",
+      "startsWith": "starts with",
+      "endsWith": "ends with"
+    }
+  }
+}

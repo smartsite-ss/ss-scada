@@ -1,0 +1,29 @@
+{
+  "protocol": {
+    "modbus": {
+      "connect_success": "Modbus TCP bağlantısı kuruldu",
+      "connect_failed": "Modbus TCP bağlantısı başarısız: {{detail}}",
+      "read_success": "Modbus okuma başarılı",
+      "read_failed": "Modbus okuma başarısız: {{detail}}",
+      "write_success": "Modbus yazma başarılı",
+      "write_failed": "Modbus yazma başarısız: {{detail}}"
+    },
+    "mqtt": {
+      "connect_success": "MQTT bağlantısı kuruldu",
+      "connect_failed": "MQTT bağlantısı başarısız: {{detail}}",
+      "publish_success": "MQTT mesajı yayınlandı",
+      "publish_failed": "MQTT mesajı yayınlanamadı: {{detail}}"
+    },
+    "opcua": {
+      "connect_success": "OPC UA bağlantısı kuruldu",
+      "connect_failed": "OPC UA bağlantısı başarısız: {{detail}}",
+      "read_success": "OPC UA okuma başarılı",
+      "read_failed": "OPC UA okuma başarısız: {{detail}}"
+    },
+    "common": {
+      "timeout": "Protokol iletişim zaman aşımı ({{timeout}}ms)",
+      "connection_refused": "Bağlantı reddedildi",
+      "authentication_failed": "Kimlik doğrulama başarısız"
+    }
+  }
+}

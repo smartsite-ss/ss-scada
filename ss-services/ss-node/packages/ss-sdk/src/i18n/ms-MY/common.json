@@ -1,0 +1,19 @@
+{
+  "common": {
+    "success": "Operasi berjaya",
+    "failed": "Operasi gagal",
+    "created": "{{resource}} berjaya dicipta",
+    "updated": "{{resource}} berjaya dikemas kini",
+    "deleted": "{{resource}} berjaya dipadam",
+    "not_found": "{{resource}} tidak wujud",
+    "unauthorized": "Akses tidak dibenarkan",
+    "forbidden": "Kebenaran tidak mencukupi",
+    "bad_request": "Parameter permintaan salah",
+    "internal_error": "Ralat dalaman pelayan",
+    "pagination": {
+      "page": "Nombor halaman mesti lebih besar daripada 0",
+      "limit": "Bilangan setiap halaman mesti antara 1-100",
+      "invalid_sort_field": "Medan susunan tidak sah: {{field}}"
+    }
+  }
+}

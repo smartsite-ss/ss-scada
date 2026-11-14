@@ -1,0 +1,31 @@
+{
+  "tag": {
+    "create": {
+      "success": "Daten-Tag erfolgreich erstellt",
+      "failed_name_exists": "Der Tag-Name ist in diesem Gerät bereits vorhanden"
+    },
+    "update": {
+      "success": "Daten-Tag erfolgreich aktualisiert"
+    },
+    "delete": {
+      "success": "Daten-Tag erfolgreich gelöscht"
+    },
+    "read": {
+      "success": "Tag-Daten erfolgreich gelesen",
+      "failed_device_offline": "Das Gerät ist offline, Lesen nicht möglich",
+      "failed_timeout": "Zeitüberschreitung beim Lesen"
+    },
+    "write": {
+      "success": "Tag-Daten erfolgreich geschrieben",
+      "failed_readonly": "Dieser Tag ist schreibgeschützt, Schreiben nicht möglich",
+      "failed_device_offline": "Das Gerät ist offline, Schreiben nicht möglich"
+    },
+    "quality": {
+      "good": "Gut",
+      "uncertain": "Unsicher",
+      "bad": "Schlecht",
+      "config_error": "Konfigurationsfehler",
+      "device_offline": "Gerät offline"
+    }
+  }
+}

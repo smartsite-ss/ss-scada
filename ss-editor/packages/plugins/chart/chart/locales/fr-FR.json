@@ -1,0 +1,41 @@
+{
+  "chart": {
+    "label": "Graphique",
+    "description": "Composant graphique pour la visualisation de données",
+    "panelTitle": "Configuration du graphique",
+    "properties": {
+      "title": "Titre",
+      "titleColor": "Couleur du titre",
+      "titleFontSize": "Taille de police du titre",
+      "titleFontWeight": "Graisse du titre",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "borderColor": "Couleur de bordure",
+      "borderWidth": "Largeur de bordure",
+      "borderStyle": "Style de bordure",
+      "borderRadius": "Rayon d'arrondi",
+      "gridColor": "Couleur des lignes de grille",
+      "axisColor": "Couleur des axes",
+      "shadowColor": "Couleur d'ombre",
+      "shadowOffsetX": "Décalage d'ombre X",
+      "shadowOffsetY": "Décalage d'ombre Y",
+      "shadowBlur": "Flou d'ombre"
+    },
+    "options": {
+      "titleFontWeight": {
+        "normal": "Normal",
+        "bold": "Gras"
+      },
+      "borderStyle": {
+        "solid": "Trait plein",
+        "dashed": "Tirets",
+        "dotted": "Pointillés"
+      }
+    },
+    "groups": {
+      "basic": "Propriétés de base",
+      "visual": "Style visuel",
+      "style": "Style",
+      "shadow": "Ombre"
+    }
+  }
+}

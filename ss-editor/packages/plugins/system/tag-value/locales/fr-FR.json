@@ -1,0 +1,61 @@
+{
+  "plugins": {
+    "groups": {
+      "shape": "Forme",
+      "name": "Nom",
+      "decoration": "Décoration"
+    }
+  },
+  "tagValue": {
+    "label": "Variable de tag décorée",
+    "description": "Affiche la valeur en temps réel d'une variable d'appareil (carré/cercle)",
+    "config": {
+      "bindVariable": "Lier une variable",
+      "selectVariable": "Choisir une variable",
+      "clear": "Effacer",
+      "unbound": "Non lié",
+      "decorationImage": "Image de décoration",
+      "backgroundImage": "Image d'arrière-plan",
+      "selectImage": "Choisir une image"
+    },
+    "selector": {
+      "title": "Choisir une variable d'appareil",
+      "searchPlaceholder": "Rechercher un appareil ou une variable",
+      "tagCount": "{count} variables",
+      "loading": "Chargement...",
+      "empty": "Aucune variable d'appareil"
+    },
+    "properties": {
+      "shape": "Forme",
+      "alias": "Alias",
+      "showName": "Afficher le nom",
+      "nameColor": "Couleur du nom",
+      "nameFontSize": "Taille de police du nom",
+      "nameFontWeight": "Graisse du nom",
+      "nameGap": "Espacement du nom",
+      "decorationImagePosition": "Position de l'image de décoration",
+      "decorationImageSize": "Taille de l'image de décoration",
+      "decorationImageOpacity": "Opacité de l'image de décoration",
+      "backgroundRepeat": "Répétition de l'arrière-plan",
+      "backgroundImageFit": "Style de remplissage"
+    },
+    "options": {
+      "shape": {
+        "rectangle": "Carré",
+        "circle": "Cercle"
+      },
+      "decorationPosition": {
+        "left": "Gauche",
+        "right": "Droite",
+        "background": "Arrière-plan",
+        "center": "Centré"
+      },
+      "backgroundRepeat": {
+        "repeat": "Répéter",
+        "no-repeat": "Ne pas répéter",
+        "repeat-x": "Répéter horizontalement",
+        "repeat-y": "Répéter verticalement"
+      }
+    }
+  }
+}

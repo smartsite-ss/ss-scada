@@ -1,0 +1,54 @@
+{
+  "button": {
+    "label": "Tombol",
+    "panelTitle": "Properti tombol",
+    "properties": {
+      "text": "Teks",
+      "backgroundColor": "Warna latar",
+      "fontColor": "Warna teks",
+      "borderColor": "Warna batas",
+      "borderWidth": "Lebar batas",
+      "borderStyle": "Gaya batas",
+      "borderRadius": "Sudut membulat",
+      "fontSize": "Ukuran font",
+      "fontWeight": "Ketebalan font",
+      "textAlign": "Perataan teks",
+      "shadowColor": "Warna bayangan",
+      "shadowOffsetX": "Offset bayangan X",
+      "shadowOffsetY": "Offset bayangan Y",
+      "shadowBlur": "Blur bayangan",
+      "targetType": "Aksi klik",
+      "targetPage": "Halaman tujuan",
+      "targetUrl": "URL tujuan"
+    },
+    "options": {
+      "borderStyle": {
+        "solid": "Garis solid",
+        "dashed": "Garis putus-putus",
+        "dotted": "Garis titik"
+      },
+      "fontWeight": {
+        "normal": "Normal",
+        "bold": "Tebal"
+      },
+      "textAlign": {
+        "left": "Rata kiri",
+        "center": "Tengah",
+        "right": "Rata kanan"
+      },
+      "targetType": {
+        "none": "Tidak ada",
+        "page": "Buka halaman",
+        "url": "Buka URL"
+      }
+    },
+    "groups": {
+      "basic": "Properti dasar",
+      "style": "Gaya",
+      "text": "Teks",
+      "shadow": "Bayangan",
+      "action": "Aksi interaksi"
+    },
+    "description": "Elemen grafis tombol"
+  }
+}

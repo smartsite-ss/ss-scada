@@ -1,0 +1,56 @@
+{
+  "image": {
+    "label": "รูปภาพ",
+    "panelTitle": "คุณสมบัติรูปภาพ",
+    "properties": {
+      "src": "ที่อยู่รูปภาพ",
+      "alt": "ข้อความแทน",
+      "opacity": "ความทึบแสง",
+      "imageScale": "อัตราการซูม",
+      "imageRotation": "มุมการหมุน",
+      "imageFilter": "เอฟเฟกต์ฟิลเตอร์",
+      "imageFit": "โหมดพอดี",
+      "borderColor": "สีเส้นขอบ",
+      "borderWidth": "ความกว้างเส้นขอบ",
+      "borderStyle": "รูปแบบเส้นขอบ",
+      "borderRadius": "มุมโค้ง",
+      "shadowColor": "สีเงา",
+      "shadowOffsetX": "ระยะเลื่อนเงา X",
+      "shadowOffsetY": "ระยะเลื่อนเงา Y",
+      "shadowBlur": "ความเบลอของเงา",
+      "imageUpload": "อัปโหลดรูปภาพ"
+    },
+    "options": {
+      "imageFilter": {
+        "none": "ไม่มี",
+        "grayscale": "ขาวเทา",
+        "sepia": "วินเทจ",
+        "invert": "กลับสี",
+        "brightness": "ความสว่าง",
+        "contrast": "ความคมชัด",
+        "saturate": "ความอิ่มตัวของสี"
+      },
+      "imageFit": {
+        "contain": "พอดี",
+        "cover": "เต็มพื้นที่",
+        "fill": "เติม",
+        "none": "ต้นฉบับ",
+        "scale-down": "ย่อลง"
+      },
+      "borderStyle": {
+        "solid": "เส้นทึบ",
+        "dashed": "เส้นประ",
+        "dotted": "เส้นจุด"
+      }
+    },
+    "groups": {
+      "basic": "คุณสมบัติพื้นฐาน",
+      "style": "รูปแบบ",
+      "shadow": "เงา"
+    },
+    "hints": {
+      "clickToUpload": "คลิกเพื่อเลือกรูปภาพ"
+    },
+    "description": "องค์ประกอบกราฟิกรูปภาพ"
+  }
+}

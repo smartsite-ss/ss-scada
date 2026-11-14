@@ -1,0 +1,16 @@
+{
+  "flowmeter": {
+    "label": "Lưu lượng kế",
+    "properties": {
+      "color": "Màu",
+      "backgroundColor": "Màu nền",
+      "lineWidth": "Độ rộng nét",
+      "dataset": "Giá trị dữ liệu (0-100)",
+      "showDigital": "Hiển thị số đọc",
+      "rangeMax": "Giá trị lớn nhất thang đo",
+      "decimalPlaces": "Số chữ thập phân",
+      "unit": "Đơn vị"
+    },
+    "description": "Lưu lượng kế - đồng hồ đo lưu lượng mặt tròn, góc kim dẫn động theo giá trị dữ liệu"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "border11": {
+    "label": "枠線-11",
+    "description": "枠線-11 装飾コンポーネント",
+    "properties": {
+      "color1": "色1",
+      "color2": "色2",
+      "backgroundColor": "背景色"
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "wattmeter": {
+    "label": "Wattmeter",
+    "properties": {
+      "color": "Warna garisan",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garisan",
+      "dataset": "Nilai data statik",
+      "showDigital": "Tunjuk bacaan digital",
+      "decimalPlaces": "Bilangan perpuluhan",
+      "unit": "Unit"
+    },
+    "description": "Wattmeter - meter pengukur kuasa aktif"
+  }
+}

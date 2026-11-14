@@ -1,0 +1,16 @@
+{
+  "border04": {
+    "label": "Batas-04",
+    "description": "Komponen dekorasi batas-04",
+    "properties": {
+      "colors": "Warna pertama",
+      "colors2": "Warna kedua",
+      "backgroundColor": "Warna latar",
+      "borderTitle": "Teks judul",
+      "borderTitleColor": "Warna judul",
+      "borderTitleSize": "Ukuran font judul",
+      "borderTitleWidth": "Lebar area judul",
+      "borderTitleHeight": "Tinggi judul"
+    }
+  }
+}

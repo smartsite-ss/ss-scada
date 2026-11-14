@@ -1,0 +1,24 @@
+{
+  "mixingpool": {
+    "label": "Tangki pengaduk",
+    "properties": {
+      "color1": "Warna satu",
+      "color2": "Warna dua",
+      "flowColor": "Warna aliran",
+      "pipeColor": "Warna paip",
+      "backgroundColor": "Warna latar",
+      "bgWidth": "Lebar latar",
+      "boardWidth": "Lebar sempadan",
+      "roate": "Sudut putaran",
+      "cls": "Gaya animasi",
+      "dur": "Kitaran animasi (saat)",
+      "dataset": "Nilai data",
+      "forwardValue": "Nilai padanan putaran ke hadapan",
+      "backwardValue": "Nilai padanan putaran songsang",
+      "stopValue": "Nilai padanan berhenti",
+      "defaultCls": "Gaya animasi lalai",
+      "decimalPlaces": "Bilangan perpuluhan"
+    },
+    "description": "Tangki pengaduk mineral - bekas campuran dengan pengaduk dan animasi putaran"
+  }
+}

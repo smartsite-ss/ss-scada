@@ -1,0 +1,15 @@
+{
+  "border14": {
+    "label": "Batas-14",
+    "description": "Komponen dekorasi batas-14",
+    "properties": {
+      "color1": "Warna utama",
+      "color2": "Warna pendukung",
+      "backgroundColor": "Warna latar",
+      "showHexGrid": "Grid heksagonal",
+      "showScanLine": "Garis pindai",
+      "showCoreLines": "Garis silang tengah",
+      "animationSpeed": "Kecepatan animasi"
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "border03": {
+    "label": "Rahmen-03",
+    "description": "Dekorationselement Rahmen-03",
+    "properties": {
+      "colors": "Farbe 1",
+      "colors2": "Farbe 2",
+      "backgroundColor": "Hintergrundfarbe"
+    }
+  }
+}

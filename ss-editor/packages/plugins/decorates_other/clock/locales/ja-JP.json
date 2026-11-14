@@ -1,0 +1,12 @@
+{
+  "clock": {
+    "label": "時計",
+    "properties": {
+      "color1": "針の色",
+      "color2": "文字盤の背景",
+      "color3": "枠線の色",
+      "borderWidth": "枠線幅"
+    },
+    "description": "アナログ時計"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "closelamp": {
+    "label": "Đèn báo đóng mạch",
+    "properties": {
+      "lampColor": "Màu đèn",
+      "backgroundColor": "Màu nền",
+      "radius": "Bán kính",
+      "closed": "Trạng thái đóng",
+      "closedValue": "Giá trị tương ứng đóng",
+      "openValue": "Giá trị tương ứng mở",
+      "defaultStatus": "Trạng thái mặc định"
+    },
+    "options": {
+      "closed": {
+        "yes": "Đóng",
+        "no": "Mở"
+      }
+    },
+    "description": "Đèn báo vị trí đóng mạch"
+  }
+}

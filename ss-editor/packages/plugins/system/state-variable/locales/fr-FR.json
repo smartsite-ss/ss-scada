@@ -1,0 +1,49 @@
+{
+  "stateVariable": {
+    "label": "Variable d'état",
+    "description": "Affiche différentes images d'état selon la valeur de la variable",
+    "graphic": {
+      "placeholder": "Non lié / aucune correspondance"
+    },
+    "config": {
+      "bindVariable": "Lier une variable",
+      "selectVariable": "Choisir une variable",
+      "clear": "Effacer",
+      "unbound": "Non lié",
+      "states": "Règles d'état",
+      "addRule": "Ajouter une règle",
+      "stateName": "Nom de l'état",
+      "value": "Valeur de comparaison",
+      "value2": "Valeur de fin",
+      "selectImage": "Choisir une image",
+      "defaultImage": "Image par défaut",
+      "deleteRule": "Supprimer"
+    },
+    "imagePicker": {
+      "title": "Choisir une image",
+      "sourceGallery": "Galerie",
+      "sourceUrl": "URL",
+      "sourceUpload": "Importer",
+      "urlPlaceholder": "Saisir l'URL de l'image",
+      "confirm": "OK",
+      "cancel": "Annuler",
+      "loading": "Chargement...",
+      "empty": "Aucune image",
+      "selectCategory": "Veuillez choisir une catégorie",
+      "uploadHint": "Choisir un fichier image local",
+      "fileSizeError": "La taille de l'image ne peut pas dépasser 10 MB"
+    },
+    "operator": {
+      "equal": "=",
+      "notEqual": "≠",
+      "greaterThan": ">",
+      "greaterOrEqual": "≥",
+      "lessThan": "<",
+      "lessOrEqual": "≤",
+      "between": "∈",
+      "contains": "contains",
+      "startsWith": "starts with",
+      "endsWith": "ends with"
+    }
+  }
+}

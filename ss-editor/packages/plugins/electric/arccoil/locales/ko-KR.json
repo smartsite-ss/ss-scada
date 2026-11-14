@@ -1,0 +1,11 @@
+{
+  "arccoil": {
+    "label": "소호 리액터",
+    "properties": {
+      "color": "선 색상",
+      "backgroundColor": "배경색",
+      "lineWidth": "선 너비"
+    },
+    "description": "소호 리액터 - 중성점 접지 보상 장치"
+  }
+}

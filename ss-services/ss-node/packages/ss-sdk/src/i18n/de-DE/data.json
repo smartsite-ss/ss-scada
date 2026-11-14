@@ -1,0 +1,23 @@
+{
+  "data": {
+    "acquisition": {
+      "started": "Datenerfassung erfolgreich gestartet",
+      "stopped": "Datenerfassung gestoppt",
+      "error": "Störung bei der Datenerfassung"
+    },
+    "transform": {
+      "success": "Datenkonvertierung erfolgreich",
+      "failed_invalid_value": "Ungültiger Datenwert: {{value}}",
+      "failed_scale_error": "Der Skalierungsfaktor ist fehlerhaft konfiguriert"
+    },
+    "persistence": {
+      "save_success": "Daten erfolgreich gespeichert",
+      "save_failed": "Daten konnten nicht gespeichert werden ({{detail}})"
+    },
+    "history": {
+      "query_success": "Verlaufsdaten erfolgreich abgefragt",
+      "query_empty": "Im angegebenen Zeitraum sind keine Verlaufsdaten vorhanden",
+      "time_range_error": "Der Parameter für den Zeitraum ist fehlerhaft"
+    }
+  }
+}

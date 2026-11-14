@@ -1,0 +1,12 @@
+{
+  "clock": {
+    "label": "時鐘",
+    "properties": {
+      "color1": "指針顏色",
+      "color2": "錶面背景",
+      "color3": "邊框顏色",
+      "borderWidth": "邊框寬度"
+    },
+    "description": "類比時鐘"
+  }
+}

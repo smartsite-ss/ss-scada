@@ -1,0 +1,12 @@
+{
+  "head04": {
+    "label": "Kopfdekoration-04",
+    "properties": {
+      "color1": "Farbe 1",
+      "color2": "Farbe 2",
+      "backgroundColor": "Hintergrundfarbe",
+      "reverse": "Spiegeln"
+    },
+    "description": "Schräglinien-Dekoration"
+  }
+}

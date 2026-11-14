@@ -1,0 +1,21 @@
+{
+  "tagVariable": {
+    "label": "Variáveis de etiqueta",
+    "description": "Exibe o valor em tempo real da variável do dispositivo",
+    "config": {
+      "bindVariable": "Vincular variável",
+      "selectVariable": "Selecionar variável",
+      "clear": "Limpar",
+      "unbound": "Não vinculado"
+    },
+    "selector": {
+      "title": "Selecionar variável do dispositivo",
+      "searchPlaceholder": "Pesquisar dispositivo ou variável",
+      "deviceLabel": "Dispositivo",
+      "tagCount": "{count} variáveis",
+      "loading": "Carregando...",
+      "empty": "Nenhuma variável de dispositivo",
+      "selectHint": "Clique na variável para vincular"
+    }
+  }
+}

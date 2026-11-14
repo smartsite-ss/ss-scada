@@ -1,0 +1,15 @@
+{
+  "levelgauge": {
+    "label": "液位計",
+    "properties": {
+      "color": "色",
+      "backgroundColor": "背景色",
+      "lineWidth": "線幅",
+      "dataset": "データ値（0-100）",
+      "showNumeric": "数値を表示",
+      "decimalPlaces": "小数点以下の桁数",
+      "unit": "単位"
+    },
+    "description": "液位計 - 垂直ガラス管の目盛りと液柱による数値表示"
+  }
+}

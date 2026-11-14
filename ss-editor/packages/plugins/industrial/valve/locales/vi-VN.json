@@ -1,0 +1,45 @@
+{
+  "valve": {
+    "label": "Van",
+    "description": "Thành phần van, hỗ trợ trạng thái đóng mở và chuyển đổi loại van",
+    "panelTitle": "Cấu hình van",
+    "properties": {
+      "width": "Chiều rộng",
+      "height": "Chiều cao",
+      "status": "Trạng thái",
+      "valveType": "Loại van",
+      "bodyColor": "Màu thân",
+      "stemColor": "Màu trục van",
+      "openColor": "Màu mở",
+      "closedColor": "Màu đóng",
+      "faultColor": "Màu sự cố",
+      "showLabel": "Hiển thị nhãn",
+      "labelText": "Văn bản nhãn",
+      "openValue": "Giá trị tương ứng mở",
+      "closedValue": "Giá trị tương ứng đóng",
+      "faultValue": "Giá trị tương ứng sự cố",
+      "defaultStatus": "Trạng thái mặc định"
+    },
+    "options": {
+      "status": {
+        "open": "Mở",
+        "closed": "Đóng",
+        "opening": "Đang mở",
+        "closing": "Đang đóng",
+        "fault": "Sự cố"
+      },
+      "valveType": {
+        "butterfly": "Van bướm",
+        "gate": "Van cổng"
+      }
+    },
+    "groups": {
+      "basic": "Cơ bản",
+      "status": "Trạng thái",
+      "color": "Màu",
+      "statusColor": "Màu trạng thái",
+      "label": "Nhãn",
+      "binding": "Ánh xạ liên kết"
+    }
+  }
+}

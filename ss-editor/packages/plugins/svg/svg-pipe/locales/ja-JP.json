@@ -1,0 +1,68 @@
+{
+  "svg-pipe": {
+    "label": "SVG 配管",
+    "panelTitle": "SVG 配管の設定",
+    "properties": {
+      "status": "状態",
+      "flowDirection": "流れの向き",
+      "strokeColor": "配管の色",
+      "flowingColor": "流動中の色",
+      "stoppedColor": "停止時の色",
+      "blockedColor": "閉塞時の色",
+      "strokeWidth": "管径",
+      "strokeLinecap": "端点スタイル",
+      "strokeLinejoin": "接続スタイル",
+      "strokeDasharray": "破線パターン",
+      "gradientType": "グラデーションの種類",
+      "gradientStartColor": "グラデーション開始色",
+      "gradientEndColor": "グラデーション終了色",
+      "filterShadow": "影",
+      "shadowColor": "影の色",
+      "shadowBlur": "影のぼかし",
+      "showFlowAnimation": "流動アニメーション",
+      "flowSpeed": "流速",
+      "arrowSpacing": "矢印の間隔",
+      "arrowSize": "矢印のサイズ",
+      "arrowStyle": "矢印のスタイル"
+    },
+    "options": {
+      "status": {
+        "flowing": "流動中",
+        "stopped": "停止",
+        "blocked": "閉塞"
+      },
+      "flowDirection": {
+        "forward": "順方向",
+        "backward": "逆方向",
+        "bidirectional": "双方向"
+      },
+      "strokeLinecap": {
+        "butt": "平端",
+        "round": "丸端",
+        "square": "角端"
+      },
+      "strokeLinejoin": {
+        "miter": "留め継ぎ",
+        "round": "丸め",
+        "bevel": "面取り"
+      },
+      "gradientType": {
+        "none": "単色",
+        "linear": "線形グラデーション",
+        "radial": "放射状グラデーション"
+      },
+      "arrowStyle": {
+        "triangle": "三角形",
+        "rectangle": "長方形",
+        "square": "正方形"
+      }
+    },
+    "groups": {
+      "status": "状態",
+      "color": "色",
+      "style": "スタイル",
+      "animation": "アニメーション"
+    },
+    "description": "SVG Path ベースの配管コンポーネント。流動アニメーション、グラデーション、スタイル設定に対応"
+  }
+}

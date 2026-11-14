@@ -1,0 +1,11 @@
+{
+  "reactor": {
+    "label": "Reaktor",
+    "properties": {
+      "color": "Warna garis",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garis"
+    },
+    "description": "Reaktor - reaktor pembatas arus"
+  }
+}

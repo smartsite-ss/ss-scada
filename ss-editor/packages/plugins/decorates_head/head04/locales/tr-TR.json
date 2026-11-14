@@ -1,0 +1,12 @@
+{
+  "head04": {
+    "label": "Başlık dekorasyonu-04",
+    "properties": {
+      "color1": "Birinci renk",
+      "color2": "İkinci renk",
+      "backgroundColor": "Arka plan rengi",
+      "reverse": "Ters çevir"
+    },
+    "description": "Eğik çizgi dekorasyonu"
+  }
+}

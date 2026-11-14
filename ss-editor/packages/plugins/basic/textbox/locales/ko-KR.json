@@ -1,0 +1,56 @@
+{
+  "textbox": {
+    "label": "텍스트 상자",
+    "panelTitle": "텍스트 상자 구성",
+    "properties": {
+      "text": "텍스트 내용",
+      "placeholder": "자리 표시자",
+      "fontSize": "글꼴 크기",
+      "fontWeight": "글꼴 굵기",
+      "fontStyle": "글꼴 스타일",
+      "textColor": "텍스트 색상",
+      "backgroundColor": "배경색",
+      "borderColor": "테두리 색상",
+      "borderWidth": "테두리 너비",
+      "borderStyle": "테두리 스타일",
+      "borderRadius": "모서리 반경",
+      "textAlign": "텍스트 정렬",
+      "verticalAlignment": "세로 정렬",
+      "padding": "안쪽 여백",
+      "multiline": "여러 줄 모드",
+      "readOnly": "읽기 전용"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "보통",
+        "bold": "굵게"
+      },
+      "fontStyle": {
+        "normal": "보통",
+        "italic": "기울임"
+      },
+      "borderStyle": {
+        "solid": "실선",
+        "dashed": "파선",
+        "dotted": "점선",
+        "none": "없음"
+      },
+      "textAlign": {
+        "left": "왼쪽 정렬",
+        "center": "가운데",
+        "right": "오른쪽 정렬"
+      },
+      "verticalAlignment": {
+        "top": "위쪽",
+        "middle": "가운데",
+        "bottom": "아래쪽"
+      }
+    },
+    "groups": {
+      "basic": "기본 속성",
+      "style": "스타일",
+      "text": "텍스트"
+    },
+    "description": "텍스트 상자 도형 요소"
+  }
+}

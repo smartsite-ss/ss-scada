@@ -1,0 +1,42 @@
+{
+  "tank": {
+    "label": "Tank",
+    "description": "Seviye gösterimi ve alarm için tank bileşeni",
+    "panelTitle": "Tank yapılandırması",
+    "properties": {
+      "width": "Genişlik",
+      "height": "Yükseklik",
+      "level": "Geçerli seviye",
+      "maxLevel": "Maksimum seviye",
+      "unit": "Birim",
+      "decimalPlaces": "Ondalık basamak sayısı",
+      "status": "Durum",
+      "warningLevel": "Uyarı seviyesi",
+      "dangerLevel": "Tehlike seviyesi",
+      "bodyColor": "Tank gövdesi rengi",
+      "liquidColor": "Sıvı rengi",
+      "warningLiquidColor": "Uyarı sıvı rengi",
+      "dangerLiquidColor": "Tehlike sıvı rengi",
+      "rimColor": "Kenarlık rengi",
+      "showLevelText": "Seviye metnini göster",
+      "showTicks": "Ölçek işaretlerini göster",
+      "showAnimation": "Dalgalanma animasyonu",
+      "tickCount": "Ölçek sayısı"
+    },
+    "options": {
+      "status": {
+        "normal": "Normal",
+        "warning": "Uyarı",
+        "danger": "Tehlike"
+      }
+    },
+    "groups": {
+      "basic": "Temel",
+      "level": "Seviye",
+      "status": "Durum",
+      "threshold": "Eşik",
+      "color": "Renk",
+      "display": "Görünüm"
+    }
+  }
+}

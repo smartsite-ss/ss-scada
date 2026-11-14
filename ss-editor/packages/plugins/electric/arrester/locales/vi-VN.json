@@ -1,0 +1,11 @@
+{
+  "arrester": {
+    "label": "Chống sét van",
+    "properties": {
+      "color": "Màu đường nét",
+      "backgroundColor": "Màu nền",
+      "lineWidth": "Độ rộng nét"
+    },
+    "description": "Chống sét van - thiết bị bảo vệ quá áp"
+  }
+}

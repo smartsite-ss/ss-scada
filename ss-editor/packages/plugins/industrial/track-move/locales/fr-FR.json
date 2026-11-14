@@ -1,0 +1,62 @@
+{
+  "track-move": {
+    "label": "Animation de trajectoire",
+    "description": "Point animé se déplaçant le long d'une trajectoire personnalisée, avec segments courbés et remplacement par image",
+    "panelTitle": "Configuration de l'animation de trajectoire",
+    "properties": {
+      "speed": "Vitesse (px/s)",
+      "dotStyle": "Style du point",
+      "dotColor": "Couleur du point",
+      "dotSize": "Taille du point",
+      "dotImage": "URL de l'image",
+      "imageWidth": "Largeur de l'image",
+      "imageHeight": "Hauteur de l'image",
+      "trackColor": "Couleur de la trajectoire",
+      "trackWidth": "Largeur de la trajectoire",
+      "trackStyle": "Style de la trajectoire",
+      "status": "État de l'animation",
+      "direction": "Sens de déplacement",
+      "loopMode": "Mode de bouclage"
+    },
+    "options": {
+      "dotStyle": {
+        "circle": "Cercle",
+        "image": "Image"
+      },
+      "trackStyle": {
+        "solid": "Trait plein",
+        "dashed": "Tirets"
+      },
+      "direction": {
+        "forward": "Direct",
+        "backward": "Inverse"
+      },
+      "loopMode": {
+        "loop": "Boucle",
+        "once": "Une fois",
+        "bounce": "Aller-retour"
+      }
+    },
+    "groups": {
+      "dot": "Point animé",
+      "track": "Trajectoire",
+      "motion": "Mouvement"
+    },
+    "hints": {
+      "dotImage": "Saisir l'adresse URL de l'image"
+    },
+    "editor": {
+      "pathPoints": "Points de trajectoire",
+      "index": "#",
+      "coordX": "X",
+      "coordY": "Y",
+      "type": "Type",
+      "action": "Action",
+      "startPoint": "Point de départ",
+      "endPoint": "Point d'arrivée",
+      "bendPoint": "Point de courbure",
+      "addBendPoint": "+ Ajouter un point de courbure",
+      "reversePath": "Inverser la trajectoire"
+    }
+  }
+}

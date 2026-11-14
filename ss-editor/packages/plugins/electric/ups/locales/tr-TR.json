@@ -1,0 +1,19 @@
+{
+  "ups": {
+    "label": "UPS güç kaynağı",
+    "properties": {
+      "color": "Çizgi rengi",
+      "backgroundColor": "Arka plan rengi",
+      "lineWidth": "Çizgi kalınlığı",
+      "state": "Çalışma durumu"
+    },
+    "options": {
+      "state": {
+        "online": "Çevrimiçi",
+        "bypass": "Bypass",
+        "fault": "Arıza"
+      }
+    },
+    "description": "UPS kesintisiz güç kaynağı - Çevrimiçi/bypass/arıza durumları"
+  }
+}

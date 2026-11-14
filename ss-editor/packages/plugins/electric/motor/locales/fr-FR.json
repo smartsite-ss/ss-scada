@@ -1,0 +1,22 @@
+{
+  "motor": {
+    "label": "Moteur",
+    "properties": {
+      "color": "Couleur du trait",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "lineWidth": "Épaisseur du trait",
+      "running": "État de marche",
+      "runningValue": "Valeur de marche",
+      "stoppedValue": "Valeur d'arrêt",
+      "faultValue": "Valeur de défaut",
+      "defaultStatus": "État par défaut"
+    },
+    "options": {
+      "running": {
+        "yes": "En marche",
+        "no": "Arrêté"
+      }
+    },
+    "description": "Moteur - Avec indication d'état de rotation"
+  }
+}

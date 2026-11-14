@@ -1,0 +1,49 @@
+{
+  "stateVariable": {
+    "label": "ตัวแปรสถานะ",
+    "description": "แสดงรูปภาพสถานะต่าง ๆ ตามค่าตัวแปร",
+    "graphic": {
+      "placeholder": "ยังไม่ผูก / ไม่ตรงกัน"
+    },
+    "config": {
+      "bindVariable": "ตัวแปรที่ผูก",
+      "selectVariable": "เลือกตัวแปร",
+      "clear": "ล้าง",
+      "unbound": "ยังไม่ผูก",
+      "states": "กฎสถานะ",
+      "addRule": "เพิ่มกฎ",
+      "stateName": "ชื่อสถานะ",
+      "value": "ค่าเปรียบเทียบ",
+      "value2": "ค่าสิ้นสุด",
+      "selectImage": "เลือกรูปภาพ",
+      "defaultImage": "รูปภาพเริ่มต้น",
+      "deleteRule": "ลบ"
+    },
+    "imagePicker": {
+      "title": "เลือกรูปภาพ",
+      "sourceGallery": "แกลเลอรีรูปภาพ",
+      "sourceUrl": "URL",
+      "sourceUpload": "อัปโหลด",
+      "urlPlaceholder": "ป้อน URL รูปภาพ",
+      "confirm": "ตกลง",
+      "cancel": "ยกเลิก",
+      "loading": "กำลังโหลด...",
+      "empty": "ไม่มีรูปภาพ",
+      "selectCategory": "กรุณาเลือกหมวดหมู่",
+      "uploadHint": "เลือกไฟล์รูปภาพในเครื่อง",
+      "fileSizeError": "ขนาดรูปภาพต้องไม่เกิน 10MB"
+    },
+    "operator": {
+      "equal": "=",
+      "notEqual": "≠",
+      "greaterThan": ">",
+      "greaterOrEqual": "≥",
+      "lessThan": "<",
+      "lessOrEqual": "≤",
+      "between": "∈",
+      "contains": "มี",
+      "startsWith": "ขึ้นต้นด้วย",
+      "endsWith": "ลงท้ายด้วย"
+    }
+  }
+}

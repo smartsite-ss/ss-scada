@@ -1,0 +1,11 @@
+{
+  "insulator": {
+    "label": "Изолятор",
+    "properties": {
+      "color": "Цвет линии",
+      "backgroundColor": "Цвет фона",
+      "lineWidth": "Толщина линии"
+    },
+    "description": "Изолятор — опорный изоляционный элемент"
+  }
+}

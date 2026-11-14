@@ -1,0 +1,12 @@
+{
+  "busbar": {
+    "label": "Sammelschienenabschnitt",
+    "properties": {
+      "color": "Linienfarbe",
+      "backgroundColor": "Hintergrundfarbe",
+      "lineWidth": "Linienbreite",
+      "labelText": "Beschriftungstext"
+    },
+    "description": "Sammelschienenabschnitt – Verteilschiene für elektrische Energie"
+  }
+}

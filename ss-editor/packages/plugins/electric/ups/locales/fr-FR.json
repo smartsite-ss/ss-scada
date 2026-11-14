@@ -1,0 +1,19 @@
+{
+  "ups": {
+    "label": "Alimentation UPS",
+    "properties": {
+      "color": "Couleur du trait",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "lineWidth": "Épaisseur du trait",
+      "state": "État de fonctionnement"
+    },
+    "options": {
+      "state": {
+        "online": "En ligne",
+        "bypass": "Dérivation",
+        "fault": "Défaut"
+      }
+    },
+    "description": "Alimentation sans interruption UPS - États en ligne/dérivation/défaut"
+  }
+}

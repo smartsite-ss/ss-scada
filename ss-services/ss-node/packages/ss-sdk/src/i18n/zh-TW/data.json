@@ -1,0 +1,23 @@
+{
+  "data": {
+    "acquisition": {
+      "started": "資料採集啟動成功",
+      "stopped": "資料採集已停止",
+      "error": "資料採集異常"
+    },
+    "transform": {
+      "success": "資料轉換成功",
+      "failed_invalid_value": "無效的資料值：{{value}}",
+      "failed_scale_error": "縮放係數設定錯誤"
+    },
+    "persistence": {
+      "save_success": "資料儲存成功",
+      "save_failed": "資料儲存失敗（{{detail}}）"
+    },
+    "history": {
+      "query_success": "歷史資料查詢成功",
+      "query_empty": "指定時間範圍內無歷史資料",
+      "time_range_error": "時間範圍參數錯誤"
+    }
+  }
+}

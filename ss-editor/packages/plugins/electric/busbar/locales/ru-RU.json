@@ -1,0 +1,12 @@
+{
+  "busbar": {
+    "label": "Секция шин",
+    "properties": {
+      "color": "Цвет линии",
+      "backgroundColor": "Цвет фона",
+      "lineWidth": "Толщина линии",
+      "labelText": "Текст метки"
+    },
+    "description": "Секция шин — сборные шины распределения энергии"
+  }
+}

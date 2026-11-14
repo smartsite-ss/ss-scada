@@ -1,0 +1,21 @@
+{
+  "groundswitch": {
+    "label": "接地開關",
+    "properties": {
+      "color": "線條顏色",
+      "backgroundColor": "背景色",
+      "lineWidth": "線寬",
+      "closed": "閉合狀態",
+      "closedValue": "閉合對應值",
+      "openValue": "斷開對應值",
+      "defaultStatus": "預設狀態"
+    },
+    "options": {
+      "closed": {
+        "yes": "合閘",
+        "no": "分閘"
+      }
+    },
+    "description": "接地開關 - 線路接地保護開關"
+  }
+}

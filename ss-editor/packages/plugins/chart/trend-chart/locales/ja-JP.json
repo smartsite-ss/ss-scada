@@ -1,0 +1,50 @@
+{
+  "trendChart": {
+    "label": "トレンドグラフ",
+    "description": "リアルタイム/履歴トレンドグラフ。複数ペンの比較と LTTB ダウンサンプリングに対応",
+    "properties": {
+      "title": "タイトル",
+      "titleColor": "タイトルの色",
+      "titleFontSize": "タイトルのフォントサイズ",
+      "titleFontWeight": "タイトルの太さ",
+      "backgroundColor": "背景色",
+      "borderColor": "枠線色",
+      "borderWidth": "枠線幅",
+      "borderStyle": "枠線スタイル",
+      "borderRadius": "角の丸み",
+      "gridColor": "グリッド線の色",
+      "axisColor": "座標軸の色",
+      "lineColors": "曲線の色",
+      "lineWidth": "曲線の幅",
+      "showPoints": "データ点を表示",
+      "pointRadius": "データ点の半径",
+      "showLegend": "凡例を表示",
+      "legendPosition": "凡例の位置",
+      "maxPens": "最大ペン数",
+      "timeWindow": "時間ウィンドウ（秒）",
+      "showTooltip": "ツールチップを表示",
+      "yAxisLabel": "Y 軸ラベル",
+      "shadowColor": "影の色",
+      "shadowOffsetX": "影のオフセットX",
+      "shadowOffsetY": "影のオフセットY",
+      "shadowBlur": "影のぼかし"
+    },
+    "options": {
+      "titleFontWeight": {
+        "normal": "標準",
+        "bold": "太字"
+      },
+      "borderStyle": {
+        "solid": "実線",
+        "dashed": "破線",
+        "dotted": "点線"
+      },
+      "legendPosition": {
+        "top": "上",
+        "bottom": "下",
+        "left": "左",
+        "right": "右"
+      }
+    }
+  }
+}

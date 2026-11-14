@@ -1,0 +1,31 @@
+{
+  "tag": {
+    "create": {
+      "success": "La etiqueta de datos se creó correctamente",
+      "failed_name_exists": "El nombre de la etiqueta ya existe en este dispositivo"
+    },
+    "update": {
+      "success": "La etiqueta de datos se actualizó correctamente"
+    },
+    "delete": {
+      "success": "La etiqueta de datos se eliminó correctamente"
+    },
+    "read": {
+      "success": "Los datos de la etiqueta se leyeron correctamente",
+      "failed_device_offline": "El dispositivo está fuera de línea y no se puede leer",
+      "failed_timeout": "Se agotó el tiempo de lectura"
+    },
+    "write": {
+      "success": "Los datos de la etiqueta se escribieron correctamente",
+      "failed_readonly": "Esta etiqueta es de solo lectura y no se puede escribir",
+      "failed_device_offline": "El dispositivo está fuera de línea y no se puede escribir"
+    },
+    "quality": {
+      "good": "Buena",
+      "uncertain": "Incierta",
+      "bad": "Mala",
+      "config_error": "Error de configuración",
+      "device_offline": "Dispositivo fuera de línea"
+    }
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "pump": {
+    "label": "펌프",
+    "description": "회전 애니메이션 및 상태 표시를 지원하는 펌프 컴포넌트",
+    "panelTitle": "펌프 구성",
+    "properties": {
+      "width": "너비",
+      "height": "높이",
+      "status": "상태",
+      "bodyColor": "본체 색상",
+      "impellerColor": "임펠러 색상",
+      "highlightColor": "강조 색상",
+      "showAnimation": "애니메이션 표시",
+      "animationSpeed": "회전 속도",
+      "rotationDirection": "회전 방향",
+      "showLabel": "레이블 표시",
+      "labelText": "레이블 텍스트",
+      "runningValue": "운전 대응 값",
+      "stoppedValue": "정지 대응 값",
+      "faultValue": "고장 대응 값",
+      "defaultStatus": "기본 상태"
+    },
+    "options": {
+      "status": {
+        "running": "운전 중",
+        "stopped": "정지됨",
+        "fault": "고장"
+      },
+      "rotationDirection": {
+        "clockwise": "시계 방향",
+        "counterclockwise": "반시계 방향"
+      }
+    },
+    "groups": {
+      "basic": "기본",
+      "status": "상태",
+      "color": "색상",
+      "animation": "애니메이션",
+      "label": "레이블",
+      "binding": "바인딩 매핑"
+    }
+  }
+}

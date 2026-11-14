@@ -1,0 +1,11 @@
+{
+  "pt": {
+    "label": "Transformador de potencial",
+    "properties": {
+      "color": "Cor da linha",
+      "backgroundColor": "Cor de fundo",
+      "lineWidth": "Espessura da linha"
+    },
+    "description": "Transformador de potencial PT - dispositivo de conversão de tensão para medição"
+  }
+}

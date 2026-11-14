@@ -1,0 +1,11 @@
+{
+  "autotransformer": {
+    "label": "Autotransformer",
+    "properties": {
+      "color": "Warna garisan",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garisan"
+    },
+    "description": "Autotransformer - gegelung tunggal dengan sadapan"
+  }
+}

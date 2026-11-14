@@ -1,0 +1,23 @@
+{
+  "runlamp": {
+    "label": "Đèn báo vận hành",
+    "properties": {
+      "lampColor": "Màu đèn",
+      "backgroundColor": "Màu nền",
+      "radius": "Bán kính",
+      "state": "Trạng thái vận hành",
+      "runningValue": "Giá trị tương ứng chạy",
+      "stoppedValue": "Giá trị tương ứng dừng",
+      "faultValue": "Giá trị tương ứng sự cố",
+      "defaultStatus": "Trạng thái mặc định"
+    },
+    "options": {
+      "state": {
+        "running": "Chạy",
+        "stopped": "Dừng",
+        "fault": "Sự cố"
+      }
+    },
+    "description": "Đèn báo trạng thái vận hành - hỗ trợ ba trạng thái chạy/dừng/sự cố"
+  }
+}

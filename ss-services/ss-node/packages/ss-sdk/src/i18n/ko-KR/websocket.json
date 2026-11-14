@@ -1,0 +1,45 @@
+{
+  "websocket": {
+    "connected": "WebSocket 연결 성공",
+    "disconnected": "WebSocket 연결이 끊겼습니다",
+    "pong": "Pong - 하트비트 응답",
+    "event": {
+      "data_update": "데이터 업데이트 이벤트 (태그: {{tagId}})",
+      "alarm_triggered": "알람 발생 이벤트",
+      "alarm_acknowledged": "알람 확인 이벤트",
+      "alarm_cleared": "알람 해제 이벤트",
+      "device_status_change": "디바이스 상태 변경 이벤트"
+    },
+    "error": {
+      "authentication_failed": "WebSocket 인증 실패",
+      "rate_limit_exceeded": "메시지 빈도 제한 초과",
+      "invalid_message_format": "유효하지 않은 메시지 형식"
+    },
+    "room": {
+      "joined": "사용자 {{username}}이(가) 방 {{room}}에 참여했습니다",
+      "left": "사용자 {{username}}이(가) 방 {{room}}에서 나갔습니다",
+      "permission_denied": "프로젝트 방 {{projectId}}에 참여할 권한이 없습니다",
+      "not_authenticated": "인증되지 않은 사용자는 프로젝트 방에 참여할 수 없습니다"
+    },
+    "connection": {
+      "limit_exceeded": "연결 수가 상한에 도달했습니다 ({{current}}/{{max}})",
+      "user_limit_exceeded": "사용자 {{username}}의 연결 수가 상한에 도달했습니다 ({{current}}/{{max}})",
+      "ip_limit_exceeded": "IP {{ip}}의 연결 수가 상한에 도달했습니다 ({{current}}/{{max}})",
+      "idle_timeout": "연결 유휴 시간 초과 ({{minutes}}분 동안 업무 메시지 없음)",
+      "force_disconnected": "관리자가 연결을 강제로 끊었습니다",
+      "global_limit_exceeded": "전체 연결 수가 상한에 도달했습니다 ({{current}}/{{max}})"
+    },
+    "monitor": {
+      "online_count": "온라인 연결 수",
+      "message_rate": "메시지 속도",
+      "connection_duration": "연결 시간",
+      "abnormal_detected": "비정상 연결이 감지되었습니다"
+    },
+    "offline": {
+      "message_cached": "오프라인 메시지가 캐시되었습니다",
+      "message_replayed": "오프라인 메시지가 재전송되었습니다 ({{count}}건)",
+      "message_expired": "만료된 메시지가 정리되었습니다",
+      "message_confirmed": "메시지가 확인되었습니다"
+    }
+  }
+}

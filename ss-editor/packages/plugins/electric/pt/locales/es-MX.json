@@ -1,0 +1,11 @@
+{
+  "pt": {
+    "label": "Transformador de tensión",
+    "properties": {
+      "color": "Color de línea",
+      "backgroundColor": "Color de fondo",
+      "lineWidth": "Grosor de línea"
+    },
+    "description": "Transformador de tensión PT: dispositivo de transformación para medición"
+  }
+}

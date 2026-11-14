@@ -1,0 +1,47 @@
+{
+  "multiChart": {
+    "label": "Çoklu grafik",
+    "description": "Çubuk grafik, pasta grafik ve ısı haritasını destekleyen çoklu grafik bileşeni",
+    "panelTitle": "Çoklu grafik yapılandırması",
+    "properties": {
+      "title": "Başlık",
+      "titleColor": "Başlık rengi",
+      "titleFontSize": "Başlık yazı boyutu",
+      "chartType": "Grafik türü",
+      "backgroundColor": "Arka plan rengi",
+      "borderColor": "Kenarlık rengi",
+      "borderWidth": "Kenarlık genişliği",
+      "borderRadius": "Köşe yuvarlatma",
+      "barColor": "Çubuk grafik rengi",
+      "barGap": "Çubuk aralığı",
+      "pieColors": "Pasta grafik renk dizisi",
+      "pieInnerRadius": "İç yarıçap oranı",
+      "pieShowLabels": "Etiketleri göster",
+      "heatmapColorLow": "Isı haritası düşük değer rengi",
+      "heatmapColorHigh": "Isı haritası yüksek değer rengi",
+      "heatmapRows": "Satır sayısı",
+      "heatmapCols": "Sütun sayısı",
+      "showLegend": "Lejantı göster",
+      "shadowColor": "Gölge rengi",
+      "shadowOffsetX": "Gölge kayması X",
+      "shadowOffsetY": "Gölge kayması Y",
+      "shadowBlur": "Gölge bulanıklığı"
+    },
+    "options": {
+      "chartType": {
+        "bar": "Çubuk grafik",
+        "pie": "Pasta grafik",
+        "heatmap": "Isı haritası"
+      }
+    },
+    "groups": {
+      "basic": "Temel",
+      "style": "Stil",
+      "bar": "Çubuk grafik",
+      "pie": "Pasta grafik",
+      "heatmap": "Isı haritası",
+      "display": "Görünüm",
+      "shadow": "Gölge"
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "border12": {
+    "label": "邊框-12",
+    "description": "邊框-12裝飾元件",
+    "properties": {
+      "color1": "顏色一",
+      "color2": "顏色二",
+      "backgroundColor": "背景色"
+    }
+  }
+}

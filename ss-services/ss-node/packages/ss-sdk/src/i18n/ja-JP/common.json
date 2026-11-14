@@ -1,0 +1,19 @@
+{
+  "common": {
+    "success": "操作に成功しました",
+    "failed": "操作に失敗しました",
+    "created": "{{resource}} の作成に成功しました",
+    "updated": "{{resource}} の更新に成功しました",
+    "deleted": "{{resource}} の削除に成功しました",
+    "not_found": "{{resource}} が存在しません",
+    "unauthorized": "未認証のアクセスです",
+    "forbidden": "権限が不足しています",
+    "bad_request": "リクエストパラメータが正しくありません",
+    "internal_error": "サーバー内部エラー",
+    "pagination": {
+      "page": "ページ番号は 0 より大きい必要があります",
+      "limit": "1 ページあたりの件数は 1〜100 の範囲で指定してください",
+      "invalid_sort_field": "無効な並び替えフィールド: {{field}}"
+    }
+  }
+}

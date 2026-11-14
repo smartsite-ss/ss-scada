@@ -1,0 +1,78 @@
+{
+  "validation": {
+    "common": {
+      "is_string": "{{property}} debe ser una cadena",
+      "is_number": "{{property}} debe ser un número",
+      "is_boolean": "{{property}} debe ser un valor booleano",
+      "is_date": "{{property}} debe ser una fecha válida",
+      "min_length": "La longitud de {{property}} no puede ser menor que {{constraints.0}} caracteres",
+      "max_length": "La longitud de {{property}} no puede superar los {{constraints.0}} caracteres",
+      "is_email": "{{property}} no es una dirección de correo válida",
+      "matches": "El formato de {{property}} no cumple los requisitos"
+    },
+    "user": {
+      "username": {
+        "required": "El nombre de usuario no puede estar vacío",
+        "length": "El nombre de usuario debe tener entre {{min}} y {{max}} caracteres",
+        "pattern": "El nombre de usuario solo puede contener letras, números y guiones bajos",
+        "unique": "Este nombre de usuario ya está en uso"
+      },
+      "email": {
+        "required": "El correo no puede estar vacío",
+        "is_email": "El formato del correo no es correcto",
+        "unique": "Este correo ya está registrado"
+      },
+      "password": {
+        "required": "La contraseña no puede estar vacía",
+        "weak": "La contraseña es demasiado débil (mínimo 8 caracteres, con mayúsculas, minúsculas y números)",
+        "mismatch": "Las contraseñas ingresadas no coinciden"
+      }
+    },
+    "project": {
+      "name": {
+        "required": "El nombre del proyecto no puede estar vacío",
+        "length": "El nombre del proyecto debe tener entre {{min}} y {{max}} caracteres"
+      },
+      "description": {
+        "maxlength": "La descripción del proyecto no puede superar los {{max}} caracteres"
+      }
+    },
+    "device": {
+      "name": {
+        "required": "El nombre del dispositivo no puede estar vacío"
+      },
+      "config": {
+        "host_required": "La dirección IP del dispositivo no puede estar vacía",
+        "port_range": "El número de puerto debe estar entre 1 y 65535",
+        "unitId_range": "El Unit ID debe estar entre 1 y 247"
+      }
+    },
+    "tag": {
+      "name": {
+        "required": "El nombre de la etiqueta no puede estar vacío",
+        "unique": "El nombre de la etiqueta ya existe en este dispositivo"
+      },
+      "address": {
+        "required": "La dirección del registro no puede estar vacía",
+        "format": "El formato de la dirección no es válido (debe ser un número o un formato de dirección Modbus)"
+      },
+      "scanRate": {
+        "range": "El periodo de escaneo debe estar entre {{min}} y {{max}} ms"
+      }
+    },
+    "alarm": {
+      "rule": {
+        "name": {
+          "required": "El nombre de la regla de alarma no puede estar vacío"
+        },
+        "threshold": {
+          "required": "El umbral de la alarma no puede estar vacío",
+          "number": "El umbral debe ser un número válido"
+        },
+        "debounceTime": {
+          "range": "El tiempo de antirrebote debe estar entre {{min}} y {{max}} ms"
+        }
+      }
+    }
+  }
+}

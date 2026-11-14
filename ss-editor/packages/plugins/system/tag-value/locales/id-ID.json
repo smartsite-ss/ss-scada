@@ -1,0 +1,61 @@
+{
+  "plugins": {
+    "groups": {
+      "shape": "Bentuk",
+      "name": "Nama",
+      "decoration": "Dekorasi"
+    }
+  },
+  "tagValue": {
+    "label": "Variabel tag dekorasi",
+    "description": "Menampilkan nilai real-time variabel perangkat (persegi/bundar)",
+    "config": {
+      "bindVariable": "Variabel terikat",
+      "selectVariable": "Pilih variabel",
+      "clear": "Bersihkan",
+      "unbound": "Tidak terikat",
+      "decorationImage": "Gambar dekorasi",
+      "backgroundImage": "Gambar latar",
+      "selectImage": "Pilih gambar"
+    },
+    "selector": {
+      "title": "Pilih variabel perangkat",
+      "searchPlaceholder": "Cari perangkat atau variabel",
+      "tagCount": "{count} variabel",
+      "loading": "Memuat...",
+      "empty": "Tidak ada variabel perangkat"
+    },
+    "properties": {
+      "shape": "Bentuk",
+      "alias": "Alias",
+      "showName": "Nama tampilan",
+      "nameColor": "Warna nama",
+      "nameFontSize": "Ukuran font nama",
+      "nameFontWeight": "Ketebalan nama",
+      "nameGap": "Jarak nama",
+      "decorationImagePosition": "Posisi gambar dekorasi",
+      "decorationImageSize": "Ukuran gambar dekorasi",
+      "decorationImageOpacity": "Opasitas gambar dekorasi",
+      "backgroundRepeat": "Ubin latar",
+      "backgroundImageFit": "Gaya isian"
+    },
+    "options": {
+      "shape": {
+        "rectangle": "Persegi",
+        "circle": "Lingkaran"
+      },
+      "decorationPosition": {
+        "left": "Kiri",
+        "right": "Kanan",
+        "background": "Latar",
+        "center": "Tengah"
+      },
+      "backgroundRepeat": {
+        "repeat": "Ubin",
+        "no-repeat": "Tanpa ubin",
+        "repeat-x": "Ubin horizontal",
+        "repeat-y": "Ubin vertikal"
+      }
+    }
+  }
+}

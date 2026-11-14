@@ -1,0 +1,45 @@
+{
+  "websocket": {
+    "connected": "Connexion WebSocket réussie",
+    "disconnected": "WebSocket déconnecté",
+    "pong": "Pong - réponse au heartbeat",
+    "event": {
+      "data_update": "Événement de mise à jour des données (étiquette : {{tagId}})",
+      "alarm_triggered": "Événement de déclenchement d'alarme",
+      "alarm_acknowledged": "Événement d'acquittement d'alarme",
+      "alarm_cleared": "Événement d'effacement d'alarme",
+      "device_status_change": "Événement de changement d'état d'appareil"
+    },
+    "error": {
+      "authentication_failed": "Échec de l'authentification WebSocket",
+      "rate_limit_exceeded": "Fréquence des messages dépassée",
+      "invalid_message_format": "Format de message non valide"
+    },
+    "room": {
+      "joined": "L'utilisateur {{username}} a rejoint le salon {{room}}",
+      "left": "L'utilisateur {{username}} a quitté le salon {{room}}",
+      "permission_denied": "Aucune autorisation pour rejoindre le salon du projet {{projectId}}",
+      "not_authenticated": "Un utilisateur non authentifié ne peut pas rejoindre le salon d'un projet"
+    },
+    "connection": {
+      "limit_exceeded": "Nombre maximal de connexions atteint ({{current}}/{{max}})",
+      "user_limit_exceeded": "Nombre maximal de connexions atteint pour l'utilisateur {{username}} ({{current}}/{{max}})",
+      "ip_limit_exceeded": "Nombre maximal de connexions atteint pour l'IP {{ip}} ({{current}}/{{max}})",
+      "idle_timeout": "Délai d'inactivité de la connexion dépassé (aucun message métier pendant {{minutes}} minutes)",
+      "force_disconnected": "Connexion interrompue de force par l'administrateur",
+      "global_limit_exceeded": "Nombre maximal de connexions global atteint ({{current}}/{{max}})"
+    },
+    "monitor": {
+      "online_count": "Connexions en ligne",
+      "message_rate": "Débit de messages",
+      "connection_duration": "Durée de connexion",
+      "abnormal_detected": "Connexion anormale détectée"
+    },
+    "offline": {
+      "message_cached": "Message hors ligne mis en cache",
+      "message_replayed": "Messages hors ligne renvoyés ({{count}})",
+      "message_expired": "Message expiré et supprimé",
+      "message_confirmed": "Message confirmé"
+    }
+  }
+}

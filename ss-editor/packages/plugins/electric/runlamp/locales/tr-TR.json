@@ -1,0 +1,23 @@
+{
+  "runlamp": {
+    "label": "Çalışma gösterge lambası",
+    "properties": {
+      "lampColor": "Lamba rengi",
+      "backgroundColor": "Arka plan rengi",
+      "radius": "Yarıçap",
+      "state": "Çalışma durumu",
+      "runningValue": "Çalışıyor durum değeri",
+      "stoppedValue": "Durdu durum değeri",
+      "faultValue": "Arıza durum değeri",
+      "defaultStatus": "Varsayılan durum"
+    },
+    "options": {
+      "state": {
+        "running": "Çalışıyor",
+        "stopped": "Durdu",
+        "fault": "Arıza"
+      }
+    },
+    "description": "Çalışma durumu gösterge lambası - Çalışıyor/durdu/arıza üç durumunu destekler"
+  }
+}

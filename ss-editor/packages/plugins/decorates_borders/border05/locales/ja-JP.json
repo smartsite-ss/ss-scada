@@ -1,0 +1,11 @@
+{
+  "border05": {
+    "label": "枠線-05",
+    "description": "枠線-05 装飾コンポーネント",
+    "properties": {
+      "colors": "色1",
+      "colors2": "色2",
+      "backgroundColor": "背景色"
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "head01": {
+    "label": "헤더 장식-01",
+    "properties": {
+      "color1": "색상 1",
+      "color2": "색상 2",
+      "dur": "애니메이션 주기(초)",
+      "lineHeight": "선 높이",
+      "endWidth": "슬라이더 너비"
+    },
+    "description": "애니메이션 사각 막대와 슬라이딩 색상 블록 장식"
+  }
+}

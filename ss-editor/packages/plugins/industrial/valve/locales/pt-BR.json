@@ -1,0 +1,45 @@
+{
+  "valve": {
+    "label": "Válvula",
+    "description": "Componente de válvula com alternância de estado aberto/fechado e de tipo",
+    "panelTitle": "Configuração da válvula",
+    "properties": {
+      "width": "Largura",
+      "height": "Altura",
+      "status": "Estado",
+      "valveType": "Tipo de válvula",
+      "bodyColor": "Cor do corpo",
+      "stemColor": "Cor da haste",
+      "openColor": "Cor do estado aberto",
+      "closedColor": "Cor do estado fechado",
+      "faultColor": "Cor de falha",
+      "showLabel": "Mostrar rótulos",
+      "labelText": "Texto do rótulo",
+      "openValue": "Valor correspondente a aberto",
+      "closedValue": "Valor correspondente a fechado",
+      "faultValue": "Valor correspondente a falha",
+      "defaultStatus": "Estado padrão"
+    },
+    "options": {
+      "status": {
+        "open": "Aberto",
+        "closed": "Fechado",
+        "opening": "Abrindo",
+        "closing": "Fechando",
+        "fault": "Falha"
+      },
+      "valveType": {
+        "butterfly": "Válvula borboleta",
+        "gate": "Válvula gaveta"
+      }
+    },
+    "groups": {
+      "basic": "Básico",
+      "status": "Estado",
+      "color": "Cor",
+      "statusColor": "Cor do estado",
+      "label": "Rótulo",
+      "binding": "Mapeamento de vinculação"
+    }
+  }
+}

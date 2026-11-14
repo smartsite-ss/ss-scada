@@ -1,0 +1,11 @@
+{
+  "chartBar": {
+    "label": "棒グラフ",
+    "description": "静的/API データソースの棒グラフ",
+    "config": {
+      "dataSource": "データソース",
+      "noData": "データなし",
+      "loadError": "読み込みに失敗しました"
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "head06": {
+    "label": "ヘッダー装飾-06",
+    "properties": {
+      "color1": "塗りの色",
+      "color2": "枠線色",
+      "dataset": "テキスト",
+      "textColor": "文字色",
+      "textSize": "文字サイズ"
+    },
+    "description": "多角形の外枠装飾"
+  }
+}

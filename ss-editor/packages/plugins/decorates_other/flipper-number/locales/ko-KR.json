@@ -1,0 +1,14 @@
+{
+  "flipper-number": {
+    "label": "플립 숫자",
+    "properties": {
+      "dataset": "값",
+      "flipperLength": "자릿수",
+      "color1": "텍스트 색상",
+      "flipperWidth": "너비",
+      "flipperHeight": "높이",
+      "flipperGap": "간격"
+    },
+    "description": "숫자 플립 표시 플러그인"
+  }
+}

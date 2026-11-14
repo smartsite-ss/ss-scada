@@ -1,0 +1,15 @@
+{
+  "border14": {
+    "label": "Borda-14",
+    "description": "Componente decorativo Borda-14",
+    "properties": {
+      "color1": "Cor principal",
+      "color2": "Cor secundária",
+      "backgroundColor": "Cor de fundo",
+      "showHexGrid": "Grade hexagonal",
+      "showScanLine": "Linha de varredura",
+      "showCoreLines": "Linhas em cruz centrais",
+      "animationSpeed": "Velocidade da animação"
+    }
+  }
+}

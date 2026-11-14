@@ -1,0 +1,21 @@
+{
+  "tagVariable": {
+    "label": "標籤變數",
+    "description": "顯示設備變數即時值",
+    "config": {
+      "bindVariable": "綁定變數",
+      "selectVariable": "選擇變數",
+      "clear": "清除",
+      "unbound": "未綁定"
+    },
+    "selector": {
+      "title": "選擇設備變數",
+      "searchPlaceholder": "搜尋設備或變數",
+      "deviceLabel": "設備",
+      "tagCount": "{count} 個變數",
+      "loading": "載入中...",
+      "empty": "暫無設備變數",
+      "selectHint": "點擊變數進行綁定"
+    }
+  }
+}

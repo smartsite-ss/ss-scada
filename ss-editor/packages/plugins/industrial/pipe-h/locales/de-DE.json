@@ -1,0 +1,39 @@
+{
+  "pipeH": {
+    "label": "Rohr – horizontal",
+    "description": "Horizontale Rohr-Komponente mit Strömungsanimation und Richtungssteuerung",
+    "panelTitle": "Rohr-Konfiguration",
+    "properties": {
+      "width": "Breite",
+      "height": "Höhe",
+      "status": "Zustand",
+      "direction": "Flussrichtung",
+      "pipeColor": "Rohrfarbe",
+      "flowingColor": "Farbe strömend",
+      "stoppedColor": "Farbe stehend",
+      "blockedColor": "Farbe verstopft",
+      "pipeThickness": "Rohrstärke",
+      "showFlange": "Flansch anzeigen",
+      "flowSpeed": "Strömungsgeschwindigkeit",
+      "showFlowAnimation": "Strömungsanimation anzeigen"
+    },
+    "options": {
+      "status": {
+        "flowing": "Strömend",
+        "stopped": "Gestoppt",
+        "blocked": "Verstopft"
+      },
+      "direction": {
+        "left": "Nach links",
+        "right": "Nach rechts"
+      }
+    },
+    "groups": {
+      "basic": "Basis",
+      "status": "Zustand",
+      "color": "Farbe",
+      "style": "Stil",
+      "animation": "Animation"
+    }
+  }
+}

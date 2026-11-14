@@ -1,0 +1,11 @@
+{
+  "autotransformer": {
+    "label": "Oto transformatör",
+    "properties": {
+      "color": "Çizgi rengi",
+      "backgroundColor": "Arka plan rengi",
+      "lineWidth": "Çizgi kalınlığı"
+    },
+    "description": "Oto transformatör - Kademe çıkışlı tek bobin"
+  }
+}

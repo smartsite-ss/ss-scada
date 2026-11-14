@@ -1,0 +1,14 @@
+{
+  "flipper-number": {
+    "label": "Перекидные цифры",
+    "properties": {
+      "dataset": "Значение",
+      "flipperLength": "Число разрядов",
+      "color1": "Цвет текста",
+      "flipperWidth": "Ширина",
+      "flipperHeight": "Высота",
+      "flipperGap": "Интервал"
+    },
+    "description": "Плагин перекидных цифр"
+  }
+}

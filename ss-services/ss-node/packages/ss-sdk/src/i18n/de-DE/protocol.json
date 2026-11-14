@@ -1,0 +1,29 @@
+{
+  "protocol": {
+    "modbus": {
+      "connect_success": "Modbus TCP erfolgreich verbunden",
+      "connect_failed": "Modbus TCP-Verbindung fehlgeschlagen: {{detail}}",
+      "read_success": "Modbus-Lesen erfolgreich",
+      "read_failed": "Modbus-Lesen fehlgeschlagen: {{detail}}",
+      "write_success": "Modbus-Schreiben erfolgreich",
+      "write_failed": "Modbus-Schreiben fehlgeschlagen: {{detail}}"
+    },
+    "mqtt": {
+      "connect_success": "MQTT erfolgreich verbunden",
+      "connect_failed": "MQTT-Verbindung fehlgeschlagen: {{detail}}",
+      "publish_success": "MQTT-Nachricht erfolgreich veröffentlicht",
+      "publish_failed": "Veröffentlichen der MQTT-Nachricht fehlgeschlagen: {{detail}}"
+    },
+    "opcua": {
+      "connect_success": "OPC UA erfolgreich verbunden",
+      "connect_failed": "OPC UA-Verbindung fehlgeschlagen: {{detail}}",
+      "read_success": "OPC UA-Lesen erfolgreich",
+      "read_failed": "OPC UA-Lesen fehlgeschlagen: {{detail}}"
+    },
+    "common": {
+      "timeout": "Zeitüberschreitung bei der Protokollkommunikation ({{timeout}} ms)",
+      "connection_refused": "Verbindung abgelehnt",
+      "authentication_failed": "Authentifizierung fehlgeschlagen"
+    }
+  }
+}

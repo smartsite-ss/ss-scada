@@ -1,0 +1,13 @@
+{
+  "head01": {
+    "label": "Dekorasi kepala-01",
+    "properties": {
+      "color1": "Warna pertama",
+      "color2": "Warna kedua",
+      "dur": "Siklus animasi (detik)",
+      "lineHeight": "Tinggi garis",
+      "endWidth": "Lebar slider"
+    },
+    "description": "Dekorasi batang persegi panjang animasi dengan blok warna bergerak"
+  }
+}

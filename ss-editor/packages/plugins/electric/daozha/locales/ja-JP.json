@@ -1,0 +1,22 @@
+{
+  "daozha": {
+    "label": "断路器",
+    "properties": {
+      "color": "線の色",
+      "backgroundColor": "背景色",
+      "lineWidth": "線幅",
+      "terminalRadius": "端子の半径",
+      "closed": "閉状態",
+      "closedValue": "閉に対応する値",
+      "openValue": "開に対応する値",
+      "defaultStatus": "既定の状態"
+    },
+    "options": {
+      "closed": {
+        "yes": "閉",
+        "no": "開"
+      }
+    },
+    "description": "電力用断路器 - 断路器の図形要素。閉/開状態の切り替えに対応"
+  }
+}

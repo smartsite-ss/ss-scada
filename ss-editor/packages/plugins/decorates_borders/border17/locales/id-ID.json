@@ -1,0 +1,15 @@
+{
+  "border17": {
+    "label": "Batas-17 (Neon Cyberpunk)",
+    "description": "Komponen dekorasi batas-17 (Neon Cyberpunk)",
+    "properties": {
+      "color1": "Sian neon",
+      "color2": "Merah muda neon",
+      "color3": "Warna dasar",
+      "backgroundColor": "Warna latar",
+      "showCircuit": "Tekstur sirkuit",
+      "showScanline": "Garis pindai",
+      "animationSpeed": "Kecepatan animasi"
+    }
+  }
+}

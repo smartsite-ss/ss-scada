@@ -1,0 +1,45 @@
+{
+  "waterpump": {
+    "label": "Wasserpumpe",
+    "description": "Wasserpumpen-Komponente mit Drehanimation und Zustandsanzeige",
+    "panelTitle": "Wasserpumpen-Konfiguration",
+    "properties": {
+      "width": "Breite",
+      "height": "Höhe",
+      "status": "Zustand",
+      "bodyColor": "Rahmenfarbe",
+      "impellerColor": "Lüfterradfarbe",
+      "pipeColor": "Rohrfarbe",
+      "flangeColor": "Flanschfarbe",
+      "highlightColor": "Hervorhebungsfarbe",
+      "showAnimation": "Animation anzeigen",
+      "rotationSpeed": "Drehzahl",
+      "rotationDirection": "Drehrichtung",
+      "showLabel": "Beschriftung anzeigen",
+      "labelText": "Beschriftungstext",
+      "runningValue": "Wert für Betrieb",
+      "stoppedValue": "Wert für Stopp",
+      "faultValue": "Wert für Störung",
+      "defaultStatus": "Standardzustand"
+    },
+    "options": {
+      "status": {
+        "running": "In Betrieb",
+        "stopped": "Gestoppt",
+        "fault": "Störung"
+      },
+      "rotationDirection": {
+        "clockwise": "Im Uhrzeigersinn",
+        "counterclockwise": "Gegen den Uhrzeigersinn"
+      }
+    },
+    "groups": {
+      "basic": "Basis",
+      "status": "Zustand",
+      "color": "Farbe",
+      "animation": "Animation",
+      "label": "Beschriftung",
+      "binding": "Bindungszuordnung"
+    }
+  }
+}

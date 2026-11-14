@@ -1,0 +1,24 @@
+{
+  "project": {
+    "create": {
+      "success": "Proje oluşturuldu",
+      "failed_name_exists": "Proje adı zaten mevcut"
+    },
+    "update": {
+      "success": "Proje güncellendi",
+      "failed_not_owner": "Bu projeyi değiştirme yetkiniz yok"
+    },
+    "delete": {
+      "success": "Proje silindi",
+      "failed_has_devices": "Projede cihazlar var, silinemiyor"
+    },
+    "get": {
+      "success": "Proje bilgileri alındı",
+      "not_found": "Proje bulunamadı"
+    },
+    "list": {
+      "success": "Proje listesi alındı",
+      "empty": "Henüz proje yok"
+    }
+  }
+}

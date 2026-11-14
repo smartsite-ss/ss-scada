@@ -1,0 +1,13 @@
+{
+  "border08": {
+    "label": "Viền-08",
+    "description": "Thành phần trang trí viền-08",
+    "properties": {
+      "color1": "Màu thứ nhất",
+      "color2": "Màu thứ hai",
+      "backgroundColor": "Màu nền",
+      "dur": "Chu kỳ hoạt ảnh (giây)",
+      "reverse": "Chuyển động ngược"
+    }
+  }
+}

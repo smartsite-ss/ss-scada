@@ -1,0 +1,12 @@
+{
+  "head04": {
+    "label": "헤더 장식-04",
+    "properties": {
+      "color1": "색상 1",
+      "color2": "색상 2",
+      "backgroundColor": "배경색",
+      "reverse": "뒤집기"
+    },
+    "description": "사선 장식"
+  }
+}

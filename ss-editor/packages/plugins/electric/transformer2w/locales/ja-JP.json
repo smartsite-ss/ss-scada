@@ -1,0 +1,11 @@
+{
+  "transformer2w": {
+    "label": "二巻線変圧器",
+    "properties": {
+      "color": "線の色",
+      "backgroundColor": "背景色",
+      "lineWidth": "線幅"
+    },
+    "description": "二巻線電力変圧器 - 2コイルのシンボル"
+  }
+}

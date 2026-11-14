@@ -1,0 +1,39 @@
+{
+  "pipe-v": {
+    "label": "Труба — вертикальная",
+    "description": "Компонент «Труба — вертикальная» с анимацией потока и управлением направлением",
+    "panelTitle": "Настройка трубы",
+    "properties": {
+      "width": "Ширина",
+      "height": "Высота",
+      "status": "Состояние",
+      "direction": "Направление потока",
+      "pipeColor": "Цвет трубы",
+      "flowingColor": "Цвет потока",
+      "stoppedColor": "Цвет останова",
+      "blockedColor": "Цвет засора",
+      "pipeThickness": "Толщина трубы",
+      "showFlange": "Показать фланец",
+      "flowSpeed": "Скорость потока",
+      "showFlowAnimation": "Показать анимацию потока"
+    },
+    "options": {
+      "status": {
+        "flowing": "Поток",
+        "stopped": "Стоп",
+        "blocked": "Засор"
+      },
+      "direction": {
+        "up": "Вверх",
+        "down": "Вниз"
+      }
+    },
+    "groups": {
+      "basic": "Основное",
+      "status": "Состояние",
+      "color": "Цвет",
+      "style": "Стиль",
+      "animation": "Анимация"
+    }
+  }
+}

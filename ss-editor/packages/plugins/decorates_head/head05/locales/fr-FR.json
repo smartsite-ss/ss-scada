@@ -1,0 +1,11 @@
+{
+  "head05": {
+    "label": "Décoration d'en-tête-05",
+    "properties": {
+      "color1": "Couleur 1",
+      "color2": "Couleur 2",
+      "dur": "Cycle d'animation (s)"
+    },
+    "description": "Décoration animée segmentée"
+  }
+}

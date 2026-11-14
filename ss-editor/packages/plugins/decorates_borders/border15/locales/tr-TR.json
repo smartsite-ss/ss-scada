@@ -1,0 +1,15 @@
+{
+  "border15": {
+    "label": "Kenarlık-15 (Art Deco)",
+    "description": "Kenarlık-15 dekoratif bileşeni (Art Deco)",
+    "properties": {
+      "color1": "Ana altın rengi",
+      "color2": "Koyu altın rengi",
+      "color3": "Koyu renk",
+      "backgroundColor": "Arka plan rengi",
+      "showSunburst": "Işın demeti",
+      "showCorners": "Köşe süslemesi",
+      "animationSpeed": "Animasyon hızı"
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "pt": {
+    "label": "Transformator tegangan",
+    "properties": {
+      "color": "Warna garis",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garis"
+    },
+    "description": "Transformator tegangan PT - perangkat konversi tegangan untuk pengukuran"
+  }
+}

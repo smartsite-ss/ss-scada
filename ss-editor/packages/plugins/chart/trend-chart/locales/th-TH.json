@@ -1,0 +1,50 @@
+{
+  "trendChart": {
+    "label": "แผนภูมิแนวโน้ม",
+    "description": "แผนภูมิแนวโน้มเรียลไทม์/ย้อนหลัง รองรับการเปรียบเทียบหลายเส้นและการลดตัวอย่างแบบ LTTB",
+    "properties": {
+      "title": "หัวข้อ",
+      "titleColor": "สีหัวข้อ",
+      "titleFontSize": "ขนาดตัวอักษรหัวข้อ",
+      "titleFontWeight": "ความหนาหัวข้อ",
+      "backgroundColor": "สีพื้นหลัง",
+      "borderColor": "สีเส้นขอบ",
+      "borderWidth": "ความกว้างเส้นขอบ",
+      "borderStyle": "รูปแบบเส้นขอบ",
+      "borderRadius": "มุมโค้ง",
+      "gridColor": "สีเส้นตาราง",
+      "axisColor": "สีแกนพิกัด",
+      "lineColors": "สีเส้นโค้ง",
+      "lineWidth": "ความกว้างเส้นโค้ง",
+      "showPoints": "แสดงจุดข้อมูล",
+      "pointRadius": "รัศมีจุดข้อมูล",
+      "showLegend": "แสดงคำอธิบายสัญลักษณ์",
+      "legendPosition": "ตำแหน่งคำอธิบายสัญลักษณ์",
+      "maxPens": "จำนวนเส้นสูงสุด",
+      "timeWindow": "ช่วงเวลา (วินาที)",
+      "showTooltip": "แสดงกล่องคำอธิบาย",
+      "yAxisLabel": "ป้ายกำกับแกน Y",
+      "shadowColor": "สีเงา",
+      "shadowOffsetX": "ระยะเลื่อนเงา X",
+      "shadowOffsetY": "ระยะเลื่อนเงา Y",
+      "shadowBlur": "ความเบลอของเงา"
+    },
+    "options": {
+      "titleFontWeight": {
+        "normal": "ปกติ",
+        "bold": "ตัวหนา"
+      },
+      "borderStyle": {
+        "solid": "เส้นทึบ",
+        "dashed": "เส้นประ",
+        "dotted": "เส้นจุด"
+      },
+      "legendPosition": {
+        "top": "บน",
+        "bottom": "ล่าง",
+        "left": "ซ้าย",
+        "right": "ขวา"
+      }
+    }
+  }
+}

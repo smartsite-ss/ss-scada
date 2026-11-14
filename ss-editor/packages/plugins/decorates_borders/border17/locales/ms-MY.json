@@ -1,0 +1,15 @@
+{
+  "border17": {
+    "label": "Sempadan-17 (Neon Cyberpunk)",
+    "description": "Komponen hiasan sempadan-17 (Neon Cyberpunk)",
+    "properties": {
+      "color1": "Sian neon",
+      "color2": "Merah jambu neon",
+      "color3": "Warna asas",
+      "backgroundColor": "Warna latar",
+      "showCircuit": "Tekstur litar",
+      "showScanline": "Garisan imbas",
+      "animationSpeed": "Kelajuan animasi"
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "transformer3w": {
+    "label": "三繞組變壓器",
+    "properties": {
+      "color": "線條顏色",
+      "backgroundColor": "背景色",
+      "lineWidth": "線寬"
+    },
+    "description": "三繞組電力變壓器 - Y 型三線圈排列"
+  }
+}

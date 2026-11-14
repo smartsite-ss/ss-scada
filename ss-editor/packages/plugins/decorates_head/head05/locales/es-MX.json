@@ -1,0 +1,11 @@
+{
+  "head05": {
+    "label": "Decoración de encabezado 05",
+    "properties": {
+      "color1": "Color uno",
+      "color2": "Color dos",
+      "dur": "Ciclo de animación (s)"
+    },
+    "description": "Decoración con animación por segmentos"
+  }
+}

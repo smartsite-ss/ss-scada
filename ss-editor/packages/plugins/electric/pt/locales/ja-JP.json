@@ -1,0 +1,11 @@
+{
+  "pt": {
+    "label": "計器用変圧器",
+    "properties": {
+      "color": "線の色",
+      "backgroundColor": "背景色",
+      "lineWidth": "線幅"
+    },
+    "description": "計器用変圧器 PT - 計測用の電圧変成装置"
+  }
+}

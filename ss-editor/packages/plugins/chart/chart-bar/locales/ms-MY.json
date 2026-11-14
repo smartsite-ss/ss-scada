@@ -1,0 +1,11 @@
+{
+  "chartBar": {
+    "label": "Carta bar",
+    "description": "Carta bar sumber data statik/API",
+    "config": {
+      "dataSource": "Sumber data",
+      "noData": "Tiada data",
+      "loadError": "Gagal memuat"
+    }
+  }
+}

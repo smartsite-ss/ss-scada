@@ -1,0 +1,11 @@
+{
+  "border11": {
+    "label": "Batas-11",
+    "description": "Komponen dekorasi batas-11",
+    "properties": {
+      "color1": "Warna pertama",
+      "color2": "Warna kedua",
+      "backgroundColor": "Warna latar"
+    }
+  }
+}

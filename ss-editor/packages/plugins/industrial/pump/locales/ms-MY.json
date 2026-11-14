@@ -1,0 +1,43 @@
+{
+  "pump": {
+    "label": "Pam",
+    "description": "Komponen pam dengan animasi putaran dan paparan status",
+    "panelTitle": "Konfigurasi pam",
+    "properties": {
+      "width": "Lebar",
+      "height": "Tinggi",
+      "status": "Status",
+      "bodyColor": "Warna badan",
+      "impellerColor": "Warna pendesak",
+      "highlightColor": "Warna sorotan",
+      "showAnimation": "Tunjuk animasi",
+      "animationSpeed": "Kelajuan putaran",
+      "rotationDirection": "Arah putaran",
+      "showLabel": "Tunjuk label",
+      "labelText": "Teks label",
+      "runningValue": "Nilai padanan berjalan",
+      "stoppedValue": "Nilai padanan berhenti",
+      "faultValue": "Nilai padanan kerosakan",
+      "defaultStatus": "Status lalai"
+    },
+    "options": {
+      "status": {
+        "running": "Beroperasi",
+        "stopped": "Berhenti",
+        "fault": "Kerosakan"
+      },
+      "rotationDirection": {
+        "clockwise": "Ikut jam",
+        "counterclockwise": "Lawan jam"
+      }
+    },
+    "groups": {
+      "basic": "Asas",
+      "status": "Status",
+      "color": "Warna",
+      "animation": "Animasi",
+      "label": "Label",
+      "binding": "Pemetaan ikatan"
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "cablehead": {
+    "label": "Đầu cuối cáp",
+    "properties": {
+      "color": "Màu đường nét",
+      "backgroundColor": "Màu nền",
+      "lineWidth": "Độ rộng nét"
+    },
+    "description": "Đầu cuối cáp - đầu nối cáp với thiết bị"
+  }
+}

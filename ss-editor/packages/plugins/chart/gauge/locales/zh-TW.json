@@ -1,0 +1,66 @@
+{
+  "chartGauge": {
+    "label": "儀表板",
+    "description": "儀表板元件，用於單值即時顯示與閾值警報",
+    "panelTitle": "儀表板設定",
+    "config": {
+      "dataSource": "資料來源",
+      "noData": "暫無資料",
+      "loadError": "載入失敗"
+    },
+    "properties": {
+      "title": "標題",
+      "titleColor": "標題顏色",
+      "titleFontSize": "標題字級",
+      "value": "目前值",
+      "minValue": "最小值",
+      "maxValue": "最大值",
+      "unit": "單位",
+      "startAngle": "起始角度",
+      "endAngle": "結束角度",
+      "backgroundColor": "背景色",
+      "borderColor": "邊框色",
+      "borderWidth": "邊框寬度",
+      "borderStyle": "邊框樣式",
+      "borderRadius": "圓角",
+      "faceColor": "錶面顏色",
+      "rimColor": "外圈顏色",
+      "normalColor": "正常區顏色",
+      "needleColor": "指針顏色",
+      "tickColor": "刻度線顏色",
+      "labelColor": "標籤顏色",
+      "valueColor": "數值顏色",
+      "showTicks": "顯示刻度",
+      "showLabels": "顯示標籤",
+      "showValue": "顯示數值",
+      "majorTicks": "主刻度數",
+      "minorTicks": "副刻度數",
+      "warningValue": "警告閾值",
+      "dangerValue": "危險閾值",
+      "warningColor": "警告顏色",
+      "dangerColor": "危險顏色",
+      "shadowColor": "陰影顏色",
+      "shadowOffsetX": "陰影偏移X",
+      "shadowOffsetY": "陰影偏移Y",
+      "shadowBlur": "陰影模糊"
+    },
+    "options": {
+      "borderStyle": {
+        "solid": "實線",
+        "dashed": "虛線",
+        "dotted": "點線"
+      }
+    },
+    "groups": {
+      "basic": "基本",
+      "value": "數值",
+      "gauge": "儀表",
+      "style": "樣式",
+      "color": "顏色",
+      "display": "顯示",
+      "ticks": "刻度",
+      "alarm": "警報",
+      "shadow": "陰影"
+    }
+  }
+}

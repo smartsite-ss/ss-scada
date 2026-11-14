@@ -1,0 +1,13 @@
+{
+  "border08": {
+    "label": "Bordure-08",
+    "description": "Composant décoratif Bordure-08",
+    "properties": {
+      "color1": "Couleur 1",
+      "color2": "Couleur 2",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "dur": "Cycle d'animation (s)",
+      "reverse": "Mouvement inversé"
+    }
+  }
+}

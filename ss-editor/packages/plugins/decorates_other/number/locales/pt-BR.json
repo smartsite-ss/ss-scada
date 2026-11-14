@@ -1,0 +1,19 @@
+{
+  "number": {
+    "label": "Número",
+    "properties": {
+      "dataset": "Valor de destino",
+      "from": "Valor inicial",
+      "dur": "Duração da animação (s)",
+      "precision": "Casas decimais",
+      "showSeparator": "Separador de milhar",
+      "numberSize": "Tamanho da fonte",
+      "color1": "Cor do número",
+      "prefixText": "Prefixo",
+      "color2": "Cor do prefixo",
+      "suffixText": "Sufixo",
+      "color3": "Cor do sufixo"
+    },
+    "description": "Plugin de animação de contagem numérica"
+  }
+}

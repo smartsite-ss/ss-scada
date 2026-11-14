@@ -1,0 +1,15 @@
+{
+  "border19": {
+    "label": "Borda-19 (Estilo tipográfico suíço)",
+    "description": "Componente decorativo Borda-19 (Estilo tipográfico suíço)",
+    "properties": {
+      "color1": "Preto profundo",
+      "color2": "Vermelho vivo",
+      "color3": "Branco",
+      "backgroundColor": "Cor de fundo",
+      "showBlocks": "Blocos geométricos",
+      "showAccents": "Pontos decorativos",
+      "animationSpeed": "Velocidade da animação"
+    }
+  }
+}

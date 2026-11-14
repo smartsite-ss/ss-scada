@@ -1,0 +1,43 @@
+{
+  "pump": {
+    "label": "Pompe",
+    "description": "Composant pompe avec animation de rotation et affichage d'état",
+    "panelTitle": "Configuration de la pompe",
+    "properties": {
+      "width": "Largeur",
+      "height": "Hauteur",
+      "status": "État",
+      "bodyColor": "Couleur du corps",
+      "impellerColor": "Couleur de la roue",
+      "highlightColor": "Couleur de surbrillance",
+      "showAnimation": "Afficher l'animation",
+      "animationSpeed": "Vitesse de rotation",
+      "rotationDirection": "Sens de rotation",
+      "showLabel": "Afficher l'étiquette",
+      "labelText": "Texte de l'étiquette",
+      "runningValue": "Valeur de marche",
+      "stoppedValue": "Valeur d'arrêt",
+      "faultValue": "Valeur de défaut",
+      "defaultStatus": "État par défaut"
+    },
+    "options": {
+      "status": {
+        "running": "En marche",
+        "stopped": "Arrêtée",
+        "fault": "Défaut"
+      },
+      "rotationDirection": {
+        "clockwise": "Horaire",
+        "counterclockwise": "Antihoraire"
+      }
+    },
+    "groups": {
+      "basic": "Base",
+      "status": "État",
+      "color": "Couleur",
+      "animation": "Animation",
+      "label": "Étiquette",
+      "binding": "Mappage de liaison"
+    }
+  }
+}

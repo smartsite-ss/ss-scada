@@ -1,0 +1,21 @@
+{
+  "closelamp": {
+    "label": "合閘指示燈",
+    "properties": {
+      "lampColor": "燈色",
+      "backgroundColor": "背景色",
+      "radius": "半徑",
+      "closed": "合閘狀態",
+      "closedValue": "閉合對應值",
+      "openValue": "斷開對應值",
+      "defaultStatus": "預設狀態"
+    },
+    "options": {
+      "closed": {
+        "yes": "合閘",
+        "no": "分閘"
+      }
+    },
+    "description": "合閘位置指示燈"
+  }
+}

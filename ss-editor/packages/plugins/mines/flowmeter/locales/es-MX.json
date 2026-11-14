@@ -1,0 +1,16 @@
+{
+  "flowmeter": {
+    "label": "Caudalímetro",
+    "properties": {
+      "color": "Color",
+      "backgroundColor": "Color de fondo",
+      "lineWidth": "Grosor de línea",
+      "dataset": "Valor de datos (0-100)",
+      "showDigital": "Mostrar lectura digital",
+      "rangeMax": "Valor máximo del rango",
+      "decimalPlaces": "Decimales",
+      "unit": "Unidad"
+    },
+    "description": "Caudalímetro: instrumento de dial circular con ángulo de aguja accionado por el valor de datos"
+  }
+}

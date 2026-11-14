@@ -1,0 +1,35 @@
+{
+  "fan3": {
+    "label": "Quạt 3",
+    "properties": {
+      "colors": "Nhóm màu",
+      "flowColor": "Màu ống gió",
+      "pipeColor": "Màu đường ống",
+      "bgWidth": "Chiều rộng đế",
+      "boardWidth": "Độ dày bản",
+      "roate": "Góc xoay",
+      "cls": "Hướng quay",
+      "dur": "Chu kỳ hoạt ảnh (giây)",
+      "backgroundColor": "Màu nền",
+      "dataset": "Bộ dữ liệu",
+      "forwardValue": "Giá trị tương ứng quay xuôi",
+      "backwardValue": "Giá trị tương ứng quay ngược",
+      "stopValue": "Giá trị tương ứng dừng",
+      "defaultCls": "Hướng hoạt ảnh mặc định",
+      "decimalPlaces": "Số chữ thập phân",
+      "clsOptions": {
+        "right": "Quay phải",
+        "left": "Quay trái",
+        "stop": "Dừng"
+      }
+    },
+    "options": {
+      "cls": {
+        "left": "Quay xuôi",
+        "right": "Quay ngược",
+        "stop": "Dừng"
+      }
+    },
+    "description": "Quạt 3 - quạt ly tâm có ống gió, hỗ trợ điều khiển hướng quay và tốc độ"
+  }
+}

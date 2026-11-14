@@ -1,0 +1,56 @@
+{
+  "image": {
+    "label": "Hình ảnh",
+    "panelTitle": "Thuộc tính hình ảnh",
+    "properties": {
+      "src": "Địa chỉ hình ảnh",
+      "alt": "Văn bản thay thế",
+      "opacity": "Độ mờ",
+      "imageScale": "Tỷ lệ thu phóng",
+      "imageRotation": "Góc xoay",
+      "imageFilter": "Hiệu ứng bộ lọc",
+      "imageFit": "Chế độ vừa khung",
+      "borderColor": "Màu viền",
+      "borderWidth": "Độ rộng viền",
+      "borderStyle": "Kiểu viền",
+      "borderRadius": "Bo góc",
+      "shadowColor": "Màu bóng đổ",
+      "shadowOffsetX": "Dịch chuyển bóng X",
+      "shadowOffsetY": "Dịch chuyển bóng Y",
+      "shadowBlur": "Độ mờ bóng",
+      "imageUpload": "Tải ảnh lên"
+    },
+    "options": {
+      "imageFilter": {
+        "none": "Không",
+        "grayscale": "Thang độ xám",
+        "sepia": "Nâu cổ điển",
+        "invert": "Đảo màu",
+        "brightness": "Độ sáng",
+        "contrast": "Độ tương phản",
+        "saturate": "Độ bão hòa"
+      },
+      "imageFit": {
+        "contain": "Vừa khung",
+        "cover": "Phủ kín",
+        "fill": "Lấp đầy",
+        "none": "Kích thước gốc",
+        "scale-down": "Thu nhỏ"
+      },
+      "borderStyle": {
+        "solid": "Nét liền",
+        "dashed": "Nét đứt",
+        "dotted": "Nét chấm"
+      }
+    },
+    "groups": {
+      "basic": "Thuộc tính cơ bản",
+      "style": "Kiểu dáng",
+      "shadow": "Bóng đổ"
+    },
+    "hints": {
+      "clickToUpload": "Nhấp để chọn ảnh"
+    },
+    "description": "Phần tử đồ họa hình ảnh"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "clock": {
+    "label": "Reloj",
+    "properties": {
+      "color1": "Color de la aguja",
+      "color2": "Fondo del dial",
+      "color3": "Color del borde",
+      "borderWidth": "Ancho del borde"
+    },
+    "description": "Reloj analógico"
+  }
+}

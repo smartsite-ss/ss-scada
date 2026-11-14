@@ -1,0 +1,12 @@
+{
+  "head04": {
+    "label": "頭部裝飾-04",
+    "properties": {
+      "color1": "顏色一",
+      "color2": "顏色二",
+      "backgroundColor": "背景色",
+      "reverse": "翻轉"
+    },
+    "description": "斜線裝飾"
+  }
+}

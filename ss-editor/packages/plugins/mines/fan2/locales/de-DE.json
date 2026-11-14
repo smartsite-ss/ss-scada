@@ -1,0 +1,31 @@
+{
+  "fan2": {
+    "label": "Lüfter 2",
+    "properties": {
+      "colors": "Farbe 1",
+      "colors2": "Farbe 2",
+      "flowColor": "Strömungsfarbe",
+      "pipeColor": "Rohrfarbe",
+      "backgroundColor": "Hintergrundfarbe",
+      "bgWidth": "Hintergrundbreite",
+      "boardWidth": "Rahmenbreite",
+      "roate": "Drehwinkel",
+      "cls": "Animationsrichtung",
+      "dur": "Animationsdauer (Sekunden)",
+      "dataset": "Datenwert",
+      "forwardValue": "Wert für Vorwärtslauf",
+      "backwardValue": "Wert für Rückwärtslauf",
+      "stopValue": "Wert für Stopp",
+      "defaultCls": "Standard-Animationsrichtung",
+      "decimalPlaces": "Dezimalstellen"
+    },
+    "options": {
+      "cls": {
+        "left": "Vorwärtslauf",
+        "right": "Rückwärtslauf",
+        "stop": "Stopp"
+      }
+    },
+    "description": "Lüfter 2 – runder Mehrblattventilator mit Steuerung von Drehrichtung und Drehzahl"
+  }
+}

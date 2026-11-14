@@ -1,0 +1,28 @@
+{
+  "three-gauge": {
+    "label": "Medidor 3D",
+    "panelTitle": "Configuração do medidor 3D",
+    "properties": {
+      "value": "Valor atual",
+      "min": "Valor mínimo",
+      "max": "Valor máximo",
+      "gaugeColor": "Cor normal",
+      "warningColor": "Cor de aviso",
+      "dangerColor": "Cor de perigo",
+      "warningThreshold": "Limiar de aviso",
+      "dangerThreshold": "Limiar de perigo",
+      "showTicks": "Mostrar escala",
+      "showLabels": "Mostrar rótulos",
+      "needleColor": "Cor do ponteiro",
+      "backgroundColor": "Cor de fundo",
+      "rimColor": "Cor da borda"
+    },
+    "groups": {
+      "数据": "Dados",
+      "颜色": "Cor",
+      "阈值": "Limiar",
+      "显示": "Exibição"
+    },
+    "description": "Elemento gráfico de medidor 3D com ponteiro acionado por dados"
+  }
+}

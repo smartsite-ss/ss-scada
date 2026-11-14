@@ -1,0 +1,12 @@
+{
+  "head02": {
+    "label": "頭部裝飾-02",
+    "properties": {
+      "color1": "顏色一",
+      "color2": "顏色二",
+      "dur": "動畫週期(秒)",
+      "lineHeight": "線條高度"
+    },
+    "description": "水平線條加虛線動畫裝飾"
+  }
+}

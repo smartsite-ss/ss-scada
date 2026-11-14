@@ -1,0 +1,68 @@
+{
+  "svg-pipe": {
+    "label": "SVG boru",
+    "panelTitle": "SVG boru yapılandırması",
+    "properties": {
+      "status": "Durum",
+      "flowDirection": "Akış yönü",
+      "strokeColor": "Boru rengi",
+      "flowingColor": "Akış rengi",
+      "stoppedColor": "Durma rengi",
+      "blockedColor": "Tıkanma rengi",
+      "strokeWidth": "Boru çapı",
+      "strokeLinecap": "Uç stili",
+      "strokeLinejoin": "Birleşim stili",
+      "strokeDasharray": "Kesikli çizgi",
+      "gradientType": "Gradyan türü",
+      "gradientStartColor": "Gradyan başlangıç rengi",
+      "gradientEndColor": "Gradyan bitiş rengi",
+      "filterShadow": "Gölge",
+      "shadowColor": "Gölge rengi",
+      "shadowBlur": "Gölge bulanıklığı",
+      "showFlowAnimation": "Akış animasyonu",
+      "flowSpeed": "Akış hızı",
+      "arrowSpacing": "Ok aralığı",
+      "arrowSize": "Ok boyutu",
+      "arrowStyle": "Ok stili"
+    },
+    "options": {
+      "status": {
+        "flowing": "Akışta",
+        "stopped": "Durdu",
+        "blocked": "Tıkanık"
+      },
+      "flowDirection": {
+        "forward": "İleri",
+        "backward": "Geri",
+        "bidirectional": "Çift yönlü"
+      },
+      "strokeLinecap": {
+        "butt": "Düz uç",
+        "round": "Yuvarlak uç",
+        "square": "Kare uç"
+      },
+      "strokeLinejoin": {
+        "miter": "Sivri köşe",
+        "round": "Yuvarlak köşe",
+        "bevel": "Eğik köşe"
+      },
+      "gradientType": {
+        "none": "Düz renk",
+        "linear": "Doğrusal gradyan",
+        "radial": "Radyal gradyan"
+      },
+      "arrowStyle": {
+        "triangle": "Üçgen blok",
+        "rectangle": "Dikdörtgen",
+        "square": "Kare"
+      }
+    },
+    "groups": {
+      "status": "Durum",
+      "color": "Renk",
+      "style": "Stil",
+      "animation": "Animasyon"
+    },
+    "description": "SVG Path tabanlı boru bileşeni, akış animasyonu, gradyan ve stil yapılandırmasını destekler"
+  }
+}

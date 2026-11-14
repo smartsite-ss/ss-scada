@@ -1,0 +1,34 @@
+{
+  "naiveButton": {
+    "label": "Naive 按鈕",
+    "panelTitle": "Naive 按鈕屬性",
+    "properties": {
+      "text": "按鈕文字",
+      "type": "按鈕類型",
+      "size": "尺寸",
+      "round": "圓角按鈕",
+      "circle": "圓形按鈕",
+      "disabled": "停用",
+      "loading": "載入狀態"
+    },
+    "options": {
+      "type": {
+        "default": "預設",
+        "primary": "主要",
+        "success": "成功",
+        "warning": "警告",
+        "error": "錯誤",
+        "info": "資訊"
+      },
+      "size": {
+        "small": "小",
+        "medium": "中",
+        "large": "大"
+      }
+    },
+    "groups": {
+      "basic": "基本屬性"
+    },
+    "description": "Naive 按鈕圖形元素，支援 Canvas 降級渲染"
+  }
+}

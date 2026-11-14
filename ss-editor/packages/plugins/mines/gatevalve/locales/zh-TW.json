@@ -1,0 +1,21 @@
+{
+  "gatevalve": {
+    "label": "電動閘閥",
+    "properties": {
+      "colors": "顏色1",
+      "colors2": "顏色2",
+      "backgroundColor": "背景色",
+      "lineWidth": "線寬",
+      "closed": "閉合狀態",
+      "state": "閥門狀態"
+    },
+    "options": {
+      "state": {
+        "open": "開啟",
+        "closed": "關閉",
+        "fault": "故障"
+      }
+    },
+    "description": "電動閘閥 - 蝶形閥體電動執行器，支援開/關/故障狀態"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "tag": {
+    "create": {
+      "success": "데이터 태그 생성 성공",
+      "failed_name_exists": "해당 디바이스에 태그 이름이 이미 존재합니다"
+    },
+    "update": {
+      "success": "데이터 태그 업데이트 성공"
+    },
+    "delete": {
+      "success": "데이터 태그 삭제 성공"
+    },
+    "read": {
+      "success": "태그 데이터 읽기 성공",
+      "failed_device_offline": "디바이스가 오프라인이라 읽을 수 없습니다",
+      "failed_timeout": "읽기 시간 초과"
+    },
+    "write": {
+      "success": "태그 데이터 쓰기 성공",
+      "failed_readonly": "읽기 전용 태그이므로 쓸 수 없습니다",
+      "failed_device_offline": "디바이스가 오프라인이라 쓸 수 없습니다"
+    },
+    "quality": {
+      "good": "양호",
+      "uncertain": "불확실",
+      "bad": "불량",
+      "config_error": "구성 오류",
+      "device_offline": "디바이스 오프라인"
+    }
+  }
+}

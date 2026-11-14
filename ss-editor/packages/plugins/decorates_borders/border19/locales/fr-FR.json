@@ -1,0 +1,15 @@
+{
+  "border19": {
+    "label": "Bordure-19 (Style typographique suisse)",
+    "description": "Composant décoratif Bordure-19 (Style typographique suisse)",
+    "properties": {
+      "color1": "Noir profond",
+      "color2": "Rouge vif",
+      "color3": "Blanc",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "showBlocks": "Blocs géométriques",
+      "showAccents": "Points décoratifs",
+      "animationSpeed": "Vitesse d'animation"
+    }
+  }
+}

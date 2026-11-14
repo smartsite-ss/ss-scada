@@ -3,17 +3,72 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 import { createI18n } from 'vue-i18n';
+import deDE from './de-DE.json';
 import enUS from './en-US.json';
+import esMX from './es-MX.json';
+import frFR from './fr-FR.json';
+import idID from './id-ID.json';
+import jaJP from './ja-JP.json';
+import koKR from './ko-KR.json';
+import msMY from './ms-MY.json';
+import ptBR from './pt-BR.json';
+import ruRU from './ru-RU.json';
+import thTH from './th-TH.json';
+import trTR from './tr-TR.json';
+import viVN from './vi-VN.json';
 import zhCN from './zh-CN.json';
+import zhTW from './zh-TW.json';
 
 // ── Single language registry: adding a language only requires registering here + a corresponding json file ──
 // key is the primary language code; aliases are legacy/short aliases for compatibility
 export const SUPPORTED_LOCALES = {
   'zh-CN': { aliases: ['zh'], messages: zhCN },
   'en-US': { aliases: ['en'], messages: enUS },
+  'zh-TW': { aliases: ['zh-TW'], messages: zhTW },
+  'ja-JP': { aliases: ['ja'], messages: jaJP },
+  'ko-KR': { aliases: ['ko'], messages: koKR },
+  'th-TH': { aliases: ['th'], messages: thTH },
+  'de-DE': { aliases: ['de'], messages: deDE },
+  'fr-FR': { aliases: ['fr'], messages: frFR },
+  'ru-RU': { aliases: ['ru'], messages: ruRU },
+  'pt-BR': { aliases: ['pt'], messages: ptBR },
+  'id-ID': { aliases: ['id'], messages: idID },
+  'vi-VN': { aliases: ['vi'], messages: viVN },
+  'es-MX': { aliases: ['es'], messages: esMX },
+  'tr-TR': { aliases: ['tr'], messages: trTR },
+  'ms-MY': { aliases: ['ms'], messages: msMY },
 } as const;
 
 export type SupportedLocale = keyof typeof SUPPORTED_LOCALES;
+
+/** UI metadata for the language switcher (native name + flag), ordered for display. */
+export interface LocaleOption {
+  code: SupportedLocale;
+  label: string;
+  flag: string;
+}
+
+export const LOCALE_OPTIONS: readonly LocaleOption[] = [
+  { code: 'zh-CN', label: '简体中文', flag: '🇨🇳' },
+  { code: 'en-US', label: 'English', flag: '🇺🇸' },
+  { code: 'zh-TW', label: '繁體中文', flag: '🇹🇼' },
+  { code: 'ja-JP', label: '日本語', flag: '🇯🇵' },
+  { code: 'ko-KR', label: '한국어', flag: '🇰🇷' },
+  { code: 'th-TH', label: 'ไทย', flag: '🇹🇭' },
+  { code: 'de-DE', label: 'Deutsch', flag: '🇩🇪' },
+  { code: 'fr-FR', label: 'Français', flag: '🇫🇷' },
+  { code: 'ru-RU', label: 'Русский', flag: '🇷🇺' },
+  { code: 'pt-BR', label: 'Português (Brasil)', flag: '🇧🇷' },
+  { code: 'id-ID', label: 'Bahasa Indonesia', flag: '🇮🇩' },
+  { code: 'vi-VN', label: 'Tiếng Việt', flag: '🇻🇳' },
+  { code: 'es-MX', label: 'Español (México)', flag: '🇲🇽' },
+  { code: 'tr-TR', label: 'Türkçe', flag: '🇹🇷' },
+  { code: 'ms-MY', label: 'Bahasa Melayu', flag: '🇲🇾' },
+];
+
+export const SUPPORTED_LOCALE_CODES: readonly SupportedLocale[] = LOCALE_OPTIONS.map(
+  (option) => option.code,
+);
 
 function buildMessages(): Record<string, any> {
   const messages: Record<string, any> = {};

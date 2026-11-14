@@ -1,0 +1,11 @@
+{
+  "arccoil": {
+    "label": "Kumparan penekan busur",
+    "properties": {
+      "color": "Warna garis",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garis"
+    },
+    "description": "Kumparan penekan busur - perangkat kompensasi pentanahan titik netral"
+  }
+}

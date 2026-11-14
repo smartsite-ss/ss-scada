@@ -1,0 +1,24 @@
+{
+  "faultlamp": {
+    "label": "Lampu alarm gangguan",
+    "properties": {
+      "alarmColor": "Warna alarm",
+      "backgroundColor": "Warna latar",
+      "dataset": "Nilai data (0=normal, >0=alarm)",
+      "flashing": "Efek kedip",
+      "flashSpeed": "Kecepatan kedip (detik)",
+      "showBuzzer": "Tampilkan buzzer",
+      "alarmValue": "Nilai pemetaan alarm",
+      "normalValue": "Nilai pemetaan normal",
+      "defaultStatus": "Status default"
+    },
+    "options": {
+      "alarmColor": {
+        "red": "Merah",
+        "amber": "Kuning amber",
+        "off": "Tutup"
+      }
+    },
+    "description": "Lampu alarm gangguan - ikon peringatan belah ketupat/segitiga, mendukung kedip dan buzzer"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "runlamp": {
+    "label": "운전 표시등",
+    "properties": {
+      "lampColor": "램프 색상",
+      "backgroundColor": "배경색",
+      "radius": "반지름",
+      "state": "운전 상태",
+      "runningValue": "운전 대응 값",
+      "stoppedValue": "정지 대응 값",
+      "faultValue": "고장 대응 값",
+      "defaultStatus": "기본 상태"
+    },
+    "options": {
+      "state": {
+        "running": "운전",
+        "stopped": "정지",
+        "fault": "고장"
+      }
+    },
+    "description": "운전 상태 표시등 - 운전/정지/고장 3상태 지원"
+  }
+}

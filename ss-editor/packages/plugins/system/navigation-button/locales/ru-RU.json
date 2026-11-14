@@ -1,0 +1,42 @@
+{
+  "navigationButton": {
+    "label": "Кнопка навигации",
+    "description": "Кнопка навигации с переходом на страницу",
+    "properties": {
+      "text": "Текст кнопки",
+      "type": "Тип кнопки",
+      "size": "Размер",
+      "disabled": "Отключено",
+      "rounded": "Скругление",
+      "transparent": "Прозрачная",
+      "targetType": "Действие по щелчку",
+      "targetPage": "Целевая страница",
+      "targetUrl": "Целевой URL"
+    },
+    "options": {
+      "type": {
+        "primary": "Основной",
+        "success": "Успех",
+        "warning": "Предупреждение",
+        "danger": "Опасность",
+        "default": "По умолчанию"
+      },
+      "size": {
+        "large": "Большой",
+        "default": "Средний",
+        "small": "Малый"
+      },
+      "targetType": {
+        "none": "Нет",
+        "page": "Открыть страницу",
+        "url": "Открыть URL"
+      }
+    },
+    "groups": {
+      "basic": "Основное",
+      "status": "Состояние",
+      "style": "Стиль",
+      "action": "Взаимодействие"
+    }
+  }
+}

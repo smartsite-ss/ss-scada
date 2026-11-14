@@ -1,0 +1,16 @@
+{
+  "flowmeter": {
+    "label": "Durchflussmesser",
+    "properties": {
+      "color": "Farbe",
+      "backgroundColor": "Hintergrundfarbe",
+      "lineWidth": "Linienbreite",
+      "dataset": "Datenwert (0–100)",
+      "showDigital": "Digitale Anzeige anzeigen",
+      "rangeMax": "Messbereichsendwert",
+      "decimalPlaces": "Dezimalstellen",
+      "unit": "Einheit"
+    },
+    "description": "Durchflussmesser – rundes Zeigerinstrument, Zeigerwinkel datengesteuert"
+  }
+}

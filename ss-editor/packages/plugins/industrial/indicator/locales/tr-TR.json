@@ -1,0 +1,42 @@
+{
+  "indicator": {
+    "label": "Gösterge lambası",
+    "description": "Durum gösterimi ve alarm için gösterge lambası bileşeni",
+    "panelTitle": "Gösterge lambası yapılandırması",
+    "properties": {
+      "width": "Genişlik",
+      "height": "Yükseklik",
+      "status": "Durum",
+      "onColor": "Yanma rengi",
+      "offColor": "Sönme rengi",
+      "warningColor": "Uyarı rengi",
+      "faultColor": "Arıza rengi",
+      "blinkOnAlarm": "Alarmda yanıp sönme",
+      "blinkInterval": "Yanıp sönme aralığı (ms)",
+      "showLabel": "Etiketi göster",
+      "labelText": "Etiket metni",
+      "labelColor": "Etiket rengi",
+      "onValue": "Yanma durum değeri",
+      "offValue": "Sönme durum değeri",
+      "warningValue": "Uyarı durum değeri",
+      "faultValue": "Arıza durum değeri",
+      "defaultStatus": "Varsayılan durum"
+    },
+    "options": {
+      "status": {
+        "on": "Yanıyor",
+        "off": "Sönük",
+        "warning": "Uyarı",
+        "fault": "Arıza"
+      }
+    },
+    "groups": {
+      "basic": "Temel",
+      "status": "Durum",
+      "color": "Renk",
+      "animation": "Animasyon",
+      "label": "Etiket",
+      "binding": "Bağlama eşlemesi"
+    }
+  }
+}

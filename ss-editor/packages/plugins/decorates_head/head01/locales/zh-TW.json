@@ -1,0 +1,13 @@
+{
+  "head01": {
+    "label": "頭部裝飾-01",
+    "properties": {
+      "color1": "顏色一",
+      "color2": "顏色二",
+      "dur": "動畫週期(秒)",
+      "lineHeight": "線條高度",
+      "endWidth": "滑塊寬度"
+    },
+    "description": "動畫矩形條加滑動顏色塊裝飾"
+  }
+}

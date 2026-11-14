@@ -1,0 +1,46 @@
+{
+  "shape": {
+    "label": "図形",
+    "panelTitle": "図形のプロパティ",
+    "properties": {
+      "shapeType": "図形の種類",
+      "fillColor": "塗りの色",
+      "fillOpacity": "塗りの不透明度",
+      "borderColor": "枠線色",
+      "borderWidth": "枠線幅",
+      "borderStyle": "枠線スタイル",
+      "borderRadius": "角の丸み",
+      "shadowColor": "影の色",
+      "shadowOffsetX": "影のオフセットX",
+      "shadowOffsetY": "影のオフセットY",
+      "shadowBlur": "影のぼかし"
+    },
+    "options": {
+      "shapeType": {
+        "rectangle": "矩形",
+        "roundedRectangle": "角丸矩形",
+        "circle": "円",
+        "ellipse": "楕円",
+        "triangle": "三角形",
+        "diamond": "ひし形",
+        "polygon": "多角形",
+        "arrowUp": "上矢印",
+        "arrowDown": "下矢印",
+        "arrowLeft": "左矢印",
+        "arrowRight": "右矢印",
+        "line": "直線"
+      },
+      "borderStyle": {
+        "solid": "実線",
+        "dashed": "破線",
+        "dotted": "点線"
+      }
+    },
+    "groups": {
+      "basic": "基本プロパティ",
+      "style": "スタイル",
+      "shadow": "影"
+    },
+    "description": "基本図形の図形要素"
+  }
+}

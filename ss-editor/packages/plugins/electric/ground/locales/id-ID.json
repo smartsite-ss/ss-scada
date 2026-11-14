@@ -1,0 +1,11 @@
+{
+  "ground": {
+    "label": "Simbol pentanahan",
+    "properties": {
+      "color": "Warna garis",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garis"
+    },
+    "description": "Simbol pentanahan listrik standar"
+  }
+}

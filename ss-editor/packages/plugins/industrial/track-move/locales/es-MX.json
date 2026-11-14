@@ -1,0 +1,62 @@
+{
+  "track-move": {
+    "label": "Trayectoria animada",
+    "description": "Punto animado que se desplaza por una trayectoria personalizada, con rutas curvas y sustitución por imagen",
+    "panelTitle": "Configuración de trayectoria animada",
+    "properties": {
+      "speed": "Velocidad (px/s)",
+      "dotStyle": "Estilo del punto",
+      "dotColor": "Color del punto",
+      "dotSize": "Tamaño del punto",
+      "dotImage": "URL de la imagen",
+      "imageWidth": "Ancho de la imagen",
+      "imageHeight": "Alto de la imagen",
+      "trackColor": "Color de la pista",
+      "trackWidth": "Ancho de la pista",
+      "trackStyle": "Estilo de la pista",
+      "status": "Estado de la animación",
+      "direction": "Dirección de movimiento",
+      "loopMode": "Modo de repetición"
+    },
+    "options": {
+      "dotStyle": {
+        "circle": "Círculo",
+        "image": "Imagen"
+      },
+      "trackStyle": {
+        "solid": "Sólida",
+        "dashed": "Discontinua"
+      },
+      "direction": {
+        "forward": "Adelante",
+        "backward": "Atrás"
+      },
+      "loopMode": {
+        "loop": "Bucle",
+        "once": "Una vez",
+        "bounce": "Rebote de ida y vuelta"
+      }
+    },
+    "groups": {
+      "dot": "Punto animado",
+      "track": "Pista",
+      "motion": "Movimiento"
+    },
+    "hints": {
+      "dotImage": "Ingrese la dirección URL de la imagen"
+    },
+    "editor": {
+      "pathPoints": "Puntos de ruta",
+      "index": "#",
+      "coordX": "X",
+      "coordY": "Y",
+      "type": "Tipo",
+      "action": "Acción",
+      "startPoint": "Punto inicial",
+      "endPoint": "Punto final",
+      "bendPoint": "Punto de inflexión",
+      "addBendPoint": "+ Agregar punto de inflexión",
+      "reversePath": "Invertir ruta"
+    }
+  }
+}

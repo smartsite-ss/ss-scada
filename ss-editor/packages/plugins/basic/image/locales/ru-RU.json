@@ -1,0 +1,56 @@
+{
+  "image": {
+    "label": "Изображение",
+    "panelTitle": "Свойства изображения",
+    "properties": {
+      "src": "Адрес изображения",
+      "alt": "Альтернативный текст",
+      "opacity": "Непрозрачность",
+      "imageScale": "Масштаб",
+      "imageRotation": "Угол поворота",
+      "imageFilter": "Эффект фильтра",
+      "imageFit": "Режим вписывания",
+      "borderColor": "Цвет рамки",
+      "borderWidth": "Ширина рамки",
+      "borderStyle": "Стиль рамки",
+      "borderRadius": "Скругление",
+      "shadowColor": "Цвет тени",
+      "shadowOffsetX": "Смещение тени X",
+      "shadowOffsetY": "Смещение тени Y",
+      "shadowBlur": "Размытие тени",
+      "imageUpload": "Загрузить изображение"
+    },
+    "options": {
+      "imageFilter": {
+        "none": "Нет",
+        "grayscale": "Оттенки серого",
+        "sepia": "Сепия",
+        "invert": "Инверсия",
+        "brightness": "Яркость",
+        "contrast": "Контрастность",
+        "saturate": "Насыщенность"
+      },
+      "imageFit": {
+        "contain": "Вписать",
+        "cover": "Заполнить",
+        "fill": "Растянуть",
+        "none": "Исходный",
+        "scale-down": "Уменьшить"
+      },
+      "borderStyle": {
+        "solid": "Сплошная",
+        "dashed": "Штриховая",
+        "dotted": "Пунктирная"
+      }
+    },
+    "groups": {
+      "basic": "Основные свойства",
+      "style": "Стиль",
+      "shadow": "Тень"
+    },
+    "hints": {
+      "clickToUpload": "Нажмите, чтобы выбрать изображение"
+    },
+    "description": "Графический элемент «Изображение»"
+  }
+}

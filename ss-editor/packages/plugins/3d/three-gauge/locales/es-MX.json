@@ -1,0 +1,28 @@
+{
+  "three-gauge": {
+    "label": "Indicador 3D",
+    "panelTitle": "Configuración del indicador 3D",
+    "properties": {
+      "value": "Valor actual",
+      "min": "Valor mínimo",
+      "max": "Valor máximo",
+      "gaugeColor": "Color normal",
+      "warningColor": "Color de advertencia",
+      "dangerColor": "Color de peligro",
+      "warningThreshold": "Umbral de advertencia",
+      "dangerThreshold": "Umbral de peligro",
+      "showTicks": "Mostrar marcas",
+      "showLabels": "Mostrar etiqueta",
+      "needleColor": "Color de la aguja",
+      "backgroundColor": "Color de fondo",
+      "rimColor": "Color del borde"
+    },
+    "groups": {
+      "数据": "Datos",
+      "颜色": "Color",
+      "阈值": "Umbral",
+      "显示": "Visualización"
+    },
+    "description": "Elemento gráfico de indicador 3D con aguja accionada por datos"
+  }
+}

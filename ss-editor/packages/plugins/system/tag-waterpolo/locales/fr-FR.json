@@ -1,0 +1,40 @@
+{
+  "tagWaterpolo": {
+    "label": "Diagramme de jauge à eau",
+    "description": "Lie une seule variable de tag et affiche le pourcentage de niveau en temps réel sous forme de jauge à eau",
+    "config": {
+      "bindVariable": "Lier une variable",
+      "addVariable": "Choisir une variable",
+      "removeVariable": "Supprimer",
+      "unbound": "Aucune variable liée"
+    },
+    "properties": {
+      "title": "Titre",
+      "titleColor": "Couleur du titre",
+      "titleFontSize": "Taille de police du titre",
+      "unit": "Unité",
+      "minValue": "Valeur minimale",
+      "maxValue": "Valeur maximale",
+      "showValue": "Afficher la valeur",
+      "valueColor": "Couleur de la valeur",
+      "waterColor": "Couleur de l'eau",
+      "trackColor": "Couleur de la piste",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "borderColor": "Couleur de bordure",
+      "borderWidth": "Largeur de bordure",
+      "borderStyle": "Style de bordure",
+      "borderRadius": "Rayon d'arrondi",
+      "shadowColor": "Couleur d'ombre",
+      "shadowOffsetX": "Décalage d'ombre X",
+      "shadowOffsetY": "Décalage d'ombre Y",
+      "shadowBlur": "Flou d'ombre"
+    },
+    "options": {
+      "borderStyle": {
+        "solid": "Trait plein",
+        "dashed": "Tirets",
+        "dotted": "Pointillés"
+      }
+    }
+  }
+}

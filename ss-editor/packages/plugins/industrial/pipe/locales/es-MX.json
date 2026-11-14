@@ -1,0 +1,39 @@
+{
+  "pipe": {
+    "label": "Tubería vertical",
+    "description": "Componente de tubería vertical con animación de flujo y control de dirección",
+    "panelTitle": "Configuración de la tubería",
+    "properties": {
+      "width": "Ancho",
+      "height": "Alto",
+      "status": "Estado",
+      "direction": "Sentido del flujo",
+      "pipeColor": "Color de la tubería",
+      "flowingColor": "Color de flujo",
+      "stoppedColor": "Color detenido",
+      "blockedColor": "Color de obstrucción",
+      "pipeThickness": "Grosor de la tubería",
+      "showFlange": "Mostrar brida",
+      "flowSpeed": "Velocidad de flujo",
+      "showFlowAnimation": "Mostrar animación de flujo"
+    },
+    "options": {
+      "status": {
+        "flowing": "En flujo",
+        "stopped": "Detenido",
+        "blocked": "Obstruido"
+      },
+      "direction": {
+        "up": "Hacia arriba",
+        "down": "Hacia abajo"
+      }
+    },
+    "groups": {
+      "basic": "Básico",
+      "status": "Estado",
+      "color": "Color",
+      "style": "Estilo",
+      "animation": "Animación"
+    }
+  }
+}

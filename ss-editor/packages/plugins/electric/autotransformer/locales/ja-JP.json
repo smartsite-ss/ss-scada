@@ -1,0 +1,11 @@
+{
+  "autotransformer": {
+    "label": "単巻変圧器",
+    "properties": {
+      "color": "線の色",
+      "backgroundColor": "背景色",
+      "lineWidth": "線幅"
+    },
+    "description": "単巻変圧器 - タップ付き単一コイル"
+  }
+}

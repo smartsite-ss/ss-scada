@@ -1,0 +1,12 @@
+{
+  "busbar": {
+    "label": "母線段",
+    "properties": {
+      "color": "線條顏色",
+      "backgroundColor": "背景色",
+      "lineWidth": "線寬",
+      "labelText": "標籤文字"
+    },
+    "description": "母線段 - 電能彙集分配母線"
+  }
+}

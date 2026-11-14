@@ -1,0 +1,36 @@
+{
+  "statusIndicator": {
+    "label": "Voyant d'état",
+    "description": "Composant voyant d'état pour l'affichage multi-états et l'alarme",
+    "properties": {
+      "status": "État",
+      "normalColor": "Couleur normale",
+      "warningColor": "Couleur d'avertissement",
+      "errorColor": "Couleur de défaut",
+      "offlineColor": "Couleur hors ligne",
+      "size": "Taille du voyant",
+      "showGlow": "Afficher le halo",
+      "pulseSpeed": "Vitesse d'impulsion (s)",
+      "normalValue": "Valeur normale",
+      "warningValue": "Valeur d'avertissement",
+      "errorValue": "Valeur de défaut",
+      "offlineValue": "Valeur hors ligne",
+      "defaultStatus": "État par défaut"
+    },
+    "options": {
+      "status": {
+        "normal": "Normal",
+        "warning": "Avertissement",
+        "error": "Défaut",
+        "offline": "Hors ligne"
+      }
+    },
+    "groups": {
+      "basic": "Base",
+      "color": "Couleur",
+      "style": "Style",
+      "animation": "Animation",
+      "binding": "Mappage de liaison"
+    }
+  }
+}

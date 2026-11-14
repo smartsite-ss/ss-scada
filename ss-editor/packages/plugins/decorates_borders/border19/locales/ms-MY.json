@@ -1,0 +1,15 @@
+{
+  "border19": {
+    "label": "Sempadan-19 (Gaya Tipografi Swiss)",
+    "description": "Komponen hiasan sempadan-19 (Gaya Tipografi Swiss)",
+    "properties": {
+      "color1": "Hitam pekat",
+      "color2": "Merah terang",
+      "color3": "Putih",
+      "backgroundColor": "Warna latar",
+      "showBlocks": "Blok geometri",
+      "showAccents": "Titik hiasan",
+      "animationSpeed": "Kelajuan animasi"
+    }
+  }
+}

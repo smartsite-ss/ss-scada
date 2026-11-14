@@ -1,0 +1,15 @@
+{
+  "levelgauge": {
+    "label": "액위계",
+    "properties": {
+      "color": "색상",
+      "backgroundColor": "배경색",
+      "lineWidth": "선 너비",
+      "dataset": "데이터 값(0-100)",
+      "showNumeric": "값 표시",
+      "decimalPlaces": "소수 자릿수",
+      "unit": "단위"
+    },
+    "description": "액위계 - 수직 유리관 눈금 액주 값 표시"
+  }
+}

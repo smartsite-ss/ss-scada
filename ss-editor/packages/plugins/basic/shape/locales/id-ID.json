@@ -1,0 +1,46 @@
+{
+  "shape": {
+    "label": "Bentuk",
+    "panelTitle": "Properti bentuk",
+    "properties": {
+      "shapeType": "Jenis bentuk",
+      "fillColor": "Warna isi",
+      "fillOpacity": "Opasitas isi",
+      "borderColor": "Warna batas",
+      "borderWidth": "Lebar batas",
+      "borderStyle": "Gaya batas",
+      "borderRadius": "Sudut membulat",
+      "shadowColor": "Warna bayangan",
+      "shadowOffsetX": "Offset bayangan X",
+      "shadowOffsetY": "Offset bayangan Y",
+      "shadowBlur": "Blur bayangan"
+    },
+    "options": {
+      "shapeType": {
+        "rectangle": "Persegi panjang",
+        "roundedRectangle": "Persegi panjang membulat",
+        "circle": "Lingkaran",
+        "ellipse": "Elips",
+        "triangle": "Segitiga",
+        "diamond": "Belah ketupat",
+        "polygon": "Poligon",
+        "arrowUp": "Panah atas",
+        "arrowDown": "Panah bawah",
+        "arrowLeft": "Panah kiri",
+        "arrowRight": "Panah kanan",
+        "line": "Garis lurus"
+      },
+      "borderStyle": {
+        "solid": "Garis solid",
+        "dashed": "Garis putus-putus",
+        "dotted": "Garis titik"
+      }
+    },
+    "groups": {
+      "basic": "Properti dasar",
+      "style": "Gaya",
+      "shadow": "Bayangan"
+    },
+    "description": "Elemen grafis bentuk"
+  }
+}

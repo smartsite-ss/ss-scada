@@ -1,0 +1,24 @@
+{
+  "faultlamp": {
+    "label": "Luz de alarme de falha",
+    "properties": {
+      "alarmColor": "Cor de alarme",
+      "backgroundColor": "Cor de fundo",
+      "dataset": "Valor de dados (0=normal, >0=alarme)",
+      "flashing": "Efeito de piscar",
+      "flashSpeed": "Velocidade de piscar (s)",
+      "showBuzzer": "Mostrar buzina",
+      "alarmValue": "Valor correspondente a alarme",
+      "normalValue": "Valor correspondente a normal",
+      "defaultStatus": "Estado padrão"
+    },
+    "options": {
+      "alarmColor": {
+        "red": "Vermelho",
+        "amber": "Âmbar",
+        "off": "Fechado"
+      }
+    },
+    "description": "Luz de alarme de falha - ícone de aviso losango/triângulo com piscar e buzina"
+  }
+}

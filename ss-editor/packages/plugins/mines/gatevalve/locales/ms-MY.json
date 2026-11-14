@@ -1,0 +1,21 @@
+{
+  "gatevalve": {
+    "label": "Injap pintu elektrik",
+    "properties": {
+      "colors": "Warna 1",
+      "colors2": "Warna 2",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garisan",
+      "closed": "Status tertutup",
+      "state": "Status injap"
+    },
+    "options": {
+      "state": {
+        "open": "Buka",
+        "closed": "Tutup",
+        "fault": "Kerosakan"
+      }
+    },
+    "description": "Injap pintu elektrik - penggerak elektrik badan injap rama-rama dengan status buka/tutup/kerosakan"
+  }
+}

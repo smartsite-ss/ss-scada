@@ -1,0 +1,31 @@
+{
+  "checkbox": {
+    "label": "กล่องเลือก",
+    "description": "องค์ประกอบกล่องเลือก สำหรับการเลือกหลายรายการ",
+    "panelTitle": "การกำหนดค่ากล่องเลือก",
+    "properties": {
+      "checked": "สถานะเลือก",
+      "label": "ข้อความป้ายกำกับ",
+      "disabled": "ปิดใช้งาน",
+      "indeterminate": "สถานะเลือกบางส่วน",
+      "color": "สีเมื่อเลือก",
+      "labelPosition": "ตำแหน่งป้ายกำกับ",
+      "size": "ขนาด"
+    },
+    "options": {
+      "labelPosition": {
+        "right": "ขวา",
+        "left": "ซ้าย"
+      },
+      "size": {
+        "small": "เล็ก",
+        "medium": "กลาง",
+        "large": "ใหญ่"
+      }
+    },
+    "groups": {
+      "basic": "คุณสมบัติพื้นฐาน",
+      "style": "รูปแบบ"
+    }
+  }
+}

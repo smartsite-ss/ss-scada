@@ -1,0 +1,15 @@
+{
+  "border15": {
+    "label": "Borde 15 (art déco)",
+    "description": "Componente decorativo de borde 15 (art déco)",
+    "properties": {
+      "color1": "Dorado principal",
+      "color2": "Dorado oscuro",
+      "color3": "Color oscuro",
+      "backgroundColor": "Color de fondo",
+      "showSunburst": "Rayos radiantes",
+      "showCorners": "Esquinas decorativas",
+      "animationSpeed": "Velocidad de animación"
+    }
+  }
+}

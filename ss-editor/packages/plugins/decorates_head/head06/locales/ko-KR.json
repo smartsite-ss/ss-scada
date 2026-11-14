@@ -1,0 +1,13 @@
+{
+  "head06": {
+    "label": "헤더 장식-06",
+    "properties": {
+      "color1": "채우기 색상",
+      "color2": "테두리 색상",
+      "dataset": "텍스트",
+      "textColor": "텍스트 색상",
+      "textSize": "텍스트 크기"
+    },
+    "description": "다각형 외곽선 장식"
+  }
+}

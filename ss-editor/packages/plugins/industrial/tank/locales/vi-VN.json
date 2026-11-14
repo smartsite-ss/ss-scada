@@ -1,0 +1,42 @@
+{
+  "tank": {
+    "label": "Bồn chứa",
+    "description": "Thành phần bồn chứa, dùng để hiển thị mức chất lỏng và cảnh báo",
+    "panelTitle": "Cấu hình bồn chứa",
+    "properties": {
+      "width": "Chiều rộng",
+      "height": "Chiều cao",
+      "level": "Mức chất lỏng hiện tại",
+      "maxLevel": "Mức chất lỏng tối đa",
+      "unit": "Đơn vị",
+      "decimalPlaces": "Số chữ thập phân",
+      "status": "Trạng thái",
+      "warningLevel": "Mức chất lỏng cảnh báo",
+      "dangerLevel": "Mức chất lỏng nguy hiểm",
+      "bodyColor": "Màu thân bồn",
+      "liquidColor": "Màu chất lỏng",
+      "warningLiquidColor": "Màu chất lỏng cảnh báo",
+      "dangerLiquidColor": "Màu chất lỏng nguy hiểm",
+      "rimColor": "Màu đường viền",
+      "showLevelText": "Hiển thị văn bản mức chất lỏng",
+      "showTicks": "Hiển thị vạch chia",
+      "showAnimation": "Hoạt ảnh gợn sóng",
+      "tickCount": "Số vạch chia"
+    },
+    "options": {
+      "status": {
+        "normal": "Bình thường",
+        "warning": "Cảnh báo",
+        "danger": "Nguy hiểm"
+      }
+    },
+    "groups": {
+      "basic": "Cơ bản",
+      "level": "Mức chất lỏng",
+      "status": "Trạng thái",
+      "threshold": "Ngưỡng",
+      "color": "Màu",
+      "display": "Hiển thị"
+    }
+  }
+}

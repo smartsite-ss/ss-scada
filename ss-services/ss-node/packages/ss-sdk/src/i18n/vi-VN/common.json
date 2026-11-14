@@ -1,0 +1,19 @@
+{
+  "common": {
+    "success": "Thao tác thành công",
+    "failed": "Thao tác thất bại",
+    "created": "{{resource}} được tạo thành công",
+    "updated": "{{resource}} được cập nhật thành công",
+    "deleted": "{{resource}} được xóa thành công",
+    "not_found": "{{resource}} không tồn tại",
+    "unauthorized": "Truy cập chưa được ủy quyền",
+    "forbidden": "Không đủ quyền",
+    "bad_request": "Tham số yêu cầu không hợp lệ",
+    "internal_error": "Lỗi máy chủ nội bộ",
+    "pagination": {
+      "page": "Số trang phải lớn hơn 0",
+      "limit": "Số lượng mỗi trang phải trong khoảng 1-100",
+      "invalid_sort_field": "Trường sắp xếp không hợp lệ: {{field}}"
+    }
+  }
+}

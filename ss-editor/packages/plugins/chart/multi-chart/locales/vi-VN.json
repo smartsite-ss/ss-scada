@@ -1,0 +1,47 @@
+{
+  "multiChart": {
+    "label": "Đa biểu đồ",
+    "description": "Thành phần đa biểu đồ, hỗ trợ biểu đồ cột, biểu đồ tròn, bản đồ nhiệt",
+    "panelTitle": "Cấu hình đa biểu đồ",
+    "properties": {
+      "title": "Tiêu đề",
+      "titleColor": "Màu tiêu đề",
+      "titleFontSize": "Cỡ chữ tiêu đề",
+      "chartType": "Loại biểu đồ",
+      "backgroundColor": "Màu nền",
+      "borderColor": "Màu viền",
+      "borderWidth": "Độ rộng viền",
+      "borderRadius": "Bo góc",
+      "barColor": "Màu biểu đồ cột",
+      "barGap": "Khoảng cách cột",
+      "pieColors": "Dải màu biểu đồ tròn",
+      "pieInnerRadius": "Tỷ lệ bán kính trong",
+      "pieShowLabels": "Hiển thị nhãn",
+      "heatmapColorLow": "Màu giá trị thấp bản đồ nhiệt",
+      "heatmapColorHigh": "Màu giá trị cao bản đồ nhiệt",
+      "heatmapRows": "Số hàng",
+      "heatmapCols": "Số cột",
+      "showLegend": "Hiển thị chú giải",
+      "shadowColor": "Màu bóng đổ",
+      "shadowOffsetX": "Dịch chuyển bóng X",
+      "shadowOffsetY": "Dịch chuyển bóng Y",
+      "shadowBlur": "Độ mờ bóng"
+    },
+    "options": {
+      "chartType": {
+        "bar": "Biểu đồ cột",
+        "pie": "Biểu đồ tròn",
+        "heatmap": "Bản đồ nhiệt"
+      }
+    },
+    "groups": {
+      "basic": "Cơ bản",
+      "style": "Kiểu dáng",
+      "bar": "Biểu đồ cột",
+      "pie": "Biểu đồ tròn",
+      "heatmap": "Bản đồ nhiệt",
+      "display": "Hiển thị",
+      "shadow": "Bóng đổ"
+    }
+  }
+}

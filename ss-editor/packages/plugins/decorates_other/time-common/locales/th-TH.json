@@ -1,0 +1,19 @@
+{
+  "time-common": {
+    "label": "เวลาทั่วไป",
+    "properties": {
+      "textColor": "สีตัวอักษร",
+      "fontSize": "ขนาดตัวอักษร",
+      "fontWeight": "น้ำหนักตัวอักษร",
+      "shadow": "เงา"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "ปกติ",
+        "bold": "ตัวหนา",
+        "lighter": "ตัวบาง"
+      }
+    },
+    "description": "การแสดงเวลาทั่วไป"
+  }
+}

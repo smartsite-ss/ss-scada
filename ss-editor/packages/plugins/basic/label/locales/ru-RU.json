@@ -1,0 +1,69 @@
+{
+  "label": {
+    "label": "Надпись",
+    "panelTitle": "Свойства надписи",
+    "properties": {
+      "text": "Текст",
+      "textColor": "Цвет текста",
+      "fontSize": "Размер шрифта",
+      "fontWeight": "Насыщенность шрифта",
+      "fontStyle": "Стиль шрифта",
+      "textDecoration": "Оформление текста",
+      "textAlign": "Выравнивание текста",
+      "verticalAlignment": "Вертикальное выравнивание",
+      "lineHeight": "Высота строки",
+      "letterSpacing": "Межбуквенный интервал",
+      "wordWrap": "Перенос слов",
+      "maxLines": "Максимум строк",
+      "backgroundColor": "Цвет фона",
+      "borderColor": "Цвет рамки",
+      "borderWidth": "Ширина рамки",
+      "borderRadius": "Скругление",
+      "textShadowColor": "Цвет тени текста",
+      "textShadowOffsetX": "Смещение тени X",
+      "textShadowOffsetY": "Смещение тени Y",
+      "textShadowBlur": "Размытие тени",
+      "decimalPlaces": "Знаков после запятой",
+      "unit": "Единица измерения",
+      "unitFontSize": "Размер шрифта единицы",
+      "unitFontColor": "Цвет шрифта единицы",
+      "unitGap": "Отступ единицы"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "Обычный",
+        "bold": "Жирный"
+      },
+      "fontStyle": {
+        "normal": "Обычный",
+        "italic": "Курсив"
+      },
+      "textDecoration": {
+        "none": "Нет",
+        "underline": "Подчёркивание",
+        "line-through": "Зачёркивание"
+      },
+      "textAlign": {
+        "left": "По левому краю",
+        "center": "По центру",
+        "right": "По правому краю"
+      },
+      "verticalAlignment": {
+        "top": "Сверху",
+        "middle": "По центру",
+        "bottom": "Снизу"
+      }
+    },
+    "groups": {
+      "basic": "Основные свойства",
+      "style": "Стиль",
+      "text": "Текст",
+      "unit": "Единица измерения",
+      "shadow": "Тень"
+    },
+    "hints": {
+      "maxLinesHint": "0 — без ограничений"
+    },
+    "description": "Графический элемент «Надпись»"
+  }
+}

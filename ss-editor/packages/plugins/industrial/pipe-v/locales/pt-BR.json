@@ -1,0 +1,39 @@
+{
+  "pipe-v": {
+    "label": "Tubulação - vertical",
+    "description": "Componente de tubulação vertical com animação de fluxo e controle de direção",
+    "panelTitle": "Configuração da tubulação",
+    "properties": {
+      "width": "Largura",
+      "height": "Altura",
+      "status": "Estado",
+      "direction": "Direção do fluxo",
+      "pipeColor": "Cor da tubulação",
+      "flowingColor": "Cor do fluxo",
+      "stoppedColor": "Cor de parado",
+      "blockedColor": "Cor de obstruído",
+      "pipeThickness": "Espessura da tubulação",
+      "showFlange": "Mostrar flanges",
+      "flowSpeed": "Velocidade do fluxo",
+      "showFlowAnimation": "Mostrar animação de fluxo"
+    },
+    "options": {
+      "status": {
+        "flowing": "Em fluxo",
+        "stopped": "Parado",
+        "blocked": "Obstruído"
+      },
+      "direction": {
+        "up": "Para cima",
+        "down": "Para baixo"
+      }
+    },
+    "groups": {
+      "basic": "Básico",
+      "status": "Estado",
+      "color": "Cor",
+      "style": "Estilo",
+      "animation": "Animação"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "flowmeter": {
+    "label": "Débitmètre",
+    "properties": {
+      "color": "Couleur",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "lineWidth": "Épaisseur de ligne",
+      "dataset": "Valeur de données (0-100)",
+      "showDigital": "Afficher la lecture numérique",
+      "rangeMax": "Valeur maximale de l'échelle",
+      "decimalPlaces": "Nombre de décimales",
+      "unit": "Unité"
+    },
+    "description": "Débitmètre - cadran circulaire dont l'aiguille est pilotée par la valeur de données"
+  }
+}

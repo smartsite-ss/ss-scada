@@ -1,0 +1,21 @@
+{
+  "gatevalve": {
+    "label": "Válvula de compuerta eléctrica",
+    "properties": {
+      "colors": "Color 1",
+      "colors2": "Color 2",
+      "backgroundColor": "Color de fondo",
+      "lineWidth": "Grosor de línea",
+      "closed": "Estado cerrado",
+      "state": "Estado de la válvula"
+    },
+    "options": {
+      "state": {
+        "open": "Abierto",
+        "closed": "Cerrado",
+        "fault": "Falla"
+      }
+    },
+    "description": "Válvula de compuerta eléctrica: cuerpo de mariposa con actuador eléctrico y estados abierto, cerrado y falla"
+  }
+}

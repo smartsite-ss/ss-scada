@@ -1,0 +1,22 @@
+{
+  "daozha": {
+    "label": "Ayırıcı",
+    "properties": {
+      "color": "Çizgi rengi",
+      "backgroundColor": "Arka plan rengi",
+      "lineWidth": "Çizgi kalınlığı",
+      "terminalRadius": "Terminal yarıçapı",
+      "closed": "Kapalı durum",
+      "closedValue": "Kapalı durum değeri",
+      "openValue": "Açık durum değeri",
+      "defaultStatus": "Varsayılan durum"
+    },
+    "options": {
+      "closed": {
+        "yes": "Kapalı",
+        "no": "Açık"
+      }
+    },
+    "description": "Güç ayırıcısı - Ayırma anahtarı grafik öğesi, kapalı/açık durum geçişini destekler"
+  }
+}

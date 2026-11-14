@@ -1,0 +1,11 @@
+{
+  "fuse": {
+    "label": "Fusible",
+    "properties": {
+      "color": "Color de línea",
+      "backgroundColor": "Color de fondo",
+      "lineWidth": "Grosor de línea"
+    },
+    "description": "Fusible de potencia: elemento de protección contra sobrecorriente"
+  }
+}

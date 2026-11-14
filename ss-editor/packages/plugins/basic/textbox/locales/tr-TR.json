@@ -1,0 +1,56 @@
+{
+  "textbox": {
+    "label": "Metin kutusu",
+    "panelTitle": "Metin kutusu yapılandırması",
+    "properties": {
+      "text": "Metin içeriği",
+      "placeholder": "Yer tutucu",
+      "fontSize": "Yazı tipi boyutu",
+      "fontWeight": "Yazı tipi kalınlığı",
+      "fontStyle": "Yazı tipi stili",
+      "textColor": "Metin rengi",
+      "backgroundColor": "Arka plan rengi",
+      "borderColor": "Kenarlık rengi",
+      "borderWidth": "Kenarlık genişliği",
+      "borderStyle": "Kenarlık stili",
+      "borderRadius": "Köşe yuvarlatma",
+      "textAlign": "Metin hizalaması",
+      "verticalAlignment": "Dikey hizalama",
+      "padding": "İç boşluk",
+      "multiline": "Çok satırlı mod",
+      "readOnly": "Salt okunur"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "Normal",
+        "bold": "Kalın"
+      },
+      "fontStyle": {
+        "normal": "Normal",
+        "italic": "İtalik"
+      },
+      "borderStyle": {
+        "solid": "Düz çizgi",
+        "dashed": "Kesikli çizgi",
+        "dotted": "Noktalı çizgi",
+        "none": "Yok"
+      },
+      "textAlign": {
+        "left": "Sola hizala",
+        "center": "Ortala",
+        "right": "Sağa hizala"
+      },
+      "verticalAlignment": {
+        "top": "Üst",
+        "middle": "Orta",
+        "bottom": "Alt"
+      }
+    },
+    "groups": {
+      "basic": "Temel özellikler",
+      "style": "Stil",
+      "text": "Yazı"
+    },
+    "description": "Metin kutusu grafik öğesi"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "ground": {
+    "label": "접지 기호",
+    "properties": {
+      "color": "선 색상",
+      "backgroundColor": "배경색",
+      "lineWidth": "선 너비"
+    },
+    "description": "표준 전기 접지 기호"
+  }
+}

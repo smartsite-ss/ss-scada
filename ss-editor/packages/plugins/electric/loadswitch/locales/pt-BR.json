@@ -1,0 +1,21 @@
+{
+  "loadswitch": {
+    "label": "Chave de carga",
+    "properties": {
+      "color": "Cor da linha",
+      "backgroundColor": "Cor de fundo",
+      "lineWidth": "Espessura da linha",
+      "closed": "Estado fechado",
+      "closedValue": "Valor correspondente a fechado",
+      "openValue": "Valor correspondente a aberto",
+      "defaultStatus": "Estado padrão"
+    },
+    "options": {
+      "closed": {
+        "yes": "Fechado",
+        "no": "Aberto"
+      }
+    },
+    "description": "Chave de carga de potência - chave de carga com capacidade de extinção de arco"
+  }
+}

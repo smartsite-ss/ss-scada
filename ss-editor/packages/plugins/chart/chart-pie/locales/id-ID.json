@@ -1,0 +1,11 @@
+{
+  "chartPie": {
+    "label": "Diagram pai",
+    "description": "Diagram pai dengan sumber data statis/API",
+    "config": {
+      "dataSource": "Sumber data",
+      "noData": "Tidak ada data",
+      "loadError": "Gagal memuat"
+    }
+  }
+}

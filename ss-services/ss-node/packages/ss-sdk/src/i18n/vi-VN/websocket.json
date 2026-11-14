@@ -1,0 +1,45 @@
+{
+  "websocket": {
+    "connected": "Kết nối WebSocket thành công",
+    "disconnected": "Đã ngắt kết nối WebSocket",
+    "pong": "Pong - Phản hồi nhịp tim",
+    "event": {
+      "data_update": "Sự kiện cập nhật dữ liệu (Thẻ: {{tagId}})",
+      "alarm_triggered": "Sự kiện kích hoạt cảnh báo",
+      "alarm_acknowledged": "Sự kiện xác nhận cảnh báo",
+      "alarm_cleared": "Sự kiện xóa cảnh báo",
+      "device_status_change": "Sự kiện thay đổi trạng thái thiết bị"
+    },
+    "error": {
+      "authentication_failed": "Xác thực WebSocket thất bại",
+      "rate_limit_exceeded": "Tần suất tin nhắn vượt giới hạn",
+      "invalid_message_format": "Định dạng tin nhắn không hợp lệ"
+    },
+    "room": {
+      "joined": "Người dùng {{username}} đã tham gia phòng {{room}}",
+      "left": "Người dùng {{username}} đã rời phòng {{room}}",
+      "permission_denied": "Không có quyền tham gia phòng dự án {{projectId}}",
+      "not_authenticated": "Người dùng chưa xác thực không thể tham gia phòng dự án"
+    },
+    "connection": {
+      "limit_exceeded": "Số kết nối đã đạt giới hạn ({{current}}/{{max}})",
+      "user_limit_exceeded": "Số kết nối của người dùng {{username}} đã đạt giới hạn ({{current}}/{{max}})",
+      "ip_limit_exceeded": "Số kết nối của IP {{ip}} đã đạt giới hạn ({{current}}/{{max}})",
+      "idle_timeout": "Kết nối nhàn rỗi quá lâu ({{minutes}} phút không có tin nhắn nghiệp vụ)",
+      "force_disconnected": "Quản trị viên buộc ngắt kết nối",
+      "global_limit_exceeded": "Số kết nối toàn cục đã đạt giới hạn ({{current}}/{{max}})"
+    },
+    "monitor": {
+      "online_count": "Số kết nối trực tuyến",
+      "message_rate": "Tốc độ tin nhắn",
+      "connection_duration": "Thời lượng kết nối",
+      "abnormal_detected": "Phát hiện kết nối bất thường"
+    },
+    "offline": {
+      "message_cached": "Tin nhắn ngoại tuyến đã được lưu tạm",
+      "message_replayed": "Đã gửi bù tin nhắn ngoại tuyến ({{count}} tin)",
+      "message_expired": "Tin nhắn đã hết hạn và được dọn dẹp",
+      "message_confirmed": "Tin nhắn đã được xác nhận"
+    }
+  }
+}

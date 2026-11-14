@@ -1,0 +1,15 @@
+{
+  "countdown": {
+    "label": "カウントダウン",
+    "properties": {
+      "dataset": "カウントダウン（秒）",
+      "showDay": "日数を表示",
+      "color1": "背景色",
+      "color2": "文字色",
+      "flipperWidth": "数字の幅",
+      "flipperHeight": "数字の高さ",
+      "flipperGap": "間隔"
+    },
+    "description": "カウントダウン装飾プラグイン"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "generator": {
+    "label": "Generador",
+    "properties": {
+      "color": "Color de línea",
+      "backgroundColor": "Color de fondo",
+      "lineWidth": "Grosor de línea",
+      "running": "Estado de funcionamiento",
+      "runningValue": "Valor para en marcha",
+      "stoppedValue": "Valor para detenido",
+      "faultValue": "Valor para falla",
+      "defaultStatus": "Estado predeterminado"
+    },
+    "options": {
+      "running": {
+        "yes": "En marcha",
+        "no": "Detenido"
+      }
+    },
+    "description": "Generador con indicación de estado de rotación"
+  }
+}

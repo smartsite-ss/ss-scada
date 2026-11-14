@@ -1,0 +1,48 @@
+{
+  "hikvisionVideo": {
+    "label": "Video Hikvision",
+    "description": "Dinding video RTSP kamera Hikvision (1/4/9 kanal)",
+    "properties": {
+      "layout": "Tata letak video",
+      "autoPlay": "Putar otomatis",
+      "muted": "Bisukan",
+      "objectFit": "Penyesuaian gambar",
+      "showChannelName": "Tampilkan nama kanal",
+      "nameColor": "Warna nama kanal",
+      "nameFontSize": "Ukuran font nama kanal",
+      "nameBackgroundColor": "Latar nama kanal",
+      "backgroundColor": "Warna latar",
+      "gap": "Jarak antar kanal"
+    },
+    "options": {
+      "layout": {
+        "1x1": "1 kanal",
+        "2x2": "4 kanal",
+        "3x3": "9 kanal"
+      },
+      "objectFit": {
+        "contain": "Sesuaikan isi",
+        "cover": "Tutupi",
+        "fill": "Isi penuh"
+      }
+    },
+    "config": {
+      "channels": "Kanal video",
+      "channelsEmpty": "Tidak ada kanal",
+      "addChannel": "Tambah kanal",
+      "channelName": "Nama kanal",
+      "sourceUrl": "Alamat sumber RTSP",
+      "playUrl": "Alamat pemutaran",
+      "username": "Nama pengguna",
+      "password": "Kata sandi",
+      "enabled": "Aktifkan",
+      "deleteChannel": "Hapus"
+    },
+    "player": {
+      "loading": "Memuat...",
+      "loadFailed": "Gagal memuat",
+      "needFlv": "HTTP-FLV memerlukan flv.js",
+      "needWebrtc": "WebRTC memerlukan jessibuca"
+    }
+  }
+}

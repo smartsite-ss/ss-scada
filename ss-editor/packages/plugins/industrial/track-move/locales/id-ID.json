@@ -1,0 +1,62 @@
+{
+  "track-move": {
+    "label": "Jalur dinamis",
+    "description": "Titik animasi bergerak di sepanjang jalur khusus, mendukung jalur bengkok dan penggantian gambar",
+    "panelTitle": "Konfigurasi jalur dinamis",
+    "properties": {
+      "speed": "Kecepatan (px/s)",
+      "dotStyle": "Gaya titik",
+      "dotColor": "Warna titik",
+      "dotSize": "Ukuran titik",
+      "dotImage": "URL gambar",
+      "imageWidth": "Lebar gambar",
+      "imageHeight": "Tinggi gambar",
+      "trackColor": "Warna jalur",
+      "trackWidth": "Lebar jalur",
+      "trackStyle": "Gaya jalur",
+      "status": "Status animasi",
+      "direction": "Arah gerak",
+      "loopMode": "Mode pengulangan"
+    },
+    "options": {
+      "dotStyle": {
+        "circle": "Lingkaran",
+        "image": "Gambar"
+      },
+      "trackStyle": {
+        "solid": "Garis solid",
+        "dashed": "Garis putus-putus"
+      },
+      "direction": {
+        "forward": "Maju",
+        "backward": "Mundur"
+      },
+      "loopMode": {
+        "loop": "Ulang",
+        "once": "Sekali",
+        "bounce": "Bolak-balik"
+      }
+    },
+    "groups": {
+      "dot": "Titik animasi",
+      "track": "Jalur",
+      "motion": "Gerakan"
+    },
+    "hints": {
+      "dotImage": "Masukkan alamat URL gambar"
+    },
+    "editor": {
+      "pathPoints": "Titik jalur",
+      "index": "#",
+      "coordX": "X",
+      "coordY": "Y",
+      "type": "Tipe",
+      "action": "Aksi",
+      "startPoint": "Titik awal",
+      "endPoint": "Titik akhir",
+      "bendPoint": "Titik bengkok",
+      "addBendPoint": "+ Tambah titik bengkok",
+      "reversePath": "Balik jalur"
+    }
+  }
+}

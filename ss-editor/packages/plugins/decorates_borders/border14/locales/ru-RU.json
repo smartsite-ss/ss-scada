@@ -1,0 +1,15 @@
+{
+  "border14": {
+    "label": "Рамка-14",
+    "description": "Декоративный компонент «Рамка-14»",
+    "properties": {
+      "color1": "Основной цвет",
+      "color2": "Дополнительный цвет",
+      "backgroundColor": "Цвет фона",
+      "showHexGrid": "Шестиугольная сетка",
+      "showScanLine": "Сканирующая линия",
+      "showCoreLines": "Центральные перекрестия",
+      "animationSpeed": "Скорость анимации"
+    }
+  }
+}

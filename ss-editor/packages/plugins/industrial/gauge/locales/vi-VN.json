@@ -1,0 +1,42 @@
+{
+  "gauge": {
+    "label": "Đồng hồ đo",
+    "description": "Thành phần đồng hồ đo, dùng để hiển thị giá trị và cảnh báo",
+    "panelTitle": "Cấu hình đồng hồ đo",
+    "properties": {
+      "width": "Chiều rộng",
+      "height": "Chiều cao",
+      "value": "Giá trị hiện tại",
+      "minValue": "Giá trị nhỏ nhất",
+      "maxValue": "Giá trị lớn nhất",
+      "unit": "Đơn vị",
+      "decimalPlaces": "Số chữ thập phân",
+      "startAngle": "Góc bắt đầu",
+      "endAngle": "Góc kết thúc",
+      "faceColor": "Màu mặt đồng hồ",
+      "rimColor": "Màu vành ngoài",
+      "needleColor": "Màu kim chỉ",
+      "tickColor": "Màu vạch chia",
+      "labelColor": "Màu nhãn",
+      "valueColor": "Màu giá trị",
+      "showTicks": "Hiển thị vạch chia",
+      "showLabels": "Hiển thị nhãn",
+      "showValue": "Hiển thị giá trị",
+      "majorTicks": "Số vạch chia chính",
+      "minorTicks": "Số vạch chia phụ",
+      "warningValue": "Ngưỡng cảnh báo",
+      "dangerValue": "Ngưỡng nguy hiểm",
+      "warningColor": "Màu cảnh báo",
+      "dangerColor": "Màu nguy hiểm"
+    },
+    "groups": {
+      "basic": "Cơ bản",
+      "value": "Giá trị",
+      "gauge": "Đồng hồ",
+      "color": "Màu",
+      "display": "Hiển thị",
+      "ticks": "Vạch chia",
+      "alarm": "Cảnh báo"
+    }
+  }
+}

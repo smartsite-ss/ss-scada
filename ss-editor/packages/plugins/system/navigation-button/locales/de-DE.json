@@ -1,0 +1,42 @@
+{
+  "navigationButton": {
+    "label": "Navigationsschaltfläche",
+    "description": "Navigationsschaltfläche für Seitenwechsel",
+    "properties": {
+      "text": "Schaltflächentext",
+      "type": "Schaltflächentyp",
+      "size": "Größe",
+      "disabled": "Deaktiviert",
+      "rounded": "Abgerundet",
+      "transparent": "Transparent",
+      "targetType": "Klickaktion",
+      "targetPage": "Zielseite",
+      "targetUrl": "Ziel-URL"
+    },
+    "options": {
+      "type": {
+        "primary": "Primär",
+        "success": "Erfolg",
+        "warning": "Warnung",
+        "danger": "Gefahr",
+        "default": "Standard"
+      },
+      "size": {
+        "large": "Groß",
+        "default": "Mittel",
+        "small": "Klein"
+      },
+      "targetType": {
+        "none": "Keine",
+        "page": "Seite öffnen",
+        "url": "URL öffnen"
+      }
+    },
+    "groups": {
+      "basic": "Basis",
+      "status": "Status",
+      "style": "Stil",
+      "action": "Interaktion"
+    }
+  }
+}

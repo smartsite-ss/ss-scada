@@ -1,0 +1,15 @@
+{
+  "border17": {
+    "label": "Kenarlık-17 (Cyberpunk neon)",
+    "description": "Kenarlık-17 dekoratif bileşeni (Cyberpunk neon)",
+    "properties": {
+      "color1": "Neon camgöbeği",
+      "color2": "Neon pembe",
+      "color3": "Zemin rengi",
+      "backgroundColor": "Arka plan rengi",
+      "showCircuit": "Devre dokusu",
+      "showScanline": "Tarama çizgisi",
+      "animationSpeed": "Animasyon hızı"
+    }
+  }
+}

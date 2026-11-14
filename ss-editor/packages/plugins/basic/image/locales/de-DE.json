@@ -1,0 +1,56 @@
+{
+  "image": {
+    "label": "Bild",
+    "panelTitle": "Bild-Eigenschaften",
+    "properties": {
+      "src": "Bildquelle",
+      "alt": "Alternativtext",
+      "opacity": "Deckkraft",
+      "imageScale": "Zoomfaktor",
+      "imageRotation": "Drehwinkel",
+      "imageFilter": "Filtereffekt",
+      "imageFit": "Anpassungsmodus",
+      "borderColor": "Rahmenfarbe",
+      "borderWidth": "Rahmenbreite",
+      "borderStyle": "Rahmenstil",
+      "borderRadius": "Eckenradius",
+      "shadowColor": "Schattenfarbe",
+      "shadowOffsetX": "Schattenversatz X",
+      "shadowOffsetY": "Schattenversatz Y",
+      "shadowBlur": "Schattenunschärfe",
+      "imageUpload": "Bild hochladen"
+    },
+    "options": {
+      "imageFilter": {
+        "none": "Keine",
+        "grayscale": "Graustufen",
+        "sepia": "Sepia",
+        "invert": "Invertiert",
+        "brightness": "Helligkeit",
+        "contrast": "Kontrast",
+        "saturate": "Sättigung"
+      },
+      "imageFit": {
+        "contain": "Einpassen",
+        "cover": "Abdecken",
+        "fill": "Füllen",
+        "none": "Original",
+        "scale-down": "Verkleinern"
+      },
+      "borderStyle": {
+        "solid": "Durchgezogen",
+        "dashed": "Gestrichelt",
+        "dotted": "Gepunktet"
+      }
+    },
+    "groups": {
+      "basic": "Grundeigenschaften",
+      "style": "Stil",
+      "shadow": "Schatten"
+    },
+    "hints": {
+      "clickToUpload": "Klicken, um ein Bild auszuwählen"
+    },
+    "description": "Bild-Grafikelement"
+  }
+}

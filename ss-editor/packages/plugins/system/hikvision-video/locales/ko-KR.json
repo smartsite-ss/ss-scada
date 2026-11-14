@@ -1,0 +1,48 @@
+{
+  "hikvisionVideo": {
+    "label": "하이크비전 영상",
+    "description": "하이크비전 카메라 RTSP 영상 월(1/4/9 채널)",
+    "properties": {
+      "layout": "영상 레이아웃",
+      "autoPlay": "자동 재생",
+      "muted": "음소거",
+      "objectFit": "화면 맞춤",
+      "showChannelName": "채널 이름 표시",
+      "nameColor": "채널 이름 색상",
+      "nameFontSize": "채널 이름 글꼴 크기",
+      "nameBackgroundColor": "채널 이름 배경",
+      "backgroundColor": "배경색",
+      "gap": "채널 간격"
+    },
+    "options": {
+      "layout": {
+        "1x1": "1 채널",
+        "2x2": "4 채널",
+        "3x3": "9 채널"
+      },
+      "objectFit": {
+        "contain": "포함",
+        "cover": "덮기",
+        "fill": "채우기"
+      }
+    },
+    "config": {
+      "channels": "영상 채널",
+      "channelsEmpty": "채널 없음",
+      "addChannel": "채널 추가",
+      "channelName": "채널 이름",
+      "sourceUrl": "RTSP 소스 주소",
+      "playUrl": "재생 주소",
+      "username": "사용자 이름",
+      "password": "비밀번호",
+      "enabled": "사용",
+      "deleteChannel": "삭제"
+    },
+    "player": {
+      "loading": "로딩 중...",
+      "loadFailed": "로드 실패",
+      "needFlv": "HTTP-FLV는 flv.js가 필요합니다",
+      "needWebrtc": "WebRTC는 jessibuca가 필요합니다"
+    }
+  }
+}

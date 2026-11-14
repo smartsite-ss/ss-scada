@@ -1,0 +1,13 @@
+{
+  "head03": {
+    "label": "Dekorasi kepala-03",
+    "properties": {
+      "color1": "Warna pertama",
+      "color2": "Warna kedua",
+      "dataset": "Tampilkan teks",
+      "textColor": "Warna teks",
+      "textSize": "Ukuran font"
+    },
+    "description": "Dekorasi panah kiri-kanan dengan teks di tengah"
+  }
+}

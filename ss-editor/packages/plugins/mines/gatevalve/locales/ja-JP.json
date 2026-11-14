@@ -1,0 +1,21 @@
+{
+  "gatevalve": {
+    "label": "電動ゲート弁",
+    "properties": {
+      "colors": "色1",
+      "colors2": "色2",
+      "backgroundColor": "背景色",
+      "lineWidth": "線幅",
+      "closed": "閉状態",
+      "state": "バルブ状態"
+    },
+    "options": {
+      "state": {
+        "open": "開",
+        "closed": "閉",
+        "fault": "故障"
+      }
+    },
+    "description": "電動ゲート弁 - バタフライ型弁体と電動アクチュエータ。開/閉/故障状態に対応"
+  }
+}

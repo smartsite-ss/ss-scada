@@ -1,0 +1,47 @@
+{
+  "multiChart": {
+    "label": "Mehrfachdiagramm",
+    "description": "Mehrfachdiagramm-Komponente für Balken-, Kreis- und Heatmap-Diagramme",
+    "panelTitle": "Mehrfachdiagramm-Konfiguration",
+    "properties": {
+      "title": "Titel",
+      "titleColor": "Titelfarbe",
+      "titleFontSize": "Titel-Schriftgröße",
+      "chartType": "Diagrammtyp",
+      "backgroundColor": "Hintergrundfarbe",
+      "borderColor": "Rahmenfarbe",
+      "borderWidth": "Rahmenbreite",
+      "borderRadius": "Eckenradius",
+      "barColor": "Balkenfarbe",
+      "barGap": "Balkenabstand",
+      "pieColors": "Kreissegment-Farbfolge",
+      "pieInnerRadius": "Innenradius-Anteil",
+      "pieShowLabels": "Beschriftung anzeigen",
+      "heatmapColorLow": "Heatmap-Farbe niedrig",
+      "heatmapColorHigh": "Heatmap-Farbe hoch",
+      "heatmapRows": "Zeilen",
+      "heatmapCols": "Spalten",
+      "showLegend": "Legende anzeigen",
+      "shadowColor": "Schattenfarbe",
+      "shadowOffsetX": "Schattenversatz X",
+      "shadowOffsetY": "Schattenversatz Y",
+      "shadowBlur": "Schattenunschärfe"
+    },
+    "options": {
+      "chartType": {
+        "bar": "Balkendiagramm",
+        "pie": "Kreisdiagramm",
+        "heatmap": "Heatmap"
+      }
+    },
+    "groups": {
+      "basic": "Basis",
+      "style": "Stil",
+      "bar": "Balkendiagramm",
+      "pie": "Kreisdiagramm",
+      "heatmap": "Heatmap",
+      "display": "Anzeige",
+      "shadow": "Schatten"
+    }
+  }
+}

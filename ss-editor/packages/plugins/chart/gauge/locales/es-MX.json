@@ -1,0 +1,66 @@
+{
+  "chartGauge": {
+    "label": "Indicador",
+    "description": "Componente de indicador para mostrar un valor en tiempo real con alarma por umbral",
+    "panelTitle": "Configuración del indicador",
+    "config": {
+      "dataSource": "Origen de datos",
+      "noData": "Sin datos",
+      "loadError": "Error al cargar"
+    },
+    "properties": {
+      "title": "Título",
+      "titleColor": "Color del título",
+      "titleFontSize": "Tamaño de fuente del título",
+      "value": "Valor actual",
+      "minValue": "Valor mínimo",
+      "maxValue": "Valor máximo",
+      "unit": "Unidad",
+      "startAngle": "Ángulo inicial",
+      "endAngle": "Ángulo final",
+      "backgroundColor": "Color de fondo",
+      "borderColor": "Color del borde",
+      "borderWidth": "Ancho del borde",
+      "borderStyle": "Estilo del borde",
+      "borderRadius": "Radio de esquina",
+      "faceColor": "Color del dial",
+      "rimColor": "Color del anillo exterior",
+      "normalColor": "Color de la zona normal",
+      "needleColor": "Color de la aguja",
+      "tickColor": "Color de las marcas de escala",
+      "labelColor": "Color de la etiqueta",
+      "valueColor": "Color del valor",
+      "showTicks": "Mostrar marcas",
+      "showLabels": "Mostrar etiqueta",
+      "showValue": "Mostrar valor",
+      "majorTicks": "Número de marcas principales",
+      "minorTicks": "Número de marcas secundarias",
+      "warningValue": "Umbral de advertencia",
+      "dangerValue": "Umbral de peligro",
+      "warningColor": "Color de advertencia",
+      "dangerColor": "Color de peligro",
+      "shadowColor": "Color de sombra",
+      "shadowOffsetX": "Desplazamiento de sombra X",
+      "shadowOffsetY": "Desplazamiento de sombra Y",
+      "shadowBlur": "Desenfoque de sombra"
+    },
+    "options": {
+      "borderStyle": {
+        "solid": "Sólida",
+        "dashed": "Discontinua",
+        "dotted": "Punteada"
+      }
+    },
+    "groups": {
+      "basic": "Básico",
+      "value": "Valor",
+      "gauge": "Medidor",
+      "style": "Estilo",
+      "color": "Color",
+      "display": "Visualización",
+      "ticks": "Escala",
+      "alarm": "Alarma",
+      "shadow": "Sombra"
+    }
+  }
+}

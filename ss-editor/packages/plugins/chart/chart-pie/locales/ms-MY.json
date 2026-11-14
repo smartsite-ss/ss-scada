@@ -1,0 +1,11 @@
+{
+  "chartPie": {
+    "label": "Carta pai",
+    "description": "Carta pai sumber data statik/API",
+    "config": {
+      "dataSource": "Sumber data",
+      "noData": "Tiada data",
+      "loadError": "Gagal memuat"
+    }
+  }
+}

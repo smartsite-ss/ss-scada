@@ -1,0 +1,21 @@
+{
+  "faultlamp": {
+    "label": "Đèn báo sự cố",
+    "properties": {
+      "color": "Màu",
+      "backgroundColor": "Màu nền",
+      "lineWidth": "Độ rộng nét",
+      "alarming": "Trạng thái cảnh báo",
+      "alarmValue": "Giá trị tương ứng cảnh báo",
+      "normalValue": "Giá trị tương ứng bình thường",
+      "defaultStatus": "Trạng thái mặc định"
+    },
+    "options": {
+      "alarming": {
+        "yes": "Đang cảnh báo",
+        "no": "Bình thường"
+      }
+    },
+    "description": "Đèn báo sự cố - nhấp nháy đỏ khi cảnh báo"
+  }
+}

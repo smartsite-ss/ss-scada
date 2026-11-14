@@ -1,0 +1,42 @@
+{
+  "gauge": {
+    "label": "ゲージ",
+    "description": "ゲージコンポーネント。数値表示とアラームに使用",
+    "panelTitle": "ゲージの設定",
+    "properties": {
+      "width": "幅",
+      "height": "高さ",
+      "value": "現在値",
+      "minValue": "最小値",
+      "maxValue": "最大値",
+      "unit": "単位",
+      "decimalPlaces": "小数点以下の桁数",
+      "startAngle": "開始角度",
+      "endAngle": "終了角度",
+      "faceColor": "文字盤の色",
+      "rimColor": "枠線の色",
+      "needleColor": "針の色",
+      "tickColor": "目盛り線の色",
+      "labelColor": "ラベルの色",
+      "valueColor": "数値の色",
+      "showTicks": "目盛りを表示",
+      "showLabels": "ラベルを表示",
+      "showValue": "数値を表示",
+      "majorTicks": "主目盛りの数",
+      "minorTicks": "副目盛りの数",
+      "warningValue": "警告しきい値",
+      "dangerValue": "危険しきい値",
+      "warningColor": "警告の色",
+      "dangerColor": "危険の色"
+    },
+    "groups": {
+      "basic": "基本",
+      "value": "数値",
+      "gauge": "ゲージ",
+      "color": "色",
+      "display": "表示",
+      "ticks": "目盛り",
+      "alarm": "アラーム"
+    }
+  }
+}

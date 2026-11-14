@@ -1,0 +1,21 @@
+{
+  "tagVariable": {
+    "label": "Variabel tag",
+    "description": "Menampilkan nilai real-time variabel perangkat",
+    "config": {
+      "bindVariable": "Variabel terikat",
+      "selectVariable": "Pilih variabel",
+      "clear": "Bersihkan",
+      "unbound": "Tidak terikat"
+    },
+    "selector": {
+      "title": "Pilih variabel perangkat",
+      "searchPlaceholder": "Cari perangkat atau variabel",
+      "deviceLabel": "Perangkat",
+      "tagCount": "{count} variabel",
+      "loading": "Memuat...",
+      "empty": "Tidak ada variabel perangkat",
+      "selectHint": "Klik variabel untuk mengikat"
+    }
+  }
+}

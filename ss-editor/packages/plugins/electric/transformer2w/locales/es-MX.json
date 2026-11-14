@@ -1,0 +1,11 @@
+{
+  "transformer2w": {
+    "label": "Transformador de dos devanados",
+    "properties": {
+      "color": "Color de línea",
+      "backgroundColor": "Color de fondo",
+      "lineWidth": "Grosor de línea"
+    },
+    "description": "Transformador de potencia de dos devanados: símbolo de dos bobinas"
+  }
+}

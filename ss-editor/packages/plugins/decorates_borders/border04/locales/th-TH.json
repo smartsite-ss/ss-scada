@@ -1,0 +1,16 @@
+{
+  "border04": {
+    "label": "เส้นขอบ-04",
+    "description": "องค์ประกอบตกแต่งเส้นขอบ-04",
+    "properties": {
+      "colors": "สีที่หนึ่ง",
+      "colors2": "สีที่สอง",
+      "backgroundColor": "สีพื้นหลัง",
+      "borderTitle": "ข้อความหัวข้อ",
+      "borderTitleColor": "สีหัวข้อ",
+      "borderTitleSize": "ขนาดตัวอักษรหัวข้อ",
+      "borderTitleWidth": "ความกว้างพื้นที่หัวข้อ",
+      "borderTitleHeight": "ความสูงหัวข้อ"
+    }
+  }
+}

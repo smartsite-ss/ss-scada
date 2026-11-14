@@ -1,0 +1,11 @@
+{
+  "border02": {
+    "label": "Sempadan-02",
+    "description": "Komponen hiasan sempadan-02",
+    "properties": {
+      "colors": "Warna satu",
+      "colors2": "Warna dua",
+      "backgroundColor": "Warna latar"
+    }
+  }
+}

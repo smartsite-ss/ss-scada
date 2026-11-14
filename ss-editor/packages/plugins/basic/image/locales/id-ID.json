@@ -1,0 +1,56 @@
+{
+  "image": {
+    "label": "Gambar",
+    "panelTitle": "Properti gambar",
+    "properties": {
+      "src": "Alamat gambar",
+      "alt": "Teks alternatif",
+      "opacity": "Opasitas",
+      "imageScale": "Rasio zoom",
+      "imageRotation": "Sudut rotasi",
+      "imageFilter": "Efek filter",
+      "imageFit": "Mode penyesuaian",
+      "borderColor": "Warna batas",
+      "borderWidth": "Lebar batas",
+      "borderStyle": "Gaya batas",
+      "borderRadius": "Sudut membulat",
+      "shadowColor": "Warna bayangan",
+      "shadowOffsetX": "Offset bayangan X",
+      "shadowOffsetY": "Offset bayangan Y",
+      "shadowBlur": "Blur bayangan",
+      "imageUpload": "Unggah gambar"
+    },
+    "options": {
+      "imageFilter": {
+        "none": "Tidak ada",
+        "grayscale": "Skala abu-abu",
+        "sepia": "Retro",
+        "invert": "Invert",
+        "brightness": "Kecerahan",
+        "contrast": "Kontras",
+        "saturate": "Saturasi"
+      },
+      "imageFit": {
+        "contain": "Muat",
+        "cover": "Penuh",
+        "fill": "Isi",
+        "none": "Asli",
+        "scale-down": "Perkecil"
+      },
+      "borderStyle": {
+        "solid": "Garis solid",
+        "dashed": "Garis putus-putus",
+        "dotted": "Garis titik"
+      }
+    },
+    "groups": {
+      "basic": "Properti dasar",
+      "style": "Gaya",
+      "shadow": "Bayangan"
+    },
+    "hints": {
+      "clickToUpload": "Klik untuk memilih gambar"
+    },
+    "description": "Elemen grafis gambar"
+  }
+}

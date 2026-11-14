@@ -1,0 +1,48 @@
+{
+  "hikvisionVideo": {
+    "label": "Hikvision-Video",
+    "description": "Hikvision-Kamera-RTSP-Videowand (1/4/9 Kanäle)",
+    "properties": {
+      "layout": "Videolayout",
+      "autoPlay": "Automatische Wiedergabe",
+      "muted": "Stumm",
+      "objectFit": "Bildanpassung",
+      "showChannelName": "Kanalnamen anzeigen",
+      "nameColor": "Kanalnamensfarbe",
+      "nameFontSize": "Schriftgröße Kanalname",
+      "nameBackgroundColor": "Hintergrund Kanalname",
+      "backgroundColor": "Hintergrundfarbe",
+      "gap": "Kanalabstand"
+    },
+    "options": {
+      "layout": {
+        "1x1": "1 Kanal",
+        "2x2": "4 Kanäle",
+        "3x3": "9 Kanäle"
+      },
+      "objectFit": {
+        "contain": "Einpassen",
+        "cover": "Abdecken",
+        "fill": "Füllen"
+      }
+    },
+    "config": {
+      "channels": "Videokanäle",
+      "channelsEmpty": "Keine Kanäle",
+      "addChannel": "Kanal hinzufügen",
+      "channelName": "Kanalname",
+      "sourceUrl": "RTSP-Quelladresse",
+      "playUrl": "Wiedergabeadresse",
+      "username": "Benutzername",
+      "password": "Passwort",
+      "enabled": "Aktiv",
+      "deleteChannel": "Löschen"
+    },
+    "player": {
+      "loading": "Wird geladen...",
+      "loadFailed": "Laden fehlgeschlagen",
+      "needFlv": "HTTP-FLV erfordert flv.js",
+      "needWebrtc": "WebRTC erfordert jessibuca"
+    }
+  }
+}

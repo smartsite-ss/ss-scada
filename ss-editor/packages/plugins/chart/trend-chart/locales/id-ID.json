@@ -1,0 +1,50 @@
+{
+  "trendChart": {
+    "label": "Grafik tren",
+    "description": "Grafik tren real-time/historis dengan perbandingan multi-pena dan downsampling LTTB",
+    "properties": {
+      "title": "Judul",
+      "titleColor": "Warna judul",
+      "titleFontSize": "Ukuran font judul",
+      "titleFontWeight": "Ketebalan judul",
+      "backgroundColor": "Warna latar",
+      "borderColor": "Warna batas",
+      "borderWidth": "Lebar batas",
+      "borderStyle": "Gaya batas",
+      "borderRadius": "Sudut membulat",
+      "gridColor": "Warna garis grid",
+      "axisColor": "Warna sumbu",
+      "lineColors": "Warna kurva",
+      "lineWidth": "Lebar kurva",
+      "showPoints": "Tampilkan titik data",
+      "pointRadius": "Radius titik data",
+      "showLegend": "Tampilkan legenda",
+      "legendPosition": "Posisi legenda",
+      "maxPens": "Jumlah pena maksimum",
+      "timeWindow": "Jendela waktu (detik)",
+      "showTooltip": "Tampilkan tooltip",
+      "yAxisLabel": "Label sumbu Y",
+      "shadowColor": "Warna bayangan",
+      "shadowOffsetX": "Offset bayangan X",
+      "shadowOffsetY": "Offset bayangan Y",
+      "shadowBlur": "Blur bayangan"
+    },
+    "options": {
+      "titleFontWeight": {
+        "normal": "Normal",
+        "bold": "Tebal"
+      },
+      "borderStyle": {
+        "solid": "Garis solid",
+        "dashed": "Garis putus-putus",
+        "dotted": "Garis titik"
+      },
+      "legendPosition": {
+        "top": "Atas",
+        "bottom": "Bawah",
+        "left": "Kiri",
+        "right": "Kanan"
+      }
+    }
+  }
+}

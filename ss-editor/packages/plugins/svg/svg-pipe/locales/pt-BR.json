@@ -1,0 +1,68 @@
+{
+  "svg-pipe": {
+    "label": "Tubulação SVG",
+    "panelTitle": "Configuração da tubulação SVG",
+    "properties": {
+      "status": "Estado",
+      "flowDirection": "Direção do fluxo",
+      "strokeColor": "Cor da tubulação",
+      "flowingColor": "Cor do fluxo",
+      "stoppedColor": "Cor de parado",
+      "blockedColor": "Cor de obstruído",
+      "strokeWidth": "Diâmetro da tubulação",
+      "strokeLinecap": "Estilo das extremidades",
+      "strokeLinejoin": "Estilo de conexão",
+      "strokeDasharray": "Padrão de traços",
+      "gradientType": "Tipo de gradiente",
+      "gradientStartColor": "Cor inicial do gradiente",
+      "gradientEndColor": "Cor final do gradiente",
+      "filterShadow": "Sombra",
+      "shadowColor": "Cor da sombra",
+      "shadowBlur": "Desfoque da sombra",
+      "showFlowAnimation": "Animação de fluxo",
+      "flowSpeed": "Velocidade do fluxo",
+      "arrowSpacing": "Espaçamento das setas",
+      "arrowSize": "Tamanho das setas",
+      "arrowStyle": "Estilo das setas"
+    },
+    "options": {
+      "status": {
+        "flowing": "Em fluxo",
+        "stopped": "Parado",
+        "blocked": "Obstruído"
+      },
+      "flowDirection": {
+        "forward": "Direto",
+        "backward": "Inverso",
+        "bidirectional": "Bidirecional"
+      },
+      "strokeLinecap": {
+        "butt": "Chanfrado",
+        "round": "Arredondado",
+        "square": "Quadrado"
+      },
+      "strokeLinejoin": {
+        "miter": "Miter",
+        "round": "Arredondado",
+        "bevel": "Canto cortado"
+      },
+      "gradientType": {
+        "none": "Cor sólida",
+        "linear": "Gradiente linear",
+        "radial": "Gradiente radial"
+      },
+      "arrowStyle": {
+        "triangle": "Bloco triangular",
+        "rectangle": "Retângulo",
+        "square": "Quadrado"
+      }
+    },
+    "groups": {
+      "status": "Estado",
+      "color": "Cor",
+      "style": "Estilo",
+      "animation": "Animação"
+    },
+    "description": "Componente de tubulação baseado em SVG Path, com animação de fluxo, gradiente e configuração de estilo"
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "input": {
+    "label": "Campo de entrada",
+    "description": "Componente de campo de entrada para texto de linha única",
+    "panelTitle": "Configuração do campo de entrada",
+    "properties": {
+      "value": "Valor",
+      "placeholder": "Espaço reservado",
+      "backgroundColor": "Cor de fundo",
+      "borderColor": "Cor da borda",
+      "borderWidth": "Largura da borda",
+      "borderStyle": "Estilo da borda",
+      "borderRadius": "Raio da borda",
+      "textColor": "Cor do texto",
+      "fontSize": "Tamanho da fonte",
+      "fontWeight": "Peso da fonte",
+      "textAlign": "Alinhamento do texto",
+      "shadowColor": "Cor da sombra",
+      "shadowOffsetX": "Deslocamento X da sombra",
+      "shadowOffsetY": "Deslocamento Y da sombra",
+      "shadowBlur": "Desfoque da sombra"
+    },
+    "options": {
+      "borderStyle": {
+        "solid": "Sólida",
+        "dashed": "Tracejada",
+        "dotted": "Pontilhada"
+      },
+      "fontWeight": {
+        "normal": "Normal",
+        "bold": "Negrito"
+      },
+      "textAlign": {
+        "left": "Alinhar à esquerda",
+        "center": "Centralizar",
+        "right": "Alinhar à direita"
+      }
+    },
+    "groups": {
+      "basic": "Propriedades básicas",
+      "style": "Estilo",
+      "text": "Texto",
+      "shadow": "Sombra"
+    }
+  }
+}

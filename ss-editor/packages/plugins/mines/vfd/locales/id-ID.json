@@ -1,0 +1,38 @@
+{
+  "vfd": {
+    "label": "Inverter/VFD",
+    "properties": {
+      "colors": "Warna 1",
+      "colors2": "Warna 2",
+      "flowColor": "Warna aliran",
+      "pipeColor": "Warna pipa",
+      "backgroundColor": "Warna latar",
+      "bgWidth": "Lebar latar",
+      "boardWidth": "Lebar batas",
+      "roate": "Sudut rotasi",
+      "cls": "Arah animasi",
+      "dur": "Periode animasi (detik)",
+      "dataset": "Nilai data",
+      "frequency": "Frekuensi (Hz)",
+      "runState": "Status operasi",
+      "forwardValue": "Nilai pemetaan putaran maju",
+      "backwardValue": "Nilai pemetaan putaran balik",
+      "stopValue": "Nilai pemetaan berhenti",
+      "defaultCls": "Arah animasi default",
+      "decimalPlaces": "Jumlah desimal"
+    },
+    "options": {
+      "cls": {
+        "left": "Putaran maju",
+        "right": "Putaran balik",
+        "stop": "Berhenti"
+      },
+      "runState": {
+        "run": "Berjalan",
+        "stop": "Berhenti",
+        "fault": "Gangguan"
+      }
+    },
+    "description": "Inverter/VFD - penggerak frekuensi variabel dengan tampilan frekuensi dan indikator status operasi"
+  }
+}

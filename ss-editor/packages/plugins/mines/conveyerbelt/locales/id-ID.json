@@ -1,0 +1,32 @@
+{
+  "conveyerbelt": {
+    "label": "Konveyor",
+    "properties": {
+      "color1": "Warna satu",
+      "color2": "Warna dua",
+      "color3": "Warna tiga",
+      "flowColor": "Warna aliran",
+      "pipeColor": "Warna pipa",
+      "backgroundColor": "Warna latar",
+      "bgWidth": "Lebar latar",
+      "boardWidth": "Lebar batas",
+      "roate": "Sudut rotasi",
+      "cls": "Arah animasi",
+      "dur": "Periode animasi (detik)",
+      "dataset": "Nilai data",
+      "forwardValue": "Nilai pemetaan putaran maju",
+      "backwardValue": "Nilai pemetaan putaran balik",
+      "stopValue": "Nilai pemetaan berhenti",
+      "defaultCls": "Arah animasi default",
+      "decimalPlaces": "Jumlah desimal"
+    },
+    "options": {
+      "cls": {
+        "left": "Putaran maju",
+        "right": "Putaran balik",
+        "stop": "Berhenti"
+      }
+    },
+    "description": "Konveyor tambang - perangkat pemindah material dengan rol, animasi aliran"
+  }
+}

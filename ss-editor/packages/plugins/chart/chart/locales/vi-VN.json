@@ -1,0 +1,41 @@
+{
+  "chart": {
+    "label": "Biểu đồ",
+    "description": "Thành phần biểu đồ, dùng để hiển thị trực quan dữ liệu",
+    "panelTitle": "Cấu hình biểu đồ",
+    "properties": {
+      "title": "Tiêu đề",
+      "titleColor": "Màu tiêu đề",
+      "titleFontSize": "Cỡ chữ tiêu đề",
+      "titleFontWeight": "Độ đậm tiêu đề",
+      "backgroundColor": "Màu nền",
+      "borderColor": "Màu viền",
+      "borderWidth": "Độ rộng viền",
+      "borderStyle": "Kiểu viền",
+      "borderRadius": "Bo góc",
+      "gridColor": "Màu lưới",
+      "axisColor": "Màu trục tọa độ",
+      "shadowColor": "Màu bóng đổ",
+      "shadowOffsetX": "Dịch chuyển bóng X",
+      "shadowOffsetY": "Dịch chuyển bóng Y",
+      "shadowBlur": "Độ mờ bóng"
+    },
+    "options": {
+      "titleFontWeight": {
+        "normal": "Bình thường",
+        "bold": "Đậm"
+      },
+      "borderStyle": {
+        "solid": "Nét liền",
+        "dashed": "Nét đứt",
+        "dotted": "Nét chấm"
+      }
+    },
+    "groups": {
+      "basic": "Thuộc tính cơ bản",
+      "visual": "Kiểu hiển thị",
+      "style": "Kiểu dáng",
+      "shadow": "Bóng đổ"
+    }
+  }
+}

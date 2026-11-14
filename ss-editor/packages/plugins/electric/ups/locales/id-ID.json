@@ -1,0 +1,19 @@
+{
+  "ups": {
+    "label": "Catu daya UPS",
+    "properties": {
+      "color": "Warna garis",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garis",
+      "state": "Status operasi"
+    },
+    "options": {
+      "state": {
+        "online": "Online",
+        "bypass": "Bypass",
+        "fault": "Gangguan"
+      }
+    },
+    "description": "Catu daya tak terputus UPS - status online/bypass/gangguan"
+  }
+}

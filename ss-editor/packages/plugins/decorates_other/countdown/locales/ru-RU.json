@@ -1,0 +1,15 @@
+{
+  "countdown": {
+    "label": "Обратный отсчёт",
+    "properties": {
+      "dataset": "Обратный отсчёт (с)",
+      "showDay": "Показать дни",
+      "color1": "Цвет фона",
+      "color2": "Цвет текста",
+      "flipperWidth": "Ширина цифры",
+      "flipperHeight": "Высота цифры",
+      "flipperGap": "Интервал"
+    },
+    "description": "Плагин обратного отсчёта"
+  }
+}

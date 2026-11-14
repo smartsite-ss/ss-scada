@@ -1,0 +1,41 @@
+{
+  "chart": {
+    "label": "圖表",
+    "description": "圖表元件，用於資料視覺化展示",
+    "panelTitle": "圖表設定",
+    "properties": {
+      "title": "標題",
+      "titleColor": "標題顏色",
+      "titleFontSize": "標題字級",
+      "titleFontWeight": "標題粗細",
+      "backgroundColor": "背景色",
+      "borderColor": "邊框色",
+      "borderWidth": "邊框寬度",
+      "borderStyle": "邊框樣式",
+      "borderRadius": "圓角",
+      "gridColor": "網格線顏色",
+      "axisColor": "座標軸顏色",
+      "shadowColor": "陰影顏色",
+      "shadowOffsetX": "陰影偏移X",
+      "shadowOffsetY": "陰影偏移Y",
+      "shadowBlur": "陰影模糊"
+    },
+    "options": {
+      "titleFontWeight": {
+        "normal": "正常",
+        "bold": "粗體"
+      },
+      "borderStyle": {
+        "solid": "實線",
+        "dashed": "虛線",
+        "dotted": "點線"
+      }
+    },
+    "groups": {
+      "basic": "基本屬性",
+      "visual": "視覺樣式",
+      "style": "樣式",
+      "shadow": "陰影"
+    }
+  }
+}

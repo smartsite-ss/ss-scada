@@ -1,0 +1,28 @@
+{
+  "three-gauge": {
+    "label": "3D gösterge paneli",
+    "panelTitle": "3D gösterge paneli yapılandırması",
+    "properties": {
+      "value": "Geçerli değer",
+      "min": "Minimum değer",
+      "max": "Maksimum değer",
+      "gaugeColor": "Normal renk",
+      "warningColor": "Uyarı rengi",
+      "dangerColor": "Tehlike rengi",
+      "warningThreshold": "Uyarı eşiği",
+      "dangerThreshold": "Tehlike eşiği",
+      "showTicks": "Ölçek işaretlerini göster",
+      "showLabels": "Etiketleri göster",
+      "needleColor": "İbre rengi",
+      "backgroundColor": "Arka plan rengi",
+      "rimColor": "Kenarlık rengi"
+    },
+    "groups": {
+      "数据": "Veri",
+      "颜色": "Renk",
+      "阈值": "Eşik",
+      "显示": "Görünüm"
+    },
+    "description": "Veri odaklı ibre döndürmesini destekleyen 3D gösterge paneli grafik öğesi"
+  }
+}

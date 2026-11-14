@@ -1,0 +1,11 @@
+{
+  "arrester": {
+    "label": "避雷器",
+    "properties": {
+      "color": "線條顏色",
+      "backgroundColor": "背景色",
+      "lineWidth": "線寬"
+    },
+    "description": "避雷器 - 過電壓保護設備"
+  }
+}

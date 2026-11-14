@@ -1,0 +1,14 @@
+{
+  "flipper-number": {
+    "label": "Angka flip",
+    "properties": {
+      "dataset": "Nilai",
+      "flipperLength": "Jumlah digit",
+      "color1": "Warna teks",
+      "flipperWidth": "Lebar",
+      "flipperHeight": "Tinggi",
+      "flipperGap": "Jarak antar"
+    },
+    "description": "Plugin tampilan angka flip"
+  }
+}

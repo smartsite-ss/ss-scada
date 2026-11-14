@@ -1,0 +1,31 @@
+{
+  "checkbox": {
+    "label": "Onay kutusu",
+    "description": "Çoklu seçim için onay kutusu bileşeni",
+    "panelTitle": "Onay kutusu yapılandırması",
+    "properties": {
+      "checked": "Seçili durum",
+      "label": "Etiket metni",
+      "disabled": "Devre dışı",
+      "indeterminate": "Kısmi seçili durum",
+      "color": "Seçim rengi",
+      "labelPosition": "Etiket konumu",
+      "size": "Boyut"
+    },
+    "options": {
+      "labelPosition": {
+        "right": "Sağ",
+        "left": "Sol"
+      },
+      "size": {
+        "small": "Küçük",
+        "medium": "Orta",
+        "large": "Büyük"
+      }
+    },
+    "groups": {
+      "basic": "Temel özellikler",
+      "style": "Stil"
+    }
+  }
+}

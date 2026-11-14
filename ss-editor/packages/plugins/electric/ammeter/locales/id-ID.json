@@ -1,0 +1,15 @@
+{
+  "ammeter": {
+    "label": "Amperemeter",
+    "properties": {
+      "color": "Warna garis",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garis",
+      "dataset": "Nilai data statis",
+      "showDigital": "Tampilkan pembacaan digital",
+      "decimalPlaces": "Jumlah desimal",
+      "unit": "Satuan"
+    },
+    "description": "Amperemeter - instrumen pengukur arus"
+  }
+}

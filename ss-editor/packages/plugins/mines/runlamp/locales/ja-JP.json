@@ -1,0 +1,23 @@
+{
+  "runlamp": {
+    "label": "運転表示灯",
+    "properties": {
+      "lampColor": "ランプの色",
+      "glowing": "発光エフェクト",
+      "blinkSpeed": "点滅速度",
+      "backgroundColor": "背景色",
+      "runningValue": "運転に対応する値",
+      "stoppedValue": "停止に対応する値",
+      "faultValue": "故障に対応する値",
+      "defaultStatus": "既定の状態"
+    },
+    "options": {
+      "lampColor": {
+        "green": "緑",
+        "red": "赤",
+        "yellow": "黄"
+      }
+    },
+    "description": "運転表示灯 - 円形ランプの色状態とパルス発光アニメーション"
+  }
+}

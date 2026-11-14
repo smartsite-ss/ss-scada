@@ -1,0 +1,21 @@
+{
+  "breaker": {
+    "label": "Pemutus litar",
+    "properties": {
+      "color": "Warna garisan",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garisan",
+      "closed": "Status tertutup",
+      "closedValue": "Nilai padanan tertutup",
+      "openValue": "Nilai padanan terbuka",
+      "defaultStatus": "Status lalai"
+    },
+    "options": {
+      "closed": {
+        "yes": "Tutup",
+        "no": "Buka"
+      }
+    },
+    "description": "Pemutus litar kuasa voltan tinggi/rendah dengan togol status tutup/buka"
+  }
+}

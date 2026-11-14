@@ -1,0 +1,11 @@
+{
+  "transformer3w": {
+    "label": "Transformateur à trois enroulements",
+    "properties": {
+      "color": "Couleur du trait",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "lineWidth": "Épaisseur du trait"
+    },
+    "description": "Transformateur de puissance à trois enroulements - Disposition en Y à trois bobines"
+  }
+}

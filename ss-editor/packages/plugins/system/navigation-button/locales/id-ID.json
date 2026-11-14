@@ -1,0 +1,42 @@
+{
+  "navigationButton": {
+    "label": "Tombol navigasi",
+    "description": "Tombol navigasi yang mendukung perpindahan halaman",
+    "properties": {
+      "text": "Teks tombol",
+      "type": "Tipe tombol",
+      "size": "Ukuran",
+      "disabled": "Nonaktif",
+      "rounded": "Sudut membulat",
+      "transparent": "Transparan",
+      "targetType": "Aksi klik",
+      "targetPage": "Halaman tujuan",
+      "targetUrl": "URL tujuan"
+    },
+    "options": {
+      "type": {
+        "primary": "Primer",
+        "success": "Sukses",
+        "warning": "Peringatan",
+        "danger": "Bahaya",
+        "default": "Default"
+      },
+      "size": {
+        "large": "Besar",
+        "default": "Sedang",
+        "small": "Kecil"
+      },
+      "targetType": {
+        "none": "Tidak ada",
+        "page": "Buka halaman",
+        "url": "Buka URL"
+      }
+    },
+    "groups": {
+      "basic": "Dasar",
+      "status": "Status",
+      "style": "Gaya",
+      "action": "Interaksi"
+    }
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "hikvisionVideo": {
+    "label": "Hikvision video",
+    "description": "Hikvision kamera RTSP video duvarı (1/4/9 kanal)",
+    "properties": {
+      "layout": "Video düzeni",
+      "autoPlay": "Otomatik oynat",
+      "muted": "Sessiz",
+      "objectFit": "Görüntü sığdırma",
+      "showChannelName": "Kanal adını göster",
+      "nameColor": "Kanal adı rengi",
+      "nameFontSize": "Kanal adı yazı boyutu",
+      "nameBackgroundColor": "Kanal adı arka planı",
+      "backgroundColor": "Arka plan rengi",
+      "gap": "Kanal aralığı"
+    },
+    "options": {
+      "layout": {
+        "1x1": "1 kanal",
+        "2x2": "4 kanal",
+        "3x3": "9 kanal"
+      },
+      "objectFit": {
+        "contain": "Sığdır",
+        "cover": "Kapla",
+        "fill": "Doldur"
+      }
+    },
+    "config": {
+      "channels": "Video kanalları",
+      "channelsEmpty": "Kanal yok",
+      "addChannel": "Kanal ekle",
+      "channelName": "Kanal adı",
+      "sourceUrl": "RTSP kaynak adresi",
+      "playUrl": "Oynatma adresi",
+      "username": "Kullanıcı adı",
+      "password": "Parola",
+      "enabled": "Etkin",
+      "deleteChannel": "Sil"
+    },
+    "player": {
+      "loading": "Yükleniyor...",
+      "loadFailed": "Yükleme başarısız",
+      "needFlv": "HTTP-FLV için flv.js gereklidir",
+      "needWebrtc": "WebRTC için jessibuca gereklidir"
+    }
+  }
+}

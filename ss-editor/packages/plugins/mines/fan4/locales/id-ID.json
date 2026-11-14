@@ -1,0 +1,35 @@
+{
+  "fan4": {
+    "label": "Kipas angin 4",
+    "properties": {
+      "colors": "Grup warna",
+      "flowColor": "Warna saluran udara",
+      "pipeColor": "Warna pipa",
+      "bgWidth": "Lebar alas",
+      "boardWidth": "Ketebalan pelat",
+      "roate": "Sudut rotasi",
+      "cls": "Arah rotasi",
+      "dur": "Periode animasi (detik)",
+      "backgroundColor": "Warna latar",
+      "dataset": "Kumpulan data",
+      "forwardValue": "Nilai pemetaan putaran maju",
+      "backwardValue": "Nilai pemetaan putaran balik",
+      "stopValue": "Nilai pemetaan berhenti",
+      "defaultCls": "Arah animasi default",
+      "decimalPlaces": "Jumlah desimal",
+      "clsOptions": {
+        "right": "Putar kanan",
+        "left": "Putar kiri",
+        "stop": "Berhenti"
+      }
+    },
+    "options": {
+      "cls": {
+        "left": "Putaran maju",
+        "right": "Putaran balik",
+        "stop": "Berhenti"
+      }
+    },
+    "description": "Kipas tambang 4 - varian kipas sentrifugal dengan saluran udara, kontrol arah dan kecepatan rotasi"
+  }
+}

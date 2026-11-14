@@ -1,0 +1,13 @@
+{
+  "head03": {
+    "label": "Decoración de encabezado 03",
+    "properties": {
+      "color1": "Color uno",
+      "color2": "Color dos",
+      "dataset": "Mostrar texto",
+      "textColor": "Color del texto",
+      "textSize": "Tamaño de fuente"
+    },
+    "description": "Decoración con flechas a ambos lados y texto central"
+  }
+}

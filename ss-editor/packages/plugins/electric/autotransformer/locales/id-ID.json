@@ -1,0 +1,11 @@
+{
+  "autotransformer": {
+    "label": "Transformator auto",
+    "properties": {
+      "color": "Warna garis",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garis"
+    },
+    "description": "Transformator auto - kumparan tunggal dengan tap"
+  }
+}

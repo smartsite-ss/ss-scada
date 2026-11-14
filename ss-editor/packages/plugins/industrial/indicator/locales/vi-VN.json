@@ -1,0 +1,42 @@
+{
+  "indicator": {
+    "label": "Đèn báo",
+    "description": "Thành phần đèn báo, dùng để hiển thị trạng thái và cảnh báo",
+    "panelTitle": "Cấu hình đèn báo",
+    "properties": {
+      "width": "Chiều rộng",
+      "height": "Chiều cao",
+      "status": "Trạng thái",
+      "onColor": "Màu bật sáng",
+      "offColor": "Màu tắt",
+      "warningColor": "Màu cảnh báo",
+      "faultColor": "Màu sự cố",
+      "blinkOnAlarm": "Nhấp nháy khi cảnh báo",
+      "blinkInterval": "Khoảng nhấp nháy (ms)",
+      "showLabel": "Hiển thị nhãn",
+      "labelText": "Văn bản nhãn",
+      "labelColor": "Màu nhãn",
+      "onValue": "Giá trị tương ứng bật sáng",
+      "offValue": "Giá trị tương ứng tắt",
+      "warningValue": "Giá trị tương ứng cảnh báo",
+      "faultValue": "Giá trị tương ứng sự cố",
+      "defaultStatus": "Trạng thái mặc định"
+    },
+    "options": {
+      "status": {
+        "on": "Bật sáng",
+        "off": "Tắt",
+        "warning": "Cảnh báo",
+        "fault": "Sự cố"
+      }
+    },
+    "groups": {
+      "basic": "Cơ bản",
+      "status": "Trạng thái",
+      "color": "Màu",
+      "animation": "Hoạt ảnh",
+      "label": "Nhãn",
+      "binding": "Ánh xạ liên kết"
+    }
+  }
+}

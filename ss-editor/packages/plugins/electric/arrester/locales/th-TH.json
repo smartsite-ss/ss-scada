@@ -1,0 +1,11 @@
+{
+  "arrester": {
+    "label": "ตัวจับฟ้าผ่า",
+    "properties": {
+      "color": "สีเส้น",
+      "backgroundColor": "สีพื้นหลัง",
+      "lineWidth": "ความกว้างเส้น"
+    },
+    "description": "ตัวจับฟ้าผ่า - อุปกรณ์ป้องกันแรงดันเกิน"
+  }
+}

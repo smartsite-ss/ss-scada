@@ -1,0 +1,68 @@
+{
+  "svg-pipe": {
+    "label": "SVG 管道",
+    "panelTitle": "SVG 管道設定",
+    "properties": {
+      "status": "狀態",
+      "flowDirection": "流向",
+      "strokeColor": "管道顏色",
+      "flowingColor": "流動顏色",
+      "stoppedColor": "停止顏色",
+      "blockedColor": "堵塞顏色",
+      "strokeWidth": "管徑",
+      "strokeLinecap": "端點樣式",
+      "strokeLinejoin": "連接樣式",
+      "strokeDasharray": "虛線",
+      "gradientType": "漸層類型",
+      "gradientStartColor": "漸層起始色",
+      "gradientEndColor": "漸層結束色",
+      "filterShadow": "陰影",
+      "shadowColor": "陰影顏色",
+      "shadowBlur": "陰影模糊",
+      "showFlowAnimation": "流動動畫",
+      "flowSpeed": "流速",
+      "arrowSpacing": "箭頭間距",
+      "arrowSize": "箭頭大小",
+      "arrowStyle": "箭頭樣式"
+    },
+    "options": {
+      "status": {
+        "flowing": "流動中",
+        "stopped": "停止",
+        "blocked": "堵塞"
+      },
+      "flowDirection": {
+        "forward": "正向",
+        "backward": "反向",
+        "bidirectional": "雙向"
+      },
+      "strokeLinecap": {
+        "butt": "平頭",
+        "round": "圓頭",
+        "square": "方頭"
+      },
+      "strokeLinejoin": {
+        "miter": "尖角",
+        "round": "圓角",
+        "bevel": "切角"
+      },
+      "gradientType": {
+        "none": "單色",
+        "linear": "線性漸層",
+        "radial": "放射狀漸層"
+      },
+      "arrowStyle": {
+        "triangle": "三角形",
+        "rectangle": "長方形",
+        "square": "正方形"
+      }
+    },
+    "groups": {
+      "status": "狀態",
+      "color": "顏色",
+      "style": "樣式",
+      "animation": "動畫"
+    },
+    "description": "基於 SVG Path 的管道元件，支援流動動畫、漸層與樣式設定"
+  }
+}

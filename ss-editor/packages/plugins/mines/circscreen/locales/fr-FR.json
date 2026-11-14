@@ -1,0 +1,31 @@
+{
+  "circscreen": {
+    "label": "Crible vibrant circulaire",
+    "properties": {
+      "colors": "Couleur 1",
+      "colors2": "Couleur 2",
+      "flowColor": "Couleur d'écoulement",
+      "pipeColor": "Couleur du tuyau",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "bgWidth": "Largeur d'arrière-plan",
+      "boardWidth": "Largeur de bordure",
+      "roate": "Angle de rotation",
+      "cls": "Sens de l'animation",
+      "dur": "Période d'animation (s)",
+      "dataset": "Valeur de données",
+      "forwardValue": "Valeur pour marche avant",
+      "backwardValue": "Valeur pour marche arrière",
+      "stopValue": "Valeur pour l'arrêt",
+      "defaultCls": "Sens d'animation par défaut",
+      "decimalPlaces": "Nombre de décimales"
+    },
+    "options": {
+      "cls": {
+        "left": "Marche avant",
+        "right": "Marche arrière",
+        "stop": "Arrêt"
+      }
+    },
+    "description": "Crible vibrant circulaire - toile circulaire à masselottes excentriques, animation de vibration circulaire"
+  }
+}

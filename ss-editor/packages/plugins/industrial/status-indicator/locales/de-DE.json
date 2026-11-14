@@ -1,0 +1,36 @@
+{
+  "statusIndicator": {
+    "label": "Statusleuchte",
+    "description": "Statusleuchten-Komponente für Mehrzustandsanzeige und Alarm",
+    "properties": {
+      "status": "Zustand",
+      "normalColor": "Normalfarbe",
+      "warningColor": "Warnfarbe",
+      "errorColor": "Störungsfarbe",
+      "offlineColor": "Offline-Farbe",
+      "size": "Größe der Leuchte",
+      "showGlow": "Leuchtschein anzeigen",
+      "pulseSpeed": "Pulsgeschwindigkeit (Sekunden)",
+      "normalValue": "Wert für Normal",
+      "warningValue": "Wert für Warnung",
+      "errorValue": "Wert für Störung",
+      "offlineValue": "Wert für Offline",
+      "defaultStatus": "Standardzustand"
+    },
+    "options": {
+      "status": {
+        "normal": "Normal",
+        "warning": "Warnung",
+        "error": "Störung",
+        "offline": "Offline"
+      }
+    },
+    "groups": {
+      "basic": "Basis",
+      "color": "Farbe",
+      "style": "Stil",
+      "animation": "Animation",
+      "binding": "Bindungszuordnung"
+    }
+  }
+}

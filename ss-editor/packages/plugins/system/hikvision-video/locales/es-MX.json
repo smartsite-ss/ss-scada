@@ -1,0 +1,48 @@
+{
+  "hikvisionVideo": {
+    "label": "Video Hikvision",
+    "description": "Muro de video RTSP de cámaras Hikvision (1/4/9 canales)",
+    "properties": {
+      "layout": "Disposición de video",
+      "autoPlay": "Reproducción automática",
+      "muted": "Silenciado",
+      "objectFit": "Ajuste de imagen",
+      "showChannelName": "Mostrar nombre del canal",
+      "nameColor": "Color del nombre del canal",
+      "nameFontSize": "Tamaño de fuente del nombre del canal",
+      "nameBackgroundColor": "Fondo del nombre del canal",
+      "backgroundColor": "Color de fondo",
+      "gap": "Espaciado entre canales"
+    },
+    "options": {
+      "layout": {
+        "1x1": "1 canal",
+        "2x2": "4 canales",
+        "3x3": "9 canales"
+      },
+      "objectFit": {
+        "contain": "Contener",
+        "cover": "Cubrir",
+        "fill": "Rellenar"
+      }
+    },
+    "config": {
+      "channels": "Canales de video",
+      "channelsEmpty": "Sin canales",
+      "addChannel": "Agregar canal",
+      "channelName": "Nombre del canal",
+      "sourceUrl": "Dirección de origen RTSP",
+      "playUrl": "Dirección de reproducción",
+      "username": "Nombre de usuario",
+      "password": "Contraseña",
+      "enabled": "Habilitar",
+      "deleteChannel": "Eliminar"
+    },
+    "player": {
+      "loading": "Cargando...",
+      "loadFailed": "Error al cargar",
+      "needFlv": "HTTP-FLV requiere importar flv.js",
+      "needWebrtc": "WebRTC requiere importar jessibuca"
+    }
+  }
+}

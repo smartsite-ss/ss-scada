@@ -1,0 +1,13 @@
+{
+  "border08": {
+    "label": "Kenarlık-08",
+    "description": "Kenarlık-08 dekoratif bileşeni",
+    "properties": {
+      "color1": "Birinci renk",
+      "color2": "İkinci renk",
+      "backgroundColor": "Arka plan rengi",
+      "dur": "Animasyon döngüsü (saniye)",
+      "reverse": "Ters yön"
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "levelgauge": {
+    "label": "Pengukur level",
+    "properties": {
+      "color": "Warna",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garis",
+      "dataset": "Nilai data (0-100)",
+      "showNumeric": "Tampilkan nilai",
+      "decimalPlaces": "Jumlah desimal",
+      "unit": "Satuan"
+    },
+    "description": "Pengukur level - tabung kaca vertikal berskala dengan tampilan nilai kolom cairan"
+  }
+}

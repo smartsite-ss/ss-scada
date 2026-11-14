@@ -1,0 +1,11 @@
+{
+  "transformer3w": {
+    "label": "Transformador de tres devanados",
+    "properties": {
+      "color": "Color de línea",
+      "backgroundColor": "Color de fondo",
+      "lineWidth": "Grosor de línea"
+    },
+    "description": "Transformador de potencia de tres devanados: disposición en Y de tres bobinas"
+  }
+}

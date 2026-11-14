@@ -1,0 +1,54 @@
+{
+  "button": {
+    "label": "ボタン",
+    "panelTitle": "ボタンのプロパティ",
+    "properties": {
+      "text": "テキスト",
+      "backgroundColor": "背景色",
+      "fontColor": "文字色",
+      "borderColor": "枠線色",
+      "borderWidth": "枠線幅",
+      "borderStyle": "枠線スタイル",
+      "borderRadius": "角の丸み",
+      "fontSize": "フォントサイズ",
+      "fontWeight": "フォントの太さ",
+      "textAlign": "テキストの配置",
+      "shadowColor": "影の色",
+      "shadowOffsetX": "影のオフセットX",
+      "shadowOffsetY": "影のオフセットY",
+      "shadowBlur": "影のぼかし",
+      "targetType": "クリック時の動作",
+      "targetPage": "対象ページ",
+      "targetUrl": "対象URL"
+    },
+    "options": {
+      "borderStyle": {
+        "solid": "実線",
+        "dashed": "破線",
+        "dotted": "点線"
+      },
+      "fontWeight": {
+        "normal": "標準",
+        "bold": "太字"
+      },
+      "textAlign": {
+        "left": "左揃え",
+        "center": "中央揃え",
+        "right": "右揃え"
+      },
+      "targetType": {
+        "none": "なし",
+        "page": "ページを開く",
+        "url": "URL を開く"
+      }
+    },
+    "groups": {
+      "basic": "基本プロパティ",
+      "style": "スタイル",
+      "text": "文字",
+      "shadow": "影",
+      "action": "インタラクション"
+    },
+    "description": "ボタンの図形要素"
+  }
+}

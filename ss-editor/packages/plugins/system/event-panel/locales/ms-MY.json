@@ -1,0 +1,61 @@
+{
+  "eventPanel": {
+    "label": "Panel peristiwa",
+    "description": "Papar log peristiwa sistem (tapis mengikut projek/jenis/status)",
+    "loading": "Memuat...",
+    "empty": "Tiada peristiwa",
+    "loadFailed": "Gagal memuat",
+    "systemLevel": "Peringkat sistem",
+    "config": {
+      "project": "Projek",
+      "allProjects": "Semua projek",
+      "eventType": "Jenis peristiwa",
+      "allEventTypes": "Semua jenis",
+      "status": "Status",
+      "allStatus": "Semua status"
+    },
+    "columns": {
+      "time": "Masa",
+      "eventType": "Jenis peristiwa",
+      "project": "Projek",
+      "operator": "Pengendali",
+      "status": "Status",
+      "successRatio": "Kadar kejayaan",
+      "duration": "Tempoh"
+    },
+    "groups": {
+      "device": "Peranti",
+      "project": "Projek",
+      "alarm": "Penggera",
+      "config": "Konfigurasi dan pemasa",
+      "plugin": "Pemalam"
+    },
+    "status": {
+      "emitted": "Dihantar",
+      "processing": "Sedang diproses",
+      "processed": "Diproses",
+      "partial": "Separa gagal",
+      "failed": "Gagal",
+      "no_subscribers": "Tiada pelanggan"
+    },
+    "properties": {
+      "pageSize": "Bilangan baris setiap halaman",
+      "refreshInterval": "Selang muat semula (saat)",
+      "showHeader": "Tunjuk kepala lajur",
+      "showTime": "Lajur masa",
+      "showEventType": "Lajur jenis peristiwa",
+      "showProject": "Lajur projek",
+      "showOperator": "Lajur pengendali",
+      "showStatus": "Lajur status",
+      "showSuccessRatio": "Lajur kadar kejayaan",
+      "showDuration": "Lajur tempoh",
+      "fontSize": "Saiz fon",
+      "rowHeight": "Tinggi baris",
+      "headerBackgroundColor": "Latar kepala lajur",
+      "rowBackgroundColor": "Latar baris",
+      "alternatingRowColor": "Latar baris berselang",
+      "textColor": "Warna teks badan",
+      "backgroundColor": "Warna latar"
+    }
+  }
+}

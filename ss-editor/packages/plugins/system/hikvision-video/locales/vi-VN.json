@@ -1,0 +1,48 @@
+{
+  "hikvisionVideo": {
+    "label": "Video Hikvision",
+    "description": "Tường video camera Hikvision RTSP (1/4/9 kênh)",
+    "properties": {
+      "layout": "Bố cục video",
+      "autoPlay": "Tự động phát",
+      "muted": "Tắt tiếng",
+      "objectFit": "Cách khớp khung hình",
+      "showChannelName": "Hiển thị tên kênh",
+      "nameColor": "Màu tên kênh",
+      "nameFontSize": "Cỡ chữ tên kênh",
+      "nameBackgroundColor": "Nền tên kênh",
+      "backgroundColor": "Màu nền",
+      "gap": "Khoảng cách kênh"
+    },
+    "options": {
+      "layout": {
+        "1x1": "1 kênh",
+        "2x2": "4 kênh",
+        "3x3": "9 kênh"
+      },
+      "objectFit": {
+        "contain": "Vừa khung",
+        "cover": "Phủ kín",
+        "fill": "Lấp đầy"
+      }
+    },
+    "config": {
+      "channels": "Kênh video",
+      "channelsEmpty": "Chưa có kênh",
+      "addChannel": "Thêm kênh",
+      "channelName": "Tên kênh",
+      "sourceUrl": "Địa chỉ nguồn RTSP",
+      "playUrl": "Địa chỉ phát",
+      "username": "Tên người dùng",
+      "password": "Mật khẩu",
+      "enabled": "Bật",
+      "deleteChannel": "Xóa"
+    },
+    "player": {
+      "loading": "Đang tải...",
+      "loadFailed": "Tải thất bại",
+      "needFlv": "HTTP-FLV cần nạp flv.js",
+      "needWebrtc": "WebRTC cần nạp jessibuca"
+    }
+  }
+}

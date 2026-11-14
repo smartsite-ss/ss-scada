@@ -1,0 +1,21 @@
+{
+  "closelamp": {
+    "label": "投入表示灯",
+    "properties": {
+      "lampColor": "ランプの色",
+      "backgroundColor": "背景色",
+      "radius": "半径",
+      "closed": "投入状態",
+      "closedValue": "閉に対応する値",
+      "openValue": "開に対応する値",
+      "defaultStatus": "既定の状態"
+    },
+    "options": {
+      "closed": {
+        "yes": "投入",
+        "no": "開放"
+      }
+    },
+    "description": "投入位置の表示灯"
+  }
+}

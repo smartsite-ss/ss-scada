@@ -1,0 +1,15 @@
+{
+  "levelgauge": {
+    "label": "Seviye ölçer",
+    "properties": {
+      "color": "Renk",
+      "backgroundColor": "Arka plan rengi",
+      "lineWidth": "Çizgi kalınlığı",
+      "dataset": "Veri değeri (0-100)",
+      "showNumeric": "Değeri göster",
+      "decimalPlaces": "Ondalık basamak sayısı",
+      "unit": "Birim"
+    },
+    "description": "Seviye ölçer - Dikey cam boru ölçekli sıvı kolonu değer gösterimi"
+  }
+}

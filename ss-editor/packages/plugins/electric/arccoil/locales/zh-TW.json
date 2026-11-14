@@ -1,0 +1,11 @@
+{
+  "arccoil": {
+    "label": "消弧線圈",
+    "properties": {
+      "color": "線條顏色",
+      "backgroundColor": "背景色",
+      "lineWidth": "線寬"
+    },
+    "description": "消弧線圈 - 中性點接地補償裝置"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "checkbox": {
+    "label": "Kotak semak",
+    "description": "Komponen kotak semak untuk operasi pilihan berbilang",
+    "panelTitle": "Konfigurasi kotak semak",
+    "properties": {
+      "checked": "Status dipilih",
+      "label": "Teks label",
+      "disabled": "Dilumpuhkan",
+      "indeterminate": "Status separuh pilih",
+      "color": "Warna pilihan",
+      "labelPosition": "Kedudukan label",
+      "size": "Saiz"
+    },
+    "options": {
+      "labelPosition": {
+        "right": "Kanan",
+        "left": "Kiri"
+      },
+      "size": {
+        "small": "Kecil",
+        "medium": "Sederhana",
+        "large": "Besar"
+      }
+    },
+    "groups": {
+      "basic": "Sifat asas",
+      "style": "Gaya"
+    }
+  }
+}

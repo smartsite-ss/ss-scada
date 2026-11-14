@@ -1,0 +1,41 @@
+{
+  "chart": {
+    "label": "Диаграмма",
+    "description": "Компонент диаграммы для визуализации данных",
+    "panelTitle": "Настройка диаграммы",
+    "properties": {
+      "title": "Заголовок",
+      "titleColor": "Цвет заголовка",
+      "titleFontSize": "Размер шрифта заголовка",
+      "titleFontWeight": "Насыщенность шрифта заголовка",
+      "backgroundColor": "Цвет фона",
+      "borderColor": "Цвет рамки",
+      "borderWidth": "Ширина рамки",
+      "borderStyle": "Стиль рамки",
+      "borderRadius": "Скругление",
+      "gridColor": "Цвет линий сетки",
+      "axisColor": "Цвет осей",
+      "shadowColor": "Цвет тени",
+      "shadowOffsetX": "Смещение тени X",
+      "shadowOffsetY": "Смещение тени Y",
+      "shadowBlur": "Размытие тени"
+    },
+    "options": {
+      "titleFontWeight": {
+        "normal": "Обычный",
+        "bold": "Жирный"
+      },
+      "borderStyle": {
+        "solid": "Сплошная",
+        "dashed": "Штриховая",
+        "dotted": "Пунктирная"
+      }
+    },
+    "groups": {
+      "basic": "Основные свойства",
+      "visual": "Визуальный стиль",
+      "style": "Стиль",
+      "shadow": "Тень"
+    }
+  }
+}

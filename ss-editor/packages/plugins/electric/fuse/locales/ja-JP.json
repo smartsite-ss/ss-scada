@@ -1,0 +1,11 @@
+{
+  "fuse": {
+    "label": "ヒューズ",
+    "properties": {
+      "color": "線の色",
+      "backgroundColor": "背景色",
+      "lineWidth": "線幅"
+    },
+    "description": "電力用ヒューズ - 過電流保護素子"
+  }
+}

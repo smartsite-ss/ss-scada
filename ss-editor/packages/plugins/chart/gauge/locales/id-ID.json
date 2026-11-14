@@ -1,0 +1,66 @@
+{
+  "chartGauge": {
+    "label": "Pengukur",
+    "description": "Komponen pengukur untuk tampilan nilai tunggal real-time dan alarm ambang",
+    "panelTitle": "Konfigurasi pengukur",
+    "config": {
+      "dataSource": "Sumber data",
+      "noData": "Tidak ada data",
+      "loadError": "Gagal memuat"
+    },
+    "properties": {
+      "title": "Judul",
+      "titleColor": "Warna judul",
+      "titleFontSize": "Ukuran font judul",
+      "value": "Nilai saat ini",
+      "minValue": "Nilai minimum",
+      "maxValue": "Nilai maksimum",
+      "unit": "Satuan",
+      "startAngle": "Sudut awal",
+      "endAngle": "Sudut akhir",
+      "backgroundColor": "Warna latar",
+      "borderColor": "Warna batas",
+      "borderWidth": "Lebar batas",
+      "borderStyle": "Gaya batas",
+      "borderRadius": "Sudut membulat",
+      "faceColor": "Warna dial",
+      "rimColor": "Warna cincin luar",
+      "normalColor": "Warna zona normal",
+      "needleColor": "Warna jarum",
+      "tickColor": "Warna garis skala",
+      "labelColor": "Warna label",
+      "valueColor": "Warna nilai",
+      "showTicks": "Tampilkan skala",
+      "showLabels": "Tampilkan label",
+      "showValue": "Tampilkan nilai",
+      "majorTicks": "Jumlah skala utama",
+      "minorTicks": "Jumlah skala minor",
+      "warningValue": "Ambang peringatan",
+      "dangerValue": "Ambang bahaya",
+      "warningColor": "Warna peringatan",
+      "dangerColor": "Warna bahaya",
+      "shadowColor": "Warna bayangan",
+      "shadowOffsetX": "Offset bayangan X",
+      "shadowOffsetY": "Offset bayangan Y",
+      "shadowBlur": "Blur bayangan"
+    },
+    "options": {
+      "borderStyle": {
+        "solid": "Garis solid",
+        "dashed": "Garis putus-putus",
+        "dotted": "Garis titik"
+      }
+    },
+    "groups": {
+      "basic": "Dasar",
+      "value": "Nilai",
+      "gauge": "Pengukur",
+      "style": "Gaya",
+      "color": "Warna",
+      "display": "Tampilan",
+      "ticks": "Skala",
+      "alarm": "Alarm",
+      "shadow": "Bayangan"
+    }
+  }
+}

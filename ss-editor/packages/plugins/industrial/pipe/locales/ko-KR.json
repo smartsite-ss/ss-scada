@@ -1,0 +1,39 @@
+{
+  "pipe": {
+    "label": "파이프-수직",
+    "description": "파이프-수직 컴포넌트, 유동 애니메이션 및 방향 제어 지원",
+    "panelTitle": "파이프 구성",
+    "properties": {
+      "width": "너비",
+      "height": "높이",
+      "status": "상태",
+      "direction": "흐름 방향",
+      "pipeColor": "파이프 색상",
+      "flowingColor": "유동 색상",
+      "stoppedColor": "정지 색상",
+      "blockedColor": "막힘 색상",
+      "pipeThickness": "파이프 두께",
+      "showFlange": "플랜지 표시",
+      "flowSpeed": "유속",
+      "showFlowAnimation": "유동 애니메이션 표시"
+    },
+    "options": {
+      "status": {
+        "flowing": "유동 중",
+        "stopped": "정지",
+        "blocked": "막힘"
+      },
+      "direction": {
+        "up": "위쪽",
+        "down": "아래쪽"
+      }
+    },
+    "groups": {
+      "basic": "기본",
+      "status": "상태",
+      "color": "색상",
+      "style": "스타일",
+      "animation": "애니메이션"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "flowmeter": {
+    "label": "Flowmeter",
+    "properties": {
+      "color": "Warna",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garis",
+      "dataset": "Nilai data (0-100)",
+      "showDigital": "Tampilkan bacaan digital",
+      "rangeMax": "Nilai rentang maksimum",
+      "decimalPlaces": "Jumlah desimal",
+      "unit": "Satuan"
+    },
+    "description": "Flowmeter - instrumen aliran dengan dial bundar, sudut jarum digerakkan nilai data"
+  }
+}

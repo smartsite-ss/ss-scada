@@ -1,0 +1,24 @@
+{
+  "mixingpool": {
+    "label": "Bồn khuấy",
+    "properties": {
+      "color1": "Màu thứ nhất",
+      "color2": "Màu thứ hai",
+      "flowColor": "Màu dòng chảy",
+      "pipeColor": "Màu đường ống",
+      "backgroundColor": "Màu nền",
+      "bgWidth": "Chiều rộng nền",
+      "boardWidth": "Độ rộng viền",
+      "roate": "Góc xoay",
+      "cls": "Kiểu hoạt ảnh",
+      "dur": "Chu kỳ hoạt ảnh (giây)",
+      "dataset": "Giá trị dữ liệu",
+      "forwardValue": "Giá trị tương ứng quay xuôi",
+      "backwardValue": "Giá trị tương ứng quay ngược",
+      "stopValue": "Giá trị tương ứng dừng",
+      "defaultCls": "Kiểu hoạt ảnh mặc định",
+      "decimalPlaces": "Số chữ thập phân"
+    },
+    "description": "Bồn khuấy - bồn trộn có cánh khuấy, hỗ trợ hoạt ảnh xoay"
+  }
+}

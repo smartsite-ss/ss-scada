@@ -1,0 +1,31 @@
+{
+  "checkbox": {
+    "label": "Caixa de seleção",
+    "description": "Componente de caixa de seleção para operações de múltipla escolha",
+    "panelTitle": "Configuração da caixa de seleção",
+    "properties": {
+      "checked": "Estado marcado",
+      "label": "Texto do rótulo",
+      "disabled": "Desativado",
+      "indeterminate": "Estado indeterminado",
+      "color": "Cor de selecionado",
+      "labelPosition": "Posição do rótulo",
+      "size": "Tamanho"
+    },
+    "options": {
+      "labelPosition": {
+        "right": "Direita",
+        "left": "Esquerda"
+      },
+      "size": {
+        "small": "Pequeno",
+        "medium": "Médio",
+        "large": "Grande"
+      }
+    },
+    "groups": {
+      "basic": "Propriedades básicas",
+      "style": "Estilo"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "number": {
+    "label": "Rakam",
+    "properties": {
+      "dataset": "Hedef değer",
+      "from": "Başlangıç değeri",
+      "dur": "Animasyon süresi (saniye)",
+      "precision": "Ondalık basamak sayısı",
+      "showSeparator": "Binlik ayırıcı",
+      "numberSize": "Yazı boyutu",
+      "color1": "Rakam rengi",
+      "prefixText": "Önek",
+      "color2": "Önek rengi",
+      "suffixText": "Sonek",
+      "color3": "Sonek rengi"
+    },
+    "description": "Sayı sayma animasyonu eklentisi"
+  }
+}

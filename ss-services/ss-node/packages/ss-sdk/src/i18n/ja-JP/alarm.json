@@ -1,0 +1,36 @@
+{
+  "alarm": {
+    "rule": {
+      "created": "アラームルールの作成に成功しました",
+      "updated": "アラームルールの更新に成功しました",
+      "deleted": "アラームルールを削除しました",
+      "enabled": "アラームルールを有効にしました",
+      "disabled": "アラームルールを無効にしました",
+      "not_found": "アラームルールが存在しません"
+    },
+    "record": {
+      "triggered": "アラーム発報: {{message}}",
+      "acknowledged": "アラームを確認しました (操作者: {{operator}})",
+      "cleared": "アラームをクリアしました (理由: {{reason}})",
+      "not_found": "イベント記録が存在しません",
+      "already_acknowledged": "このアラームは既に確認済みです",
+      "already_cleared": "このアラームは既にクリア済みです"
+    },
+    "condition": {
+      "gt": "{{tag}} の値 {{value}} が上限 {{threshold}} を超えています",
+      "lt": "{{tag}} の値 {{value}} が下限 {{threshold}} を下回っています",
+      "range_in": "{{tag}} の値 {{value}} は正常範囲内です",
+      "range_out": "{{tag}} の値 {{value}} は正常範囲を超えています"
+    },
+    "level": {
+      "info": "情報",
+      "warning": "警告",
+      "error": "エラー",
+      "critical": "重大"
+    },
+    "notification": {
+      "send_success": "アラーム通知の送信に成功しました",
+      "send_failed": "アラーム通知の送信に失敗しました"
+    }
+  }
+}

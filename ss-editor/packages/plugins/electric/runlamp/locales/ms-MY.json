@@ -1,0 +1,23 @@
+{
+  "runlamp": {
+    "label": "Lampu penunjuk operasi",
+    "properties": {
+      "lampColor": "Warna lampu",
+      "backgroundColor": "Warna latar",
+      "radius": "Jejari",
+      "state": "Status operasi",
+      "runningValue": "Nilai padanan berjalan",
+      "stoppedValue": "Nilai padanan berhenti",
+      "faultValue": "Nilai padanan kerosakan",
+      "defaultStatus": "Status lalai"
+    },
+    "options": {
+      "state": {
+        "running": "Berjalan",
+        "stopped": "Berhenti",
+        "fault": "Kerosakan"
+      }
+    },
+    "description": "Lampu penunjuk status operasi - menyokong tiga keadaan berjalan/berhenti/kerosakan"
+  }
+}

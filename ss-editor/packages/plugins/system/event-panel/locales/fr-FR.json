@@ -1,0 +1,61 @@
+{
+  "eventPanel": {
+    "label": "Panneau d'événements",
+    "description": "Affiche le journal des événements système (filtrable par projet/type/état)",
+    "loading": "Chargement...",
+    "empty": "Aucun événement",
+    "loadFailed": "Échec du chargement",
+    "systemLevel": "Niveau système",
+    "config": {
+      "project": "Projet",
+      "allProjects": "Tous les projets",
+      "eventType": "Type d'événement",
+      "allEventTypes": "Tous les types",
+      "status": "État",
+      "allStatus": "Tous les états"
+    },
+    "columns": {
+      "time": "Heure",
+      "eventType": "Type d'événement",
+      "project": "Projet",
+      "operator": "Opérateur",
+      "status": "État",
+      "successRatio": "Taux de réussite",
+      "duration": "Durée"
+    },
+    "groups": {
+      "device": "Appareil",
+      "project": "Projet",
+      "alarm": "Alarme",
+      "config": "Configuration et minuteries",
+      "plugin": "Plugin"
+    },
+    "status": {
+      "emitted": "Émis",
+      "processing": "En cours de traitement",
+      "processed": "Traité",
+      "partial": "Échec partiel",
+      "failed": "Échec",
+      "no_subscribers": "Aucun abonné"
+    },
+    "properties": {
+      "pageSize": "Lignes par page",
+      "refreshInterval": "Intervalle de rafraîchissement (s)",
+      "showHeader": "Afficher l'en-tête",
+      "showTime": "Colonne heure",
+      "showEventType": "Colonne type d'événement",
+      "showProject": "Colonne projet",
+      "showOperator": "Colonne opérateur",
+      "showStatus": "Colonne état",
+      "showSuccessRatio": "Colonne taux de réussite",
+      "showDuration": "Colonne durée",
+      "fontSize": "Taille de police",
+      "rowHeight": "Hauteur de ligne",
+      "headerBackgroundColor": "Fond d'en-tête",
+      "rowBackgroundColor": "Fond de ligne",
+      "alternatingRowColor": "Fond des lignes alternées",
+      "textColor": "Couleur du texte",
+      "backgroundColor": "Couleur d'arrière-plan"
+    }
+  }
+}

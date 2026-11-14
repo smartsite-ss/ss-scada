@@ -1,0 +1,21 @@
+{
+  "groundswitch": {
+    "label": "Chave de aterramento",
+    "properties": {
+      "color": "Cor da linha",
+      "backgroundColor": "Cor de fundo",
+      "lineWidth": "Espessura da linha",
+      "closed": "Estado fechado",
+      "closedValue": "Valor correspondente a fechado",
+      "openValue": "Valor correspondente a aberto",
+      "defaultStatus": "Estado padrão"
+    },
+    "options": {
+      "closed": {
+        "yes": "Fechado",
+        "no": "Aberto"
+      }
+    },
+    "description": "Chave de aterramento - chave de proteção de aterramento da linha"
+  }
+}

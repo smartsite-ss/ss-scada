@@ -1,0 +1,61 @@
+{
+  "plugins": {
+    "groups": {
+      "shape": "Form",
+      "name": "Name",
+      "decoration": "Dekoration"
+    }
+  },
+  "tagValue": {
+    "label": "Dekorierte Tag-Variable",
+    "description": "Zeigt den Echtzeitwert einer Gerätevariable (rechteckig/rund)",
+    "config": {
+      "bindVariable": "Variable binden",
+      "selectVariable": "Variable auswählen",
+      "clear": "Zurücksetzen",
+      "unbound": "Nicht gebunden",
+      "decorationImage": "Dekorationsbild",
+      "backgroundImage": "Hintergrundbild",
+      "selectImage": "Bild auswählen"
+    },
+    "selector": {
+      "title": "Gerätevariable auswählen",
+      "searchPlaceholder": "Gerät oder Variable suchen",
+      "tagCount": "{count} Variablen",
+      "loading": "Wird geladen...",
+      "empty": "Keine Gerätevariablen"
+    },
+    "properties": {
+      "shape": "Form",
+      "alias": "Alias",
+      "showName": "Namen anzeigen",
+      "nameColor": "Namensfarbe",
+      "nameFontSize": "Schriftgröße Name",
+      "nameFontWeight": "Schriftstärke Name",
+      "nameGap": "Namensabstand",
+      "decorationImagePosition": "Position des Dekorationsbilds",
+      "decorationImageSize": "Größe des Dekorationsbilds",
+      "decorationImageOpacity": "Deckkraft des Dekorationsbilds",
+      "backgroundRepeat": "Hintergrundkachelung",
+      "backgroundImageFit": "Füllstil"
+    },
+    "options": {
+      "shape": {
+        "rectangle": "Rechteck",
+        "circle": "Kreis"
+      },
+      "decorationPosition": {
+        "left": "Links",
+        "right": "Rechts",
+        "background": "Hintergrund",
+        "center": "Zentriert"
+      },
+      "backgroundRepeat": {
+        "repeat": "Kacheln",
+        "no-repeat": "Nicht kacheln",
+        "repeat-x": "Horizontal kacheln",
+        "repeat-y": "Vertikal kacheln"
+      }
+    }
+  }
+}

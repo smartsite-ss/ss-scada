@@ -1,0 +1,14 @@
+{
+  "flipper-number": {
+    "label": "ตัวเลขแบบพลิกบัตร",
+    "properties": {
+      "dataset": "ค่าตัวเลข",
+      "flipperLength": "จำนวนหลัก",
+      "color1": "สีข้อความ",
+      "flipperWidth": "ความกว้าง",
+      "flipperHeight": "ความสูง",
+      "flipperGap": "ระยะห่าง"
+    },
+    "description": "ปลั๊กอินแสดงตัวเลขแบบพลิกบัตร"
+  }
+}

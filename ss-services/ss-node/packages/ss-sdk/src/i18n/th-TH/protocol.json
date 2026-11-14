@@ -1,0 +1,29 @@
+{
+  "protocol": {
+    "modbus": {
+      "connect_success": "เชื่อมต่อ Modbus TCP สำเร็จ",
+      "connect_failed": "เชื่อมต่อ Modbus TCP ไม่สำเร็จ: {{detail}}",
+      "read_success": "อ่านข้อมูล Modbus สำเร็จ",
+      "read_failed": "อ่านข้อมูล Modbus ไม่สำเร็จ: {{detail}}",
+      "write_success": "เขียนข้อมูล Modbus สำเร็จ",
+      "write_failed": "เขียนข้อมูล Modbus ไม่สำเร็จ: {{detail}}"
+    },
+    "mqtt": {
+      "connect_success": "เชื่อมต่อ MQTT สำเร็จ",
+      "connect_failed": "เชื่อมต่อ MQTT ไม่สำเร็จ: {{detail}}",
+      "publish_success": "เผยแพร่ข้อความ MQTT สำเร็จ",
+      "publish_failed": "เผยแพร่ข้อความ MQTT ไม่สำเร็จ: {{detail}}"
+    },
+    "opcua": {
+      "connect_success": "เชื่อมต่อ OPC UA สำเร็จ",
+      "connect_failed": "เชื่อมต่อ OPC UA ไม่สำเร็จ: {{detail}}",
+      "read_success": "อ่านข้อมูล OPC UA สำเร็จ",
+      "read_failed": "อ่านข้อมูล OPC UA ไม่สำเร็จ: {{detail}}"
+    },
+    "common": {
+      "timeout": "การสื่อสารโปรโตคอลหมดเวลา ({{timeout}}ms)",
+      "connection_refused": "การเชื่อมต่อถูกปฏิเสธ",
+      "authentication_failed": "การยืนยันตัวตนล้มเหลว"
+    }
+  }
+}

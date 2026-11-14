@@ -1,0 +1,27 @@
+{
+  "device": {
+    "create": {
+      "success": "Tạo thiết bị thành công",
+      "failed_name_exists": "Tên thiết bị đã tồn tại trong dự án này"
+    },
+    "update": {
+      "success": "Cập nhật thiết bị thành công"
+    },
+    "delete": {
+      "success": "Xóa thiết bị thành công",
+      "failed_has_tags": "Thiết bị còn thẻ, không thể xóa"
+    },
+    "connect": {
+      "success": "Kết nối thiết bị thành công",
+      "failed_timeout": "Kết nối thiết bị quá thời gian chờ",
+      "failed_refused": "Thiết bị từ chối kết nối"
+    },
+    "disconnect": {
+      "success": "Đã ngắt kết nối thiết bị"
+    },
+    "offline": "Thiết bị {{name}} (ID: {{id}}) đã offline",
+    "online": "Thiết bị {{name}} (ID: {{id}}) đã online",
+    "read_error": "Đọc thiết bị {{name}} tại địa chỉ {{address}} thất bại: {{error}}",
+    "write_error": "Ghi thiết bị {{name}} tại địa chỉ {{address}} thất bại: {{error}}"
+  }
+}

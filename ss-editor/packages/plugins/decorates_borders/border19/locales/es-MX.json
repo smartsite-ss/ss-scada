@@ -1,0 +1,15 @@
+{
+  "border19": {
+    "label": "Borde 19 (estilo tipográfico suizo)",
+    "description": "Componente decorativo de borde 19 (estilo tipográfico suizo)",
+    "properties": {
+      "color1": "Negro profundo",
+      "color2": "Rojo brillante",
+      "color3": "Blanco",
+      "backgroundColor": "Color de fondo",
+      "showBlocks": "Bloques geométricos",
+      "showAccents": "Puntos decorativos",
+      "animationSpeed": "Velocidad de animación"
+    }
+  }
+}

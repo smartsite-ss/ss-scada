@@ -1,0 +1,61 @@
+{
+  "plugins": {
+    "groups": {
+      "shape": "Forma",
+      "name": "Nombre",
+      "decoration": "Decoración"
+    }
+  },
+  "tagValue": {
+    "label": "Variable de etiqueta decorada",
+    "description": "Muestra el valor en tiempo real de la variable del equipo (cuadrado o círculo)",
+    "config": {
+      "bindVariable": "Variables enlazadas",
+      "selectVariable": "Seleccionar variable",
+      "clear": "Borrar",
+      "unbound": "Sin enlazar",
+      "decorationImage": "Imagen decorativa",
+      "backgroundImage": "Imagen de fondo",
+      "selectImage": "Seleccionar imagen"
+    },
+    "selector": {
+      "title": "Seleccionar variable del equipo",
+      "searchPlaceholder": "Buscar equipo o variable",
+      "tagCount": "{count} variables",
+      "loading": "Cargando...",
+      "empty": "Sin variables de equipo"
+    },
+    "properties": {
+      "shape": "Forma",
+      "alias": "Alias",
+      "showName": "Mostrar nombre",
+      "nameColor": "Color del nombre",
+      "nameFontSize": "Tamaño de fuente del nombre",
+      "nameFontWeight": "Grosor del nombre",
+      "nameGap": "Espaciado del nombre",
+      "decorationImagePosition": "Posición de la imagen decorativa",
+      "decorationImageSize": "Tamaño de la imagen decorativa",
+      "decorationImageOpacity": "Opacidad de la imagen decorativa",
+      "backgroundRepeat": "Repetición del fondo",
+      "backgroundImageFit": "Estilo de relleno"
+    },
+    "options": {
+      "shape": {
+        "rectangle": "Cuadrado",
+        "circle": "Círculo"
+      },
+      "decorationPosition": {
+        "left": "Izquierda",
+        "right": "Derecha",
+        "background": "Fondo",
+        "center": "Centrar"
+      },
+      "backgroundRepeat": {
+        "repeat": "Repetir",
+        "no-repeat": "Sin repetición",
+        "repeat-x": "Repetir horizontalmente",
+        "repeat-y": "Repetir verticalmente"
+      }
+    }
+  }
+}

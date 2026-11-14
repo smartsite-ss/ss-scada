@@ -1,0 +1,28 @@
+{
+  "three-gauge": {
+    "label": "Meter 3D",
+    "panelTitle": "Konfigurasi meter 3D",
+    "properties": {
+      "value": "Nilai semasa",
+      "min": "Nilai minimum",
+      "max": "Nilai maksimum",
+      "gaugeColor": "Warna normal",
+      "warningColor": "Warna amaran",
+      "dangerColor": "Warna bahaya",
+      "warningThreshold": "Ambang amaran",
+      "dangerThreshold": "Ambang bahaya",
+      "showTicks": "Tunjuk skala",
+      "showLabels": "Tunjuk label",
+      "needleColor": "Warna jarum",
+      "backgroundColor": "Warna latar",
+      "rimColor": "Warna sempadan"
+    },
+    "groups": {
+      "数据": "Data",
+      "颜色": "Warna",
+      "阈值": "Ambang",
+      "显示": "Paparan"
+    },
+    "description": "Elemen grafik meter 3D dengan putaran jarum dipacu data"
+  }
+}

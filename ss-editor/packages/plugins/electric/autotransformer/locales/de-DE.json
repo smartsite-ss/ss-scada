@@ -1,0 +1,11 @@
+{
+  "autotransformer": {
+    "label": "Spartransformator",
+    "properties": {
+      "color": "Linienfarbe",
+      "backgroundColor": "Hintergrundfarbe",
+      "lineWidth": "Linienbreite"
+    },
+    "description": "Spartransformator – Einzelwicklung mit Anzapfung"
+  }
+}

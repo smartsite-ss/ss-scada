@@ -1,0 +1,54 @@
+{
+  "button": {
+    "label": "Bouton",
+    "panelTitle": "Propriétés du bouton",
+    "properties": {
+      "text": "Texte",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "fontColor": "Couleur du texte",
+      "borderColor": "Couleur de bordure",
+      "borderWidth": "Largeur de bordure",
+      "borderStyle": "Style de bordure",
+      "borderRadius": "Rayon d'arrondi",
+      "fontSize": "Taille de police",
+      "fontWeight": "Graisse de police",
+      "textAlign": "Alignement du texte",
+      "shadowColor": "Couleur d'ombre",
+      "shadowOffsetX": "Décalage d'ombre X",
+      "shadowOffsetY": "Décalage d'ombre Y",
+      "shadowBlur": "Flou d'ombre",
+      "targetType": "Action au clic",
+      "targetPage": "Page cible",
+      "targetUrl": "URL cible"
+    },
+    "options": {
+      "borderStyle": {
+        "solid": "Trait plein",
+        "dashed": "Tirets",
+        "dotted": "Pointillés"
+      },
+      "fontWeight": {
+        "normal": "Normal",
+        "bold": "Gras"
+      },
+      "textAlign": {
+        "left": "Aligner à gauche",
+        "center": "Centrer",
+        "right": "Aligner à droite"
+      },
+      "targetType": {
+        "none": "Aucune",
+        "page": "Ouvrir une page",
+        "url": "Ouvrir une URL"
+      }
+    },
+    "groups": {
+      "basic": "Propriétés de base",
+      "style": "Style",
+      "text": "Texte",
+      "shadow": "Ombre",
+      "action": "Action interactive"
+    },
+    "description": "Élément graphique bouton"
+  }
+}

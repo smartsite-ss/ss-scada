@@ -1,0 +1,56 @@
+{
+  "textbox": {
+    "label": "Kotak teks",
+    "panelTitle": "Konfigurasi kotak teks",
+    "properties": {
+      "text": "Kandungan teks",
+      "placeholder": "Pemegang tempat",
+      "fontSize": "Saiz fon",
+      "fontWeight": "Ketebalan fon",
+      "fontStyle": "Gaya fon",
+      "textColor": "Warna teks",
+      "backgroundColor": "Warna latar",
+      "borderColor": "Warna sempadan",
+      "borderWidth": "Lebar sempadan",
+      "borderStyle": "Gaya sempadan",
+      "borderRadius": "Sudut bulat",
+      "textAlign": "Jajaran teks",
+      "verticalAlignment": "Jajaran menegak",
+      "padding": "Lapik dalam",
+      "multiline": "Mod berbilang baris",
+      "readOnly": "Hanya baca"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "Normal",
+        "bold": "Tebal"
+      },
+      "fontStyle": {
+        "normal": "Normal",
+        "italic": "Condong"
+      },
+      "borderStyle": {
+        "solid": "Garisan pepejal",
+        "dashed": "Garisan putus-putus",
+        "dotted": "Garisan bertitik",
+        "none": "Tiada"
+      },
+      "textAlign": {
+        "left": "Jajar kiri",
+        "center": "Tengah",
+        "right": "Jajar kanan"
+      },
+      "verticalAlignment": {
+        "top": "Atas",
+        "middle": "Tengah",
+        "bottom": "Bawah"
+      }
+    },
+    "groups": {
+      "basic": "Sifat asas",
+      "style": "Gaya",
+      "text": "Teks"
+    },
+    "description": "Elemen grafik kotak teks"
+  }
+}

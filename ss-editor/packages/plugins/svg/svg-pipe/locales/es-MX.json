@@ -1,0 +1,68 @@
+{
+  "svg-pipe": {
+    "label": "Tubería SVG",
+    "panelTitle": "Configuración de tubería SVG",
+    "properties": {
+      "status": "Estado",
+      "flowDirection": "Sentido del flujo",
+      "strokeColor": "Color de la tubería",
+      "flowingColor": "Color de flujo",
+      "stoppedColor": "Color detenido",
+      "blockedColor": "Color de obstrucción",
+      "strokeWidth": "Diámetro de tubería",
+      "strokeLinecap": "Estilo de extremo",
+      "strokeLinejoin": "Estilo de unión",
+      "strokeDasharray": "Discontinua",
+      "gradientType": "Tipo de degradado",
+      "gradientStartColor": "Color inicial del degradado",
+      "gradientEndColor": "Color final del degradado",
+      "filterShadow": "Sombra",
+      "shadowColor": "Color de sombra",
+      "shadowBlur": "Desenfoque de sombra",
+      "showFlowAnimation": "Animación de flujo",
+      "flowSpeed": "Velocidad de flujo",
+      "arrowSpacing": "Espaciado de flechas",
+      "arrowSize": "Tamaño de flecha",
+      "arrowStyle": "Estilo de flecha"
+    },
+    "options": {
+      "status": {
+        "flowing": "En flujo",
+        "stopped": "Detenido",
+        "blocked": "Obstruido"
+      },
+      "flowDirection": {
+        "forward": "Adelante",
+        "backward": "Atrás",
+        "bidirectional": "Bidireccional"
+      },
+      "strokeLinecap": {
+        "butt": "Extremo plano",
+        "round": "Extremo redondo",
+        "square": "Extremo cuadrado"
+      },
+      "strokeLinejoin": {
+        "miter": "Esquina en punta",
+        "round": "Radio de esquina",
+        "bevel": "Esquina biselada"
+      },
+      "gradientType": {
+        "none": "Color sólido",
+        "linear": "Degradado lineal",
+        "radial": "Degradado radial"
+      },
+      "arrowStyle": {
+        "triangle": "Bloque triangular",
+        "rectangle": "Rectángulo",
+        "square": "Cuadrado"
+      }
+    },
+    "groups": {
+      "status": "Estado",
+      "color": "Color",
+      "style": "Estilo",
+      "animation": "Animación"
+    },
+    "description": "Componente de tubería basado en SVG Path con animación de flujo, degradados y configuración de estilo"
+  }
+}

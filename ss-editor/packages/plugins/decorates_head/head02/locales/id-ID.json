@@ -1,0 +1,12 @@
+{
+  "head02": {
+    "label": "Dekorasi kepala-02",
+    "properties": {
+      "color1": "Warna pertama",
+      "color2": "Warna kedua",
+      "dur": "Siklus animasi (detik)",
+      "lineHeight": "Tinggi garis"
+    },
+    "description": "Dekorasi garis horizontal dengan animasi garis putus-putus"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "alarm": {
+    "rule": {
+      "created": "Règle d'alarme créée avec succès",
+      "updated": "Règle d'alarme mise à jour avec succès",
+      "deleted": "Règle d'alarme supprimée",
+      "enabled": "Règle d'alarme activée",
+      "disabled": "Règle d'alarme désactivée",
+      "not_found": "Règle d'alarme inexistante"
+    },
+    "record": {
+      "triggered": "Alarme déclenchée : {{message}}",
+      "acknowledged": "Alarme acquittée (opérateur : {{operator}})",
+      "cleared": "Alarme effacée (motif : {{reason}})",
+      "not_found": "Enregistrement d'événement inexistant",
+      "already_acknowledged": "Cette alarme a déjà été acquittée",
+      "already_cleared": "Cette alarme a déjà été effacée"
+    },
+    "condition": {
+      "gt": "La valeur {{value}} de {{tag}} dépasse la limite supérieure {{threshold}}",
+      "lt": "La valeur {{value}} de {{tag}} est inférieure à la limite inférieure {{threshold}}",
+      "range_in": "La valeur {{value}} de {{tag}} se situe dans la plage normale",
+      "range_out": "La valeur {{value}} de {{tag}} est hors de la plage normale"
+    },
+    "level": {
+      "info": "Information",
+      "warning": "Avertissement",
+      "error": "Erreur",
+      "critical": "Critique"
+    },
+    "notification": {
+      "send_success": "Notification d'alarme envoyée avec succès",
+      "send_failed": "Échec de l'envoi de la notification d'alarme"
+    }
+  }
+}

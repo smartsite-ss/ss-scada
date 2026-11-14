@@ -1,0 +1,23 @@
+{
+  "runlamp": {
+    "label": "Luz indicadora de marcha",
+    "properties": {
+      "lampColor": "Color de la lámpara",
+      "backgroundColor": "Color de fondo",
+      "radius": "Radio",
+      "state": "Estado de funcionamiento",
+      "runningValue": "Valor para en marcha",
+      "stoppedValue": "Valor para detenido",
+      "faultValue": "Valor para falla",
+      "defaultStatus": "Estado predeterminado"
+    },
+    "options": {
+      "state": {
+        "running": "En marcha",
+        "stopped": "Detenido",
+        "fault": "Falla"
+      }
+    },
+    "description": "Luz indicadora de estado: tres estados en marcha/detenido/falla"
+  }
+}

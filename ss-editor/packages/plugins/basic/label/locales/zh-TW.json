@@ -1,0 +1,69 @@
+{
+  "label": {
+    "label": "標籤",
+    "panelTitle": "標籤屬性",
+    "properties": {
+      "text": "文字",
+      "textColor": "文字顏色",
+      "fontSize": "字型大小",
+      "fontWeight": "字型粗細",
+      "fontStyle": "字型樣式",
+      "textDecoration": "文字裝飾",
+      "textAlign": "文字對齊",
+      "verticalAlignment": "垂直對齊",
+      "lineHeight": "行高",
+      "letterSpacing": "字間距",
+      "wordWrap": "自動換行",
+      "maxLines": "最大行數",
+      "backgroundColor": "背景色",
+      "borderColor": "邊框色",
+      "borderWidth": "邊框寬度",
+      "borderRadius": "圓角",
+      "textShadowColor": "文字陰影色",
+      "textShadowOffsetX": "陰影偏移X",
+      "textShadowOffsetY": "陰影偏移Y",
+      "textShadowBlur": "陰影模糊",
+      "decimalPlaces": "小數位數",
+      "unit": "單位",
+      "unitFontSize": "單位字型大小",
+      "unitFontColor": "單位字型顏色",
+      "unitGap": "單位間距"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "正常",
+        "bold": "粗體"
+      },
+      "fontStyle": {
+        "normal": "正常",
+        "italic": "斜體"
+      },
+      "textDecoration": {
+        "none": "無",
+        "underline": "底線",
+        "line-through": "刪除線"
+      },
+      "textAlign": {
+        "left": "靠左對齊",
+        "center": "置中",
+        "right": "靠右對齊"
+      },
+      "verticalAlignment": {
+        "top": "頂部",
+        "middle": "置中",
+        "bottom": "底部"
+      }
+    },
+    "groups": {
+      "basic": "基本屬性",
+      "style": "樣式",
+      "text": "文字",
+      "unit": "單位",
+      "shadow": "陰影"
+    },
+    "hints": {
+      "maxLinesHint": "0 表示不限制"
+    },
+    "description": "標籤圖形元素"
+  }
+}

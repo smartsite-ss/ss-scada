@@ -1,0 +1,61 @@
+{
+  "eventPanel": {
+    "label": "イベントパネル",
+    "description": "システムイベントログを表示（プロジェクト/種類/状態で絞り込み）",
+    "loading": "読み込み中...",
+    "empty": "イベントはありません",
+    "loadFailed": "読み込みに失敗しました",
+    "systemLevel": "システムレベル",
+    "config": {
+      "project": "プロジェクト",
+      "allProjects": "すべてのプロジェクト",
+      "eventType": "イベントの種類",
+      "allEventTypes": "すべての種類",
+      "status": "状態",
+      "allStatus": "すべての状態"
+    },
+    "columns": {
+      "time": "時刻",
+      "eventType": "イベントの種類",
+      "project": "プロジェクト",
+      "operator": "操作者",
+      "status": "状態",
+      "successRatio": "成功率",
+      "duration": "所要時間"
+    },
+    "groups": {
+      "device": "デバイス",
+      "project": "プロジェクト",
+      "alarm": "アラーム",
+      "config": "設定とタイマー",
+      "plugin": "プラグイン"
+    },
+    "status": {
+      "emitted": "発行済み",
+      "processing": "処理中",
+      "processed": "処理済み",
+      "partial": "一部失敗",
+      "failed": "失敗",
+      "no_subscribers": "購読者なし"
+    },
+    "properties": {
+      "pageSize": "1 ページの件数",
+      "refreshInterval": "更新間隔（秒）",
+      "showHeader": "列ヘッダーを表示",
+      "showTime": "時刻列",
+      "showEventType": "イベント種別列",
+      "showProject": "プロジェクト列",
+      "showOperator": "操作者列",
+      "showStatus": "状態列",
+      "showSuccessRatio": "成功率列",
+      "showDuration": "所要時間列",
+      "fontSize": "フォントサイズ",
+      "rowHeight": "行の高さ",
+      "headerBackgroundColor": "ヘッダーの背景",
+      "rowBackgroundColor": "行の背景",
+      "alternatingRowColor": "交互行の背景",
+      "textColor": "本文の色",
+      "backgroundColor": "背景色"
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "pipe-v": {
+    "label": "Pipa - vertikal",
+    "description": "Komponen pipa vertikal dengan animasi aliran dan kontrol arah",
+    "panelTitle": "Konfigurasi pipa",
+    "properties": {
+      "width": "Lebar",
+      "height": "Tinggi",
+      "status": "Status",
+      "direction": "Arah aliran",
+      "pipeColor": "Warna pipa",
+      "flowingColor": "Warna aliran",
+      "stoppedColor": "Warna berhenti",
+      "blockedColor": "Warna tersumbat",
+      "pipeThickness": "Ketebalan pipa",
+      "showFlange": "Tampilkan flensa",
+      "flowSpeed": "Kecepatan aliran",
+      "showFlowAnimation": "Tampilkan animasi aliran"
+    },
+    "options": {
+      "status": {
+        "flowing": "Mengalir",
+        "stopped": "Berhenti",
+        "blocked": "Tersumbat"
+      },
+      "direction": {
+        "up": "Ke atas",
+        "down": "Ke bawah"
+      }
+    },
+    "groups": {
+      "basic": "Dasar",
+      "status": "Status",
+      "color": "Warna",
+      "style": "Gaya",
+      "animation": "Animasi"
+    }
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "textbox": {
+    "label": "文字方塊",
+    "panelTitle": "文字方塊設定",
+    "properties": {
+      "text": "文字內容",
+      "placeholder": "預留位置",
+      "fontSize": "字型大小",
+      "fontWeight": "字型粗細",
+      "fontStyle": "字型樣式",
+      "textColor": "文字顏色",
+      "backgroundColor": "背景色",
+      "borderColor": "邊框色",
+      "borderWidth": "邊框寬度",
+      "borderStyle": "邊框樣式",
+      "borderRadius": "圓角",
+      "textAlign": "文字對齊",
+      "verticalAlignment": "垂直對齊",
+      "padding": "內距",
+      "multiline": "多行模式",
+      "readOnly": "唯讀"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "正常",
+        "bold": "粗體"
+      },
+      "fontStyle": {
+        "normal": "正常",
+        "italic": "斜體"
+      },
+      "borderStyle": {
+        "solid": "實線",
+        "dashed": "虛線",
+        "dotted": "點線",
+        "none": "無"
+      },
+      "textAlign": {
+        "left": "靠左對齊",
+        "center": "置中",
+        "right": "靠右對齊"
+      },
+      "verticalAlignment": {
+        "top": "頂部",
+        "middle": "置中",
+        "bottom": "底部"
+      }
+    },
+    "groups": {
+      "basic": "基本屬性",
+      "style": "樣式",
+      "text": "文字"
+    },
+    "description": "文字方塊圖形元素"
+  }
+}

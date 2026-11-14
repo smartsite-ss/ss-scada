@@ -1,0 +1,42 @@
+{
+  "navigationButton": {
+    "label": "Butang navigasi",
+    "description": "Butang navigasi dengan lompatan halaman",
+    "properties": {
+      "text": "Teks butang",
+      "type": "Jenis butang",
+      "size": "Saiz",
+      "disabled": "Dilumpuhkan",
+      "rounded": "Sudut bulat",
+      "transparent": "Lutsinar",
+      "targetType": "Tindakan klik",
+      "targetPage": "Halaman sasaran",
+      "targetUrl": "URL sasaran"
+    },
+    "options": {
+      "type": {
+        "primary": "Utama",
+        "success": "Berjaya",
+        "warning": "Amaran",
+        "danger": "Bahaya",
+        "default": "Lalai"
+      },
+      "size": {
+        "large": "Besar",
+        "default": "Sederhana",
+        "small": "Kecil"
+      },
+      "targetType": {
+        "none": "Tiada",
+        "page": "Buka halaman",
+        "url": "Buka URL"
+      }
+    },
+    "groups": {
+      "basic": "Asas",
+      "status": "Status",
+      "style": "Gaya",
+      "action": "Interaksi"
+    }
+  }
+}

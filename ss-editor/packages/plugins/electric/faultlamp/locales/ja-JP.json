@@ -1,0 +1,21 @@
+{
+  "faultlamp": {
+    "label": "故障警報灯",
+    "properties": {
+      "color": "色",
+      "backgroundColor": "背景色",
+      "lineWidth": "線幅",
+      "alarming": "警報状態",
+      "alarmValue": "警報に対応する値",
+      "normalValue": "正常に対応する値",
+      "defaultStatus": "既定の状態"
+    },
+    "options": {
+      "alarming": {
+        "yes": "警報中",
+        "no": "正常"
+      }
+    },
+    "description": "故障警報表示灯 - 警報時は赤色で点滅"
+  }
+}

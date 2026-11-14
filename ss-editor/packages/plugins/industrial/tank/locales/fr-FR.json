@@ -1,0 +1,42 @@
+{
+  "tank": {
+    "label": "Cuve",
+    "description": "Composant cuve pour l'affichage du niveau de liquide et l'alarme",
+    "panelTitle": "Configuration de la cuve",
+    "properties": {
+      "width": "Largeur",
+      "height": "Hauteur",
+      "level": "Niveau actuel",
+      "maxLevel": "Niveau maximal",
+      "unit": "Unité",
+      "decimalPlaces": "Nombre de décimales",
+      "status": "État",
+      "warningLevel": "Niveau d'avertissement",
+      "dangerLevel": "Niveau de danger",
+      "bodyColor": "Couleur de la cuve",
+      "liquidColor": "Couleur du liquide",
+      "warningLiquidColor": "Couleur du liquide en avertissement",
+      "dangerLiquidColor": "Couleur du liquide en danger",
+      "rimColor": "Couleur de bordure",
+      "showLevelText": "Afficher le texte de niveau",
+      "showTicks": "Afficher les graduations",
+      "showAnimation": "Animation d'ondulation",
+      "tickCount": "Nombre de graduations"
+    },
+    "options": {
+      "status": {
+        "normal": "Normal",
+        "warning": "Avertissement",
+        "danger": "Danger"
+      }
+    },
+    "groups": {
+      "basic": "Base",
+      "level": "Niveau de liquide",
+      "status": "État",
+      "threshold": "Seuil",
+      "color": "Couleur",
+      "display": "Affichage"
+    }
+  }
+}

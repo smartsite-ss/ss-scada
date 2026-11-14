@@ -1,0 +1,21 @@
+{
+  "loadswitch": {
+    "label": "Lasttrennschalter",
+    "properties": {
+      "color": "Linienfarbe",
+      "backgroundColor": "Hintergrundfarbe",
+      "lineWidth": "Linienbreite",
+      "closed": "Geschlossener Zustand",
+      "closedValue": "Wert für geschlossen",
+      "openValue": "Wert für offen",
+      "defaultStatus": "Standardzustand"
+    },
+    "options": {
+      "closed": {
+        "yes": "Geschlossen",
+        "no": "Offen"
+      }
+    },
+    "description": "Lasttrennschalter – Lastschalter mit Lichtbogenlöschung"
+  }
+}

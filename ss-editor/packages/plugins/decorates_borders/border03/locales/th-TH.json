@@ -1,0 +1,11 @@
+{
+  "border03": {
+    "label": "เส้นขอบ-03",
+    "description": "องค์ประกอบตกแต่งเส้นขอบ-03",
+    "properties": {
+      "colors": "สีที่หนึ่ง",
+      "colors2": "สีที่สอง",
+      "backgroundColor": "สีพื้นหลัง"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "runlamp": {
+    "label": "Luz indicadora de operação",
+    "properties": {
+      "lampColor": "Cor da luz",
+      "backgroundColor": "Cor de fundo",
+      "radius": "Raio",
+      "state": "Estado de operação",
+      "runningValue": "Valor correspondente a operação",
+      "stoppedValue": "Valor correspondente a parado",
+      "faultValue": "Valor correspondente a falha",
+      "defaultStatus": "Estado padrão"
+    },
+    "options": {
+      "state": {
+        "running": "Em operação",
+        "stopped": "Parado",
+        "fault": "Falha"
+      }
+    },
+    "description": "Luz indicadora de operação - três estados: operação/parado/falha"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "ct": {
+    "label": "Transformador de corriente",
+    "properties": {
+      "color": "Color de línea",
+      "backgroundColor": "Color de fondo",
+      "lineWidth": "Grosor de línea"
+    },
+    "description": "Transformador de corriente CT: dispositivo de transformación para medición"
+  }
+}

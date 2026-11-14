@@ -1,0 +1,50 @@
+{
+  "trendChart": {
+    "label": "Biểu đồ xu hướng",
+    "description": "Biểu đồ xu hướng thời gian thực/lịch sử, hỗ trợ so sánh nhiều bút, giảm mẫu LTTB",
+    "properties": {
+      "title": "Tiêu đề",
+      "titleColor": "Màu tiêu đề",
+      "titleFontSize": "Cỡ chữ tiêu đề",
+      "titleFontWeight": "Độ đậm tiêu đề",
+      "backgroundColor": "Màu nền",
+      "borderColor": "Màu viền",
+      "borderWidth": "Độ rộng viền",
+      "borderStyle": "Kiểu viền",
+      "borderRadius": "Bo góc",
+      "gridColor": "Màu lưới",
+      "axisColor": "Màu trục tọa độ",
+      "lineColors": "Màu đường cong",
+      "lineWidth": "Độ rộng đường cong",
+      "showPoints": "Hiển thị điểm dữ liệu",
+      "pointRadius": "Bán kính điểm dữ liệu",
+      "showLegend": "Hiển thị chú giải",
+      "legendPosition": "Vị trí chú giải",
+      "maxPens": "Số bút tối đa",
+      "timeWindow": "Cửa sổ thời gian (giây)",
+      "showTooltip": "Hiển thị chú thích",
+      "yAxisLabel": "Nhãn trục Y",
+      "shadowColor": "Màu bóng đổ",
+      "shadowOffsetX": "Dịch chuyển bóng X",
+      "shadowOffsetY": "Dịch chuyển bóng Y",
+      "shadowBlur": "Độ mờ bóng"
+    },
+    "options": {
+      "titleFontWeight": {
+        "normal": "Bình thường",
+        "bold": "Đậm"
+      },
+      "borderStyle": {
+        "solid": "Nét liền",
+        "dashed": "Nét đứt",
+        "dotted": "Nét chấm"
+      },
+      "legendPosition": {
+        "top": "Trên",
+        "bottom": "Dưới",
+        "left": "Trái",
+        "right": "Phải"
+      }
+    }
+  }
+}

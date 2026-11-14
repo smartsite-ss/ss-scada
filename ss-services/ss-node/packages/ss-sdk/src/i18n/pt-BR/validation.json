@@ -1,0 +1,78 @@
+{
+  "validation": {
+    "common": {
+      "is_string": "{{property}} deve ser uma string",
+      "is_number": "{{property}} deve ser um número",
+      "is_boolean": "{{property}} deve ser booleano",
+      "is_date": "{{property}} deve ser uma data válida",
+      "min_length": "{{property}} não pode ter menos de {{constraints.0}} caracteres",
+      "max_length": "{{property}} não pode ter mais de {{constraints.0}} caracteres",
+      "is_email": "{{property}} não é um endereço de e-mail válido",
+      "matches": "O formato de {{property}} não atende aos requisitos"
+    },
+    "user": {
+      "username": {
+        "required": "O nome de usuário não pode ficar vazio",
+        "length": "O nome de usuário deve ter entre {{min}} e {{max}} caracteres",
+        "pattern": "O nome de usuário pode conter apenas letras, números e sublinhado",
+        "unique": "Este nome de usuário já está em uso"
+      },
+      "email": {
+        "required": "O e-mail não pode ficar vazio",
+        "is_email": "Formato de e-mail incorreto",
+        "unique": "Este e-mail já está cadastrado"
+      },
+      "password": {
+        "required": "A senha não pode ficar vazia",
+        "weak": "Senha muito fraca (mínimo de 8 caracteres, com letras maiúsculas, minúsculas e números)",
+        "mismatch": "As senhas digitadas não coincidem"
+      }
+    },
+    "project": {
+      "name": {
+        "required": "O nome do projeto não pode ficar vazio",
+        "length": "O nome do projeto deve ter entre {{min}} e {{max}} caracteres"
+      },
+      "description": {
+        "maxlength": "A descrição do projeto não pode exceder {{max}} caracteres"
+      }
+    },
+    "device": {
+      "name": {
+        "required": "O nome do dispositivo não pode ficar vazio"
+      },
+      "config": {
+        "host_required": "O endereço IP do dispositivo não pode ficar vazio",
+        "port_range": "O número da porta deve estar entre 1 e 65535",
+        "unitId_range": "O Unit ID deve estar entre 1 e 247"
+      }
+    },
+    "tag": {
+      "name": {
+        "required": "O nome da tag não pode ficar vazio",
+        "unique": "Já existe uma tag com esse nome neste dispositivo"
+      },
+      "address": {
+        "required": "O endereço do registrador não pode ficar vazio",
+        "format": "Formato de endereço inválido (deve ser um número ou um endereço Modbus)"
+      },
+      "scanRate": {
+        "range": "O ciclo de varredura deve estar entre {{min}} e {{max}} ms"
+      }
+    },
+    "alarm": {
+      "rule": {
+        "name": {
+          "required": "O nome da regra de alarme não pode ficar vazio"
+        },
+        "threshold": {
+          "required": "O limite do alarme não pode ficar vazio",
+          "number": "O limite deve ser um número válido"
+        },
+        "debounceTime": {
+          "range": "O tempo de debounce deve estar entre {{min}} e {{max}} ms"
+        }
+      }
+    }
+  }
+}

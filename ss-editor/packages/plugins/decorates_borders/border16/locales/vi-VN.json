@@ -1,0 +1,15 @@
+{
+  "border16": {
+    "label": "Viền-16 (Bắc Âu tối giản)",
+    "description": "Thành phần trang trí viền-16 (Bắc Âu tối giản)",
+    "properties": {
+      "color1": "Màu chính",
+      "color2": "Màu phụ",
+      "color3": "Màu nền tảng",
+      "backgroundColor": "Màu nền",
+      "showLeaves": "Trang trí lá",
+      "showDots": "Họa tiết chấm",
+      "animationSpeed": "Tốc độ hoạt ảnh"
+    }
+  }
+}

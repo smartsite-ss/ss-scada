@@ -1,0 +1,11 @@
+{
+  "autotransformer": {
+    "label": "Autotransformador",
+    "properties": {
+      "color": "Cor da linha",
+      "backgroundColor": "Cor de fundo",
+      "lineWidth": "Espessura da linha"
+    },
+    "description": "Autotransformador - bobina única com derivação"
+  }
+}

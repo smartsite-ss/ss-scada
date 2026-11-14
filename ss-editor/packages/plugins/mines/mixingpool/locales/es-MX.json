@@ -1,0 +1,24 @@
+{
+  "mixingpool": {
+    "label": "Tanque agitador",
+    "properties": {
+      "color1": "Color uno",
+      "color2": "Color dos",
+      "flowColor": "Color de flujo",
+      "pipeColor": "Color de tubería",
+      "backgroundColor": "Color de fondo",
+      "bgWidth": "Ancho del fondo",
+      "boardWidth": "Ancho del borde",
+      "roate": "Ángulo de rotación",
+      "cls": "Estilo de animación",
+      "dur": "Ciclo de animación (s)",
+      "dataset": "Valor de datos",
+      "forwardValue": "Valor para giro directo",
+      "backwardValue": "Valor para giro inverso",
+      "stopValue": "Valor para detenido",
+      "defaultCls": "Estilo de animación predeterminado",
+      "decimalPlaces": "Decimales"
+    },
+    "description": "Tanque agitador de minería: recipiente de mezcla con agitador y animación de rotación"
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "multiChart": {
+    "label": "Carta berbilang",
+    "description": "Komponen carta berbilang dengan carta bar, carta pai dan peta haba",
+    "panelTitle": "Konfigurasi carta berbilang",
+    "properties": {
+      "title": "Tajuk",
+      "titleColor": "Warna tajuk",
+      "titleFontSize": "Saiz fon tajuk",
+      "chartType": "Jenis carta",
+      "backgroundColor": "Warna latar",
+      "borderColor": "Warna sempadan",
+      "borderWidth": "Lebar sempadan",
+      "borderRadius": "Sudut bulat",
+      "barColor": "Warna carta bar",
+      "barGap": "Jarak bar",
+      "pieColors": "Urutan warna carta pai",
+      "pieInnerRadius": "Nisbah jejari dalam",
+      "pieShowLabels": "Tunjuk label",
+      "heatmapColorLow": "Warna nilai rendah peta haba",
+      "heatmapColorHigh": "Warna nilai tinggi peta haba",
+      "heatmapRows": "Bilangan baris",
+      "heatmapCols": "Bilangan lajur",
+      "showLegend": "Tunjuk legenda",
+      "shadowColor": "Warna bayang",
+      "shadowOffsetX": "Offset bayang X",
+      "shadowOffsetY": "Offset bayang Y",
+      "shadowBlur": "Kabur bayang"
+    },
+    "options": {
+      "chartType": {
+        "bar": "Carta bar",
+        "pie": "Carta pai",
+        "heatmap": "Peta haba"
+      }
+    },
+    "groups": {
+      "basic": "Asas",
+      "style": "Gaya",
+      "bar": "Carta bar",
+      "pie": "Carta pai",
+      "heatmap": "Peta haba",
+      "display": "Paparan",
+      "shadow": "Bayang"
+    }
+  }
+}

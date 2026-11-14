@@ -1,0 +1,21 @@
+{
+  "closelamp": {
+    "label": "Voyant de fermeture",
+    "properties": {
+      "lampColor": "Couleur du voyant",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "radius": "Rayon",
+      "closed": "État fermé",
+      "closedValue": "Valeur de fermeture",
+      "openValue": "Valeur d'ouverture",
+      "defaultStatus": "État par défaut"
+    },
+    "options": {
+      "closed": {
+        "yes": "Fermé",
+        "no": "Ouvert"
+      }
+    },
+    "description": "Voyant de position fermée"
+  }
+}

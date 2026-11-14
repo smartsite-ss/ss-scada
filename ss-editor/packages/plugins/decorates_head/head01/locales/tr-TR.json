@@ -1,0 +1,13 @@
+{
+  "head01": {
+    "label": "Başlık dekorasyonu-01",
+    "properties": {
+      "color1": "Birinci renk",
+      "color2": "İkinci renk",
+      "dur": "Animasyon döngüsü (saniye)",
+      "lineHeight": "Çizgi yüksekliği",
+      "endWidth": "Kaydırıcı genişliği"
+    },
+    "description": "Kayan renk bloğu ile animasyonlu dikdörtgen çubuk dekorasyonu"
+  }
+}

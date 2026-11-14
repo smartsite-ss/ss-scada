@@ -1,0 +1,14 @@
+{
+  "border01": {
+    "label": "Batas-01",
+    "description": "Komponen dekorasi batas-01",
+    "properties": {
+      "color1": "Warna pertama",
+      "color2": "Warna kedua",
+      "backgroundColor": "Warna latar",
+      "borderColor": "Warna garis batas",
+      "dur": "Siklus animasi (detik)",
+      "showAnimation": "Aktifkan animasi"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "clock": {
+    "label": "Horloge",
+    "properties": {
+      "color1": "Couleur de l'aiguille",
+      "color2": "Fond du cadran",
+      "color3": "Couleur de bordure",
+      "borderWidth": "Largeur de bordure"
+    },
+    "description": "Horloge analogique"
+  }
+}

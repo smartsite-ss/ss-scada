@@ -1,0 +1,69 @@
+{
+  "label": {
+    "label": "Etiqueta",
+    "panelTitle": "Propiedades de la etiqueta",
+    "properties": {
+      "text": "Texto",
+      "textColor": "Color del texto",
+      "fontSize": "Tamaño de fuente",
+      "fontWeight": "Grosor de fuente",
+      "fontStyle": "Estilo de fuente",
+      "textDecoration": "Decoración del texto",
+      "textAlign": "Alineación del texto",
+      "verticalAlignment": "Alineación vertical",
+      "lineHeight": "Altura de línea",
+      "letterSpacing": "Espaciado entre letras",
+      "wordWrap": "Ajuste de línea automático",
+      "maxLines": "Número máximo de líneas",
+      "backgroundColor": "Color de fondo",
+      "borderColor": "Color del borde",
+      "borderWidth": "Ancho del borde",
+      "borderRadius": "Radio de esquina",
+      "textShadowColor": "Color de sombra del texto",
+      "textShadowOffsetX": "Desplazamiento de sombra X",
+      "textShadowOffsetY": "Desplazamiento de sombra Y",
+      "textShadowBlur": "Desenfoque de sombra",
+      "decimalPlaces": "Decimales",
+      "unit": "Unidad",
+      "unitFontSize": "Tamaño de fuente de la unidad",
+      "unitFontColor": "Color de fuente de la unidad",
+      "unitGap": "Espaciado de la unidad"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "Normal",
+        "bold": "Negrita"
+      },
+      "fontStyle": {
+        "normal": "Normal",
+        "italic": "Cursiva"
+      },
+      "textDecoration": {
+        "none": "Ninguno",
+        "underline": "Subrayado",
+        "line-through": "Tachado"
+      },
+      "textAlign": {
+        "left": "Alinear a la izquierda",
+        "center": "Centrar",
+        "right": "Alinear a la derecha"
+      },
+      "verticalAlignment": {
+        "top": "Arriba",
+        "middle": "Centrar",
+        "bottom": "Abajo"
+      }
+    },
+    "groups": {
+      "basic": "Propiedades básicas",
+      "style": "Estilo",
+      "text": "Texto",
+      "unit": "Unidad",
+      "shadow": "Sombra"
+    },
+    "hints": {
+      "maxLinesHint": "0 indica sin límite"
+    },
+    "description": "Elemento gráfico de etiqueta"
+  }
+}

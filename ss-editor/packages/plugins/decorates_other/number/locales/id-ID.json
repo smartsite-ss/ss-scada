@@ -1,0 +1,19 @@
+{
+  "number": {
+    "label": "Angka",
+    "properties": {
+      "dataset": "Nilai target",
+      "from": "Nilai awal",
+      "dur": "Durasi animasi (detik)",
+      "precision": "Jumlah desimal",
+      "showSeparator": "Pemisah ribuan",
+      "numberSize": "Ukuran font",
+      "color1": "Warna angka",
+      "prefixText": "Awalan",
+      "color2": "Warna awalan",
+      "suffixText": "Akhiran",
+      "color3": "Warna akhiran"
+    },
+    "description": "Plugin animasi penghitung angka"
+  }
+}

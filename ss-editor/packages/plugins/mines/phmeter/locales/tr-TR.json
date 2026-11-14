@@ -1,0 +1,32 @@
+{
+  "phmeter": {
+    "label": "pH metre",
+    "properties": {
+      "colors": "Renk 1",
+      "colors2": "Renk 2",
+      "flowColor": "Akış rengi",
+      "pipeColor": "Boru rengi",
+      "backgroundColor": "Arka plan rengi",
+      "bgWidth": "Arka plan genişliği",
+      "boardWidth": "Kenarlık genişliği",
+      "roate": "Döndürme açısı",
+      "cls": "Animasyon yönü",
+      "dur": "Animasyon döngüsü (saniye)",
+      "dataset": "Veri değeri",
+      "decimalPlaces": "Ondalık basamak sayısı",
+      "unit": "Birim",
+      "forwardValue": "İleri dönüş durum değeri",
+      "backwardValue": "Geri dönüş durum değeri",
+      "stopValue": "Durma durum değeri",
+      "defaultCls": "Varsayılan animasyon yönü"
+    },
+    "options": {
+      "cls": {
+        "left": "İleri dönüş",
+        "right": "Geri dönüş",
+        "stop": "Durdu"
+      }
+    },
+    "description": "Maden pH metresi - Gösterge panelli pH probu, renk geçişiyle asit/baz göstergesi"
+  }
+}

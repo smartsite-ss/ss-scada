@@ -1,0 +1,78 @@
+{
+  "validation": {
+    "common": {
+      "is_string": "{{property}} は文字列である必要があります",
+      "is_number": "{{property}} は数値である必要があります",
+      "is_boolean": "{{property}} は真偽値である必要があります",
+      "is_date": "{{property}} は有効な日付である必要があります",
+      "min_length": "{{property}} の長さは {{constraints.0}} 文字以上にしてください",
+      "max_length": "{{property}} の長さは {{constraints.0}} 文字以下にしてください",
+      "is_email": "{{property}} は正しいメールアドレス形式ではありません",
+      "matches": "{{property}} の形式が要件を満たしていません"
+    },
+    "user": {
+      "username": {
+        "required": "ユーザー名は必須です",
+        "length": "ユーザー名の長さは {{min}}-{{max}} 文字の範囲で指定してください",
+        "pattern": "ユーザー名には英字、数字、アンダースコアのみ使用できます",
+        "unique": "このユーザー名は既に使用されています"
+      },
+      "email": {
+        "required": "メールアドレスは必須です",
+        "is_email": "メールアドレスの形式が正しくありません",
+        "unique": "このメールアドレスは既に登録されています"
+      },
+      "password": {
+        "required": "パスワードは必須です",
+        "weak": "パスワード強度が不足しています（8 文字以上、大文字・小文字の英字と数字を含む）",
+        "mismatch": "入力したパスワードが一致しません"
+      }
+    },
+    "project": {
+      "name": {
+        "required": "プロジェクト名は必須です",
+        "length": "プロジェクト名の長さは {{min}}-{{max}} 文字の範囲で指定してください"
+      },
+      "description": {
+        "maxlength": "プロジェクトの説明は {{max}} 文字以下にしてください"
+      }
+    },
+    "device": {
+      "name": {
+        "required": "設備名は必須です"
+      },
+      "config": {
+        "host_required": "設備の IP アドレスは必須です",
+        "port_range": "ポート番号は 1〜65535 の範囲で指定してください",
+        "unitId_range": "Unit ID は 1〜247 の範囲で指定してください"
+      }
+    },
+    "tag": {
+      "name": {
+        "required": "タグ名は必須です",
+        "unique": "タグ名はこの設備内に既に存在します"
+      },
+      "address": {
+        "required": "レジスタアドレスは必須です",
+        "format": "アドレス形式が無効です（数値または Modbus アドレス形式で指定してください）"
+      },
+      "scanRate": {
+        "range": "スキャン周期は {{min}}-{{max}} ms の範囲で指定してください"
+      }
+    },
+    "alarm": {
+      "rule": {
+        "name": {
+          "required": "アラームルール名は必須です"
+        },
+        "threshold": {
+          "required": "アラームしきい値は必須です",
+          "number": "しきい値は有効な数値である必要があります"
+        },
+        "debounceTime": {
+          "range": "デバウンス時間は {{min}}-{{max}} ms の範囲で指定してください"
+        }
+      }
+    }
+  }
+}

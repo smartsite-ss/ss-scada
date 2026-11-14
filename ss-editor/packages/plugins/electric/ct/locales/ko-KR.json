@@ -1,0 +1,11 @@
+{
+  "ct": {
+    "label": "변류기",
+    "properties": {
+      "color": "선 색상",
+      "backgroundColor": "배경색",
+      "lineWidth": "선 너비"
+    },
+    "description": "변류기 CT - 측정용 전류 변환 장치"
+  }
+}

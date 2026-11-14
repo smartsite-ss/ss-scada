@@ -1,0 +1,19 @@
+{
+  "time-common": {
+    "label": "Masa umum",
+    "properties": {
+      "textColor": "Warna teks",
+      "fontSize": "Saiz fon",
+      "fontWeight": "Berat fon",
+      "shadow": "Bayang"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "Normal",
+        "bold": "Tebal",
+        "lighter": "Nipis"
+      }
+    },
+    "description": "Paparan masa umum"
+  }
+}

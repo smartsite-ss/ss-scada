@@ -1,0 +1,15 @@
+{
+  "border19": {
+    "label": "Batas-19 (Gaya Tipografi Swiss)",
+    "description": "Komponen dekorasi batas-19 (Gaya Tipografi Swiss)",
+    "properties": {
+      "color1": "Hitam pekat",
+      "color2": "Merah cerah",
+      "color3": "Putih",
+      "backgroundColor": "Warna latar",
+      "showBlocks": "Blok geometris",
+      "showAccents": "Titik dekoratif",
+      "animationSpeed": "Kecepatan animasi"
+    }
+  }
+}

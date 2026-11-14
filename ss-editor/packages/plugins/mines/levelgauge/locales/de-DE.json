@@ -1,0 +1,15 @@
+{
+  "levelgauge": {
+    "label": "Füllstandsanzeiger",
+    "properties": {
+      "color": "Farbe",
+      "backgroundColor": "Hintergrundfarbe",
+      "lineWidth": "Linienbreite",
+      "dataset": "Datenwert (0–100)",
+      "showNumeric": "Wert anzeigen",
+      "decimalPlaces": "Dezimalstellen",
+      "unit": "Einheit"
+    },
+    "description": "Füllstandsanzeiger – senkrechtes Glasrohr mit Skala und Füllstandsanzeige"
+  }
+}

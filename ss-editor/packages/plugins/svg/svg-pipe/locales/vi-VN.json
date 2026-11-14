@@ -1,0 +1,68 @@
+{
+  "svg-pipe": {
+    "label": "Đường ống SVG",
+    "panelTitle": "Cấu hình đường ống SVG",
+    "properties": {
+      "status": "Trạng thái",
+      "flowDirection": "Hướng dòng chảy",
+      "strokeColor": "Màu đường ống",
+      "flowingColor": "Màu dòng chảy",
+      "stoppedColor": "Màu dừng",
+      "blockedColor": "Màu tắc nghẽn",
+      "strokeWidth": "Đường kính ống",
+      "strokeLinecap": "Kiểu đầu nét",
+      "strokeLinejoin": "Kiểu nối nét",
+      "strokeDasharray": "Nét đứt",
+      "gradientType": "Kiểu chuyển sắc",
+      "gradientStartColor": "Màu bắt đầu chuyển sắc",
+      "gradientEndColor": "Màu kết thúc chuyển sắc",
+      "filterShadow": "Bóng đổ",
+      "shadowColor": "Màu bóng đổ",
+      "shadowBlur": "Độ mờ bóng",
+      "showFlowAnimation": "Hoạt ảnh dòng chảy",
+      "flowSpeed": "Tốc độ dòng chảy",
+      "arrowSpacing": "Khoảng cách mũi tên",
+      "arrowSize": "Kích thước mũi tên",
+      "arrowStyle": "Kiểu mũi tên"
+    },
+    "options": {
+      "status": {
+        "flowing": "Đang chảy",
+        "stopped": "Dừng",
+        "blocked": "Tắc nghẽn"
+      },
+      "flowDirection": {
+        "forward": "Xuôi",
+        "backward": "Ngược",
+        "bidirectional": "Hai chiều"
+      },
+      "strokeLinecap": {
+        "butt": "Đầu bằng",
+        "round": "Đầu tròn",
+        "square": "Đầu vuông"
+      },
+      "strokeLinejoin": {
+        "miter": "Góc nhọn",
+        "round": "Góc tròn",
+        "bevel": "Góc vát"
+      },
+      "gradientType": {
+        "none": "Màu đơn sắc",
+        "linear": "Chuyển sắc tuyến tính",
+        "radial": "Chuyển sắc hướng tâm"
+      },
+      "arrowStyle": {
+        "triangle": "Khối tam giác",
+        "rectangle": "Hình chữ nhật",
+        "square": "Hình vuông"
+      }
+    },
+    "groups": {
+      "status": "Trạng thái",
+      "color": "Màu",
+      "style": "Kiểu dáng",
+      "animation": "Hoạt ảnh"
+    },
+    "description": "Thành phần đường ống dựa trên SVG Path, hỗ trợ hoạt ảnh dòng chảy, chuyển sắc và cấu hình kiểu dáng"
+  }
+}

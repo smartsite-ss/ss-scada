@@ -1,0 +1,11 @@
+{
+  "autotransformer": {
+    "label": "단권 변압기",
+    "properties": {
+      "color": "선 색상",
+      "backgroundColor": "배경색",
+      "lineWidth": "선 너비"
+    },
+    "description": "단권 변압기 - 탭이 있는 단일 코일"
+  }
+}

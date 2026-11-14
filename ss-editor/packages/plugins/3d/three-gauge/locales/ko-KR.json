@@ -1,0 +1,28 @@
+{
+  "three-gauge": {
+    "label": "3D 게이지",
+    "panelTitle": "3D 게이지 구성",
+    "properties": {
+      "value": "현재 값",
+      "min": "최솟값",
+      "max": "최댓값",
+      "gaugeColor": "정상 색상",
+      "warningColor": "경고 색상",
+      "dangerColor": "위험 색상",
+      "warningThreshold": "경고 임계값",
+      "dangerThreshold": "위험 임계값",
+      "showTicks": "눈금 표시",
+      "showLabels": "레이블 표시",
+      "needleColor": "바늘 색상",
+      "backgroundColor": "배경 색상",
+      "rimColor": "테두리 색상"
+    },
+    "groups": {
+      "数据": "데이터",
+      "颜色": "색상",
+      "阈值": "임계값",
+      "显示": "표시"
+    },
+    "description": "3D 게이지 도형 요소, 데이터 기반 바늘 회전 지원"
+  }
+}

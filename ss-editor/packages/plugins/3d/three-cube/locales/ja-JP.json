@@ -1,0 +1,17 @@
+{
+  "three-cube": {
+    "label": "3D 立方体",
+    "panelTitle": "3D 立方体の設定",
+    "properties": {
+      "cubeColor": "立方体の色",
+      "cubeSize": "立方体のサイズ",
+      "rotationSpeed": "回転速度",
+      "showGrid": "グリッドを表示",
+      "showAxes": "座標軸を表示"
+    },
+    "groups": {
+      "basic": "基本プロパティ"
+    },
+    "description": "3D 立方体の図形要素。回転アニメーションに対応"
+  }
+}

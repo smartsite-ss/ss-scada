@@ -1,0 +1,14 @@
+{
+  "border01": {
+    "label": "Sempadan-01",
+    "description": "Komponen hiasan sempadan-01",
+    "properties": {
+      "color1": "Warna satu",
+      "color2": "Warna dua",
+      "backgroundColor": "Warna latar",
+      "borderColor": "Warna garisan sempadan",
+      "dur": "Kitaran animasi (saat)",
+      "showAnimation": "Dayakan animasi"
+    }
+  }
+}

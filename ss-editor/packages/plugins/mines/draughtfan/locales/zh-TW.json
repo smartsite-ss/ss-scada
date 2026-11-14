@@ -1,0 +1,33 @@
+{
+  "draughtfan": {
+    "label": "風機",
+    "properties": {
+      "dataset": "資料集",
+      "dur": "動畫週期(秒)",
+      "colors": "顏色組",
+      "flowColor": "流動顏色",
+      "pipeColor": "管道顏色",
+      "bgWidth": "背景寬度",
+      "boardWidth": "邊框寬度",
+      "roate": "旋轉角度",
+      "cls": "旋轉方向",
+      "clsLeft": "順時針",
+      "clsRight": "逆時針",
+      "clsStop": "停止",
+      "backgroundColor": "背景色",
+      "forwardValue": "正轉對應值",
+      "backwardValue": "反轉對應值",
+      "stopValue": "停止對應值",
+      "defaultCls": "預設動畫方向",
+      "decimalPlaces": "小數位數"
+    },
+    "options": {
+      "cls": {
+        "left": "正轉",
+        "right": "反轉",
+        "stop": "停止"
+      }
+    },
+    "description": "礦產風機 - 抽風機，支援旋轉動畫"
+  }
+}

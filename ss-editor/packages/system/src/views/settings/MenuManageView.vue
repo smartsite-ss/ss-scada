@@ -299,7 +299,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { useI18n, getLocale, i18n } from '@scada-editor/core';
+import { useI18n, getLocale, i18n, SUPPORTED_LOCALE_CODES } from '@scada-editor/core';
 import { menuApi } from '../../api/modules';
 import { showSuccess, showError, showConfirm } from '../../utils/messageBox';
 import type { SystemMenuItem, SystemRole } from '../../config/system-menu.config';
@@ -331,7 +331,7 @@ const activeLocale = computed(() => {
   return loc;
 });
 /** Supported languages list */
-const supportedLocales = ref<string[]>(['zh-CN', 'en-US']);
+const supportedLocales = ref<string[]>([...SUPPORTED_LOCALE_CODES]);
 /** Menu i18n label mapping: locale → (labelKey → label) */
 const menuI18nLabels = ref<Map<string, Map<string, string>>>(new Map());
 
@@ -687,11 +687,11 @@ async function loadData() {
     const [menus, buttons, locales] = await Promise.all([
       menuApi.getMenu(),
       menuApi.getButtons(),
-      menuApi.getMenuI18nLocales().catch(() => ['zh-CN', 'en-US']),
+      menuApi.getMenuI18nLocales().catch(() => [...SUPPORTED_LOCALE_CODES]),
     ]);
     menuTree.value = menus || [];
     allButtons.value = buttons || [];
-    supportedLocales.value = locales.length > 0 ? locales : ['zh-CN', 'en-US'];
+    supportedLocales.value = locales.length > 0 ? locales : [...SUPPORTED_LOCALE_CODES];
 
     // Load menu i18n data for all languages
     await loadAllI18nLabels();

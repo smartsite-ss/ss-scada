@@ -1,0 +1,61 @@
+{
+  "eventPanel": {
+    "label": "事件面板",
+    "description": "顯示系統事件日誌（依專案/類型/狀態篩選）",
+    "loading": "載入中...",
+    "empty": "暫無事件",
+    "loadFailed": "載入失敗",
+    "systemLevel": "系統級",
+    "config": {
+      "project": "專案",
+      "allProjects": "全部專案",
+      "eventType": "事件類型",
+      "allEventTypes": "全部類型",
+      "status": "狀態",
+      "allStatus": "全部狀態"
+    },
+    "columns": {
+      "time": "時間",
+      "eventType": "事件類型",
+      "project": "專案",
+      "operator": "操作者",
+      "status": "狀態",
+      "successRatio": "成功率",
+      "duration": "耗時"
+    },
+    "groups": {
+      "device": "設備",
+      "project": "專案",
+      "alarm": "警報",
+      "config": "設定與計時器",
+      "plugin": "外掛"
+    },
+    "status": {
+      "emitted": "已發送",
+      "processing": "處理中",
+      "processed": "已處理",
+      "partial": "部分失敗",
+      "failed": "失敗",
+      "no_subscribers": "無訂閱者"
+    },
+    "properties": {
+      "pageSize": "每頁筆數",
+      "refreshInterval": "重新整理間隔(秒)",
+      "showHeader": "顯示欄位標題",
+      "showTime": "時間欄",
+      "showEventType": "事件類型欄",
+      "showProject": "專案欄",
+      "showOperator": "操作者欄",
+      "showStatus": "狀態欄",
+      "showSuccessRatio": "成功率欄",
+      "showDuration": "耗時欄",
+      "fontSize": "字級",
+      "rowHeight": "列高",
+      "headerBackgroundColor": "欄位標題背景",
+      "rowBackgroundColor": "列背景",
+      "alternatingRowColor": "隔列背景",
+      "textColor": "內文顏色",
+      "backgroundColor": "背景色"
+    }
+  }
+}

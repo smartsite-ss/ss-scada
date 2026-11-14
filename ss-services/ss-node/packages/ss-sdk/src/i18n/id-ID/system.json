@@ -1,0 +1,23 @@
+{
+  "system": {
+    "health_check": {
+      "success": "Pemeriksaan kesehatan sistem lulus",
+      "failed": "Pemeriksaan kesehatan sistem gagal: {{detail}}"
+    },
+    "config": {
+      "reload_success": "Konfigurasi berhasil dimuat ulang",
+      "reload_failed": "Pemuatan ulang konfigurasi gagal: {{detail}}",
+      "validation_error": "Validasi konfigurasi gagal: {{detail}}"
+    },
+    "storage": {
+      "database_connected": "Koneksi basis data berhasil",
+      "database_connection_failed": "Koneksi basis data gagal: {{detail}}",
+      "redis_connected": "Koneksi Redis berhasil",
+      "redis_connection_failed": "Koneksi Redis gagal: {{detail}}"
+    },
+    "maintenance": {
+      "mode_enabled": "Mode pemeliharaan telah diaktifkan",
+      "mode_disabled": "Mode pemeliharaan telah dinonaktifkan"
+    }
+  }
+}

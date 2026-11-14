@@ -1,0 +1,24 @@
+{
+  "mixingpool": {
+    "label": "Karıştırma tankı",
+    "properties": {
+      "color1": "Birinci renk",
+      "color2": "İkinci renk",
+      "flowColor": "Akış rengi",
+      "pipeColor": "Boru rengi",
+      "backgroundColor": "Arka plan rengi",
+      "bgWidth": "Arka plan genişliği",
+      "boardWidth": "Kenarlık genişliği",
+      "roate": "Döndürme açısı",
+      "cls": "Animasyon stili",
+      "dur": "Animasyon döngüsü (saniye)",
+      "dataset": "Veri değeri",
+      "forwardValue": "İleri dönüş durum değeri",
+      "backwardValue": "Geri dönüş durum değeri",
+      "stopValue": "Durma durum değeri",
+      "defaultCls": "Varsayılan animasyon stili",
+      "decimalPlaces": "Ondalık basamak sayısı"
+    },
+    "description": "Maden karıştırma tankı - Karıştırıcılı karışım kabı, döndürme animasyonunu destekler"
+  }
+}

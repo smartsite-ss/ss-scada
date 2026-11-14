@@ -1,0 +1,13 @@
+{
+  "head06": {
+    "label": "Hiasan kepala-06",
+    "properties": {
+      "color1": "Warna isi",
+      "color2": "Warna sempadan",
+      "dataset": "Teks",
+      "textColor": "Warna teks",
+      "textSize": "Saiz teks"
+    },
+    "description": "Hiasan bingkai poligon"
+  }
+}

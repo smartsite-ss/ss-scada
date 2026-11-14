@@ -1,0 +1,62 @@
+{
+  "track-move": {
+    "label": "การเคลื่อนที่ตามเส้นทาง",
+    "description": "จุดแอนิเมชันเคลื่อนที่ตามรางกำหนดเอง รองรับเส้นทางหักมุมและการแทนที่ด้วยรูปภาพ",
+    "panelTitle": "การกำหนดค่าการเคลื่อนที่ตามเส้นทาง",
+    "properties": {
+      "speed": "ความเร็ว (px/s)",
+      "dotStyle": "รูปแบบจุด",
+      "dotColor": "สีจุด",
+      "dotSize": "ขนาดจุด",
+      "dotImage": "URL รูปภาพ",
+      "imageWidth": "ความกว้างรูปภาพ",
+      "imageHeight": "ความสูงรูปภาพ",
+      "trackColor": "สีราง",
+      "trackWidth": "ความกว้างราง",
+      "trackStyle": "รูปแบบราง",
+      "status": "สถานะแอนิเมชัน",
+      "direction": "ทิศทางการเคลื่อนที่",
+      "loopMode": "โหมดวนซ้ำ"
+    },
+    "options": {
+      "dotStyle": {
+        "circle": "วงกลม",
+        "image": "รูปภาพ"
+      },
+      "trackStyle": {
+        "solid": "เส้นทึบ",
+        "dashed": "เส้นประ"
+      },
+      "direction": {
+        "forward": "ทิศตรง",
+        "backward": "ทิศกลับ"
+      },
+      "loopMode": {
+        "loop": "วนซ้ำ",
+        "once": "ครั้งเดียว",
+        "bounce": "กระเด้งไปกลับ"
+      }
+    },
+    "groups": {
+      "dot": "จุดแอนิเมชัน",
+      "track": "ราง",
+      "motion": "การเคลื่อนที่"
+    },
+    "hints": {
+      "dotImage": "ป้อนที่อยู่ URL รูปภาพ"
+    },
+    "editor": {
+      "pathPoints": "จุดเส้นทาง",
+      "index": "#",
+      "coordX": "X",
+      "coordY": "Y",
+      "type": "ประเภท",
+      "action": "การดำเนินการ",
+      "startPoint": "จุดเริ่ม",
+      "endPoint": "จุดสิ้นสุด",
+      "bendPoint": "จุดหักมุม",
+      "addBendPoint": "+ เพิ่มจุดหักมุม",
+      "reversePath": "เส้นทางย้อนกลับ"
+    }
+  }
+}

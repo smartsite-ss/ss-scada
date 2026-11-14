@@ -1,0 +1,35 @@
+{
+  "fan5": {
+    "label": "Lüfter 5",
+    "properties": {
+      "colors": "Farbgruppe",
+      "flowColor": "Luftkanalfarbe",
+      "pipeColor": "Rohrfarbe",
+      "bgWidth": "Sockelbreite",
+      "boardWidth": "Plattenstärke",
+      "roate": "Drehwinkel",
+      "cls": "Drehrichtung",
+      "dur": "Animationsdauer (Sekunden)",
+      "backgroundColor": "Hintergrundfarbe",
+      "dataset": "Datensatz",
+      "forwardValue": "Wert für Vorwärtslauf",
+      "backwardValue": "Wert für Rückwärtslauf",
+      "stopValue": "Wert für Stopp",
+      "defaultCls": "Standard-Animationsrichtung",
+      "decimalPlaces": "Dezimalstellen",
+      "clsOptions": {
+        "right": "Rechtslauf",
+        "left": "Linkslauf",
+        "stop": "Stopp"
+      }
+    },
+    "options": {
+      "cls": {
+        "left": "Vorwärtslauf",
+        "right": "Rückwärtslauf",
+        "stop": "Stopp"
+      }
+    },
+    "description": "Lüfter 5 – Axialkanalventilator mit Steuerung von Drehrichtung und Drehzahl"
+  }
+}

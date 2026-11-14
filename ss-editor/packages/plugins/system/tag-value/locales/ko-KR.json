@@ -1,0 +1,61 @@
+{
+  "plugins": {
+    "groups": {
+      "shape": "형태",
+      "name": "이름",
+      "decoration": "장식"
+    }
+  },
+  "tagValue": {
+    "label": "장식 태그 변수",
+    "description": "설비 변수 실시간 값 표시(사각형/원형)",
+    "config": {
+      "bindVariable": "변수 바인딩",
+      "selectVariable": "변수 선택",
+      "clear": "지우기",
+      "unbound": "바인딩되지 않음",
+      "decorationImage": "장식 이미지",
+      "backgroundImage": "배경 이미지",
+      "selectImage": "이미지 선택"
+    },
+    "selector": {
+      "title": "설비 변수 선택",
+      "searchPlaceholder": "설비 또는 변수 검색",
+      "tagCount": "변수 {count}개",
+      "loading": "로딩 중...",
+      "empty": "설비 변수 없음"
+    },
+    "properties": {
+      "shape": "형태",
+      "alias": "별칭",
+      "showName": "이름 표시",
+      "nameColor": "이름 색상",
+      "nameFontSize": "이름 글꼴 크기",
+      "nameFontWeight": "이름 굵기",
+      "nameGap": "이름 간격",
+      "decorationImagePosition": "장식 이미지 위치",
+      "decorationImageSize": "장식 이미지 크기",
+      "decorationImageOpacity": "장식 이미지 불투명도",
+      "backgroundRepeat": "배경 타일",
+      "backgroundImageFit": "채우기 스타일"
+    },
+    "options": {
+      "shape": {
+        "rectangle": "사각형",
+        "circle": "원형"
+      },
+      "decorationPosition": {
+        "left": "왼쪽",
+        "right": "오른쪽",
+        "background": "배경",
+        "center": "가운데"
+      },
+      "backgroundRepeat": {
+        "repeat": "타일",
+        "no-repeat": "타일 안 함",
+        "repeat-x": "가로 타일",
+        "repeat-y": "세로 타일"
+      }
+    }
+  }
+}

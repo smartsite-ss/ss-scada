@@ -1,0 +1,51 @@
+{
+  "tagRadar": {
+    "label": "Radar variabel",
+    "description": "Mengikat beberapa variabel tag dan menampilkan kesehatan multi-dimensi secara real-time dalam radar",
+    "config": {
+      "bindVariables": "Variabel terikat",
+      "addVariable": "Tambah variabel",
+      "removeVariable": "Hapus",
+      "unbound": "Variabel belum terikat",
+      "loadError": "Gagal memuat"
+    },
+    "properties": {
+      "title": "Judul",
+      "titleColor": "Warna judul",
+      "titleFontSize": "Ukuran font judul",
+      "titleFontWeight": "Ketebalan judul",
+      "indicatorMax": "Nilai maksimum indikator",
+      "gridColor": "Warna grid",
+      "axisColor": "Warna sumbu",
+      "showLegend": "Tampilkan legenda",
+      "legendPosition": "Posisi legenda",
+      "showTooltip": "Tampilkan tooltip",
+      "backgroundColor": "Warna latar",
+      "borderColor": "Warna batas",
+      "borderWidth": "Lebar batas",
+      "borderStyle": "Gaya batas",
+      "borderRadius": "Sudut membulat",
+      "shadowColor": "Warna bayangan",
+      "shadowOffsetX": "Offset bayangan X",
+      "shadowOffsetY": "Offset bayangan Y",
+      "shadowBlur": "Blur bayangan"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "Normal",
+        "bold": "Tebal"
+      },
+      "legendPosition": {
+        "top": "Atas",
+        "bottom": "Bawah",
+        "left": "Kiri",
+        "right": "Kanan"
+      },
+      "borderStyle": {
+        "solid": "Garis solid",
+        "dashed": "Garis putus-putus",
+        "dotted": "Garis titik"
+      }
+    }
+  }
+}

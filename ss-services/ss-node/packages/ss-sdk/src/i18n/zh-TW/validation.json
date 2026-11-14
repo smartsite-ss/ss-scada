@@ -1,0 +1,78 @@
+{
+  "validation": {
+    "common": {
+      "is_string": "{{property}} 必須為字串",
+      "is_number": "{{property}} 必須為數字",
+      "is_boolean": "{{property}} 必須為布林值",
+      "is_date": "{{property}} 必須為有效的日期",
+      "min_length": "{{property}} 長度不能小於 {{constraints.0}} 個字元",
+      "max_length": "{{property}} 長度不能超過 {{constraints.0}} 個字元",
+      "is_email": "{{property}} 格式不正確的電子郵件地址",
+      "matches": "{{property}} 格式不符合要求"
+    },
+    "user": {
+      "username": {
+        "required": "使用者名稱不能為空",
+        "length": "使用者名稱長度必須介於 {{min}}-{{max}} 個字元之間",
+        "pattern": "使用者名稱只能包含字母、數字與底線",
+        "unique": "該使用者名稱已被使用"
+      },
+      "email": {
+        "required": "電子郵件不能為空",
+        "is_email": "電子郵件格式不正確",
+        "unique": "該電子郵件已被註冊"
+      },
+      "password": {
+        "required": "密碼不能為空",
+        "weak": "密碼強度不足（至少 8 位，須包含大小寫字母與數字）",
+        "mismatch": "兩次輸入的密碼不一致"
+      }
+    },
+    "project": {
+      "name": {
+        "required": "專案名稱不能為空",
+        "length": "專案名稱長度必須介於 {{min}}-{{max}} 個字元之間"
+      },
+      "description": {
+        "maxlength": "專案描述不能超過 {{max}} 個字元"
+      }
+    },
+    "device": {
+      "name": {
+        "required": "設備名稱不能為空"
+      },
+      "config": {
+        "host_required": "設備 IP 位址不能為空",
+        "port_range": "連接埠號碼必須介於 1-65535 之間",
+        "unitId_range": "Unit ID 必須介於 1-247 之間"
+      }
+    },
+    "tag": {
+      "name": {
+        "required": "標籤名稱不能為空",
+        "unique": "標籤名稱在該設備下已存在"
+      },
+      "address": {
+        "required": "暫存器位址不能為空",
+        "format": "位址格式無效（應為數字或 Modbus 位址格式）"
+      },
+      "scanRate": {
+        "range": "掃描週期必須介於 {{min}}-{{max}} ms 之間"
+      }
+    },
+    "alarm": {
+      "rule": {
+        "name": {
+          "required": "警報規則名稱不能為空"
+        },
+        "threshold": {
+          "required": "警報閾值不能為空",
+          "number": "閾值必須為有效的數字"
+        },
+        "debounceTime": {
+          "range": "防抖時間必須介於 {{min}}-{{max}} ms 之間"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "label": {
+    "label": "ป้ายกำกับ",
+    "panelTitle": "คุณสมบัติป้ายกำกับ",
+    "properties": {
+      "text": "ข้อความ",
+      "textColor": "สีข้อความ",
+      "fontSize": "ขนาดแบบอักษร",
+      "fontWeight": "ความหนาแบบอักษร",
+      "fontStyle": "รูปแบบแบบอักษร",
+      "textDecoration": "การตกแต่งข้อความ",
+      "textAlign": "การจัดข้อความ",
+      "verticalAlignment": "การจัดแนวตั้ง",
+      "lineHeight": "ความสูงบรรทัด",
+      "letterSpacing": "ระยะห่างตัวอักษร",
+      "wordWrap": "ตัดบรรทัดอัตโนมัติ",
+      "maxLines": "จำนวนบรรทัดสูงสุด",
+      "backgroundColor": "สีพื้นหลัง",
+      "borderColor": "สีเส้นขอบ",
+      "borderWidth": "ความกว้างเส้นขอบ",
+      "borderRadius": "มุมโค้ง",
+      "textShadowColor": "สีเงาตัวอักษร",
+      "textShadowOffsetX": "ระยะเลื่อนเงา X",
+      "textShadowOffsetY": "ระยะเลื่อนเงา Y",
+      "textShadowBlur": "ความเบลอของเงา",
+      "decimalPlaces": "จำนวนตำแหน่งทศนิยม",
+      "unit": "หน่วย",
+      "unitFontSize": "ขนาดแบบอักษรหน่วย",
+      "unitFontColor": "สีแบบอักษรหน่วย",
+      "unitGap": "ระยะห่างหน่วย"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "ปกติ",
+        "bold": "ตัวหนา"
+      },
+      "fontStyle": {
+        "normal": "ปกติ",
+        "italic": "ตัวเอียง"
+      },
+      "textDecoration": {
+        "none": "ไม่มี",
+        "underline": "ขีดเส้นใต้",
+        "line-through": "ขีดฆ่า"
+      },
+      "textAlign": {
+        "left": "ชิดซ้าย",
+        "center": "กึ่งกลาง",
+        "right": "ชิดขวา"
+      },
+      "verticalAlignment": {
+        "top": "บน",
+        "middle": "กึ่งกลาง",
+        "bottom": "ล่าง"
+      }
+    },
+    "groups": {
+      "basic": "คุณสมบัติพื้นฐาน",
+      "style": "รูปแบบ",
+      "text": "ข้อความ",
+      "unit": "หน่วย",
+      "shadow": "เงา"
+    },
+    "hints": {
+      "maxLinesHint": "0 หมายถึงไม่จำกัด"
+    },
+    "description": "องค์ประกอบกราฟิกป้ายกำกับ"
+  }
+}

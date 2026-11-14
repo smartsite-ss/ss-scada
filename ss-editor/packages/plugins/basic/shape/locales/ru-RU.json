@@ -1,0 +1,46 @@
+{
+  "shape": {
+    "label": "Фигура",
+    "panelTitle": "Свойства фигуры",
+    "properties": {
+      "shapeType": "Тип фигуры",
+      "fillColor": "Цвет заливки",
+      "fillOpacity": "Непрозрачность заливки",
+      "borderColor": "Цвет рамки",
+      "borderWidth": "Ширина рамки",
+      "borderStyle": "Стиль рамки",
+      "borderRadius": "Скругление",
+      "shadowColor": "Цвет тени",
+      "shadowOffsetX": "Смещение тени X",
+      "shadowOffsetY": "Смещение тени Y",
+      "shadowBlur": "Размытие тени"
+    },
+    "options": {
+      "shapeType": {
+        "rectangle": "Прямоугольник",
+        "roundedRectangle": "Скруглённый прямоугольник",
+        "circle": "Круг",
+        "ellipse": "Эллипс",
+        "triangle": "Треугольник",
+        "diamond": "Ромб",
+        "polygon": "Многоугольник",
+        "arrowUp": "Стрелка вверх",
+        "arrowDown": "Стрелка вниз",
+        "arrowLeft": "Стрелка влево",
+        "arrowRight": "Стрелка вправо",
+        "line": "Линия"
+      },
+      "borderStyle": {
+        "solid": "Сплошная",
+        "dashed": "Штриховая",
+        "dotted": "Пунктирная"
+      }
+    },
+    "groups": {
+      "basic": "Основные свойства",
+      "style": "Стиль",
+      "shadow": "Тень"
+    },
+    "description": "Графический элемент «Фигура»"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "data": {
+    "acquisition": {
+      "started": "Pengumpulan data berjaya dimulakan",
+      "stopped": "Pengumpulan data telah dihentikan",
+      "error": "Ralat pengumpulan data"
+    },
+    "transform": {
+      "success": "Penukaran data berjaya",
+      "failed_invalid_value": "Nilai data tidak sah: {{value}}",
+      "failed_scale_error": "Konfigurasi faktor skala salah"
+    },
+    "persistence": {
+      "save_success": "Data berjaya disimpan",
+      "save_failed": "Gagal menyimpan data ({{detail}})"
+    },
+    "history": {
+      "query_success": "Pertanyaan data sejarah berjaya",
+      "query_empty": "Tiada data sejarah dalam julat masa yang ditentukan",
+      "time_range_error": "Parameter julat masa salah"
+    }
+  }
+}

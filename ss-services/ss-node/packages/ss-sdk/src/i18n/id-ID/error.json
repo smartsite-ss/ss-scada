@@ -1,0 +1,59 @@
+{
+  "error": {
+    "auth": {
+      "AUTH_001": "Nama pengguna atau kata sandi salah",
+      "AUTH_002": "Akun telah dinonaktifkan, silakan hubungi administrator",
+      "AUTH_003": "Token telah kedaluwarsa, silakan masuk kembali",
+      "AUTH_004": "Token tidak valid atau telah dimodifikasi",
+      "AUTH_005": "Nama pengguna atau email sudah terdaftar",
+      "AUTH_006": "Format email tidak benar",
+      "AUTH_007": "Kekuatan kata sandi tidak memadai (minimal 8 karakter, berisi huruf dan angka)",
+      "AUTH_008": "Pengguna tidak ditemukan"
+    },
+    "project": {
+      "PROJ_001": "Proyek tidak ditemukan",
+      "PROJ_002": "Tidak berizin mengakses proyek ini",
+      "PROJ_003": "Nama proyek tidak boleh kosong",
+      "PROJ_004": "Nama proyek terlalu panjang (maksimal 100 karakter)",
+      "PROJ_005": "Hanya dapat menghapus proyek yang Anda buat sendiri"
+    },
+    "device": {
+      "DEV_001": "Perangkat tidak ditemukan",
+      "DEV_002": "Perangkat {{name}} (ID: {{id}}) offline",
+      "DEV_003": "Gagal membaca perangkat {{deviceId}} alamat {{address}}: {{detail}}",
+      "DEV_004": "Gagal menulis data perangkat",
+      "DEV_005": "Koneksi perangkat timeout ({{timeout}}ms)",
+      "DEV_006": "Komunikasi perangkat terputus",
+      "DEV_007": "Konfigurasi perangkat tidak valid: {{detail}}"
+    },
+    "data": {
+      "DATA_001": "Kesalahan pengumpulan data",
+      "DATA_002": "Komunikasi protokol {{protocol}} timeout ({{timeout}}ms)",
+      "DATA_003": "Persistensi data gagal (penyimpanan: {{storage}}, detail: {{detail}})",
+      "DATA_004": "Masalah kualitas data tag {{tagId}}: {{quality}}",
+      "DATA_005": "Data riwayat tidak ditemukan",
+      "DATA_006": "Rentang waktu tidak valid (waktu mulai harus lebih awal dari waktu selesai)"
+    },
+    "alarm": {
+      "ALM_001": "Kesalahan alarm: {{detail}}",
+      "ALM_002": "Notifikasi alarm gagal dikirim (saluran: {{channel}}, detail: {{detail}})",
+      "ALM_003": "Aturan alarm tidak ditemukan",
+      "ALM_004": "Konfigurasi kondisi alarm tidak valid",
+      "ALM_005": "Catatan peristiwa tidak ditemukan atau sudah dibersihkan"
+    },
+    "protocol": {
+      "PROTO_001": "Jenis protokol tidak didukung: {{type}}",
+      "PROTO_002": "Koneksi protokol gagal: {{detail}}",
+      "PROTO_003": "Pemutusan protokol gagal: {{detail}}",
+      "PROTO_004": "Pembacaan protokol timeout",
+      "PROTO_005": "Penulisan protokol gagal"
+    },
+    "system": {
+      "SYS_001": "Kesalahan internal sistem",
+      "SYS_002": "Kesalahan konfigurasi ({{key}}: {{detail}})",
+      "SYS_003": "Kesalahan penyimpanan ({{storage}}: {{detail}})",
+      "SYS_004": "Layanan tidak tersedia",
+      "SYS_005": "Koneksi basis data gagal"
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "valve": {
+    "label": "Vana",
+    "description": "Açık/kapalı durumu ve tür değiştirmeyi destekleyen vana bileşeni",
+    "panelTitle": "Vana yapılandırması",
+    "properties": {
+      "width": "Genişlik",
+      "height": "Yükseklik",
+      "status": "Durum",
+      "valveType": "Vana türü",
+      "bodyColor": "Gövde rengi",
+      "stemColor": "Mil rengi",
+      "openColor": "Açık rengi",
+      "closedColor": "Kapalı rengi",
+      "faultColor": "Arıza rengi",
+      "showLabel": "Etiketi göster",
+      "labelText": "Etiket metni",
+      "openValue": "Açık durum değeri",
+      "closedValue": "Kapalı durum değeri",
+      "faultValue": "Arıza durum değeri",
+      "defaultStatus": "Varsayılan durum"
+    },
+    "options": {
+      "status": {
+        "open": "Açık",
+        "closed": "Kapalı",
+        "opening": "Açılıyor",
+        "closing": "Kapanıyor",
+        "fault": "Arıza"
+      },
+      "valveType": {
+        "butterfly": "Kelebek vana",
+        "gate": "Sürgülü vana"
+      }
+    },
+    "groups": {
+      "basic": "Temel",
+      "status": "Durum",
+      "color": "Renk",
+      "statusColor": "Durum rengi",
+      "label": "Etiket",
+      "binding": "Bağlama eşlemesi"
+    }
+  }
+}

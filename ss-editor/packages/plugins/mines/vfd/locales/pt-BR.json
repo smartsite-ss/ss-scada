@@ -1,0 +1,38 @@
+{
+  "vfd": {
+    "label": "Inversor de frequência/VFD",
+    "properties": {
+      "colors": "Cor 1",
+      "colors2": "Cor 2",
+      "flowColor": "Cor do fluxo",
+      "pipeColor": "Cor da tubulação",
+      "backgroundColor": "Cor de fundo",
+      "bgWidth": "Largura do fundo",
+      "boardWidth": "Largura da borda",
+      "roate": "Ângulo de rotação",
+      "cls": "Direção da animação",
+      "dur": "Período da animação (s)",
+      "dataset": "Valor de dados",
+      "frequency": "Frequência (Hz)",
+      "runState": "Estado de operação",
+      "forwardValue": "Valor correspondente a rotação direta",
+      "backwardValue": "Valor correspondente a rotação inversa",
+      "stopValue": "Valor correspondente a parado",
+      "defaultCls": "Direção padrão da animação",
+      "decimalPlaces": "Casas decimais"
+    },
+    "options": {
+      "cls": {
+        "left": "Rotação direta",
+        "right": "Rotação inversa",
+        "stop": "Parado"
+      },
+      "runState": {
+        "run": "Em operação",
+        "stop": "Parado",
+        "fault": "Falha"
+      }
+    },
+    "description": "Inversor de frequência/VFD - acionamento de frequência variável com exibição de frequência e indicação de estado de operação"
+  }
+}

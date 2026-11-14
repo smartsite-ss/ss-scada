@@ -1,0 +1,11 @@
+{
+  "ground": {
+    "label": "Ký hiệu nối đất",
+    "properties": {
+      "color": "Màu đường nét",
+      "backgroundColor": "Màu nền",
+      "lineWidth": "Độ rộng nét"
+    },
+    "description": "Ký hiệu nối đất điện tiêu chuẩn"
+  }
+}

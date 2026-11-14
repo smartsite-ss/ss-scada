@@ -1,0 +1,46 @@
+{
+  "shape": {
+    "label": "Form",
+    "panelTitle": "Form-Eigenschaften",
+    "properties": {
+      "shapeType": "Formtyp",
+      "fillColor": "Füllfarbe",
+      "fillOpacity": "Füll-Deckkraft",
+      "borderColor": "Rahmenfarbe",
+      "borderWidth": "Rahmenbreite",
+      "borderStyle": "Rahmenstil",
+      "borderRadius": "Eckenradius",
+      "shadowColor": "Schattenfarbe",
+      "shadowOffsetX": "Schattenversatz X",
+      "shadowOffsetY": "Schattenversatz Y",
+      "shadowBlur": "Schattenunschärfe"
+    },
+    "options": {
+      "shapeType": {
+        "rectangle": "Rechteck",
+        "roundedRectangle": "Abgerundetes Rechteck",
+        "circle": "Kreis",
+        "ellipse": "Ellipse",
+        "triangle": "Dreieck",
+        "diamond": "Raute",
+        "polygon": "Vieleck",
+        "arrowUp": "Pfeil oben",
+        "arrowDown": "Pfeil unten",
+        "arrowLeft": "Pfeil links",
+        "arrowRight": "Pfeil rechts",
+        "line": "Linie"
+      },
+      "borderStyle": {
+        "solid": "Durchgezogen",
+        "dashed": "Gestrichelt",
+        "dotted": "Gepunktet"
+      }
+    },
+    "groups": {
+      "basic": "Grundeigenschaften",
+      "style": "Stil",
+      "shadow": "Schatten"
+    },
+    "description": "Form-Grafikelement"
+  }
+}

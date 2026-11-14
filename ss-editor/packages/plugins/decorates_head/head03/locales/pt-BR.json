@@ -1,0 +1,13 @@
+{
+  "head03": {
+    "label": "Decoração de cabeçalho-03",
+    "properties": {
+      "color1": "Cor 1",
+      "color2": "Cor 2",
+      "dataset": "Texto exibido",
+      "textColor": "Cor do texto",
+      "textSize": "Tamanho da fonte"
+    },
+    "description": "Decoração em setas laterais com texto central"
+  }
+}

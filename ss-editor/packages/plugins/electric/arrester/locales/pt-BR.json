@@ -1,0 +1,11 @@
+{
+  "arrester": {
+    "label": "Para-raios",
+    "properties": {
+      "color": "Cor da linha",
+      "backgroundColor": "Cor de fundo",
+      "lineWidth": "Espessura da linha"
+    },
+    "description": "Para-raios - dispositivo de proteção contra sobretensão"
+  }
+}

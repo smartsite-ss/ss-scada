@@ -1,0 +1,23 @@
+{
+  "system": {
+    "health_check": {
+      "success": "系統健康檢查通過",
+      "failed": "系統健康檢查失敗：{{detail}}"
+    },
+    "config": {
+      "reload_success": "設定重新載入成功",
+      "reload_failed": "設定重新載入失敗：{{detail}}",
+      "validation_error": "設定驗證失敗：{{detail}}"
+    },
+    "storage": {
+      "database_connected": "資料庫連線成功",
+      "database_connection_failed": "資料庫連線失敗：{{detail}}",
+      "redis_connected": "Redis 連線成功",
+      "redis_connection_failed": "Redis 連線失敗：{{detail}}"
+    },
+    "maintenance": {
+      "mode_enabled": "維護模式已啟用",
+      "mode_disabled": "維護模式已停用"
+    }
+  }
+}

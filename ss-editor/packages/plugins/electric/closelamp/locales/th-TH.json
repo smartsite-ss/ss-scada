@@ -1,0 +1,21 @@
+{
+  "closelamp": {
+    "label": "ไฟแสดงการปิดวงจร",
+    "properties": {
+      "lampColor": "สีไฟ",
+      "backgroundColor": "สีพื้นหลัง",
+      "radius": "รัศมี",
+      "closed": "สถานะปิดวงจร",
+      "closedValue": "ค่าที่สอดคล้องกับการปิดวงจร",
+      "openValue": "ค่าที่สอดคล้องกับการตัดวงจร",
+      "defaultStatus": "สถานะเริ่มต้น"
+    },
+    "options": {
+      "closed": {
+        "yes": "ปิดวงจร",
+        "no": "เปิดวงจร"
+      }
+    },
+    "description": "ไฟแสดงตำแหน่งปิดวงจร"
+  }
+}

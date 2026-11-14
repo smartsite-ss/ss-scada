@@ -1,0 +1,28 @@
+{
+  "three-gauge": {
+    "label": "3D ゲージ",
+    "panelTitle": "3D ゲージの設定",
+    "properties": {
+      "value": "現在値",
+      "min": "最小値",
+      "max": "最大値",
+      "gaugeColor": "正常時の色",
+      "warningColor": "警告の色",
+      "dangerColor": "危険の色",
+      "warningThreshold": "警告しきい値",
+      "dangerThreshold": "危険しきい値",
+      "showTicks": "目盛りを表示",
+      "showLabels": "ラベルを表示",
+      "needleColor": "針の色",
+      "backgroundColor": "背景色",
+      "rimColor": "外枠の色"
+    },
+    "groups": {
+      "数据": "データ",
+      "颜色": "色",
+      "阈值": "しきい値",
+      "显示": "表示"
+    },
+    "description": "3D ゲージの図形要素。データ連動による針の回転に対応"
+  }
+}

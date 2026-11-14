@@ -1,0 +1,22 @@
+{
+  "daozha": {
+    "label": "刀閘",
+    "properties": {
+      "color": "線條顏色",
+      "backgroundColor": "背景色",
+      "lineWidth": "線寬",
+      "terminalRadius": "端子半徑",
+      "closed": "閉合狀態",
+      "closedValue": "閉合對應值",
+      "openValue": "斷開對應值",
+      "defaultStatus": "預設狀態"
+    },
+    "options": {
+      "closed": {
+        "yes": "閉合",
+        "no": "斷開"
+      }
+    },
+    "description": "電力刀閘 - 隔離開關圖形元素，支援閉合/斷開狀態切換"
+  }
+}

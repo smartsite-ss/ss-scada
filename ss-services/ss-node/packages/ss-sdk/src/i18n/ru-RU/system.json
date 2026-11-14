@@ -1,0 +1,23 @@
+{
+  "system": {
+    "health_check": {
+      "success": "Проверка работоспособности системы пройдена",
+      "failed": "Проверка работоспособности системы не пройдена: {{detail}}"
+    },
+    "config": {
+      "reload_success": "Конфигурация перезагружена",
+      "reload_failed": "Не удалось перезагрузить конфигурацию: {{detail}}",
+      "validation_error": "Проверка конфигурации не пройдена: {{detail}}"
+    },
+    "storage": {
+      "database_connected": "Подключение к базе данных установлено",
+      "database_connection_failed": "Не удалось подключиться к базе данных: {{detail}}",
+      "redis_connected": "Подключение к Redis установлено",
+      "redis_connection_failed": "Не удалось подключиться к Redis: {{detail}}"
+    },
+    "maintenance": {
+      "mode_enabled": "Режим обслуживания включён",
+      "mode_disabled": "Режим обслуживания отключён"
+    }
+  }
+}

@@ -1,0 +1,126 @@
+{
+  "common": {
+    "ok": "OK",
+    "cancel": "キャンセル",
+    "save": "保存",
+    "delete": "削除",
+    "edit": "編集",
+    "add": "追加",
+    "search": "検索",
+    "reset": "リセット",
+    "export": "エクスポート",
+    "import": "インポート",
+    "confirm": "確認",
+    "close": "閉じる",
+    "refresh": "更新",
+    "upload": "アップロード",
+    "download": "ダウンロード",
+    "preview": "プレビュー",
+    "copy": "コピー",
+    "paste": "貼り付け",
+    "undo": "元に戻す",
+    "redo": "やり直し",
+    "settings": "設定",
+    "theme": "テーマ",
+    "language": "言語"
+  },
+  "category": {
+    "basic": "基本コンポーネント",
+    "form": "フォームコンポーネント",
+    "chart": "チャートコンポーネント",
+    "industrial": "産業用コンポーネント",
+    "media": "メディアコンポーネント",
+    "layout": "レイアウトコンポーネント",
+    "3d": "3D コンポーネント",
+    "svg": "SVG コンポーネント"
+  },
+  "editor": {
+    "toolbar": "ツールバー",
+    "canvas": "キャンバス",
+    "properties": "プロパティパネル",
+    "layers": "レイヤーパネル",
+    "plugin": "プラグイン管理",
+    "zoomIn": "拡大",
+    "zoomOut": "縮小",
+    "fitToScreen": "画面に合わせる",
+    "undo": "元に戻す",
+    "redo": "やり直し",
+    "delete": "選択項目を削除",
+    "selectAll": "すべて選択",
+    "copy": "コピー",
+    "paste": "貼り付け",
+    "group": "グループ化",
+    "ungroup": "グループ解除",
+    "bringToFront": "最前面へ",
+    "sendToBack": "最背面へ",
+    "align": "整列"
+  },
+  "plugin": {
+    "noPluginSelected": "図形要素が選択されていません",
+    "propertiesMissing": "プロパティが不足しています",
+    "schemaVersion": "Schema バージョン",
+    "pluginType": "図形要素の種類",
+    "position": "位置",
+    "size": "サイズ",
+    "width": "幅",
+    "height": "高さ",
+    "x": "X 座標",
+    "y": "Y 座標",
+    "rotation": "回転",
+    "opacity": "不透明度",
+    "visible": "表示",
+    "locked": "ロック"
+  },
+  "language": {
+    "zhCN": "中国語",
+    "enUS": "英語"
+  },
+  "threeStage": {
+    "label": "3D シーンコンテナ",
+    "description": "Three.js の 3D シーンコンテナを提供し、モデルの読み込み、ライト、カメラ制御に対応します"
+  },
+  "validation": {
+    "requiredFieldMissingDefault": "必須フィールド \"{field}\" に既定値がありません (required=true ですが defaultValue が空です)",
+    "requiredFieldMissing": "必須フィールド \"{field}\" がありません",
+    "schemaMissingName": "[{pluginName}] Schema に name がありません",
+    "schemaMissingFields": "[{pluginName}] Schema に fields 定義がありません",
+    "fieldDuplicate": "フィールド \"{field}\" が重複定義されています",
+    "fieldMissingName": "フィールドに name がありません",
+    "fieldMissingLabel": "フィールドに label がありません",
+    "fieldMissingType": "フィールドに type がありません",
+    "selectMissingOptions": "select フィールド \"{field}\" に options がありません",
+    "minGreaterThanMax": "min({min}) が max({max}) より大きい",
+    "invalidColorDefault": "色の既定値 \"{value}\" の形式が無効です",
+    "fieldMissingDefault": "フィールドに defaultValue がありません",
+    "fieldCannotBeEmpty": "フィールド \"{field}\" は空にできません",
+    "fieldExpectedNumber": "フィールド \"{field}\" は数値型が期待されますが、実際は {actual} です",
+    "fieldValueLessThanMin": "フィールド \"{field}\" の値 {value} が最小値 {min} より小さい",
+    "fieldValueGreaterThanMax": "フィールド \"{field}\" の値 {value} が最大値 {max} より大きい",
+    "fieldExpectedString": "フィールド \"{field}\" は文字列型が期待されますが、実際は {actual} です",
+    "fieldExpectedBoolean": "フィールド \"{field}\" は真偽値型が期待されますが、実際は {actual} です",
+    "fieldValueNotInOptions": "フィールド \"{field}\" の値 \"{value}\" が有効な選択肢 [{options}] にありません",
+    "fieldExpectedColor": "フィールド \"{field}\" は色文字列が期待されますが、実際は {actual} です",
+    "invalidColorFormat": "フィールド \"{field}\" の値 \"{value}\" は有効な色形式ではありません (#RGB / #RRGGBB / #RRGGBBAA である必要があります)"
+  },
+  "pluginSdk": {
+    "readme": {
+      "type": "種類",
+      "category": "カテゴリ",
+      "renderBackend": "レンダリング方式",
+      "properties": "プロパティ一覧",
+      "default": "既定",
+      "development": "開発"
+    },
+    "pluginStyle": "プラグインスタイル",
+    "backendDescriptions": {
+      "vueComponent": "Vue コンポーネントベースのレンダリング。複雑なインタラクティブコンポーネントに適しています",
+      "canvas2d": "Canvas 2D ベースのレンダリング。高性能な図形描画に適しています",
+      "svgDom": "SVG DOM ベースのレンダリング。ベクターグラフィックスとアニメーションに適しています",
+      "cssDom": "CSS DOM ベースのレンダリング。HTML 要素とスタイルに適しています",
+      "three3d": "Three.js 3D ベースのレンダリング。3D シーンとモデルに適しています"
+    }
+  },
+  "createPlugin": {
+    "cannotExtractComponentName": "コンポーネント名を抽出できません。graphicComponentName で明示的に指定してください"
+  }
+}

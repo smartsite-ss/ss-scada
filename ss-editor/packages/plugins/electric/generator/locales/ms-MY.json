@@ -1,0 +1,22 @@
+{
+  "generator": {
+    "label": "Penjana",
+    "properties": {
+      "color": "Warna garisan",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garisan",
+      "running": "Status operasi",
+      "runningValue": "Nilai padanan berjalan",
+      "stoppedValue": "Nilai padanan berhenti",
+      "faultValue": "Nilai padanan kerosakan",
+      "defaultStatus": "Status lalai"
+    },
+    "options": {
+      "running": {
+        "yes": "Beroperasi",
+        "no": "Berhenti"
+      }
+    },
+    "description": "Penjana - dengan penunjuk status putaran"
+  }
+}

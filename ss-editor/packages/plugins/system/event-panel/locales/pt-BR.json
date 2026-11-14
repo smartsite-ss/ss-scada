@@ -1,0 +1,61 @@
+{
+  "eventPanel": {
+    "label": "Painel de eventos",
+    "description": "Exibe o log de eventos do sistema (filtro por projeto/tipo/status)",
+    "loading": "Carregando...",
+    "empty": "Nenhum evento",
+    "loadFailed": "Falha ao carregar",
+    "systemLevel": "Nível do sistema",
+    "config": {
+      "project": "Projeto",
+      "allProjects": "Todos os projetos",
+      "eventType": "Tipo de evento",
+      "allEventTypes": "Todos os tipos",
+      "status": "Estado",
+      "allStatus": "Todos os estados"
+    },
+    "columns": {
+      "time": "Hora",
+      "eventType": "Tipo de evento",
+      "project": "Projeto",
+      "operator": "Operador",
+      "status": "Estado",
+      "successRatio": "Taxa de sucesso",
+      "duration": "Duração"
+    },
+    "groups": {
+      "device": "Dispositivo",
+      "project": "Projeto",
+      "alarm": "Alarme",
+      "config": "Configuração e temporizador",
+      "plugin": "Plugin"
+    },
+    "status": {
+      "emitted": "Emitido",
+      "processing": "Em processamento",
+      "processed": "Processado",
+      "partial": "Falha parcial",
+      "failed": "Falha",
+      "no_subscribers": "Sem assinantes"
+    },
+    "properties": {
+      "pageSize": "Itens por página",
+      "refreshInterval": "Intervalo de atualização (s)",
+      "showHeader": "Mostrar cabeçalhos das colunas",
+      "showTime": "Coluna de hora",
+      "showEventType": "Coluna de tipo de evento",
+      "showProject": "Coluna de projeto",
+      "showOperator": "Coluna de operador",
+      "showStatus": "Coluna de estado",
+      "showSuccessRatio": "Coluna de taxa de sucesso",
+      "showDuration": "Coluna de duração",
+      "fontSize": "Tamanho da fonte",
+      "rowHeight": "Altura da linha",
+      "headerBackgroundColor": "Fundo do cabeçalho da coluna",
+      "rowBackgroundColor": "Fundo da linha",
+      "alternatingRowColor": "Fundo alternado das linhas",
+      "textColor": "Cor do texto",
+      "backgroundColor": "Cor de fundo"
+    }
+  }
+}

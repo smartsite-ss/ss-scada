@@ -1,0 +1,34 @@
+{
+  "naiveButton": {
+    "label": "ปุ่ม Naive",
+    "panelTitle": "คุณสมบัติปุ่ม Naive",
+    "properties": {
+      "text": "ข้อความปุ่ม",
+      "type": "ประเภทปุ่ม",
+      "size": "ขนาด",
+      "round": "ปุ่มมุมโค้ง",
+      "circle": "ปุ่มวงกลม",
+      "disabled": "ปิดใช้งาน",
+      "loading": "สถานะการโหลด"
+    },
+    "options": {
+      "type": {
+        "default": "ค่าเริ่มต้น",
+        "primary": "หลัก",
+        "success": "สำเร็จ",
+        "warning": "คำเตือน",
+        "error": "ข้อผิดพลาด",
+        "info": "ข้อมูลข่าวสาร"
+      },
+      "size": {
+        "small": "เล็ก",
+        "medium": "กลาง",
+        "large": "ใหญ่"
+      }
+    },
+    "groups": {
+      "basic": "คุณสมบัติพื้นฐาน"
+    },
+    "description": "องค์ประกอบกราฟิกปุ่ม Naive รองรับการเรนเดอร์สำรองด้วย Canvas"
+  }
+}

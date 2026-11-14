@@ -1,0 +1,19 @@
+{
+  "ups": {
+    "label": "แหล่งจ่ายไฟ UPS",
+    "properties": {
+      "color": "สีเส้น",
+      "backgroundColor": "สีพื้นหลัง",
+      "lineWidth": "ความกว้างเส้น",
+      "state": "สถานะการทำงาน"
+    },
+    "options": {
+      "state": {
+        "online": "ออนไลน์",
+        "bypass": "บายพาส",
+        "fault": "ข้อขัดข้อง"
+      }
+    },
+    "description": "UPS - สถานะออนไลน์/บายพาส/ข้อขัดข้อง"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "head03": {
+    "label": "헤더 장식-03",
+    "properties": {
+      "color1": "색상 1",
+      "color2": "색상 2",
+      "dataset": "표시 텍스트",
+      "textColor": "텍스트 색상",
+      "textSize": "글꼴 크기"
+    },
+    "description": "좌우 화살표 장식과 중앙 텍스트"
+  }
+}

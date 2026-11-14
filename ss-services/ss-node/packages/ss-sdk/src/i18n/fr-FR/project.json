@@ -1,0 +1,24 @@
+{
+  "project": {
+    "create": {
+      "success": "Projet créé avec succès",
+      "failed_name_exists": "Ce nom de projet existe déjà"
+    },
+    "update": {
+      "success": "Projet mis à jour avec succès",
+      "failed_not_owner": "Vous n'êtes pas autorisé à modifier ce projet"
+    },
+    "delete": {
+      "success": "Projet supprimé avec succès",
+      "failed_has_devices": "Le projet contient encore des appareils et ne peut pas être supprimé"
+    },
+    "get": {
+      "success": "Informations du projet récupérées avec succès",
+      "not_found": "Projet inexistant"
+    },
+    "list": {
+      "success": "Liste des projets récupérée avec succès",
+      "empty": "Aucun projet"
+    }
+  }
+}

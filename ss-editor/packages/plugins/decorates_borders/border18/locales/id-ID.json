@@ -1,0 +1,15 @@
+{
+  "border18": {
+    "label": "Batas-18 (Arabesque Maroko)",
+    "description": "Komponen dekorasi batas-18 (Arabesque Maroko)",
+    "properties": {
+      "color1": "Biru permata",
+      "color2": "Warna terakota",
+      "color3": "Emas",
+      "backgroundColor": "Warna latar",
+      "showStars": "Pola bintang",
+      "showArches": "Ornamen lengkung",
+      "animationSpeed": "Kecepatan animasi"
+    }
+  }
+}

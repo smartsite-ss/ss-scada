@@ -1,0 +1,40 @@
+{
+  "tagWaterpolo": {
+    "label": "Gráfico de esfera líquida de variáveis",
+    "description": "Vincula uma única variável de etiqueta e exibe a porcentagem de nível em tempo real em forma de esfera líquida",
+    "config": {
+      "bindVariable": "Vincular variável",
+      "addVariable": "Selecionar variável",
+      "removeVariable": "Excluir",
+      "unbound": "Variável não vinculada"
+    },
+    "properties": {
+      "title": "Título",
+      "titleColor": "Cor do título",
+      "titleFontSize": "Tamanho da fonte do título",
+      "unit": "Unidade",
+      "minValue": "Valor mínimo",
+      "maxValue": "Valor máximo",
+      "showValue": "Mostrar valor",
+      "valueColor": "Cor do valor",
+      "waterColor": "Cor da esfera líquida",
+      "trackColor": "Cor da trajetória",
+      "backgroundColor": "Cor de fundo",
+      "borderColor": "Cor da borda",
+      "borderWidth": "Largura da borda",
+      "borderStyle": "Estilo da borda",
+      "borderRadius": "Raio da borda",
+      "shadowColor": "Cor da sombra",
+      "shadowOffsetX": "Deslocamento X da sombra",
+      "shadowOffsetY": "Deslocamento Y da sombra",
+      "shadowBlur": "Desfoque da sombra"
+    },
+    "options": {
+      "borderStyle": {
+        "solid": "Sólida",
+        "dashed": "Tracejada",
+        "dotted": "Pontilhada"
+      }
+    }
+  }
+}

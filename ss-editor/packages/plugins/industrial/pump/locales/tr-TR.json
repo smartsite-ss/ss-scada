@@ -1,0 +1,43 @@
+{
+  "pump": {
+    "label": "Pompa",
+    "description": "Döndürme animasyonu ve durum göstergesini destekleyen pompa bileşeni",
+    "panelTitle": "Pompa yapılandırması",
+    "properties": {
+      "width": "Genişlik",
+      "height": "Yükseklik",
+      "status": "Durum",
+      "bodyColor": "Gövde rengi",
+      "impellerColor": "Çark rengi",
+      "highlightColor": "Vurgu rengi",
+      "showAnimation": "Animasyonu göster",
+      "animationSpeed": "Dönüş hızı",
+      "rotationDirection": "Döndürme yönü",
+      "showLabel": "Etiketi göster",
+      "labelText": "Etiket metni",
+      "runningValue": "Çalışıyor durum değeri",
+      "stoppedValue": "Durdu durum değeri",
+      "faultValue": "Arıza durum değeri",
+      "defaultStatus": "Varsayılan durum"
+    },
+    "options": {
+      "status": {
+        "running": "Çalışıyor",
+        "stopped": "Durduruldu",
+        "fault": "Arıza"
+      },
+      "rotationDirection": {
+        "clockwise": "Saat yönünde",
+        "counterclockwise": "Saat yönünün tersine"
+      }
+    },
+    "groups": {
+      "basic": "Temel",
+      "status": "Durum",
+      "color": "Renk",
+      "animation": "Animasyon",
+      "label": "Etiket",
+      "binding": "Bağlama eşlemesi"
+    }
+  }
+}

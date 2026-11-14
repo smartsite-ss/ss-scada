@@ -1,0 +1,24 @@
+{
+  "project": {
+    "create": {
+      "success": "Projek berjaya dicipta",
+      "failed_name_exists": "Nama projek sudah wujud"
+    },
+    "update": {
+      "success": "Projek berjaya dikemas kini",
+      "failed_not_owner": "Tiada kebenaran mengubah projek ini"
+    },
+    "delete": {
+      "success": "Projek berjaya dipadam",
+      "failed_has_devices": "Projek masih mempunyai peranti, tidak boleh dipadam"
+    },
+    "get": {
+      "success": "Maklumat projek berjaya diperoleh",
+      "not_found": "Projek tidak wujud"
+    },
+    "list": {
+      "success": "Senarai projek berjaya diperoleh",
+      "empty": "Tiada projek"
+    }
+  }
+}

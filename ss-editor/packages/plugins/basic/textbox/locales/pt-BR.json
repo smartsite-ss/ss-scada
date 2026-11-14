@@ -1,0 +1,56 @@
+{
+  "textbox": {
+    "label": "Caixa de texto",
+    "panelTitle": "Configuração da caixa de texto",
+    "properties": {
+      "text": "Conteúdo do texto",
+      "placeholder": "Espaço reservado",
+      "fontSize": "Tamanho da fonte",
+      "fontWeight": "Peso da fonte",
+      "fontStyle": "Estilo da fonte",
+      "textColor": "Cor do texto",
+      "backgroundColor": "Cor de fundo",
+      "borderColor": "Cor da borda",
+      "borderWidth": "Largura da borda",
+      "borderStyle": "Estilo da borda",
+      "borderRadius": "Raio da borda",
+      "textAlign": "Alinhamento do texto",
+      "verticalAlignment": "Alinhamento vertical",
+      "padding": "Preenchimento interno",
+      "multiline": "Modo multilinha",
+      "readOnly": "Somente leitura"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "Normal",
+        "bold": "Negrito"
+      },
+      "fontStyle": {
+        "normal": "Normal",
+        "italic": "Itálico"
+      },
+      "borderStyle": {
+        "solid": "Sólida",
+        "dashed": "Tracejada",
+        "dotted": "Pontilhada",
+        "none": "Nenhum"
+      },
+      "textAlign": {
+        "left": "Alinhar à esquerda",
+        "center": "Centralizar",
+        "right": "Alinhar à direita"
+      },
+      "verticalAlignment": {
+        "top": "Topo",
+        "middle": "Centro",
+        "bottom": "Base"
+      }
+    },
+    "groups": {
+      "basic": "Propriedades básicas",
+      "style": "Estilo",
+      "text": "Texto"
+    },
+    "description": "Elemento gráfico de caixa de texto"
+  }
+}

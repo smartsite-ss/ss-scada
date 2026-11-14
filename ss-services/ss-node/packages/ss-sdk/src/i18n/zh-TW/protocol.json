@@ -1,0 +1,29 @@
+{
+  "protocol": {
+    "modbus": {
+      "connect_success": "Modbus TCP 連線成功",
+      "connect_failed": "Modbus TCP 連線失敗：{{detail}}",
+      "read_success": "Modbus 讀取成功",
+      "read_failed": "Modbus 讀取失敗：{{detail}}",
+      "write_success": "Modbus 寫入成功",
+      "write_failed": "Modbus 寫入失敗：{{detail}}"
+    },
+    "mqtt": {
+      "connect_success": "MQTT 連線成功",
+      "connect_failed": "MQTT 連線失敗：{{detail}}",
+      "publish_success": "MQTT 訊息發布成功",
+      "publish_failed": "MQTT 訊息發布失敗：{{detail}}"
+    },
+    "opcua": {
+      "connect_success": "OPC UA 連線成功",
+      "connect_failed": "OPC UA 連線失敗：{{detail}}",
+      "read_success": "OPC UA 讀取成功",
+      "read_failed": "OPC UA 讀取失敗：{{detail}}"
+    },
+    "common": {
+      "timeout": "協定通訊逾時 ({{timeout}}ms)",
+      "connection_refused": "連線被拒絕",
+      "authentication_failed": "認證失敗"
+    }
+  }
+}

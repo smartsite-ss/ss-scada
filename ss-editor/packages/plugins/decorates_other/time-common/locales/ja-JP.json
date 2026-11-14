@@ -1,0 +1,19 @@
+{
+  "time-common": {
+    "label": "共通時刻",
+    "properties": {
+      "textColor": "文字色",
+      "fontSize": "フォントサイズ",
+      "fontWeight": "フォントの太さ",
+      "shadow": "影"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "標準",
+        "bold": "太字",
+        "lighter": "細字"
+      }
+    },
+    "description": "共通時刻の表示"
+  }
+}

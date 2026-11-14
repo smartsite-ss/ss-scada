@@ -1,0 +1,102 @@
+{
+  "historyTrend": {
+    "label": "Verlaufstrend",
+    "description": "Historischer Verlauf einer oder mehrerer Variablen für einen Zeitraum",
+    "config": {
+      "bindVariables": "Variablen binden",
+      "addVariable": "Variable hinzufügen",
+      "removeVariable": "Löschen",
+      "unbound": "Keine Variable gebunden",
+      "timeRange": "Zeitraum",
+      "queryMethod": "Abfragemodus",
+      "query": "Abfragen",
+      "querying": "Abfrage läuft…"
+    },
+    "series": {
+      "lineWidth": "Linienbreite",
+      "lineType": "Linientyp",
+      "lineColor": "Linienfarbe",
+      "symbolSize": "Größe der Datenpunkte",
+      "labelShow": "Beschriftung anzeigen",
+      "labelFontSize": "Schriftgröße der Beschriftung",
+      "labelColor": "Beschriftungsfarbe",
+      "labelPosition": "Beschriftungsposition",
+      "areaShow": "Flächenfüllung anzeigen",
+      "areaStartColor": "Startfarbe",
+      "areaMiddleColor": "Mittelfarbe",
+      "areaEndColor": "Endfarbe",
+      "areaOpacity": "Deckkraft"
+    },
+    "options": {
+      "interpolation": {
+        "raw": "Rohwert",
+        "linear": "Lineare Interpolation",
+        "step": "Stufeninterpolation"
+      },
+      "presetRange": {
+        "1h": "Letzte Stunde",
+        "6h": "Letzte 6 Stunden",
+        "24h": "Letzte 24 Stunden",
+        "7d": "Letzte 7 Tage",
+        "custom": "Benutzerdefiniert"
+      },
+      "lineType": {
+        "solid": "Durchgezogen",
+        "dashed": "Gestrichelt",
+        "dotted": "Gepunktet"
+      },
+      "labelPosition": {
+        "top": "Oben",
+        "left": "Links",
+        "right": "Rechts",
+        "bottom": "Unten"
+      },
+      "legendPosition": {
+        "top": "Oben",
+        "bottom": "Unten",
+        "left": "Links",
+        "right": "Rechts"
+      },
+      "borderStyle": {
+        "solid": "Durchgezogen",
+        "dashed": "Gestrichelt",
+        "dotted": "Gepunktet"
+      },
+      "fontWeight": {
+        "normal": "Normal",
+        "bold": "Fett"
+      }
+    },
+    "properties": {
+      "defaultInterpolation": "Standard-Abfragemodus",
+      "defaultInterval": "Standard-Interpolationsintervall (ms)",
+      "defaultPresetRange": "Standard-Zeitraum",
+      "defaultCustomStart": "Benutzerdefinierte Startzeit",
+      "defaultCustomEnd": "Benutzerdefinierte Endzeit",
+      "maxPoints": "Maximale Anzahl Datenpunkte",
+      "title": "Titel",
+      "titleColor": "Titelfarbe",
+      "titleFontSize": "Titel-Schriftgröße",
+      "titleFontWeight": "Titel-Schriftstärke",
+      "gridColor": "Rasterfarbe",
+      "axisColor": "Achsenfarbe",
+      "showLegend": "Legende anzeigen",
+      "legendPosition": "Legendenposition",
+      "showTooltip": "Tooltip anzeigen",
+      "showDataZoom": "Zeitachsen-Zoom",
+      "showXAxis": "Zeitachse anzeigen",
+      "xAxisLineColor": "Zeitachsenfarbe",
+      "xAxisLabelFontSize": "Schriftgröße der Zeitachse",
+      "xAxisLabelRotate": "Neigung der Zeitachsenbeschriftung",
+      "backgroundColor": "Hintergrundfarbe",
+      "borderColor": "Rahmenfarbe",
+      "borderWidth": "Rahmenbreite",
+      "borderStyle": "Rahmenstil",
+      "borderRadius": "Eckenradius",
+      "shadowColor": "Schattenfarbe",
+      "shadowOffsetX": "Schattenversatz X",
+      "shadowOffsetY": "Schattenversatz Y",
+      "shadowBlur": "Schattenunschärfe"
+    }
+  }
+}

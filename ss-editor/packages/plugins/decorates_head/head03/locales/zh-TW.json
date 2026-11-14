@@ -1,0 +1,13 @@
+{
+  "head03": {
+    "label": "頭部裝飾-03",
+    "properties": {
+      "color1": "顏色一",
+      "color2": "顏色二",
+      "dataset": "顯示文字",
+      "textColor": "文字顏色",
+      "textSize": "字級"
+    },
+    "description": "左右箭頭形裝飾帶中間文字"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "head01": {
+    "label": "Decoración de encabezado 01",
+    "properties": {
+      "color1": "Color uno",
+      "color2": "Color dos",
+      "dur": "Ciclo de animación (s)",
+      "lineHeight": "Altura de la línea",
+      "endWidth": "Ancho del bloque deslizante"
+    },
+    "description": "Barra rectangular animada con bloque de color deslizante"
+  }
+}

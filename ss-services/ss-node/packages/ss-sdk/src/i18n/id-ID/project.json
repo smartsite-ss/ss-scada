@@ -1,0 +1,24 @@
+{
+  "project": {
+    "create": {
+      "success": "Proyek berhasil dibuat",
+      "failed_name_exists": "Nama proyek sudah ada"
+    },
+    "update": {
+      "success": "Proyek berhasil diperbarui",
+      "failed_not_owner": "Tidak berizin mengubah proyek ini"
+    },
+    "delete": {
+      "success": "Proyek berhasil dihapus",
+      "failed_has_devices": "Proyek masih memiliki perangkat, tidak dapat dihapus"
+    },
+    "get": {
+      "success": "Informasi proyek berhasil diambil",
+      "not_found": "Proyek tidak ditemukan"
+    },
+    "list": {
+      "success": "Daftar proyek berhasil diambil",
+      "empty": "Belum ada proyek"
+    }
+  }
+}

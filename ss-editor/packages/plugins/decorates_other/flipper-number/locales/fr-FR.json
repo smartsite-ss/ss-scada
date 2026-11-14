@@ -1,0 +1,14 @@
+{
+  "flipper-number": {
+    "label": "Chiffres à palettes",
+    "properties": {
+      "dataset": "Valeur",
+      "flipperLength": "Nombre de chiffres",
+      "color1": "Couleur du texte",
+      "flipperWidth": "Largeur",
+      "flipperHeight": "Hauteur",
+      "flipperGap": "Espacement"
+    },
+    "description": "Plugin d'affichage de chiffres à palettes"
+  }
+}

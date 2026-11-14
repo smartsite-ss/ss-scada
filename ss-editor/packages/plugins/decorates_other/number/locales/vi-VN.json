@@ -1,0 +1,19 @@
+{
+  "number": {
+    "label": "Số",
+    "properties": {
+      "dataset": "Giá trị đích",
+      "from": "Giá trị bắt đầu",
+      "dur": "Thời lượng hoạt ảnh (giây)",
+      "precision": "Số chữ thập phân",
+      "showSeparator": "Phân cách hàng nghìn",
+      "numberSize": "Cỡ chữ",
+      "color1": "Màu chữ số",
+      "prefixText": "Tiền tố",
+      "color2": "Màu tiền tố",
+      "suffixText": "Hậu tố",
+      "color3": "Màu hậu tố"
+    },
+    "description": "Plugin hoạt ảnh đếm số"
+  }
+}

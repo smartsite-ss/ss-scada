@@ -1,0 +1,42 @@
+{
+  "indicator": {
+    "label": "Lampu indikator",
+    "description": "Komponen lampu indikator untuk tampilan status dan alarm",
+    "panelTitle": "Konfigurasi lampu indikator",
+    "properties": {
+      "width": "Lebar",
+      "height": "Tinggi",
+      "status": "Status",
+      "onColor": "Warna menyala",
+      "offColor": "Warna mati",
+      "warningColor": "Warna peringatan",
+      "faultColor": "Warna gangguan",
+      "blinkOnAlarm": "Kedip alarm",
+      "blinkInterval": "Interval kedip (ms)",
+      "showLabel": "Tampilkan label",
+      "labelText": "Teks label",
+      "labelColor": "Warna label",
+      "onValue": "Nilai pemetaan menyala",
+      "offValue": "Nilai pemetaan mati",
+      "warningValue": "Nilai pemetaan peringatan",
+      "faultValue": "Nilai pemetaan gangguan",
+      "defaultStatus": "Status default"
+    },
+    "options": {
+      "status": {
+        "on": "Menyala",
+        "off": "Mati",
+        "warning": "Peringatan",
+        "fault": "Gangguan"
+      }
+    },
+    "groups": {
+      "basic": "Dasar",
+      "status": "Status",
+      "color": "Warna",
+      "animation": "Animasi",
+      "label": "Label",
+      "binding": "Pemetaan pengikatan"
+    }
+  }
+}

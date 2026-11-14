@@ -1,0 +1,15 @@
+{
+  "countdown": {
+    "label": "Kira detik",
+    "properties": {
+      "dataset": "Kira detik (saat)",
+      "showDay": "Tunjuk hari",
+      "color1": "Warna latar",
+      "color2": "Warna teks",
+      "flipperWidth": "Lebar digit",
+      "flipperHeight": "Tinggi digit",
+      "flipperGap": "Jarak"
+    },
+    "description": "Pemalam hiasan kira detik"
+  }
+}

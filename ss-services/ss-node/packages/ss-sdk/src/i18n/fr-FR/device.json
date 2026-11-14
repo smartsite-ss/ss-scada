@@ -1,0 +1,27 @@
+{
+  "device": {
+    "create": {
+      "success": "Appareil créé avec succès",
+      "failed_name_exists": "Un appareil portant ce nom existe déjà dans ce projet"
+    },
+    "update": {
+      "success": "Appareil mis à jour avec succès"
+    },
+    "delete": {
+      "success": "Appareil supprimé avec succès",
+      "failed_has_tags": "L'appareil contient encore des étiquettes et ne peut pas être supprimé"
+    },
+    "connect": {
+      "success": "Connexion à l'appareil réussie",
+      "failed_timeout": "Délai de connexion à l'appareil dépassé",
+      "failed_refused": "L'appareil a refusé la connexion"
+    },
+    "disconnect": {
+      "success": "Appareil déconnecté"
+    },
+    "offline": "L'appareil {{name}} (ID : {{id}}) est hors ligne",
+    "online": "L'appareil {{name}} (ID : {{id}}) est en ligne",
+    "read_error": "Échec de la lecture de l'adresse {{address}} de l'appareil {{name}} : {{error}}",
+    "write_error": "Échec de l'écriture à l'adresse {{address}} de l'appareil {{name}} : {{error}}"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "data": {
+    "acquisition": {
+      "started": "Coleta de dados iniciada com sucesso",
+      "stopped": "Coleta de dados interrompida",
+      "error": "Erro na coleta de dados"
+    },
+    "transform": {
+      "success": "Conversão de dados concluída com sucesso",
+      "failed_invalid_value": "Valor de dados inválido: {{value}}",
+      "failed_scale_error": "Configuração incorreta do fator de escala"
+    },
+    "persistence": {
+      "save_success": "Dados salvos com sucesso",
+      "save_failed": "Falha ao salvar os dados ({{detail}})"
+    },
+    "history": {
+      "query_success": "Consulta de dados históricos concluída com sucesso",
+      "query_empty": "Nenhum dado histórico no intervalo especificado",
+      "time_range_error": "Parâmetros do intervalo de tempo inválidos"
+    }
+  }
+}

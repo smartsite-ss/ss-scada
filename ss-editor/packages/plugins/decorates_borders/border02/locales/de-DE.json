@@ -1,0 +1,11 @@
+{
+  "border02": {
+    "label": "Rahmen-02",
+    "description": "Dekorationselement Rahmen-02",
+    "properties": {
+      "colors": "Farbe 1",
+      "colors2": "Farbe 2",
+      "backgroundColor": "Hintergrundfarbe"
+    }
+  }
+}

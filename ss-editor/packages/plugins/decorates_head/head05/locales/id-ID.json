@@ -1,0 +1,11 @@
+{
+  "head05": {
+    "label": "Dekorasi kepala-05",
+    "properties": {
+      "color1": "Warna pertama",
+      "color2": "Warna kedua",
+      "dur": "Siklus animasi (detik)"
+    },
+    "description": "Dekorasi animasi tersegmentasi"
+  }
+}

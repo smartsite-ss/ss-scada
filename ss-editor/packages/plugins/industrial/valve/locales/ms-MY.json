@@ -1,0 +1,45 @@
+{
+  "valve": {
+    "label": "Injap",
+    "description": "Komponen injap dengan status buka/tutup dan pertukaran jenis",
+    "panelTitle": "Konfigurasi injap",
+    "properties": {
+      "width": "Lebar",
+      "height": "Tinggi",
+      "status": "Status",
+      "valveType": "Jenis injap",
+      "bodyColor": "Warna badan",
+      "stemColor": "Warna batang injap",
+      "openColor": "Warna terbuka",
+      "closedColor": "Warna tertutup",
+      "faultColor": "Warna kerosakan",
+      "showLabel": "Tunjuk label",
+      "labelText": "Teks label",
+      "openValue": "Nilai padanan terbuka",
+      "closedValue": "Nilai padanan tertutup",
+      "faultValue": "Nilai padanan kerosakan",
+      "defaultStatus": "Status lalai"
+    },
+    "options": {
+      "status": {
+        "open": "Buka",
+        "closed": "Tutup",
+        "opening": "Sedang membuka",
+        "closing": "Sedang menutup",
+        "fault": "Kerosakan"
+      },
+      "valveType": {
+        "butterfly": "Injap rama-rama",
+        "gate": "Injap pintu"
+      }
+    },
+    "groups": {
+      "basic": "Asas",
+      "status": "Status",
+      "color": "Warna",
+      "statusColor": "Warna status",
+      "label": "Label",
+      "binding": "Pemetaan ikatan"
+    }
+  }
+}

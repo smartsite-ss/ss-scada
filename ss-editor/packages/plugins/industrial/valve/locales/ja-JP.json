@@ -1,0 +1,45 @@
+{
+  "valve": {
+    "label": "バルブ",
+    "description": "バルブコンポーネント。開閉状態と種類の切り替えに対応",
+    "panelTitle": "バルブの設定",
+    "properties": {
+      "width": "幅",
+      "height": "高さ",
+      "status": "状態",
+      "valveType": "バルブの種類",
+      "bodyColor": "本体の色",
+      "stemColor": "ステムの色",
+      "openColor": "開時の色",
+      "closedColor": "閉時の色",
+      "faultColor": "故障の色",
+      "showLabel": "ラベルを表示",
+      "labelText": "ラベルテキスト",
+      "openValue": "開に対応する値",
+      "closedValue": "閉に対応する値",
+      "faultValue": "故障に対応する値",
+      "defaultStatus": "既定の状態"
+    },
+    "options": {
+      "status": {
+        "open": "開",
+        "closed": "閉",
+        "opening": "開動作中",
+        "closing": "閉動作中",
+        "fault": "故障"
+      },
+      "valveType": {
+        "butterfly": "バタフライ弁",
+        "gate": "ゲート弁"
+      }
+    },
+    "groups": {
+      "basic": "基本",
+      "status": "状態",
+      "color": "色",
+      "statusColor": "状態の色",
+      "label": "ラベル",
+      "binding": "バインドマッピング"
+    }
+  }
+}

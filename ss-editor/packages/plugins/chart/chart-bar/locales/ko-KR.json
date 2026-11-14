@@ -1,0 +1,11 @@
+{
+  "chartBar": {
+    "label": "막대 차트",
+    "description": "정적/API 데이터 소스 막대 차트",
+    "config": {
+      "dataSource": "데이터 소스",
+      "noData": "데이터 없음",
+      "loadError": "로드 실패"
+    }
+  }
+}

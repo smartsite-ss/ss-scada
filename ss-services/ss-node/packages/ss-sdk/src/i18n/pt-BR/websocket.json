@@ -1,0 +1,45 @@
+{
+  "websocket": {
+    "connected": "Conexão WebSocket bem-sucedida",
+    "disconnected": "WebSocket desconectado",
+    "pong": "Pong - resposta de heartbeat",
+    "event": {
+      "data_update": "Evento de atualização de dados (tag: {{tagId}})",
+      "alarm_triggered": "Evento de disparo de alarme",
+      "alarm_acknowledged": "Evento de confirmação de alarme",
+      "alarm_cleared": "Evento de limpeza de alarme",
+      "device_status_change": "Evento de mudança de status do dispositivo"
+    },
+    "error": {
+      "authentication_failed": "Falha na autenticação do WebSocket",
+      "rate_limit_exceeded": "Limite de frequência de mensagens excedido",
+      "invalid_message_format": "Formato de mensagem inválido"
+    },
+    "room": {
+      "joined": "O usuário {{username}} entrou na sala {{room}}",
+      "left": "O usuário {{username}} saiu da sala {{room}}",
+      "permission_denied": "Sem permissão para entrar na sala do projeto {{projectId}}",
+      "not_authenticated": "Usuários não autenticados não podem entrar na sala do projeto"
+    },
+    "connection": {
+      "limit_exceeded": "Limite de conexões atingido ({{current}}/{{max}})",
+      "user_limit_exceeded": "O usuário {{username}} atingiu o limite de conexões ({{current}}/{{max}})",
+      "ip_limit_exceeded": "O IP {{ip}} atingiu o limite de conexões ({{current}}/{{max}})",
+      "idle_timeout": "Tempo limite de inatividade da conexão esgotado ({{minutes}} minutos sem mensagens de negócio)",
+      "force_disconnected": "O administrador encerrou a conexão à força",
+      "global_limit_exceeded": "Limite global de conexões atingido ({{current}}/{{max}})"
+    },
+    "monitor": {
+      "online_count": "Conexões online",
+      "message_rate": "Taxa de mensagens",
+      "connection_duration": "Duração da conexão",
+      "abnormal_detected": "Conexão anormal detectada"
+    },
+    "offline": {
+      "message_cached": "Mensagem offline armazenada em cache",
+      "message_replayed": "Mensagens offline reenviadas ({{count}})",
+      "message_expired": "Mensagem expirada e removida",
+      "message_confirmed": "Mensagem confirmada"
+    }
+  }
+}

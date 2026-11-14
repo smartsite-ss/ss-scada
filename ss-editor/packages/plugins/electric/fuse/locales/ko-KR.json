@@ -1,0 +1,11 @@
+{
+  "fuse": {
+    "label": "퓨즈",
+    "properties": {
+      "color": "선 색상",
+      "backgroundColor": "배경색",
+      "lineWidth": "선 너비"
+    },
+    "description": "전력 퓨즈 - 과전류 보호 소자"
+  }
+}

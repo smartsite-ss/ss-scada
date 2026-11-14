@@ -1,0 +1,21 @@
+{
+  "gatevalve": {
+    "label": "Elektrisches Schieberventil",
+    "properties": {
+      "colors": "Farbe 1",
+      "colors2": "Farbe 2",
+      "backgroundColor": "Hintergrundfarbe",
+      "lineWidth": "Linienbreite",
+      "closed": "Geschlossener Zustand",
+      "state": "Ventilzustand"
+    },
+    "options": {
+      "state": {
+        "open": "Offen",
+        "closed": "Geschlossen",
+        "fault": "Störung"
+      }
+    },
+    "description": "Elektrisches Schieberventil – Schmetterlingsgehäuse mit elektrischem Antrieb, Zustände Offen/Geschlossen/Störung"
+  }
+}

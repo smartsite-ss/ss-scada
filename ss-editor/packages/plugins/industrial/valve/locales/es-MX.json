@@ -1,0 +1,45 @@
+{
+  "valve": {
+    "label": "Válvula",
+    "description": "Componente de válvula con estado de apertura y cambio de tipo",
+    "panelTitle": "Configuración de la válvula",
+    "properties": {
+      "width": "Ancho",
+      "height": "Alto",
+      "status": "Estado",
+      "valveType": "Tipo de válvula",
+      "bodyColor": "Color del cuerpo",
+      "stemColor": "Color del vástago",
+      "openColor": "Color abierto",
+      "closedColor": "Color cerrado",
+      "faultColor": "Color de falla",
+      "showLabel": "Mostrar etiqueta",
+      "labelText": "Texto de etiqueta",
+      "openValue": "Valor para abierto",
+      "closedValue": "Valor para cerrado",
+      "faultValue": "Valor para falla",
+      "defaultStatus": "Estado predeterminado"
+    },
+    "options": {
+      "status": {
+        "open": "Abierto",
+        "closed": "Cerrado",
+        "opening": "Abriendo",
+        "closing": "Cerrando",
+        "fault": "Falla"
+      },
+      "valveType": {
+        "butterfly": "Válvula de mariposa",
+        "gate": "Válvula de compuerta"
+      }
+    },
+    "groups": {
+      "basic": "Básico",
+      "status": "Estado",
+      "color": "Color",
+      "statusColor": "Color de estado",
+      "label": "Etiqueta",
+      "binding": "Asignación de enlaces"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "tagVariable": {
+    "label": "ตัวแปรแท็ก",
+    "description": "แสดงค่าตัวแปรอุปกรณ์แบบเรียลไทม์",
+    "config": {
+      "bindVariable": "ตัวแปรที่ผูก",
+      "selectVariable": "เลือกตัวแปร",
+      "clear": "ล้าง",
+      "unbound": "ยังไม่ผูก"
+    },
+    "selector": {
+      "title": "เลือกตัวแปรอุปกรณ์",
+      "searchPlaceholder": "ค้นหาอุปกรณ์หรือตัวแปร",
+      "deviceLabel": "อุปกรณ์",
+      "tagCount": "{count} ตัวแปร",
+      "loading": "กำลังโหลด...",
+      "empty": "ไม่มีตัวแปรอุปกรณ์",
+      "selectHint": "คลิกตัวแปรเพื่อผูก"
+    }
+  }
+}

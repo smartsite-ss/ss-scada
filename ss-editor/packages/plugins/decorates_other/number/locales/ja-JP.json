@@ -1,0 +1,19 @@
+{
+  "number": {
+    "label": "数値",
+    "properties": {
+      "dataset": "目標値",
+      "from": "開始値",
+      "dur": "アニメーション時間（秒）",
+      "precision": "小数点以下の桁数",
+      "showSeparator": "桁区切り",
+      "numberSize": "フォントサイズ",
+      "color1": "数値の色",
+      "prefixText": "接頭辞",
+      "color2": "接頭辞の色",
+      "suffixText": "接尾辞",
+      "color3": "接尾辞の色"
+    },
+    "description": "数値カウントアップアニメーションのプラグイン"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "daozha": {
+    "label": "Sakelar pisau",
+    "properties": {
+      "color": "Warna garis",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garis",
+      "terminalRadius": "Radius terminal",
+      "closed": "Status tertutup",
+      "closedValue": "Nilai untuk tertutup",
+      "openValue": "Nilai untuk terbuka",
+      "defaultStatus": "Status default"
+    },
+    "options": {
+      "closed": {
+        "yes": "Tertutup",
+        "no": "Terbuka"
+      }
+    },
+    "description": "Sakelar pisau daya - elemen grafis sakelar pemisah dengan peralihan status tertutup/terbuka"
+  }
+}

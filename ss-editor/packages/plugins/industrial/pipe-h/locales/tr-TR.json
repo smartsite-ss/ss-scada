@@ -1,0 +1,39 @@
+{
+  "pipeH": {
+    "label": "Boru-H",
+    "description": "Boru - yatay bileşen, akış animasyonu ve yön kontrolünü destekler",
+    "panelTitle": "Boru yapılandırması",
+    "properties": {
+      "width": "Genişlik",
+      "height": "Yükseklik",
+      "status": "Durum",
+      "direction": "Akış yönü",
+      "pipeColor": "Boru rengi",
+      "flowingColor": "Akış rengi",
+      "stoppedColor": "Durma rengi",
+      "blockedColor": "Tıkanma rengi",
+      "pipeThickness": "Boru kalınlığı",
+      "showFlange": "Flanşı göster",
+      "flowSpeed": "Akış hızı",
+      "showFlowAnimation": "Akış animasyonunu göster"
+    },
+    "options": {
+      "status": {
+        "flowing": "Akışta",
+        "stopped": "Durdu",
+        "blocked": "Tıkanık"
+      },
+      "direction": {
+        "left": "Sola",
+        "right": "Sağa"
+      }
+    },
+    "groups": {
+      "basic": "Temel",
+      "status": "Durum",
+      "color": "Renk",
+      "style": "Stil",
+      "animation": "Animasyon"
+    }
+  }
+}

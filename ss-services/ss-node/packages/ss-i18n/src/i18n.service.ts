@@ -5,8 +5,17 @@
 import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
 import * as path from 'path';
+import { DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES, normalizeLanguage } from './i18n.constants';
 
 const I18N_BASE_PATH = path.join(__dirname, '..', '..', 'packages', 'ss-sdk', 'src', 'i18n');
+
+/** Legacy directory names used before the locale code became the folder name. */
+const LANG_DIR_OVERRIDES: Record<string, string> = {
+  'zh-CN': 'zh',
+  'en-US': 'en',
+  zh: 'zh',
+  en: 'en',
+};
 
 export interface I18nContext {
   lang?: string;
@@ -15,31 +24,41 @@ export interface I18nContext {
 @Injectable()
 export class I18nService {
   private translations: Map<string, Record<string, any>> = new Map();
-  private fallbackLanguage = 'zh-CN';
+  private fallbackLanguage: string = DEFAULT_LANGUAGE;
   private currentLanguage: string;
   private loaderPath: string;
   private missingKeys: Set<string> = new Set();
 
   constructor() {
     this.loaderPath = process.env.I18N_LOADER_PATH || I18N_BASE_PATH;
-    this.fallbackLanguage = process.env.I18N_FALLBACK_LANGUAGE || 'zh-CN';
+    this.fallbackLanguage = process.env.I18N_FALLBACK_LANGUAGE || DEFAULT_LANGUAGE;
     this.currentLanguage = this.fallbackLanguage;
     this.loadAllLanguages();
   }
 
   private getLangDir(lang: string): string {
-    const langMap: Record<string, string> = {
-      'zh-CN': 'zh',
-      'en-US': 'en',
-      en: 'en',
-      zh: 'zh',
-    };
-    return langMap[lang] || lang;
+    return LANG_DIR_OVERRIDES[lang] || lang;
+  }
+
+  /** Locale list from I18N_SUPPORTED_LANGUAGES, normalized and de-duplicated. */
+  private getConfiguredLanguages(): string[] {
+    const configured = process.env.I18N_SUPPORTED_LANGUAGES;
+    const raw = configured && configured.trim() ? configured.split(',') : SUPPORTED_LANGUAGES;
+    const result: string[] = [];
+    for (const entry of raw) {
+      const normalized = normalizeLanguage(entry);
+      if (normalized && !result.includes(normalized)) {
+        result.push(normalized);
+      }
+    }
+    if (!result.includes(this.fallbackLanguage)) {
+      result.unshift(this.fallbackLanguage);
+    }
+    return result;
   }
 
   private loadAllLanguages(): void {
-    const langs = ['zh-CN', 'en-US'];
-    for (const lang of langs) {
+    for (const lang of this.getConfiguredLanguages()) {
       this.loadLanguage(lang);
     }
   }

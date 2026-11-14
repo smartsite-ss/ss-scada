@@ -1,0 +1,42 @@
+{
+  "tank": {
+    "label": "儲槽",
+    "description": "儲槽元件，用於液位顯示與警報",
+    "panelTitle": "儲槽設定",
+    "properties": {
+      "width": "寬度",
+      "height": "高度",
+      "level": "目前液位",
+      "maxLevel": "最大液位",
+      "unit": "單位",
+      "decimalPlaces": "小數位數",
+      "status": "狀態",
+      "warningLevel": "警告液位",
+      "dangerLevel": "危險液位",
+      "bodyColor": "槽體顏色",
+      "liquidColor": "液體顏色",
+      "warningLiquidColor": "警告液體色",
+      "dangerLiquidColor": "危險液體色",
+      "rimColor": "邊框顏色",
+      "showLevelText": "顯示液位文字",
+      "showTicks": "顯示刻度",
+      "showAnimation": "波動動畫",
+      "tickCount": "刻度數量"
+    },
+    "options": {
+      "status": {
+        "normal": "正常",
+        "warning": "警告",
+        "danger": "危險"
+      }
+    },
+    "groups": {
+      "basic": "基本",
+      "level": "液位",
+      "status": "狀態",
+      "threshold": "閾值",
+      "color": "顏色",
+      "display": "顯示"
+    }
+  }
+}

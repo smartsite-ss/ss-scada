@@ -1,0 +1,54 @@
+{
+  "button": {
+    "label": "Nút",
+    "panelTitle": "Thuộc tính nút",
+    "properties": {
+      "text": "Văn bản",
+      "backgroundColor": "Màu nền",
+      "fontColor": "Màu chữ",
+      "borderColor": "Màu viền",
+      "borderWidth": "Độ rộng viền",
+      "borderStyle": "Kiểu viền",
+      "borderRadius": "Bo góc",
+      "fontSize": "Cỡ phông chữ",
+      "fontWeight": "Độ đậm phông chữ",
+      "textAlign": "Căn chỉnh văn bản",
+      "shadowColor": "Màu bóng đổ",
+      "shadowOffsetX": "Dịch chuyển bóng X",
+      "shadowOffsetY": "Dịch chuyển bóng Y",
+      "shadowBlur": "Độ mờ bóng",
+      "targetType": "Hành động nhấp",
+      "targetPage": "Trang đích",
+      "targetUrl": "URL đích"
+    },
+    "options": {
+      "borderStyle": {
+        "solid": "Nét liền",
+        "dashed": "Nét đứt",
+        "dotted": "Nét chấm"
+      },
+      "fontWeight": {
+        "normal": "Bình thường",
+        "bold": "Đậm"
+      },
+      "textAlign": {
+        "left": "Căn trái",
+        "center": "Căn giữa",
+        "right": "Căn phải"
+      },
+      "targetType": {
+        "none": "Không",
+        "page": "Mở trang",
+        "url": "Mở URL"
+      }
+    },
+    "groups": {
+      "basic": "Thuộc tính cơ bản",
+      "style": "Kiểu dáng",
+      "text": "Chữ",
+      "shadow": "Bóng đổ",
+      "action": "Hành động tương tác"
+    },
+    "description": "Phần tử đồ họa nút"
+  }
+}

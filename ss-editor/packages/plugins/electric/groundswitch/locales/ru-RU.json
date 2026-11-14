@@ -1,0 +1,21 @@
+{
+  "groundswitch": {
+    "label": "Заземляющий нож",
+    "properties": {
+      "color": "Цвет линии",
+      "backgroundColor": "Цвет фона",
+      "lineWidth": "Толщина линии",
+      "closed": "Состояние «включено»",
+      "closedValue": "Значение «включено»",
+      "openValue": "Значение «отключено»",
+      "defaultStatus": "Состояние по умолчанию"
+    },
+    "options": {
+      "closed": {
+        "yes": "Включено",
+        "no": "Отключено"
+      }
+    },
+    "description": "Заземляющий нож — заземление линии"
+  }
+}

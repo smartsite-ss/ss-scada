@@ -1,0 +1,15 @@
+{
+  "border19": {
+    "label": "Kenarlık-19 (İsviçre tipografi stili)",
+    "description": "Kenarlık-19 dekoratif bileşeni (İsviçre tipografi stili)",
+    "properties": {
+      "color1": "Koyu siyah",
+      "color2": "Parlak kırmızı",
+      "color3": "Beyaz",
+      "backgroundColor": "Arka plan rengi",
+      "showBlocks": "Geometrik bloklar",
+      "showAccents": "Süs noktaları",
+      "animationSpeed": "Animasyon hızı"
+    }
+  }
+}

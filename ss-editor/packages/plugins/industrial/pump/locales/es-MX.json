@@ -1,0 +1,43 @@
+{
+  "pump": {
+    "label": "Bomba",
+    "description": "Componente de bomba con animación de rotación y visualización de estado",
+    "panelTitle": "Configuración de la bomba",
+    "properties": {
+      "width": "Ancho",
+      "height": "Alto",
+      "status": "Estado",
+      "bodyColor": "Color del cuerpo",
+      "impellerColor": "Color del impulsor",
+      "highlightColor": "Color de resalte",
+      "showAnimation": "Mostrar animación",
+      "animationSpeed": "Velocidad de giro",
+      "rotationDirection": "Dirección de rotación",
+      "showLabel": "Mostrar etiqueta",
+      "labelText": "Texto de etiqueta",
+      "runningValue": "Valor para en marcha",
+      "stoppedValue": "Valor para detenido",
+      "faultValue": "Valor para falla",
+      "defaultStatus": "Estado predeterminado"
+    },
+    "options": {
+      "status": {
+        "running": "En marcha",
+        "stopped": "Detenido",
+        "fault": "Falla"
+      },
+      "rotationDirection": {
+        "clockwise": "Horario",
+        "counterclockwise": "Antihorario"
+      }
+    },
+    "groups": {
+      "basic": "Básico",
+      "status": "Estado",
+      "color": "Color",
+      "animation": "Animación",
+      "label": "Etiqueta",
+      "binding": "Asignación de enlaces"
+    }
+  }
+}

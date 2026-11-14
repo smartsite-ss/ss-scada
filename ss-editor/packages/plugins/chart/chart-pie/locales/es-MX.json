@@ -1,0 +1,11 @@
+{
+  "chartPie": {
+    "label": "Gráfico circular",
+    "description": "Gráfico circular con origen de datos estático/API",
+    "config": {
+      "dataSource": "Origen de datos",
+      "noData": "Sin datos",
+      "loadError": "Error al cargar"
+    }
+  }
+}

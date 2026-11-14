@@ -1,0 +1,27 @@
+{
+  "device": {
+    "create": {
+      "success": "設備の作成に成功しました",
+      "failed_name_exists": "設備名はこのプロジェクト内に既に存在します"
+    },
+    "update": {
+      "success": "設備の更新に成功しました"
+    },
+    "delete": {
+      "success": "設備の削除に成功しました",
+      "failed_has_tags": "設備にタグが残っているため削除できません"
+    },
+    "connect": {
+      "success": "設備の接続に成功しました",
+      "failed_timeout": "設備の接続がタイムアウトしました",
+      "failed_refused": "設備が接続を拒否しました"
+    },
+    "disconnect": {
+      "success": "設備を切断しました"
+    },
+    "offline": "設備 {{name}} (ID: {{id}}) がオフラインになりました",
+    "online": "設備 {{name}} (ID: {{id}}) がオンラインになりました",
+    "read_error": "設備 {{name}} のアドレス {{address}} の読み取りに失敗しました: {{error}}",
+    "write_error": "設備 {{name}} のアドレス {{address}} の書き込みに失敗しました: {{error}}"
+  }
+}

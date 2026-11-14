@@ -1,0 +1,11 @@
+{
+  "transformer3w": {
+    "label": "Üç sargılı transformatör",
+    "properties": {
+      "color": "Çizgi rengi",
+      "backgroundColor": "Arka plan rengi",
+      "lineWidth": "Çizgi kalınlığı"
+    },
+    "description": "Üç sargılı güç transformatörü - Y tipi üç bobin düzeni"
+  }
+}

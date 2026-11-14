@@ -1,0 +1,11 @@
+{
+  "autotransformer": {
+    "label": "Máy biến áp tự ngẫu",
+    "properties": {
+      "color": "Màu đường nét",
+      "backgroundColor": "Màu nền",
+      "lineWidth": "Độ rộng nét"
+    },
+    "description": "Máy biến áp tự ngẫu - một cuộn dây có đầu phân áp"
+  }
+}

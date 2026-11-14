@@ -1,0 +1,35 @@
+{
+  "fan4": {
+    "label": "風扇4",
+    "properties": {
+      "colors": "顏色組",
+      "flowColor": "風管顏色",
+      "pipeColor": "管道顏色",
+      "bgWidth": "底座寬度",
+      "boardWidth": "板厚",
+      "roate": "旋轉角度",
+      "cls": "旋轉方向",
+      "dur": "動畫週期(秒)",
+      "backgroundColor": "背景色",
+      "dataset": "資料集",
+      "forwardValue": "正轉對應值",
+      "backwardValue": "反轉對應值",
+      "stopValue": "停止對應值",
+      "defaultCls": "預設動畫方向",
+      "decimalPlaces": "小數位數",
+      "clsOptions": {
+        "right": "右轉",
+        "left": "左轉",
+        "stop": "停止"
+      }
+    },
+    "options": {
+      "cls": {
+        "left": "正轉",
+        "right": "反轉",
+        "stop": "停止"
+      }
+    },
+    "description": "礦產風扇4 - 帶風管離心風機變體，支援旋轉方向與速度控制"
+  }
+}

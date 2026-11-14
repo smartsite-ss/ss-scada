@@ -1,0 +1,11 @@
+{
+  "ct": {
+    "label": "電流互感器",
+    "properties": {
+      "color": "線條顏色",
+      "backgroundColor": "背景色",
+      "lineWidth": "線寬"
+    },
+    "description": "電流互感器 CT - 測量用電流變換裝置"
+  }
+}

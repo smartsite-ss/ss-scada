@@ -1,0 +1,17 @@
+{
+  "three-cube": {
+    "label": "Cube 3D",
+    "panelTitle": "Configuration du cube 3D",
+    "properties": {
+      "cubeColor": "Couleur du cube",
+      "cubeSize": "Taille du cube",
+      "rotationSpeed": "Vitesse de rotation",
+      "showGrid": "Afficher la grille",
+      "showAxes": "Afficher les axes"
+    },
+    "groups": {
+      "basic": "Propriétés de base"
+    },
+    "description": "Élément graphique cube 3D avec animation de rotation"
+  }
+}

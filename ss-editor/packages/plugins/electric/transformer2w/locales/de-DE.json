@@ -1,0 +1,11 @@
+{
+  "transformer2w": {
+    "label": "Zweiwicklungstransformator",
+    "properties": {
+      "color": "Linienfarbe",
+      "backgroundColor": "Hintergrundfarbe",
+      "lineWidth": "Linienbreite"
+    },
+    "description": "Zweiwicklungs-Leistungstransformator – Symbol mit zwei Wicklungen"
+  }
+}

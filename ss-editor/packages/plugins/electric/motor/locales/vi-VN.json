@@ -1,0 +1,22 @@
+{
+  "motor": {
+    "label": "Động cơ điện",
+    "properties": {
+      "color": "Màu đường nét",
+      "backgroundColor": "Màu nền",
+      "lineWidth": "Độ rộng nét",
+      "running": "Trạng thái vận hành",
+      "runningValue": "Giá trị tương ứng chạy",
+      "stoppedValue": "Giá trị tương ứng dừng",
+      "faultValue": "Giá trị tương ứng sự cố",
+      "defaultStatus": "Trạng thái mặc định"
+    },
+    "options": {
+      "running": {
+        "yes": "Đang chạy",
+        "no": "Dừng"
+      }
+    },
+    "description": "Động cơ điện - có chỉ báo trạng thái quay"
+  }
+}

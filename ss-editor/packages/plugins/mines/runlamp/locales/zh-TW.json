@@ -1,0 +1,23 @@
+{
+  "runlamp": {
+    "label": "運轉指示燈",
+    "properties": {
+      "lampColor": "燈色",
+      "glowing": "發光效果",
+      "blinkSpeed": "閃爍速度",
+      "backgroundColor": "背景色",
+      "runningValue": "運轉對應值",
+      "stoppedValue": "停止對應值",
+      "faultValue": "故障對應值",
+      "defaultStatus": "預設狀態"
+    },
+    "options": {
+      "lampColor": {
+        "green": "綠色",
+        "red": "紅色",
+        "yellow": "黃色"
+      }
+    },
+    "description": "運轉指示燈 - 圓形燈泡顏色狀態脈衝發光動畫"
+  }
+}

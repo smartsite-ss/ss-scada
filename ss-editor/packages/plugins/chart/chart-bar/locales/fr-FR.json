@@ -1,0 +1,11 @@
+{
+  "chartBar": {
+    "label": "Histogramme",
+    "description": "Histogramme à source de données statique/API",
+    "config": {
+      "dataSource": "Source de données",
+      "noData": "Aucune donnée",
+      "loadError": "Échec du chargement"
+    }
+  }
+}

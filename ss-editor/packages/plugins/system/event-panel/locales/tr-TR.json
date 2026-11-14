@@ -1,0 +1,61 @@
+{
+  "eventPanel": {
+    "label": "Olay paneli",
+    "description": "Sistem olay günlüklerini gösterir (proje/tür/durum ile filtreleme)",
+    "loading": "Yükleniyor...",
+    "empty": "Olay yok",
+    "loadFailed": "Yükleme başarısız",
+    "systemLevel": "Sistem düzeyi",
+    "config": {
+      "project": "Proje",
+      "allProjects": "Tüm projeler",
+      "eventType": "Olay türü",
+      "allEventTypes": "Tüm türler",
+      "status": "Durum",
+      "allStatus": "Tüm durumlar"
+    },
+    "columns": {
+      "time": "Zaman",
+      "eventType": "Olay türü",
+      "project": "Proje",
+      "operator": "Operatör",
+      "status": "Durum",
+      "successRatio": "Başarı oranı",
+      "duration": "Süre"
+    },
+    "groups": {
+      "device": "Cihaz",
+      "project": "Proje",
+      "alarm": "Alarm",
+      "config": "Yapılandırma ve zamanlayıcılar",
+      "plugin": "Eklenti"
+    },
+    "status": {
+      "emitted": "Yayınlandı",
+      "processing": "İşleniyor",
+      "processed": "İşlendi",
+      "partial": "Kısmen başarısız",
+      "failed": "Başarısız",
+      "no_subscribers": "Abone yok"
+    },
+    "properties": {
+      "pageSize": "Sayfa başına kayıt",
+      "refreshInterval": "Yenileme aralığı (saniye)",
+      "showHeader": "Sütun başlıklarını göster",
+      "showTime": "Zaman sütunu",
+      "showEventType": "Olay türü sütunu",
+      "showProject": "Proje sütunu",
+      "showOperator": "Operatör sütunu",
+      "showStatus": "Durum sütunu",
+      "showSuccessRatio": "Başarı oranı sütunu",
+      "showDuration": "Süre sütunu",
+      "fontSize": "Yazı boyutu",
+      "rowHeight": "Satır yüksekliği",
+      "headerBackgroundColor": "Sütun başlığı arka planı",
+      "rowBackgroundColor": "Satır arka planı",
+      "alternatingRowColor": "Alternatif satır arka planı",
+      "textColor": "Metin rengi",
+      "backgroundColor": "Arka plan rengi"
+    }
+  }
+}

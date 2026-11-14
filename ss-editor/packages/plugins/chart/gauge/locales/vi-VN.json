@@ -1,0 +1,66 @@
+{
+  "chartGauge": {
+    "label": "Đồng hồ đo",
+    "description": "Thành phần đồng hồ đo, dùng để hiển thị giá trị đơn theo thời gian thực và cảnh báo ngưỡng",
+    "panelTitle": "Cấu hình đồng hồ đo",
+    "config": {
+      "dataSource": "Nguồn dữ liệu",
+      "noData": "Chưa có dữ liệu",
+      "loadError": "Tải thất bại"
+    },
+    "properties": {
+      "title": "Tiêu đề",
+      "titleColor": "Màu tiêu đề",
+      "titleFontSize": "Cỡ chữ tiêu đề",
+      "value": "Giá trị hiện tại",
+      "minValue": "Giá trị nhỏ nhất",
+      "maxValue": "Giá trị lớn nhất",
+      "unit": "Đơn vị",
+      "startAngle": "Góc bắt đầu",
+      "endAngle": "Góc kết thúc",
+      "backgroundColor": "Màu nền",
+      "borderColor": "Màu viền",
+      "borderWidth": "Độ rộng viền",
+      "borderStyle": "Kiểu viền",
+      "borderRadius": "Bo góc",
+      "faceColor": "Màu mặt đồng hồ",
+      "rimColor": "Màu vành ngoài",
+      "normalColor": "Màu vùng bình thường",
+      "needleColor": "Màu kim chỉ",
+      "tickColor": "Màu vạch chia",
+      "labelColor": "Màu nhãn",
+      "valueColor": "Màu giá trị",
+      "showTicks": "Hiển thị vạch chia",
+      "showLabels": "Hiển thị nhãn",
+      "showValue": "Hiển thị giá trị",
+      "majorTicks": "Số vạch chia chính",
+      "minorTicks": "Số vạch chia phụ",
+      "warningValue": "Ngưỡng cảnh báo",
+      "dangerValue": "Ngưỡng nguy hiểm",
+      "warningColor": "Màu cảnh báo",
+      "dangerColor": "Màu nguy hiểm",
+      "shadowColor": "Màu bóng đổ",
+      "shadowOffsetX": "Dịch chuyển bóng X",
+      "shadowOffsetY": "Dịch chuyển bóng Y",
+      "shadowBlur": "Độ mờ bóng"
+    },
+    "options": {
+      "borderStyle": {
+        "solid": "Nét liền",
+        "dashed": "Nét đứt",
+        "dotted": "Nét chấm"
+      }
+    },
+    "groups": {
+      "basic": "Cơ bản",
+      "value": "Giá trị",
+      "gauge": "Đồng hồ",
+      "style": "Kiểu dáng",
+      "color": "Màu",
+      "display": "Hiển thị",
+      "ticks": "Vạch chia",
+      "alarm": "Cảnh báo",
+      "shadow": "Bóng đổ"
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "waterpump": {
+    "label": "Pompa air",
+    "description": "Komponen pompa air dengan animasi rotasi dan tampilan status",
+    "panelTitle": "Konfigurasi pompa air",
+    "properties": {
+      "width": "Lebar",
+      "height": "Tinggi",
+      "status": "Status",
+      "bodyColor": "Warna rangka",
+      "impellerColor": "Warna kipas",
+      "pipeColor": "Warna pipa",
+      "flangeColor": "Warna flensa",
+      "highlightColor": "Warna sorotan",
+      "showAnimation": "Tampilkan animasi",
+      "rotationSpeed": "Kecepatan putar",
+      "rotationDirection": "Arah rotasi",
+      "showLabel": "Tampilkan label",
+      "labelText": "Teks label",
+      "runningValue": "Nilai pemetaan berjalan",
+      "stoppedValue": "Nilai pemetaan berhenti",
+      "faultValue": "Nilai pemetaan gangguan",
+      "defaultStatus": "Status default"
+    },
+    "options": {
+      "status": {
+        "running": "Berjalan",
+        "stopped": "Berhenti",
+        "fault": "Gangguan"
+      },
+      "rotationDirection": {
+        "clockwise": "Searah jarum jam",
+        "counterclockwise": "Berlawanan arah jarum jam"
+      }
+    },
+    "groups": {
+      "basic": "Dasar",
+      "status": "Status",
+      "color": "Warna",
+      "animation": "Animasi",
+      "label": "Label",
+      "binding": "Pemetaan pengikatan"
+    }
+  }
+}

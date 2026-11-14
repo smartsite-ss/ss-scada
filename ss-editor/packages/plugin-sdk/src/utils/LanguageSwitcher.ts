@@ -2,8 +2,27 @@
 // https://smartsite.top/
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
-import { I18nProvider } from './I18nProvider';
+import { I18nProvider, SUPPORTED_LOCALES } from './I18nProvider';
 import type { SupportedLocale } from './I18nProvider';
+
+/** Native language names — locale-independent, so they are static rather than translated. */
+const LOCALE_LABELS: Record<SupportedLocale, string> = {
+  'zh-CN': '简体中文',
+  'en-US': 'English',
+  'zh-TW': '繁體中文',
+  'ja-JP': '日本語',
+  'ko-KR': '한국어',
+  'th-TH': 'ไทย',
+  'de-DE': 'Deutsch',
+  'fr-FR': 'Français',
+  'ru-RU': 'Русский',
+  'pt-BR': 'Português (Brasil)',
+  'id-ID': 'Bahasa Indonesia',
+  'vi-VN': 'Tiếng Việt',
+  'es-MX': 'Español (México)',
+  'tr-TR': 'Türkçe',
+  'ms-MY': 'Bahasa Melayu',
+};
 
 export interface LanguageSwitcherOptions {
   container?: HTMLElement;
@@ -19,7 +38,27 @@ export class LanguageSwitcher {
   private static _localeKeyMap: Record<SupportedLocale, string> = {
     'zh-CN': 'zhCN',
     'en-US': 'enUS',
+    'zh-TW': 'zhTW',
+    'ja-JP': 'jaJP',
+    'ko-KR': 'koKR',
+    'th-TH': 'thTH',
+    'de-DE': 'deDE',
+    'fr-FR': 'frFR',
+    'ru-RU': 'ruRU',
+    'pt-BR': 'ptBR',
+    'id-ID': 'idID',
+    'vi-VN': 'viVN',
+    'es-MX': 'esMX',
+    'tr-TR': 'trTR',
+    'ms-MY': 'msMY',
   };
+
+  /** Native label for a locale (falls back to its language-pack translation when present). */
+  private static labelOf(locale: SupportedLocale): string {
+    const key = `language.${LanguageSwitcher._localeKeyMap[locale]}`;
+    const translated = I18nProvider.t('__system__', key, '');
+    return translated && translated !== key ? translated : LOCALE_LABELS[locale];
+  }
 
   constructor(options: LanguageSwitcherOptions = {}) {
     this._options = options;
@@ -27,7 +66,7 @@ export class LanguageSwitcher {
 
   async mount(container?: HTMLElement): Promise<HTMLSelectElement> {
     const target = container ?? this._options.container ?? document.body;
-    const locales = this._options.supportedLocales ?? (['zh-CN', 'en-US'] as SupportedLocale[]);
+    const locales = this._options.supportedLocales ?? SUPPORTED_LOCALES;
 
     const select = document.createElement('select');
     select.className = 'ss-language-switcher';
@@ -36,7 +75,7 @@ export class LanguageSwitcher {
     for (const locale of locales) {
       const option = document.createElement('option');
       option.value = locale;
-      option.textContent = I18nProvider.t('__system__', `language.${LanguageSwitcher._localeKeyMap[locale]}`);
+      option.textContent = LanguageSwitcher.labelOf(locale);
       if (locale === I18nProvider.locale) {
         option.selected = true;
       }

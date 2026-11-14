@@ -1,0 +1,31 @@
+{
+  "tag": {
+    "create": {
+      "success": "データタグの作成に成功しました",
+      "failed_name_exists": "タグ名はこの設備内に既に存在します"
+    },
+    "update": {
+      "success": "データタグの更新に成功しました"
+    },
+    "delete": {
+      "success": "データタグの削除に成功しました"
+    },
+    "read": {
+      "success": "タグデータの読み取りに成功しました",
+      "failed_device_offline": "設備がオフラインのため読み取れません",
+      "failed_timeout": "読み取りがタイムアウトしました"
+    },
+    "write": {
+      "success": "タグデータの書き込みに成功しました",
+      "failed_readonly": "このタグは読み取り専用のため書き込めません",
+      "failed_device_offline": "設備がオフラインのため書き込めません"
+    },
+    "quality": {
+      "good": "良好",
+      "uncertain": "不確定",
+      "bad": "不良",
+      "config_error": "設定エラー",
+      "device_offline": "設備オフライン"
+    }
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "track-move": {
+    "label": "Движение по траектории",
+    "description": "Анимированная точка, движущаяся по заданному пути; поддерживает изломы и замену изображением",
+    "panelTitle": "Настройка движения по траектории",
+    "properties": {
+      "speed": "Скорость (px/s)",
+      "dotStyle": "Стиль точки",
+      "dotColor": "Цвет точки",
+      "dotSize": "Размер точки",
+      "dotImage": "URL изображения",
+      "imageWidth": "Ширина изображения",
+      "imageHeight": "Высота изображения",
+      "trackColor": "Цвет траектории",
+      "trackWidth": "Ширина траектории",
+      "trackStyle": "Стиль траектории",
+      "status": "Состояние анимации",
+      "direction": "Направление движения",
+      "loopMode": "Режим цикла"
+    },
+    "options": {
+      "dotStyle": {
+        "circle": "Круг",
+        "image": "Изображение"
+      },
+      "trackStyle": {
+        "solid": "Сплошная",
+        "dashed": "Штриховая"
+      },
+      "direction": {
+        "forward": "Вперёд",
+        "backward": "Назад"
+      },
+      "loopMode": {
+        "loop": "Цикл",
+        "once": "Однократно",
+        "bounce": "Туда-обратно"
+      }
+    },
+    "groups": {
+      "dot": "Анимированная точка",
+      "track": "Траектория",
+      "motion": "Движение"
+    },
+    "hints": {
+      "dotImage": "Введите URL изображения"
+    },
+    "editor": {
+      "pathPoints": "Точки пути",
+      "index": "#",
+      "coordX": "X",
+      "coordY": "Y",
+      "type": "Тип",
+      "action": "Действие",
+      "startPoint": "Начальная точка",
+      "endPoint": "Конечная точка",
+      "bendPoint": "Точка излома",
+      "addBendPoint": "+ Добавить точку излома",
+      "reversePath": "Инвертировать путь"
+    }
+  }
+}

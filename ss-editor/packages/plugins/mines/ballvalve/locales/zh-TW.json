@@ -1,0 +1,31 @@
+{
+  "ballvalve": {
+    "label": "電動球閥",
+    "properties": {
+      "colors": "顏色1",
+      "colors2": "顏色2",
+      "flowColor": "流動顏色",
+      "pipeColor": "管道顏色",
+      "backgroundColor": "背景色",
+      "bgWidth": "背景寬度",
+      "boardWidth": "邊框寬度",
+      "roate": "旋轉角度",
+      "cls": "動畫方向",
+      "dur": "動畫週期(秒)",
+      "dataset": "資料值",
+      "forwardValue": "正轉對應值",
+      "backwardValue": "反轉對應值",
+      "stopValue": "停止對應值",
+      "defaultCls": "預設動畫方向",
+      "decimalPlaces": "小數位數"
+    },
+    "options": {
+      "cls": {
+        "left": "正轉",
+        "right": "反轉",
+        "stop": "停止"
+      }
+    },
+    "description": "礦產電動球閥 - 球閥閥體帶 V 口球體，90 度開關動畫"
+  }
+}

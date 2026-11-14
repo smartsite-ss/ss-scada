@@ -1,0 +1,36 @@
+{
+  "alarm": {
+    "rule": {
+      "created": "알람 규칙이 생성되었습니다",
+      "updated": "알람 규칙이 업데이트되었습니다",
+      "deleted": "알람 규칙이 삭제되었습니다",
+      "enabled": "알람 규칙이 활성화되었습니다",
+      "disabled": "알람 규칙이 비활성화되었습니다",
+      "not_found": "알람 규칙이 존재하지 않습니다"
+    },
+    "record": {
+      "triggered": "알람 발생: {{message}}",
+      "acknowledged": "알람이 확인되었습니다 (처리자: {{operator}})",
+      "cleared": "알람이 해제되었습니다 (사유: {{reason}})",
+      "not_found": "이벤트 기록이 존재하지 않습니다",
+      "already_acknowledged": "이미 확인된 알람입니다",
+      "already_cleared": "이미 해제된 알람입니다"
+    },
+    "condition": {
+      "gt": "{{tag}}의 값 {{value}}이(가) 상한 {{threshold}}보다 큽니다",
+      "lt": "{{tag}}의 값 {{value}}이(가) 하한 {{threshold}}보다 작습니다",
+      "range_in": "{{tag}}의 값 {{value}}이(가) 정상 범위 내에 있습니다",
+      "range_out": "{{tag}}의 값 {{value}}이(가) 정상 범위를 벗어났습니다"
+    },
+    "level": {
+      "info": "정보",
+      "warning": "경고",
+      "error": "오류",
+      "critical": "심각"
+    },
+    "notification": {
+      "send_success": "알람 알림 전송 성공",
+      "send_failed": "알람 알림 전송 실패"
+    }
+  }
+}

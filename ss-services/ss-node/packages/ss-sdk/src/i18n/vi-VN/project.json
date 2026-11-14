@@ -1,0 +1,24 @@
+{
+  "project": {
+    "create": {
+      "success": "Tạo dự án thành công",
+      "failed_name_exists": "Tên dự án đã tồn tại"
+    },
+    "update": {
+      "success": "Cập nhật dự án thành công",
+      "failed_not_owner": "Không có quyền sửa dự án này"
+    },
+    "delete": {
+      "success": "Xóa dự án thành công",
+      "failed_has_devices": "Dự án còn thiết bị, không thể xóa"
+    },
+    "get": {
+      "success": "Lấy thông tin dự án thành công",
+      "not_found": "Dự án không tồn tại"
+    },
+    "list": {
+      "success": "Lấy danh sách dự án thành công",
+      "empty": "Chưa có dự án"
+    }
+  }
+}

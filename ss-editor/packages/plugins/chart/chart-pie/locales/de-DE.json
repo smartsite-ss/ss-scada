@@ -1,0 +1,11 @@
+{
+  "chartPie": {
+    "label": "Kreisdiagramm",
+    "description": "Kreisdiagramm mit statischer/API-Datenquelle",
+    "config": {
+      "dataSource": "Datenquelle",
+      "noData": "Keine Daten",
+      "loadError": "Laden fehlgeschlagen"
+    }
+  }
+}

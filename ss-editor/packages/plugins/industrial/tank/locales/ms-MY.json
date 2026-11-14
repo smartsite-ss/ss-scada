@@ -1,0 +1,42 @@
+{
+  "tank": {
+    "label": "Tangki",
+    "description": "Komponen tangki untuk paparan paras cecair dan penggera",
+    "panelTitle": "Konfigurasi tangki",
+    "properties": {
+      "width": "Lebar",
+      "height": "Tinggi",
+      "level": "Paras cecair semasa",
+      "maxLevel": "Paras cecair maksimum",
+      "unit": "Unit",
+      "decimalPlaces": "Bilangan perpuluhan",
+      "status": "Status",
+      "warningLevel": "Paras amaran",
+      "dangerLevel": "Paras bahaya",
+      "bodyColor": "Warna badan tangki",
+      "liquidColor": "Warna cecair",
+      "warningLiquidColor": "Warna cecair amaran",
+      "dangerLiquidColor": "Warna cecair bahaya",
+      "rimColor": "Warna sempadan",
+      "showLevelText": "Tunjuk teks paras cecair",
+      "showTicks": "Tunjuk skala",
+      "showAnimation": "Animasi gelombang",
+      "tickCount": "Bilangan skala"
+    },
+    "options": {
+      "status": {
+        "normal": "Normal",
+        "warning": "Amaran",
+        "danger": "Bahaya"
+      }
+    },
+    "groups": {
+      "basic": "Asas",
+      "level": "Paras cecair",
+      "status": "Status",
+      "threshold": "Ambang",
+      "color": "Warna",
+      "display": "Paparan"
+    }
+  }
+}

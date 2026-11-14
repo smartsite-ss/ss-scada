@@ -1,0 +1,14 @@
+{
+  "flipper-number": {
+    "label": "Digit flip",
+    "properties": {
+      "dataset": "Nilai",
+      "flipperLength": "Bilangan digit",
+      "color1": "Warna teks",
+      "flipperWidth": "Lebar",
+      "flipperHeight": "Tinggi",
+      "flipperGap": "Jarak"
+    },
+    "description": "Pemalam paparan digit flip"
+  }
+}

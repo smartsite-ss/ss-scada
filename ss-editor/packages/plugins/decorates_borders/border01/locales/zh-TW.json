@@ -1,0 +1,14 @@
+{
+  "border01": {
+    "label": "邊框-01",
+    "description": "邊框-01裝飾元件",
+    "properties": {
+      "color1": "顏色一",
+      "color2": "顏色二",
+      "backgroundColor": "背景色",
+      "borderColor": "邊框線色",
+      "dur": "動畫週期(秒)",
+      "showAnimation": "啟用動畫"
+    }
+  }
+}

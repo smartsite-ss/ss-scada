@@ -1,0 +1,56 @@
+{
+  "textbox": {
+    "label": "テキストボックス",
+    "panelTitle": "テキストボックスの設定",
+    "properties": {
+      "text": "テキスト内容",
+      "placeholder": "プレースホルダー",
+      "fontSize": "フォントサイズ",
+      "fontWeight": "フォントの太さ",
+      "fontStyle": "フォントスタイル",
+      "textColor": "文字色",
+      "backgroundColor": "背景色",
+      "borderColor": "枠線色",
+      "borderWidth": "枠線幅",
+      "borderStyle": "枠線スタイル",
+      "borderRadius": "角の丸み",
+      "textAlign": "テキストの配置",
+      "verticalAlignment": "垂直方向の配置",
+      "padding": "内側の余白",
+      "multiline": "複数行モード",
+      "readOnly": "読み取り専用"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "標準",
+        "bold": "太字"
+      },
+      "fontStyle": {
+        "normal": "標準",
+        "italic": "斜体"
+      },
+      "borderStyle": {
+        "solid": "実線",
+        "dashed": "破線",
+        "dotted": "点線",
+        "none": "なし"
+      },
+      "textAlign": {
+        "left": "左揃え",
+        "center": "中央揃え",
+        "right": "右揃え"
+      },
+      "verticalAlignment": {
+        "top": "上",
+        "middle": "中央",
+        "bottom": "下"
+      }
+    },
+    "groups": {
+      "basic": "基本プロパティ",
+      "style": "スタイル",
+      "text": "文字"
+    },
+    "description": "テキストボックスの図形要素"
+  }
+}

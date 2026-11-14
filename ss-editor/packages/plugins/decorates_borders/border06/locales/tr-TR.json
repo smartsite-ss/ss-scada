@@ -1,0 +1,11 @@
+{
+  "border06": {
+    "label": "Kenarlık-06",
+    "description": "Kenarlık-06 dekoratif bileşeni",
+    "properties": {
+      "color1": "Birinci renk",
+      "color2": "İkinci renk",
+      "backgroundColor": "Arka plan rengi"
+    }
+  }
+}

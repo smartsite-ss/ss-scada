@@ -2,7 +2,41 @@
 // https://smartsite.top/
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
-export type SupportedLocale = 'zh-CN' | 'en-US';
+export type SupportedLocale =
+  | 'zh-CN'
+  | 'en-US'
+  | 'zh-TW'
+  | 'ja-JP'
+  | 'ko-KR'
+  | 'th-TH'
+  | 'de-DE'
+  | 'fr-FR'
+  | 'ru-RU'
+  | 'pt-BR'
+  | 'id-ID'
+  | 'vi-VN'
+  | 'es-MX'
+  | 'tr-TR'
+  | 'ms-MY';
+
+/** Supported locales in display order (native names are locale-independent, so they are static). */
+export const SUPPORTED_LOCALES: readonly SupportedLocale[] = [
+  'zh-CN',
+  'en-US',
+  'zh-TW',
+  'ja-JP',
+  'ko-KR',
+  'th-TH',
+  'de-DE',
+  'fr-FR',
+  'ru-RU',
+  'pt-BR',
+  'id-ID',
+  'vi-VN',
+  'es-MX',
+  'tr-TR',
+  'ms-MY',
+];
 
 export interface I18nResource {
   [key: string]: string | I18nResource;
@@ -18,7 +52,8 @@ export class I18nProvider {
   private static _resources: Map<string, I18nResource> = new Map();
   private static _pluginLoaders: PluginLocaleEntry[] = [];
   private static _listeners: Array<() => void> = [];
-  private static _systemResources: Record<SupportedLocale, I18nResource> = {
+  // Only the built-in bootstrap subset; full packs are registered via syncSystemLocales().
+  private static _systemResources: Partial<Record<SupportedLocale, I18nResource>> = {
     'zh-CN': {
       common: {
         ok: '确定',
@@ -92,7 +127,10 @@ export class I18nProvider {
     this._locale = locale;
     this._resources.clear();
 
-    this._resources.set('__system__', this._systemResources[locale]);
+    this._resources.set(
+      '__system__',
+      this._systemResources[locale] ?? this._systemResources['en-US']!,
+    );
 
     await Promise.all(
       this._pluginLoaders.map(async (entry) => {

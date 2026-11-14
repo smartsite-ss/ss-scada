@@ -1,0 +1,68 @@
+{
+  "svg-pipe": {
+    "label": "Pipa SVG",
+    "panelTitle": "Konfigurasi pipa SVG",
+    "properties": {
+      "status": "Status",
+      "flowDirection": "Arah aliran",
+      "strokeColor": "Warna pipa",
+      "flowingColor": "Warna aliran",
+      "stoppedColor": "Warna berhenti",
+      "blockedColor": "Warna tersumbat",
+      "strokeWidth": "Diameter pipa",
+      "strokeLinecap": "Gaya ujung",
+      "strokeLinejoin": "Gaya sambungan",
+      "strokeDasharray": "Garis putus-putus",
+      "gradientType": "Tipe gradasi",
+      "gradientStartColor": "Warna awal gradasi",
+      "gradientEndColor": "Warna akhir gradasi",
+      "filterShadow": "Bayangan",
+      "shadowColor": "Warna bayangan",
+      "shadowBlur": "Blur bayangan",
+      "showFlowAnimation": "Animasi aliran",
+      "flowSpeed": "Kecepatan aliran",
+      "arrowSpacing": "Jarak antar panah",
+      "arrowSize": "Ukuran panah",
+      "arrowStyle": "Gaya panah"
+    },
+    "options": {
+      "status": {
+        "flowing": "Mengalir",
+        "stopped": "Berhenti",
+        "blocked": "Tersumbat"
+      },
+      "flowDirection": {
+        "forward": "Maju",
+        "backward": "Mundur",
+        "bidirectional": "Dua arah"
+      },
+      "strokeLinecap": {
+        "butt": "Ujung datar",
+        "round": "Ujung bulat",
+        "square": "Ujung persegi"
+      },
+      "strokeLinejoin": {
+        "miter": "Siku tajam",
+        "round": "Sudut membulat",
+        "bevel": "Siku terpotong"
+      },
+      "gradientType": {
+        "none": "Warna solid",
+        "linear": "Gradasi linear",
+        "radial": "Gradasi radial"
+      },
+      "arrowStyle": {
+        "triangle": "Blok segitiga",
+        "rectangle": "Persegi panjang",
+        "square": "Persegi"
+      }
+    },
+    "groups": {
+      "status": "Status",
+      "color": "Warna",
+      "style": "Gaya",
+      "animation": "Animasi"
+    },
+    "description": "Komponen pipa berbasis SVG Path dengan animasi aliran, gradasi, dan konfigurasi gaya"
+  }
+}

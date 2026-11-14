@@ -1,0 +1,15 @@
+{
+  "countdown": {
+    "label": "Compte à rebours",
+    "properties": {
+      "dataset": "Compte à rebours (s)",
+      "showDay": "Afficher les jours",
+      "color1": "Couleur d'arrière-plan",
+      "color2": "Couleur du texte",
+      "flipperWidth": "Largeur des chiffres",
+      "flipperHeight": "Hauteur des chiffres",
+      "flipperGap": "Espacement"
+    },
+    "description": "Plugin de décoration compte à rebours"
+  }
+}

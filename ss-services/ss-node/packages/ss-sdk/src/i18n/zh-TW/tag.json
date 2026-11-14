@@ -1,0 +1,31 @@
+{
+  "tag": {
+    "create": {
+      "success": "資料標籤建立成功",
+      "failed_name_exists": "標籤名稱在該設備下已存在"
+    },
+    "update": {
+      "success": "資料標籤更新成功"
+    },
+    "delete": {
+      "success": "資料標籤刪除成功"
+    },
+    "read": {
+      "success": "讀取標籤資料成功",
+      "failed_device_offline": "設備離線，無法讀取",
+      "failed_timeout": "讀取逾時"
+    },
+    "write": {
+      "success": "寫入標籤資料成功",
+      "failed_readonly": "該標籤為唯讀，無法寫入",
+      "failed_device_offline": "設備離線，無法寫入"
+    },
+    "quality": {
+      "good": "良好",
+      "uncertain": "不確定",
+      "bad": "不良",
+      "config_error": "設定錯誤",
+      "device_offline": "設備離線"
+    }
+  }
+}

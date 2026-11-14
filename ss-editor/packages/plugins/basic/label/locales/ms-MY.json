@@ -1,0 +1,69 @@
+{
+  "label": {
+    "label": "Label",
+    "panelTitle": "Sifat label",
+    "properties": {
+      "text": "Teks",
+      "textColor": "Warna teks",
+      "fontSize": "Saiz fon",
+      "fontWeight": "Ketebalan fon",
+      "fontStyle": "Gaya fon",
+      "textDecoration": "Hiasan teks",
+      "textAlign": "Jajaran teks",
+      "verticalAlignment": "Jajaran menegak",
+      "lineHeight": "Tinggi baris",
+      "letterSpacing": "Jarak huruf",
+      "wordWrap": "Balut automatik",
+      "maxLines": "Baris maksimum",
+      "backgroundColor": "Warna latar",
+      "borderColor": "Warna sempadan",
+      "borderWidth": "Lebar sempadan",
+      "borderRadius": "Sudut bulat",
+      "textShadowColor": "Warna bayang teks",
+      "textShadowOffsetX": "Offset bayang X",
+      "textShadowOffsetY": "Offset bayang Y",
+      "textShadowBlur": "Kabur bayang",
+      "decimalPlaces": "Bilangan perpuluhan",
+      "unit": "Unit",
+      "unitFontSize": "Saiz fon unit",
+      "unitFontColor": "Warna fon unit",
+      "unitGap": "Jarak unit"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "Normal",
+        "bold": "Tebal"
+      },
+      "fontStyle": {
+        "normal": "Normal",
+        "italic": "Condong"
+      },
+      "textDecoration": {
+        "none": "Tiada",
+        "underline": "Garis bawah",
+        "line-through": "Garis lorek"
+      },
+      "textAlign": {
+        "left": "Jajar kiri",
+        "center": "Tengah",
+        "right": "Jajar kanan"
+      },
+      "verticalAlignment": {
+        "top": "Atas",
+        "middle": "Tengah",
+        "bottom": "Bawah"
+      }
+    },
+    "groups": {
+      "basic": "Sifat asas",
+      "style": "Gaya",
+      "text": "Teks",
+      "unit": "Unit",
+      "shadow": "Bayang"
+    },
+    "hints": {
+      "maxLinesHint": "0 bermaksud tanpa had"
+    },
+    "description": "Elemen grafik label"
+  }
+}

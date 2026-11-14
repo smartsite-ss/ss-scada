@@ -1,0 +1,15 @@
+{
+  "countdown": {
+    "label": "Hitung mundur",
+    "properties": {
+      "dataset": "Hitung mundur (detik)",
+      "showDay": "Tampilkan hari",
+      "color1": "Warna latar",
+      "color2": "Warna teks",
+      "flipperWidth": "Lebar digit",
+      "flipperHeight": "Tinggi digit",
+      "flipperGap": "Jarak antar"
+    },
+    "description": "Plugin dekorasi hitung mundur"
+  }
+}

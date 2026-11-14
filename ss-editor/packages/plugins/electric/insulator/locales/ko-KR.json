@@ -1,0 +1,11 @@
+{
+  "insulator": {
+    "label": "애자",
+    "properties": {
+      "color": "선 색상",
+      "backgroundColor": "배경색",
+      "lineWidth": "선 너비"
+    },
+    "description": "애자 - 전기 절연 지지물"
+  }
+}

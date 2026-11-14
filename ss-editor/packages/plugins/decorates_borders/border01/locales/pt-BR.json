@@ -1,0 +1,14 @@
+{
+  "border01": {
+    "label": "Borda-01",
+    "description": "Componente decorativo Borda-01",
+    "properties": {
+      "color1": "Cor 1",
+      "color2": "Cor 2",
+      "backgroundColor": "Cor de fundo",
+      "borderColor": "Cor da linha da borda",
+      "dur": "Período da animação (s)",
+      "showAnimation": "Ativar animação"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "faultlamp": {
+    "label": "Voyant d'alarme de défaut",
+    "properties": {
+      "color": "Couleur",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "lineWidth": "Épaisseur du trait",
+      "alarming": "État d'alarme",
+      "alarmValue": "Valeur d'alarme",
+      "normalValue": "Valeur normale",
+      "defaultStatus": "État par défaut"
+    },
+    "options": {
+      "alarming": {
+        "yes": "En alarme",
+        "no": "Normal"
+      }
+    },
+    "description": "Voyant d'alarme de défaut - Clignote en rouge en cas d'alarme"
+  }
+}

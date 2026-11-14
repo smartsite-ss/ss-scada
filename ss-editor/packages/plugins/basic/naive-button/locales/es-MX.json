@@ -1,0 +1,34 @@
+{
+  "naiveButton": {
+    "label": "Botón Naive",
+    "panelTitle": "Propiedades del botón Naive",
+    "properties": {
+      "text": "Texto del botón",
+      "type": "Tipo de botón",
+      "size": "Tamaño",
+      "round": "Botón redondeado",
+      "circle": "Botón circular",
+      "disabled": "Deshabilitado",
+      "loading": "Estado de carga"
+    },
+    "options": {
+      "type": {
+        "default": "Predeterminado",
+        "primary": "Principal",
+        "success": "Éxito",
+        "warning": "Advertencia",
+        "error": "Error",
+        "info": "Información"
+      },
+      "size": {
+        "small": "Pequeño",
+        "medium": "Mediano",
+        "large": "Grande"
+      }
+    },
+    "groups": {
+      "basic": "Propiedades básicas"
+    },
+    "description": "Elemento gráfico de botón Naive con renderizado alternativo en Canvas"
+  }
+}

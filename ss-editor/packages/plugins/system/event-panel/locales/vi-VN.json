@@ -1,0 +1,61 @@
+{
+  "eventPanel": {
+    "label": "Bảng sự kiện",
+    "description": "Hiển thị nhật ký sự kiện hệ thống (lọc theo dự án/loại/trạng thái)",
+    "loading": "Đang tải...",
+    "empty": "Chưa có sự kiện",
+    "loadFailed": "Tải thất bại",
+    "systemLevel": "Cấp hệ thống",
+    "config": {
+      "project": "Dự án",
+      "allProjects": "Tất cả dự án",
+      "eventType": "Loại sự kiện",
+      "allEventTypes": "Tất cả loại",
+      "status": "Trạng thái",
+      "allStatus": "Tất cả trạng thái"
+    },
+    "columns": {
+      "time": "Thời gian",
+      "eventType": "Loại sự kiện",
+      "project": "Dự án",
+      "operator": "Người thao tác",
+      "status": "Trạng thái",
+      "successRatio": "Tỷ lệ thành công",
+      "duration": "Thời gian xử lý"
+    },
+    "groups": {
+      "device": "Thiết bị",
+      "project": "Dự án",
+      "alarm": "Cảnh báo",
+      "config": "Cấu hình và bộ hẹn giờ",
+      "plugin": "Plugin"
+    },
+    "status": {
+      "emitted": "Đã phát",
+      "processing": "Đang xử lý",
+      "processed": "Đã xử lý",
+      "partial": "Thất bại một phần",
+      "failed": "Thất bại",
+      "no_subscribers": "Không có người đăng ký"
+    },
+    "properties": {
+      "pageSize": "Số dòng mỗi trang",
+      "refreshInterval": "Khoảng làm mới (giây)",
+      "showHeader": "Hiển thị tiêu đề cột",
+      "showTime": "Cột thời gian",
+      "showEventType": "Cột loại sự kiện",
+      "showProject": "Cột dự án",
+      "showOperator": "Cột người thao tác",
+      "showStatus": "Cột trạng thái",
+      "showSuccessRatio": "Cột tỷ lệ thành công",
+      "showDuration": "Cột thời gian xử lý",
+      "fontSize": "Cỡ chữ",
+      "rowHeight": "Chiều cao dòng",
+      "headerBackgroundColor": "Nền tiêu đề cột",
+      "rowBackgroundColor": "Nền dòng",
+      "alternatingRowColor": "Nền dòng xen kẽ",
+      "textColor": "Màu nội dung",
+      "backgroundColor": "Màu nền"
+    }
+  }
+}

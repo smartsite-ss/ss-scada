@@ -1,0 +1,41 @@
+{
+  "chart": {
+    "label": "Grafik",
+    "description": "Komponen grafik untuk visualisasi data",
+    "panelTitle": "Konfigurasi grafik",
+    "properties": {
+      "title": "Judul",
+      "titleColor": "Warna judul",
+      "titleFontSize": "Ukuran font judul",
+      "titleFontWeight": "Ketebalan judul",
+      "backgroundColor": "Warna latar",
+      "borderColor": "Warna batas",
+      "borderWidth": "Lebar batas",
+      "borderStyle": "Gaya batas",
+      "borderRadius": "Sudut membulat",
+      "gridColor": "Warna garis grid",
+      "axisColor": "Warna sumbu",
+      "shadowColor": "Warna bayangan",
+      "shadowOffsetX": "Offset bayangan X",
+      "shadowOffsetY": "Offset bayangan Y",
+      "shadowBlur": "Blur bayangan"
+    },
+    "options": {
+      "titleFontWeight": {
+        "normal": "Normal",
+        "bold": "Tebal"
+      },
+      "borderStyle": {
+        "solid": "Garis solid",
+        "dashed": "Garis putus-putus",
+        "dotted": "Garis titik"
+      }
+    },
+    "groups": {
+      "basic": "Properti dasar",
+      "visual": "Gaya visual",
+      "style": "Gaya",
+      "shadow": "Bayangan"
+    }
+  }
+}

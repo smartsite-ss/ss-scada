@@ -1,0 +1,19 @@
+{
+  "time-common": {
+    "label": "Универсальное время",
+    "properties": {
+      "textColor": "Цвет текста",
+      "fontSize": "Размер шрифта",
+      "fontWeight": "Насыщенность шрифта",
+      "shadow": "Тень"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "Обычный",
+        "bold": "Жирный",
+        "lighter": "Тонкий"
+      }
+    },
+    "description": "Универсальное отображение времени"
+  }
+}

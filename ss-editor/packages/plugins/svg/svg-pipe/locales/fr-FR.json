@@ -1,0 +1,68 @@
+{
+  "svg-pipe": {
+    "label": "Tuyauterie SVG",
+    "panelTitle": "Configuration de la tuyauterie SVG",
+    "properties": {
+      "status": "État",
+      "flowDirection": "Sens d'écoulement",
+      "strokeColor": "Couleur du tuyau",
+      "flowingColor": "Couleur d'écoulement",
+      "stoppedColor": "Couleur à l'arrêt",
+      "blockedColor": "Couleur de colmatage",
+      "strokeWidth": "Diamètre du tuyau",
+      "strokeLinecap": "Style d'extrémité",
+      "strokeLinejoin": "Style de jonction",
+      "strokeDasharray": "Tirets",
+      "gradientType": "Type de dégradé",
+      "gradientStartColor": "Couleur de début du dégradé",
+      "gradientEndColor": "Couleur de fin du dégradé",
+      "filterShadow": "Ombre",
+      "shadowColor": "Couleur d'ombre",
+      "shadowBlur": "Flou d'ombre",
+      "showFlowAnimation": "Animation d'écoulement",
+      "flowSpeed": "Vitesse d'écoulement",
+      "arrowSpacing": "Espacement des flèches",
+      "arrowSize": "Taille des flèches",
+      "arrowStyle": "Style des flèches"
+    },
+    "options": {
+      "status": {
+        "flowing": "En écoulement",
+        "stopped": "Arrêt",
+        "blocked": "Colmaté"
+      },
+      "flowDirection": {
+        "forward": "Direct",
+        "backward": "Inverse",
+        "bidirectional": "Bidirectionnel"
+      },
+      "strokeLinecap": {
+        "butt": "Bout plat",
+        "round": "Bout rond",
+        "square": "Bout carré"
+      },
+      "strokeLinejoin": {
+        "miter": "Angle vif",
+        "round": "Arrondi",
+        "bevel": "Biseau"
+      },
+      "gradientType": {
+        "none": "Couleur unie",
+        "linear": "Dégradé linéaire",
+        "radial": "Dégradé radial"
+      },
+      "arrowStyle": {
+        "triangle": "Triangle",
+        "rectangle": "Rectangle",
+        "square": "Carré"
+      }
+    },
+    "groups": {
+      "status": "État",
+      "color": "Couleur",
+      "style": "Style",
+      "animation": "Animation"
+    },
+    "description": "Composant de tuyauterie basé sur SVG Path, avec animation d'écoulement, dégradés et configuration de style"
+  }
+}

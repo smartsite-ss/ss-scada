@@ -1,0 +1,15 @@
+{
+  "border18": {
+    "label": "Rahmen-18 (Marokkanisches Arabeskenmuster)",
+    "description": "Dekorationselement Rahmen-18 (Marokkanisches Arabeskenmuster)",
+    "properties": {
+      "color1": "Juwelblau",
+      "color2": "Terrakotta",
+      "color3": "Gold",
+      "backgroundColor": "Hintergrundfarbe",
+      "showStars": "Sternmuster",
+      "showArches": "Bogenfries",
+      "animationSpeed": "Animationsgeschwindigkeit"
+    }
+  }
+}

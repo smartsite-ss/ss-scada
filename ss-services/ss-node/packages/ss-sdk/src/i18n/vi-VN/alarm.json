@@ -1,0 +1,36 @@
+{
+  "alarm": {
+    "rule": {
+      "created": "Tạo quy tắc cảnh báo thành công",
+      "updated": "Cập nhật quy tắc cảnh báo thành công",
+      "deleted": "Đã xóa quy tắc cảnh báo",
+      "enabled": "Đã bật quy tắc cảnh báo",
+      "disabled": "Đã tắt quy tắc cảnh báo",
+      "not_found": "Quy tắc cảnh báo không tồn tại"
+    },
+    "record": {
+      "triggered": "Cảnh báo kích hoạt: {{message}}",
+      "acknowledged": "Đã xác nhận cảnh báo (Người thao tác: {{operator}})",
+      "cleared": "Đã xóa cảnh báo (Lý do: {{reason}})",
+      "not_found": "Bản ghi sự kiện không tồn tại",
+      "already_acknowledged": "Cảnh báo này đã được xác nhận",
+      "already_cleared": "Cảnh báo này đã được xóa"
+    },
+    "condition": {
+      "gt": "Giá trị {{value}} của {{tag}} lớn hơn giới hạn trên {{threshold}}",
+      "lt": "Giá trị {{value}} của {{tag}} nhỏ hơn giới hạn dưới {{threshold}}",
+      "range_in": "Giá trị {{value}} của {{tag}} nằm trong phạm vi bình thường",
+      "range_out": "Giá trị {{value}} của {{tag}} vượt phạm vi bình thường"
+    },
+    "level": {
+      "info": "Thông tin",
+      "warning": "Cảnh báo",
+      "error": "Lỗi",
+      "critical": "Nghiêm trọng"
+    },
+    "notification": {
+      "send_success": "Gửi thông báo cảnh báo thành công",
+      "send_failed": "Gửi thông báo cảnh báo thất bại"
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "border15": {
+    "label": "Sempadan-15 (Art Deco)",
+    "description": "Komponen hiasan sempadan-15 (Art Deco)",
+    "properties": {
+      "color1": "Emas utama",
+      "color2": "Emas gelap",
+      "color3": "Warna gelap",
+      "backgroundColor": "Warna latar",
+      "showSunburst": "Sinar memancar",
+      "showCorners": "Hiasan sudut",
+      "animationSpeed": "Kelajuan animasi"
+    }
+  }
+}

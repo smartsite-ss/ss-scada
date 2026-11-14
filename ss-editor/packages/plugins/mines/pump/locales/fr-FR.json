@@ -1,0 +1,32 @@
+{
+  "pump": {
+    "label": "Pompe à eau",
+    "properties": {
+      "colors": "Couleur du corps de pompe 1",
+      "colors2": "Couleur du corps de pompe 2",
+      "colors3": "Couleur du corps de pompe 3",
+      "flowColor": "Couleur d'écoulement",
+      "pipeColor": "Couleur du tuyau",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "bgWidth": "Largeur d'arrière-plan",
+      "boardWidth": "Largeur de bordure",
+      "roate": "Angle de rotation",
+      "cls": "Sens de l'animation",
+      "dur": "Période d'animation (s)",
+      "dataset": "Valeur de données",
+      "forwardValue": "Valeur pour marche avant",
+      "backwardValue": "Valeur pour marche arrière",
+      "stopValue": "Valeur pour l'arrêt",
+      "defaultCls": "Sens d'animation par défaut",
+      "decimalPlaces": "Nombre de décimales"
+    },
+    "options": {
+      "cls": {
+        "left": "Marche avant",
+        "right": "Marche arrière",
+        "stop": "Arrêt"
+      }
+    },
+    "description": "Pompe à eau - pompe centrifuge à double corps avec animation de rotation"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "ammeter": {
+    "label": "Amperímetro",
+    "properties": {
+      "color": "Color de línea",
+      "backgroundColor": "Color de fondo",
+      "lineWidth": "Grosor de línea",
+      "dataset": "Valor de datos estático",
+      "showDigital": "Mostrar lectura digital",
+      "decimalPlaces": "Decimales",
+      "unit": "Unidad"
+    },
+    "description": "Amperímetro: instrumento de medición de corriente"
+  }
+}

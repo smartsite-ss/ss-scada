@@ -1,0 +1,23 @@
+{
+  "data": {
+    "acquisition": {
+      "started": "Acquisition de données démarrée avec succès",
+      "stopped": "Acquisition de données arrêtée",
+      "error": "Anomalie lors de l'acquisition de données"
+    },
+    "transform": {
+      "success": "Conversion des données réussie",
+      "failed_invalid_value": "Valeur de données non valide : {{value}}",
+      "failed_scale_error": "Configuration incorrecte du facteur d'échelle"
+    },
+    "persistence": {
+      "save_success": "Données enregistrées avec succès",
+      "save_failed": "Échec de l'enregistrement des données ({{detail}})"
+    },
+    "history": {
+      "query_success": "Requête des données historiques réussie",
+      "query_empty": "Aucune donnée historique sur la plage horaire indiquée",
+      "time_range_error": "Paramètres de plage horaire incorrects"
+    }
+  }
+}

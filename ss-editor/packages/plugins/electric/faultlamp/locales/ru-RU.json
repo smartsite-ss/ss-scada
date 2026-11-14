@@ -1,0 +1,21 @@
+{
+  "faultlamp": {
+    "label": "Лампа аварии",
+    "properties": {
+      "color": "Цвет",
+      "backgroundColor": "Цвет фона",
+      "lineWidth": "Толщина линии",
+      "alarming": "Состояние тревоги",
+      "alarmValue": "Значение тревоги",
+      "normalValue": "Значение нормы",
+      "defaultStatus": "Состояние по умолчанию"
+    },
+    "options": {
+      "alarming": {
+        "yes": "Тревога",
+        "no": "Норма"
+      }
+    },
+    "description": "Индикатор аварии — красное мигание при тревоге"
+  }
+}

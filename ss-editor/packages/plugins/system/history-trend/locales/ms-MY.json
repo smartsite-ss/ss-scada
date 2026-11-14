@@ -1,0 +1,102 @@
+{
+  "historyTrend": {
+    "label": "Trend sejarah",
+    "description": "Pertanyaan trend sejarah bagi satu atau lebih pemboleh ubah mengikut julat masa",
+    "config": {
+      "bindVariables": "Ikat pemboleh ubah",
+      "addVariable": "Tambah pemboleh ubah",
+      "removeVariable": "Hapus",
+      "unbound": "Pemboleh ubah tidak terikat",
+      "timeRange": "Julat masa",
+      "queryMethod": "Kaedah pertanyaan",
+      "query": "Pertanyaan",
+      "querying": "Sedang menany..."
+    },
+    "series": {
+      "lineWidth": "Lebar garisan",
+      "lineType": "Jenis garisan",
+      "lineColor": "Warna garisan",
+      "symbolSize": "Saiz titik pepejal",
+      "labelShow": "Tunjuk label",
+      "labelFontSize": "Saiz fon label",
+      "labelColor": "Warna label",
+      "labelPosition": "Kedudukan label",
+      "areaShow": "Tunjuk isian kawasan",
+      "areaStartColor": "Warna mula",
+      "areaMiddleColor": "Warna tengah",
+      "areaEndColor": "Warna tamat",
+      "areaOpacity": "Kelegapan"
+    },
+    "options": {
+      "interpolation": {
+        "raw": "Nilai asal",
+        "linear": "Interpolasi linear",
+        "step": "Interpolasi tangga"
+      },
+      "presetRange": {
+        "1h": "1 jam terakhir",
+        "6h": "6 jam terakhir",
+        "24h": "24 jam terakhir",
+        "7d": "7 hari terakhir",
+        "custom": "Tersuai"
+      },
+      "lineType": {
+        "solid": "Garisan pepejal",
+        "dashed": "Garisan putus-putus",
+        "dotted": "Garisan bertitik"
+      },
+      "labelPosition": {
+        "top": "Atas",
+        "left": "Kiri",
+        "right": "Kanan",
+        "bottom": "Bawah"
+      },
+      "legendPosition": {
+        "top": "Atas",
+        "bottom": "Bawah",
+        "left": "Kiri",
+        "right": "Kanan"
+      },
+      "borderStyle": {
+        "solid": "Garisan pepejal",
+        "dashed": "Garisan putus-putus",
+        "dotted": "Garisan bertitik"
+      },
+      "fontWeight": {
+        "normal": "Normal",
+        "bold": "Tebal"
+      }
+    },
+    "properties": {
+      "defaultInterpolation": "Kaedah pertanyaan lalai",
+      "defaultInterval": "Selang interpolasi lalai (ms)",
+      "defaultPresetRange": "Julat masa lalai",
+      "defaultCustomStart": "Masa mula tersuai",
+      "defaultCustomEnd": "Masa tamat tersuai",
+      "maxPoints": "Tunjuk bilangan titik maksimum",
+      "title": "Tajuk",
+      "titleColor": "Warna tajuk",
+      "titleFontSize": "Saiz fon tajuk",
+      "titleFontWeight": "Ketebalan tajuk",
+      "gridColor": "Warna grid",
+      "axisColor": "Warna paksi",
+      "showLegend": "Tunjuk legenda",
+      "legendPosition": "Kedudukan legenda",
+      "showTooltip": "Tunjuk tip alat",
+      "showDataZoom": "Zum paksi masa",
+      "showXAxis": "Tunjuk paksi masa",
+      "xAxisLineColor": "Warna paksi masa",
+      "xAxisLabelFontSize": "Saiz fon paksi masa",
+      "xAxisLabelRotate": "Kecondongan teks paksi masa",
+      "backgroundColor": "Warna latar",
+      "borderColor": "Warna sempadan",
+      "borderWidth": "Lebar sempadan",
+      "borderStyle": "Gaya sempadan",
+      "borderRadius": "Sudut bulat",
+      "shadowColor": "Warna bayang",
+      "shadowOffsetX": "Offset bayang X",
+      "shadowOffsetY": "Offset bayang Y",
+      "shadowBlur": "Kabur bayang"
+    }
+  }
+}

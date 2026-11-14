@@ -1,0 +1,23 @@
+{
+  "runlamp": {
+    "label": "Đèn báo vận hành",
+    "properties": {
+      "lampColor": "Màu đèn",
+      "glowing": "Hiệu ứng phát sáng",
+      "blinkSpeed": "Tốc độ nhấp nháy",
+      "backgroundColor": "Màu nền",
+      "runningValue": "Giá trị tương ứng chạy",
+      "stoppedValue": "Giá trị tương ứng dừng",
+      "faultValue": "Giá trị tương ứng sự cố",
+      "defaultStatus": "Trạng thái mặc định"
+    },
+    "options": {
+      "lampColor": {
+        "green": "Xanh lá",
+        "red": "Đỏ",
+        "yellow": "Vàng"
+      }
+    },
+    "description": "Đèn báo vận hành - bóng đèn tròn, hoạt ảnh phát sáng nhấp nháy theo màu trạng thái"
+  }
+}

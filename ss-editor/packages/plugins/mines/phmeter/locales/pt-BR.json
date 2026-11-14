@@ -1,0 +1,32 @@
+{
+  "phmeter": {
+    "label": "Medidor de pH",
+    "properties": {
+      "colors": "Cor 1",
+      "colors2": "Cor 2",
+      "flowColor": "Cor do fluxo",
+      "pipeColor": "Cor da tubulação",
+      "backgroundColor": "Cor de fundo",
+      "bgWidth": "Largura do fundo",
+      "boardWidth": "Largura da borda",
+      "roate": "Ângulo de rotação",
+      "cls": "Direção da animação",
+      "dur": "Período da animação (s)",
+      "dataset": "Valor de dados",
+      "decimalPlaces": "Casas decimais",
+      "unit": "Unidade",
+      "forwardValue": "Valor correspondente a rotação direta",
+      "backwardValue": "Valor correspondente a rotação inversa",
+      "stopValue": "Valor correspondente a parado",
+      "defaultCls": "Direção padrão da animação"
+    },
+    "options": {
+      "cls": {
+        "left": "Rotação direta",
+        "right": "Rotação inversa",
+        "stop": "Parado"
+      }
+    },
+    "description": "Medidor de pH de mineração - sonda de pH com painel de exibição e gradiente de cor indicando acidez e alcalinidade"
+  }
+}

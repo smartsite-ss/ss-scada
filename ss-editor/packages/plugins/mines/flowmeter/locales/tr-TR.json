@@ -1,0 +1,16 @@
+{
+  "flowmeter": {
+    "label": "Debi ölçer",
+    "properties": {
+      "color": "Renk",
+      "backgroundColor": "Arka plan rengi",
+      "lineWidth": "Çizgi kalınlığı",
+      "dataset": "Veri değeri (0-100)",
+      "showDigital": "Dijital okumayı göster",
+      "rangeMax": "Maksimum ölçüm aralığı",
+      "decimalPlaces": "Ondalık basamak sayısı",
+      "unit": "Birim"
+    },
+    "description": "Debi ölçer - Dairesel kadranlı debi göstergesi, ibre açısı veri değeriyle sürülür"
+  }
+}

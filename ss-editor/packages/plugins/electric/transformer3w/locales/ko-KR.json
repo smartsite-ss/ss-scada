@@ -1,0 +1,11 @@
+{
+  "transformer3w": {
+    "label": "3권선 변압기",
+    "properties": {
+      "color": "선 색상",
+      "backgroundColor": "배경색",
+      "lineWidth": "선 너비"
+    },
+    "description": "3권선 전력 변압기 - Y형 3코일 배열"
+  }
+}

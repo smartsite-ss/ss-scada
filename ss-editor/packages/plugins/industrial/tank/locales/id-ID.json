@@ -1,0 +1,42 @@
+{
+  "tank": {
+    "label": "Tangki",
+    "description": "Komponen tangki untuk tampilan level dan alarm",
+    "panelTitle": "Konfigurasi tangki",
+    "properties": {
+      "width": "Lebar",
+      "height": "Tinggi",
+      "level": "Level saat ini",
+      "maxLevel": "Level maksimum",
+      "unit": "Satuan",
+      "decimalPlaces": "Jumlah desimal",
+      "status": "Status",
+      "warningLevel": "Level peringatan",
+      "dangerLevel": "Level bahaya",
+      "bodyColor": "Warna badan tangki",
+      "liquidColor": "Warna cairan",
+      "warningLiquidColor": "Warna cairan peringatan",
+      "dangerLiquidColor": "Warna cairan bahaya",
+      "rimColor": "Warna batas",
+      "showLevelText": "Tampilkan teks level",
+      "showTicks": "Tampilkan skala",
+      "showAnimation": "Animasi gelombang",
+      "tickCount": "Jumlah skala"
+    },
+    "options": {
+      "status": {
+        "normal": "Normal",
+        "warning": "Peringatan",
+        "danger": "Bahaya"
+      }
+    },
+    "groups": {
+      "basic": "Dasar",
+      "level": "Level",
+      "status": "Status",
+      "threshold": "Ambang",
+      "color": "Warna",
+      "display": "Tampilan"
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "head06": {
+    "label": "Başlık dekorasyonu-06",
+    "properties": {
+      "color1": "Dolgu rengi",
+      "color2": "Kenarlık rengi",
+      "dataset": "Metin",
+      "textColor": "Metin rengi",
+      "textSize": "Metin boyutu"
+    },
+    "description": "Çokgen dış çerçeve dekorasyonu"
+  }
+}

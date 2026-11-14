@@ -1,0 +1,21 @@
+{
+  "tagVariable": {
+    "label": "Pemboleh ubah tag",
+    "description": "Papar nilai masa nyata pemboleh ubah peranti",
+    "config": {
+      "bindVariable": "Ikat pemboleh ubah",
+      "selectVariable": "Pilih pemboleh ubah",
+      "clear": "Kosongkan",
+      "unbound": "Tidak terikat"
+    },
+    "selector": {
+      "title": "Pilih pemboleh ubah peranti",
+      "searchPlaceholder": "Cari peranti atau pemboleh ubah",
+      "deviceLabel": "Peranti",
+      "tagCount": "{count} pemboleh ubah",
+      "loading": "Memuat...",
+      "empty": "Tiada pemboleh ubah peranti",
+      "selectHint": "Klik pemboleh ubah untuk mengikat"
+    }
+  }
+}

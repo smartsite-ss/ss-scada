@@ -1,0 +1,31 @@
+{
+  "checkbox": {
+    "label": "Kontrollkästchen",
+    "description": "Kontrollkästchen-Komponente für Mehrfachauswahl",
+    "panelTitle": "Kontrollkästchen-Konfiguration",
+    "properties": {
+      "checked": "Ausgewählt",
+      "label": "Beschriftungstext",
+      "disabled": "Deaktiviert",
+      "indeterminate": "Unbestimmter Zustand",
+      "color": "Auswahlfarbe",
+      "labelPosition": "Beschriftungsposition",
+      "size": "Größe"
+    },
+    "options": {
+      "labelPosition": {
+        "right": "Rechts",
+        "left": "Links"
+      },
+      "size": {
+        "small": "Klein",
+        "medium": "Mittel",
+        "large": "Groß"
+      }
+    },
+    "groups": {
+      "basic": "Grundeigenschaften",
+      "style": "Stil"
+    }
+  }
+}

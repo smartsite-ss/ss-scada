@@ -1,0 +1,15 @@
+{
+  "ammeter": {
+    "label": "Ampe kế",
+    "properties": {
+      "color": "Màu đường nét",
+      "backgroundColor": "Màu nền",
+      "lineWidth": "Độ rộng nét",
+      "dataset": "Giá trị dữ liệu tĩnh",
+      "showDigital": "Hiển thị số đọc",
+      "decimalPlaces": "Số chữ thập phân",
+      "unit": "Đơn vị"
+    },
+    "description": "Ampe kế - dụng cụ đo dòng điện"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "circscreen": {
+    "label": "円形振動ふるい",
+    "properties": {
+      "colors": "色1",
+      "colors2": "色2",
+      "flowColor": "流動色",
+      "pipeColor": "配管の色",
+      "backgroundColor": "背景色",
+      "bgWidth": "背景の幅",
+      "boardWidth": "枠線幅",
+      "roate": "回転角度",
+      "cls": "アニメーション方向",
+      "dur": "アニメーション周期（秒）",
+      "dataset": "データ値",
+      "forwardValue": "正転に対応する値",
+      "backwardValue": "逆転に対応する値",
+      "stopValue": "停止に対応する値",
+      "defaultCls": "既定のアニメーション方向",
+      "decimalPlaces": "小数点以下の桁数"
+    },
+    "options": {
+      "cls": {
+        "left": "正転",
+        "right": "逆転",
+        "stop": "停止"
+      }
+    },
+    "description": "鉱山用円形振動ふるい - 偏心重り付き円形ふるい網。円周振動アニメーション"
+  }
+}

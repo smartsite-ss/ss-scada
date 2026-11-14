@@ -1,0 +1,42 @@
+{
+  "navigationButton": {
+    "label": "Nút điều hướng",
+    "description": "Nút điều hướng hỗ trợ chuyển trang",
+    "properties": {
+      "text": "Văn bản nút",
+      "type": "Loại nút",
+      "size": "Kích thước",
+      "disabled": "Vô hiệu hóa",
+      "rounded": "Bo góc",
+      "transparent": "Trong suốt",
+      "targetType": "Hành động nhấp",
+      "targetPage": "Trang đích",
+      "targetUrl": "URL đích"
+    },
+    "options": {
+      "type": {
+        "primary": "Chính",
+        "success": "Thành công",
+        "warning": "Cảnh báo",
+        "danger": "Nguy hiểm",
+        "default": "Mặc định"
+      },
+      "size": {
+        "large": "Lớn",
+        "default": "Vừa",
+        "small": "Nhỏ"
+      },
+      "targetType": {
+        "none": "Không",
+        "page": "Mở trang",
+        "url": "Mở URL"
+      }
+    },
+    "groups": {
+      "basic": "Cơ bản",
+      "status": "Trạng thái",
+      "style": "Kiểu dáng",
+      "action": "Tương tác"
+    }
+  }
+}

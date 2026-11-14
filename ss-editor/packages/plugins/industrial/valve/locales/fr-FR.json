@@ -1,0 +1,45 @@
+{
+  "valve": {
+    "label": "Vanne",
+    "description": "Composant vanne avec état d'ouverture et changement de type",
+    "panelTitle": "Configuration de la vanne",
+    "properties": {
+      "width": "Largeur",
+      "height": "Hauteur",
+      "status": "État",
+      "valveType": "Type de vanne",
+      "bodyColor": "Couleur du corps",
+      "stemColor": "Couleur de la tige",
+      "openColor": "Couleur d'ouverture",
+      "closedColor": "Couleur de fermeture",
+      "faultColor": "Couleur de défaut",
+      "showLabel": "Afficher l'étiquette",
+      "labelText": "Texte de l'étiquette",
+      "openValue": "Valeur d'ouverture",
+      "closedValue": "Valeur de fermeture",
+      "faultValue": "Valeur de défaut",
+      "defaultStatus": "État par défaut"
+    },
+    "options": {
+      "status": {
+        "open": "Ouverte",
+        "closed": "Fermée",
+        "opening": "En ouverture",
+        "closing": "En fermeture",
+        "fault": "Défaut"
+      },
+      "valveType": {
+        "butterfly": "Vanne papillon",
+        "gate": "Vanne à opercule"
+      }
+    },
+    "groups": {
+      "basic": "Base",
+      "status": "État",
+      "color": "Couleur",
+      "statusColor": "Couleurs d'état",
+      "label": "Étiquette",
+      "binding": "Mappage de liaison"
+    }
+  }
+}

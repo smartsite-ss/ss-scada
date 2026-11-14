@@ -1,0 +1,16 @@
+{
+  "flowmeter": {
+    "label": "Meter aliran",
+    "properties": {
+      "color": "Warna",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garisan",
+      "dataset": "Nilai data (0-100)",
+      "showDigital": "Tunjuk bacaan digital",
+      "rangeMax": "Nilai maksimum julat",
+      "decimalPlaces": "Bilangan perpuluhan",
+      "unit": "Unit"
+    },
+    "description": "Meter aliran - meter aliran dail bulat dengan sudut jarum dipacu nilai data"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "head05": {
+    "label": "Trang trí đầu-05",
+    "properties": {
+      "color1": "Màu thứ nhất",
+      "color2": "Màu thứ hai",
+      "dur": "Chu kỳ hoạt ảnh (giây)"
+    },
+    "description": "Trang trí hoạt ảnh phân đoạn"
+  }
+}

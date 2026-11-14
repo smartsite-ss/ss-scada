@@ -1,0 +1,21 @@
+{
+  "faultlamp": {
+    "label": "Luz de alarme de falha",
+    "properties": {
+      "color": "Cor",
+      "backgroundColor": "Cor de fundo",
+      "lineWidth": "Espessura da linha",
+      "alarming": "Estado de alarme",
+      "alarmValue": "Valor correspondente a alarme",
+      "normalValue": "Valor correspondente a normal",
+      "defaultStatus": "Estado padrão"
+    },
+    "options": {
+      "alarming": {
+        "yes": "Em alarme",
+        "no": "Normal"
+      }
+    },
+    "description": "Luz de alarme de falha - pisca em vermelho durante o alarme"
+  }
+}

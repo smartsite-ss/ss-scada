@@ -1,0 +1,11 @@
+{
+  "ground": {
+    "label": "接地符號",
+    "properties": {
+      "color": "線條顏色",
+      "backgroundColor": "背景色",
+      "lineWidth": "線寬"
+    },
+    "description": "標準電氣接地符號"
+  }
+}

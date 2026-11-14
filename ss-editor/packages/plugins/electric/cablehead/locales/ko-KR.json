@@ -1,0 +1,11 @@
+{
+  "cablehead": {
+    "label": "케이블 종단 헤드",
+    "properties": {
+      "color": "선 색상",
+      "backgroundColor": "배경색",
+      "lineWidth": "선 너비"
+    },
+    "description": "케이블 종단 헤드 - 케이블과 설비 연결 단자"
+  }
+}

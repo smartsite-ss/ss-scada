@@ -1,0 +1,11 @@
+{
+  "pt": {
+    "label": "Spannungswandler",
+    "properties": {
+      "color": "Linienfarbe",
+      "backgroundColor": "Hintergrundfarbe",
+      "lineWidth": "Linienbreite"
+    },
+    "description": "Spannungswandler PT – Messwandler für Spannung"
+  }
+}

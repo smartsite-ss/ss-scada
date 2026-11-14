@@ -1,0 +1,56 @@
+{
+  "textbox": {
+    "label": "Zone de texte",
+    "panelTitle": "Configuration de la zone de texte",
+    "properties": {
+      "text": "Contenu du texte",
+      "placeholder": "Texte indicatif",
+      "fontSize": "Taille de police",
+      "fontWeight": "Graisse de police",
+      "fontStyle": "Style de police",
+      "textColor": "Couleur du texte",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "borderColor": "Couleur de bordure",
+      "borderWidth": "Largeur de bordure",
+      "borderStyle": "Style de bordure",
+      "borderRadius": "Rayon d'arrondi",
+      "textAlign": "Alignement du texte",
+      "verticalAlignment": "Alignement vertical",
+      "padding": "Marge intérieure",
+      "multiline": "Mode multiligne",
+      "readOnly": "Lecture seule"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "Normal",
+        "bold": "Gras"
+      },
+      "fontStyle": {
+        "normal": "Normal",
+        "italic": "Italique"
+      },
+      "borderStyle": {
+        "solid": "Trait plein",
+        "dashed": "Tirets",
+        "dotted": "Pointillés",
+        "none": "Aucune"
+      },
+      "textAlign": {
+        "left": "Aligner à gauche",
+        "center": "Centrer",
+        "right": "Aligner à droite"
+      },
+      "verticalAlignment": {
+        "top": "Haut",
+        "middle": "Centre",
+        "bottom": "Bas"
+      }
+    },
+    "groups": {
+      "basic": "Propriétés de base",
+      "style": "Style",
+      "text": "Texte"
+    },
+    "description": "Élément graphique zone de texte"
+  }
+}

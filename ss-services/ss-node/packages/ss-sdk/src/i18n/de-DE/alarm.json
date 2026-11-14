@@ -1,0 +1,36 @@
+{
+  "alarm": {
+    "rule": {
+      "created": "Alarmregel erfolgreich erstellt",
+      "updated": "Alarmregel erfolgreich aktualisiert",
+      "deleted": "Alarmregel gelöscht",
+      "enabled": "Alarmregel aktiviert",
+      "disabled": "Alarmregel deaktiviert",
+      "not_found": "Alarmregel nicht vorhanden"
+    },
+    "record": {
+      "triggered": "Alarm ausgelöst: {{message}}",
+      "acknowledged": "Alarm quittiert (Bediener: {{operator}})",
+      "cleared": "Alarm gelöscht (Grund: {{reason}})",
+      "not_found": "Ereignisdatensatz nicht vorhanden",
+      "already_acknowledged": "Dieser Alarm wurde bereits quittiert",
+      "already_cleared": "Dieser Alarm wurde bereits gelöscht"
+    },
+    "condition": {
+      "gt": "Der Wert {{value}} von {{tag}} überschreitet die Obergrenze {{threshold}}",
+      "lt": "Der Wert {{value}} von {{tag}} unterschreitet die Untergrenze {{threshold}}",
+      "range_in": "Der Wert {{value}} von {{tag}} liegt im Normalbereich",
+      "range_out": "Der Wert {{value}} von {{tag}} liegt außerhalb des Normalbereichs"
+    },
+    "level": {
+      "info": "Information",
+      "warning": "Warnung",
+      "error": "Fehler",
+      "critical": "Kritisch"
+    },
+    "notification": {
+      "send_success": "Alarmbenachrichtigung erfolgreich gesendet",
+      "send_failed": "Alarmbenachrichtigung konnte nicht gesendet werden"
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "flipper-number": {
+    "label": "フリップ数字",
+    "properties": {
+      "dataset": "値",
+      "flipperLength": "桁数",
+      "color1": "文字色",
+      "flipperWidth": "幅",
+      "flipperHeight": "高さ",
+      "flipperGap": "間隔"
+    },
+    "description": "数字フリップ表示プラグイン"
+  }
+}

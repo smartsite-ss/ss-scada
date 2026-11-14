@@ -1,0 +1,51 @@
+{
+  "tagRadar": {
+    "label": "แผนภูมิเรดาร์ตัวแปร",
+    "description": "ผูกตัวแปรแท็กหลายตัว แสดงสุขภาพหลายมิติแบบเรียลไทม์ด้วยแผนภูมิเรดาร์",
+    "config": {
+      "bindVariables": "ตัวแปรที่ผูก",
+      "addVariable": "เพิ่มตัวแปร",
+      "removeVariable": "ลบ",
+      "unbound": "ตัวแปรที่ยังไม่ผูก",
+      "loadError": "โหลดไม่สำเร็จ"
+    },
+    "properties": {
+      "title": "หัวข้อ",
+      "titleColor": "สีหัวข้อ",
+      "titleFontSize": "ขนาดตัวอักษรหัวข้อ",
+      "titleFontWeight": "ความหนาหัวข้อ",
+      "indicatorMax": "ค่าสูงสุดของตัวชี้วัด",
+      "gridColor": "สีตาราง",
+      "axisColor": "สีแกนพิกัด",
+      "showLegend": "แสดงคำอธิบายสัญลักษณ์",
+      "legendPosition": "ตำแหน่งคำอธิบายสัญลักษณ์",
+      "showTooltip": "แสดงกล่องคำอธิบาย",
+      "backgroundColor": "สีพื้นหลัง",
+      "borderColor": "สีเส้นขอบ",
+      "borderWidth": "ความกว้างเส้นขอบ",
+      "borderStyle": "รูปแบบเส้นขอบ",
+      "borderRadius": "มุมโค้ง",
+      "shadowColor": "สีเงา",
+      "shadowOffsetX": "ระยะเลื่อนเงา X",
+      "shadowOffsetY": "ระยะเลื่อนเงา Y",
+      "shadowBlur": "ความเบลอของเงา"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "ปกติ",
+        "bold": "ตัวหนา"
+      },
+      "legendPosition": {
+        "top": "บน",
+        "bottom": "ล่าง",
+        "left": "ซ้าย",
+        "right": "ขวา"
+      },
+      "borderStyle": {
+        "solid": "เส้นทึบ",
+        "dashed": "เส้นประ",
+        "dotted": "เส้นจุด"
+      }
+    }
+  }
+}

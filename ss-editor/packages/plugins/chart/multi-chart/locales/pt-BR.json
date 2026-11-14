@@ -1,0 +1,47 @@
+{
+  "multiChart": {
+    "label": "Múltiplos gráficos",
+    "description": "Componente de múltiplos gráficos com barras, pizza e mapa de calor",
+    "panelTitle": "Configuração de múltiplos gráficos",
+    "properties": {
+      "title": "Título",
+      "titleColor": "Cor do título",
+      "titleFontSize": "Tamanho da fonte do título",
+      "chartType": "Tipo de gráfico",
+      "backgroundColor": "Cor de fundo",
+      "borderColor": "Cor da borda",
+      "borderWidth": "Largura da borda",
+      "borderRadius": "Raio da borda",
+      "barColor": "Cor das barras",
+      "barGap": "Espaçamento entre barras",
+      "pieColors": "Sequência de cores da pizza",
+      "pieInnerRadius": "Proporção do raio interno",
+      "pieShowLabels": "Mostrar rótulos",
+      "heatmapColorLow": "Cor de valor baixo do mapa de calor",
+      "heatmapColorHigh": "Cor de valor alto do mapa de calor",
+      "heatmapRows": "Número de linhas",
+      "heatmapCols": "Número de colunas",
+      "showLegend": "Mostrar legenda",
+      "shadowColor": "Cor da sombra",
+      "shadowOffsetX": "Deslocamento X da sombra",
+      "shadowOffsetY": "Deslocamento Y da sombra",
+      "shadowBlur": "Desfoque da sombra"
+    },
+    "options": {
+      "chartType": {
+        "bar": "Gráfico de barras",
+        "pie": "Gráfico de pizza",
+        "heatmap": "Mapa de calor"
+      }
+    },
+    "groups": {
+      "basic": "Básico",
+      "style": "Estilo",
+      "bar": "Gráfico de barras",
+      "pie": "Gráfico de pizza",
+      "heatmap": "Mapa de calor",
+      "display": "Exibição",
+      "shadow": "Sombra"
+    }
+  }
+}

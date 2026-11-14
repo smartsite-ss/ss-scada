@@ -1,0 +1,50 @@
+{
+  "trendChart": {
+    "label": "Trenddiagramm",
+    "description": "Echtzeit-/Verlaufsdiagramm mit Mehrfachkurvenvergleich und LTTB-Downsampling",
+    "properties": {
+      "title": "Titel",
+      "titleColor": "Titelfarbe",
+      "titleFontSize": "Titel-Schriftgröße",
+      "titleFontWeight": "Titel-Schriftstärke",
+      "backgroundColor": "Hintergrundfarbe",
+      "borderColor": "Rahmenfarbe",
+      "borderWidth": "Rahmenbreite",
+      "borderStyle": "Rahmenstil",
+      "borderRadius": "Eckenradius",
+      "gridColor": "Rasterlinienfarbe",
+      "axisColor": "Achsenfarbe",
+      "lineColors": "Kurvenfarbe",
+      "lineWidth": "Kurvenbreite",
+      "showPoints": "Datenpunkte anzeigen",
+      "pointRadius": "Datenpunktradius",
+      "showLegend": "Legende anzeigen",
+      "legendPosition": "Legendenposition",
+      "maxPens": "Maximale Kurven",
+      "timeWindow": "Zeitfenster (Sekunden)",
+      "showTooltip": "Tooltip anzeigen",
+      "yAxisLabel": "Y-Achsen-Beschriftung",
+      "shadowColor": "Schattenfarbe",
+      "shadowOffsetX": "Schattenversatz X",
+      "shadowOffsetY": "Schattenversatz Y",
+      "shadowBlur": "Schattenunschärfe"
+    },
+    "options": {
+      "titleFontWeight": {
+        "normal": "Normal",
+        "bold": "Fett"
+      },
+      "borderStyle": {
+        "solid": "Durchgezogen",
+        "dashed": "Gestrichelt",
+        "dotted": "Gepunktet"
+      },
+      "legendPosition": {
+        "top": "Oben",
+        "bottom": "Unten",
+        "left": "Links",
+        "right": "Rechts"
+      }
+    }
+  }
+}

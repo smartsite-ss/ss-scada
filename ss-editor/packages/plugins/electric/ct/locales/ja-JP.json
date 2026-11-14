@@ -1,0 +1,11 @@
+{
+  "ct": {
+    "label": "変流器",
+    "properties": {
+      "color": "線の色",
+      "backgroundColor": "背景色",
+      "lineWidth": "線幅"
+    },
+    "description": "変流器 CT - 計測用の電流変成装置"
+  }
+}

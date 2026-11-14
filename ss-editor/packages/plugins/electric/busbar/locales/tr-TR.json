@@ -1,0 +1,12 @@
+{
+  "busbar": {
+    "label": "Bara bölümü",
+    "properties": {
+      "color": "Çizgi rengi",
+      "backgroundColor": "Arka plan rengi",
+      "lineWidth": "Çizgi kalınlığı",
+      "labelText": "Etiket metni"
+    },
+    "description": "Bara bölümü - Enerji toplama ve dağıtım barası"
+  }
+}

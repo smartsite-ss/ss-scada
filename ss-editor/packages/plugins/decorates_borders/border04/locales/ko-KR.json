@@ -1,0 +1,16 @@
+{
+  "border04": {
+    "label": "테두리-04",
+    "description": "테두리-04 장식 컴포넌트",
+    "properties": {
+      "colors": "색상 1",
+      "colors2": "색상 2",
+      "backgroundColor": "배경색",
+      "borderTitle": "제목 텍스트",
+      "borderTitleColor": "제목 색상",
+      "borderTitleSize": "제목 글꼴 크기",
+      "borderTitleWidth": "제목 영역 너비",
+      "borderTitleHeight": "제목 높이"
+    }
+  }
+}

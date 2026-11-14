@@ -1,0 +1,36 @@
+{
+  "alarm": {
+    "rule": {
+      "created": "Peraturan penggera berjaya dicipta",
+      "updated": "Peraturan penggera berjaya dikemas kini",
+      "deleted": "Peraturan penggera telah dipadam",
+      "enabled": "Peraturan penggera telah didayakan",
+      "disabled": "Peraturan penggera telah dilumpuhkan",
+      "not_found": "Peraturan penggera tidak wujud"
+    },
+    "record": {
+      "triggered": "Penggera dicetuskan: {{message}}",
+      "acknowledged": "Penggera telah disahkan (pengendali: {{operator}})",
+      "cleared": "Penggera telah dibersihkan (sebab: {{reason}})",
+      "not_found": "Rekod peristiwa tidak wujud",
+      "already_acknowledged": "Penggera ini telah disahkan",
+      "already_cleared": "Penggera ini telah dibersihkan"
+    },
+    "condition": {
+      "gt": "Nilai {{tag}} {{value}} melebihi had atas {{threshold}}",
+      "lt": "Nilai {{tag}} {{value}} kurang daripada had bawah {{threshold}}",
+      "range_in": "Nilai {{tag}} {{value}} berada dalam julat normal",
+      "range_out": "Nilai {{tag}} {{value}} di luar julat normal"
+    },
+    "level": {
+      "info": "Maklumat",
+      "warning": "Amaran",
+      "error": "Ralat",
+      "critical": "Kritikal"
+    },
+    "notification": {
+      "send_success": "Pemberitahuan penggera berjaya dihantar",
+      "send_failed": "Pemberitahuan penggera gagal dihantar"
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "border14": {
+    "label": "เส้นขอบ-14",
+    "description": "องค์ประกอบตกแต่งเส้นขอบ-14",
+    "properties": {
+      "color1": "สีหลัก",
+      "color2": "สีรอง",
+      "backgroundColor": "สีพื้นหลัง",
+      "showHexGrid": "ตารางหกเหลี่ยม",
+      "showScanLine": "เส้นสแกน",
+      "showCoreLines": "เส้นกากบาทกลาง",
+      "animationSpeed": "ความเร็วแอนิเมชัน"
+    }
+  }
+}

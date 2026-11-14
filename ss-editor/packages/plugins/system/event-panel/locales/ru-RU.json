@@ -1,0 +1,61 @@
+{
+  "eventPanel": {
+    "label": "Панель событий",
+    "description": "Журнал системных событий с фильтрацией по проекту/типу/состоянию",
+    "loading": "Загрузка...",
+    "empty": "Нет событий",
+    "loadFailed": "Ошибка загрузки",
+    "systemLevel": "Системный уровень",
+    "config": {
+      "project": "Проект",
+      "allProjects": "Все проекты",
+      "eventType": "Тип события",
+      "allEventTypes": "Все типы",
+      "status": "Состояние",
+      "allStatus": "Все состояния"
+    },
+    "columns": {
+      "time": "Время",
+      "eventType": "Тип события",
+      "project": "Проект",
+      "operator": "Оператор",
+      "status": "Состояние",
+      "successRatio": "Доля успеха",
+      "duration": "Длительность"
+    },
+    "groups": {
+      "device": "Оборудование",
+      "project": "Проект",
+      "alarm": "Тревога",
+      "config": "Конфигурация и таймеры",
+      "plugin": "Плагин"
+    },
+    "status": {
+      "emitted": "Отправлено",
+      "processing": "В обработке",
+      "processed": "Обработано",
+      "partial": "Частичный сбой",
+      "failed": "Сбой",
+      "no_subscribers": "Нет подписчиков"
+    },
+    "properties": {
+      "pageSize": "Строк на странице",
+      "refreshInterval": "Интервал обновления (с)",
+      "showHeader": "Показать заголовки",
+      "showTime": "Столбец времени",
+      "showEventType": "Столбец типа события",
+      "showProject": "Столбец проекта",
+      "showOperator": "Столбец оператора",
+      "showStatus": "Столбец состояния",
+      "showSuccessRatio": "Столбец доли успеха",
+      "showDuration": "Столбец длительности",
+      "fontSize": "Размер шрифта",
+      "rowHeight": "Высота строки",
+      "headerBackgroundColor": "Фон заголовков",
+      "rowBackgroundColor": "Фон строк",
+      "alternatingRowColor": "Фон чётных строк",
+      "textColor": "Цвет текста",
+      "backgroundColor": "Цвет фона"
+    }
+  }
+}

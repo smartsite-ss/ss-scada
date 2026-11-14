@@ -1,0 +1,48 @@
+{
+  "hikvisionVideo": {
+    "label": "Vidéo Hikvision",
+    "description": "Mur vidéo RTSP des caméras Hikvision (1/4/9 voies)",
+    "properties": {
+      "layout": "Disposition vidéo",
+      "autoPlay": "Lecture automatique",
+      "muted": "Muet",
+      "objectFit": "Adaptation de l'image",
+      "showChannelName": "Afficher le nom du canal",
+      "nameColor": "Couleur du nom du canal",
+      "nameFontSize": "Taille de police du nom de canal",
+      "nameBackgroundColor": "Fond du nom de canal",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "gap": "Espacement des canaux"
+    },
+    "options": {
+      "layout": {
+        "1x1": "1 voie",
+        "2x2": "4 voies",
+        "3x3": "9 voies"
+      },
+      "objectFit": {
+        "contain": "Contenir",
+        "cover": "Couvrir",
+        "fill": "Remplir"
+      }
+    },
+    "config": {
+      "channels": "Canaux vidéo",
+      "channelsEmpty": "Aucun canal",
+      "addChannel": "Ajouter un canal",
+      "channelName": "Nom du canal",
+      "sourceUrl": "Adresse source RTSP",
+      "playUrl": "Adresse de lecture",
+      "username": "Nom d'utilisateur",
+      "password": "Mot de passe",
+      "enabled": "Activer",
+      "deleteChannel": "Supprimer"
+    },
+    "player": {
+      "loading": "Chargement...",
+      "loadFailed": "Échec du chargement",
+      "needFlv": "HTTP-FLV nécessite l'import de flv.js",
+      "needWebrtc": "WebRTC nécessite l'import de jessibuca"
+    }
+  }
+}

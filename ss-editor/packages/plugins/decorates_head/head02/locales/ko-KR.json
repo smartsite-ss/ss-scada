@@ -1,0 +1,12 @@
+{
+  "head02": {
+    "label": "헤더 장식-02",
+    "properties": {
+      "color1": "색상 1",
+      "color2": "색상 2",
+      "dur": "애니메이션 주기(초)",
+      "lineHeight": "선 높이"
+    },
+    "description": "수평선과 파선 애니메이션 장식"
+  }
+}

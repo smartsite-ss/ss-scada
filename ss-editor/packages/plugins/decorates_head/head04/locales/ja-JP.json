@@ -1,0 +1,12 @@
+{
+  "head04": {
+    "label": "ヘッダー装飾-04",
+    "properties": {
+      "color1": "色1",
+      "color2": "色2",
+      "backgroundColor": "背景色",
+      "reverse": "反転"
+    },
+    "description": "斜線の装飾"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "statusIndicator": {
+    "label": "Durum gösterge lambası",
+    "description": "Çok durumlu gösterim ve alarm için durum gösterge lambası bileşeni",
+    "properties": {
+      "status": "Durum",
+      "normalColor": "Normal renk",
+      "warningColor": "Uyarı rengi",
+      "errorColor": "Arıza rengi",
+      "offlineColor": "Çevrimdışı rengi",
+      "size": "Gösterge lambası boyutu",
+      "showGlow": "Hâle efektini göster",
+      "pulseSpeed": "Darbe hızı (saniye)",
+      "normalValue": "Normal durum değeri",
+      "warningValue": "Uyarı durum değeri",
+      "errorValue": "Arıza durum değeri",
+      "offlineValue": "Çevrimdışı durum değeri",
+      "defaultStatus": "Varsayılan durum"
+    },
+    "options": {
+      "status": {
+        "normal": "Normal",
+        "warning": "Uyarı",
+        "error": "Arıza",
+        "offline": "Çevrimdışı"
+      }
+    },
+    "groups": {
+      "basic": "Temel",
+      "color": "Renk",
+      "style": "Stil",
+      "animation": "Animasyon",
+      "binding": "Bağlama eşlemesi"
+    }
+  }
+}

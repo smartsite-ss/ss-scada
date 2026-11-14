@@ -1,0 +1,23 @@
+{
+  "system": {
+    "health_check": {
+      "success": "システムヘルスチェックに合格しました",
+      "failed": "システムヘルスチェックに失敗しました: {{detail}}"
+    },
+    "config": {
+      "reload_success": "設定の再読み込みに成功しました",
+      "reload_failed": "設定の再読み込みに失敗しました: {{detail}}",
+      "validation_error": "設定の検証に失敗しました: {{detail}}"
+    },
+    "storage": {
+      "database_connected": "データベース接続に成功しました",
+      "database_connection_failed": "データベース接続に失敗しました: {{detail}}",
+      "redis_connected": "Redis 接続に成功しました",
+      "redis_connection_failed": "Redis 接続に失敗しました: {{detail}}"
+    },
+    "maintenance": {
+      "mode_enabled": "メンテナンスモードを有効にしました",
+      "mode_disabled": "メンテナンスモードを無効にしました"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "faultlamp": {
+    "label": "Lampu penggera kerosakan",
+    "properties": {
+      "color": "Warna",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garisan",
+      "alarming": "Status penggera",
+      "alarmValue": "Nilai padanan penggera",
+      "normalValue": "Nilai padanan normal",
+      "defaultStatus": "Status lalai"
+    },
+    "options": {
+      "alarming": {
+        "yes": "Dalam penggera",
+        "no": "Normal"
+      }
+    },
+    "description": "Lampu penunjuk penggera kerosakan - berkelip merah semasa penggera"
+  }
+}

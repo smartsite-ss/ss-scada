@@ -1,0 +1,35 @@
+{
+  "fan4": {
+    "label": "팬 4",
+    "properties": {
+      "colors": "색상 그룹",
+      "flowColor": "풍관 색상",
+      "pipeColor": "파이프 색상",
+      "bgWidth": "베이스 너비",
+      "boardWidth": "판 두께",
+      "roate": "회전 각도",
+      "cls": "회전 방향",
+      "dur": "애니메이션 주기(초)",
+      "backgroundColor": "배경색",
+      "dataset": "데이터 세트",
+      "forwardValue": "정회전 대응 값",
+      "backwardValue": "역회전 대응 값",
+      "stopValue": "정지 대응 값",
+      "defaultCls": "기본 애니메이션 방향",
+      "decimalPlaces": "소수 자릿수",
+      "clsOptions": {
+        "right": "우회전",
+        "left": "좌회전",
+        "stop": "정지"
+      }
+    },
+    "options": {
+      "cls": {
+        "left": "정회전",
+        "right": "역회전",
+        "stop": "정지"
+      }
+    },
+    "description": "광산 팬 4 - 풍관이 있는 원심 송풍기 변형, 회전 방향 및 속도 제어 지원"
+  }
+}

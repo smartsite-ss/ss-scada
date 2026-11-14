@@ -1,0 +1,13 @@
+{
+  "head03": {
+    "label": "Trang trí đầu-03",
+    "properties": {
+      "color1": "Màu thứ nhất",
+      "color2": "Màu thứ hai",
+      "dataset": "Văn bản hiển thị",
+      "textColor": "Màu văn bản",
+      "textSize": "Cỡ chữ"
+    },
+    "description": "Trang trí hình mũi tên hai bên kèm văn bản ở giữa"
+  }
+}

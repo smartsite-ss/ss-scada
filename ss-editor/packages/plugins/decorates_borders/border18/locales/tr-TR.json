@@ -1,0 +1,15 @@
+{
+  "border18": {
+    "label": "Kenarlık-18 (Fas arabesk)",
+    "description": "Kenarlık-18 dekoratif bileşeni (Fas arabesk)",
+    "properties": {
+      "color1": "Safir mavisi",
+      "color2": "Terrakota",
+      "color3": "Altın rengi",
+      "backgroundColor": "Arka plan rengi",
+      "showStars": "Yıldız deseni",
+      "showArches": "Kemer bordür",
+      "animationSpeed": "Animasyon hızı"
+    }
+  }
+}

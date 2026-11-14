@@ -1,0 +1,15 @@
+{
+  "border19": {
+    "label": "枠線-19（スイス・タイポグラフィ）",
+    "description": "枠線-19 装飾コンポーネント（スイス・タイポグラフィ）",
+    "properties": {
+      "color1": "ディープブラック",
+      "color2": "ブライトレッド",
+      "color3": "ホワイト",
+      "backgroundColor": "背景色",
+      "showBlocks": "幾何ブロック",
+      "showAccents": "アクセントドット",
+      "animationSpeed": "アニメーション速度"
+    }
+  }
+}

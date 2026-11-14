@@ -1,0 +1,14 @@
+{
+  "border01": {
+    "label": "Borde 01",
+    "description": "Componente decorativo de borde 01",
+    "properties": {
+      "color1": "Color uno",
+      "color2": "Color dos",
+      "backgroundColor": "Color de fondo",
+      "borderColor": "Color de la línea del borde",
+      "dur": "Ciclo de animación (s)",
+      "showAnimation": "Activar animación"
+    }
+  }
+}

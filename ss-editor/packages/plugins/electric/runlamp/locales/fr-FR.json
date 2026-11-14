@@ -1,0 +1,23 @@
+{
+  "runlamp": {
+    "label": "Voyant de marche",
+    "properties": {
+      "lampColor": "Couleur du voyant",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "radius": "Rayon",
+      "state": "État de marche",
+      "runningValue": "Valeur de marche",
+      "stoppedValue": "Valeur d'arrêt",
+      "faultValue": "Valeur de défaut",
+      "defaultStatus": "État par défaut"
+    },
+    "options": {
+      "state": {
+        "running": "Marche",
+        "stopped": "Arrêt",
+        "fault": "Défaut"
+      }
+    },
+    "description": "Voyant d'état de marche - Trois états : marche/arrêt/défaut"
+  }
+}

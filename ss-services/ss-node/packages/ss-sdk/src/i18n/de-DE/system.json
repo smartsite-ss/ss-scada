@@ -1,0 +1,23 @@
+{
+  "system": {
+    "health_check": {
+      "success": "Systemzustandsprüfung bestanden",
+      "failed": "Systemzustandsprüfung fehlgeschlagen: {{detail}}"
+    },
+    "config": {
+      "reload_success": "Konfiguration erfolgreich neu geladen",
+      "reload_failed": "Konfiguration konnte nicht neu geladen werden: {{detail}}",
+      "validation_error": "Konfigurationsprüfung fehlgeschlagen: {{detail}}"
+    },
+    "storage": {
+      "database_connected": "Datenbankverbindung erfolgreich",
+      "database_connection_failed": "Datenbankverbindung fehlgeschlagen: {{detail}}",
+      "redis_connected": "Redis-Verbindung erfolgreich",
+      "redis_connection_failed": "Redis-Verbindung fehlgeschlagen: {{detail}}"
+    },
+    "maintenance": {
+      "mode_enabled": "Wartungsmodus aktiviert",
+      "mode_disabled": "Wartungsmodus deaktiviert"
+    }
+  }
+}

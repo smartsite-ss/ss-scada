@@ -1,0 +1,51 @@
+{
+  "tagRadar": {
+    "label": "Variablen-Radar-Diagramm",
+    "description": "Bindet mehrere Tag-Variablen und zeigt die mehrdimensionale Bewertung in Echtzeit als Radar-Diagramm",
+    "config": {
+      "bindVariables": "Variablen binden",
+      "addVariable": "Variable hinzufügen",
+      "removeVariable": "Löschen",
+      "unbound": "Keine Variable gebunden",
+      "loadError": "Laden fehlgeschlagen"
+    },
+    "properties": {
+      "title": "Titel",
+      "titleColor": "Titelfarbe",
+      "titleFontSize": "Titel-Schriftgröße",
+      "titleFontWeight": "Titel-Schriftstärke",
+      "indicatorMax": "Maximalwert der Kennzahl",
+      "gridColor": "Rasterfarbe",
+      "axisColor": "Achsenfarbe",
+      "showLegend": "Legende anzeigen",
+      "legendPosition": "Legendenposition",
+      "showTooltip": "Tooltip anzeigen",
+      "backgroundColor": "Hintergrundfarbe",
+      "borderColor": "Rahmenfarbe",
+      "borderWidth": "Rahmenbreite",
+      "borderStyle": "Rahmenstil",
+      "borderRadius": "Eckenradius",
+      "shadowColor": "Schattenfarbe",
+      "shadowOffsetX": "Schattenversatz X",
+      "shadowOffsetY": "Schattenversatz Y",
+      "shadowBlur": "Schattenunschärfe"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "Normal",
+        "bold": "Fett"
+      },
+      "legendPosition": {
+        "top": "Oben",
+        "bottom": "Unten",
+        "left": "Links",
+        "right": "Rechts"
+      },
+      "borderStyle": {
+        "solid": "Durchgezogen",
+        "dashed": "Gestrichelt",
+        "dotted": "Gepunktet"
+      }
+    }
+  }
+}

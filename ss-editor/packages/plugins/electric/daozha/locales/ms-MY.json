@@ -1,0 +1,22 @@
+{
+  "daozha": {
+    "label": "Isolator pisau",
+    "properties": {
+      "color": "Warna garisan",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garisan",
+      "terminalRadius": "Jejari terminal",
+      "closed": "Status tertutup",
+      "closedValue": "Nilai padanan tertutup",
+      "openValue": "Nilai padanan terbuka",
+      "defaultStatus": "Status lalai"
+    },
+    "options": {
+      "closed": {
+        "yes": "Tertutup",
+        "no": "Terbuka"
+      }
+    },
+    "description": "Isolator pisau - elemen grafik suis pengasing dengan togol status tertutup/terbuka"
+  }
+}

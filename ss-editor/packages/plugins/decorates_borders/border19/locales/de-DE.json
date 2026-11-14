@@ -1,0 +1,15 @@
+{
+  "border19": {
+    "label": "Rahmen-19 (Schweizer Typografie)",
+    "description": "Dekorationselement Rahmen-19 (Schweizer Typografie)",
+    "properties": {
+      "color1": "Tiefschwarz",
+      "color2": "Signalrot",
+      "color3": "Weiß",
+      "backgroundColor": "Hintergrundfarbe",
+      "showBlocks": "Geometrische Blöcke",
+      "showAccents": "Akzentpunkte",
+      "animationSpeed": "Animationsgeschwindigkeit"
+    }
+  }
+}

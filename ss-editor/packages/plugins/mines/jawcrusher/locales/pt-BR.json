@@ -1,0 +1,30 @@
+{
+  "jawcrusher": {
+    "label": "Britador de mandíbulas",
+    "properties": {
+      "colors": "Cor 1",
+      "colors2": "Cor 2",
+      "flowColor": "Cor do fluxo",
+      "pipeColor": "Cor da tubulação",
+      "backgroundColor": "Cor de fundo",
+      "bgWidth": "Largura do fundo",
+      "boardWidth": "Largura da borda",
+      "roate": "Ângulo de rotação",
+      "cls": "Direção da animação",
+      "dur": "Período da animação (s)",
+      "dataset": "Valor de dados",
+      "forwardValue": "Valor correspondente a rotação direta",
+      "backwardValue": "Valor correspondente a rotação inversa",
+      "stopValue": "Valor correspondente a parado",
+      "defaultCls": "Direção padrão da animação",
+      "decimalPlaces": "Casas decimais"
+    },
+    "options": {
+      "cls": {
+        "run": "Em operação",
+        "stop": "Parado"
+      }
+    },
+    "description": "Britador de mandíbulas - britagem por oscilação entre mandíbula fixa e móvel, com controle de animação operação/parado"
+  }
+}

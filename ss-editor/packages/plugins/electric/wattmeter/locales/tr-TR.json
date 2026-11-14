@@ -1,0 +1,15 @@
+{
+  "wattmeter": {
+    "label": "Wattmetre",
+    "properties": {
+      "color": "Çizgi rengi",
+      "backgroundColor": "Arka plan rengi",
+      "lineWidth": "Çizgi kalınlığı",
+      "dataset": "Statik veri değeri",
+      "showDigital": "Dijital okumayı göster",
+      "decimalPlaces": "Ondalık basamak sayısı",
+      "unit": "Birim"
+    },
+    "description": "Wattmetre - Aktif güç ölçüm göstergesi"
+  }
+}

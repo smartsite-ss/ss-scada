@@ -1,0 +1,11 @@
+{
+  "chartPie": {
+    "label": "円グラフ",
+    "description": "静的/API データソースの円グラフ",
+    "config": {
+      "dataSource": "データソース",
+      "noData": "データなし",
+      "loadError": "読み込みに失敗しました"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "loadswitch": {
+    "label": "Sakelar beban",
+    "properties": {
+      "color": "Warna garis",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garis",
+      "closed": "Status tertutup",
+      "closedValue": "Nilai untuk tertutup",
+      "openValue": "Nilai untuk terbuka",
+      "defaultStatus": "Status default"
+    },
+    "options": {
+      "closed": {
+        "yes": "Tertutup",
+        "no": "Terbuka"
+      }
+    },
+    "description": "Sakelar beban daya - sakelar beban dengan kemampuan pemadaman busur"
+  }
+}

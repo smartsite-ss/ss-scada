@@ -1,0 +1,15 @@
+{
+  "border17": {
+    "label": "테두리-17(사이버펑크 네온)",
+    "description": "테두리-17 장식 컴포넌트(사이버펑크 네온)",
+    "properties": {
+      "color1": "네온 시안",
+      "color2": "네온 핑크",
+      "color3": "바탕색",
+      "backgroundColor": "배경색",
+      "showCircuit": "회로 텍스처",
+      "showScanline": "스캔 라인",
+      "animationSpeed": "애니메이션 속도"
+    }
+  }
+}

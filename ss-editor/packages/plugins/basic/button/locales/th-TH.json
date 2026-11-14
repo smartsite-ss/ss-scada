@@ -1,0 +1,54 @@
+{
+  "button": {
+    "label": "ปุ่ม",
+    "panelTitle": "คุณสมบัติปุ่ม",
+    "properties": {
+      "text": "ข้อความ",
+      "backgroundColor": "สีพื้นหลัง",
+      "fontColor": "สีข้อความ",
+      "borderColor": "สีเส้นขอบ",
+      "borderWidth": "ความกว้างเส้นขอบ",
+      "borderStyle": "รูปแบบเส้นขอบ",
+      "borderRadius": "มุมโค้ง",
+      "fontSize": "ขนาดแบบอักษร",
+      "fontWeight": "ความหนาแบบอักษร",
+      "textAlign": "การจัดข้อความ",
+      "shadowColor": "สีเงา",
+      "shadowOffsetX": "ระยะเลื่อนเงา X",
+      "shadowOffsetY": "ระยะเลื่อนเงา Y",
+      "shadowBlur": "ความเบลอของเงา",
+      "targetType": "การกระทำเมื่อคลิก",
+      "targetPage": "หน้าเป้าหมาย",
+      "targetUrl": "URL เป้าหมาย"
+    },
+    "options": {
+      "borderStyle": {
+        "solid": "เส้นทึบ",
+        "dashed": "เส้นประ",
+        "dotted": "เส้นจุด"
+      },
+      "fontWeight": {
+        "normal": "ปกติ",
+        "bold": "ตัวหนา"
+      },
+      "textAlign": {
+        "left": "ชิดซ้าย",
+        "center": "กึ่งกลาง",
+        "right": "ชิดขวา"
+      },
+      "targetType": {
+        "none": "ไม่มี",
+        "page": "เปิดหน้า",
+        "url": "เปิด URL"
+      }
+    },
+    "groups": {
+      "basic": "คุณสมบัติพื้นฐาน",
+      "style": "รูปแบบ",
+      "text": "ข้อความ",
+      "shadow": "เงา",
+      "action": "การกระทำโต้ตอบ"
+    },
+    "description": "องค์ประกอบกราฟิกปุ่ม"
+  }
+}

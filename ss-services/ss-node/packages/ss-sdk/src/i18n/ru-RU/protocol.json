@@ -1,0 +1,29 @@
+{
+  "protocol": {
+    "modbus": {
+      "connect_success": "Modbus TCP: подключение установлено",
+      "connect_failed": "Modbus TCP: не удалось подключиться: {{detail}}",
+      "read_success": "Modbus: чтение выполнено",
+      "read_failed": "Modbus: ошибка чтения: {{detail}}",
+      "write_success": "Modbus: запись выполнена",
+      "write_failed": "Modbus: ошибка записи: {{detail}}"
+    },
+    "mqtt": {
+      "connect_success": "MQTT: подключение установлено",
+      "connect_failed": "MQTT: не удалось подключиться: {{detail}}",
+      "publish_success": "MQTT: сообщение опубликовано",
+      "publish_failed": "MQTT: не удалось опубликовать сообщение: {{detail}}"
+    },
+    "opcua": {
+      "connect_success": "OPC UA: подключение установлено",
+      "connect_failed": "OPC UA: не удалось подключиться: {{detail}}",
+      "read_success": "OPC UA: чтение выполнено",
+      "read_failed": "OPC UA: ошибка чтения: {{detail}}"
+    },
+    "common": {
+      "timeout": "Тайм-аут связи по протоколу ({{timeout}} мс)",
+      "connection_refused": "В подключении отказано",
+      "authentication_failed": "Ошибка аутентификации"
+    }
+  }
+}

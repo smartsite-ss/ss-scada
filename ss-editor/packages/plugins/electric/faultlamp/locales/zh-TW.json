@@ -1,0 +1,21 @@
+{
+  "faultlamp": {
+    "label": "故障警報燈",
+    "properties": {
+      "color": "顏色",
+      "backgroundColor": "背景色",
+      "lineWidth": "線寬",
+      "alarming": "警報狀態",
+      "alarmValue": "警報對應值",
+      "normalValue": "正常對應值",
+      "defaultStatus": "預設狀態"
+    },
+    "options": {
+      "alarming": {
+        "yes": "警報中",
+        "no": "正常"
+      }
+    },
+    "description": "故障警報指示燈 - 警報時紅色閃爍"
+  }
+}

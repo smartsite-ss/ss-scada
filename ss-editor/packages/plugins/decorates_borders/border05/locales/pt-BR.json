@@ -1,0 +1,11 @@
+{
+  "border05": {
+    "label": "Borda-05",
+    "description": "Componente decorativo Borda-05",
+    "properties": {
+      "colors": "Cor 1",
+      "colors2": "Cor 2",
+      "backgroundColor": "Cor de fundo"
+    }
+  }
+}

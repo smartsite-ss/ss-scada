@@ -1,0 +1,11 @@
+{
+  "arrester": {
+    "label": "Разрядник",
+    "properties": {
+      "color": "Цвет линии",
+      "backgroundColor": "Цвет фона",
+      "lineWidth": "Толщина линии"
+    },
+    "description": "Разрядник — устройство защиты от перенапряжений"
+  }
+}

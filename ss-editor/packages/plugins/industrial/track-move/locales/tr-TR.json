@@ -1,0 +1,62 @@
+{
+  "track-move": {
+    "label": "Yörünge hareketi",
+    "description": "Özel yörünge boyunca hareket eden animasyonlu nokta, kırık yolları ve görsel ile değiştirmeyi destekler",
+    "panelTitle": "Yörünge hareketi yapılandırması",
+    "properties": {
+      "speed": "Hız (px/s)",
+      "dotStyle": "Nokta stili",
+      "dotColor": "Nokta rengi",
+      "dotSize": "Nokta boyutu",
+      "dotImage": "Görsel URL'si",
+      "imageWidth": "Görsel genişliği",
+      "imageHeight": "Görsel yüksekliği",
+      "trackColor": "Yörünge rengi",
+      "trackWidth": "Yörünge genişliği",
+      "trackStyle": "Yörünge stili",
+      "status": "Animasyon durumu",
+      "direction": "Hareket yönü",
+      "loopMode": "Döngü modu"
+    },
+    "options": {
+      "dotStyle": {
+        "circle": "Daire",
+        "image": "Görsel"
+      },
+      "trackStyle": {
+        "solid": "Düz çizgi",
+        "dashed": "Kesikli çizgi"
+      },
+      "direction": {
+        "forward": "İleri",
+        "backward": "Geri"
+      },
+      "loopMode": {
+        "loop": "Döngü",
+        "once": "Tek sefer",
+        "bounce": "Gidiş dönüş"
+      }
+    },
+    "groups": {
+      "dot": "Animasyon noktası",
+      "track": "Yörünge",
+      "motion": "Hareket"
+    },
+    "hints": {
+      "dotImage": "Görsel URL adresini girin"
+    },
+    "editor": {
+      "pathPoints": "Yol noktaları",
+      "index": "#",
+      "coordX": "X",
+      "coordY": "Y",
+      "type": "Tür",
+      "action": "İşlem",
+      "startPoint": "Başlangıç noktası",
+      "endPoint": "Bitiş noktası",
+      "bendPoint": "Kırılma noktası",
+      "addBendPoint": "+ Kırılma noktası ekle",
+      "reversePath": "Yolu ters çevir"
+    }
+  }
+}

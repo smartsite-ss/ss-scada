@@ -1,0 +1,11 @@
+{
+  "cablehead": {
+    "label": "Kablo başlığı",
+    "properties": {
+      "color": "Çizgi rengi",
+      "backgroundColor": "Arka plan rengi",
+      "lineWidth": "Çizgi kalınlığı"
+    },
+    "description": "Kablo başlığı - Kablo ile cihaz arasındaki bağlantı ucu"
+  }
+}

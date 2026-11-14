@@ -1,0 +1,15 @@
+{
+  "pressuregauge": {
+    "label": "Đồng hồ áp suất",
+    "properties": {
+      "color": "Màu",
+      "backgroundColor": "Màu nền",
+      "lineWidth": "Độ rộng nét",
+      "dataset": "Giá trị dữ liệu (0-100)",
+      "maxPressure": "Thang đo lớn nhất (MPa)",
+      "decimalPlaces": "Số chữ thập phân",
+      "unit": "Đơn vị"
+    },
+    "description": "Đồng hồ áp suất - đồng hồ đo áp suất mặt tròn, kim dẫn động theo giá trị dữ liệu hiển thị áp suất MPa"
+  }
+}

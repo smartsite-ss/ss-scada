@@ -1,0 +1,40 @@
+{
+  "tagWaterpolo": {
+    "label": "Variablen-Wasserball-Diagramm",
+    "description": "Bindet eine einzelne Tag-Variable und zeigt den Füllstand in Prozent in Echtzeit als Wasserball",
+    "config": {
+      "bindVariable": "Variable binden",
+      "addVariable": "Variable auswählen",
+      "removeVariable": "Löschen",
+      "unbound": "Keine Variable gebunden"
+    },
+    "properties": {
+      "title": "Titel",
+      "titleColor": "Titelfarbe",
+      "titleFontSize": "Titel-Schriftgröße",
+      "unit": "Einheit",
+      "minValue": "Minimum",
+      "maxValue": "Maximum",
+      "showValue": "Wert anzeigen",
+      "valueColor": "Wertfarbe",
+      "waterColor": "Wasserballfarbe",
+      "trackColor": "Bahnfarbe",
+      "backgroundColor": "Hintergrundfarbe",
+      "borderColor": "Rahmenfarbe",
+      "borderWidth": "Rahmenbreite",
+      "borderStyle": "Rahmenstil",
+      "borderRadius": "Eckenradius",
+      "shadowColor": "Schattenfarbe",
+      "shadowOffsetX": "Schattenversatz X",
+      "shadowOffsetY": "Schattenversatz Y",
+      "shadowBlur": "Schattenunschärfe"
+    },
+    "options": {
+      "borderStyle": {
+        "solid": "Durchgezogen",
+        "dashed": "Gestrichelt",
+        "dotted": "Gepunktet"
+      }
+    }
+  }
+}

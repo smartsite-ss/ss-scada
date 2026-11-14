@@ -1,0 +1,14 @@
+{
+  "border01": {
+    "label": "Rahmen-01",
+    "description": "Dekorationselement Rahmen-01",
+    "properties": {
+      "color1": "Farbe 1",
+      "color2": "Farbe 2",
+      "backgroundColor": "Hintergrundfarbe",
+      "borderColor": "Rahmenlinienfarbe",
+      "dur": "Animationsdauer (Sekunden)",
+      "showAnimation": "Animation aktivieren"
+    }
+  }
+}

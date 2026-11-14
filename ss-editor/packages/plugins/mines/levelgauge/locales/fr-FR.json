@@ -1,0 +1,15 @@
+{
+  "levelgauge": {
+    "label": "Indicateur de niveau",
+    "properties": {
+      "color": "Couleur",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "lineWidth": "Épaisseur de ligne",
+      "dataset": "Valeur de données (0-100)",
+      "showNumeric": "Afficher la valeur",
+      "decimalPlaces": "Nombre de décimales",
+      "unit": "Unité"
+    },
+    "description": "Indicateur de niveau - tube de verre vertical gradué avec affichage numérique de la colonne liquide"
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "track-move": {
+    "label": "Quỹ đạo động",
+    "description": "Điểm hoạt ảnh di chuyển theo quỹ đạo tùy chỉnh, hỗ trợ đường gấp khúc và thay thế bằng hình ảnh",
+    "panelTitle": "Cấu hình quỹ đạo động",
+    "properties": {
+      "speed": "Tốc độ (px/s)",
+      "dotStyle": "Kiểu điểm",
+      "dotColor": "Màu điểm",
+      "dotSize": "Kích thước điểm",
+      "dotImage": "URL hình ảnh",
+      "imageWidth": "Chiều rộng hình ảnh",
+      "imageHeight": "Chiều cao hình ảnh",
+      "trackColor": "Màu đường ray",
+      "trackWidth": "Độ rộng đường ray",
+      "trackStyle": "Kiểu đường ray",
+      "status": "Trạng thái hoạt ảnh",
+      "direction": "Hướng di chuyển",
+      "loopMode": "Chế độ lặp"
+    },
+    "options": {
+      "dotStyle": {
+        "circle": "Hình tròn",
+        "image": "Hình ảnh"
+      },
+      "trackStyle": {
+        "solid": "Nét liền",
+        "dashed": "Nét đứt"
+      },
+      "direction": {
+        "forward": "Xuôi",
+        "backward": "Ngược"
+      },
+      "loopMode": {
+        "loop": "Lặp",
+        "once": "Một lần",
+        "bounce": "Nảy qua lại"
+      }
+    },
+    "groups": {
+      "dot": "Điểm hoạt ảnh",
+      "track": "Đường ray",
+      "motion": "Chuyển động"
+    },
+    "hints": {
+      "dotImage": "Nhập địa chỉ URL hình ảnh"
+    },
+    "editor": {
+      "pathPoints": "Điểm đường dẫn",
+      "index": "#",
+      "coordX": "X",
+      "coordY": "Y",
+      "type": "Loại",
+      "action": "Thao tác",
+      "startPoint": "Điểm bắt đầu",
+      "endPoint": "Điểm kết thúc",
+      "bendPoint": "Điểm gấp khúc",
+      "addBendPoint": "+ Thêm điểm gấp khúc",
+      "reversePath": "Đảo ngược đường dẫn"
+    }
+  }
+}

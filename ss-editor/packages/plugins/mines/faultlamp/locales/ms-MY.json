@@ -1,0 +1,24 @@
+{
+  "faultlamp": {
+    "label": "Lampu penggera kerosakan",
+    "properties": {
+      "alarmColor": "Warna penggera",
+      "backgroundColor": "Warna latar",
+      "dataset": "Nilai data (0=normal, >0=penggera)",
+      "flashing": "Kesan kelipan",
+      "flashSpeed": "Kelajuan kelipan (saat)",
+      "showBuzzer": "Tunjuk buzzer",
+      "alarmValue": "Nilai padanan penggera",
+      "normalValue": "Nilai padanan normal",
+      "defaultStatus": "Status lalai"
+    },
+    "options": {
+      "alarmColor": {
+        "red": "Merah",
+        "amber": "Warna ambar",
+        "off": "Tutup"
+      }
+    },
+    "description": "Lampu penggera kerosakan - ikon amaran rombus/segi tiga dengan kelipan dan buzzer"
+  }
+}

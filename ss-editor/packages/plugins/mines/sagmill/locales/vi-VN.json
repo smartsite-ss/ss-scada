@@ -1,0 +1,31 @@
+{
+  "sagmill": {
+    "label": "Máy nghiền SAG",
+    "properties": {
+      "colors": "Màu 1",
+      "colors2": "Màu 2",
+      "flowColor": "Màu dòng chảy",
+      "pipeColor": "Màu đường ống",
+      "backgroundColor": "Màu nền",
+      "bgWidth": "Chiều rộng nền",
+      "boardWidth": "Độ rộng viền",
+      "roate": "Góc xoay",
+      "cls": "Hướng hoạt ảnh",
+      "dur": "Chu kỳ hoạt ảnh (giây)",
+      "dataset": "Giá trị dữ liệu",
+      "forwardValue": "Giá trị tương ứng quay xuôi",
+      "backwardValue": "Giá trị tương ứng quay ngược",
+      "stopValue": "Giá trị tương ứng dừng",
+      "defaultCls": "Hướng hoạt ảnh mặc định",
+      "decimalPlaces": "Số chữ thập phân"
+    },
+    "options": {
+      "cls": {
+        "left": "Quay xuôi",
+        "right": "Quay ngược",
+        "stop": "Dừng"
+      }
+    },
+    "description": "Máy nghiền SAG - máy nghiền tang ngắn đường kính lớn, xả liệu không có lưới, hỗ trợ hoạt ảnh xoay"
+  }
+}

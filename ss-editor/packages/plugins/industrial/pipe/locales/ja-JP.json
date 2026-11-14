@@ -1,0 +1,39 @@
+{
+  "pipe": {
+    "label": "配管-縦",
+    "description": "配管-縦コンポーネント。流動アニメーションと方向制御に対応",
+    "panelTitle": "配管の設定",
+    "properties": {
+      "width": "幅",
+      "height": "高さ",
+      "status": "状態",
+      "direction": "流れの向き",
+      "pipeColor": "配管の色",
+      "flowingColor": "流動中の色",
+      "stoppedColor": "停止時の色",
+      "blockedColor": "閉塞時の色",
+      "pipeThickness": "配管の太さ",
+      "showFlange": "フランジを表示",
+      "flowSpeed": "流速",
+      "showFlowAnimation": "流動アニメーションを表示"
+    },
+    "options": {
+      "status": {
+        "flowing": "流動中",
+        "stopped": "停止",
+        "blocked": "閉塞"
+      },
+      "direction": {
+        "up": "上",
+        "down": "下"
+      }
+    },
+    "groups": {
+      "basic": "基本",
+      "status": "状態",
+      "color": "色",
+      "style": "スタイル",
+      "animation": "アニメーション"
+    }
+  }
+}

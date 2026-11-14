@@ -1,0 +1,59 @@
+{
+  "error": {
+    "auth": {
+      "AUTH_001": "Benutzername oder Passwort ist falsch",
+      "AUTH_002": "Das Konto wurde deaktiviert. Bitte wenden Sie sich an den Administrator",
+      "AUTH_003": "Das Token ist abgelaufen. Bitte melden Sie sich erneut an",
+      "AUTH_004": "Das Token ist ungültig oder wurde manipuliert",
+      "AUTH_005": "Benutzername oder E-Mail ist bereits vorhanden",
+      "AUTH_006": "Das Format der E-Mail-Adresse ist ungültig",
+      "AUTH_007": "Das Passwort ist zu unsicher (mindestens 8 Zeichen mit Buchstaben und Ziffern)",
+      "AUTH_008": "Benutzer nicht vorhanden"
+    },
+    "project": {
+      "PROJ_001": "Projekt nicht vorhanden",
+      "PROJ_002": "Keine Berechtigung für dieses Projekt",
+      "PROJ_003": "Der Projektname darf nicht leer sein",
+      "PROJ_004": "Der Projektname ist zu lang (maximal 100 Zeichen)",
+      "PROJ_005": "Es können nur selbst erstellte Projekte gelöscht werden"
+    },
+    "device": {
+      "DEV_001": "Gerät nicht vorhanden",
+      "DEV_002": "Gerät {{name}} (ID: {{id}}) ist offline",
+      "DEV_003": "Lesen von Gerät {{deviceId}} an Adresse {{address}} fehlgeschlagen: {{detail}}",
+      "DEV_004": "Schreiben der Gerätedaten fehlgeschlagen",
+      "DEV_005": "Zeitüberschreitung beim Verbindungsaufbau zum Gerät ({{timeout}} ms)",
+      "DEV_006": "Die Kommunikation mit dem Gerät wurde unterbrochen",
+      "DEV_007": "Die Gerätekonfiguration ist ungültig: {{detail}}"
+    },
+    "data": {
+      "DATA_001": "Fehler bei der Datenerfassung",
+      "DATA_002": "Zeitüberschreitung bei der Kommunikation über das Protokoll {{protocol}} ({{timeout}} ms)",
+      "DATA_003": "Persistieren der Daten fehlgeschlagen (Speicher: {{storage}}, Details: {{detail}})",
+      "DATA_004": "Datenqualitätsproblem bei Tag {{tagId}}: {{quality}}",
+      "DATA_005": "Verlaufsdaten nicht vorhanden",
+      "DATA_006": "Ungültiger Zeitraum (die Startzeit muss vor der Endzeit liegen)"
+    },
+    "alarm": {
+      "ALM_001": "Alarmfehler: {{detail}}",
+      "ALM_002": "Alarmbenachrichtigung konnte nicht gesendet werden (Kanal: {{channel}}, Details: {{detail}})",
+      "ALM_003": "Alarmregel nicht vorhanden",
+      "ALM_004": "Die Alarmbedingung ist ungültig konfiguriert",
+      "ALM_005": "Der Ereignisdatensatz ist nicht vorhanden oder wurde gelöscht"
+    },
+    "protocol": {
+      "PROTO_001": "Nicht unterstützter Protokolltyp: {{type}}",
+      "PROTO_002": "Protokollverbindung fehlgeschlagen: {{detail}}",
+      "PROTO_003": "Trennen der Protokollverbindung fehlgeschlagen: {{detail}}",
+      "PROTO_004": "Zeitüberschreitung beim Lesen über das Protokoll",
+      "PROTO_005": "Schreiben über das Protokoll fehlgeschlagen"
+    },
+    "system": {
+      "SYS_001": "Interner Systemfehler",
+      "SYS_002": "Konfigurationsfehler ({{key}}: {{detail}})",
+      "SYS_003": "Speicherfehler ({{storage}}: {{detail}})",
+      "SYS_004": "Dienst nicht verfügbar",
+      "SYS_005": "Datenbankverbindung fehlgeschlagen"
+    }
+  }
+}

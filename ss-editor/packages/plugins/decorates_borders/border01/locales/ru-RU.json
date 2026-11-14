@@ -1,0 +1,14 @@
+{
+  "border01": {
+    "label": "Рамка-01",
+    "description": "Декоративный компонент «Рамка-01»",
+    "properties": {
+      "color1": "Цвет 1",
+      "color2": "Цвет 2",
+      "backgroundColor": "Цвет фона",
+      "borderColor": "Цвет линии рамки",
+      "dur": "Период анимации (с)",
+      "showAnimation": "Включить анимацию"
+    }
+  }
+}

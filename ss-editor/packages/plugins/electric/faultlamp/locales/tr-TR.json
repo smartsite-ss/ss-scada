@@ -1,0 +1,21 @@
+{
+  "faultlamp": {
+    "label": "Arıza alarm lambası",
+    "properties": {
+      "color": "Renk",
+      "backgroundColor": "Arka plan rengi",
+      "lineWidth": "Çizgi kalınlığı",
+      "alarming": "Alarm durumu",
+      "alarmValue": "Alarm durum değeri",
+      "normalValue": "Normal durum değeri",
+      "defaultStatus": "Varsayılan durum"
+    },
+    "options": {
+      "alarming": {
+        "yes": "Alarmda",
+        "no": "Normal"
+      }
+    },
+    "description": "Arıza alarm gösterge lambası - Alarm durumunda kırmızı yanıp söner"
+  }
+}

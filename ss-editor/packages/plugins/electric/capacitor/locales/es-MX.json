@@ -1,0 +1,11 @@
+{
+  "capacitor": {
+    "label": "Banco de capacitores",
+    "properties": {
+      "color": "Color de línea",
+      "backgroundColor": "Color de fondo",
+      "lineWidth": "Grosor de línea"
+    },
+    "description": "Banco de capacitores: capacitor de compensación reactiva"
+  }
+}

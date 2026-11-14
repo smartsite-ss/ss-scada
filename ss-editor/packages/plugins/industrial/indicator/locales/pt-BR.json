@@ -1,0 +1,42 @@
+{
+  "indicator": {
+    "label": "Luz indicadora",
+    "description": "Componente de luz indicadora para exibição de estado e alarme",
+    "panelTitle": "Configuração da luz indicadora",
+    "properties": {
+      "width": "Largura",
+      "height": "Altura",
+      "status": "Estado",
+      "onColor": "Cor de aceso",
+      "offColor": "Cor de apagado",
+      "warningColor": "Cor de aviso",
+      "faultColor": "Cor de falha",
+      "blinkOnAlarm": "Piscar no alarme",
+      "blinkInterval": "Intervalo de piscar (ms)",
+      "showLabel": "Mostrar rótulos",
+      "labelText": "Texto do rótulo",
+      "labelColor": "Cor do rótulo",
+      "onValue": "Valor correspondente a aceso",
+      "offValue": "Valor correspondente a apagado",
+      "warningValue": "Valor correspondente a aviso",
+      "faultValue": "Valor correspondente a falha",
+      "defaultStatus": "Estado padrão"
+    },
+    "options": {
+      "status": {
+        "on": "Aceso",
+        "off": "Apagado",
+        "warning": "Aviso",
+        "fault": "Falha"
+      }
+    },
+    "groups": {
+      "basic": "Básico",
+      "status": "Estado",
+      "color": "Cor",
+      "animation": "Animação",
+      "label": "Rótulo",
+      "binding": "Mapeamento de vinculação"
+    }
+  }
+}

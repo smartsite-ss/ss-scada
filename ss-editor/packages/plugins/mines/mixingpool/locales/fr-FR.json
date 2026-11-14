@@ -1,0 +1,24 @@
+{
+  "mixingpool": {
+    "label": "Cuve d'agitation",
+    "properties": {
+      "color1": "Couleur 1",
+      "color2": "Couleur 2",
+      "flowColor": "Couleur d'écoulement",
+      "pipeColor": "Couleur du tuyau",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "bgWidth": "Largeur d'arrière-plan",
+      "boardWidth": "Largeur de bordure",
+      "roate": "Angle de rotation",
+      "cls": "Style d'animation",
+      "dur": "Période d'animation (s)",
+      "dataset": "Valeur de données",
+      "forwardValue": "Valeur pour marche avant",
+      "backwardValue": "Valeur pour marche arrière",
+      "stopValue": "Valeur pour l'arrêt",
+      "defaultCls": "Style d'animation par défaut",
+      "decimalPlaces": "Nombre de décimales"
+    },
+    "description": "Cuve d'agitation - récipient de mélange avec agitateur, animation de rotation"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "fanblue": {
+    "label": "Ventilador - azul",
+    "properties": {
+      "dataset": "Conjunto de dados",
+      "dur": "Período da animação (s)",
+      "colors": "Grupo de cores",
+      "flowColor": "Cor do fluxo",
+      "pipeColor": "Cor da tubulação",
+      "bgWidth": "Largura do fundo",
+      "boardWidth": "Largura da borda",
+      "roate": "Ângulo de rotação",
+      "cls": "Direção de rotação",
+      "clsLeft": "Horário",
+      "clsRight": "Anti-horário",
+      "clsStop": "Parado",
+      "backgroundColor": "Cor de fundo",
+      "forwardValue": "Valor correspondente a rotação direta",
+      "backwardValue": "Valor correspondente a rotação inversa",
+      "stopValue": "Valor correspondente a parado",
+      "defaultCls": "Direção padrão da animação",
+      "decimalPlaces": "Casas decimais"
+    },
+    "options": {
+      "cls": {
+        "left": "Rotação direta",
+        "right": "Rotação inversa",
+        "stop": "Parado"
+      }
+    },
+    "description": "Ventilador - azul de mineração - ventilador industrial de grande porte com animação de rotação"
+  }
+}

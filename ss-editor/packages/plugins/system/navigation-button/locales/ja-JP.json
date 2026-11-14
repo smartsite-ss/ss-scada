@@ -1,0 +1,42 @@
+{
+  "navigationButton": {
+    "label": "ナビゲーションボタン",
+    "description": "ページ遷移に対応したナビゲーションボタン",
+    "properties": {
+      "text": "ボタンのテキスト",
+      "type": "ボタンの種類",
+      "size": "サイズ",
+      "disabled": "無効",
+      "rounded": "角丸",
+      "transparent": "透明",
+      "targetType": "クリック時の動作",
+      "targetPage": "対象ページ",
+      "targetUrl": "対象URL"
+    },
+    "options": {
+      "type": {
+        "primary": "プライマリ",
+        "success": "成功",
+        "warning": "警告",
+        "danger": "危険",
+        "default": "既定"
+      },
+      "size": {
+        "large": "大",
+        "default": "中",
+        "small": "小"
+      },
+      "targetType": {
+        "none": "なし",
+        "page": "ページを開く",
+        "url": "URL を開く"
+      }
+    },
+    "groups": {
+      "basic": "基本",
+      "status": "状態",
+      "style": "スタイル",
+      "action": "インタラクション"
+    }
+  }
+}

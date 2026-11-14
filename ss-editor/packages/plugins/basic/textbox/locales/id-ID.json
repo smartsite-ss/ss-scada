@@ -1,0 +1,56 @@
+{
+  "textbox": {
+    "label": "Kotak teks",
+    "panelTitle": "Konfigurasi kotak teks",
+    "properties": {
+      "text": "Isi teks",
+      "placeholder": "Placeholder",
+      "fontSize": "Ukuran font",
+      "fontWeight": "Ketebalan font",
+      "fontStyle": "Gaya font",
+      "textColor": "Warna teks",
+      "backgroundColor": "Warna latar",
+      "borderColor": "Warna batas",
+      "borderWidth": "Lebar batas",
+      "borderStyle": "Gaya batas",
+      "borderRadius": "Sudut membulat",
+      "textAlign": "Perataan teks",
+      "verticalAlignment": "Perataan vertikal",
+      "padding": "Padding",
+      "multiline": "Mode multiline",
+      "readOnly": "Hanya baca"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "Normal",
+        "bold": "Tebal"
+      },
+      "fontStyle": {
+        "normal": "Normal",
+        "italic": "Miring"
+      },
+      "borderStyle": {
+        "solid": "Garis solid",
+        "dashed": "Garis putus-putus",
+        "dotted": "Garis titik",
+        "none": "Tidak ada"
+      },
+      "textAlign": {
+        "left": "Rata kiri",
+        "center": "Tengah",
+        "right": "Rata kanan"
+      },
+      "verticalAlignment": {
+        "top": "Atas",
+        "middle": "Tengah",
+        "bottom": "Bawah"
+      }
+    },
+    "groups": {
+      "basic": "Properti dasar",
+      "style": "Gaya",
+      "text": "Teks"
+    },
+    "description": "Elemen grafis kotak teks"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "waterpump": {
+    "label": "Bomba d'água",
+    "description": "Componente de bomba d'água com animação de rotação e exibição de estado",
+    "panelTitle": "Configuração da bomba d'água",
+    "properties": {
+      "width": "Largura",
+      "height": "Altura",
+      "status": "Estado",
+      "bodyColor": "Cor da estrutura",
+      "impellerColor": "Cor das pás",
+      "pipeColor": "Cor da tubulação",
+      "flangeColor": "Cor do flange",
+      "highlightColor": "Cor de destaque",
+      "showAnimation": "Mostrar animação",
+      "rotationSpeed": "Velocidade de rotação",
+      "rotationDirection": "Direção de rotação",
+      "showLabel": "Mostrar rótulos",
+      "labelText": "Texto do rótulo",
+      "runningValue": "Valor correspondente a operação",
+      "stoppedValue": "Valor correspondente a parado",
+      "faultValue": "Valor correspondente a falha",
+      "defaultStatus": "Estado padrão"
+    },
+    "options": {
+      "status": {
+        "running": "Em operação",
+        "stopped": "Parado",
+        "fault": "Falha"
+      },
+      "rotationDirection": {
+        "clockwise": "Horário",
+        "counterclockwise": "Anti-horário"
+      }
+    },
+    "groups": {
+      "basic": "Básico",
+      "status": "Estado",
+      "color": "Cor",
+      "animation": "Animação",
+      "label": "Rótulo",
+      "binding": "Mapeamento de vinculação"
+    }
+  }
+}

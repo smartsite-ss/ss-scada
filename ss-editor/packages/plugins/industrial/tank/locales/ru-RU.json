@@ -1,0 +1,42 @@
+{
+  "tank": {
+    "label": "Резервуар",
+    "description": "Компонент резервуара для отображения уровня и тревог",
+    "panelTitle": "Настройка резервуара",
+    "properties": {
+      "width": "Ширина",
+      "height": "Высота",
+      "level": "Текущий уровень",
+      "maxLevel": "Максимальный уровень",
+      "unit": "Единица измерения",
+      "decimalPlaces": "Знаков после запятой",
+      "status": "Состояние",
+      "warningLevel": "Уровень предупреждения",
+      "dangerLevel": "Уровень опасности",
+      "bodyColor": "Цвет корпуса",
+      "liquidColor": "Цвет жидкости",
+      "warningLiquidColor": "Цвет жидкости при предупреждении",
+      "dangerLiquidColor": "Цвет жидкости при опасности",
+      "rimColor": "Цвет рамки",
+      "showLevelText": "Показать текст уровня",
+      "showTicks": "Показать деления",
+      "showAnimation": "Анимация волны",
+      "tickCount": "Число делений"
+    },
+    "options": {
+      "status": {
+        "normal": "Норма",
+        "warning": "Предупреждение",
+        "danger": "Опасность"
+      }
+    },
+    "groups": {
+      "basic": "Основное",
+      "level": "Уровень",
+      "status": "Состояние",
+      "threshold": "Пороги",
+      "color": "Цвет",
+      "display": "Отображение"
+    }
+  }
+}

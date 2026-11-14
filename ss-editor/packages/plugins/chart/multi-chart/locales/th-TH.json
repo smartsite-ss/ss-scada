@@ -1,0 +1,47 @@
+{
+  "multiChart": {
+    "label": "แผนภูมิหลายแบบ",
+    "description": "องค์ประกอบแผนภูมิหลายแบบ รองรับแผนภูมิแท่ง แผนภูมิวงกลม และแผนภูมิความร้อน",
+    "panelTitle": "การกำหนดค่าแผนภูมิหลายแบบ",
+    "properties": {
+      "title": "หัวข้อ",
+      "titleColor": "สีหัวข้อ",
+      "titleFontSize": "ขนาดตัวอักษรหัวข้อ",
+      "chartType": "ประเภทแผนภูมิ",
+      "backgroundColor": "สีพื้นหลัง",
+      "borderColor": "สีเส้นขอบ",
+      "borderWidth": "ความกว้างเส้นขอบ",
+      "borderRadius": "มุมโค้ง",
+      "barColor": "สีแผนภูมิแท่ง",
+      "barGap": "ระยะห่างแท่ง",
+      "pieColors": "ลำดับสีแผนภูมิวงกลม",
+      "pieInnerRadius": "อัตราส่วนรัศมีภายใน",
+      "pieShowLabels": "แสดงป้ายกำกับ",
+      "heatmapColorLow": "สีค่าต่ำของแผนภูมิความร้อน",
+      "heatmapColorHigh": "สีค่าสูงของแผนภูมิความร้อน",
+      "heatmapRows": "จำนวนแถว",
+      "heatmapCols": "จำนวนคอลัมน์",
+      "showLegend": "แสดงคำอธิบายสัญลักษณ์",
+      "shadowColor": "สีเงา",
+      "shadowOffsetX": "ระยะเลื่อนเงา X",
+      "shadowOffsetY": "ระยะเลื่อนเงา Y",
+      "shadowBlur": "ความเบลอของเงา"
+    },
+    "options": {
+      "chartType": {
+        "bar": "แผนภูมิแท่ง",
+        "pie": "แผนภูมิวงกลม",
+        "heatmap": "แผนภูมิความร้อน"
+      }
+    },
+    "groups": {
+      "basic": "พื้นฐาน",
+      "style": "รูปแบบ",
+      "bar": "แผนภูมิแท่ง",
+      "pie": "แผนภูมิวงกลม",
+      "heatmap": "แผนภูมิความร้อน",
+      "display": "แสดง",
+      "shadow": "เงา"
+    }
+  }
+}

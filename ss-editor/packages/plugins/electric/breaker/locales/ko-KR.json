@@ -1,0 +1,21 @@
+{
+  "breaker": {
+    "label": "차단기",
+    "properties": {
+      "color": "선 색상",
+      "backgroundColor": "배경색",
+      "lineWidth": "선 너비",
+      "closed": "닫힘 상태",
+      "closedValue": "닫힘 대응 값",
+      "openValue": "열림 대응 값",
+      "defaultStatus": "기본 상태"
+    },
+    "options": {
+      "closed": {
+        "yes": "투입",
+        "no": "차단"
+      }
+    },
+    "description": "전력 차단기 - 고압/저압 차단기, 투입/차단 상태 전환 지원"
+  }
+}

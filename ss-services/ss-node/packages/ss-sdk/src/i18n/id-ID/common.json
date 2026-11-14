@@ -1,0 +1,19 @@
+{
+  "common": {
+    "success": "Operasi berhasil",
+    "failed": "Operasi gagal",
+    "created": "{{resource}} berhasil dibuat",
+    "updated": "{{resource}} berhasil diperbarui",
+    "deleted": "{{resource}} berhasil dihapus",
+    "not_found": "{{resource}} tidak ditemukan",
+    "unauthorized": "Akses tidak sah",
+    "forbidden": "Izin tidak memadai",
+    "bad_request": "Parameter permintaan salah",
+    "internal_error": "Kesalahan internal server",
+    "pagination": {
+      "page": "Nomor halaman harus lebih besar dari 0",
+      "limit": "Jumlah per halaman harus antara 1-100",
+      "invalid_sort_field": "Bidang pengurutan tidak valid: {{field}}"
+    }
+  }
+}

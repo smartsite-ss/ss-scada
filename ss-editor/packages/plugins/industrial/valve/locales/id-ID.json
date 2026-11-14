@@ -1,0 +1,45 @@
+{
+  "valve": {
+    "label": "Katup",
+    "description": "Komponen katup dengan status buka/tutup dan pergantian tipe",
+    "panelTitle": "Konfigurasi katup",
+    "properties": {
+      "width": "Lebar",
+      "height": "Tinggi",
+      "status": "Status",
+      "valveType": "Tipe katup",
+      "bodyColor": "Warna badan",
+      "stemColor": "Warna batang katup",
+      "openColor": "Warna terbuka",
+      "closedColor": "Warna tertutup",
+      "faultColor": "Warna gangguan",
+      "showLabel": "Tampilkan label",
+      "labelText": "Teks label",
+      "openValue": "Nilai pemetaan terbuka",
+      "closedValue": "Nilai pemetaan tertutup",
+      "faultValue": "Nilai pemetaan gangguan",
+      "defaultStatus": "Status default"
+    },
+    "options": {
+      "status": {
+        "open": "Buka",
+        "closed": "Tutup",
+        "opening": "Sedang membuka",
+        "closing": "Sedang menutup",
+        "fault": "Gangguan"
+      },
+      "valveType": {
+        "butterfly": "Katup kupu-kupu",
+        "gate": "Katup gerbang"
+      }
+    },
+    "groups": {
+      "basic": "Dasar",
+      "status": "Status",
+      "color": "Warna",
+      "statusColor": "Warna status",
+      "label": "Label",
+      "binding": "Pemetaan pengikatan"
+    }
+  }
+}

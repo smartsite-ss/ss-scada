@@ -1,0 +1,13 @@
+{
+  "head03": {
+    "label": "Kopfdekoration-03",
+    "properties": {
+      "color1": "Farbe 1",
+      "color2": "Farbe 2",
+      "dataset": "Anzeigetext",
+      "textColor": "Textfarbe",
+      "textSize": "Schriftgröße"
+    },
+    "description": "Pfeilförmige Dekoration links und rechts mit Text in der Mitte"
+  }
+}

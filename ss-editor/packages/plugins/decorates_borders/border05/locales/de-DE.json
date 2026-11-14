@@ -1,0 +1,11 @@
+{
+  "border05": {
+    "label": "Rahmen-05",
+    "description": "Dekorationselement Rahmen-05",
+    "properties": {
+      "colors": "Farbe 1",
+      "colors2": "Farbe 2",
+      "backgroundColor": "Hintergrundfarbe"
+    }
+  }
+}

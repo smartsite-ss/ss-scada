@@ -1,0 +1,11 @@
+{
+  "chartPie": {
+    "label": "Pasta grafik",
+    "description": "Statik/API veri kaynaklı pasta grafik",
+    "config": {
+      "dataSource": "Veri kaynağı",
+      "noData": "Veri yok",
+      "loadError": "Yükleme başarısız"
+    }
+  }
+}

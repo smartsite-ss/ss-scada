@@ -1,0 +1,32 @@
+{
+  "conveyerbelt": {
+    "label": "輸送帶",
+    "properties": {
+      "color1": "顏色一",
+      "color2": "顏色二",
+      "color3": "顏色三",
+      "flowColor": "流動色",
+      "pipeColor": "管道色",
+      "backgroundColor": "背景色",
+      "bgWidth": "背景寬度",
+      "boardWidth": "邊框寬度",
+      "roate": "旋轉角度",
+      "cls": "動畫方向",
+      "dur": "動畫週期(秒)",
+      "dataset": "資料值",
+      "forwardValue": "正轉對應值",
+      "backwardValue": "反轉對應值",
+      "stopValue": "停止對應值",
+      "defaultCls": "預設動畫方向",
+      "decimalPlaces": "小數位數"
+    },
+    "options": {
+      "cls": {
+        "left": "正轉",
+        "right": "反轉",
+        "stop": "停止"
+      }
+    },
+    "description": "礦產輸送帶 - 帶滾輪的物料輸送裝置，支援流動動畫"
+  }
+}

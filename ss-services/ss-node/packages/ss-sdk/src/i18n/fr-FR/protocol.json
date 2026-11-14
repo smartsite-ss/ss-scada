@@ -1,0 +1,29 @@
+{
+  "protocol": {
+    "modbus": {
+      "connect_success": "Connexion Modbus TCP réussie",
+      "connect_failed": "Échec de la connexion Modbus TCP : {{detail}}",
+      "read_success": "Lecture Modbus réussie",
+      "read_failed": "Échec de la lecture Modbus : {{detail}}",
+      "write_success": "Écriture Modbus réussie",
+      "write_failed": "Échec de l'écriture Modbus : {{detail}}"
+    },
+    "mqtt": {
+      "connect_success": "Connexion MQTT réussie",
+      "connect_failed": "Échec de la connexion MQTT : {{detail}}",
+      "publish_success": "Message MQTT publié avec succès",
+      "publish_failed": "Échec de la publication du message MQTT : {{detail}}"
+    },
+    "opcua": {
+      "connect_success": "Connexion OPC UA réussie",
+      "connect_failed": "Échec de la connexion OPC UA : {{detail}}",
+      "read_success": "Lecture OPC UA réussie",
+      "read_failed": "Échec de la lecture OPC UA : {{detail}}"
+    },
+    "common": {
+      "timeout": "Délai de communication du protocole dépassé ({{timeout}} ms)",
+      "connection_refused": "Connexion refusée",
+      "authentication_failed": "Échec de l'authentification"
+    }
+  }
+}

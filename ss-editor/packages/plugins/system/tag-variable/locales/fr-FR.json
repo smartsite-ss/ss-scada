@@ -1,0 +1,21 @@
+{
+  "tagVariable": {
+    "label": "Variable de tag",
+    "description": "Affiche la valeur en temps réel d'une variable d'appareil",
+    "config": {
+      "bindVariable": "Lier une variable",
+      "selectVariable": "Choisir une variable",
+      "clear": "Effacer",
+      "unbound": "Non lié"
+    },
+    "selector": {
+      "title": "Choisir une variable d'appareil",
+      "searchPlaceholder": "Rechercher un appareil ou une variable",
+      "deviceLabel": "Appareil",
+      "tagCount": "{count} variables",
+      "loading": "Chargement...",
+      "empty": "Aucune variable d'appareil",
+      "selectHint": "Cliquez sur une variable pour la lier"
+    }
+  }
+}

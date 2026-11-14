@@ -1,0 +1,15 @@
+{
+  "pressuregauge": {
+    "label": "Manometer",
+    "properties": {
+      "color": "Farbe",
+      "backgroundColor": "Hintergrundfarbe",
+      "lineWidth": "Linienbreite",
+      "dataset": "Datenwert (0–100)",
+      "maxPressure": "Messbereichsende (MPa)",
+      "decimalPlaces": "Dezimalstellen",
+      "unit": "Einheit"
+    },
+    "description": "Manometer – rundes Druckmessgerät, Zeiger datengesteuert für Druck in MPa"
+  }
+}

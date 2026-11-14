@@ -1,0 +1,62 @@
+{
+  "track-move": {
+    "label": "軌跡アニメーション",
+    "description": "カスタム軌道に沿って移動するアニメーション点。折れ曲がり経路と画像の差し替えに対応",
+    "panelTitle": "軌跡アニメーションの設定",
+    "properties": {
+      "speed": "速度（px/s）",
+      "dotStyle": "点のスタイル",
+      "dotColor": "点の色",
+      "dotSize": "点のサイズ",
+      "dotImage": "画像URL",
+      "imageWidth": "画像の幅",
+      "imageHeight": "画像の高さ",
+      "trackColor": "軌道の色",
+      "trackWidth": "軌道の幅",
+      "trackStyle": "軌道のスタイル",
+      "status": "アニメーション状態",
+      "direction": "移動方向",
+      "loopMode": "ループモード"
+    },
+    "options": {
+      "dotStyle": {
+        "circle": "円",
+        "image": "画像"
+      },
+      "trackStyle": {
+        "solid": "実線",
+        "dashed": "破線"
+      },
+      "direction": {
+        "forward": "順方向",
+        "backward": "逆方向"
+      },
+      "loopMode": {
+        "loop": "ループ",
+        "once": "1 回",
+        "bounce": "往復"
+      }
+    },
+    "groups": {
+      "dot": "アニメーション点",
+      "track": "軌道",
+      "motion": "動作"
+    },
+    "hints": {
+      "dotImage": "画像の URL を入力してください"
+    },
+    "editor": {
+      "pathPoints": "経路点",
+      "index": "#",
+      "coordX": "X",
+      "coordY": "Y",
+      "type": "種類",
+      "action": "操作",
+      "startPoint": "始点",
+      "endPoint": "終点",
+      "bendPoint": "折れ点",
+      "addBendPoint": "+ 折れ点を追加",
+      "reversePath": "経路を反転"
+    }
+  }
+}

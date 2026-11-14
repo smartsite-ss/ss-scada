@@ -1,0 +1,69 @@
+{
+  "label": {
+    "label": "Etiket",
+    "panelTitle": "Etiket özellikleri",
+    "properties": {
+      "text": "Metin",
+      "textColor": "Metin rengi",
+      "fontSize": "Yazı tipi boyutu",
+      "fontWeight": "Yazı tipi kalınlığı",
+      "fontStyle": "Yazı tipi stili",
+      "textDecoration": "Metin dekorasyonu",
+      "textAlign": "Metin hizalaması",
+      "verticalAlignment": "Dikey hizalama",
+      "lineHeight": "Satır yüksekliği",
+      "letterSpacing": "Harf aralığı",
+      "wordWrap": "Otomatik satır kaydırma",
+      "maxLines": "Maksimum satır sayısı",
+      "backgroundColor": "Arka plan rengi",
+      "borderColor": "Kenarlık rengi",
+      "borderWidth": "Kenarlık genişliği",
+      "borderRadius": "Köşe yuvarlatma",
+      "textShadowColor": "Metin gölge rengi",
+      "textShadowOffsetX": "Gölge kayması X",
+      "textShadowOffsetY": "Gölge kayması Y",
+      "textShadowBlur": "Gölge bulanıklığı",
+      "decimalPlaces": "Ondalık basamak sayısı",
+      "unit": "Birim",
+      "unitFontSize": "Birim yazı tipi boyutu",
+      "unitFontColor": "Birim yazı tipi rengi",
+      "unitGap": "Birim aralığı"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "Normal",
+        "bold": "Kalın"
+      },
+      "fontStyle": {
+        "normal": "Normal",
+        "italic": "İtalik"
+      },
+      "textDecoration": {
+        "none": "Yok",
+        "underline": "Altı çizili",
+        "line-through": "Üstü çizili"
+      },
+      "textAlign": {
+        "left": "Sola hizala",
+        "center": "Ortala",
+        "right": "Sağa hizala"
+      },
+      "verticalAlignment": {
+        "top": "Üst",
+        "middle": "Orta",
+        "bottom": "Alt"
+      }
+    },
+    "groups": {
+      "basic": "Temel özellikler",
+      "style": "Stil",
+      "text": "Yazı",
+      "unit": "Birim",
+      "shadow": "Gölge"
+    },
+    "hints": {
+      "maxLinesHint": "0 sınırsız anlamına gelir"
+    },
+    "description": "Etiket grafik öğesi"
+  }
+}

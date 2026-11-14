@@ -1,0 +1,12 @@
+{
+  "head04": {
+    "label": "Décoration d'en-tête-04",
+    "properties": {
+      "color1": "Couleur 1",
+      "color2": "Couleur 2",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "reverse": "Inverser"
+    },
+    "description": "Décoration en hachures"
+  }
+}

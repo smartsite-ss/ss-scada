@@ -1,0 +1,45 @@
+{
+  "waterpump": {
+    "label": "Su pompası",
+    "description": "Döndürme animasyonu ve durum göstergesini destekleyen su pompası bileşeni",
+    "panelTitle": "Su pompası yapılandırması",
+    "properties": {
+      "width": "Genişlik",
+      "height": "Yükseklik",
+      "status": "Durum",
+      "bodyColor": "Çerçeve rengi",
+      "impellerColor": "Pervane rengi",
+      "pipeColor": "Boru rengi",
+      "flangeColor": "Flanş rengi",
+      "highlightColor": "Vurgu rengi",
+      "showAnimation": "Animasyonu göster",
+      "rotationSpeed": "Dönüş hızı",
+      "rotationDirection": "Döndürme yönü",
+      "showLabel": "Etiketi göster",
+      "labelText": "Etiket metni",
+      "runningValue": "Çalışıyor durum değeri",
+      "stoppedValue": "Durdu durum değeri",
+      "faultValue": "Arıza durum değeri",
+      "defaultStatus": "Varsayılan durum"
+    },
+    "options": {
+      "status": {
+        "running": "Çalışıyor",
+        "stopped": "Durduruldu",
+        "fault": "Arıza"
+      },
+      "rotationDirection": {
+        "clockwise": "Saat yönünde",
+        "counterclockwise": "Saat yönünün tersine"
+      }
+    },
+    "groups": {
+      "basic": "Temel",
+      "status": "Durum",
+      "color": "Renk",
+      "animation": "Animasyon",
+      "label": "Etiket",
+      "binding": "Bağlama eşlemesi"
+    }
+  }
+}

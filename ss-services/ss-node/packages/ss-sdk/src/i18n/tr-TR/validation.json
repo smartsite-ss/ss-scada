@@ -1,0 +1,78 @@
+{
+  "validation": {
+    "common": {
+      "is_string": "{{property}} metin olmalıdır",
+      "is_number": "{{property}} sayı olmalıdır",
+      "is_boolean": "{{property}} mantıksal değer olmalıdır",
+      "is_date": "{{property}} geçerli bir tarih olmalıdır",
+      "min_length": "{{property}} uzunluğu {{constraints.0}} karakterden az olamaz",
+      "max_length": "{{property}} uzunluğu {{constraints.0}} karakteri aşamaz",
+      "is_email": "{{property}} geçerli bir e-posta adresi değil",
+      "matches": "{{property}} biçimi gereksinimlere uymuyor"
+    },
+    "user": {
+      "username": {
+        "required": "Kullanıcı adı boş olamaz",
+        "length": "Kullanıcı adı uzunluğu {{min}}-{{max}} karakter arasında olmalıdır",
+        "pattern": "Kullanıcı adı yalnızca harf, rakam ve alt çizgi içerebilir",
+        "unique": "Bu kullanıcı adı zaten kullanılıyor"
+      },
+      "email": {
+        "required": "E-posta boş olamaz",
+        "is_email": "E-posta biçimi hatalı",
+        "unique": "Bu e-posta zaten kayıtlı"
+      },
+      "password": {
+        "required": "Şifre boş olamaz",
+        "weak": "Şifre gücü yetersiz (en az 8 karakter, büyük/küçük harf ve rakam içermeli)",
+        "mismatch": "Girilen şifreler eşleşmiyor"
+      }
+    },
+    "project": {
+      "name": {
+        "required": "Proje adı boş olamaz",
+        "length": "Proje adı uzunluğu {{min}}-{{max}} karakter arasında olmalıdır"
+      },
+      "description": {
+        "maxlength": "Proje açıklaması {{max}} karakteri aşamaz"
+      }
+    },
+    "device": {
+      "name": {
+        "required": "Cihaz adı boş olamaz"
+      },
+      "config": {
+        "host_required": "Cihaz IP adresi boş olamaz",
+        "port_range": "Port numarası 1-65535 arasında olmalıdır",
+        "unitId_range": "Unit ID 1-247 arasında olmalıdır"
+      }
+    },
+    "tag": {
+      "name": {
+        "required": "Etiket adı boş olamaz",
+        "unique": "Etiket adı bu cihazda zaten mevcut"
+      },
+      "address": {
+        "required": "Register adresi boş olamaz",
+        "format": "Adres biçimi geçersiz (sayı veya Modbus adres biçimi olmalıdır)"
+      },
+      "scanRate": {
+        "range": "Tarama periyodu {{min}}-{{max}} ms arasında olmalıdır"
+      }
+    },
+    "alarm": {
+      "rule": {
+        "name": {
+          "required": "Alarm kuralı adı boş olamaz"
+        },
+        "threshold": {
+          "required": "Alarm eşiği boş olamaz",
+          "number": "Eşik geçerli bir sayı olmalıdır"
+        },
+        "debounceTime": {
+          "range": "Titreşim önleme süresi {{min}}-{{max}} ms arasında olmalıdır"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "head05": {
+    "label": "Hiasan kepala-05",
+    "properties": {
+      "color1": "Warna satu",
+      "color2": "Warna dua",
+      "dur": "Kitaran animasi (saat)"
+    },
+    "description": "Hiasan animasi bersegmen"
+  }
+}

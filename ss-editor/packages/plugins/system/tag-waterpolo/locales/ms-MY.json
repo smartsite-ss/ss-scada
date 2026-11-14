@@ -1,0 +1,40 @@
+{
+  "tagWaterpolo": {
+    "label": "Carta bola air pemboleh ubah",
+    "description": "Ikat satu pemboleh ubah tag dan papar peratus paras cecair secara masa nyata dalam bentuk bola air",
+    "config": {
+      "bindVariable": "Ikat pemboleh ubah",
+      "addVariable": "Pilih pemboleh ubah",
+      "removeVariable": "Hapus",
+      "unbound": "Pemboleh ubah tidak terikat"
+    },
+    "properties": {
+      "title": "Tajuk",
+      "titleColor": "Warna tajuk",
+      "titleFontSize": "Saiz fon tajuk",
+      "unit": "Unit",
+      "minValue": "Nilai minimum",
+      "maxValue": "Nilai maksimum",
+      "showValue": "Tunjuk nilai",
+      "valueColor": "Warna nilai",
+      "waterColor": "Warna bola air",
+      "trackColor": "Warna trek",
+      "backgroundColor": "Warna latar",
+      "borderColor": "Warna sempadan",
+      "borderWidth": "Lebar sempadan",
+      "borderStyle": "Gaya sempadan",
+      "borderRadius": "Sudut bulat",
+      "shadowColor": "Warna bayang",
+      "shadowOffsetX": "Offset bayang X",
+      "shadowOffsetY": "Offset bayang Y",
+      "shadowBlur": "Kabur bayang"
+    },
+    "options": {
+      "borderStyle": {
+        "solid": "Garisan pepejal",
+        "dashed": "Garisan putus-putus",
+        "dotted": "Garisan bertitik"
+      }
+    }
+  }
+}

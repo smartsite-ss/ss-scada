@@ -1,0 +1,15 @@
+{
+  "border15": {
+    "label": "Batas-15 (Art Deco)",
+    "description": "Komponen dekorasi batas-15 (Art Deco)",
+    "properties": {
+      "color1": "Emas utama",
+      "color2": "Emas gelap",
+      "color3": "Warna gelap",
+      "backgroundColor": "Warna latar",
+      "showSunburst": "Pancaran sinar",
+      "showCorners": "Ornamen sudut",
+      "animationSpeed": "Kecepatan animasi"
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "gauge": {
+    "label": "Messuhr",
+    "description": "Messuhr-Komponente für Wertanzeige und Alarm",
+    "panelTitle": "Messuhr-Konfiguration",
+    "properties": {
+      "width": "Breite",
+      "height": "Höhe",
+      "value": "Aktueller Wert",
+      "minValue": "Minimum",
+      "maxValue": "Maximum",
+      "unit": "Einheit",
+      "decimalPlaces": "Dezimalstellen",
+      "startAngle": "Startwinkel",
+      "endAngle": "Endwinkel",
+      "faceColor": "Zifferblattfarbe",
+      "rimColor": "Rahmenfarbe",
+      "needleColor": "Zeigerfarbe",
+      "tickColor": "Skalenstrichfarbe",
+      "labelColor": "Beschriftungsfarbe",
+      "valueColor": "Wertfarbe",
+      "showTicks": "Skala anzeigen",
+      "showLabels": "Beschriftung anzeigen",
+      "showValue": "Wert anzeigen",
+      "majorTicks": "Hauptskalenstriche",
+      "minorTicks": "Nebenskalenstriche",
+      "warningValue": "Warnschwelle",
+      "dangerValue": "Gefahrenschwelle",
+      "warningColor": "Warnfarbe",
+      "dangerColor": "Gefahrenfarbe"
+    },
+    "groups": {
+      "basic": "Basis",
+      "value": "Wert",
+      "gauge": "Messuhr",
+      "color": "Farbe",
+      "display": "Anzeige",
+      "ticks": "Skala",
+      "alarm": "Alarm"
+    }
+  }
+}

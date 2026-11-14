@@ -1,0 +1,45 @@
+{
+  "valve": {
+    "label": "Клапан",
+    "description": "Компонент клапана с переключением состояния и типа",
+    "panelTitle": "Настройка клапана",
+    "properties": {
+      "width": "Ширина",
+      "height": "Высота",
+      "status": "Состояние",
+      "valveType": "Тип клапана",
+      "bodyColor": "Цвет корпуса",
+      "stemColor": "Цвет штока",
+      "openColor": "Цвет «открыто»",
+      "closedColor": "Цвет «закрыто»",
+      "faultColor": "Цвет аварии",
+      "showLabel": "Показать метку",
+      "labelText": "Текст метки",
+      "openValue": "Значение «открыто»",
+      "closedValue": "Значение «закрыто»",
+      "faultValue": "Значение аварии",
+      "defaultStatus": "Состояние по умолчанию"
+    },
+    "options": {
+      "status": {
+        "open": "Открыто",
+        "closed": "Закрыто",
+        "opening": "Открывается",
+        "closing": "Закрывается",
+        "fault": "Авария"
+      },
+      "valveType": {
+        "butterfly": "Дисковый затвор",
+        "gate": "Задвижка"
+      }
+    },
+    "groups": {
+      "basic": "Основное",
+      "status": "Состояние",
+      "color": "Цвет",
+      "statusColor": "Цвет состояния",
+      "label": "Метка",
+      "binding": "Привязка значений"
+    }
+  }
+}

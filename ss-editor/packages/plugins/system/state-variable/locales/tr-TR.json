@@ -1,0 +1,49 @@
+{
+  "stateVariable": {
+    "label": "Durum değişkeni",
+    "description": "Değişken değerine göre farklı durum görselleri gösterir",
+    "graphic": {
+      "placeholder": "Bağlı değil / eşleşme yok"
+    },
+    "config": {
+      "bindVariable": "Değişken bağla",
+      "selectVariable": "Değişken seç",
+      "clear": "Temizle",
+      "unbound": "Bağlı değil",
+      "states": "Durum kuralları",
+      "addRule": "Kural ekle",
+      "stateName": "Durum adı",
+      "value": "Karşılaştırma değeri",
+      "value2": "Bitiş değeri",
+      "selectImage": "Görsel seç",
+      "defaultImage": "Varsayılan görsel",
+      "deleteRule": "Sil"
+    },
+    "imagePicker": {
+      "title": "Görsel seç",
+      "sourceGallery": "Galeri",
+      "sourceUrl": "URL",
+      "sourceUpload": "Yükle",
+      "urlPlaceholder": "Görsel URL'sini girin",
+      "confirm": "Tamam",
+      "cancel": "İptal",
+      "loading": "Yükleniyor...",
+      "empty": "Görsel yok",
+      "selectCategory": "Kategori seçin",
+      "uploadHint": "Yerel görsel dosyası seçin",
+      "fileSizeError": "Görsel boyutu 10 MB'ı aşamaz"
+    },
+    "operator": {
+      "equal": "=",
+      "notEqual": "≠",
+      "greaterThan": ">",
+      "greaterOrEqual": "≥",
+      "lessThan": "<",
+      "lessOrEqual": "≤",
+      "between": "∈",
+      "contains": "içerir",
+      "startsWith": "ile başlar",
+      "endsWith": "ile biter"
+    }
+  }
+}

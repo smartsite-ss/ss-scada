@@ -1,0 +1,45 @@
+{
+  "websocket": {
+    "connected": "WebSocket 連線成功",
+    "disconnected": "WebSocket 已中斷連線",
+    "pong": "Pong - 心跳回應",
+    "event": {
+      "data_update": "資料更新事件（標籤：{{tagId}}）",
+      "alarm_triggered": "警報觸發事件",
+      "alarm_acknowledged": "警報確認事件",
+      "alarm_cleared": "警報清除事件",
+      "device_status_change": "設備狀態變更事件"
+    },
+    "error": {
+      "authentication_failed": "WebSocket 認證失敗",
+      "rate_limit_exceeded": "訊息頻率超限",
+      "invalid_message_format": "無效的訊息格式"
+    },
+    "room": {
+      "joined": "使用者 {{username}} 加入房間 {{room}}",
+      "left": "使用者 {{username}} 離開房間 {{room}}",
+      "permission_denied": "無權限加入專案房間 {{projectId}}",
+      "not_authenticated": "未認證使用者無法加入專案房間"
+    },
+    "connection": {
+      "limit_exceeded": "連線數已達上限 ({{current}}/{{max}})",
+      "user_limit_exceeded": "使用者 {{username}} 連線數已達上限 ({{current}}/{{max}})",
+      "ip_limit_exceeded": "IP {{ip}} 連線數已達上限 ({{current}}/{{max}})",
+      "idle_timeout": "連線閒置逾時（{{minutes}} 分鐘無業務訊息）",
+      "force_disconnected": "管理員強制中斷連線",
+      "global_limit_exceeded": "全域連線數已達上限 ({{current}}/{{max}})"
+    },
+    "monitor": {
+      "online_count": "線上連線數",
+      "message_rate": "訊息速率",
+      "connection_duration": "連線時長",
+      "abnormal_detected": "偵測到異常連線"
+    },
+    "offline": {
+      "message_cached": "離線訊息已快取",
+      "message_replayed": "離線訊息已補發（{{count}} 則）",
+      "message_expired": "訊息已過期清理",
+      "message_confirmed": "訊息已確認"
+    }
+  }
+}

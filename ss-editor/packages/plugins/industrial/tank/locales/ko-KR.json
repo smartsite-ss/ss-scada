@@ -1,0 +1,42 @@
+{
+  "tank": {
+    "label": "저장 탱크",
+    "description": "액위 표시 및 알람에 사용되는 저장 탱크 컴포넌트",
+    "panelTitle": "저장 탱크 구성",
+    "properties": {
+      "width": "너비",
+      "height": "높이",
+      "level": "현재 액위",
+      "maxLevel": "최대 액위",
+      "unit": "단위",
+      "decimalPlaces": "소수 자릿수",
+      "status": "상태",
+      "warningLevel": "경고 액위",
+      "dangerLevel": "위험 액위",
+      "bodyColor": "탱크 본체 색상",
+      "liquidColor": "액체 색상",
+      "warningLiquidColor": "경고 액체 색상",
+      "dangerLiquidColor": "위험 액체 색상",
+      "rimColor": "테두리 색상",
+      "showLevelText": "액위 텍스트 표시",
+      "showTicks": "눈금 표시",
+      "showAnimation": "파동 애니메이션",
+      "tickCount": "눈금 수"
+    },
+    "options": {
+      "status": {
+        "normal": "정상",
+        "warning": "경고",
+        "danger": "위험"
+      }
+    },
+    "groups": {
+      "basic": "기본",
+      "level": "액위",
+      "status": "상태",
+      "threshold": "임계값",
+      "color": "색상",
+      "display": "표시"
+    }
+  }
+}

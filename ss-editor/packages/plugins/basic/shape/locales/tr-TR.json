@@ -1,0 +1,46 @@
+{
+  "shape": {
+    "label": "Şekil",
+    "panelTitle": "Şekil özellikleri",
+    "properties": {
+      "shapeType": "Şekil türü",
+      "fillColor": "Dolgu rengi",
+      "fillOpacity": "Dolgu opaklığı",
+      "borderColor": "Kenarlık rengi",
+      "borderWidth": "Kenarlık genişliği",
+      "borderStyle": "Kenarlık stili",
+      "borderRadius": "Köşe yuvarlatma",
+      "shadowColor": "Gölge rengi",
+      "shadowOffsetX": "Gölge kayması X",
+      "shadowOffsetY": "Gölge kayması Y",
+      "shadowBlur": "Gölge bulanıklığı"
+    },
+    "options": {
+      "shapeType": {
+        "rectangle": "Dikdörtgen",
+        "roundedRectangle": "Yuvarlak köşeli dikdörtgen",
+        "circle": "Daire",
+        "ellipse": "Elips",
+        "triangle": "Üçgen",
+        "diamond": "Eşkenar dörtgen",
+        "polygon": "Çokgen",
+        "arrowUp": "Yukarı ok",
+        "arrowDown": "Aşağı ok",
+        "arrowLeft": "Sol ok",
+        "arrowRight": "Sağ ok",
+        "line": "Çizgi"
+      },
+      "borderStyle": {
+        "solid": "Düz çizgi",
+        "dashed": "Kesikli çizgi",
+        "dotted": "Noktalı çizgi"
+      }
+    },
+    "groups": {
+      "basic": "Temel özellikler",
+      "style": "Stil",
+      "shadow": "Gölge"
+    },
+    "description": "Şekil grafik öğesi"
+  }
+}

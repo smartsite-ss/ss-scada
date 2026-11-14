@@ -1,0 +1,11 @@
+{
+  "arccoil": {
+    "label": "Erdschlusslöschspule",
+    "properties": {
+      "color": "Linienfarbe",
+      "backgroundColor": "Hintergrundfarbe",
+      "lineWidth": "Linienbreite"
+    },
+    "description": "Erdschlusslöschspule – Kompensationseinrichtung für Sternpunkterdung"
+  }
+}

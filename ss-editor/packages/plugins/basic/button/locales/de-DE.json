@@ -1,0 +1,54 @@
+{
+  "button": {
+    "label": "Schaltfläche",
+    "panelTitle": "Schaltflächen-Eigenschaften",
+    "properties": {
+      "text": "Text",
+      "backgroundColor": "Hintergrundfarbe",
+      "fontColor": "Textfarbe",
+      "borderColor": "Rahmenfarbe",
+      "borderWidth": "Rahmenbreite",
+      "borderStyle": "Rahmenstil",
+      "borderRadius": "Eckenradius",
+      "fontSize": "Schriftgröße",
+      "fontWeight": "Schriftstärke",
+      "textAlign": "Textausrichtung",
+      "shadowColor": "Schattenfarbe",
+      "shadowOffsetX": "Schattenversatz X",
+      "shadowOffsetY": "Schattenversatz Y",
+      "shadowBlur": "Schattenunschärfe",
+      "targetType": "Klickaktion",
+      "targetPage": "Zielseite",
+      "targetUrl": "Ziel-URL"
+    },
+    "options": {
+      "borderStyle": {
+        "solid": "Durchgezogen",
+        "dashed": "Gestrichelt",
+        "dotted": "Gepunktet"
+      },
+      "fontWeight": {
+        "normal": "Normal",
+        "bold": "Fett"
+      },
+      "textAlign": {
+        "left": "Linksbündig",
+        "center": "Zentriert",
+        "right": "Rechtsbündig"
+      },
+      "targetType": {
+        "none": "Keine",
+        "page": "Seite öffnen",
+        "url": "URL öffnen"
+      }
+    },
+    "groups": {
+      "basic": "Grundeigenschaften",
+      "style": "Stil",
+      "text": "Text",
+      "shadow": "Schatten",
+      "action": "Interaktion"
+    },
+    "description": "Schaltflächen-Grafikelement"
+  }
+}

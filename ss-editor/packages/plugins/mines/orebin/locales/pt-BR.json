@@ -1,0 +1,32 @@
+{
+  "orebin": {
+    "label": "Silo",
+    "properties": {
+      "colors": "Cor 1",
+      "colors2": "Cor 2",
+      "flowColor": "Cor do fluxo",
+      "pipeColor": "Cor da tubulação",
+      "backgroundColor": "Cor de fundo",
+      "bgWidth": "Largura do fundo",
+      "boardWidth": "Largura da borda",
+      "roate": "Ângulo de rotação",
+      "cls": "Direção da animação",
+      "dur": "Período da animação (s)",
+      "dataset": "Valor de dados (nível do silo %)",
+      "showDischarge": "Mostrar animação de descarga",
+      "forwardValue": "Valor correspondente a rotação direta",
+      "backwardValue": "Valor correspondente a rotação inversa",
+      "stopValue": "Valor correspondente a parado",
+      "defaultCls": "Direção padrão da animação",
+      "decimalPlaces": "Casas decimais"
+    },
+    "options": {
+      "cls": {
+        "left": "Rotação direta",
+        "right": "Rotação inversa",
+        "stop": "Parado"
+      }
+    },
+    "description": "Silo - silo de fundo cônico com exibição de nível e animação de descarga"
+  }
+}

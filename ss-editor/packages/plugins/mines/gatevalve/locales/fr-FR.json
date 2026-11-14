@@ -1,0 +1,21 @@
+{
+  "gatevalve": {
+    "label": "Vanne à opercule motorisée",
+    "properties": {
+      "colors": "Couleur 1",
+      "colors2": "Couleur 2",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "lineWidth": "Épaisseur de ligne",
+      "closed": "État de fermeture",
+      "state": "État de la vanne"
+    },
+    "options": {
+      "state": {
+        "open": "Ouvert",
+        "closed": "Fermé",
+        "fault": "Défaut"
+      }
+    },
+    "description": "Vanne à opercule motorisée - actionneur électrique à corps papillon, états ouvert/fermé/défaut"
+  }
+}

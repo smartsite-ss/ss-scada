@@ -1,0 +1,33 @@
+{
+  "fanblue": {
+    "label": "Quạt - xanh dương",
+    "properties": {
+      "dataset": "Bộ dữ liệu",
+      "dur": "Chu kỳ hoạt ảnh (giây)",
+      "colors": "Nhóm màu",
+      "flowColor": "Màu dòng chảy",
+      "pipeColor": "Màu đường ống",
+      "bgWidth": "Chiều rộng nền",
+      "boardWidth": "Độ rộng viền",
+      "roate": "Góc xoay",
+      "cls": "Hướng quay",
+      "clsLeft": "Chiều kim đồng hồ",
+      "clsRight": "Ngược chiều kim đồng hồ",
+      "clsStop": "Dừng",
+      "backgroundColor": "Màu nền",
+      "forwardValue": "Giá trị tương ứng quay xuôi",
+      "backwardValue": "Giá trị tương ứng quay ngược",
+      "stopValue": "Giá trị tương ứng dừng",
+      "defaultCls": "Hướng hoạt ảnh mặc định",
+      "decimalPlaces": "Số chữ thập phân"
+    },
+    "options": {
+      "cls": {
+        "left": "Quay xuôi",
+        "right": "Quay ngược",
+        "stop": "Dừng"
+      }
+    },
+    "description": "Quạt xanh dương - quạt thông gió công nghiệp cỡ lớn, hỗ trợ hoạt ảnh xoay"
+  }
+}

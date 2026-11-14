@@ -1,0 +1,45 @@
+{
+  "websocket": {
+    "connected": "Sambungan WebSocket berjaya",
+    "disconnected": "WebSocket telah terputus sambungan",
+    "pong": "Pong - respons denyutan jantung",
+    "event": {
+      "data_update": "Peristiwa kemas kini data (tag: {{tagId}})",
+      "alarm_triggered": "Peristiwa penggera dicetuskan",
+      "alarm_acknowledged": "Peristiwa penggera disahkan",
+      "alarm_cleared": "Peristiwa penggera dibersihkan",
+      "device_status_change": "Peristiwa perubahan status peranti"
+    },
+    "error": {
+      "authentication_failed": "Pengesahan WebSocket gagal",
+      "rate_limit_exceeded": "Kadar mesej melebihi had",
+      "invalid_message_format": "Format mesej tidak sah"
+    },
+    "room": {
+      "joined": "Pengguna {{username}} menyertai bilik {{room}}",
+      "left": "Pengguna {{username}} keluar dari bilik {{room}}",
+      "permission_denied": "Tiada kebenaran menyertai bilik projek {{projectId}}",
+      "not_authenticated": "Pengguna yang tidak disahkan tidak boleh menyertai bilik projek"
+    },
+    "connection": {
+      "limit_exceeded": "Bilangan sambungan telah mencapai had ({{current}}/{{max}})",
+      "user_limit_exceeded": "Sambungan pengguna {{username}} telah mencapai had ({{current}}/{{max}})",
+      "ip_limit_exceeded": "Sambungan IP {{ip}} telah mencapai had ({{current}}/{{max}})",
+      "idle_timeout": "Sambungan tamat masa melahu ({{minutes}} minit tanpa mesej perniagaan)",
+      "force_disconnected": "Pentadbir memaksa pemutusan sambungan",
+      "global_limit_exceeded": "Bilangan sambungan global telah mencapai had ({{current}}/{{max}})"
+    },
+    "monitor": {
+      "online_count": "Bilangan sambungan dalam talian",
+      "message_rate": "Kadar mesej",
+      "connection_duration": "Tempoh sambungan",
+      "abnormal_detected": "Sambungan tidak normal dikesan"
+    },
+    "offline": {
+      "message_cached": "Mesej luar talian telah di-cache",
+      "message_replayed": "Mesej luar talian telah dihantar semula ({{count}} mesej)",
+      "message_expired": "Mesej telah luput dan dibersihkan",
+      "message_confirmed": "Mesej telah disahkan"
+    }
+  }
+}

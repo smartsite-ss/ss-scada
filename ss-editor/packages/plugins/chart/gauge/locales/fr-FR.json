@@ -1,0 +1,66 @@
+{
+  "chartGauge": {
+    "label": "Jauge",
+    "description": "Composant jauge pour l'affichage temps réel d'une valeur et l'alarme par seuil",
+    "panelTitle": "Configuration de la jauge",
+    "config": {
+      "dataSource": "Source de données",
+      "noData": "Aucune donnée",
+      "loadError": "Échec du chargement"
+    },
+    "properties": {
+      "title": "Titre",
+      "titleColor": "Couleur du titre",
+      "titleFontSize": "Taille de police du titre",
+      "value": "Valeur actuelle",
+      "minValue": "Valeur minimale",
+      "maxValue": "Valeur maximale",
+      "unit": "Unité",
+      "startAngle": "Angle de départ",
+      "endAngle": "Angle de fin",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "borderColor": "Couleur de bordure",
+      "borderWidth": "Largeur de bordure",
+      "borderStyle": "Style de bordure",
+      "borderRadius": "Rayon d'arrondi",
+      "faceColor": "Couleur du cadran",
+      "rimColor": "Couleur de l'anneau",
+      "normalColor": "Couleur de la zone normale",
+      "needleColor": "Couleur de l'aiguille",
+      "tickColor": "Couleur des graduations",
+      "labelColor": "Couleur des étiquettes",
+      "valueColor": "Couleur de la valeur",
+      "showTicks": "Afficher les graduations",
+      "showLabels": "Afficher les étiquettes",
+      "showValue": "Afficher la valeur",
+      "majorTicks": "Nombre de graduations principales",
+      "minorTicks": "Nombre de graduations secondaires",
+      "warningValue": "Seuil d'avertissement",
+      "dangerValue": "Seuil de danger",
+      "warningColor": "Couleur d'avertissement",
+      "dangerColor": "Couleur de danger",
+      "shadowColor": "Couleur d'ombre",
+      "shadowOffsetX": "Décalage d'ombre X",
+      "shadowOffsetY": "Décalage d'ombre Y",
+      "shadowBlur": "Flou d'ombre"
+    },
+    "options": {
+      "borderStyle": {
+        "solid": "Trait plein",
+        "dashed": "Tirets",
+        "dotted": "Pointillés"
+      }
+    },
+    "groups": {
+      "basic": "Base",
+      "value": "Valeur",
+      "gauge": "Jauge",
+      "style": "Style",
+      "color": "Couleur",
+      "display": "Affichage",
+      "ticks": "Graduations",
+      "alarm": "Alarme",
+      "shadow": "Ombre"
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "voltmeter": {
+    "label": "Voltmeter",
+    "properties": {
+      "color": "Linienfarbe",
+      "backgroundColor": "Hintergrundfarbe",
+      "lineWidth": "Linienbreite",
+      "dataset": "Statischer Datenwert",
+      "showDigital": "Digitale Anzeige anzeigen",
+      "decimalPlaces": "Dezimalstellen",
+      "unit": "Einheit"
+    },
+    "description": "Voltmeter – Messgerät für Spannung"
+  }
+}

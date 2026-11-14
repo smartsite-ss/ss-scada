@@ -1,0 +1,19 @@
+{
+  "ups": {
+    "label": "Fuente UPS",
+    "properties": {
+      "color": "Color de línea",
+      "backgroundColor": "Color de fondo",
+      "lineWidth": "Grosor de línea",
+      "state": "Estado de operación"
+    },
+    "options": {
+      "state": {
+        "online": "En línea",
+        "bypass": "Bypass",
+        "fault": "Falla"
+      }
+    },
+    "description": "UPS: estado en línea/bypass/falla"
+  }
+}

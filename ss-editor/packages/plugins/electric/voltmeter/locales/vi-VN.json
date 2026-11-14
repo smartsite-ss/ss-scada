@@ -1,0 +1,15 @@
+{
+  "voltmeter": {
+    "label": "Vôn kế",
+    "properties": {
+      "color": "Màu đường nét",
+      "backgroundColor": "Màu nền",
+      "lineWidth": "Độ rộng nét",
+      "dataset": "Giá trị dữ liệu tĩnh",
+      "showDigital": "Hiển thị số đọc",
+      "decimalPlaces": "Số chữ thập phân",
+      "unit": "Đơn vị"
+    },
+    "description": "Vôn kế - đồng hồ đo điện áp"
+  }
+}

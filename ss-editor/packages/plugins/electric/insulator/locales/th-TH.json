@@ -1,0 +1,11 @@
+{
+  "insulator": {
+    "label": "ลูกถ้วยฉนวน",
+    "properties": {
+      "color": "สีเส้น",
+      "backgroundColor": "สีพื้นหลัง",
+      "lineWidth": "ความกว้างเส้น"
+    },
+    "description": "ลูกถ้วยฉนวน - ชิ้นส่วนรองรับฉนวนไฟฟ้า"
+  }
+}

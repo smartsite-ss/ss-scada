@@ -1,0 +1,42 @@
+{
+  "navigationButton": {
+    "label": "Botón de navegación",
+    "description": "Botón de navegación con salto de página",
+    "properties": {
+      "text": "Texto del botón",
+      "type": "Tipo de botón",
+      "size": "Tamaño",
+      "disabled": "Deshabilitado",
+      "rounded": "Radio de esquina",
+      "transparent": "Transparente",
+      "targetType": "Acción al hacer clic",
+      "targetPage": "Página de destino",
+      "targetUrl": "URL de destino"
+    },
+    "options": {
+      "type": {
+        "primary": "Principal",
+        "success": "Éxito",
+        "warning": "Advertencia",
+        "danger": "Peligro",
+        "default": "Predeterminado"
+      },
+      "size": {
+        "large": "Grande",
+        "default": "Mediano",
+        "small": "Pequeño"
+      },
+      "targetType": {
+        "none": "Ninguno",
+        "page": "Abrir página",
+        "url": "Abrir URL"
+      }
+    },
+    "groups": {
+      "basic": "Básico",
+      "status": "Estado",
+      "style": "Estilo",
+      "action": "Interacción"
+    }
+  }
+}

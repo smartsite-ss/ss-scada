@@ -1,0 +1,15 @@
+{
+  "countdown": {
+    "label": "นับถอยหลัง",
+    "properties": {
+      "dataset": "นับถอยหลัง (วินาที)",
+      "showDay": "แสดงจำนวนวัน",
+      "color1": "สีพื้นหลัง",
+      "color2": "สีข้อความ",
+      "flipperWidth": "ความกว้างตัวเลข",
+      "flipperHeight": "ความสูงตัวเลข",
+      "flipperGap": "ระยะห่าง"
+    },
+    "description": "ปลั๊กอินตกแต่งนับถอยหลัง"
+  }
+}

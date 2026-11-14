@@ -1,0 +1,27 @@
+{
+  "device": {
+    "create": {
+      "success": "Cihaz oluşturuldu",
+      "failed_name_exists": "Cihaz adı bu projede zaten mevcut"
+    },
+    "update": {
+      "success": "Cihaz güncellendi"
+    },
+    "delete": {
+      "success": "Cihaz silindi",
+      "failed_has_tags": "Cihaza bağlı etiketler var, silinemiyor"
+    },
+    "connect": {
+      "success": "Cihaz bağlantısı kuruldu",
+      "failed_timeout": "Cihaz bağlantısı zaman aşımına uğradı",
+      "failed_refused": "Cihaz bağlantıyı reddetti"
+    },
+    "disconnect": {
+      "success": "Cihaz bağlantısı kesildi"
+    },
+    "offline": "{{name}} cihazı (ID: {{id}}) çevrimdışı oldu",
+    "online": "{{name}} cihazı (ID: {{id}}) çevrimiçi oldu",
+    "read_error": "{{name}} cihazının {{address}} adresinden okuma başarısız: {{error}}",
+    "write_error": "{{name}} cihazının {{address}} adresine yazma başarısız: {{error}}"
+  }
+}

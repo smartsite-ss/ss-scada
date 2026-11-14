@@ -1,0 +1,15 @@
+{
+  "pressuregauge": {
+    "label": "壓力表",
+    "properties": {
+      "color": "顏色",
+      "backgroundColor": "背景色",
+      "lineWidth": "線寬",
+      "dataset": "資料值(0-100)",
+      "maxPressure": "最大量程(MPa)",
+      "decimalPlaces": "小數位數",
+      "unit": "單位"
+    },
+    "description": "壓力表 - 圓形壓力儀表，指針由資料值驅動顯示 MPa 壓力"
+  }
+}

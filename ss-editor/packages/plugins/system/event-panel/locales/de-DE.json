@@ -1,0 +1,61 @@
+{
+  "eventPanel": {
+    "label": "Ereignispanel",
+    "description": "Zeigt Systemereignisprotokolle (Filter nach Projekt, Typ und Status)",
+    "loading": "Wird geladen...",
+    "empty": "Keine Ereignisse",
+    "loadFailed": "Laden fehlgeschlagen",
+    "systemLevel": "Systemebene",
+    "config": {
+      "project": "Projekt",
+      "allProjects": "Alle Projekte",
+      "eventType": "Ereignistyp",
+      "allEventTypes": "Alle Typen",
+      "status": "Status",
+      "allStatus": "Alle Status"
+    },
+    "columns": {
+      "time": "Zeit",
+      "eventType": "Ereignistyp",
+      "project": "Projekt",
+      "operator": "Bediener",
+      "status": "Status",
+      "successRatio": "Erfolgsquote",
+      "duration": "Dauer"
+    },
+    "groups": {
+      "device": "Gerät",
+      "project": "Projekt",
+      "alarm": "Alarm",
+      "config": "Konfiguration und Timer",
+      "plugin": "Plugin"
+    },
+    "status": {
+      "emitted": "Ausgelöst",
+      "processing": "In Bearbeitung",
+      "processed": "Verarbeitet",
+      "partial": "Teilweise fehlgeschlagen",
+      "failed": "Fehlgeschlagen",
+      "no_subscribers": "Keine Abonnenten"
+    },
+    "properties": {
+      "pageSize": "Einträge pro Seite",
+      "refreshInterval": "Aktualisierungsintervall (Sekunden)",
+      "showHeader": "Spaltenkopf anzeigen",
+      "showTime": "Zeitspalte",
+      "showEventType": "Ereignistypspalte",
+      "showProject": "Projektspalte",
+      "showOperator": "Bedienerspalte",
+      "showStatus": "Statusspalte",
+      "showSuccessRatio": "Erfolgsquotenspalte",
+      "showDuration": "Dauerspalte",
+      "fontSize": "Schriftgröße",
+      "rowHeight": "Zeilenhöhe",
+      "headerBackgroundColor": "Spaltenkopf-Hintergrund",
+      "rowBackgroundColor": "Zeilenhintergrund",
+      "alternatingRowColor": "Hintergrund abwechselnder Zeilen",
+      "textColor": "Textfarbe",
+      "backgroundColor": "Hintergrundfarbe"
+    }
+  }
+}

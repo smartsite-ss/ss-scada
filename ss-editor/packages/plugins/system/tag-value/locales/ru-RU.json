@@ -1,0 +1,61 @@
+{
+  "plugins": {
+    "groups": {
+      "shape": "Форма",
+      "name": "Название",
+      "decoration": "Декор"
+    }
+  },
+  "tagValue": {
+    "label": "Декоративная метка переменной",
+    "description": "Отображает текущее значение переменной устройства (прямоугольник/круг)",
+    "config": {
+      "bindVariable": "Привязать переменную",
+      "selectVariable": "Выбрать переменную",
+      "clear": "Очистить",
+      "unbound": "Не привязано",
+      "decorationImage": "Декоративное изображение",
+      "backgroundImage": "Фоновое изображение",
+      "selectImage": "Выбрать изображение"
+    },
+    "selector": {
+      "title": "Выбор переменной устройства",
+      "searchPlaceholder": "Поиск устройства или переменной",
+      "tagCount": "{count} переменных",
+      "loading": "Загрузка...",
+      "empty": "Нет переменных устройств"
+    },
+    "properties": {
+      "shape": "Форма",
+      "alias": "Псевдоним",
+      "showName": "Показать название",
+      "nameColor": "Цвет названия",
+      "nameFontSize": "Размер шрифта названия",
+      "nameFontWeight": "Насыщенность шрифта названия",
+      "nameGap": "Отступ названия",
+      "decorationImagePosition": "Положение декора",
+      "decorationImageSize": "Размер декора",
+      "decorationImageOpacity": "Прозрачность декора",
+      "backgroundRepeat": "Повтор фона",
+      "backgroundImageFit": "Режим вписывания"
+    },
+    "options": {
+      "shape": {
+        "rectangle": "Прямоугольник",
+        "circle": "Круг"
+      },
+      "decorationPosition": {
+        "left": "Слева",
+        "right": "Справа",
+        "background": "Фон",
+        "center": "По центру"
+      },
+      "backgroundRepeat": {
+        "repeat": "Повтор",
+        "no-repeat": "Без повтора",
+        "repeat-x": "По горизонтали",
+        "repeat-y": "По вертикали"
+      }
+    }
+  }
+}

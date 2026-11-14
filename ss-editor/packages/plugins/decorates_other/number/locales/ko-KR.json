@@ -1,0 +1,19 @@
+{
+  "number": {
+    "label": "숫자",
+    "properties": {
+      "dataset": "목표 값",
+      "from": "시작 값",
+      "dur": "애니메이션 길이(초)",
+      "precision": "소수 자릿수",
+      "showSeparator": "천 단위 구분",
+      "numberSize": "글꼴 크기",
+      "color1": "숫자 색상",
+      "prefixText": "접두사",
+      "color2": "접두사 색상",
+      "suffixText": "접미사",
+      "color3": "접미사 색상"
+    },
+    "description": "숫자 카운트 애니메이션 플러그인"
+  }
+}

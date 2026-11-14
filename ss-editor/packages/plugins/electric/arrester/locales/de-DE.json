@@ -1,0 +1,11 @@
+{
+  "arrester": {
+    "label": "Überspannungsableiter",
+    "properties": {
+      "color": "Linienfarbe",
+      "backgroundColor": "Hintergrundfarbe",
+      "lineWidth": "Linienbreite"
+    },
+    "description": "Überspannungsableiter – Überspannungsschutzeinrichtung"
+  }
+}

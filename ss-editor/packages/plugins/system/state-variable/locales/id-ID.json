@@ -1,0 +1,49 @@
+{
+  "stateVariable": {
+    "label": "Variabel status",
+    "description": "Menampilkan gambar status berbeda sesuai nilai variabel",
+    "graphic": {
+      "placeholder": "Tidak terikat / tidak cocok"
+    },
+    "config": {
+      "bindVariable": "Variabel terikat",
+      "selectVariable": "Pilih variabel",
+      "clear": "Bersihkan",
+      "unbound": "Tidak terikat",
+      "states": "Aturan status",
+      "addRule": "Tambah aturan",
+      "stateName": "Nama status",
+      "value": "Nilai pembanding",
+      "value2": "Nilai akhir",
+      "selectImage": "Pilih gambar",
+      "defaultImage": "Gambar default",
+      "deleteRule": "Hapus"
+    },
+    "imagePicker": {
+      "title": "Pilih gambar",
+      "sourceGallery": "Galeri",
+      "sourceUrl": "URL",
+      "sourceUpload": "Unggah",
+      "urlPlaceholder": "Masukkan URL gambar",
+      "confirm": "OK",
+      "cancel": "Batal",
+      "loading": "Memuat...",
+      "empty": "Tidak ada gambar",
+      "selectCategory": "Pilih kategori",
+      "uploadHint": "Pilih file gambar lokal",
+      "fileSizeError": "Ukuran gambar tidak boleh melebihi 10MB"
+    },
+    "operator": {
+      "equal": "=",
+      "notEqual": "≠",
+      "greaterThan": ">",
+      "greaterOrEqual": "≥",
+      "lessThan": "<",
+      "lessOrEqual": "≤",
+      "between": "∈",
+      "contains": "contains",
+      "startsWith": "starts with",
+      "endsWith": "ends with"
+    }
+  }
+}

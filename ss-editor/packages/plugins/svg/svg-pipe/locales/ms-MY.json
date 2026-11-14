@@ -1,0 +1,68 @@
+{
+  "svg-pipe": {
+    "label": "Paip SVG",
+    "panelTitle": "Konfigurasi paip SVG",
+    "properties": {
+      "status": "Status",
+      "flowDirection": "Arah aliran",
+      "strokeColor": "Warna paip",
+      "flowingColor": "Warna aliran",
+      "stoppedColor": "Warna berhenti",
+      "blockedColor": "Warna tersekat",
+      "strokeWidth": "Diameter paip",
+      "strokeLinecap": "Gaya hujung",
+      "strokeLinejoin": "Gaya sambungan",
+      "strokeDasharray": "Garisan putus-putus",
+      "gradientType": "Jenis gradien",
+      "gradientStartColor": "Warna mula gradien",
+      "gradientEndColor": "Warna tamat gradien",
+      "filterShadow": "Bayang",
+      "shadowColor": "Warna bayang",
+      "shadowBlur": "Kabur bayang",
+      "showFlowAnimation": "Animasi aliran",
+      "flowSpeed": "Kelajuan aliran",
+      "arrowSpacing": "Jarak anak panah",
+      "arrowSize": "Saiz anak panah",
+      "arrowStyle": "Gaya anak panah"
+    },
+    "options": {
+      "status": {
+        "flowing": "Mengalir",
+        "stopped": "Berhenti",
+        "blocked": "Tersekat"
+      },
+      "flowDirection": {
+        "forward": "Hadapan",
+        "backward": "Songsang",
+        "bidirectional": "Dua hala"
+      },
+      "strokeLinecap": {
+        "butt": "Hujung rata",
+        "round": "Hujung bulat",
+        "square": "Hujung segi empat"
+      },
+      "strokeLinejoin": {
+        "miter": "Sudut tajam",
+        "round": "Sudut bulat",
+        "bevel": "Sudut serong"
+      },
+      "gradientType": {
+        "none": "Warna pepejal",
+        "linear": "Gradien linear",
+        "radial": "Gradien jejari"
+      },
+      "arrowStyle": {
+        "triangle": "Blok segi tiga",
+        "rectangle": "Segi empat panjang",
+        "square": "Segi empat sama"
+      }
+    },
+    "groups": {
+      "status": "Status",
+      "color": "Warna",
+      "style": "Gaya",
+      "animation": "Animasi"
+    },
+    "description": "Komponen paip berasaskan SVG Path dengan animasi aliran, gradien dan konfigurasi gaya"
+  }
+}

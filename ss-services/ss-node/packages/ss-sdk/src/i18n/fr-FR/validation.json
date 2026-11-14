@@ -1,0 +1,78 @@
+{
+  "validation": {
+    "common": {
+      "is_string": "{{property}} doit être une chaîne de caractères",
+      "is_number": "{{property}} doit être un nombre",
+      "is_boolean": "{{property}} doit être une valeur booléenne",
+      "is_date": "{{property}} doit être une date valide",
+      "min_length": "{{property}} ne peut pas contenir moins de {{constraints.0}} caractères",
+      "max_length": "{{property}} ne peut pas dépasser {{constraints.0}} caractères",
+      "is_email": "{{property}} n'est pas une adresse e-mail valide",
+      "matches": "{{property}} ne respecte pas le format attendu"
+    },
+    "user": {
+      "username": {
+        "required": "Le nom d'utilisateur ne peut pas être vide",
+        "length": "Le nom d'utilisateur doit contenir entre {{min}} et {{max}} caractères",
+        "pattern": "Le nom d'utilisateur ne peut contenir que des lettres, des chiffres et des traits de soulignement",
+        "unique": "Ce nom d'utilisateur est déjà utilisé"
+      },
+      "email": {
+        "required": "L'adresse e-mail ne peut pas être vide",
+        "is_email": "Format de l'adresse e-mail incorrect",
+        "unique": "Cette adresse e-mail est déjà enregistrée"
+      },
+      "password": {
+        "required": "Le mot de passe ne peut pas être vide",
+        "weak": "Mot de passe trop faible (8 caractères minimum, avec majuscules, minuscules et chiffres)",
+        "mismatch": "Les deux mots de passe saisis ne correspondent pas"
+      }
+    },
+    "project": {
+      "name": {
+        "required": "Le nom du projet ne peut pas être vide",
+        "length": "Le nom du projet doit contenir entre {{min}} et {{max}} caractères"
+      },
+      "description": {
+        "maxlength": "La description du projet ne peut pas dépasser {{max}} caractères"
+      }
+    },
+    "device": {
+      "name": {
+        "required": "Le nom de l'appareil ne peut pas être vide"
+      },
+      "config": {
+        "host_required": "L'adresse IP de l'appareil ne peut pas être vide",
+        "port_range": "Le numéro de port doit être compris entre 1 et 65535",
+        "unitId_range": "L'Unit ID doit être compris entre 1 et 247"
+      }
+    },
+    "tag": {
+      "name": {
+        "required": "Le nom de l'étiquette ne peut pas être vide",
+        "unique": "Ce nom d'étiquette existe déjà pour cet appareil"
+      },
+      "address": {
+        "required": "L'adresse du registre ne peut pas être vide",
+        "format": "Format d'adresse non valide (un nombre ou une adresse Modbus est attendu)"
+      },
+      "scanRate": {
+        "range": "La période de scrutation doit être comprise entre {{min}} et {{max}} ms"
+      }
+    },
+    "alarm": {
+      "rule": {
+        "name": {
+          "required": "Le nom de la règle d'alarme ne peut pas être vide"
+        },
+        "threshold": {
+          "required": "Le seuil d'alarme ne peut pas être vide",
+          "number": "Le seuil doit être un nombre valide"
+        },
+        "debounceTime": {
+          "range": "Le temps anti-rebond doit être compris entre {{min}} et {{max}} ms"
+        }
+      }
+    }
+  }
+}

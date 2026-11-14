@@ -1,0 +1,15 @@
+{
+  "border15": {
+    "label": "Borda-15 (Art Déco)",
+    "description": "Componente decorativo Borda-15 (Art Déco)",
+    "properties": {
+      "color1": "Dourado principal",
+      "color2": "Dourado escuro",
+      "color3": "Cor escura",
+      "backgroundColor": "Cor de fundo",
+      "showSunburst": "Raios de luz",
+      "showCorners": "Ornamentos de canto",
+      "animationSpeed": "Velocidade da animação"
+    }
+  }
+}

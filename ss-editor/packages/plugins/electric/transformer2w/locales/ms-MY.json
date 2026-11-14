@@ -1,0 +1,11 @@
+{
+  "transformer2w": {
+    "label": "Transformer dua belitan",
+    "properties": {
+      "color": "Warna garisan",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garisan"
+    },
+    "description": "Transformer kuasa dua belitan - simbol dua gegelung"
+  }
+}

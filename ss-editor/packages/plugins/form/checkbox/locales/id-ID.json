@@ -1,0 +1,31 @@
+{
+  "checkbox": {
+    "label": "Kotak centang",
+    "description": "Komponen kotak centang untuk operasi pilihan ganda",
+    "panelTitle": "Konfigurasi kotak centang",
+    "properties": {
+      "checked": "Status terpilih",
+      "label": "Teks label",
+      "disabled": "Nonaktif",
+      "indeterminate": "Status setengah terpilih",
+      "color": "Warna terpilih",
+      "labelPosition": "Posisi label",
+      "size": "Ukuran"
+    },
+    "options": {
+      "labelPosition": {
+        "right": "Kanan",
+        "left": "Kiri"
+      },
+      "size": {
+        "small": "Kecil",
+        "medium": "Sedang",
+        "large": "Besar"
+      }
+    },
+    "groups": {
+      "basic": "Properti dasar",
+      "style": "Gaya"
+    }
+  }
+}

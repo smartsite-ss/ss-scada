@@ -1,0 +1,15 @@
+{
+  "pressuregauge": {
+    "label": "압력계",
+    "properties": {
+      "color": "색상",
+      "backgroundColor": "배경색",
+      "lineWidth": "선 너비",
+      "dataset": "데이터 값(0-100)",
+      "maxPressure": "최대 측정 범위(MPa)",
+      "decimalPlaces": "소수 자릿수",
+      "unit": "단위"
+    },
+    "description": "압력계 - 원형 압력 계기, 바늘이 데이터 값으로 구동되어 MPa 압력 표시"
+  }
+}

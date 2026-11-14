@@ -1,0 +1,11 @@
+{
+  "chartBar": {
+    "label": "Gráfico de barras",
+    "description": "Gráfico de barras com fonte de dados estática/API",
+    "config": {
+      "dataSource": "Fonte de dados",
+      "noData": "Sem dados",
+      "loadError": "Falha ao carregar"
+    }
+  }
+}

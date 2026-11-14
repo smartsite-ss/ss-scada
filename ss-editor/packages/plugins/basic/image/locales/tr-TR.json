@@ -1,0 +1,56 @@
+{
+  "image": {
+    "label": "Görsel",
+    "panelTitle": "Görsel özellikleri",
+    "properties": {
+      "src": "Görsel adresi",
+      "alt": "Alternatif metin",
+      "opacity": "Opaklık",
+      "imageScale": "Yakınlaştırma oranı",
+      "imageRotation": "Döndürme açısı",
+      "imageFilter": "Filtre efekti",
+      "imageFit": "Sığdırma modu",
+      "borderColor": "Kenarlık rengi",
+      "borderWidth": "Kenarlık genişliği",
+      "borderStyle": "Kenarlık stili",
+      "borderRadius": "Köşe yuvarlatma",
+      "shadowColor": "Gölge rengi",
+      "shadowOffsetX": "Gölge kayması X",
+      "shadowOffsetY": "Gölge kayması Y",
+      "shadowBlur": "Gölge bulanıklığı",
+      "imageUpload": "Görsel yükle"
+    },
+    "options": {
+      "imageFilter": {
+        "none": "Yok",
+        "grayscale": "Gri tonlama",
+        "sepia": "Sepya",
+        "invert": "Ters çevir",
+        "brightness": "Parlaklık",
+        "contrast": "Kontrast",
+        "saturate": "Doygunluk"
+      },
+      "imageFit": {
+        "contain": "Sığdır",
+        "cover": "Kapla",
+        "fill": "Doldur",
+        "none": "Orijinal",
+        "scale-down": "Küçült"
+      },
+      "borderStyle": {
+        "solid": "Düz çizgi",
+        "dashed": "Kesikli çizgi",
+        "dotted": "Noktalı çizgi"
+      }
+    },
+    "groups": {
+      "basic": "Temel özellikler",
+      "style": "Stil",
+      "shadow": "Gölge"
+    },
+    "hints": {
+      "clickToUpload": "Görsel seçmek için tıklayın"
+    },
+    "description": "Görsel grafik öğesi"
+  }
+}

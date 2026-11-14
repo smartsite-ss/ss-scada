@@ -1,0 +1,42 @@
+{
+  "tank": {
+    "label": "Tank",
+    "description": "Tank-Komponente für Füllstandsanzeige und Alarm",
+    "panelTitle": "Tank-Konfiguration",
+    "properties": {
+      "width": "Breite",
+      "height": "Höhe",
+      "level": "Aktueller Füllstand",
+      "maxLevel": "Maximaler Füllstand",
+      "unit": "Einheit",
+      "decimalPlaces": "Dezimalstellen",
+      "status": "Zustand",
+      "warningLevel": "Warnfüllstand",
+      "dangerLevel": "Gefahrenfüllstand",
+      "bodyColor": "Behälterfarbe",
+      "liquidColor": "Füllfarbe",
+      "warningLiquidColor": "Füllfarbe bei Warnung",
+      "dangerLiquidColor": "Füllfarbe bei Gefahr",
+      "rimColor": "Rahmenfarbe",
+      "showLevelText": "Füllstandstext anzeigen",
+      "showTicks": "Skala anzeigen",
+      "showAnimation": "Wellenanimation",
+      "tickCount": "Anzahl Skalenstriche"
+    },
+    "options": {
+      "status": {
+        "normal": "Normal",
+        "warning": "Warnung",
+        "danger": "Gefahr"
+      }
+    },
+    "groups": {
+      "basic": "Basis",
+      "level": "Füllstand",
+      "status": "Zustand",
+      "threshold": "Schwellenwert",
+      "color": "Farbe",
+      "display": "Anzeige"
+    }
+  }
+}

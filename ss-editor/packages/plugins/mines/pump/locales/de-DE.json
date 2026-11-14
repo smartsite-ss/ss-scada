@@ -1,0 +1,32 @@
+{
+  "pump": {
+    "label": "Wasserpumpe",
+    "properties": {
+      "colors": "Pumpengehäusefarbe 1",
+      "colors2": "Pumpengehäusefarbe 2",
+      "colors3": "Pumpengehäusefarbe 3",
+      "flowColor": "Strömungsfarbe",
+      "pipeColor": "Rohrfarbe",
+      "backgroundColor": "Hintergrundfarbe",
+      "bgWidth": "Hintergrundbreite",
+      "boardWidth": "Rahmenbreite",
+      "roate": "Drehwinkel",
+      "cls": "Animationsrichtung",
+      "dur": "Animationsdauer (Sekunden)",
+      "dataset": "Datenwert",
+      "forwardValue": "Wert für Vorwärtslauf",
+      "backwardValue": "Wert für Rückwärtslauf",
+      "stopValue": "Wert für Stopp",
+      "defaultCls": "Standard-Animationsrichtung",
+      "decimalPlaces": "Dezimalstellen"
+    },
+    "options": {
+      "cls": {
+        "left": "Vorwärtslauf",
+        "right": "Rückwärtslauf",
+        "stop": "Stopp"
+      }
+    },
+    "description": "Wasserpumpe – Kreiselpumpe mit zwei Gehäusen, mit Drehanimation"
+  }
+}

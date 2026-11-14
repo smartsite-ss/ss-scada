@@ -1,0 +1,15 @@
+{
+  "border16": {
+    "label": "枠線-16（北欧ミニマル）",
+    "description": "枠線-16 装飾コンポーネント（北欧ミニマル）",
+    "properties": {
+      "color1": "メインカラー",
+      "color2": "サブカラー",
+      "color3": "ベースカラー",
+      "backgroundColor": "背景色",
+      "showLeaves": "葉の装飾",
+      "showDots": "ドットテクスチャ",
+      "animationSpeed": "アニメーション速度"
+    }
+  }
+}

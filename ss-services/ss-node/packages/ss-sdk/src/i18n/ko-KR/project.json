@@ -1,0 +1,24 @@
+{
+  "project": {
+    "create": {
+      "success": "프로젝트 생성 성공",
+      "failed_name_exists": "프로젝트 이름이 이미 존재합니다"
+    },
+    "update": {
+      "success": "프로젝트 업데이트 성공",
+      "failed_not_owner": "이 프로젝트를 수정할 권한이 없습니다"
+    },
+    "delete": {
+      "success": "프로젝트 삭제 성공",
+      "failed_has_devices": "프로젝트에 디바이스가 남아 있어 삭제할 수 없습니다"
+    },
+    "get": {
+      "success": "프로젝트 정보를 가져왔습니다",
+      "not_found": "프로젝트가 존재하지 않습니다"
+    },
+    "list": {
+      "success": "프로젝트 목록을 가져왔습니다",
+      "empty": "프로젝트가 없습니다"
+    }
+  }
+}

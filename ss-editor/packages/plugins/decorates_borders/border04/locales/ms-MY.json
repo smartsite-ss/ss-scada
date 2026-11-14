@@ -1,0 +1,16 @@
+{
+  "border04": {
+    "label": "Sempadan-04",
+    "description": "Komponen hiasan sempadan-04",
+    "properties": {
+      "colors": "Warna satu",
+      "colors2": "Warna dua",
+      "backgroundColor": "Warna latar",
+      "borderTitle": "Teks tajuk",
+      "borderTitleColor": "Warna tajuk",
+      "borderTitleSize": "Saiz fon tajuk",
+      "borderTitleWidth": "Lebar kawasan tajuk",
+      "borderTitleHeight": "Tinggi tajuk"
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "project": {
+    "create": {
+      "success": "專案建立成功",
+      "failed_name_exists": "專案名稱已存在"
+    },
+    "update": {
+      "success": "專案更新成功",
+      "failed_not_owner": "無權修改此專案"
+    },
+    "delete": {
+      "success": "專案刪除成功",
+      "failed_has_devices": "專案下仍有設備，無法刪除"
+    },
+    "get": {
+      "success": "取得專案資訊成功",
+      "not_found": "專案不存在"
+    },
+    "list": {
+      "success": "取得專案清單成功",
+      "empty": "尚無專案"
+    }
+  }
+}

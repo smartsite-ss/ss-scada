@@ -1,0 +1,15 @@
+{
+  "border19": {
+    "label": "邊框-19（瑞士編排風格）",
+    "description": "邊框-19裝飾元件（瑞士編排風格）",
+    "properties": {
+      "color1": "深黑",
+      "color2": "亮紅",
+      "color3": "白色",
+      "backgroundColor": "背景色",
+      "showBlocks": "幾何塊",
+      "showAccents": "裝飾圓點",
+      "animationSpeed": "動畫速度"
+    }
+  }
+}

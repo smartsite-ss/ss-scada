@@ -1,0 +1,40 @@
+{
+  "tagWaterpolo": {
+    "label": "แผนภูมิลูกบอลน้ำตัวแปร",
+    "description": "ผูกตัวแปรแท็กเดียว แสดงเปอร์เซ็นต์ระดับของเหลวแบบเรียลไทม์ในรูปทรงลูกบอลน้ำ",
+    "config": {
+      "bindVariable": "ตัวแปรที่ผูก",
+      "addVariable": "เลือกตัวแปร",
+      "removeVariable": "ลบ",
+      "unbound": "ตัวแปรที่ยังไม่ผูก"
+    },
+    "properties": {
+      "title": "หัวข้อ",
+      "titleColor": "สีหัวข้อ",
+      "titleFontSize": "ขนาดตัวอักษรหัวข้อ",
+      "unit": "หน่วย",
+      "minValue": "ค่าต่ำสุด",
+      "maxValue": "ค่าสูงสุด",
+      "showValue": "แสดงค่าตัวเลข",
+      "valueColor": "สีค่าตัวเลข",
+      "waterColor": "สีลูกบอลน้ำ",
+      "trackColor": "สีราง",
+      "backgroundColor": "สีพื้นหลัง",
+      "borderColor": "สีเส้นขอบ",
+      "borderWidth": "ความกว้างเส้นขอบ",
+      "borderStyle": "รูปแบบเส้นขอบ",
+      "borderRadius": "มุมโค้ง",
+      "shadowColor": "สีเงา",
+      "shadowOffsetX": "ระยะเลื่อนเงา X",
+      "shadowOffsetY": "ระยะเลื่อนเงา Y",
+      "shadowBlur": "ความเบลอของเงา"
+    },
+    "options": {
+      "borderStyle": {
+        "solid": "เส้นทึบ",
+        "dashed": "เส้นประ",
+        "dotted": "เส้นจุด"
+      }
+    }
+  }
+}

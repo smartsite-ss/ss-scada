@@ -1,0 +1,31 @@
+{
+  "checkbox": {
+    "label": "核取方塊",
+    "description": "核取方塊元件，用於多選操作",
+    "panelTitle": "核取方塊設定",
+    "properties": {
+      "checked": "選取狀態",
+      "label": "標籤文字",
+      "disabled": "停用",
+      "indeterminate": "半選狀態",
+      "color": "選取顏色",
+      "labelPosition": "標籤位置",
+      "size": "尺寸"
+    },
+    "options": {
+      "labelPosition": {
+        "right": "右側",
+        "left": "左側"
+      },
+      "size": {
+        "small": "小",
+        "medium": "中",
+        "large": "大"
+      }
+    },
+    "groups": {
+      "basic": "基本屬性",
+      "style": "樣式"
+    }
+  }
+}

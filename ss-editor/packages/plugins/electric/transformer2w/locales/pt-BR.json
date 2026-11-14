@@ -1,0 +1,11 @@
+{
+  "transformer2w": {
+    "label": "Transformador de dois enrolamentos",
+    "properties": {
+      "color": "Cor da linha",
+      "backgroundColor": "Cor de fundo",
+      "lineWidth": "Espessura da linha"
+    },
+    "description": "Transformador de potência de dois enrolamentos - símbolo de duas bobinas"
+  }
+}

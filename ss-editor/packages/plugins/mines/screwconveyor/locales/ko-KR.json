@@ -1,0 +1,31 @@
+{
+  "screwconveyor": {
+    "label": "스크류 컨베이어",
+    "properties": {
+      "colors": "색상 1",
+      "colors2": "색상 2",
+      "flowColor": "유동 색상",
+      "pipeColor": "파이프 색상",
+      "backgroundColor": "배경색",
+      "bgWidth": "배경 너비",
+      "boardWidth": "테두리 너비",
+      "roate": "회전 각도",
+      "cls": "애니메이션 방향",
+      "dur": "애니메이션 주기(초)",
+      "dataset": "데이터 값",
+      "forwardValue": "정회전 대응 값",
+      "backwardValue": "역회전 대응 값",
+      "stopValue": "정지 대응 값",
+      "defaultCls": "기본 애니메이션 방향",
+      "decimalPlaces": "소수 자릿수"
+    },
+    "options": {
+      "cls": {
+        "left": "정회전",
+        "right": "역회전",
+        "stop": "정지"
+      }
+    },
+    "description": "광산 스크류 컨베이어 - 스크류 블레이드가 있는 U형 홈, 회전으로 자재 이송"
+  }
+}

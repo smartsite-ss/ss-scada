@@ -1,0 +1,66 @@
+{
+  "chartGauge": {
+    "label": "ゲージ",
+    "description": "ゲージコンポーネント。単一値のリアルタイム表示としきい値アラームに使用",
+    "panelTitle": "ゲージの設定",
+    "config": {
+      "dataSource": "データソース",
+      "noData": "データなし",
+      "loadError": "読み込みに失敗しました"
+    },
+    "properties": {
+      "title": "タイトル",
+      "titleColor": "タイトルの色",
+      "titleFontSize": "タイトルのフォントサイズ",
+      "value": "現在値",
+      "minValue": "最小値",
+      "maxValue": "最大値",
+      "unit": "単位",
+      "startAngle": "開始角度",
+      "endAngle": "終了角度",
+      "backgroundColor": "背景色",
+      "borderColor": "枠線色",
+      "borderWidth": "枠線幅",
+      "borderStyle": "枠線スタイル",
+      "borderRadius": "角の丸み",
+      "faceColor": "文字盤の色",
+      "rimColor": "外枠の色",
+      "normalColor": "正常域の色",
+      "needleColor": "針の色",
+      "tickColor": "目盛り線の色",
+      "labelColor": "ラベルの色",
+      "valueColor": "数値の色",
+      "showTicks": "目盛りを表示",
+      "showLabels": "ラベルを表示",
+      "showValue": "数値を表示",
+      "majorTicks": "主目盛りの数",
+      "minorTicks": "副目盛りの数",
+      "warningValue": "警告しきい値",
+      "dangerValue": "危険しきい値",
+      "warningColor": "警告の色",
+      "dangerColor": "危険の色",
+      "shadowColor": "影の色",
+      "shadowOffsetX": "影のオフセットX",
+      "shadowOffsetY": "影のオフセットY",
+      "shadowBlur": "影のぼかし"
+    },
+    "options": {
+      "borderStyle": {
+        "solid": "実線",
+        "dashed": "破線",
+        "dotted": "点線"
+      }
+    },
+    "groups": {
+      "basic": "基本",
+      "value": "数値",
+      "gauge": "ゲージ",
+      "style": "スタイル",
+      "color": "色",
+      "display": "表示",
+      "ticks": "目盛り",
+      "alarm": "アラーム",
+      "shadow": "影"
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "valve": {
+    "label": "閥門",
+    "description": "閥門元件，支援開關狀態與類型切換",
+    "panelTitle": "閥門設定",
+    "properties": {
+      "width": "寬度",
+      "height": "高度",
+      "status": "狀態",
+      "valveType": "閥門類型",
+      "bodyColor": "主體顏色",
+      "stemColor": "閥桿顏色",
+      "openColor": "開啟顏色",
+      "closedColor": "關閉顏色",
+      "faultColor": "故障顏色",
+      "showLabel": "顯示標籤",
+      "labelText": "標籤文字",
+      "openValue": "開啟對應值",
+      "closedValue": "關閉對應值",
+      "faultValue": "故障對應值",
+      "defaultStatus": "預設狀態"
+    },
+    "options": {
+      "status": {
+        "open": "開啟",
+        "closed": "關閉",
+        "opening": "正在開啟",
+        "closing": "正在關閉",
+        "fault": "故障"
+      },
+      "valveType": {
+        "butterfly": "蝶閥",
+        "gate": "閘閥"
+      }
+    },
+    "groups": {
+      "basic": "基本",
+      "status": "狀態",
+      "color": "顏色",
+      "statusColor": "狀態顏色",
+      "label": "標籤",
+      "binding": "綁定對應"
+    }
+  }
+}

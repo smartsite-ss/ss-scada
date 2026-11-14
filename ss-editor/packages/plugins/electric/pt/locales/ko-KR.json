@@ -1,0 +1,11 @@
+{
+  "pt": {
+    "label": "계기용 변압기",
+    "properties": {
+      "color": "선 색상",
+      "backgroundColor": "배경색",
+      "lineWidth": "선 너비"
+    },
+    "description": "계기용 변압기 PT - 측정용 전압 변환 장치"
+  }
+}

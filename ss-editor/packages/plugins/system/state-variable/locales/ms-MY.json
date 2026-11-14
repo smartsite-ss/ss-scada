@@ -1,0 +1,49 @@
+{
+  "stateVariable": {
+    "label": "Pemboleh ubah status",
+    "description": "Papar imej status berbeza mengikut nilai pemboleh ubah",
+    "graphic": {
+      "placeholder": "Tidak terikat / tiada padanan"
+    },
+    "config": {
+      "bindVariable": "Ikat pemboleh ubah",
+      "selectVariable": "Pilih pemboleh ubah",
+      "clear": "Kosongkan",
+      "unbound": "Tidak terikat",
+      "states": "Peraturan status",
+      "addRule": "Tambah peraturan",
+      "stateName": "Nama status",
+      "value": "Nilai perbandingan",
+      "value2": "Nilai akhir",
+      "selectImage": "Pilih imej",
+      "defaultImage": "Imej lalai",
+      "deleteRule": "Hapus"
+    },
+    "imagePicker": {
+      "title": "Pilih imej",
+      "sourceGallery": "Galeri",
+      "sourceUrl": "URL",
+      "sourceUpload": "Muat naik",
+      "urlPlaceholder": "Masukkan URL imej",
+      "confirm": "OK",
+      "cancel": "Batal",
+      "loading": "Memuat...",
+      "empty": "Tiada imej",
+      "selectCategory": "Sila pilih kategori",
+      "uploadHint": "Pilih fail imej setempat",
+      "fileSizeError": "Saiz imej tidak boleh melebihi 10MB"
+    },
+    "operator": {
+      "equal": "=",
+      "notEqual": "≠",
+      "greaterThan": ">",
+      "greaterOrEqual": "≥",
+      "lessThan": "<",
+      "lessOrEqual": "≤",
+      "between": "∈",
+      "contains": "contains",
+      "startsWith": "starts with",
+      "endsWith": "ends with"
+    }
+  }
+}

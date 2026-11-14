@@ -1,0 +1,15 @@
+{
+  "levelgauge": {
+    "label": "Máy đo mức chất lỏng",
+    "properties": {
+      "color": "Màu",
+      "backgroundColor": "Màu nền",
+      "lineWidth": "Độ rộng nét",
+      "dataset": "Giá trị dữ liệu (0-100)",
+      "showNumeric": "Hiển thị giá trị",
+      "decimalPlaces": "Số chữ thập phân",
+      "unit": "Đơn vị"
+    },
+    "description": "Máy đo mức chất lỏng - ống thủy tinh thẳng đứng có vạch chia, hiển thị giá trị cột chất lỏng"
+  }
+}

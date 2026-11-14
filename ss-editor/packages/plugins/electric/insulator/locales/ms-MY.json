@@ -1,0 +1,11 @@
+{
+  "insulator": {
+    "label": "Penebat",
+    "properties": {
+      "color": "Warna garisan",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garisan"
+    },
+    "description": "Penebat - penyokong penebat elektrik"
+  }
+}

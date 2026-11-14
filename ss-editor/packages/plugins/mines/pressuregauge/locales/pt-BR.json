@@ -1,0 +1,15 @@
+{
+  "pressuregauge": {
+    "label": "Manômetro",
+    "properties": {
+      "color": "Cor",
+      "backgroundColor": "Cor de fundo",
+      "lineWidth": "Espessura da linha",
+      "dataset": "Valor de dados (0-100)",
+      "maxPressure": "Faixa máxima (MPa)",
+      "decimalPlaces": "Casas decimais",
+      "unit": "Unidade"
+    },
+    "description": "Manômetro - instrumento de pressão circular com ponteiro acionado pelo valor de dados em MPa"
+  }
+}

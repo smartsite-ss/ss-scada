@@ -1,0 +1,102 @@
+{
+  "historyTrend": {
+    "label": "Tendência histórica",
+    "description": "Consulta a tendência histórica de uma ou mais variáveis por período",
+    "config": {
+      "bindVariables": "Vincular variável",
+      "addVariable": "Adicionar variável",
+      "removeVariable": "Excluir",
+      "unbound": "Variável não vinculada",
+      "timeRange": "Período",
+      "queryMethod": "Modo de consulta",
+      "query": "Consultar",
+      "querying": "Consultando…"
+    },
+    "series": {
+      "lineWidth": "Espessura da linha",
+      "lineType": "Tipo de linha",
+      "lineColor": "Cor da linha",
+      "symbolSize": "Tamanho do ponto sólido",
+      "labelShow": "Mostrar rótulos",
+      "labelFontSize": "Tamanho da fonte do rótulo",
+      "labelColor": "Cor do rótulo",
+      "labelPosition": "Posição do rótulo",
+      "areaShow": "Preenchimento da área de exibição",
+      "areaStartColor": "Cor inicial",
+      "areaMiddleColor": "Cor intermediária",
+      "areaEndColor": "Cor final",
+      "areaOpacity": "Opacidade"
+    },
+    "options": {
+      "interpolation": {
+        "raw": "Valor original",
+        "linear": "Interpolação linear",
+        "step": "Interpolação em degraus"
+      },
+      "presetRange": {
+        "1h": "Última 1 hora",
+        "6h": "Últimas 6 horas",
+        "24h": "Últimas 24 horas",
+        "7d": "Últimos 7 dias",
+        "custom": "Personalizado"
+      },
+      "lineType": {
+        "solid": "Sólida",
+        "dashed": "Tracejada",
+        "dotted": "Pontilhada"
+      },
+      "labelPosition": {
+        "top": "Topo",
+        "left": "Esquerda",
+        "right": "Direita",
+        "bottom": "Base"
+      },
+      "legendPosition": {
+        "top": "Topo",
+        "bottom": "Base",
+        "left": "Esquerda",
+        "right": "Direita"
+      },
+      "borderStyle": {
+        "solid": "Sólida",
+        "dashed": "Tracejada",
+        "dotted": "Pontilhada"
+      },
+      "fontWeight": {
+        "normal": "Normal",
+        "bold": "Negrito"
+      }
+    },
+    "properties": {
+      "defaultInterpolation": "Modo de consulta padrão",
+      "defaultInterval": "Intervalo de interpolação padrão (ms)",
+      "defaultPresetRange": "Período padrão",
+      "defaultCustomStart": "Hora inicial personalizada",
+      "defaultCustomEnd": "Hora final personalizada",
+      "maxPoints": "Mostrar número máximo de pontos",
+      "title": "Título",
+      "titleColor": "Cor do título",
+      "titleFontSize": "Tamanho da fonte do título",
+      "titleFontWeight": "Peso da fonte do título",
+      "gridColor": "Cor das linhas de grade",
+      "axisColor": "Cor dos eixos",
+      "showLegend": "Mostrar legenda",
+      "legendPosition": "Posição da legenda",
+      "showTooltip": "Mostrar dica",
+      "showDataZoom": "Zoom do eixo de tempo",
+      "showXAxis": "Mostrar eixo de tempo",
+      "xAxisLineColor": "Cor do eixo de tempo",
+      "xAxisLabelFontSize": "Tamanho da fonte do eixo de tempo",
+      "xAxisLabelRotate": "Inclinação do texto do eixo de tempo",
+      "backgroundColor": "Cor de fundo",
+      "borderColor": "Cor da borda",
+      "borderWidth": "Largura da borda",
+      "borderStyle": "Estilo da borda",
+      "borderRadius": "Raio da borda",
+      "shadowColor": "Cor da sombra",
+      "shadowOffsetX": "Deslocamento X da sombra",
+      "shadowOffsetY": "Deslocamento Y da sombra",
+      "shadowBlur": "Desfoque da sombra"
+    }
+  }
+}

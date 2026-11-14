@@ -1,0 +1,15 @@
+{
+  "border15": {
+    "label": "Rahmen-15 (Art déco)",
+    "description": "Dekorationselement Rahmen-15 (Art déco)",
+    "properties": {
+      "color1": "Hauptgold",
+      "color2": "Dunkelgold",
+      "color3": "Dunkelton",
+      "backgroundColor": "Hintergrundfarbe",
+      "showSunburst": "Strahlenkranz",
+      "showCorners": "Eckornamente",
+      "animationSpeed": "Animationsgeschwindigkeit"
+    }
+  }
+}

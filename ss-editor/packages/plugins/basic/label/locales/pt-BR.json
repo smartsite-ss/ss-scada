@@ -1,0 +1,69 @@
+{
+  "label": {
+    "label": "Rótulo",
+    "panelTitle": "Propriedades do rótulo",
+    "properties": {
+      "text": "Texto",
+      "textColor": "Cor do texto",
+      "fontSize": "Tamanho da fonte",
+      "fontWeight": "Peso da fonte",
+      "fontStyle": "Estilo da fonte",
+      "textDecoration": "Decoração do texto",
+      "textAlign": "Alinhamento do texto",
+      "verticalAlignment": "Alinhamento vertical",
+      "lineHeight": "Altura da linha",
+      "letterSpacing": "Espaçamento entre letras",
+      "wordWrap": "Quebra automática de linha",
+      "maxLines": "Máximo de linhas",
+      "backgroundColor": "Cor de fundo",
+      "borderColor": "Cor da borda",
+      "borderWidth": "Largura da borda",
+      "borderRadius": "Raio da borda",
+      "textShadowColor": "Cor da sombra do texto",
+      "textShadowOffsetX": "Deslocamento X da sombra",
+      "textShadowOffsetY": "Deslocamento Y da sombra",
+      "textShadowBlur": "Desfoque da sombra",
+      "decimalPlaces": "Casas decimais",
+      "unit": "Unidade",
+      "unitFontSize": "Tamanho da fonte da unidade",
+      "unitFontColor": "Cor da fonte da unidade",
+      "unitGap": "Espaçamento da unidade"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "Normal",
+        "bold": "Negrito"
+      },
+      "fontStyle": {
+        "normal": "Normal",
+        "italic": "Itálico"
+      },
+      "textDecoration": {
+        "none": "Nenhum",
+        "underline": "Sublinhado",
+        "line-through": "Tachado"
+      },
+      "textAlign": {
+        "left": "Alinhar à esquerda",
+        "center": "Centralizar",
+        "right": "Alinhar à direita"
+      },
+      "verticalAlignment": {
+        "top": "Topo",
+        "middle": "Centro",
+        "bottom": "Base"
+      }
+    },
+    "groups": {
+      "basic": "Propriedades básicas",
+      "style": "Estilo",
+      "text": "Texto",
+      "unit": "Unidade",
+      "shadow": "Sombra"
+    },
+    "hints": {
+      "maxLinesHint": "0 indica sem limite"
+    },
+    "description": "Elemento gráfico de rótulo"
+  }
+}

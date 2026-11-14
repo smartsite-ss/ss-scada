@@ -1,0 +1,14 @@
+{
+  "flipper-number": {
+    "label": "Klappziffern",
+    "properties": {
+      "dataset": "Wert",
+      "flipperLength": "Stellenanzahl",
+      "color1": "Textfarbe",
+      "flipperWidth": "Breite",
+      "flipperHeight": "Höhe",
+      "flipperGap": "Abstand"
+    },
+    "description": "Klappziffern-Anzeige-Plugin"
+  }
+}

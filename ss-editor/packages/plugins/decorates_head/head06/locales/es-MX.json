@@ -1,0 +1,13 @@
+{
+  "head06": {
+    "label": "Decoración de encabezado 06",
+    "properties": {
+      "color1": "Color de relleno",
+      "color2": "Color del borde",
+      "dataset": "Texto",
+      "textColor": "Color del texto",
+      "textSize": "Tamaño del texto"
+    },
+    "description": "Decoración de marco poligonal"
+  }
+}

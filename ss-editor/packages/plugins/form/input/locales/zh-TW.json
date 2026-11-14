@@ -1,0 +1,46 @@
+{
+  "input": {
+    "label": "輸入框",
+    "description": "輸入框元件，用於單行文字輸入",
+    "panelTitle": "輸入框設定",
+    "properties": {
+      "value": "值",
+      "placeholder": "預留位置",
+      "backgroundColor": "背景色",
+      "borderColor": "邊框色",
+      "borderWidth": "邊框寬度",
+      "borderStyle": "邊框樣式",
+      "borderRadius": "圓角",
+      "textColor": "文字顏色",
+      "fontSize": "字型大小",
+      "fontWeight": "字型粗細",
+      "textAlign": "文字對齊",
+      "shadowColor": "陰影顏色",
+      "shadowOffsetX": "陰影偏移X",
+      "shadowOffsetY": "陰影偏移Y",
+      "shadowBlur": "陰影模糊"
+    },
+    "options": {
+      "borderStyle": {
+        "solid": "實線",
+        "dashed": "虛線",
+        "dotted": "點線"
+      },
+      "fontWeight": {
+        "normal": "正常",
+        "bold": "粗體"
+      },
+      "textAlign": {
+        "left": "靠左對齊",
+        "center": "置中",
+        "right": "靠右對齊"
+      }
+    },
+    "groups": {
+      "basic": "基本屬性",
+      "style": "樣式",
+      "text": "文字",
+      "shadow": "陰影"
+    }
+  }
+}

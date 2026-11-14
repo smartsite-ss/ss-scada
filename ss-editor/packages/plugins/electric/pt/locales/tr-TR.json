@@ -1,0 +1,11 @@
+{
+  "pt": {
+    "label": "Gerilim transformatörü",
+    "properties": {
+      "color": "Çizgi rengi",
+      "backgroundColor": "Arka plan rengi",
+      "lineWidth": "Çizgi kalınlığı"
+    },
+    "description": "Gerilim transformatörü PT - Ölçüm amaçlı gerilim dönüştürme cihazı"
+  }
+}

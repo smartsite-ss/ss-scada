@@ -1,0 +1,13 @@
+{
+  "head01": {
+    "label": "Trang trí đầu-01",
+    "properties": {
+      "color1": "Màu thứ nhất",
+      "color2": "Màu thứ hai",
+      "dur": "Chu kỳ hoạt ảnh (giây)",
+      "lineHeight": "Chiều cao đường",
+      "endWidth": "Chiều rộng thanh trượt"
+    },
+    "description": "Trang trí thanh chữ nhật động kèm khối màu trượt"
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "label": {
+    "label": "ラベル",
+    "panelTitle": "ラベルのプロパティ",
+    "properties": {
+      "text": "テキスト",
+      "textColor": "文字色",
+      "fontSize": "フォントサイズ",
+      "fontWeight": "フォントの太さ",
+      "fontStyle": "フォントスタイル",
+      "textDecoration": "文字の装飾",
+      "textAlign": "テキストの配置",
+      "verticalAlignment": "垂直方向の配置",
+      "lineHeight": "行の高さ",
+      "letterSpacing": "文字間隔",
+      "wordWrap": "折り返し",
+      "maxLines": "最大行数",
+      "backgroundColor": "背景色",
+      "borderColor": "枠線色",
+      "borderWidth": "枠線幅",
+      "borderRadius": "角の丸み",
+      "textShadowColor": "文字の影の色",
+      "textShadowOffsetX": "影のオフセットX",
+      "textShadowOffsetY": "影のオフセットY",
+      "textShadowBlur": "影のぼかし",
+      "decimalPlaces": "小数点以下の桁数",
+      "unit": "単位",
+      "unitFontSize": "単位のフォントサイズ",
+      "unitFontColor": "単位の文字色",
+      "unitGap": "単位の間隔"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "標準",
+        "bold": "太字"
+      },
+      "fontStyle": {
+        "normal": "標準",
+        "italic": "斜体"
+      },
+      "textDecoration": {
+        "none": "なし",
+        "underline": "下線",
+        "line-through": "取り消し線"
+      },
+      "textAlign": {
+        "left": "左揃え",
+        "center": "中央揃え",
+        "right": "右揃え"
+      },
+      "verticalAlignment": {
+        "top": "上",
+        "middle": "中央",
+        "bottom": "下"
+      }
+    },
+    "groups": {
+      "basic": "基本プロパティ",
+      "style": "スタイル",
+      "text": "文字",
+      "unit": "単位",
+      "shadow": "影"
+    },
+    "hints": {
+      "maxLinesHint": "0 は無制限を表します"
+    },
+    "description": "ラベルの図形要素"
+  }
+}

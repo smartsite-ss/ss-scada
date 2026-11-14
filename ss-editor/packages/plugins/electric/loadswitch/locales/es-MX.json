@@ -1,0 +1,21 @@
+{
+  "loadswitch": {
+    "label": "Interruptor de carga",
+    "properties": {
+      "color": "Color de línea",
+      "backgroundColor": "Color de fondo",
+      "lineWidth": "Grosor de línea",
+      "closed": "Estado cerrado",
+      "closedValue": "Valor para cerrado",
+      "openValue": "Valor para abierto",
+      "defaultStatus": "Estado predeterminado"
+    },
+    "options": {
+      "closed": {
+        "yes": "Cerrado",
+        "no": "Abierto"
+      }
+    },
+    "description": "Interruptor de carga de potencia con capacidad de extinción de arco"
+  }
+}

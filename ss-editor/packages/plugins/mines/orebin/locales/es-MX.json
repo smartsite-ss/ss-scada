@@ -1,0 +1,32 @@
+{
+  "orebin": {
+    "label": "Tolva / silo de mineral",
+    "properties": {
+      "colors": "Color 1",
+      "colors2": "Color 2",
+      "flowColor": "Color de flujo",
+      "pipeColor": "Color de la tubería",
+      "backgroundColor": "Color de fondo",
+      "bgWidth": "Ancho del fondo",
+      "boardWidth": "Ancho del borde",
+      "roate": "Ángulo de rotación",
+      "cls": "Dirección de la animación",
+      "dur": "Ciclo de animación (s)",
+      "dataset": "Valor de datos (nivel %)",
+      "showDischarge": "Mostrar animación de descarga",
+      "forwardValue": "Valor para giro directo",
+      "backwardValue": "Valor para giro inverso",
+      "stopValue": "Valor para detenido",
+      "defaultCls": "Dirección de animación predeterminada",
+      "decimalPlaces": "Decimales"
+    },
+    "options": {
+      "cls": {
+        "left": "Giro directo",
+        "right": "Giro inverso",
+        "stop": "Detenido"
+      }
+    },
+    "description": "Tolva / silo de mineral: tolva de fondo cónico con visualización de nivel y animación de descarga"
+  }
+}

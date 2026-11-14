@@ -1,0 +1,11 @@
+{
+  "transformer2w": {
+    "label": "İki sargılı transformatör",
+    "properties": {
+      "color": "Çizgi rengi",
+      "backgroundColor": "Arka plan rengi",
+      "lineWidth": "Çizgi kalınlığı"
+    },
+    "description": "İki sargılı güç transformatörü - İki bobin sembolü"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "head01": {
+    "label": "Hiasan kepala-01",
+    "properties": {
+      "color1": "Warna satu",
+      "color2": "Warna dua",
+      "dur": "Kitaran animasi (saat)",
+      "lineHeight": "Tinggi garisan",
+      "endWidth": "Lebar peluncur"
+    },
+    "description": "Bar segi empat beranimasi dengan hiasan blok warna gelongsor"
+  }
+}

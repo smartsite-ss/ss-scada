@@ -1,0 +1,13 @@
+{
+  "head06": {
+    "label": "Dekorasi kepala-06",
+    "properties": {
+      "color1": "Warna isi",
+      "color2": "Warna batas",
+      "dataset": "Teks",
+      "textColor": "Warna teks",
+      "textSize": "Ukuran teks"
+    },
+    "description": "Dekorasi bingkai poligon"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "protocol": {
+    "modbus": {
+      "connect_success": "Modbus TCP 연결 성공",
+      "connect_failed": "Modbus TCP 연결 실패: {{detail}}",
+      "read_success": "Modbus 읽기 성공",
+      "read_failed": "Modbus 읽기 실패: {{detail}}",
+      "write_success": "Modbus 쓰기 성공",
+      "write_failed": "Modbus 쓰기 실패: {{detail}}"
+    },
+    "mqtt": {
+      "connect_success": "MQTT 연결 성공",
+      "connect_failed": "MQTT 연결 실패: {{detail}}",
+      "publish_success": "MQTT 메시지 발행 성공",
+      "publish_failed": "MQTT 메시지 발행 실패: {{detail}}"
+    },
+    "opcua": {
+      "connect_success": "OPC UA 연결 성공",
+      "connect_failed": "OPC UA 연결 실패: {{detail}}",
+      "read_success": "OPC UA 읽기 성공",
+      "read_failed": "OPC UA 읽기 실패: {{detail}}"
+    },
+    "common": {
+      "timeout": "프로토콜 통신 시간 초과 ({{timeout}}ms)",
+      "connection_refused": "연결이 거부되었습니다",
+      "authentication_failed": "인증 실패"
+    }
+  }
+}

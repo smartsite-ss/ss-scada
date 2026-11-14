@@ -1,0 +1,33 @@
+{
+  "draughtfan": {
+    "label": "Ventilateur",
+    "properties": {
+      "dataset": "Jeu de données",
+      "dur": "Période d'animation (s)",
+      "colors": "Groupe de couleurs",
+      "flowColor": "Couleur d'écoulement",
+      "pipeColor": "Couleur du tuyau",
+      "bgWidth": "Largeur d'arrière-plan",
+      "boardWidth": "Largeur de bordure",
+      "roate": "Angle de rotation",
+      "cls": "Sens de rotation",
+      "clsLeft": "Sens horaire",
+      "clsRight": "Sens antihoraire",
+      "clsStop": "Arrêt",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "forwardValue": "Valeur pour marche avant",
+      "backwardValue": "Valeur pour marche arrière",
+      "stopValue": "Valeur pour l'arrêt",
+      "defaultCls": "Sens d'animation par défaut",
+      "decimalPlaces": "Nombre de décimales"
+    },
+    "options": {
+      "cls": {
+        "left": "Marche avant",
+        "right": "Marche arrière",
+        "stop": "Arrêt"
+      }
+    },
+    "description": "Ventilateur - ventilateur d'extraction avec animation de rotation"
+  }
+}

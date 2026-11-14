@@ -1,0 +1,46 @@
+{
+  "input": {
+    "label": "Ô nhập",
+    "description": "Thành phần ô nhập, dùng để nhập văn bản một dòng",
+    "panelTitle": "Cấu hình ô nhập",
+    "properties": {
+      "value": "Giá trị",
+      "placeholder": "Văn bản giữ chỗ",
+      "backgroundColor": "Màu nền",
+      "borderColor": "Màu viền",
+      "borderWidth": "Độ rộng viền",
+      "borderStyle": "Kiểu viền",
+      "borderRadius": "Bo góc",
+      "textColor": "Màu văn bản",
+      "fontSize": "Cỡ phông chữ",
+      "fontWeight": "Độ đậm phông chữ",
+      "textAlign": "Căn chỉnh văn bản",
+      "shadowColor": "Màu bóng đổ",
+      "shadowOffsetX": "Dịch chuyển bóng X",
+      "shadowOffsetY": "Dịch chuyển bóng Y",
+      "shadowBlur": "Độ mờ bóng"
+    },
+    "options": {
+      "borderStyle": {
+        "solid": "Nét liền",
+        "dashed": "Nét đứt",
+        "dotted": "Nét chấm"
+      },
+      "fontWeight": {
+        "normal": "Bình thường",
+        "bold": "Đậm"
+      },
+      "textAlign": {
+        "left": "Căn trái",
+        "center": "Căn giữa",
+        "right": "Căn phải"
+      }
+    },
+    "groups": {
+      "basic": "Thuộc tính cơ bản",
+      "style": "Kiểu dáng",
+      "text": "Chữ",
+      "shadow": "Bóng đổ"
+    }
+  }
+}

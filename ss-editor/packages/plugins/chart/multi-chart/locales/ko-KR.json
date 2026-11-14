@@ -1,0 +1,47 @@
+{
+  "multiChart": {
+    "label": "다중 차트",
+    "description": "막대 차트, 원형 차트, 히트맵을 지원하는 다중 차트 컴포넌트",
+    "panelTitle": "다중 차트 구성",
+    "properties": {
+      "title": "제목",
+      "titleColor": "제목 색상",
+      "titleFontSize": "제목 글꼴 크기",
+      "chartType": "차트 유형",
+      "backgroundColor": "배경색",
+      "borderColor": "테두리 색상",
+      "borderWidth": "테두리 너비",
+      "borderRadius": "모서리 반경",
+      "barColor": "막대 차트 색상",
+      "barGap": "막대 간격",
+      "pieColors": "원형 차트 색상 시퀀스",
+      "pieInnerRadius": "내부 반지름 비율",
+      "pieShowLabels": "레이블 표시",
+      "heatmapColorLow": "히트맵 저값 색상",
+      "heatmapColorHigh": "히트맵 고값 색상",
+      "heatmapRows": "행 수",
+      "heatmapCols": "열 수",
+      "showLegend": "범례 표시",
+      "shadowColor": "그림자 색상",
+      "shadowOffsetX": "그림자 오프셋 X",
+      "shadowOffsetY": "그림자 오프셋 Y",
+      "shadowBlur": "그림자 흐림"
+    },
+    "options": {
+      "chartType": {
+        "bar": "막대 차트",
+        "pie": "원형 차트",
+        "heatmap": "히트맵"
+      }
+    },
+    "groups": {
+      "basic": "기본",
+      "style": "스타일",
+      "bar": "막대 차트",
+      "pie": "원형 차트",
+      "heatmap": "히트맵",
+      "display": "표시",
+      "shadow": "그림자"
+    }
+  }
+}

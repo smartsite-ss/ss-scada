@@ -1,0 +1,15 @@
+{
+  "pressuregauge": {
+    "label": "Manometer",
+    "properties": {
+      "color": "Warna",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garis",
+      "dataset": "Nilai data (0-100)",
+      "maxPressure": "Rentang maksimum (MPa)",
+      "decimalPlaces": "Jumlah desimal",
+      "unit": "Satuan"
+    },
+    "description": "Manometer - instrumen tekanan dial bundar, jarum digerakkan nilai data menampilkan tekanan MPa"
+  }
+}

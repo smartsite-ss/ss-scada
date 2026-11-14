@@ -1,0 +1,24 @@
+{
+  "faultlamp": {
+    "label": "故障警報灯",
+    "properties": {
+      "alarmColor": "警報色",
+      "backgroundColor": "背景色",
+      "dataset": "データ値（0=正常、0 より大きい=警報）",
+      "flashing": "点滅エフェクト",
+      "flashSpeed": "点滅速度（秒）",
+      "showBuzzer": "ブザーを表示",
+      "alarmValue": "警報に対応する値",
+      "normalValue": "正常に対応する値",
+      "defaultStatus": "既定の状態"
+    },
+    "options": {
+      "alarmColor": {
+        "red": "赤",
+        "amber": "アンバー",
+        "off": "オフ"
+      }
+    },
+    "description": "故障警報灯 - ひし形/三角形の警告アイコン。点滅とブザー表示に対応"
+  }
+}

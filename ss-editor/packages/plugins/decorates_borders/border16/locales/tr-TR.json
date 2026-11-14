@@ -1,0 +1,15 @@
+{
+  "border16": {
+    "label": "Kenarlık-16 (İskandinav minimal)",
+    "description": "Kenarlık-16 dekoratif bileşeni (İskandinav minimal)",
+    "properties": {
+      "color1": "Ana renk",
+      "color2": "Yardımcı renk",
+      "color3": "Zemin rengi",
+      "backgroundColor": "Arka plan rengi",
+      "showLeaves": "Yaprak süslemesi",
+      "showDots": "Nokta dokusu",
+      "animationSpeed": "Animasyon hızı"
+    }
+  }
+}

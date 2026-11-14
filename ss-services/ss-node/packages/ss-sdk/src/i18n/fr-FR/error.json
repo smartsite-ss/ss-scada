@@ -1,0 +1,59 @@
+{
+  "error": {
+    "auth": {
+      "AUTH_001": "Nom d'utilisateur ou mot de passe incorrect",
+      "AUTH_002": "Le compte a été désactivé, veuillez contacter l'administrateur",
+      "AUTH_003": "Le Token a expiré, veuillez vous reconnecter",
+      "AUTH_004": "Token invalide ou altéré",
+      "AUTH_005": "Le nom d'utilisateur ou l'adresse e-mail existe déjà",
+      "AUTH_006": "Format de l'adresse e-mail incorrect",
+      "AUTH_007": "Mot de passe trop faible (8 caractères minimum, avec lettres et chiffres)",
+      "AUTH_008": "Utilisateur inexistant"
+    },
+    "project": {
+      "PROJ_001": "Projet inexistant",
+      "PROJ_002": "Vous n'avez pas accès à ce projet",
+      "PROJ_003": "Le nom du projet ne peut pas être vide",
+      "PROJ_004": "Le nom du projet est trop long (100 caractères maximum)",
+      "PROJ_005": "Vous ne pouvez supprimer que les projets que vous avez créés"
+    },
+    "device": {
+      "DEV_001": "Appareil inexistant",
+      "DEV_002": "L'appareil {{name}} (ID : {{id}}) est hors ligne",
+      "DEV_003": "Échec de la lecture de l'adresse {{address}} de l'appareil {{deviceId}} : {{detail}}",
+      "DEV_004": "Échec de l'écriture des données de l'appareil",
+      "DEV_005": "Délai de connexion à l'appareil dépassé ({{timeout}} ms)",
+      "DEV_006": "Communication interrompue avec l'appareil",
+      "DEV_007": "Configuration de l'appareil non valide : {{detail}}"
+    },
+    "data": {
+      "DATA_001": "Erreur d'acquisition de données",
+      "DATA_002": "Délai de communication du protocole {{protocol}} dépassé ({{timeout}} ms)",
+      "DATA_003": "Échec de la persistance des données (stockage : {{storage}}, détail : {{detail}})",
+      "DATA_004": "Problème de qualité des données de l'étiquette {{tagId}} : {{quality}}",
+      "DATA_005": "Données historiques inexistantes",
+      "DATA_006": "Plage horaire non valide (l'heure de début doit précéder l'heure de fin)"
+    },
+    "alarm": {
+      "ALM_001": "Erreur d'alarme : {{detail}}",
+      "ALM_002": "Échec de l'envoi de la notification d'alarme (canal : {{channel}}, détail : {{detail}})",
+      "ALM_003": "Règle d'alarme inexistante",
+      "ALM_004": "Configuration de la condition d'alarme non valide",
+      "ALM_005": "Enregistrement d'événement inexistant ou effacé"
+    },
+    "protocol": {
+      "PROTO_001": "Type de protocole non pris en charge : {{type}}",
+      "PROTO_002": "Échec de la connexion au protocole : {{detail}}",
+      "PROTO_003": "Échec de la déconnexion du protocole : {{detail}}",
+      "PROTO_004": "Délai de lecture du protocole dépassé",
+      "PROTO_005": "Échec de l'écriture via le protocole"
+    },
+    "system": {
+      "SYS_001": "Erreur interne du système",
+      "SYS_002": "Erreur de configuration ({{key}} : {{detail}})",
+      "SYS_003": "Erreur de stockage ({{storage}} : {{detail}})",
+      "SYS_004": "Service indisponible",
+      "SYS_005": "Échec de la connexion à la base de données"
+    }
+  }
+}

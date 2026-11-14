@@ -1,0 +1,11 @@
+{
+  "insulator": {
+    "label": "Aislador",
+    "properties": {
+      "color": "Color de línea",
+      "backgroundColor": "Color de fondo",
+      "lineWidth": "Grosor de línea"
+    },
+    "description": "Aislador: soporte de aislamiento eléctrico"
+  }
+}

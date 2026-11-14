@@ -1,0 +1,28 @@
+{
+  "three-gauge": {
+    "label": "Jauge 3D",
+    "panelTitle": "Configuration de la jauge 3D",
+    "properties": {
+      "value": "Valeur actuelle",
+      "min": "Valeur minimale",
+      "max": "Valeur maximale",
+      "gaugeColor": "Couleur normale",
+      "warningColor": "Couleur d'avertissement",
+      "dangerColor": "Couleur de danger",
+      "warningThreshold": "Seuil d'avertissement",
+      "dangerThreshold": "Seuil de danger",
+      "showTicks": "Afficher les graduations",
+      "showLabels": "Afficher les étiquettes",
+      "needleColor": "Couleur de l'aiguille",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "rimColor": "Couleur du cadre"
+    },
+    "groups": {
+      "数据": "Données",
+      "颜色": "Couleur",
+      "阈值": "Seuil",
+      "显示": "Affichage"
+    },
+    "description": "Élément graphique jauge 3D avec rotation de l'aiguille pilotée par les données"
+  }
+}

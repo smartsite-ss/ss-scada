@@ -1,0 +1,21 @@
+{
+  "closelamp": {
+    "label": "Luz indicadora de cerrado",
+    "properties": {
+      "lampColor": "Color de la lámpara",
+      "backgroundColor": "Color de fondo",
+      "radius": "Radio",
+      "closed": "Estado de cerrado",
+      "closedValue": "Valor para cerrado",
+      "openValue": "Valor para abierto",
+      "defaultStatus": "Estado predeterminado"
+    },
+    "options": {
+      "closed": {
+        "yes": "Cerrado",
+        "no": "Abierto"
+      }
+    },
+    "description": "Luz indicadora de posición cerrada"
+  }
+}

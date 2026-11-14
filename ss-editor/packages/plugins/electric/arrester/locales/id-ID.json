@@ -1,0 +1,11 @@
+{
+  "arrester": {
+    "label": "Arester",
+    "properties": {
+      "color": "Warna garis",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garis"
+    },
+    "description": "Arester - perangkat proteksi tegangan lebih"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "protocol": {
+    "modbus": {
+      "connect_success": "Sambungan Modbus TCP berjaya",
+      "connect_failed": "Sambungan Modbus TCP gagal: {{detail}}",
+      "read_success": "Bacaan Modbus berjaya",
+      "read_failed": "Bacaan Modbus gagal: {{detail}}",
+      "write_success": "Penulisan Modbus berjaya",
+      "write_failed": "Penulisan Modbus gagal: {{detail}}"
+    },
+    "mqtt": {
+      "connect_success": "Sambungan MQTT berjaya",
+      "connect_failed": "Sambungan MQTT gagal: {{detail}}",
+      "publish_success": "Mesej MQTT berjaya diterbitkan",
+      "publish_failed": "Penerbitan mesej MQTT gagal: {{detail}}"
+    },
+    "opcua": {
+      "connect_success": "Sambungan OPC UA berjaya",
+      "connect_failed": "Sambungan OPC UA gagal: {{detail}}",
+      "read_success": "Bacaan OPC UA berjaya",
+      "read_failed": "Bacaan OPC UA gagal: {{detail}}"
+    },
+    "common": {
+      "timeout": "Komunikasi protokol tamat masa ({{timeout}}ms)",
+      "connection_refused": "Sambungan ditolak",
+      "authentication_failed": "Pengesahan gagal"
+    }
+  }
+}

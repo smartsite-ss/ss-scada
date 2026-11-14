@@ -1,0 +1,19 @@
+{
+  "time-common": {
+    "label": "Allgemeine Zeit",
+    "properties": {
+      "textColor": "Textfarbe",
+      "fontSize": "Schriftgröße",
+      "fontWeight": "Schriftstärke",
+      "shadow": "Schatten"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "Normal",
+        "bold": "Fett",
+        "lighter": "Leicht"
+      }
+    },
+    "description": "Allgemeine Zeitanzeige"
+  }
+}

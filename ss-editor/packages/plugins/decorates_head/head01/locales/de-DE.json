@@ -1,0 +1,13 @@
+{
+  "head01": {
+    "label": "Kopfdekoration-01",
+    "properties": {
+      "color1": "Farbe 1",
+      "color2": "Farbe 2",
+      "dur": "Animationsdauer (Sekunden)",
+      "lineHeight": "Linienhöhe",
+      "endWidth": "Breite des Gleiters"
+    },
+    "description": "Animierter Rechteckbalken mit gleitendem Farbblock"
+  }
+}

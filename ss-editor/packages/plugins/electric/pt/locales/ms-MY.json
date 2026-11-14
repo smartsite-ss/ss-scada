@@ -1,0 +1,11 @@
+{
+  "pt": {
+    "label": "Transformer voltan",
+    "properties": {
+      "color": "Warna garisan",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garisan"
+    },
+    "description": "Transformer voltan PT - peranti penukar voltan untuk pengukuran"
+  }
+}

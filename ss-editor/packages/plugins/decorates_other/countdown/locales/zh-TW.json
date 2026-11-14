@@ -1,0 +1,15 @@
+{
+  "countdown": {
+    "label": "倒數計時",
+    "properties": {
+      "dataset": "倒數計時(秒)",
+      "showDay": "顯示天數",
+      "color1": "背景色",
+      "color2": "文字色",
+      "flipperWidth": "數字寬度",
+      "flipperHeight": "數字高度",
+      "flipperGap": "間距"
+    },
+    "description": "倒數計時裝飾外掛"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "waterpump": {
+    "label": "水ポンプ",
+    "description": "水ポンプコンポーネント。回転アニメーションと状態表示に対応",
+    "panelTitle": "水ポンプの設定",
+    "properties": {
+      "width": "幅",
+      "height": "高さ",
+      "status": "状態",
+      "bodyColor": "フレームの色",
+      "impellerColor": "羽根の色",
+      "pipeColor": "配管の色",
+      "flangeColor": "フランジの色",
+      "highlightColor": "ハイライトの色",
+      "showAnimation": "アニメーションを表示",
+      "rotationSpeed": "回転速度",
+      "rotationDirection": "回転方向",
+      "showLabel": "ラベルを表示",
+      "labelText": "ラベルテキスト",
+      "runningValue": "運転に対応する値",
+      "stoppedValue": "停止に対応する値",
+      "faultValue": "故障に対応する値",
+      "defaultStatus": "既定の状態"
+    },
+    "options": {
+      "status": {
+        "running": "運転中",
+        "stopped": "停止",
+        "fault": "故障"
+      },
+      "rotationDirection": {
+        "clockwise": "時計回り",
+        "counterclockwise": "反時計回り"
+      }
+    },
+    "groups": {
+      "basic": "基本",
+      "status": "状態",
+      "color": "色",
+      "animation": "アニメーション",
+      "label": "ラベル",
+      "binding": "バインドマッピング"
+    }
+  }
+}

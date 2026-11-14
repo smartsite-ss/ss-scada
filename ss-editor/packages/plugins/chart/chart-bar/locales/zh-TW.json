@@ -1,0 +1,11 @@
+{
+  "chartBar": {
+    "label": "長條圖",
+    "description": "靜態/API 資料來源長條圖",
+    "config": {
+      "dataSource": "資料來源",
+      "noData": "暫無資料",
+      "loadError": "載入失敗"
+    }
+  }
+}

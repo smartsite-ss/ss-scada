@@ -1,0 +1,11 @@
+{
+  "cablehead": {
+    "label": "Kabelendverschluss",
+    "properties": {
+      "color": "Linienfarbe",
+      "backgroundColor": "Hintergrundfarbe",
+      "lineWidth": "Linienbreite"
+    },
+    "description": "Kabelendverschluss – Anschlussende zwischen Kabel und Gerät"
+  }
+}

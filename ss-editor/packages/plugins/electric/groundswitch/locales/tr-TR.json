@@ -1,0 +1,21 @@
+{
+  "groundswitch": {
+    "label": "Topraklama anahtarı",
+    "properties": {
+      "color": "Çizgi rengi",
+      "backgroundColor": "Arka plan rengi",
+      "lineWidth": "Çizgi kalınlığı",
+      "closed": "Kapalı durum",
+      "closedValue": "Kapalı durum değeri",
+      "openValue": "Açık durum değeri",
+      "defaultStatus": "Varsayılan durum"
+    },
+    "options": {
+      "closed": {
+        "yes": "Kapalı",
+        "no": "Açık"
+      }
+    },
+    "description": "Topraklama anahtarı - Hat topraklama koruma anahtarı"
+  }
+}

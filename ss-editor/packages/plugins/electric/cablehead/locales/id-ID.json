@@ -1,0 +1,11 @@
+{
+  "cablehead": {
+    "label": "Terminasi kabel",
+    "properties": {
+      "color": "Warna garis",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garis"
+    },
+    "description": "Terminasi kabel - ujung penghubung kabel dan peralatan"
+  }
+}

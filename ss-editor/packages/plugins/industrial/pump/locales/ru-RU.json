@@ -1,0 +1,43 @@
+{
+  "pump": {
+    "label": "Насос",
+    "description": "Компонент насоса с анимацией вращения и индикацией состояния",
+    "panelTitle": "Настройка насоса",
+    "properties": {
+      "width": "Ширина",
+      "height": "Высота",
+      "status": "Состояние",
+      "bodyColor": "Цвет корпуса",
+      "impellerColor": "Цвет рабочего колеса",
+      "highlightColor": "Цвет подсветки",
+      "showAnimation": "Показать анимацию",
+      "animationSpeed": "Скорость вращения",
+      "rotationDirection": "Направление вращения",
+      "showLabel": "Показать метку",
+      "labelText": "Текст метки",
+      "runningValue": "Значение «работа»",
+      "stoppedValue": "Значение «стоп»",
+      "faultValue": "Значение «авария»",
+      "defaultStatus": "Состояние по умолчанию"
+    },
+    "options": {
+      "status": {
+        "running": "Работа",
+        "stopped": "Остановлен",
+        "fault": "Авария"
+      },
+      "rotationDirection": {
+        "clockwise": "По часовой стрелке",
+        "counterclockwise": "Против часовой стрелки"
+      }
+    },
+    "groups": {
+      "basic": "Основное",
+      "status": "Состояние",
+      "color": "Цвет",
+      "animation": "Анимация",
+      "label": "Метка",
+      "binding": "Привязка значений"
+    }
+  }
+}

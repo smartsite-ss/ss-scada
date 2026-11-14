@@ -1,0 +1,21 @@
+{
+  "tagVariable": {
+    "label": "Variable de etiqueta",
+    "description": "Muestra el valor en tiempo real de la variable del equipo",
+    "config": {
+      "bindVariable": "Variables enlazadas",
+      "selectVariable": "Seleccionar variable",
+      "clear": "Borrar",
+      "unbound": "Sin enlazar"
+    },
+    "selector": {
+      "title": "Seleccionar variable del equipo",
+      "searchPlaceholder": "Buscar equipo o variable",
+      "deviceLabel": "Equipo",
+      "tagCount": "{count} variables",
+      "loading": "Cargando...",
+      "empty": "Sin variables de equipo",
+      "selectHint": "Haga clic en una variable para enlazarla"
+    }
+  }
+}

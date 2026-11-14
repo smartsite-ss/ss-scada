@@ -1,0 +1,69 @@
+{
+  "label": {
+    "label": "Beschriftung",
+    "panelTitle": "Beschriftungs-Eigenschaften",
+    "properties": {
+      "text": "Text",
+      "textColor": "Textfarbe",
+      "fontSize": "Schriftgröße",
+      "fontWeight": "Schriftstärke",
+      "fontStyle": "Schriftstil",
+      "textDecoration": "Textdekoration",
+      "textAlign": "Textausrichtung",
+      "verticalAlignment": "Vertikale Ausrichtung",
+      "lineHeight": "Zeilenhöhe",
+      "letterSpacing": "Zeichenabstand",
+      "wordWrap": "Automatischer Umbruch",
+      "maxLines": "Maximale Zeilen",
+      "backgroundColor": "Hintergrundfarbe",
+      "borderColor": "Rahmenfarbe",
+      "borderWidth": "Rahmenbreite",
+      "borderRadius": "Eckenradius",
+      "textShadowColor": "Textschattenfarbe",
+      "textShadowOffsetX": "Schattenversatz X",
+      "textShadowOffsetY": "Schattenversatz Y",
+      "textShadowBlur": "Schattenunschärfe",
+      "decimalPlaces": "Dezimalstellen",
+      "unit": "Einheit",
+      "unitFontSize": "Schriftgröße der Einheit",
+      "unitFontColor": "Schriftfarbe der Einheit",
+      "unitGap": "Abstand zur Einheit"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "Normal",
+        "bold": "Fett"
+      },
+      "fontStyle": {
+        "normal": "Normal",
+        "italic": "Kursiv"
+      },
+      "textDecoration": {
+        "none": "Keine",
+        "underline": "Unterstrichen",
+        "line-through": "Durchgestrichen"
+      },
+      "textAlign": {
+        "left": "Linksbündig",
+        "center": "Zentriert",
+        "right": "Rechtsbündig"
+      },
+      "verticalAlignment": {
+        "top": "Oben",
+        "middle": "Zentriert",
+        "bottom": "Unten"
+      }
+    },
+    "groups": {
+      "basic": "Grundeigenschaften",
+      "style": "Stil",
+      "text": "Text",
+      "unit": "Einheit",
+      "shadow": "Schatten"
+    },
+    "hints": {
+      "maxLinesHint": "0 bedeutet keine Begrenzung"
+    },
+    "description": "Beschriftungs-Grafikelement"
+  }
+}

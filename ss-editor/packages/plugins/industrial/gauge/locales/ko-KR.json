@@ -1,0 +1,42 @@
+{
+  "gauge": {
+    "label": "게이지",
+    "description": "값 표시 및 알람에 사용되는 게이지 컴포넌트",
+    "panelTitle": "게이지 구성",
+    "properties": {
+      "width": "너비",
+      "height": "높이",
+      "value": "현재 값",
+      "minValue": "최솟값",
+      "maxValue": "최댓값",
+      "unit": "단위",
+      "decimalPlaces": "소수 자릿수",
+      "startAngle": "시작 각도",
+      "endAngle": "종료 각도",
+      "faceColor": "다이얼 색상",
+      "rimColor": "테두리 색상",
+      "needleColor": "바늘 색상",
+      "tickColor": "눈금선 색상",
+      "labelColor": "레이블 색상",
+      "valueColor": "값 색상",
+      "showTicks": "눈금 표시",
+      "showLabels": "레이블 표시",
+      "showValue": "값 표시",
+      "majorTicks": "주 눈금 수",
+      "minorTicks": "보조 눈금 수",
+      "warningValue": "경고 임계값",
+      "dangerValue": "위험 임계값",
+      "warningColor": "경고 색상",
+      "dangerColor": "위험 색상"
+    },
+    "groups": {
+      "basic": "기본",
+      "value": "값",
+      "gauge": "게이지",
+      "color": "색상",
+      "display": "표시",
+      "ticks": "눈금",
+      "alarm": "알람"
+    }
+  }
+}

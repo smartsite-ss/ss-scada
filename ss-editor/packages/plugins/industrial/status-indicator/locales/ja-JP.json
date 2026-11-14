@@ -1,0 +1,36 @@
+{
+  "statusIndicator": {
+    "label": "状態表示灯",
+    "description": "状態表示灯コンポーネント。多状態の表示とアラームに使用",
+    "properties": {
+      "status": "状態",
+      "normalColor": "正常の色",
+      "warningColor": "警告の色",
+      "errorColor": "故障の色",
+      "offlineColor": "オフラインの色",
+      "size": "表示灯のサイズ",
+      "showGlow": "グローを表示",
+      "pulseSpeed": "パルス速度（秒）",
+      "normalValue": "正常に対応する値",
+      "warningValue": "警告に対応する値",
+      "errorValue": "故障に対応する値",
+      "offlineValue": "オフラインに対応する値",
+      "defaultStatus": "既定の状態"
+    },
+    "options": {
+      "status": {
+        "normal": "正常",
+        "warning": "警告",
+        "error": "故障",
+        "offline": "オフライン"
+      }
+    },
+    "groups": {
+      "basic": "基本",
+      "color": "色",
+      "style": "スタイル",
+      "animation": "アニメーション",
+      "binding": "バインドマッピング"
+    }
+  }
+}

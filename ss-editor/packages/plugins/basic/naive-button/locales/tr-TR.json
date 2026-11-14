@@ -1,0 +1,34 @@
+{
+  "naiveButton": {
+    "label": "Naive düğmesi",
+    "panelTitle": "Naive düğmesi özellikleri",
+    "properties": {
+      "text": "Düğme metni",
+      "type": "Düğme türü",
+      "size": "Boyut",
+      "round": "Yuvarlak köşeli düğme",
+      "circle": "Dairesel düğme",
+      "disabled": "Devre dışı",
+      "loading": "Yükleniyor durumu"
+    },
+    "options": {
+      "type": {
+        "default": "Varsayılan",
+        "primary": "Birincil",
+        "success": "Başarılı",
+        "warning": "Uyarı",
+        "error": "Hata",
+        "info": "Bilgi"
+      },
+      "size": {
+        "small": "Küçük",
+        "medium": "Orta",
+        "large": "Büyük"
+      }
+    },
+    "groups": {
+      "basic": "Temel özellikler"
+    },
+    "description": "Canvas yedek oluşturmayı destekleyen Naive düğmesi grafik öğesi"
+  }
+}

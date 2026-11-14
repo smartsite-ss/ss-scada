@@ -1,0 +1,17 @@
+{
+  "three-cube": {
+    "label": "Khối lập phương 3D",
+    "panelTitle": "Cấu hình khối lập phương 3D",
+    "properties": {
+      "cubeColor": "Màu khối lập phương",
+      "cubeSize": "Kích thước khối lập phương",
+      "rotationSpeed": "Tốc độ xoay",
+      "showGrid": "Hiển thị lưới",
+      "showAxes": "Hiển thị trục tọa độ"
+    },
+    "groups": {
+      "basic": "Thuộc tính cơ bản"
+    },
+    "description": "Phần tử đồ họa khối lập phương 3D, hỗ trợ hiệu ứng xoay"
+  }
+}

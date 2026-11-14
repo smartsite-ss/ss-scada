@@ -1,0 +1,11 @@
+{
+  "capacitor": {
+    "label": "Kapasitör grubu",
+    "properties": {
+      "color": "Çizgi rengi",
+      "backgroundColor": "Arka plan rengi",
+      "lineWidth": "Çizgi kalınlığı"
+    },
+    "description": "Kapasitör grubu - Reaktif güç kompanzasyon kapasitörü"
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "pipe": {
+    "label": "管道-垂直",
+    "description": "管道-垂直元件，支援流動動畫與方向控制",
+    "panelTitle": "管道設定",
+    "properties": {
+      "width": "寬度",
+      "height": "高度",
+      "status": "狀態",
+      "direction": "流向",
+      "pipeColor": "管道顏色",
+      "flowingColor": "流動顏色",
+      "stoppedColor": "停止顏色",
+      "blockedColor": "堵塞顏色",
+      "pipeThickness": "管道粗細",
+      "showFlange": "顯示法蘭",
+      "flowSpeed": "流速",
+      "showFlowAnimation": "顯示流動動畫"
+    },
+    "options": {
+      "status": {
+        "flowing": "流動中",
+        "stopped": "停止",
+        "blocked": "堵塞"
+      },
+      "direction": {
+        "up": "向上",
+        "down": "向下"
+      }
+    },
+    "groups": {
+      "basic": "基本",
+      "status": "狀態",
+      "color": "顏色",
+      "style": "樣式",
+      "animation": "動畫"
+    }
+  }
+}

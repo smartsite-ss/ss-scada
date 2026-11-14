@@ -1,0 +1,11 @@
+{
+  "border07": {
+    "label": "Bordure-07",
+    "description": "Composant décoratif Bordure-07",
+    "properties": {
+      "color1": "Couleur 1",
+      "color2": "Couleur 2",
+      "backgroundColor": "Couleur d'arrière-plan"
+    }
+  }
+}

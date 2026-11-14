@@ -1,0 +1,35 @@
+{
+  "fan5": {
+    "label": "Fan 5",
+    "properties": {
+      "colors": "Renk grubu",
+      "flowColor": "Kanal rengi",
+      "pipeColor": "Boru rengi",
+      "bgWidth": "Taban genişliği",
+      "boardWidth": "Plaka kalınlığı",
+      "roate": "Döndürme açısı",
+      "cls": "Döndürme yönü",
+      "dur": "Animasyon döngüsü (saniye)",
+      "backgroundColor": "Arka plan rengi",
+      "dataset": "Veri kümesi",
+      "forwardValue": "İleri dönüş durum değeri",
+      "backwardValue": "Geri dönüş durum değeri",
+      "stopValue": "Durma durum değeri",
+      "defaultCls": "Varsayılan animasyon yönü",
+      "decimalPlaces": "Ondalık basamak sayısı",
+      "clsOptions": {
+        "right": "Sağa dönüş",
+        "left": "Sola dönüş",
+        "stop": "Durdu"
+      }
+    },
+    "options": {
+      "cls": {
+        "left": "İleri dönüş",
+        "right": "Geri dönüş",
+        "stop": "Durdu"
+      }
+    },
+    "description": "Maden fanı 5 - Eksenel kanal fanı, döndürme yönü ve hız kontrolünü destekler"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "fanblue": {
+    "label": "ファン-ブルー",
+    "properties": {
+      "dataset": "データセット",
+      "dur": "アニメーション周期（秒）",
+      "colors": "色グループ",
+      "flowColor": "流動色",
+      "pipeColor": "配管の色",
+      "bgWidth": "背景の幅",
+      "boardWidth": "枠線幅",
+      "roate": "回転角度",
+      "cls": "回転方向",
+      "clsLeft": "時計回り",
+      "clsRight": "反時計回り",
+      "clsStop": "停止",
+      "backgroundColor": "背景色",
+      "forwardValue": "正転に対応する値",
+      "backwardValue": "逆転に対応する値",
+      "stopValue": "停止に対応する値",
+      "defaultCls": "既定のアニメーション方向",
+      "decimalPlaces": "小数点以下の桁数"
+    },
+    "options": {
+      "cls": {
+        "left": "正転",
+        "right": "逆転",
+        "stop": "停止"
+      }
+    },
+    "description": "鉱山用ファン-ブルー - 大型産業用換気ファン。回転アニメーションに対応"
+  }
+}

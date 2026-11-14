@@ -1,0 +1,59 @@
+{
+  "error": {
+    "auth": {
+      "AUTH_001": "Nama pengguna atau kata laluan salah",
+      "AUTH_002": "Akaun telah dilumpuhkan, sila hubungi pentadbir",
+      "AUTH_003": "Token telah tamat tempoh, sila log masuk semula",
+      "AUTH_004": "Token tidak sah atau telah diubah",
+      "AUTH_005": "Nama pengguna atau e-mel sudah wujud",
+      "AUTH_006": "Format e-mel tidak betul",
+      "AUTH_007": "Kekuatan kata laluan tidak mencukupi (sekurang-kurangnya 8 aksara, mengandungi huruf dan nombor)",
+      "AUTH_008": "Pengguna tidak wujud"
+    },
+    "project": {
+      "PROJ_001": "Projek tidak wujud",
+      "PROJ_002": "Tiada kebenaran mengakses projek ini",
+      "PROJ_003": "Nama projek tidak boleh kosong",
+      "PROJ_004": "Nama projek terlalu panjang (maksimum 100 aksara)",
+      "PROJ_005": "Hanya projek yang dicipta sendiri boleh dipadam"
+    },
+    "device": {
+      "DEV_001": "Peranti tidak wujud",
+      "DEV_002": "Peranti {{name}} (ID: {{id}}) telah luar talian",
+      "DEV_003": "Gagal membaca alamat {{address}} peranti {{deviceId}}: {{detail}}",
+      "DEV_004": "Gagal menulis data peranti",
+      "DEV_005": "Sambungan peranti tamat masa ({{timeout}}ms)",
+      "DEV_006": "Komunikasi peranti terputus",
+      "DEV_007": "Konfigurasi peranti tidak sah: {{detail}}"
+    },
+    "data": {
+      "DATA_001": "Ralat pengumpulan data",
+      "DATA_002": "Protokol {{protocol}} tamat masa komunikasi ({{timeout}}ms)",
+      "DATA_003": "Penyimpanan data gagal (storan: {{storage}}, butiran: {{detail}})",
+      "DATA_004": "Isu kualiti data tag {{tagId}}: {{quality}}",
+      "DATA_005": "Data sejarah tidak wujud",
+      "DATA_006": "Julat masa tidak sah (masa mula mesti lebih awal daripada masa tamat)"
+    },
+    "alarm": {
+      "ALM_001": "Ralat penggera: {{detail}}",
+      "ALM_002": "Pemberitahuan penggera gagal dihantar (saluran: {{channel}}, butiran: {{detail}})",
+      "ALM_003": "Peraturan penggera tidak wujud",
+      "ALM_004": "Konfigurasi syarat penggera tidak sah",
+      "ALM_005": "Rekod peristiwa tidak wujud atau telah dibersihkan"
+    },
+    "protocol": {
+      "PROTO_001": "Jenis protokol tidak disokong: {{type}}",
+      "PROTO_002": "Sambungan protokol gagal: {{detail}}",
+      "PROTO_003": "Pemutusan protokol gagal: {{detail}}",
+      "PROTO_004": "Bacaan protokol tamat masa",
+      "PROTO_005": "Penulisan protokol gagal"
+    },
+    "system": {
+      "SYS_001": "Ralat dalaman sistem",
+      "SYS_002": "Ralat konfigurasi ({{key}}: {{detail}})",
+      "SYS_003": "Ralat storan ({{storage}}: {{detail}})",
+      "SYS_004": "Perkhidmatan tidak tersedia",
+      "SYS_005": "Sambungan pangkalan data gagal"
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "head03": {
+    "label": "Décoration d'en-tête-03",
+    "properties": {
+      "color1": "Couleur 1",
+      "color2": "Couleur 2",
+      "dataset": "Texte affiché",
+      "textColor": "Couleur du texte",
+      "textSize": "Taille de police"
+    },
+    "description": "Décoration en forme de flèches gauche et droite avec texte central"
+  }
+}

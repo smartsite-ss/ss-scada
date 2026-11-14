@@ -1,0 +1,42 @@
+{
+  "tank": {
+    "label": "Tanque",
+    "description": "Componente de tanque para exibição de nível e alarme",
+    "panelTitle": "Configuração do tanque",
+    "properties": {
+      "width": "Largura",
+      "height": "Altura",
+      "level": "Nível atual",
+      "maxLevel": "Nível máximo",
+      "unit": "Unidade",
+      "decimalPlaces": "Casas decimais",
+      "status": "Estado",
+      "warningLevel": "Nível de aviso",
+      "dangerLevel": "Nível de perigo",
+      "bodyColor": "Cor do tanque",
+      "liquidColor": "Cor do líquido",
+      "warningLiquidColor": "Cor do líquido em aviso",
+      "dangerLiquidColor": "Cor do líquido em perigo",
+      "rimColor": "Cor da borda",
+      "showLevelText": "Mostrar texto do nível",
+      "showTicks": "Mostrar escala",
+      "showAnimation": "Animação de ondulação",
+      "tickCount": "Quantidade de marcas"
+    },
+    "options": {
+      "status": {
+        "normal": "Normal",
+        "warning": "Aviso",
+        "danger": "Perigo"
+      }
+    },
+    "groups": {
+      "basic": "Básico",
+      "level": "Nível",
+      "status": "Estado",
+      "threshold": "Limiar",
+      "color": "Cor",
+      "display": "Exibição"
+    }
+  }
+}

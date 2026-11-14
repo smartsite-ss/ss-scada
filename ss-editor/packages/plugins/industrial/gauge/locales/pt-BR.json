@@ -1,0 +1,42 @@
+{
+  "gauge": {
+    "label": "Painel de medidor",
+    "description": "Componente de painel de medidor para exibição de valores e alarmes",
+    "panelTitle": "Configuração do painel de medidor",
+    "properties": {
+      "width": "Largura",
+      "height": "Altura",
+      "value": "Valor atual",
+      "minValue": "Valor mínimo",
+      "maxValue": "Valor máximo",
+      "unit": "Unidade",
+      "decimalPlaces": "Casas decimais",
+      "startAngle": "Ângulo inicial",
+      "endAngle": "Ângulo final",
+      "faceColor": "Cor do mostrador",
+      "rimColor": "Cor da borda",
+      "needleColor": "Cor do ponteiro",
+      "tickColor": "Cor das marcas de escala",
+      "labelColor": "Cor do rótulo",
+      "valueColor": "Cor do valor",
+      "showTicks": "Mostrar escala",
+      "showLabels": "Mostrar rótulos",
+      "showValue": "Mostrar valor",
+      "majorTicks": "Número de marcas principais",
+      "minorTicks": "Número de marcas secundárias",
+      "warningValue": "Limiar de aviso",
+      "dangerValue": "Limiar de perigo",
+      "warningColor": "Cor de aviso",
+      "dangerColor": "Cor de perigo"
+    },
+    "groups": {
+      "basic": "Básico",
+      "value": "Valor",
+      "gauge": "Medidor",
+      "color": "Cor",
+      "display": "Exibição",
+      "ticks": "Escala",
+      "alarm": "Alarme"
+    }
+  }
+}

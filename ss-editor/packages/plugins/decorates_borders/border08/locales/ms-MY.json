@@ -1,0 +1,13 @@
+{
+  "border08": {
+    "label": "Sempadan-08",
+    "description": "Komponen hiasan sempadan-08",
+    "properties": {
+      "color1": "Warna satu",
+      "color2": "Warna dua",
+      "backgroundColor": "Warna latar",
+      "dur": "Kitaran animasi (saat)",
+      "reverse": "Gerakan songsang"
+    }
+  }
+}

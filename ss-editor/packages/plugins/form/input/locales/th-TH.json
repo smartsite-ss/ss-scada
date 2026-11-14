@@ -1,0 +1,46 @@
+{
+  "input": {
+    "label": "ช่องป้อนข้อมูล",
+    "description": "องค์ประกอบช่องป้อนข้อมูล สำหรับป้อนข้อความบรรทัดเดียว",
+    "panelTitle": "การกำหนดค่าช่องป้อนข้อมูล",
+    "properties": {
+      "value": "ค่า",
+      "placeholder": "ตัวยึดตำแหน่ง",
+      "backgroundColor": "สีพื้นหลัง",
+      "borderColor": "สีเส้นขอบ",
+      "borderWidth": "ความกว้างเส้นขอบ",
+      "borderStyle": "รูปแบบเส้นขอบ",
+      "borderRadius": "มุมโค้ง",
+      "textColor": "สีข้อความ",
+      "fontSize": "ขนาดแบบอักษร",
+      "fontWeight": "ความหนาแบบอักษร",
+      "textAlign": "การจัดข้อความ",
+      "shadowColor": "สีเงา",
+      "shadowOffsetX": "ระยะเลื่อนเงา X",
+      "shadowOffsetY": "ระยะเลื่อนเงา Y",
+      "shadowBlur": "ความเบลอของเงา"
+    },
+    "options": {
+      "borderStyle": {
+        "solid": "เส้นทึบ",
+        "dashed": "เส้นประ",
+        "dotted": "เส้นจุด"
+      },
+      "fontWeight": {
+        "normal": "ปกติ",
+        "bold": "ตัวหนา"
+      },
+      "textAlign": {
+        "left": "ชิดซ้าย",
+        "center": "กึ่งกลาง",
+        "right": "ชิดขวา"
+      }
+    },
+    "groups": {
+      "basic": "คุณสมบัติพื้นฐาน",
+      "style": "รูปแบบ",
+      "text": "ข้อความ",
+      "shadow": "เงา"
+    }
+  }
+}

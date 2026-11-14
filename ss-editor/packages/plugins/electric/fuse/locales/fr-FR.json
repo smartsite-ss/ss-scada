@@ -1,0 +1,11 @@
+{
+  "fuse": {
+    "label": "Fusible",
+    "properties": {
+      "color": "Couleur du trait",
+      "backgroundColor": "Couleur d'arrière-plan",
+      "lineWidth": "Épaisseur du trait"
+    },
+    "description": "Fusible électrique - Composant de protection contre les surintensités"
+  }
+}

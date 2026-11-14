@@ -1,0 +1,56 @@
+{
+  "textbox": {
+    "label": "Hộp văn bản",
+    "panelTitle": "Cấu hình hộp văn bản",
+    "properties": {
+      "text": "Nội dung văn bản",
+      "placeholder": "Văn bản giữ chỗ",
+      "fontSize": "Cỡ phông chữ",
+      "fontWeight": "Độ đậm phông chữ",
+      "fontStyle": "Kiểu phông chữ",
+      "textColor": "Màu văn bản",
+      "backgroundColor": "Màu nền",
+      "borderColor": "Màu viền",
+      "borderWidth": "Độ rộng viền",
+      "borderStyle": "Kiểu viền",
+      "borderRadius": "Bo góc",
+      "textAlign": "Căn chỉnh văn bản",
+      "verticalAlignment": "Căn chỉnh dọc",
+      "padding": "Khoảng đệm trong",
+      "multiline": "Chế độ nhiều dòng",
+      "readOnly": "Chỉ đọc"
+    },
+    "options": {
+      "fontWeight": {
+        "normal": "Bình thường",
+        "bold": "Đậm"
+      },
+      "fontStyle": {
+        "normal": "Bình thường",
+        "italic": "Nghiêng"
+      },
+      "borderStyle": {
+        "solid": "Nét liền",
+        "dashed": "Nét đứt",
+        "dotted": "Nét chấm",
+        "none": "Không"
+      },
+      "textAlign": {
+        "left": "Căn trái",
+        "center": "Căn giữa",
+        "right": "Căn phải"
+      },
+      "verticalAlignment": {
+        "top": "Trên",
+        "middle": "Giữa",
+        "bottom": "Dưới"
+      }
+    },
+    "groups": {
+      "basic": "Thuộc tính cơ bản",
+      "style": "Kiểu dáng",
+      "text": "Chữ"
+    },
+    "description": "Phần tử đồ họa hộp văn bản"
+  }
+}

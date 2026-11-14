@@ -1,0 +1,23 @@
+{
+  "runlamp": {
+    "label": "Lampu penunjuk operasi",
+    "properties": {
+      "lampColor": "Warna lampu",
+      "glowing": "Kesan bercahaya",
+      "blinkSpeed": "Kelajuan kelipan",
+      "backgroundColor": "Warna latar",
+      "runningValue": "Nilai padanan berjalan",
+      "stoppedValue": "Nilai padanan berhenti",
+      "faultValue": "Nilai padanan kerosakan",
+      "defaultStatus": "Status lalai"
+    },
+    "options": {
+      "lampColor": {
+        "green": "Hijau",
+        "red": "Merah",
+        "yellow": "Kuning"
+      }
+    },
+    "description": "Lampu penunjuk operasi - mentol bulat dengan animasi denyut bercahaya mengikut status warna"
+  }
+}

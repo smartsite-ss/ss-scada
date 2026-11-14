@@ -1,0 +1,42 @@
+{
+  "gauge": {
+    "label": "Meter",
+    "description": "Komponen meter untuk paparan nilai dan penggera",
+    "panelTitle": "Konfigurasi meter",
+    "properties": {
+      "width": "Lebar",
+      "height": "Tinggi",
+      "value": "Nilai semasa",
+      "minValue": "Nilai minimum",
+      "maxValue": "Nilai maksimum",
+      "unit": "Unit",
+      "decimalPlaces": "Bilangan perpuluhan",
+      "startAngle": "Sudut mula",
+      "endAngle": "Sudut tamat",
+      "faceColor": "Warna dail",
+      "rimColor": "Warna sempadan",
+      "needleColor": "Warna jarum",
+      "tickColor": "Warna garisan skala",
+      "labelColor": "Warna label",
+      "valueColor": "Warna nilai",
+      "showTicks": "Tunjuk skala",
+      "showLabels": "Tunjuk label",
+      "showValue": "Tunjuk nilai",
+      "majorTicks": "Bilangan skala utama",
+      "minorTicks": "Bilangan skala kecil",
+      "warningValue": "Ambang amaran",
+      "dangerValue": "Ambang bahaya",
+      "warningColor": "Warna amaran",
+      "dangerColor": "Warna bahaya"
+    },
+    "groups": {
+      "basic": "Asas",
+      "value": "Nilai",
+      "gauge": "Meter",
+      "color": "Warna",
+      "display": "Paparan",
+      "ticks": "Skala",
+      "alarm": "Penggera"
+    }
+  }
+}

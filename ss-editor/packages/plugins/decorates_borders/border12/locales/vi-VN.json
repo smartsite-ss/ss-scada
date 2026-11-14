@@ -1,0 +1,11 @@
+{
+  "border12": {
+    "label": "Viền-12",
+    "description": "Thành phần trang trí viền-12",
+    "properties": {
+      "color1": "Màu thứ nhất",
+      "color2": "Màu thứ hai",
+      "backgroundColor": "Màu nền"
+    }
+  }
+}

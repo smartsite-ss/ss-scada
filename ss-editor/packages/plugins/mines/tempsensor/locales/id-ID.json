@@ -1,0 +1,32 @@
+{
+  "tempsensor": {
+    "label": "Sensor suhu",
+    "properties": {
+      "colors": "Warna 1",
+      "colors2": "Warna 2",
+      "flowColor": "Warna aliran",
+      "pipeColor": "Warna pipa",
+      "backgroundColor": "Warna latar",
+      "bgWidth": "Lebar latar",
+      "boardWidth": "Lebar batas",
+      "roate": "Sudut rotasi",
+      "cls": "Arah animasi",
+      "dur": "Periode animasi (detik)",
+      "dataset": "Nilai data",
+      "decimalPlaces": "Jumlah desimal",
+      "unit": "Satuan",
+      "forwardValue": "Nilai pemetaan putaran maju",
+      "backwardValue": "Nilai pemetaan putaran balik",
+      "stopValue": "Nilai pemetaan berhenti",
+      "defaultCls": "Arah animasi default"
+    },
+    "options": {
+      "cls": {
+        "left": "Putaran maju",
+        "right": "Putaran balik",
+        "stop": "Berhenti"
+      }
+    },
+    "description": "Sensor suhu tambang - simbol probe/sensor dengan tampilan nilai suhu dan warna peringatan saat suhu berlebih"
+  }
+}

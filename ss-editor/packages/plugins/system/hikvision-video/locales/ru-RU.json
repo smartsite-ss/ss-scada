@@ -1,0 +1,48 @@
+{
+  "hikvisionVideo": {
+    "label": "Видео Hikvision",
+    "description": "Видеостена RTSP камер Hikvision (1/4/9 каналов)",
+    "properties": {
+      "layout": "Раскладка видео",
+      "autoPlay": "Автовоспроизведение",
+      "muted": "Без звука",
+      "objectFit": "Вписывание кадра",
+      "showChannelName": "Показать имя канала",
+      "nameColor": "Цвет имени канала",
+      "nameFontSize": "Размер шрифта имени канала",
+      "nameBackgroundColor": "Фон имени канала",
+      "backgroundColor": "Цвет фона",
+      "gap": "Интервал каналов"
+    },
+    "options": {
+      "layout": {
+        "1x1": "1 канал",
+        "2x2": "4 канала",
+        "3x3": "9 каналов"
+      },
+      "objectFit": {
+        "contain": "Вписать",
+        "cover": "Заполнить",
+        "fill": "Растянуть"
+      }
+    },
+    "config": {
+      "channels": "Видеоканалы",
+      "channelsEmpty": "Нет каналов",
+      "addChannel": "Добавить канал",
+      "channelName": "Имя канала",
+      "sourceUrl": "Адрес источника RTSP",
+      "playUrl": "Адрес воспроизведения",
+      "username": "Имя пользователя",
+      "password": "Пароль",
+      "enabled": "Включено",
+      "deleteChannel": "Удалить"
+    },
+    "player": {
+      "loading": "Загрузка...",
+      "loadFailed": "Ошибка загрузки",
+      "needFlv": "Для HTTP-FLV требуется flv.js",
+      "needWebrtc": "Для WebRTC требуется jessibuca"
+    }
+  }
+}

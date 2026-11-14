@@ -1,0 +1,21 @@
+{
+  "tagVariable": {
+    "label": "Etiket değişkeni",
+    "description": "Cihaz değişkeninin gerçek zamanlı değerini gösterir",
+    "config": {
+      "bindVariable": "Değişken bağla",
+      "selectVariable": "Değişken seç",
+      "clear": "Temizle",
+      "unbound": "Bağlı değil"
+    },
+    "selector": {
+      "title": "Cihaz değişkeni seç",
+      "searchPlaceholder": "Cihaz veya değişken ara",
+      "deviceLabel": "Cihaz",
+      "tagCount": "{count} değişken",
+      "loading": "Yükleniyor...",
+      "empty": "Cihaz değişkeni yok",
+      "selectHint": "Bağlamak için değişkene tıklayın"
+    }
+  }
+}

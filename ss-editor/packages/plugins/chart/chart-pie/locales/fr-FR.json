@@ -1,0 +1,11 @@
+{
+  "chartPie": {
+    "label": "Diagramme circulaire",
+    "description": "Diagramme circulaire à source de données statique/API",
+    "config": {
+      "dataSource": "Source de données",
+      "noData": "Aucune donnée",
+      "loadError": "Échec du chargement"
+    }
+  }
+}

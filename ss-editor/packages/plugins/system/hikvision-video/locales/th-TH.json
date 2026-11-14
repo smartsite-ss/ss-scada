@@ -1,0 +1,48 @@
+{
+  "hikvisionVideo": {
+    "label": "วิดีโอ Hikvision",
+    "description": "ผนังวิดีโอกล้อง Hikvision RTSP (1/4/9 ช่อง)",
+    "properties": {
+      "layout": "รูปแบบหน้าจอวิดีโอ",
+      "autoPlay": "เล่นอัตโนมัติ",
+      "muted": "ปิดเสียง",
+      "objectFit": "ปรับให้พอดีหน้าจอ",
+      "showChannelName": "แสดงชื่อช่อง",
+      "nameColor": "สีชื่อช่อง",
+      "nameFontSize": "ขนาดตัวอักษรชื่อช่อง",
+      "nameBackgroundColor": "พื้นหลังชื่อช่อง",
+      "backgroundColor": "สีพื้นหลัง",
+      "gap": "ระยะห่างช่อง"
+    },
+    "options": {
+      "layout": {
+        "1x1": "1 ช่อง",
+        "2x2": "4 ช่อง",
+        "3x3": "9 ช่อง"
+      },
+      "objectFit": {
+        "contain": "พอดี",
+        "cover": "เต็มพื้นที่",
+        "fill": "เติม"
+      }
+    },
+    "config": {
+      "channels": "ช่องวิดีโอ",
+      "channelsEmpty": "ไม่มีช่อง",
+      "addChannel": "เพิ่มช่อง",
+      "channelName": "ชื่อช่อง",
+      "sourceUrl": "ที่อยู่แหล่งสัญญาณ RTSP",
+      "playUrl": "ที่อยู่เล่นวิดีโอ",
+      "username": "ชื่อผู้ใช้",
+      "password": "รหัสผ่าน",
+      "enabled": "เปิดใช้งาน",
+      "deleteChannel": "ลบ"
+    },
+    "player": {
+      "loading": "กำลังโหลด...",
+      "loadFailed": "โหลดไม่สำเร็จ",
+      "needFlv": "HTTP-FLV ต้องนำเข้า flv.js",
+      "needWebrtc": "WebRTC ต้องนำเข้า jessibuca"
+    }
+  }
+}

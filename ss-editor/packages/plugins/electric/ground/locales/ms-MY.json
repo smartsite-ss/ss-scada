@@ -1,0 +1,11 @@
+{
+  "ground": {
+    "label": "Simbol pembumian",
+    "properties": {
+      "color": "Warna garisan",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garisan"
+    },
+    "description": "Simbol pembumian elektrik piawai"
+  }
+}

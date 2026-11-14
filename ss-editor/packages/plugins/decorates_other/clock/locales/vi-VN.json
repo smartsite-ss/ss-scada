@@ -1,0 +1,12 @@
+{
+  "clock": {
+    "label": "Đồng hồ",
+    "properties": {
+      "color1": "Màu kim",
+      "color2": "Nền mặt đồng hồ",
+      "color3": "Màu viền",
+      "borderWidth": "Độ rộng viền"
+    },
+    "description": "Đồng hồ kim"
+  }
+}

@@ -1,0 +1,126 @@
+{
+  "common": {
+    "ok": "Tamam",
+    "cancel": "İptal",
+    "save": "Kaydet",
+    "delete": "Sil",
+    "edit": "Düzenle",
+    "add": "Ekle",
+    "search": "Ara",
+    "reset": "Sıfırla",
+    "export": "Dışa aktar",
+    "import": "İçe aktar",
+    "confirm": "Onayla",
+    "close": "Kapat",
+    "refresh": "Yenile",
+    "upload": "Yükle",
+    "download": "İndir",
+    "preview": "Önizle",
+    "copy": "Kopyala",
+    "paste": "Yapıştır",
+    "undo": "Geri al",
+    "redo": "Yinele",
+    "settings": "Ayarlar",
+    "theme": "Tema",
+    "language": "Dil"
+  },
+  "category": {
+    "basic": "Temel bileşenler",
+    "form": "Form bileşenleri",
+    "chart": "Grafik bileşenleri",
+    "industrial": "Endüstriyel bileşenler",
+    "media": "Medya bileşenleri",
+    "layout": "Yerleşim bileşenleri",
+    "3d": "3D bileşenler",
+    "svg": "SVG bileşenler"
+  },
+  "editor": {
+    "toolbar": "Araç çubuğu",
+    "canvas": "Tuval",
+    "properties": "Özellik paneli",
+    "layers": "Katman paneli",
+    "plugin": "Eklenti yönetimi",
+    "zoomIn": "Yakınlaştır",
+    "zoomOut": "Uzaklaştır",
+    "fitToScreen": "Ekrana sığdır",
+    "undo": "Geri al",
+    "redo": "Yinele",
+    "delete": "Seçileni sil",
+    "selectAll": "Tümünü seç",
+    "copy": "Kopyala",
+    "paste": "Yapıştır",
+    "group": "Grupla",
+    "ungroup": "Grubu çöz",
+    "bringToFront": "En öne getir",
+    "sendToBack": "En arkaya gönder",
+    "align": "Hizala"
+  },
+  "plugin": {
+    "noPluginSelected": "Grafik seçilmedi",
+    "propertiesMissing": "Özellikler eksik",
+    "schemaVersion": "Schema sürümü",
+    "pluginType": "Grafik türü",
+    "position": "Konum",
+    "size": "Boyut",
+    "width": "Genişlik",
+    "height": "Yükseklik",
+    "x": "X koordinatı",
+    "y": "Y koordinatı",
+    "rotation": "Döndürme",
+    "opacity": "Opaklık",
+    "visible": "Görünür",
+    "locked": "Kilitli"
+  },
+  "language": {
+    "zhCN": "Çince",
+    "enUS": "İngilizce"
+  },
+  "threeStage": {
+    "label": "3D sahne kapsayıcısı",
+    "description": "Three.js 3D sahne kapsayıcısı sunar; model yükleme, ışık ve kamera denetimini destekler"
+  },
+  "validation": {
+    "requiredFieldMissingDefault": "Zorunlu alan \"{field}\" için varsayılan değer yok (required=true ancak defaultValue boş)",
+    "requiredFieldMissing": "Zorunlu alan \"{field}\" eksik",
+    "schemaMissingName": "[{pluginName}] Schema içinde name eksik",
+    "schemaMissingFields": "[{pluginName}] Schema içinde fields tanımı eksik",
+    "fieldDuplicate": "\"{field}\" alanı birden fazla kez tanımlanmış",
+    "fieldMissingName": "Alan için name eksik",
+    "fieldMissingLabel": "Alan için label eksik",
+    "fieldMissingType": "Alan için type eksik",
+    "selectMissingOptions": "\"{field}\" select alanı için options eksik",
+    "minGreaterThanMax": "min({min}) değeri max({max}) değerinden büyük",
+    "invalidColorDefault": "Renk varsayılan değeri \"{value}\" biçimi geçersiz",
+    "fieldMissingDefault": "Alan için defaultValue eksik",
+    "fieldCannotBeEmpty": "\"{field}\" alanı boş olamaz",
+    "fieldExpectedNumber": "\"{field}\" alanı sayı türü bekliyor, gerçek değer {actual}",
+    "fieldValueLessThanMin": "\"{field}\" alanının değeri {value}, minimum {min} değerinden küçük",
+    "fieldValueGreaterThanMax": "\"{field}\" alanının değeri {value}, maksimum {max} değerinden büyük",
+    "fieldExpectedString": "\"{field}\" alanı metin türü bekliyor, gerçek değer {actual}",
+    "fieldExpectedBoolean": "\"{field}\" alanı mantıksal tür bekliyor, gerçek değer {actual}",
+    "fieldValueNotInOptions": "\"{field}\" alanının değeri \"{value}\" geçerli seçenekler [{options}] içinde değil",
+    "fieldExpectedColor": "\"{field}\" alanı renk metni bekliyor, gerçek değer {actual}",
+    "invalidColorFormat": "\"{field}\" alanının değeri \"{value}\" geçerli renk biçimi değil (#RGB / #RRGGBB / #RRGGBBAA olmalı)"
+  },
+  "pluginSdk": {
+    "readme": {
+      "type": "Tür",
+      "category": "Kategori",
+      "renderBackend": "İşleme yöntemi",
+      "properties": "Özellik listesi",
+      "default": "Varsayılan",
+      "development": "Geliştirme"
+    },
+    "pluginStyle": "Eklenti stili",
+    "backendDescriptions": {
+      "vueComponent": "Vue bileşeni tabanlı işleme, karmaşık etkileşimli bileşenler için uygundur",
+      "canvas2d": "Canvas 2D tabanlı işleme, yüksek performanslı grafik çizimi için uygundur",
+      "svgDom": "SVG DOM tabanlı işleme, vektör grafikler ve animasyonlar için uygundur",
+      "cssDom": "CSS DOM tabanlı işleme, HTML öğeleri ve stilleri için uygundur",
+      "three3d": "Three.js 3D tabanlı işleme, üç boyutlu sahneler ve modeller için uygundur"
+    }
+  },
+  "createPlugin": {
+    "cannotExtractComponentName": "Bileşen adı çıkarılamadı, lütfen graphicComponentName ile açıkça belirtin"
+  }
+}

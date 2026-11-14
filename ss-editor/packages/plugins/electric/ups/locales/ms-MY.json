@@ -1,0 +1,19 @@
+{
+  "ups": {
+    "label": "Bekalan kuasa UPS",
+    "properties": {
+      "color": "Warna garisan",
+      "backgroundColor": "Warna latar",
+      "lineWidth": "Lebar garisan",
+      "state": "Status kerja"
+    },
+    "options": {
+      "state": {
+        "online": "Dalam talian",
+        "bypass": "Pintasan",
+        "fault": "Kerosakan"
+      }
+    },
+    "description": "UPS bekalan kuasa tidak terputus - status dalam talian/pintasan/kerosakan"
+  }
+}

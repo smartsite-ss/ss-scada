@@ -1,0 +1,15 @@
+{
+  "border15": {
+    "label": "เส้นขอบ-15 (อาร์ตเดโค)",
+    "description": "องค์ประกอบตกแต่งเส้นขอบ-15 (อาร์ตเดโค)",
+    "properties": {
+      "color1": "ทองหลัก",
+      "color2": "ทองเข้ม",
+      "color3": "สีเข้ม",
+      "backgroundColor": "สีพื้นหลัง",
+      "showSunburst": "รัศมีเปล่งแสง",
+      "showCorners": "ตกแต่งมุม",
+      "animationSpeed": "ความเร็วแอนิเมชัน"
+    }
+  }
+}

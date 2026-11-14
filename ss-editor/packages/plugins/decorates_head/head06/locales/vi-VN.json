@@ -1,0 +1,13 @@
+{
+  "head06": {
+    "label": "Trang trí đầu-06",
+    "properties": {
+      "color1": "Màu tô",
+      "color2": "Màu viền",
+      "dataset": "Văn bản",
+      "textColor": "Màu chữ",
+      "textSize": "Cỡ chữ"
+    },
+    "description": "Trang trí khung đa giác"
+  }
+}

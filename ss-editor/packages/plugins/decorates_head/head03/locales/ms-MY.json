@@ -1,0 +1,13 @@
+{
+  "head03": {
+    "label": "Hiasan kepala-03",
+    "properties": {
+      "color1": "Warna satu",
+      "color2": "Warna dua",
+      "dataset": "Teks paparan",
+      "textColor": "Warna teks",
+      "textSize": "Saiz fon"
+    },
+    "description": "Hiasan anak panah kiri-kanan dengan teks di tengah"
+  }
+}

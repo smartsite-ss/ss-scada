@@ -1,0 +1,24 @@
+{
+  "faultlamp": {
+    "label": "Lámpara de alarma de falla",
+    "properties": {
+      "alarmColor": "Color de alarma",
+      "backgroundColor": "Color de fondo",
+      "dataset": "Valor de datos (0 = normal, >0 = alarma)",
+      "flashing": "Efecto de parpadeo",
+      "flashSpeed": "Velocidad de parpadeo (s)",
+      "showBuzzer": "Mostrar zumbador",
+      "alarmValue": "Valor para alarma",
+      "normalValue": "Valor para normal",
+      "defaultStatus": "Estado predeterminado"
+    },
+    "options": {
+      "alarmColor": {
+        "red": "Rojo",
+        "amber": "Ámbar",
+        "off": "Cerrado"
+      }
+    },
+    "description": "Lámpara de alarma de falla: icono de advertencia rómbico o triangular con parpadeo y zumbador"
+  }
+}

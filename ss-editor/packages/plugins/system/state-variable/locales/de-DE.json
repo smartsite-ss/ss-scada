@@ -1,0 +1,49 @@
+{
+  "stateVariable": {
+    "label": "Zustandsvariable",
+    "description": "Zeigt je nach Variablenwert unterschiedliche Zustandsbilder",
+    "graphic": {
+      "placeholder": "Nicht gebunden / keine Übereinstimmung"
+    },
+    "config": {
+      "bindVariable": "Variable binden",
+      "selectVariable": "Variable auswählen",
+      "clear": "Zurücksetzen",
+      "unbound": "Nicht gebunden",
+      "states": "Zustandsregeln",
+      "addRule": "Regel hinzufügen",
+      "stateName": "Zustandsname",
+      "value": "Vergleichswert",
+      "value2": "Endwert",
+      "selectImage": "Bild auswählen",
+      "defaultImage": "Standardbild",
+      "deleteRule": "Löschen"
+    },
+    "imagePicker": {
+      "title": "Bild auswählen",
+      "sourceGallery": "Galerie",
+      "sourceUrl": "URL",
+      "sourceUpload": "Hochladen",
+      "urlPlaceholder": "Bild-URL eingeben",
+      "confirm": "Bestätigen",
+      "cancel": "Abbrechen",
+      "loading": "Wird geladen...",
+      "empty": "Keine Bilder",
+      "selectCategory": "Bitte Kategorie auswählen",
+      "uploadHint": "Lokale Bilddatei auswählen",
+      "fileSizeError": "Die Bildgröße darf 10 MB nicht überschreiten"
+    },
+    "operator": {
+      "equal": "=",
+      "notEqual": "≠",
+      "greaterThan": ">",
+      "greaterOrEqual": "≥",
+      "lessThan": "<",
+      "lessOrEqual": "≤",
+      "between": "∈",
+      "contains": "contains",
+      "startsWith": "starts with",
+      "endsWith": "ends with"
+    }
+  }
+}

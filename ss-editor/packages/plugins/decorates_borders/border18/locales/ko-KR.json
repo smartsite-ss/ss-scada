@@ -1,0 +1,15 @@
+{
+  "border18": {
+    "label": "테두리-18(모로코 아라베스크)",
+    "description": "테두리-18 장식 컴포넌트(모로코 아라베스크)",
+    "properties": {
+      "color1": "주얼 블루",
+      "color2": "테라코타",
+      "color3": "골드",
+      "backgroundColor": "배경색",
+      "showStars": "별 패턴",
+      "showArches": "아치 장식",
+      "animationSpeed": "애니메이션 속도"
+    }
+  }
+}

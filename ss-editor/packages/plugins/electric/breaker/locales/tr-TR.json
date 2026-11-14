@@ -1,0 +1,21 @@
+{
+  "breaker": {
+    "label": "Devre kesici",
+    "properties": {
+      "color": "Çizgi rengi",
+      "backgroundColor": "Arka plan rengi",
+      "lineWidth": "Çizgi kalınlığı",
+      "closed": "Kapalı durum",
+      "closedValue": "Kapalı durum değeri",
+      "openValue": "Açık durum değeri",
+      "defaultStatus": "Varsayılan durum"
+    },
+    "options": {
+      "closed": {
+        "yes": "Kapalı",
+        "no": "Açık"
+      }
+    },
+    "description": "Güç devre kesici - Yüksek/alçak gerilim devre kesici, kapalı/açık durum geçişini destekler"
+  }
+}

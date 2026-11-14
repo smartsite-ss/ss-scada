@@ -1,0 +1,16 @@
+{
+  "border04": {
+    "label": "Kenarlık-04",
+    "description": "Kenarlık-04 dekoratif bileşeni",
+    "properties": {
+      "colors": "Birinci renk",
+      "colors2": "İkinci renk",
+      "backgroundColor": "Arka plan rengi",
+      "borderTitle": "Başlık metni",
+      "borderTitleColor": "Başlık rengi",
+      "borderTitleSize": "Başlık yazı boyutu",
+      "borderTitleWidth": "Başlık alanı genişliği",
+      "borderTitleHeight": "Başlık yüksekliği"
+    }
+  }
+}

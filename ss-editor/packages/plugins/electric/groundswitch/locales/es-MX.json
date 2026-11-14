@@ -1,0 +1,21 @@
+{
+  "groundswitch": {
+    "label": "Interruptor de puesta a tierra",
+    "properties": {
+      "color": "Color de línea",
+      "backgroundColor": "Color de fondo",
+      "lineWidth": "Grosor de línea",
+      "closed": "Estado cerrado",
+      "closedValue": "Valor para cerrado",
+      "openValue": "Valor para abierto",
+      "defaultStatus": "Estado predeterminado"
+    },
+    "options": {
+      "closed": {
+        "yes": "Cerrado",
+        "no": "Abierto"
+      }
+    },
+    "description": "Interruptor de puesta a tierra: protección de puesta a tierra de línea"
+  }
+}

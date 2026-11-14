@@ -1,0 +1,11 @@
+{
+  "pt": {
+    "label": "電壓互感器",
+    "properties": {
+      "color": "線條顏色",
+      "backgroundColor": "背景色",
+      "lineWidth": "線寬"
+    },
+    "description": "電壓互感器 PT - 測量用電壓變換裝置"
+  }
+}

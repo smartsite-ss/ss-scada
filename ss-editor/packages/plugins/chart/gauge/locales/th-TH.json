@@ -1,0 +1,66 @@
+{
+  "chartGauge": {
+    "label": "แผงหน้าปัด",
+    "description": "องค์ประกอบแผงหน้าปัด สำหรับแสดงค่าเดียวแบบเรียลไทม์และการแจ้งเตือนตามค่าเกณฑ์",
+    "panelTitle": "การกำหนดค่าแผงหน้าปัด",
+    "config": {
+      "dataSource": "แหล่งข้อมูล",
+      "noData": "ไม่มีข้อมูล",
+      "loadError": "โหลดไม่สำเร็จ"
+    },
+    "properties": {
+      "title": "หัวข้อ",
+      "titleColor": "สีหัวข้อ",
+      "titleFontSize": "ขนาดตัวอักษรหัวข้อ",
+      "value": "ค่าปัจจุบัน",
+      "minValue": "ค่าต่ำสุด",
+      "maxValue": "ค่าสูงสุด",
+      "unit": "หน่วย",
+      "startAngle": "มุมเริ่มต้น",
+      "endAngle": "มุมสิ้นสุด",
+      "backgroundColor": "สีพื้นหลัง",
+      "borderColor": "สีเส้นขอบ",
+      "borderWidth": "ความกว้างเส้นขอบ",
+      "borderStyle": "รูปแบบเส้นขอบ",
+      "borderRadius": "มุมโค้ง",
+      "faceColor": "สีหน้าปัด",
+      "rimColor": "สีวงแหวนนอก",
+      "normalColor": "สีโซนปกติ",
+      "needleColor": "สีเข็มชี้",
+      "tickColor": "สีเส้นขีดสเกล",
+      "labelColor": "สีป้ายกำกับ",
+      "valueColor": "สีค่าตัวเลข",
+      "showTicks": "แสดงขีดสเกล",
+      "showLabels": "แสดงป้ายกำกับ",
+      "showValue": "แสดงค่าตัวเลข",
+      "majorTicks": "จำนวนขีดสเกลหลัก",
+      "minorTicks": "จำนวนขีดสเกลย่อย",
+      "warningValue": "ค่าเกณฑ์คำเตือน",
+      "dangerValue": "ค่าเกณฑ์อันตราย",
+      "warningColor": "สีคำเตือน",
+      "dangerColor": "สีอันตราย",
+      "shadowColor": "สีเงา",
+      "shadowOffsetX": "ระยะเลื่อนเงา X",
+      "shadowOffsetY": "ระยะเลื่อนเงา Y",
+      "shadowBlur": "ความเบลอของเงา"
+    },
+    "options": {
+      "borderStyle": {
+        "solid": "เส้นทึบ",
+        "dashed": "เส้นประ",
+        "dotted": "เส้นจุด"
+      }
+    },
+    "groups": {
+      "basic": "พื้นฐาน",
+      "value": "ค่าตัวเลข",
+      "gauge": "เครื่องวัด",
+      "style": "รูปแบบ",
+      "color": "สี",
+      "display": "แสดง",
+      "ticks": "ขีดสเกล",
+      "alarm": "การแจ้งเตือน",
+      "shadow": "เงา"
+    }
+  }
+}

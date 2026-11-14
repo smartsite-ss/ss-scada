@@ -1,0 +1,59 @@
+{
+  "error": {
+    "auth": {
+      "AUTH_001": "Tên người dùng hoặc mật khẩu không đúng",
+      "AUTH_002": "Tài khoản đã bị vô hiệu hóa, vui lòng liên hệ quản trị viên",
+      "AUTH_003": "Token đã hết hạn, vui lòng đăng nhập lại",
+      "AUTH_004": "Token không hợp lệ hoặc đã bị thay đổi",
+      "AUTH_005": "Tên người dùng hoặc email đã tồn tại",
+      "AUTH_006": "Định dạng email không đúng",
+      "AUTH_007": "Mật khẩu chưa đủ mạnh (ít nhất 8 ký tự, gồm chữ cái và số)",
+      "AUTH_008": "Người dùng không tồn tại"
+    },
+    "project": {
+      "PROJ_001": "Dự án không tồn tại",
+      "PROJ_002": "Không có quyền truy cập dự án này",
+      "PROJ_003": "Tên dự án không được để trống",
+      "PROJ_004": "Tên dự án quá dài (tối đa 100 ký tự)",
+      "PROJ_005": "Chỉ có thể xóa dự án do chính mình tạo"
+    },
+    "device": {
+      "DEV_001": "Thiết bị không tồn tại",
+      "DEV_002": "Thiết bị {{name}} (ID: {{id}}) đã offline",
+      "DEV_003": "Đọc thiết bị {{deviceId}} tại địa chỉ {{address}} thất bại: {{detail}}",
+      "DEV_004": "Ghi dữ liệu thiết bị thất bại",
+      "DEV_005": "Kết nối thiết bị quá thời gian chờ ({{timeout}}ms)",
+      "DEV_006": "Gián đoạn liên lạc với thiết bị",
+      "DEV_007": "Cấu hình thiết bị không hợp lệ: {{detail}}"
+    },
+    "data": {
+      "DATA_001": "Lỗi thu thập dữ liệu",
+      "DATA_002": "Giao thức {{protocol}} quá thời gian chờ ({{timeout}}ms)",
+      "DATA_003": "Lưu trữ dữ liệu thất bại (Kho: {{storage}}, Chi tiết: {{detail}})",
+      "DATA_004": "Vấn đề chất lượng dữ liệu của thẻ {{tagId}}: {{quality}}",
+      "DATA_005": "Dữ liệu lịch sử không tồn tại",
+      "DATA_006": "Khoảng thời gian không hợp lệ (thời gian bắt đầu phải sớm hơn thời gian kết thúc)"
+    },
+    "alarm": {
+      "ALM_001": "Lỗi cảnh báo: {{detail}}",
+      "ALM_002": "Gửi thông báo cảnh báo thất bại (Kênh: {{channel}}, Chi tiết: {{detail}})",
+      "ALM_003": "Quy tắc cảnh báo không tồn tại",
+      "ALM_004": "Cấu hình điều kiện cảnh báo không hợp lệ",
+      "ALM_005": "Bản ghi sự kiện không tồn tại hoặc đã bị xóa"
+    },
+    "protocol": {
+      "PROTO_001": "Loại giao thức không được hỗ trợ: {{type}}",
+      "PROTO_002": "Kết nối giao thức thất bại: {{detail}}",
+      "PROTO_003": "Ngắt kết nối giao thức thất bại: {{detail}}",
+      "PROTO_004": "Đọc giao thức quá thời gian chờ",
+      "PROTO_005": "Ghi giao thức thất bại"
+    },
+    "system": {
+      "SYS_001": "Lỗi nội bộ hệ thống",
+      "SYS_002": "Lỗi cấu hình ({{key}}: {{detail}})",
+      "SYS_003": "Lỗi lưu trữ ({{storage}}: {{detail}})",
+      "SYS_004": "Dịch vụ không khả dụng",
+      "SYS_005": "Kết nối cơ sở dữ liệu thất bại"
+    }
+  }
+}

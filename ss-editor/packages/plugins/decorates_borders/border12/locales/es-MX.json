@@ -1,0 +1,11 @@
+{
+  "border12": {
+    "label": "Borde 12",
+    "description": "Componente decorativo de borde 12",
+    "properties": {
+      "color1": "Color uno",
+      "color2": "Color dos",
+      "backgroundColor": "Color de fondo"
+    }
+  }
+}

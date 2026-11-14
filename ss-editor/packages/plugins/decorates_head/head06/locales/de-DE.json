@@ -1,0 +1,13 @@
+{
+  "head06": {
+    "label": "Kopfdekoration-06",
+    "properties": {
+      "color1": "Füllfarbe",
+      "color2": "Rahmenfarbe",
+      "dataset": "Text",
+      "textColor": "Textfarbe",
+      "textSize": "Textgröße"
+    },
+    "description": "Vieleck-Rahmendekoration"
+  }
+}

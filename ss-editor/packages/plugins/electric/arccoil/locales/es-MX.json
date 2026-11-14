@@ -1,0 +1,11 @@
+{
+  "arccoil": {
+    "label": "Bobina de extinción de arco",
+    "properties": {
+      "color": "Color de línea",
+      "backgroundColor": "Color de fondo",
+      "lineWidth": "Grosor de línea"
+    },
+    "description": "Bobina de extinción de arco: dispositivo de compensación de neutro a tierra"
+  }
+}

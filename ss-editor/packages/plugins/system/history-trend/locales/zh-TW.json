@@ -1,0 +1,102 @@
+{
+  "historyTrend": {
+    "label": "歷史趨勢",
+    "description": "依時間區間查詢一個或多個變數的歷史趨勢",
+    "config": {
+      "bindVariables": "綁定變數",
+      "addVariable": "新增變數",
+      "removeVariable": "刪除",
+      "unbound": "未綁定變數",
+      "timeRange": "時間區間",
+      "queryMethod": "查詢方式",
+      "query": "查詢",
+      "querying": "查詢中…"
+    },
+    "series": {
+      "lineWidth": "線條寬度",
+      "lineType": "線條類型",
+      "lineColor": "線條顏色",
+      "symbolSize": "實心點大小",
+      "labelShow": "顯示標籤",
+      "labelFontSize": "標籤字級",
+      "labelColor": "標籤顏色",
+      "labelPosition": "標籤位置",
+      "areaShow": "顯示區域填滿",
+      "areaStartColor": "開始顏色",
+      "areaMiddleColor": "中間顏色",
+      "areaEndColor": "結束顏色",
+      "areaOpacity": "透明度"
+    },
+    "options": {
+      "interpolation": {
+        "raw": "原始值",
+        "linear": "線性插值",
+        "step": "階梯插值"
+      },
+      "presetRange": {
+        "1h": "最近 1 小時",
+        "6h": "最近 6 小時",
+        "24h": "最近 24 小時",
+        "7d": "最近 7 天",
+        "custom": "自訂"
+      },
+      "lineType": {
+        "solid": "實線",
+        "dashed": "虛線",
+        "dotted": "點線"
+      },
+      "labelPosition": {
+        "top": "頂部",
+        "left": "左側",
+        "right": "右側",
+        "bottom": "底部"
+      },
+      "legendPosition": {
+        "top": "頂部",
+        "bottom": "底部",
+        "left": "左側",
+        "right": "右側"
+      },
+      "borderStyle": {
+        "solid": "實線",
+        "dashed": "虛線",
+        "dotted": "點線"
+      },
+      "fontWeight": {
+        "normal": "正常",
+        "bold": "粗體"
+      }
+    },
+    "properties": {
+      "defaultInterpolation": "預設查詢方式",
+      "defaultInterval": "預設插值間隔(ms)",
+      "defaultPresetRange": "預設時間範圍",
+      "defaultCustomStart": "自訂開始時間",
+      "defaultCustomEnd": "自訂結束時間",
+      "maxPoints": "顯示最大點數",
+      "title": "標題",
+      "titleColor": "標題顏色",
+      "titleFontSize": "標題字級",
+      "titleFontWeight": "標題粗細",
+      "gridColor": "網格顏色",
+      "axisColor": "座標軸顏色",
+      "showLegend": "顯示圖例",
+      "legendPosition": "圖例位置",
+      "showTooltip": "顯示提示框",
+      "showDataZoom": "時間軸縮放",
+      "showXAxis": "顯示時間軸",
+      "xAxisLineColor": "時間軸顏色",
+      "xAxisLabelFontSize": "時間軸字級",
+      "xAxisLabelRotate": "時間軸文字斜度",
+      "backgroundColor": "背景色",
+      "borderColor": "邊框色",
+      "borderWidth": "邊框寬度",
+      "borderStyle": "邊框樣式",
+      "borderRadius": "圓角",
+      "shadowColor": "陰影顏色",
+      "shadowOffsetX": "陰影偏移X",
+      "shadowOffsetY": "陰影偏移Y",
+      "shadowBlur": "陰影模糊"
+    }
+  }
+}

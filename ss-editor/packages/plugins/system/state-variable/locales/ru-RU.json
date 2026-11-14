@@ -1,0 +1,49 @@
+{
+  "stateVariable": {
+    "label": "Переменная состояния",
+    "description": "Отображает изображение состояния по значению переменной",
+    "graphic": {
+      "placeholder": "Не привязано / нет совпадений"
+    },
+    "config": {
+      "bindVariable": "Привязать переменную",
+      "selectVariable": "Выбрать переменную",
+      "clear": "Очистить",
+      "unbound": "Не привязано",
+      "states": "Правила состояний",
+      "addRule": "Добавить правило",
+      "stateName": "Имя состояния",
+      "value": "Значение сравнения",
+      "value2": "Конечное значение",
+      "selectImage": "Выбрать изображение",
+      "defaultImage": "Изображение по умолчанию",
+      "deleteRule": "Удалить"
+    },
+    "imagePicker": {
+      "title": "Выбор изображения",
+      "sourceGallery": "Галерея",
+      "sourceUrl": "URL",
+      "sourceUpload": "Загрузить",
+      "urlPlaceholder": "Введите URL изображения",
+      "confirm": "ОК",
+      "cancel": "Отмена",
+      "loading": "Загрузка...",
+      "empty": "Нет изображений",
+      "selectCategory": "Выберите категорию",
+      "uploadHint": "Выберите локальный файл изображения",
+      "fileSizeError": "Размер изображения не должен превышать 10 МБ"
+    },
+    "operator": {
+      "equal": "=",
+      "notEqual": "≠",
+      "greaterThan": ">",
+      "greaterOrEqual": "≥",
+      "lessThan": "<",
+      "lessOrEqual": "≤",
+      "between": "∈",
+      "contains": "contains",
+      "startsWith": "starts with",
+      "endsWith": "ends with"
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "border13": {
+    "label": "Рамка-13",
+    "description": "Декоративный компонент «Рамка-13»",
+    "properties": {
+      "color1": "Цвет 1",
+      "color2": "Цвет 2",
+      "backgroundColor": "Цвет фона"
+    }
+  }
+}

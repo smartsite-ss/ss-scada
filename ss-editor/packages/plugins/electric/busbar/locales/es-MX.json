@@ -1,0 +1,12 @@
+{
+  "busbar": {
+    "label": "Sección de barra colectora",
+    "properties": {
+      "color": "Color de línea",
+      "backgroundColor": "Color de fondo",
+      "lineWidth": "Grosor de línea",
+      "labelText": "Texto de etiqueta"
+    },
+    "description": "Sección de barra colectora: barra de distribución de energía"
+  }
+}

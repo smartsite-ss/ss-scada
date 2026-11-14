@@ -1,0 +1,19 @@
+{
+  "number": {
+    "label": "Número",
+    "properties": {
+      "dataset": "Valor objetivo",
+      "from": "Valor inicial",
+      "dur": "Duración de la animación (s)",
+      "precision": "Decimales",
+      "showSeparator": "Separador de miles",
+      "numberSize": "Tamaño de fuente",
+      "color1": "Color del número",
+      "prefixText": "Prefijo",
+      "color2": "Color del prefijo",
+      "suffixText": "Sufijo",
+      "color3": "Color del sufijo"
+    },
+    "description": "Complemento de animación de conteo numérico"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "voltmeter": {
+    "label": "電壓表",
+    "properties": {
+      "color": "線條顏色",
+      "backgroundColor": "背景色",
+      "lineWidth": "線寬",
+      "dataset": "靜態資料值",
+      "showDigital": "顯示數字讀數",
+      "decimalPlaces": "小數位數",
+      "unit": "單位"
+    },
+    "description": "電壓表 - 測量電壓儀表"
+  }
+}

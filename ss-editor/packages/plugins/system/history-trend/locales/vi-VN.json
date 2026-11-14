@@ -1,0 +1,102 @@
+{
+  "historyTrend": {
+    "label": "Xu hướng lịch sử",
+    "description": "Truy vấn xu hướng lịch sử của một hoặc nhiều biến theo khoảng thời gian",
+    "config": {
+      "bindVariables": "Liên kết biến",
+      "addVariable": "Thêm biến",
+      "removeVariable": "Xóa",
+      "unbound": "Chưa liên kết biến",
+      "timeRange": "Khoảng thời gian",
+      "queryMethod": "Cách truy vấn",
+      "query": "Truy vấn",
+      "querying": "Đang truy vấn…"
+    },
+    "series": {
+      "lineWidth": "Độ rộng đường nét",
+      "lineType": "Kiểu đường nét",
+      "lineColor": "Màu đường nét",
+      "symbolSize": "Kích thước điểm đặc",
+      "labelShow": "Hiển thị nhãn",
+      "labelFontSize": "Cỡ chữ nhãn",
+      "labelColor": "Màu nhãn",
+      "labelPosition": "Vị trí nhãn",
+      "areaShow": "Hiển thị vùng tô",
+      "areaStartColor": "Màu bắt đầu",
+      "areaMiddleColor": "Màu giữa",
+      "areaEndColor": "Màu kết thúc",
+      "areaOpacity": "Độ mờ"
+    },
+    "options": {
+      "interpolation": {
+        "raw": "Giá trị gốc",
+        "linear": "Nội suy tuyến tính",
+        "step": "Nội suy bậc thang"
+      },
+      "presetRange": {
+        "1h": "1 giờ gần đây",
+        "6h": "6 giờ gần đây",
+        "24h": "24 giờ gần đây",
+        "7d": "7 ngày gần đây",
+        "custom": "Tùy chỉnh"
+      },
+      "lineType": {
+        "solid": "Nét liền",
+        "dashed": "Nét đứt",
+        "dotted": "Nét chấm"
+      },
+      "labelPosition": {
+        "top": "Trên",
+        "left": "Trái",
+        "right": "Phải",
+        "bottom": "Dưới"
+      },
+      "legendPosition": {
+        "top": "Trên",
+        "bottom": "Dưới",
+        "left": "Trái",
+        "right": "Phải"
+      },
+      "borderStyle": {
+        "solid": "Nét liền",
+        "dashed": "Nét đứt",
+        "dotted": "Nét chấm"
+      },
+      "fontWeight": {
+        "normal": "Bình thường",
+        "bold": "Đậm"
+      }
+    },
+    "properties": {
+      "defaultInterpolation": "Cách truy vấn mặc định",
+      "defaultInterval": "Khoảng nội suy mặc định (ms)",
+      "defaultPresetRange": "Phạm vi thời gian mặc định",
+      "defaultCustomStart": "Thời gian bắt đầu tùy chỉnh",
+      "defaultCustomEnd": "Thời gian kết thúc tùy chỉnh",
+      "maxPoints": "Số điểm hiển thị tối đa",
+      "title": "Tiêu đề",
+      "titleColor": "Màu tiêu đề",
+      "titleFontSize": "Cỡ chữ tiêu đề",
+      "titleFontWeight": "Độ đậm tiêu đề",
+      "gridColor": "Màu lưới",
+      "axisColor": "Màu trục tọa độ",
+      "showLegend": "Hiển thị chú giải",
+      "legendPosition": "Vị trí chú giải",
+      "showTooltip": "Hiển thị chú thích",
+      "showDataZoom": "Thu phóng trục thời gian",
+      "showXAxis": "Hiển thị trục thời gian",
+      "xAxisLineColor": "Màu trục thời gian",
+      "xAxisLabelFontSize": "Cỡ chữ trục thời gian",
+      "xAxisLabelRotate": "Độ nghiêng chữ trục thời gian",
+      "backgroundColor": "Màu nền",
+      "borderColor": "Màu viền",
+      "borderWidth": "Độ rộng viền",
+      "borderStyle": "Kiểu viền",
+      "borderRadius": "Bo góc",
+      "shadowColor": "Màu bóng đổ",
+      "shadowOffsetX": "Dịch chuyển bóng X",
+      "shadowOffsetY": "Dịch chuyển bóng Y",
+      "shadowBlur": "Độ mờ bóng"
+    }
+  }
+}

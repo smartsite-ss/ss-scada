@@ -1,0 +1,42 @@
+{
+  "navigationButton": {
+    "label": "탐색 버튼",
+    "description": "페이지 이동을 지원하는 탐색 버튼",
+    "properties": {
+      "text": "버튼 텍스트",
+      "type": "버튼 유형",
+      "size": "크기",
+      "disabled": "비활성화",
+      "rounded": "모서리 반경",
+      "transparent": "투명",
+      "targetType": "클릭 동작",
+      "targetPage": "대상 페이지",
+      "targetUrl": "대상 URL"
+    },
+    "options": {
+      "type": {
+        "primary": "주요",
+        "success": "성공",
+        "warning": "경고",
+        "danger": "위험",
+        "default": "기본"
+      },
+      "size": {
+        "large": "크게",
+        "default": "중간",
+        "small": "작게"
+      },
+      "targetType": {
+        "none": "없음",
+        "page": "페이지 열기",
+        "url": "URL 열기"
+      }
+    },
+    "groups": {
+      "basic": "기본",
+      "status": "상태",
+      "style": "스타일",
+      "action": "상호 작용"
+    }
+  }
+}

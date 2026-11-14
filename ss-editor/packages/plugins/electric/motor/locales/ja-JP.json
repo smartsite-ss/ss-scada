@@ -1,0 +1,22 @@
+{
+  "motor": {
+    "label": "電動機",
+    "properties": {
+      "color": "線の色",
+      "backgroundColor": "背景色",
+      "lineWidth": "線幅",
+      "running": "運転状態",
+      "runningValue": "運転に対応する値",
+      "stoppedValue": "停止に対応する値",
+      "faultValue": "故障に対応する値",
+      "defaultStatus": "既定の状態"
+    },
+    "options": {
+      "running": {
+        "yes": "運転中",
+        "no": "停止"
+      }
+    },
+    "description": "電動機 - 回転状態の表示付き"
+  }
+}

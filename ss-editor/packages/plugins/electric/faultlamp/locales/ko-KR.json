@@ -1,0 +1,21 @@
+{
+  "faultlamp": {
+    "label": "고장 알람 램프",
+    "properties": {
+      "color": "색상",
+      "backgroundColor": "배경색",
+      "lineWidth": "선 너비",
+      "alarming": "알람 상태",
+      "alarmValue": "알람 대응 값",
+      "normalValue": "정상 대응 값",
+      "defaultStatus": "기본 상태"
+    },
+    "options": {
+      "alarming": {
+        "yes": "알람 발생 중",
+        "no": "정상"
+      }
+    },
+    "description": "고장 알람 표시등 - 알람 시 빨간색 점멸"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "statusIndicator": {
+    "label": "Индикатор состояния",
+    "description": "Компонент индикатора состояния для многостатусного отображения и тревог",
+    "properties": {
+      "status": "Состояние",
+      "normalColor": "Цвет нормы",
+      "warningColor": "Цвет предупреждения",
+      "errorColor": "Цвет аварии",
+      "offlineColor": "Цвет офлайн",
+      "size": "Размер индикатора",
+      "showGlow": "Показать свечение",
+      "pulseSpeed": "Скорость импульса (с)",
+      "normalValue": "Значение нормы",
+      "warningValue": "Значение предупреждения",
+      "errorValue": "Значение аварии",
+      "offlineValue": "Значение офлайн",
+      "defaultStatus": "Состояние по умолчанию"
+    },
+    "options": {
+      "status": {
+        "normal": "Норма",
+        "warning": "Предупреждение",
+        "error": "Авария",
+        "offline": "Офлайн"
+      }
+    },
+    "groups": {
+      "basic": "Основное",
+      "color": "Цвет",
+      "style": "Стиль",
+      "animation": "Анимация",
+      "binding": "Привязка значений"
+    }
+  }
+}

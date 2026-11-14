@@ -1,0 +1,61 @@
+{
+  "eventPanel": {
+    "label": "Panel peristiwa",
+    "description": "Menampilkan log peristiwa sistem (filter berdasarkan proyek/tipe/status)",
+    "loading": "Memuat...",
+    "empty": "Tidak ada peristiwa",
+    "loadFailed": "Gagal memuat",
+    "systemLevel": "Tingkat sistem",
+    "config": {
+      "project": "Proyek",
+      "allProjects": "Semua proyek",
+      "eventType": "Tipe peristiwa",
+      "allEventTypes": "Semua tipe",
+      "status": "Status",
+      "allStatus": "Semua status"
+    },
+    "columns": {
+      "time": "Waktu",
+      "eventType": "Tipe peristiwa",
+      "project": "Proyek",
+      "operator": "Operator",
+      "status": "Status",
+      "successRatio": "Tingkat keberhasilan",
+      "duration": "Durasi"
+    },
+    "groups": {
+      "device": "Perangkat",
+      "project": "Proyek",
+      "alarm": "Alarm",
+      "config": "Konfigurasi dan timer",
+      "plugin": "Plugin"
+    },
+    "status": {
+      "emitted": "Terkirim",
+      "processing": "Diproses",
+      "processed": "Selesai diproses",
+      "partial": "Sebagian gagal",
+      "failed": "Gagal",
+      "no_subscribers": "Tanpa pelanggan"
+    },
+    "properties": {
+      "pageSize": "Baris per halaman",
+      "refreshInterval": "Interval penyegaran (detik)",
+      "showHeader": "Tampilkan kepala kolom",
+      "showTime": "Kolom waktu",
+      "showEventType": "Kolom tipe peristiwa",
+      "showProject": "Kolom proyek",
+      "showOperator": "Kolom operator",
+      "showStatus": "Kolom status",
+      "showSuccessRatio": "Kolom tingkat keberhasilan",
+      "showDuration": "Kolom durasi",
+      "fontSize": "Ukuran font",
+      "rowHeight": "Tinggi baris",
+      "headerBackgroundColor": "Latar kepala kolom",
+      "rowBackgroundColor": "Latar baris",
+      "alternatingRowColor": "Latar baris selang-seling",
+      "textColor": "Warna teks utama",
+      "backgroundColor": "Warna latar"
+    }
+  }
+}

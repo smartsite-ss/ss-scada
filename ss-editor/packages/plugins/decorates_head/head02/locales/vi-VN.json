@@ -1,0 +1,12 @@
+{
+  "head02": {
+    "label": "Trang trí đầu-02",
+    "properties": {
+      "color1": "Màu thứ nhất",
+      "color2": "Màu thứ hai",
+      "dur": "Chu kỳ hoạt ảnh (giây)",
+      "lineHeight": "Chiều cao đường"
+    },
+    "description": "Trang trí đường ngang kèm hoạt ảnh nét đứt"
+  }
+}

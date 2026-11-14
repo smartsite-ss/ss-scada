@@ -1,0 +1,15 @@
+{
+  "border18": {
+    "label": "邊框-18（摩洛哥蔓藤花紋）",
+    "description": "邊框-18裝飾元件（摩洛哥蔓藤花紋）",
+    "properties": {
+      "color1": "寶石青",
+      "color2": "陶土色",
+      "color3": "金色",
+      "backgroundColor": "背景色",
+      "showStars": "星星圖案",
+      "showArches": "拱形邊飾",
+      "animationSpeed": "動畫速度"
+    }
+  }
+}

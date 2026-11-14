@@ -1,0 +1,78 @@
+{
+  "validation": {
+    "common": {
+      "is_string": "{{property}} muss eine Zeichenkette sein",
+      "is_number": "{{property}} muss eine Zahl sein",
+      "is_boolean": "{{property}} muss ein Boolean sein",
+      "is_date": "{{property}} muss ein gültiges Datum sein",
+      "min_length": "{{property}} darf nicht kürzer als {{constraints.0}} Zeichen sein",
+      "max_length": "{{property}} darf nicht länger als {{constraints.0}} Zeichen sein",
+      "is_email": "{{property}} ist keine gültige E-Mail-Adresse",
+      "matches": "{{property}} entspricht nicht dem erforderlichen Format"
+    },
+    "user": {
+      "username": {
+        "required": "Der Benutzername darf nicht leer sein",
+        "length": "Der Benutzername muss zwischen {{min}} und {{max}} Zeichen lang sein",
+        "pattern": "Der Benutzername darf nur Buchstaben, Ziffern und Unterstriche enthalten",
+        "unique": "Dieser Benutzername ist bereits vergeben"
+      },
+      "email": {
+        "required": "Die E-Mail-Adresse darf nicht leer sein",
+        "is_email": "Das Format der E-Mail-Adresse ist ungültig",
+        "unique": "Diese E-Mail-Adresse ist bereits registriert"
+      },
+      "password": {
+        "required": "Das Passwort darf nicht leer sein",
+        "weak": "Das Passwort ist zu unsicher (mindestens 8 Zeichen mit Groß- und Kleinbuchstaben sowie Ziffern)",
+        "mismatch": "Die beiden Passwörter stimmen nicht überein"
+      }
+    },
+    "project": {
+      "name": {
+        "required": "Der Projektname darf nicht leer sein",
+        "length": "Der Projektname muss zwischen {{min}} und {{max}} Zeichen lang sein"
+      },
+      "description": {
+        "maxlength": "Die Projektbeschreibung darf maximal {{max}} Zeichen lang sein"
+      }
+    },
+    "device": {
+      "name": {
+        "required": "Der Gerätename darf nicht leer sein"
+      },
+      "config": {
+        "host_required": "Die IP-Adresse des Geräts darf nicht leer sein",
+        "port_range": "Die Portnummer muss zwischen 1 und 65535 liegen",
+        "unitId_range": "Die Unit ID muss zwischen 1 und 247 liegen"
+      }
+    },
+    "tag": {
+      "name": {
+        "required": "Der Tag-Name darf nicht leer sein",
+        "unique": "Der Tag-Name ist in diesem Gerät bereits vorhanden"
+      },
+      "address": {
+        "required": "Die Registeradresse darf nicht leer sein",
+        "format": "Das Adressformat ist ungültig (erwartet wird eine Zahl oder ein Modbus-Adressformat)"
+      },
+      "scanRate": {
+        "range": "Der Scan-Zyklus muss zwischen {{min}} und {{max}} ms liegen"
+      }
+    },
+    "alarm": {
+      "rule": {
+        "name": {
+          "required": "Der Name der Alarmregel darf nicht leer sein"
+        },
+        "threshold": {
+          "required": "Der Alarmschwellenwert darf nicht leer sein",
+          "number": "Der Schwellenwert muss eine gültige Zahl sein"
+        },
+        "debounceTime": {
+          "range": "Die Entprellzeit muss zwischen {{min}} und {{max}} ms liegen"
+        }
+      }
+    }
+  }
+}

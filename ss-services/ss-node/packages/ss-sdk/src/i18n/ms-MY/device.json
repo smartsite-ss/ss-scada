@@ -1,0 +1,27 @@
+{
+  "device": {
+    "create": {
+      "success": "Peranti berjaya dicipta",
+      "failed_name_exists": "Nama peranti sudah wujud dalam projek ini"
+    },
+    "update": {
+      "success": "Peranti berjaya dikemas kini"
+    },
+    "delete": {
+      "success": "Peranti berjaya dipadam",
+      "failed_has_tags": "Peranti masih mempunyai tag, tidak boleh dipadam"
+    },
+    "connect": {
+      "success": "Peranti berjaya disambungkan",
+      "failed_timeout": "Sambungan peranti tamat masa",
+      "failed_refused": "Peranti menolak sambungan"
+    },
+    "disconnect": {
+      "success": "Peranti telah terputus sambungan"
+    },
+    "offline": "Peranti {{name}} (ID: {{id}}) telah luar talian",
+    "online": "Peranti {{name}} (ID: {{id}}) telah dalam talian",
+    "read_error": "Gagal membaca alamat {{address}} peranti {{name}}: {{error}}",
+    "write_error": "Gagal menulis alamat {{address}} peranti {{name}}: {{error}}"
+  }
+}

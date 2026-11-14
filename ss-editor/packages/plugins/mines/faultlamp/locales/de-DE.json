@@ -1,0 +1,24 @@
+{
+  "faultlamp": {
+    "label": "Störungsleuchte",
+    "properties": {
+      "alarmColor": "Alarmfarbe",
+      "backgroundColor": "Hintergrundfarbe",
+      "dataset": "Datenwert (0 = Normal, > 0 = Alarm)",
+      "flashing": "Blinkeffekt",
+      "flashSpeed": "Blinkgeschwindigkeit (Sekunden)",
+      "showBuzzer": "Summer anzeigen",
+      "alarmValue": "Wert für Alarm",
+      "normalValue": "Wert für Normal",
+      "defaultStatus": "Standardzustand"
+    },
+    "options": {
+      "alarmColor": {
+        "red": "Rot",
+        "amber": "Amber",
+        "off": "Aus"
+      }
+    },
+    "description": "Störungsleuchte – rauten- bzw. dreieckförmiges Warnsymbol mit Blinken und Summeranzeige"
+  }
+}

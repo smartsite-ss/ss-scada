@@ -1,0 +1,32 @@
+{
+  "loadcell": {
+    "label": "Celda de carga",
+    "properties": {
+      "colors": "Color 1",
+      "colors2": "Color 2",
+      "flowColor": "Color de flujo",
+      "pipeColor": "Color de la tubería",
+      "backgroundColor": "Color de fondo",
+      "bgWidth": "Ancho del fondo",
+      "boardWidth": "Ancho del borde",
+      "roate": "Ángulo de rotación",
+      "cls": "Dirección de la animación",
+      "dur": "Ciclo de animación (s)",
+      "dataset": "Valor de datos",
+      "decimalPlaces": "Decimales",
+      "unit": "Unidad",
+      "forwardValue": "Valor para giro directo",
+      "backwardValue": "Valor para giro inverso",
+      "stopValue": "Valor para detenido",
+      "defaultCls": "Dirección de animación predeterminada"
+    },
+    "options": {
+      "cls": {
+        "left": "Giro directo",
+        "right": "Giro inverso",
+        "stop": "Detenido"
+      }
+    },
+    "description": "Celda de carga de minería: símbolo con visualización del valor de peso en toneladas"
+  }
+}

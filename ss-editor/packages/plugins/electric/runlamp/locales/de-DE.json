@@ -1,0 +1,23 @@
+{
+  "runlamp": {
+    "label": "Betriebsleuchte",
+    "properties": {
+      "lampColor": "Lampenfarbe",
+      "backgroundColor": "Hintergrundfarbe",
+      "radius": "Radius",
+      "state": "Betriebszustand",
+      "runningValue": "Wert für Betrieb",
+      "stoppedValue": "Wert für Stopp",
+      "faultValue": "Wert für Störung",
+      "defaultStatus": "Standardzustand"
+    },
+    "options": {
+      "state": {
+        "running": "Betrieb",
+        "stopped": "Stopp",
+        "fault": "Störung"
+      }
+    },
+    "description": "Betriebsleuchte – drei Zustände Betrieb/Stopp/Störung"
+  }
+}

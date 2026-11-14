@@ -1,0 +1,23 @@
+{
+  "runlamp": {
+    "label": "運転表示灯",
+    "properties": {
+      "lampColor": "ランプの色",
+      "backgroundColor": "背景色",
+      "radius": "半径",
+      "state": "運転状態",
+      "runningValue": "運転に対応する値",
+      "stoppedValue": "停止に対応する値",
+      "faultValue": "故障に対応する値",
+      "defaultStatus": "既定の状態"
+    },
+    "options": {
+      "state": {
+        "running": "運転",
+        "stopped": "停止",
+        "fault": "故障"
+      }
+    },
+    "description": "運転状態表示灯 - 運転/停止/故障の3状態に対応"
+  }
+}

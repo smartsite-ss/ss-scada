@@ -1,0 +1,16 @@
+{
+  "border04": {
+    "label": "Viền-04",
+    "description": "Thành phần trang trí viền-04",
+    "properties": {
+      "colors": "Màu thứ nhất",
+      "colors2": "Màu thứ hai",
+      "backgroundColor": "Màu nền",
+      "borderTitle": "Chữ tiêu đề",
+      "borderTitleColor": "Màu tiêu đề",
+      "borderTitleSize": "Cỡ chữ tiêu đề",
+      "borderTitleWidth": "Chiều rộng vùng tiêu đề",
+      "borderTitleHeight": "Chiều cao tiêu đề"
+    }
+  }
+}

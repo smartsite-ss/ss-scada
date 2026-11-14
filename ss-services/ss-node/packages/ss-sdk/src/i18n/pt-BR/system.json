@@ -1,0 +1,23 @@
+{
+  "system": {
+    "health_check": {
+      "success": "Verificação de integridade do sistema aprovada",
+      "failed": "Falha na verificação de integridade do sistema: {{detail}}"
+    },
+    "config": {
+      "reload_success": "Configuração recarregada com sucesso",
+      "reload_failed": "Falha ao recarregar a configuração: {{detail}}",
+      "validation_error": "Falha na validação da configuração: {{detail}}"
+    },
+    "storage": {
+      "database_connected": "Conexão com o banco de dados bem-sucedida",
+      "database_connection_failed": "Falha na conexão com o banco de dados: {{detail}}",
+      "redis_connected": "Conexão com o Redis bem-sucedida",
+      "redis_connection_failed": "Falha na conexão com o Redis: {{detail}}"
+    },
+    "maintenance": {
+      "mode_enabled": "Modo de manutenção ativado",
+      "mode_disabled": "Modo de manutenção desativado"
+    }
+  }
+}
