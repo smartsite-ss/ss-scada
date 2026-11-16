@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "1.0",
+  "templateType": "device_tag_template",
+  "id": "tpl-4631108c-be4",
+  "name": "Wastewater Pump Unit Template",
+  "description": "Wastewater pump / fan virtual template (running status / current / frequency)",
+  "deviceType": "undefined",
+  "deviceModel": "undefined",
+  "version": "1.0",
+  "status": "draft",
+  "isDefault": false,
+  "authorId": "ai-assistant",
+  "tags": [
+    "Wastewater",
+    "Pump",
+    "Virtual Device"
+  ],
+  "industry": "Custom Templates",
+  "category": "General",
+  "protocol": {
+    "type": "undefined",
+    "config": {}
+  },
+  "variables": [
+    {
+      "name": "Running Status",
+      "label": "Running Status",
+      "address": "20",
+      "dataType": "int",
+      "guid": "34b85db5-e08a-44f0-bb25-6fbc2cba3433"
+    },
+    {
+      "name": "Current",
+      "label": "Current",
+      "address": "24",
+      "dataType": "float",
+      "guid": "271c871a-f281-4c36-9aeb-1219a0acad8c"
+    },
+    {
+      "name": "Frequency",
+      "label": "Frequency",
+      "address": "28",
+      "dataType": "float",
+      "guid": "71e0d9d6-2aeb-4590-84ce-7b6064c24242"
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-09-06T15:06:05.631Z",
+    "updatedAt": "2026-11-16T02:55:48.652Z",
+    "linkedDevices": 0,
+    "usageCount": 0,
+    "rating": 0
+  }
+}

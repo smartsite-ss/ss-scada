@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "1.0",
+  "templateType": "device_tag_template",
+  "id": "tpl-98ad5f09-f2d",
+  "name": "Templat Virtual Peralatan Lini Produksi",
+  "description": "Templat perangkat virtual lini produksi (status / output / waktu siklus / suhu / daya / waktu operasi)",
+  "deviceType": "virtual",
+  "deviceModel": "virtual",
+  "version": "1.0.0",
+  "status": "draft",
+  "isDefault": false,
+  "authorId": "737532a5-77c3-44ac-8f70-1719e207fba7",
+  "tags": [
+    "Lini Produksi",
+    "Perangkat Virtual",
+    "Pabrik Pintar",
+    "Peralatan"
+  ],
+  "industry": "Smart Factory",
+  "category": "Production Line Equipment",
+  "protocol": {
+    "type": "virtual",
+    "config": {}
+  },
+  "variables": [
+    {
+      "name": "Status Operasi",
+      "address": "V_STATUS",
+      "dataType": "bool",
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "9f3b1518-cbbd-4738-8e5d-94876ab45b74"
+    },
+    {
+      "name": "Total Output",
+      "address": "V_COUNT",
+      "dataType": "int32",
+      "unit": "pcs",
+      "minValue": 0,
+      "maxValue": 5000,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "1b3ff150-e0c4-4449-8a81-45b4da3f1a0c"
+    },
+    {
+      "name": "Waktu Siklus",
+      "address": "V_CYCLE",
+      "dataType": "float32",
+      "unit": "s",
+      "minValue": 18,
+      "maxValue": 32,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "fb417511-6545-408c-9f9b-0f39026f7faf"
+    },
+    {
+      "name": "Suhu Spindel",
+      "address": "V_TEMP",
+      "dataType": "float32",
+      "unit": "℃",
+      "minValue": 55,
+      "maxValue": 85,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "a21fae0d-5c76-4ecb-91cf-c70e1e0b7779"
+    },
+    {
+      "name": "Daya",
+      "address": "V_POWER",
+      "dataType": "float32",
+      "unit": "kW",
+      "minValue": 60,
+      "maxValue": 130,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "58babe25-989b-4868-acca-a5cb4cd7a79c"
+    },
+    {
+      "name": "Waktu Operasi",
+      "address": "V_RUNTIME",
+      "dataType": "int32",
+      "unit": "s",
+      "minValue": 0,
+      "maxValue": 86400,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "704480eb-23bb-45ab-8686-af8f77c96d69"
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-09-03T13:42:48.324Z",
+    "updatedAt": "2026-11-16T03:01:46.579Z",
+    "linkedDevices": 0,
+    "usageCount": 0,
+    "rating": 0
+  }
+}

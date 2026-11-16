@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "1.0",
+  "templateType": "device_tag_template",
+  "id": "tpl-70a21ac0-9e9",
+  "name": "Virtuelle Vorlage für MES-Integration",
+  "description": "Virtuelle Vorlage für die MES-Integration (Produktionsauftrag / MES-Rückschreibung)",
+  "deviceType": "virtual",
+  "deviceModel": "virtual",
+  "version": "1.0.0",
+  "status": "draft",
+  "isDefault": false,
+  "authorId": "737532a5-77c3-44ac-8f70-1719e207fba7",
+  "tags": [
+    "MES",
+    "Integration",
+    "Virtuelles Gerät",
+    "Smart Factory"
+  ],
+  "industry": "Smart Factory",
+  "category": "Integration",
+  "protocol": {
+    "type": "virtual",
+    "config": {}
+  },
+  "variables": [
+    {
+      "name": "Aktueller Produktionsauftrag",
+      "address": "V_ORDER",
+      "dataType": "string",
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "26d59363-2355-4f8a-8b17-ff4ec1b0a5a5"
+    },
+    {
+      "name": "MES-Rückschreibung",
+      "address": "V_MES_OUT",
+      "dataType": "string",
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "28c0d38b-bb50-4699-9ef4-a057bb4d0be0"
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-09-03T13:42:48.417Z",
+    "updatedAt": "2026-11-16T03:01:46.570Z",
+    "linkedDevices": 0,
+    "usageCount": 0,
+    "rating": 0
+  }
+}

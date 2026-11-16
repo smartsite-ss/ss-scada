@@ -1,0 +1,138 @@
+{
+  "schemaVersion": "1.0",
+  "templateType": "device_tag_template",
+  "id": "tpl-a20ee558-c4f",
+  "name": "HVAC Central Chiller Unit Template",
+  "description": "Central air-conditioning chilled / hot water unit virtual template (supply and return water temperature / EER / COP / power consumption / deviation / status)",
+  "deviceType": "virtual",
+  "deviceModel": "virtual",
+  "version": "1.0",
+  "status": "draft",
+  "isDefault": false,
+  "authorId": "ai-assistant",
+  "tags": [
+    "HVAC",
+    "Chiller",
+    "Central Air Conditioning",
+    "Virtual Device"
+  ],
+  "industry": "Custom Templates",
+  "category": "General",
+  "protocol": {
+    "type": "virtual",
+    "config": {}
+  },
+  "variables": [
+    {
+      "name": "supplyTemp",
+      "label": "Supply Water Temperature",
+      "address": "40001",
+      "dataType": "float32",
+      "unit": "℃",
+      "guid": "1ec46add-c68b-4e1f-bb8b-568cfab89ece"
+    },
+    {
+      "name": "returnTemp",
+      "label": "Return Water Temperature",
+      "address": "40002",
+      "dataType": "float32",
+      "unit": "℃",
+      "guid": "ff9e37d0-81c2-4d2c-a2ce-7e4ac8691b69"
+    },
+    {
+      "name": "inletTemp",
+      "label": "Inlet Water Temperature",
+      "address": "40003",
+      "dataType": "float32",
+      "unit": "℃",
+      "guid": "8792c357-5948-484a-a160-b2c77c761450"
+    },
+    {
+      "name": "eer",
+      "label": "Instant Cooling Efficiency EER",
+      "address": "40004",
+      "dataType": "float32",
+      "unit": "",
+      "guid": "0421a11f-4a1f-432d-9866-a1c60fbe80ed"
+    },
+    {
+      "name": "eerAvg",
+      "label": "Average Cooling Efficiency EER",
+      "address": "40005",
+      "dataType": "float32",
+      "unit": "",
+      "guid": "4859153e-cea5-4424-ad05-1f5956a22d48"
+    },
+    {
+      "name": "cop",
+      "label": "Instant Heating Efficiency COP",
+      "address": "40006",
+      "dataType": "float32",
+      "unit": "",
+      "guid": "f6107423-6f6a-4a90-a6df-79012cced501"
+    },
+    {
+      "name": "copAvg",
+      "label": "Average Heating Efficiency COP",
+      "address": "40007",
+      "dataType": "float32",
+      "unit": "",
+      "guid": "efa70315-e886-4fc3-b4c9-f38f2c8307c5"
+    },
+    {
+      "name": "power1",
+      "label": "Cooling/Heating Power 1",
+      "address": "40008",
+      "dataType": "float32",
+      "unit": "kW",
+      "guid": "c6a77818-7bee-4552-a407-0980cc343034"
+    },
+    {
+      "name": "power2",
+      "label": "Cooling/Heating Power 2",
+      "address": "40009",
+      "dataType": "float32",
+      "unit": "kW",
+      "guid": "662f2181-8cab-40a6-a925-891330e26594"
+    },
+    {
+      "name": "eerDev",
+      "label": "Efficiency Ratio Deviation",
+      "address": "40010",
+      "dataType": "float32",
+      "unit": "%",
+      "guid": "4ff53a23-9862-48d9-9fa2-8a26f02cf6e7"
+    },
+    {
+      "name": "flowDev",
+      "label": "Water Flow Deviation",
+      "address": "40011",
+      "dataType": "float32",
+      "unit": "%",
+      "guid": "2e93ed6c-b468-494c-81b1-90ec8edc16f8"
+    },
+    {
+      "name": "loadKw",
+      "label": "Nominal Load",
+      "address": "40012",
+      "dataType": "float32",
+      "unit": "kW",
+      "guid": "198fbe41-81d5-4f3e-9b2f-ca4dfdffe3db"
+    },
+    {
+      "name": "status",
+      "label": "Running Status",
+      "address": "40013",
+      "dataType": "bool",
+      "unit": "",
+      "guid": "e203d8fd-1813-40d9-897f-287d75be3cf4"
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-09-06T10:40:53.333Z",
+    "updatedAt": "2026-11-16T02:55:48.656Z",
+    "linkedDevices": 0,
+    "usageCount": 0,
+    "rating": 0
+  }
+}

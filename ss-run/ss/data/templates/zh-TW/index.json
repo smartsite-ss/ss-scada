@@ -1,0 +1,106 @@
+{
+  "schemaVersion": "2.0",
+  "lastUpdated": "2026-11-16T03:01:46.759Z",
+  "totalTemplates": 3,
+  "totalIndustries": 1,
+  "totalCategories": 3,
+  "description": "Smart SCADA device template tree index - organized by industry and device type",
+  "rootPath": "f:\\work\\smartdata\\202603_trace\\trunk\\code\\ss-scada\\ss-run\\ss\\data\\templates\\zh-TW",
+  "industries": [
+    {
+      "type": "industry",
+      "name": "Smart Factory",
+      "path": "Smart Factory",
+      "templateCount": 3,
+      "categories": [
+        {
+          "type": "category",
+          "name": "Energy",
+          "path": "Smart Factory/Energy",
+          "templateCount": 1,
+          "templates": [
+            {
+              "type": "template",
+              "id": "tpl-b4fc5766-ef1",
+              "name": "能源計量虛擬模板",
+              "fileName": "tpl-b4fc5766-ef1.json",
+              "relativePath": "Smart Factory/Energy/tpl-b4fc5766-ef1.json",
+              "deviceType": "virtual",
+              "deviceModel": "virtual",
+              "version": "1.0.0",
+              "status": "draft",
+              "isDefault": false,
+              "variableCount": 4,
+              "tags": [
+                "能源",
+                "計量",
+                "虛擬設備",
+                "智慧工廠"
+              ],
+              "createdAt": "2026-09-03T13:42:48.380Z",
+              "updatedAt": "2026-11-16T03:01:46.559Z"
+            }
+          ]
+        },
+        {
+          "type": "category",
+          "name": "Integration",
+          "path": "Smart Factory/Integration",
+          "templateCount": 1,
+          "templates": [
+            {
+              "type": "template",
+              "id": "tpl-70a21ac0-9e9",
+              "name": "MES對接虛擬模板",
+              "fileName": "tpl-70a21ac0-9e9.json",
+              "relativePath": "Smart Factory/Integration/tpl-70a21ac0-9e9.json",
+              "deviceType": "virtual",
+              "deviceModel": "virtual",
+              "version": "1.0.0",
+              "status": "draft",
+              "isDefault": false,
+              "variableCount": 2,
+              "tags": [
+                "MES",
+                "對接",
+                "虛擬設備",
+                "智慧工廠"
+              ],
+              "createdAt": "2026-09-03T13:42:48.417Z",
+              "updatedAt": "2026-11-16T03:01:46.558Z"
+            }
+          ]
+        },
+        {
+          "type": "category",
+          "name": "Production Line Equipment",
+          "path": "Smart Factory/Production Line Equipment",
+          "templateCount": 1,
+          "templates": [
+            {
+              "type": "template",
+              "id": "tpl-98ad5f09-f2d",
+              "name": "產線設備虛擬模板",
+              "fileName": "tpl-98ad5f09-f2d.json",
+              "relativePath": "Smart Factory/Production Line Equipment/tpl-98ad5f09-f2d.json",
+              "deviceType": "virtual",
+              "deviceModel": "virtual",
+              "version": "1.0.0",
+              "status": "draft",
+              "isDefault": false,
+              "variableCount": 6,
+              "tags": [
+                "產線",
+                "虛擬設備",
+                "智慧工廠",
+                "設備"
+              ],
+              "createdAt": "2026-09-03T13:42:48.324Z",
+              "updatedAt": "2026-11-16T03:01:46.555Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

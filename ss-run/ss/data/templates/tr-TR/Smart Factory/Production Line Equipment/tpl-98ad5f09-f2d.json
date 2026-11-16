@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "1.0",
+  "templateType": "device_tag_template",
+  "id": "tpl-98ad5f09-f2d",
+  "name": "Üretim Hattı Ekipmanı Sanal Şablonu",
+  "description": "Üretim hattı sanal cihaz şablonu (durum / üretim / çevrim süresi / sıcaklık / güç / çalışma süresi)",
+  "deviceType": "virtual",
+  "deviceModel": "virtual",
+  "version": "1.0.0",
+  "status": "draft",
+  "isDefault": false,
+  "authorId": "737532a5-77c3-44ac-8f70-1719e207fba7",
+  "tags": [
+    "Üretim Hattı",
+    "Sanal Cihaz",
+    "Akıllı Fabrika",
+    "Ekipman"
+  ],
+  "industry": "Smart Factory",
+  "category": "Production Line Equipment",
+  "protocol": {
+    "type": "virtual",
+    "config": {}
+  },
+  "variables": [
+    {
+      "name": "Çalışma Durumu",
+      "address": "V_STATUS",
+      "dataType": "bool",
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "dee6867d-a251-4aa3-9e21-1648bc413247"
+    },
+    {
+      "name": "Toplam Üretim",
+      "address": "V_COUNT",
+      "dataType": "int32",
+      "unit": "pcs",
+      "minValue": 0,
+      "maxValue": 5000,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "9a3d9e2e-1a99-4443-baf8-1084cec67e07"
+    },
+    {
+      "name": "Çevrim Süresi",
+      "address": "V_CYCLE",
+      "dataType": "float32",
+      "unit": "s",
+      "minValue": 18,
+      "maxValue": 32,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "0176092d-9ec6-4044-a9c0-b8940958d865"
+    },
+    {
+      "name": "İş Mili Sıcaklığı",
+      "address": "V_TEMP",
+      "dataType": "float32",
+      "unit": "℃",
+      "minValue": 55,
+      "maxValue": 85,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "dc01f55d-c17d-4c33-849a-f59f979d5ec5"
+    },
+    {
+      "name": "Güç",
+      "address": "V_POWER",
+      "dataType": "float32",
+      "unit": "kW",
+      "minValue": 60,
+      "maxValue": 130,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "d64e9921-6fec-46e0-aba2-1b0da53c8040"
+    },
+    {
+      "name": "Çalışma Süresi",
+      "address": "V_RUNTIME",
+      "dataType": "int32",
+      "unit": "s",
+      "minValue": 0,
+      "maxValue": 86400,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "97e716a6-bf8a-4f7c-b573-29d8f51dd2e1"
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-09-03T13:42:48.324Z",
+    "updatedAt": "2026-11-16T03:01:46.595Z",
+    "linkedDevices": 0,
+    "usageCount": 0,
+    "rating": 0
+  }
+}

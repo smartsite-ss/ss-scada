@@ -1,0 +1,85 @@
+{
+  "schemaVersion": "1.0",
+  "templateType": "device_tag_template",
+  "id": "tpl-dc812fe4-921",
+  "name": "ZZ Calculated Variable Verification Template",
+  "description": "End-to-end verification of calculated variables (includes a cron-scheduled calculated point); can be deleted after verification",
+  "deviceType": "virtual",
+  "deviceModel": "virtual",
+  "version": "1.0",
+  "status": "draft",
+  "isDefault": false,
+  "authorId": "system",
+  "tags": [
+    "Calculated Variable",
+    "Verification",
+    "Cron",
+    "Virtual Device"
+  ],
+  "industry": "Custom Templates",
+  "category": "General",
+  "protocol": {
+    "type": "virtual",
+    "config": {}
+  },
+  "variables": [
+    {
+      "guid": "021db9ff-2abf-4953-ae32-bbe346076447",
+      "order": 0,
+      "name": "inlet",
+      "address": "",
+      "dataType": "float32",
+      "enabled": true,
+      "unit": "℃"
+    },
+    {
+      "guid": "684cb046-3da6-4636-87f5-493d8deaf3dc",
+      "order": 1,
+      "name": "outlet",
+      "address": "",
+      "dataType": "float32",
+      "enabled": true,
+      "unit": "℃"
+    },
+    {
+      "name": "deltaTemp",
+      "label": "Supply/Return Water Temperature Difference",
+      "address": "",
+      "dataType": "float32",
+      "category": "CALC",
+      "displayFormat": "%.2f",
+      "description": "Calculated variable: inlet - outlet (cron schedule, once per minute)",
+      "calc": {
+        "evaluator": "expression",
+        "expression": "#{a}-#{b}",
+        "binding": {
+          "mode": "relative",
+          "slots": [
+            {
+              "key": "a",
+              "ref": "inlet"
+            },
+            {
+              "key": "b",
+              "ref": "outlet"
+            }
+          ]
+        },
+        "onMissing": "ignore",
+        "schedule": {
+          "mode": "cron",
+          "cron": "* * * * *",
+          "timestampAt": "period-start"
+        }
+      },
+      "guid": "94e22195-63c6-4d8f-b157-091bdf4f403d"
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-09-16T10:01:45.426Z",
+    "updatedAt": "2026-11-16T02:55:48.659Z",
+    "linkedDevices": 0,
+    "usageCount": 0,
+    "rating": 0
+  }
+}

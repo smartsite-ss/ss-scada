@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "1.0",
+  "templateType": "device_tag_template",
+  "id": "tpl-70a21ac0-9e9",
+  "name": "MES 연동 가상 템플릿",
+  "description": "MES 연동 가상 템플릿(생산 지시/MES 쓰기 백)",
+  "deviceType": "virtual",
+  "deviceModel": "virtual",
+  "version": "1.0.0",
+  "status": "draft",
+  "isDefault": false,
+  "authorId": "737532a5-77c3-44ac-8f70-1719e207fba7",
+  "tags": [
+    "MES",
+    "연동",
+    "가상 장비",
+    "스마트 팩토리"
+  ],
+  "industry": "Smart Factory",
+  "category": "Integration",
+  "protocol": {
+    "type": "virtual",
+    "config": {}
+  },
+  "variables": [
+    {
+      "name": "현재 생산 지시",
+      "address": "V_ORDER",
+      "dataType": "string",
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "16761d30-3014-4326-bb71-21e7976f3e83"
+    },
+    {
+      "name": "MES 쓰기 백",
+      "address": "V_MES_OUT",
+      "dataType": "string",
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "07d69264-494b-466e-bcbd-78072524a18d"
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-09-03T13:42:48.417Z",
+    "updatedAt": "2026-11-16T03:01:46.566Z",
+    "linkedDevices": 0,
+    "usageCount": 0,
+    "rating": 0
+  }
+}

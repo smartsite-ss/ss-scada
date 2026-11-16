@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "1.0",
+  "templateType": "device_tag_template",
+  "id": "tpl-98ad5f09-f2d",
+  "name": "Modelo virtual de equipamento de linha de produção",
+  "description": "Modelo virtual de linha de produção (status / produção / tempo de ciclo / temperatura / potência / tempo de operação)",
+  "deviceType": "virtual",
+  "deviceModel": "virtual",
+  "version": "1.0.0",
+  "status": "draft",
+  "isDefault": false,
+  "authorId": "737532a5-77c3-44ac-8f70-1719e207fba7",
+  "tags": [
+    "Linha de Produção",
+    "Dispositivo Virtual",
+    "Fábrica Inteligente",
+    "Equipamento"
+  ],
+  "industry": "Smart Factory",
+  "category": "Production Line Equipment",
+  "protocol": {
+    "type": "virtual",
+    "config": {}
+  },
+  "variables": [
+    {
+      "name": "Status de Operação",
+      "address": "V_STATUS",
+      "dataType": "bool",
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "2ef3d2af-eaee-40e8-8e93-ec6b0ec7d8da"
+    },
+    {
+      "name": "Produção Acumulada",
+      "address": "V_COUNT",
+      "dataType": "int32",
+      "unit": "pcs",
+      "minValue": 0,
+      "maxValue": 5000,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "03f3a3ff-257a-406a-9652-ff15ea70f61a"
+    },
+    {
+      "name": "Tempo de Ciclo",
+      "address": "V_CYCLE",
+      "dataType": "float32",
+      "unit": "s",
+      "minValue": 18,
+      "maxValue": 32,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "e249f225-8c1e-4697-bec9-a049c14d9d83"
+    },
+    {
+      "name": "Temperatura do Fuso",
+      "address": "V_TEMP",
+      "dataType": "float32",
+      "unit": "℃",
+      "minValue": 55,
+      "maxValue": 85,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "b7b1cdf1-4953-4db8-b5c5-73fea4f476d9"
+    },
+    {
+      "name": "Potência",
+      "address": "V_POWER",
+      "dataType": "float32",
+      "unit": "kW",
+      "minValue": 60,
+      "maxValue": 130,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "f45fa0e6-9e84-46a2-9380-52522e4998d2"
+    },
+    {
+      "name": "Tempo de Operação",
+      "address": "V_RUNTIME",
+      "dataType": "int32",
+      "unit": "s",
+      "minValue": 0,
+      "maxValue": 86400,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "d9b9382e-dff8-43da-bb91-451eb9a03c88"
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-09-03T13:42:48.324Z",
+    "updatedAt": "2026-11-16T03:01:46.587Z",
+    "linkedDevices": 0,
+    "usageCount": 0,
+    "rating": 0
+  }
+}

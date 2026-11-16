@@ -469,4 +469,125 @@ describe('TemplateLoaderService', () => {
       expect(tpl!.variables[0].address).toBe('40001');
     });
   });
+
+  describe('locale fallback (English baseline)', () => {
+    const buildEntry = (id: string, name: string, tag: string) => ({
+      type: 'template',
+      id,
+      name,
+      fileName: id + '.json',
+      relativePath: 'Smart Factory/Production Line Equipment/' + id + '.json',
+      deviceType: 'virtual',
+      deviceModel: 'virtual',
+      version: '1.0.0',
+      status: 'draft',
+      isDefault: false,
+      variableCount: 1,
+      tags: [tag],
+      createdAt: '2026-01-01T00:00:00Z',
+      updatedAt: '2026-01-01T00:00:00Z',
+    });
+
+    const buildIndex = (locale: string, entries: any[]) => ({
+      schemaVersion: '2.0',
+      lastUpdated: '2026-01-01T00:00:00.000Z',
+      totalTemplates: entries.length,
+      totalIndustries: 1,
+      totalCategories: 1,
+      description: 'Test index',
+      rootPath: '/tmp/test-templates/' + locale,
+      industries: [
+        {
+          type: 'industry',
+          name: 'Smart Factory',
+          path: 'Smart Factory',
+          templateCount: entries.length,
+          categories: [
+            {
+              type: 'category',
+              name: 'Production Line Equipment',
+              path: 'Smart Factory/Production Line Equipment',
+              templateCount: entries.length,
+              templates: entries,
+            },
+          ],
+        },
+      ],
+    });
+
+    beforeEach(() => {
+      const indexes: Record<string, any> = {
+        'zh-CN': buildIndex('zh-CN', [
+          buildEntry('tpl-shared', 'Shared Template', 'zh'),
+          buildEntry('tpl-zh-only', 'Chinese Only Template', 'zh'),
+        ]),
+        'en-US': buildIndex('en-US', [
+          buildEntry('tpl-shared', 'Shared Template', 'en'),
+          buildEntry('tpl-en-only', 'English Only Template', 'en'),
+        ]),
+        'ja-JP': buildIndex('ja-JP', [buildEntry('tpl-shared', 'Shared Template (ja)', 'ja')]),
+      };
+
+      (fs.readdirSync as jest.Mock).mockReturnValue([
+        { name: 'zh-CN', isDirectory: () => true },
+        { name: 'en-US', isDirectory: () => true },
+        { name: 'ja-JP', isDirectory: () => true },
+      ]);
+      (fs.readFileSync as jest.Mock).mockImplementation((filePath: string) => {
+        if (filePath.endsWith('index.json')) {
+          const locale = ['zh-CN', 'en-US', 'ja-JP'].find((l) => filePath.includes(l))!;
+          return JSON.stringify(indexes[locale]);
+        }
+        const suffix = filePath.includes('ja-JP') ? 'ja' : filePath.includes('en-US') ? 'en' : 'zh';
+        const fileName = filePath.split(/[\\/]/).pop()!.replace('.json', '');
+        return JSON.stringify({ name: fileName + '-' + suffix, description: 'desc', variables: [{ name: 'v1', address: '1' }] });
+      });
+      (fs.existsSync as jest.Mock).mockReturnValue(true);
+      service = new TemplateLoaderService(mockIndexService);
+    });
+
+    it('TC-LOAD-100: should fill templates missing in the current locale from en-US', async () => {
+      await service.reload();
+
+      const ids = service.getAllTemplates('ja-JP').map((t) => t.id);
+      expect(ids).toHaveLength(2);
+      expect(ids).toEqual(expect.arrayContaining(['tpl-shared', 'tpl-en-only']));
+    });
+
+    it('TC-LOAD-101: should prefer the template of the current locale', async () => {
+      await service.reload();
+
+      expect(service.getTemplate('tpl-shared', 'ja-JP')!.name).toBe('tpl-shared-ja');
+      expect(service.getTemplate('tpl-en-only', 'ja-JP')!.name).toBe('tpl-en-only-en');
+    });
+
+    it('TC-LOAD-102: should not fall back from en-US to zh-CN', async () => {
+      await service.reload();
+
+      const ids = service.getAllTemplates('en-US').map((t) => t.id);
+      expect(ids).toEqual(expect.arrayContaining(['tpl-shared', 'tpl-en-only']));
+      expect(ids).not.toContain('tpl-zh-only');
+      expect(service.getTemplate('tpl-zh-only', 'en-US')).toBeUndefined();
+    });
+
+    it('TC-LOAD-103: should merge the index with the English baseline', async () => {
+      await service.reload();
+
+      const index = service.getIndex('ja-JP')!;
+      expect(index.totalTemplates).toBe(2);
+      expect(index.totalIndustries).toBe(1);
+      const templates = index.industries[0].categories[0].templates;
+      expect(templates.map((t) => t.id).sort()).toEqual(['tpl-en-only', 'tpl-shared']);
+      // The current locale wins for entries it does translate
+      expect(templates.find((t) => t.id === 'tpl-shared')!.name).toBe('Shared Template (ja)');
+    });
+
+    it('TC-LOAD-104: should keep zh-CN index untouched by the English baseline', async () => {
+      await service.reload();
+
+      const index = service.getIndex('zh-CN')!;
+      expect(index.totalTemplates).toBe(2);
+      expect(index.industries[0].categories[0].templates.map((t) => t.id)).toEqual(['tpl-shared', 'tpl-zh-only']);
+    });
+  });
 });

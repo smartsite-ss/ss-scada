@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "1.0",
+  "templateType": "device_tag_template",
+  "id": "tpl-3e2ebf3e-1c7",
+  "name": "HVAC Terminal Environment Template",
+  "description": "Central air-conditioning terminal environment virtual template (room temperature / humidity / fresh air volume / air velocity / PM2.5)",
+  "deviceType": "virtual",
+  "deviceModel": "virtual",
+  "version": "1.0",
+  "status": "draft",
+  "isDefault": false,
+  "authorId": "ai-assistant",
+  "tags": [
+    "HVAC",
+    "Terminal",
+    "Environment",
+    "Virtual Device"
+  ],
+  "industry": "Custom Templates",
+  "category": "General",
+  "protocol": {
+    "type": "virtual",
+    "config": {}
+  },
+  "variables": [
+    {
+      "name": "roomTemp",
+      "label": "Room Temperature",
+      "address": "40018",
+      "dataType": "float32",
+      "unit": "℃",
+      "guid": "243137a6-f875-44be-8308-6eb651ef4186"
+    },
+    {
+      "name": "humidity",
+      "label": "Humidity",
+      "address": "40019",
+      "dataType": "float32",
+      "unit": "%",
+      "guid": "65019754-ba02-4ba1-bed1-7696d85a880f"
+    },
+    {
+      "name": "freshAir",
+      "label": "Fresh Air Volume",
+      "address": "40020",
+      "dataType": "float32",
+      "unit": "m³/h",
+      "guid": "340889ec-e173-4012-968e-11495791f638"
+    },
+    {
+      "name": "airSpeed",
+      "label": "Air Velocity",
+      "address": "40021",
+      "dataType": "float32",
+      "unit": "m/s",
+      "guid": "0799d8c3-c0f5-48ee-9127-1c27586d3049"
+    },
+    {
+      "name": "pm25",
+      "label": "PM2.5",
+      "address": "40022",
+      "dataType": "float32",
+      "unit": "μg/m³",
+      "guid": "187a99da-91ca-4fbe-9db1-10e893999a6c"
+    },
+    {
+      "name": "status",
+      "label": "Running Status",
+      "address": "40023",
+      "dataType": "bool",
+      "unit": "",
+      "guid": "1a428f3f-e9fa-4c45-be2e-6181c15c6601"
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-09-06T10:40:53.538Z",
+    "updatedAt": "2026-11-16T02:55:48.649Z",
+    "linkedDevices": 0,
+    "usageCount": 0,
+    "rating": 0
+  }
+}

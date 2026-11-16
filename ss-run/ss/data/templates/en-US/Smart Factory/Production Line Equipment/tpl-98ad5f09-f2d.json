@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "1.0",
+  "templateType": "device_tag_template",
+  "id": "tpl-98ad5f09-f2d",
+  "name": "Production Line Equipment Virtual Template",
+  "description": "Production line virtual device template (status / output / cycle time / temperature / power / running time)",
+  "deviceType": "virtual",
+  "deviceModel": "virtual",
+  "version": "1.0.0",
+  "status": "draft",
+  "isDefault": false,
+  "authorId": "737532a5-77c3-44ac-8f70-1719e207fba7",
+  "tags": [
+    "Production Line",
+    "Virtual Device",
+    "Smart Factory",
+    "Equipment"
+  ],
+  "industry": "Smart Factory",
+  "category": "Production Line Equipment",
+  "protocol": {
+    "type": "virtual",
+    "config": {}
+  },
+  "variables": [
+    {
+      "name": "Running Status",
+      "address": "V_STATUS",
+      "dataType": "bool",
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "212e5b17-659e-45d4-9177-3f0e756e93d3"
+    },
+    {
+      "name": "Total Output",
+      "address": "V_COUNT",
+      "dataType": "int32",
+      "unit": "pcs",
+      "minValue": 0,
+      "maxValue": 5000,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "a0efd683-90fc-44e5-96a1-a9a682078534"
+    },
+    {
+      "name": "Cycle Time",
+      "address": "V_CYCLE",
+      "dataType": "float32",
+      "unit": "s",
+      "minValue": 18,
+      "maxValue": 32,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "81fc6f59-47ff-47ee-84ad-912f9ace1547"
+    },
+    {
+      "name": "Spindle Temperature",
+      "address": "V_TEMP",
+      "dataType": "float32",
+      "unit": "℃",
+      "minValue": 55,
+      "maxValue": 85,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "3b380475-b5e6-466a-9af3-d2b55c8caac6"
+    },
+    {
+      "name": "Power",
+      "address": "V_POWER",
+      "dataType": "float32",
+      "unit": "kW",
+      "minValue": 60,
+      "maxValue": 130,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "7a99fe6b-6cfd-46f8-a751-b330efc6461a"
+    },
+    {
+      "name": "Running Time",
+      "address": "V_RUNTIME",
+      "dataType": "int32",
+      "unit": "s",
+      "minValue": 0,
+      "maxValue": 86400,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "21d06878-3e9b-4404-b18b-00f0a454d0ee"
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-09-03T13:42:48.324Z",
+    "updatedAt": "2026-11-16T02:55:48.645Z",
+    "linkedDevices": 0,
+    "usageCount": 0,
+    "rating": 0
+  }
+}

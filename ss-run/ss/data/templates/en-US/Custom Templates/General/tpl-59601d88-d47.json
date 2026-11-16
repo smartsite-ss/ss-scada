@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "1.0",
+  "templateType": "device_tag_template",
+  "id": "tpl-59601d88-d47",
+  "name": "Wastewater Tank Template",
+  "description": "Wastewater tank virtual template (level / temperature / dissolved oxygen / sludge concentration / ORP)",
+  "deviceType": "undefined",
+  "deviceModel": "undefined",
+  "version": "1.0",
+  "status": "draft",
+  "isDefault": false,
+  "authorId": "ai-assistant",
+  "tags": [
+    "Wastewater",
+    "Tank",
+    "Virtual Device"
+  ],
+  "industry": "Custom Templates",
+  "category": "General",
+  "protocol": {
+    "type": "undefined",
+    "config": {}
+  },
+  "variables": [
+    {
+      "name": "Level",
+      "label": "Level",
+      "address": "0",
+      "dataType": "float",
+      "guid": "0dc4e249-ebe6-4f97-bdaa-33c22211ef83"
+    },
+    {
+      "name": "Temperature",
+      "label": "Temperature",
+      "address": "4",
+      "dataType": "float",
+      "guid": "2d526779-5bc5-4422-baed-75c72cb8de97"
+    },
+    {
+      "name": "Dissolved Oxygen",
+      "label": "Dissolved Oxygen",
+      "address": "8",
+      "dataType": "float",
+      "guid": "f6729570-b666-4991-ad51-db4bbecda4ea"
+    },
+    {
+      "name": "Sludge Concentration",
+      "label": "Sludge Concentration",
+      "address": "12",
+      "dataType": "float",
+      "guid": "0e6f85f5-57d6-4348-b0bf-dddc918ec7e3"
+    },
+    {
+      "name": "ORP",
+      "label": "ORP",
+      "address": "16",
+      "dataType": "int",
+      "guid": "ab636fa7-5207-4b4d-bea5-1316d27e8a87"
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-09-06T15:06:05.478Z",
+    "updatedAt": "2026-11-16T02:55:48.654Z",
+    "linkedDevices": 0,
+    "usageCount": 0,
+    "rating": 0
+  }
+}

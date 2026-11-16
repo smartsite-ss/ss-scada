@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "1.0",
+  "templateType": "device_tag_template",
+  "id": "tpl-98ad5f09-f2d",
+  "name": "เทมเพลตเสมือนของอุปกรณ์สายการผลิต",
+  "description": "เทมเพลตอุปกรณ์เสมือนของสายการผลิต (สถานะ / ปริมาณผลผลิต / เวลารอบ / อุณหภูมิ / กำลังไฟ / เวลาทำงาน)",
+  "deviceType": "virtual",
+  "deviceModel": "virtual",
+  "version": "1.0.0",
+  "status": "draft",
+  "isDefault": false,
+  "authorId": "737532a5-77c3-44ac-8f70-1719e207fba7",
+  "tags": [
+    "สายการผลิต",
+    "อุปกรณ์เสมือน",
+    "โรงงานอัจฉริยะ",
+    "อุปกรณ์"
+  ],
+  "industry": "Smart Factory",
+  "category": "Production Line Equipment",
+  "protocol": {
+    "type": "virtual",
+    "config": {}
+  },
+  "variables": [
+    {
+      "name": "สถานะการทำงาน",
+      "address": "V_STATUS",
+      "dataType": "bool",
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "64994805-a78e-4b3d-b569-e623298ce8cc"
+    },
+    {
+      "name": "ปริมาณผลผลิตรวม",
+      "address": "V_COUNT",
+      "dataType": "int32",
+      "unit": "pcs",
+      "minValue": 0,
+      "maxValue": 5000,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "3166f50c-001f-48f3-b535-cb743e7f8292"
+    },
+    {
+      "name": "เวลารอบ",
+      "address": "V_CYCLE",
+      "dataType": "float32",
+      "unit": "s",
+      "minValue": 18,
+      "maxValue": 32,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "de27631b-8266-4a85-b23b-c08f04368d87"
+    },
+    {
+      "name": "อุณหภูมิสปินเดิล",
+      "address": "V_TEMP",
+      "dataType": "float32",
+      "unit": "℃",
+      "minValue": 55,
+      "maxValue": 85,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "780cb35d-547d-4779-b0f8-fac366d0af59"
+    },
+    {
+      "name": "กำลังไฟ",
+      "address": "V_POWER",
+      "dataType": "float32",
+      "unit": "kW",
+      "minValue": 60,
+      "maxValue": 130,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "762cc9fc-486d-47ea-8d0b-35bc34d790a0"
+    },
+    {
+      "name": "เวลาทำงาน",
+      "address": "V_RUNTIME",
+      "dataType": "int32",
+      "unit": "s",
+      "minValue": 0,
+      "maxValue": 86400,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "11fbbb75-4f31-44f2-817b-3301205c8207"
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-09-03T13:42:48.324Z",
+    "updatedAt": "2026-11-16T03:01:46.593Z",
+    "linkedDevices": 0,
+    "usageCount": 0,
+    "rating": 0
+  }
+}

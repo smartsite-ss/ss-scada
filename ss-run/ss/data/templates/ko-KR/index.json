@@ -1,0 +1,106 @@
+{
+  "schemaVersion": "2.0",
+  "lastUpdated": "2026-11-16T03:01:46.730Z",
+  "totalTemplates": 3,
+  "totalIndustries": 1,
+  "totalCategories": 3,
+  "description": "Smart SCADA device template tree index - organized by industry and device type",
+  "rootPath": "f:\\work\\smartdata\\202603_trace\\trunk\\code\\ss-scada\\ss-run\\ss\\data\\templates\\ko-KR",
+  "industries": [
+    {
+      "type": "industry",
+      "name": "Smart Factory",
+      "path": "Smart Factory",
+      "templateCount": 3,
+      "categories": [
+        {
+          "type": "category",
+          "name": "Energy",
+          "path": "Smart Factory/Energy",
+          "templateCount": 1,
+          "templates": [
+            {
+              "type": "template",
+              "id": "tpl-b4fc5766-ef1",
+              "name": "에너지 계량 가상 템플릿",
+              "fileName": "tpl-b4fc5766-ef1.json",
+              "relativePath": "Smart Factory/Energy/tpl-b4fc5766-ef1.json",
+              "deviceType": "virtual",
+              "deviceModel": "virtual",
+              "version": "1.0.0",
+              "status": "draft",
+              "isDefault": false,
+              "variableCount": 4,
+              "tags": [
+                "에너지",
+                "계량",
+                "가상 장비",
+                "스마트 팩토리"
+              ],
+              "createdAt": "2026-09-03T13:42:48.380Z",
+              "updatedAt": "2026-11-16T03:01:46.567Z"
+            }
+          ]
+        },
+        {
+          "type": "category",
+          "name": "Integration",
+          "path": "Smart Factory/Integration",
+          "templateCount": 1,
+          "templates": [
+            {
+              "type": "template",
+              "id": "tpl-70a21ac0-9e9",
+              "name": "MES 연동 가상 템플릿",
+              "fileName": "tpl-70a21ac0-9e9.json",
+              "relativePath": "Smart Factory/Integration/tpl-70a21ac0-9e9.json",
+              "deviceType": "virtual",
+              "deviceModel": "virtual",
+              "version": "1.0.0",
+              "status": "draft",
+              "isDefault": false,
+              "variableCount": 2,
+              "tags": [
+                "MES",
+                "연동",
+                "가상 장비",
+                "스마트 팩토리"
+              ],
+              "createdAt": "2026-09-03T13:42:48.417Z",
+              "updatedAt": "2026-11-16T03:01:46.566Z"
+            }
+          ]
+        },
+        {
+          "type": "category",
+          "name": "Production Line Equipment",
+          "path": "Smart Factory/Production Line Equipment",
+          "templateCount": 1,
+          "templates": [
+            {
+              "type": "template",
+              "id": "tpl-98ad5f09-f2d",
+              "name": "생산 라인 설비 가상 템플릿",
+              "fileName": "tpl-98ad5f09-f2d.json",
+              "relativePath": "Smart Factory/Production Line Equipment/tpl-98ad5f09-f2d.json",
+              "deviceType": "virtual",
+              "deviceModel": "virtual",
+              "version": "1.0.0",
+              "status": "draft",
+              "isDefault": false,
+              "variableCount": 6,
+              "tags": [
+                "생산 라인",
+                "가상 장비",
+                "스마트 팩토리",
+                "설비"
+              ],
+              "createdAt": "2026-09-03T13:42:48.324Z",
+              "updatedAt": "2026-11-16T03:01:46.564Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

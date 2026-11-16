@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "1.0",
+  "templateType": "device_tag_template",
+  "id": "tpl-98ad5f09-f2d",
+  "name": "Modèle virtuel d'équipement de ligne de production",
+  "description": "Modèle virtuel de ligne de production (état / production / temps de cycle / température / puissance / temps de fonctionnement)",
+  "deviceType": "virtual",
+  "deviceModel": "virtual",
+  "version": "1.0.0",
+  "status": "draft",
+  "isDefault": false,
+  "authorId": "737532a5-77c3-44ac-8f70-1719e207fba7",
+  "tags": [
+    "Ligne de production",
+    "Appareil virtuel",
+    "Usine intelligente",
+    "Équipement"
+  ],
+  "industry": "Smart Factory",
+  "category": "Production Line Equipment",
+  "protocol": {
+    "type": "virtual",
+    "config": {}
+  },
+  "variables": [
+    {
+      "name": "État de fonctionnement",
+      "address": "V_STATUS",
+      "dataType": "bool",
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "2f4a048d-9dd7-469e-a238-0d6bbbf8c953"
+    },
+    {
+      "name": "Production cumulée",
+      "address": "V_COUNT",
+      "dataType": "int32",
+      "unit": "pcs",
+      "minValue": 0,
+      "maxValue": 5000,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "b1e78498-7e55-403d-b9d9-5a67a9775a4d"
+    },
+    {
+      "name": "Temps de cycle",
+      "address": "V_CYCLE",
+      "dataType": "float32",
+      "unit": "s",
+      "minValue": 18,
+      "maxValue": 32,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "e295733d-8e9b-4944-8e5e-caab3dbe1dbb"
+    },
+    {
+      "name": "Température de broche",
+      "address": "V_TEMP",
+      "dataType": "float32",
+      "unit": "℃",
+      "minValue": 55,
+      "maxValue": 85,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "b3be0b00-7206-4005-af5c-0cd0e3083a27"
+    },
+    {
+      "name": "Puissance",
+      "address": "V_POWER",
+      "dataType": "float32",
+      "unit": "kW",
+      "minValue": 60,
+      "maxValue": 130,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "9baa5c40-724d-42df-a1af-c503ea33d4b8"
+    },
+    {
+      "name": "Temps de fonctionnement",
+      "address": "V_RUNTIME",
+      "dataType": "int32",
+      "unit": "s",
+      "minValue": 0,
+      "maxValue": 86400,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "7293d6fa-d2ca-4b52-8ee0-212aef24a6e4"
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-09-03T13:42:48.324Z",
+    "updatedAt": "2026-11-16T03:01:46.576Z",
+    "linkedDevices": 0,
+    "usageCount": 0,
+    "rating": 0
+  }
+}

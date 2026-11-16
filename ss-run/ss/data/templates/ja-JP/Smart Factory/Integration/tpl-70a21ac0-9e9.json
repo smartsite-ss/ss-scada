@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "1.0",
+  "templateType": "device_tag_template",
+  "id": "tpl-70a21ac0-9e9",
+  "name": "MES連携 仮想テンプレート",
+  "description": "MES 連携仮想テンプレート（生産指示／MES 書き戻し）",
+  "deviceType": "virtual",
+  "deviceModel": "virtual",
+  "version": "1.0.0",
+  "status": "draft",
+  "isDefault": false,
+  "authorId": "737532a5-77c3-44ac-8f70-1719e207fba7",
+  "tags": [
+    "MES",
+    "連携",
+    "仮想デバイス",
+    "スマートファクトリー"
+  ],
+  "industry": "Smart Factory",
+  "category": "Integration",
+  "protocol": {
+    "type": "virtual",
+    "config": {}
+  },
+  "variables": [
+    {
+      "name": "現在の生産指示",
+      "address": "V_ORDER",
+      "dataType": "string",
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "49371ad4-8549-467f-af4e-c56e7fae0af5"
+    },
+    {
+      "name": "MES書き戻し",
+      "address": "V_MES_OUT",
+      "dataType": "string",
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "af42aca2-fff1-43d1-80a7-b730164129b4"
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-09-03T13:42:48.417Z",
+    "updatedAt": "2026-11-16T03:01:46.562Z",
+    "linkedDevices": 0,
+    "usageCount": 0,
+    "rating": 0
+  }
+}

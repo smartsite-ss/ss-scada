@@ -172,30 +172,98 @@ export class TemplateLoaderService implements OnModuleInit {
     return this.getDefaultLocale();
   }
 
+  /**
+   * Fallback chain of a locale: itself first, then English (translation baseline).
+   * zh-CN and en-US are complete locales, so they never fall back to another language.
+   */
+  private getFallbackChain(lang: string): string[] {
+    const chain = [lang];
+    if (lang !== 'zh-CN' && lang !== 'en-US') chain.push('en-US');
+    return chain.filter((l) => this.localeCaches.has(l) || this.localeIndexes.has(l));
+  }
+
   /** Get a template for a given language (with fallback) */
   getTemplate(id: string, locale?: string): LoadedTemplate | undefined {
     const lang = this.resolveLocale(locale);
-    const cache = this.localeCaches.get(lang);
-    let tpl = cache?.get(id);
-
-    // ✨ Fallback: when the current language lacks the template, fall back to zh-CN
-    if (!tpl && lang !== 'zh-CN') {
-      tpl = this.localeCaches.get('zh-CN')?.get(id);
+    for (const candidate of this.getFallbackChain(lang)) {
+      const tpl = this.localeCaches.get(candidate)?.get(id);
+      if (tpl) return tpl;
     }
-    return tpl;
+    return undefined;
   }
 
-  /** Get all templates for a given language */
+  /** Get all templates for a given language (current locale first, English fills the gaps) */
   getAllTemplates(locale?: string): LoadedTemplate[] {
     const lang = this.resolveLocale(locale);
-    const cache = this.localeCaches.get(lang);
-    return cache ? Array.from(cache.values()) : [];
+    const chain = this.getFallbackChain(lang);
+    if (chain.length <= 1) {
+      const cache = this.localeCaches.get(lang);
+      return cache ? Array.from(cache.values()) : [];
+    }
+
+    // Iterate from the weakest to the strongest locale so that the current locale wins
+    const merged = new Map<string, LoadedTemplate>();
+    for (const candidate of [...chain].reverse()) {
+      this.localeCaches.get(candidate)?.forEach((tpl, id) => merged.set(id, tpl));
+    }
+    return Array.from(merged.values());
   }
 
-  /** Get the index for a given language */
+  /** Get the index for a given language (merged with the English baseline for untranslated entries) */
   getIndex(locale?: string): TemplateTreeIndex | null {
     const lang = this.resolveLocale(locale);
-    return this.localeIndexes.get(lang) ?? null;
+    const chain = this.getFallbackChain(lang);
+    let merged: TemplateTreeIndex | null = null;
+    for (const candidate of [...chain].reverse()) {
+      const index = this.localeIndexes.get(candidate);
+      if (!index) continue;
+      merged = merged ? this.mergeIndexes(merged, index) : index;
+    }
+    return merged;
+  }
+
+  /**
+   * Merge an overlay index onto a base index.
+   * Industries/categories are matched by name, templates by id; overlay entries win.
+   */
+  private mergeIndexes(base: TemplateTreeIndex, overlay: TemplateTreeIndex): TemplateTreeIndex {
+    const result: TemplateTreeIndex = JSON.parse(JSON.stringify(base));
+
+    for (const overlayIndustry of overlay.industries || []) {
+      let industry = result.industries.find((i) => i.name === overlayIndustry.name);
+      if (!industry) {
+        industry = JSON.parse(JSON.stringify(overlayIndustry));
+        result.industries.push(industry);
+        continue;
+      }
+
+      for (const overlayCategory of overlayIndustry.categories || []) {
+        let category = industry.categories.find((c) => c.name === overlayCategory.name);
+        if (!category) {
+          category = JSON.parse(JSON.stringify(overlayCategory));
+          industry.categories.push(category);
+          continue;
+        }
+
+        for (const overlayTemplate of overlayCategory.templates || []) {
+          const existing = category.templates.findIndex((t) => t.id === overlayTemplate.id);
+          if (existing >= 0) category.templates[existing] = { ...overlayTemplate };
+          else category.templates.push({ ...overlayTemplate });
+        }
+        category.templateCount = category.templates.length;
+      }
+      industry.templateCount = industry.categories.reduce((sum, c) => sum + c.templates.length, 0);
+    }
+
+    result.totalIndustries = result.industries.length;
+    result.totalCategories = result.industries.reduce((sum, i) => sum + i.categories.length, 0);
+    result.totalTemplates = result.industries.reduce(
+      (sum, i) => sum + i.categories.reduce((s, c) => s + c.templates.length, 0),
+      0,
+    );
+    result.lastUpdated = new Date().toISOString();
+    if ((overlay as any)._locale) (result as any)._locale = (overlay as any)._locale;
+    return result;
   }
 
   /** Hot reload: rescan all language directories */

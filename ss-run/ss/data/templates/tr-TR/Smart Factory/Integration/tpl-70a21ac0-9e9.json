@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "1.0",
+  "templateType": "device_tag_template",
+  "id": "tpl-70a21ac0-9e9",
+  "name": "MES Entegrasyonu Sanal Şablonu",
+  "description": "MES entegrasyonu sanal şablonu (üretim emri / MES geri yazma)",
+  "deviceType": "virtual",
+  "deviceModel": "virtual",
+  "version": "1.0.0",
+  "status": "draft",
+  "isDefault": false,
+  "authorId": "737532a5-77c3-44ac-8f70-1719e207fba7",
+  "tags": [
+    "MES",
+    "Entegrasyon",
+    "Sanal Cihaz",
+    "Akıllı Fabrika"
+  ],
+  "industry": "Smart Factory",
+  "category": "Integration",
+  "protocol": {
+    "type": "virtual",
+    "config": {}
+  },
+  "variables": [
+    {
+      "name": "Geçerli Üretim Emri",
+      "address": "V_ORDER",
+      "dataType": "string",
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "46f4f968-ad83-4214-8c7d-933fb9b91d36"
+    },
+    {
+      "name": "MES Geri Yazma",
+      "address": "V_MES_OUT",
+      "dataType": "string",
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "87f56a0b-d125-41d0-a1bd-ebd4e2956794"
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-09-03T13:42:48.417Z",
+    "updatedAt": "2026-11-16T03:01:46.596Z",
+    "linkedDevices": 0,
+    "usageCount": 0,
+    "rating": 0
+  }
+}

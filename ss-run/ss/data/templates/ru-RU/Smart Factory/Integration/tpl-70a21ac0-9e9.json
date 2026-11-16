@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "1.0",
+  "templateType": "device_tag_template",
+  "id": "tpl-70a21ac0-9e9",
+  "name": "Виртуальный шаблон интеграции MES",
+  "description": "Виртуальный шаблон интеграции с MES (производственный заказ / обратная запись MES)",
+  "deviceType": "virtual",
+  "deviceModel": "virtual",
+  "version": "1.0.0",
+  "status": "draft",
+  "isDefault": false,
+  "authorId": "737532a5-77c3-44ac-8f70-1719e207fba7",
+  "tags": [
+    "MES",
+    "Интеграция",
+    "Виртуальное устройство",
+    "Умная фабрика"
+  ],
+  "industry": "Smart Factory",
+  "category": "Integration",
+  "protocol": {
+    "type": "virtual",
+    "config": {}
+  },
+  "variables": [
+    {
+      "name": "Текущий производственный заказ",
+      "address": "V_ORDER",
+      "dataType": "string",
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "361e2be1-9c4c-429d-9501-cd47e3ab64b9"
+    },
+    {
+      "name": "Обратная запись MES",
+      "address": "V_MES_OUT",
+      "dataType": "string",
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "715d10df-c7b7-4f6f-b0a4-ca0f5b18dc0b"
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-09-03T13:42:48.417Z",
+    "updatedAt": "2026-11-16T03:01:46.591Z",
+    "linkedDevices": 0,
+    "usageCount": 0,
+    "rating": 0
+  }
+}

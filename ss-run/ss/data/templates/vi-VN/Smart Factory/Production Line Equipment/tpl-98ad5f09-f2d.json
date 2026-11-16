@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "1.0",
+  "templateType": "device_tag_template",
+  "id": "tpl-98ad5f09-f2d",
+  "name": "Mẫu ảo thiết bị dây chuyền sản xuất",
+  "description": "Mẫu thiết bị ảo dây chuyền sản xuất (trạng thái / sản lượng / thời gian chu kỳ / nhiệt độ / công suất / thời gian hoạt động)",
+  "deviceType": "virtual",
+  "deviceModel": "virtual",
+  "version": "1.0.0",
+  "status": "draft",
+  "isDefault": false,
+  "authorId": "737532a5-77c3-44ac-8f70-1719e207fba7",
+  "tags": [
+    "Dây chuyền sản xuất",
+    "Thiết bị ảo",
+    "Nhà máy thông minh",
+    "Thiết bị"
+  ],
+  "industry": "Smart Factory",
+  "category": "Production Line Equipment",
+  "protocol": {
+    "type": "virtual",
+    "config": {}
+  },
+  "variables": [
+    {
+      "name": "Trạng thái hoạt động",
+      "address": "V_STATUS",
+      "dataType": "bool",
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "fdb1f974-9132-4a42-9995-d63ac8cc185d"
+    },
+    {
+      "name": "Tổng sản lượng",
+      "address": "V_COUNT",
+      "dataType": "int32",
+      "unit": "pcs",
+      "minValue": 0,
+      "maxValue": 5000,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "f72cb312-8403-4553-8b42-8183b3f1c997"
+    },
+    {
+      "name": "Thời gian chu kỳ",
+      "address": "V_CYCLE",
+      "dataType": "float32",
+      "unit": "s",
+      "minValue": 18,
+      "maxValue": 32,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "bd66f6d5-fa85-40c2-ace3-95f0447dacb0"
+    },
+    {
+      "name": "Nhiệt độ trục chính",
+      "address": "V_TEMP",
+      "dataType": "float32",
+      "unit": "℃",
+      "minValue": 55,
+      "maxValue": 85,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "32b35129-2199-4d42-af2a-cb47f89693cf"
+    },
+    {
+      "name": "Công suất",
+      "address": "V_POWER",
+      "dataType": "float32",
+      "unit": "kW",
+      "minValue": 60,
+      "maxValue": 130,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "608f3981-1d54-4de2-a697-2d53af0bc5aa"
+    },
+    {
+      "name": "Thời gian hoạt động",
+      "address": "V_RUNTIME",
+      "dataType": "int32",
+      "unit": "s",
+      "minValue": 0,
+      "maxValue": 86400,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "f00f3cb6-5abd-4d0b-b886-c872aef86b02"
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-09-03T13:42:48.324Z",
+    "updatedAt": "2026-11-16T03:01:46.599Z",
+    "linkedDevices": 0,
+    "usageCount": 0,
+    "rating": 0
+  }
+}

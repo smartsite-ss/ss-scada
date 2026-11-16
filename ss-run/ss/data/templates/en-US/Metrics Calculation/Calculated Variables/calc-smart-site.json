@@ -1,0 +1,311 @@
+{
+  "schemaVersion": "1.0",
+  "templateType": "device_tag_template",
+  "id": "tpl-calc-smart-site",
+  "name": "Smart Site Metrics Calculation Template (Built-in)",
+  "description": "Smart Site built-in calculation template: the system's current year/month/day/hour/minute/second plus CPU usage, memory usage and disk usage. Handled by the built-in calc plugin evaluator (evaluator='system') with no external dependency; select the \"Calculated Variables (calc)\" protocol for the host device and apply this template.",
+  "deviceType": "calc",
+  "deviceModel": "calc",
+  "version": "1.0.0",
+  "status": "published",
+  "isDefault": true,
+  "authorId": "system",
+  "tags": [
+    "Built-in",
+    "Calculated Variables",
+    "Metrics Calculation",
+    "Smart Site",
+    "CPU",
+    "Memory",
+    "Disk",
+    "System Time"
+  ],
+  "industry": "Metrics Calculation",
+  "category": "Calculated Variables",
+  "protocol": {
+    "type": "calc",
+    "config": {}
+  },
+  "variables": [
+    {
+      "guid": "99a0ab66-3246-4dd4-bd9f-1bffae8cb4b8",
+      "order": 0,
+      "name": "System Year",
+      "description": "Current year of the server (local time zone), e.g. 2026",
+      "address": "",
+      "dataType": "int32",
+      "direction": "read",
+      "scanRate": 1000,
+      "enabled": true,
+      "unit": "",
+      "displayFormat": "%.0f",
+      "category": "CALC",
+      "calc": {
+        "evaluator": "system",
+        "systemMetric": "year",
+        "schedule": {
+          "mode": "scanRate"
+        }
+      }
+    },
+    {
+      "guid": "80d29923-94fa-474d-a575-5e4ee1440b09",
+      "order": 1,
+      "name": "System Month",
+      "description": "Current month of the server (1~12, local time zone)",
+      "address": "",
+      "dataType": "int32",
+      "direction": "read",
+      "scanRate": 1000,
+      "enabled": true,
+      "unit": "",
+      "displayFormat": "%.0f",
+      "category": "CALC",
+      "calc": {
+        "evaluator": "system",
+        "systemMetric": "month",
+        "schedule": {
+          "mode": "scanRate"
+        }
+      }
+    },
+    {
+      "guid": "cbce93a7-bb47-4f4a-aeef-3d62ba791480",
+      "order": 2,
+      "name": "System Day",
+      "description": "Current day of the server (1~31, local time zone)",
+      "address": "",
+      "dataType": "int32",
+      "direction": "read",
+      "scanRate": 1000,
+      "enabled": true,
+      "unit": "",
+      "displayFormat": "%.0f",
+      "category": "CALC",
+      "calc": {
+        "evaluator": "system",
+        "systemMetric": "day",
+        "schedule": {
+          "mode": "scanRate"
+        }
+      }
+    },
+    {
+      "guid": "9c95320d-ce8c-4d39-bb9b-274a730227d4",
+      "order": 3,
+      "name": "System Hour",
+      "description": "Current hour of the server (0~23, local time zone)",
+      "address": "",
+      "dataType": "int32",
+      "direction": "read",
+      "scanRate": 1000,
+      "enabled": true,
+      "unit": "",
+      "displayFormat": "%.0f",
+      "category": "CALC",
+      "calc": {
+        "evaluator": "system",
+        "systemMetric": "hour",
+        "schedule": {
+          "mode": "scanRate"
+        }
+      }
+    },
+    {
+      "guid": "370f3228-f870-4f6b-82af-27fa7251dd5e",
+      "order": 4,
+      "name": "System Minute",
+      "description": "Current minute of the server (0~59, local time zone)",
+      "address": "",
+      "dataType": "int32",
+      "direction": "read",
+      "scanRate": 1000,
+      "enabled": true,
+      "unit": "",
+      "displayFormat": "%.0f",
+      "category": "CALC",
+      "calc": {
+        "evaluator": "system",
+        "systemMetric": "minute",
+        "schedule": {
+          "mode": "scanRate"
+        }
+      }
+    },
+    {
+      "guid": "006db767-5ba8-4238-98a6-b219aa104562",
+      "order": 5,
+      "name": "System Second",
+      "description": "Current second of the server (0~59, local time zone)",
+      "address": "",
+      "dataType": "int32",
+      "direction": "read",
+      "scanRate": 1000,
+      "enabled": true,
+      "unit": "",
+      "displayFormat": "%.0f",
+      "category": "CALC",
+      "calc": {
+        "evaluator": "system",
+        "systemMetric": "second",
+        "schedule": {
+          "mode": "scanRate"
+        }
+      }
+    },
+    {
+      "guid": "cb2cca6e-c516-4cf0-9b51-4b9d62ccc267",
+      "order": 6,
+      "name": "CPU Usage",
+      "description": "Host CPU usage (computed from the delta of two samples; the first read is uncertain and the real value starts from the next cycle)",
+      "address": "",
+      "dataType": "float32",
+      "direction": "read",
+      "scanRate": 5000,
+      "enabled": true,
+      "unit": "%",
+      "displayFormat": "%.1f",
+      "minValue": 0,
+      "maxValue": 100,
+      "category": "CALC",
+      "calc": {
+        "evaluator": "system",
+        "systemMetric": "cpu",
+        "schedule": {
+          "mode": "scanRate"
+        }
+      }
+    },
+    {
+      "guid": "10817266-010e-4c05-bab2-5a0f95b9dc86",
+      "order": 7,
+      "name": "Memory Usage",
+      "description": "Host memory usage ((total - free) / total)",
+      "address": "",
+      "dataType": "float32",
+      "direction": "read",
+      "scanRate": 5000,
+      "enabled": true,
+      "unit": "%",
+      "displayFormat": "%.1f",
+      "minValue": 0,
+      "maxValue": 100,
+      "category": "CALC",
+      "calc": {
+        "evaluator": "system",
+        "systemMetric": "memory",
+        "schedule": {
+          "mode": "scanRate"
+        }
+      }
+    },
+    {
+      "guid": "99f28585-a018-45fd-a73a-e007b931cd3f",
+      "order": 8,
+      "name": "Disk Usage",
+      "description": "Disk usage of the installation volume (statfs; the data directory usually resides on the same volume)",
+      "address": "",
+      "dataType": "float32",
+      "direction": "read",
+      "scanRate": 5000,
+      "enabled": true,
+      "unit": "%",
+      "displayFormat": "%.1f",
+      "minValue": 0,
+      "maxValue": 100,
+      "category": "CALC",
+      "calc": {
+        "evaluator": "system",
+        "systemMetric": "disk",
+        "schedule": {
+          "mode": "scanRate"
+        }
+      }
+    },
+    {
+      "guid": "3c38bb13-b8e2-42da-86fe-5afb18455034",
+      "order": 0,
+      "name": "second_100",
+      "description": "System second - transformation calculation",
+      "address": "",
+      "dataType": "float32",
+      "direction": "read",
+      "byteOrder": "little-endian",
+      "scanRate": 1000,
+      "priority": "normal",
+      "enabled": true,
+      "conversionType": "",
+      "conversionConfig": null,
+      "unit": "",
+      "displayFormat": "",
+      "minValue": null,
+      "maxValue": null,
+      "engMinValue": null,
+      "engMaxValue": null,
+      "deadbandMode": "none",
+      "deadbandValue": 0,
+      "deadbandPercent": 0,
+      "deadbandTime": 0,
+      "alarmEnabled": false,
+      "alarmHighHigh": null,
+      "alarmHigh": null,
+      "alarmLow": null,
+      "alarmLowLow": null,
+      "alarmDeviation": null,
+      "qualityCheckEnabled": false,
+      "archiveEnabled": false,
+      "category": "CALC",
+      "calc": {
+        "evaluator": "expression",
+        "expression": "#a*100",
+        "binding": {
+          "mode": "relative",
+          "slots": [
+            {
+              "key": "a",
+              "ref": "System Second"
+            }
+          ]
+        },
+        "onMissing": "ignore",
+        "schedule": {
+          "mode": "scanRate",
+          "timestampAt": "run-at",
+          "catchUp": false,
+          "catchUpMaxPeriods": 1440
+        }
+      },
+      "simulation": {
+        "enabled": false,
+        "mode": "fixed",
+        "updateIntervalSec": 1,
+        "params": {
+          "value": 0,
+          "min": 0,
+          "max": 100,
+          "pattern": "random_walk",
+          "step": 1,
+          "period": 60,
+          "noiseLevel": 0,
+          "values": [],
+          "switchMode": "sequential",
+          "stepSize": 1,
+          "fixedValue": false,
+          "toggleIntervalSec": 5,
+          "trueProbability": 0.5,
+          "switchIntervalSec": 10,
+          "lowLimit": 0,
+          "highLimit": 100,
+          "limitPattern": "square"
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-09-20T00:00:00.000Z",
+    "updatedAt": "2026-11-16T02:55:48.644Z",
+    "linkedDevices": 0,
+    "usageCount": 0,
+    "rating": 0
+  }
+}

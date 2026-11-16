@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "1.0",
+  "templateType": "device_tag_template",
+  "id": "tpl-b4fc5766-ef1",
+  "name": "Виртуальный шаблон измерения энергии",
+  "description": "Виртуальный шаблон счётчика энергии (напряжение / ток / мощность / энергопотребление)",
+  "deviceType": "virtual",
+  "deviceModel": "virtual",
+  "version": "1.0.0",
+  "status": "draft",
+  "isDefault": false,
+  "authorId": "737532a5-77c3-44ac-8f70-1719e207fba7",
+  "tags": [
+    "Энергия",
+    "Измерение",
+    "Виртуальное устройство",
+    "Умная фабрика"
+  ],
+  "industry": "Smart Factory",
+  "category": "Energy",
+  "protocol": {
+    "type": "virtual",
+    "config": {}
+  },
+  "variables": [
+    {
+      "name": "Напряжение",
+      "address": "V_VOLT",
+      "dataType": "float32",
+      "unit": "V",
+      "minValue": 215,
+      "maxValue": 245,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "2820c3e5-f277-4869-a671-a5ab80622c67"
+    },
+    {
+      "name": "Ток",
+      "address": "V_CURRENT",
+      "dataType": "float32",
+      "unit": "A",
+      "minValue": 5,
+      "maxValue": 40,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "1e030849-e3ee-462d-8be9-2689e692141c"
+    },
+    {
+      "name": "Мощность",
+      "address": "V_EPOWER",
+      "dataType": "float32",
+      "unit": "kW",
+      "minValue": 60,
+      "maxValue": 130,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "c082d5c9-ac39-43a5-b1d6-aa45e36fd54c"
+    },
+    {
+      "name": "Энергопотребление",
+      "address": "V_ENERGY",
+      "dataType": "float32",
+      "unit": "kWh",
+      "minValue": 0,
+      "maxValue": 100000,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "15976042-b760-4aa0-bcee-99060ff04d6f"
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-09-03T13:42:48.380Z",
+    "updatedAt": "2026-11-16T03:01:46.592Z",
+    "linkedDevices": 0,
+    "usageCount": 0,
+    "rating": 0
+  }
+}

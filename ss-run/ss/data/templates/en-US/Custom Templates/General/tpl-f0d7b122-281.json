@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "1.0",
+  "templateType": "device_tag_template",
+  "id": "tpl-f0d7b122-281",
+  "name": "Flue Gas Auxiliary Equipment Virtual Template",
+  "description": "Power plant flue gas system auxiliary equipment virtual template (running status / inlet temperature / outlet temperature / differential pressure)",
+  "deviceType": "virtual",
+  "deviceModel": "virtual",
+  "version": "1.0",
+  "status": "draft",
+  "isDefault": false,
+  "authorId": "ai-assistant",
+  "tags": [
+    "Flue Gas",
+    "Auxiliary Equipment",
+    "Power Plant",
+    "Virtual Device"
+  ],
+  "industry": "Custom Templates",
+  "category": "General",
+  "protocol": {
+    "type": "virtual",
+    "config": {}
+  },
+  "variables": [
+    {
+      "name": "Running Status",
+      "label": "Running Status",
+      "address": "0",
+      "dataType": "int",
+      "guid": "26a9d2aa-7c85-470d-abaa-2da59f6bc181"
+    },
+    {
+      "name": "Inlet Temperature",
+      "label": "Inlet Temperature",
+      "address": "4",
+      "dataType": "float",
+      "guid": "540540a5-be25-4cbc-b0ab-aa30fdeceae6"
+    },
+    {
+      "name": "Outlet Temperature",
+      "label": "Outlet Temperature",
+      "address": "8",
+      "dataType": "float",
+      "guid": "5559249b-f9f2-468a-ab39-ab51cc2e875a"
+    },
+    {
+      "name": "Differential Pressure",
+      "label": "Differential Pressure",
+      "address": "12",
+      "dataType": "float",
+      "guid": "7224a5f2-3152-4769-8cd0-35072431dce1"
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-09-10T15:43:53.186Z",
+    "updatedAt": "2026-11-16T02:55:48.660Z",
+    "linkedDevices": 0,
+    "usageCount": 0,
+    "rating": 0
+  }
+}

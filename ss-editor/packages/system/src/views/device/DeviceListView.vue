@@ -1106,7 +1106,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, onActivated, onDeactivated } from 'vue';
+import { ref, computed, onMounted, onUnmounted, onActivated, onDeactivated, watch } from 'vue';
 import { useI18n } from '@scada-editor/core';
 import { useDeviceStore } from '../../stores/device.store';
 import { useProjectStore } from '../../stores/project.store';
@@ -1131,7 +1131,7 @@ interface TreeGroup {
   parentId?: string;
 }
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const deviceStore = useDeviceStore();
 const projectStore = useProjectStore();
 
@@ -1207,7 +1207,7 @@ const templateNameMap = ref<Map<string, string>>(new Map());
 
 async function loadTemplateNames() {
   try {
-    const res = await templateApi.list({ page: 1, pageSize: 1000 });
+    const res = await templateApi.list({ page: 1, pageSize: 1000, locale: locale.value });
     const result: DeviceTemplateListResult = res.data;
     const list = result?.data || [];
     const map = new Map<string, string>();
@@ -1224,6 +1224,11 @@ function getTemplateName(templateId?: string): string {
   if (!templateId) return '';
   return templateNameMap.value.get(String(templateId)) || templateId;
 }
+
+// Keep the "device template" column in sync with the active UI language
+watch(locale, () => {
+  loadTemplateNames();
+});
 
 const devices = computed(() => deviceStore.devices);
 const loading = computed(() => deviceStore.loading);

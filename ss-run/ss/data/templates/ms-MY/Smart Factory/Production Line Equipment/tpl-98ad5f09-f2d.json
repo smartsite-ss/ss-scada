@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "1.0",
+  "templateType": "device_tag_template",
+  "id": "tpl-98ad5f09-f2d",
+  "name": "Templat Maya Peralatan Barisan Pengeluaran",
+  "description": "Templat maya peranti barisan pengeluaran (status / keluaran / masa kitaran / suhu / kuasa / masa operasi)",
+  "deviceType": "virtual",
+  "deviceModel": "virtual",
+  "version": "1.0.0",
+  "status": "draft",
+  "isDefault": false,
+  "authorId": "737532a5-77c3-44ac-8f70-1719e207fba7",
+  "tags": [
+    "Barisan Pengeluaran",
+    "Peranti Maya",
+    "Kilang Pintar",
+    "Peralatan"
+  ],
+  "industry": "Smart Factory",
+  "category": "Production Line Equipment",
+  "protocol": {
+    "type": "virtual",
+    "config": {}
+  },
+  "variables": [
+    {
+      "name": "Status Operasi",
+      "address": "V_STATUS",
+      "dataType": "bool",
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "58f09fc4-021e-4cc1-b133-304700763097"
+    },
+    {
+      "name": "Jumlah Keluaran",
+      "address": "V_COUNT",
+      "dataType": "int32",
+      "unit": "pcs",
+      "minValue": 0,
+      "maxValue": 5000,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "6e63f6f3-2270-412a-b4a3-5fb85d37c369"
+    },
+    {
+      "name": "Masa Kitaran",
+      "address": "V_CYCLE",
+      "dataType": "float32",
+      "unit": "s",
+      "minValue": 18,
+      "maxValue": 32,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "a3c89ac6-71f8-4894-8fd1-cd39ceff2422"
+    },
+    {
+      "name": "Suhu Gelendong",
+      "address": "V_TEMP",
+      "dataType": "float32",
+      "unit": "℃",
+      "minValue": 55,
+      "maxValue": 85,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "268be3df-d08c-461c-9649-0e1e581d29a4"
+    },
+    {
+      "name": "Kuasa",
+      "address": "V_POWER",
+      "dataType": "float32",
+      "unit": "kW",
+      "minValue": 60,
+      "maxValue": 130,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "49dad815-70c4-4c6e-8e90-f606c6a3fda8"
+    },
+    {
+      "name": "Masa Operasi",
+      "address": "V_RUNTIME",
+      "dataType": "int32",
+      "unit": "s",
+      "minValue": 0,
+      "maxValue": 86400,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "9a46a7f3-b64c-4ebf-ad65-76a3889052c5"
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-09-03T13:42:48.324Z",
+    "updatedAt": "2026-11-16T03:01:46.583Z",
+    "linkedDevices": 0,
+    "usageCount": 0,
+    "rating": 0
+  }
+}

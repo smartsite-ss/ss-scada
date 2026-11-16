@@ -170,7 +170,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, onDeactivated, onActivated, ref } from 'vue';
+import { computed, onMounted, onUnmounted, onDeactivated, onActivated, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useI18n } from '@scada-editor/core';
 import { useDeviceStore } from '../../stores/device.store';
@@ -180,7 +180,7 @@ import type { DeviceTemplateListResult } from '../../api/modules/template.api';
 import { templateApi } from '../../api/modules/template.api';
 
 const route = useRoute();
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const deviceStore = useDeviceStore();
 
 const wsStore = useWsStore();
@@ -214,7 +214,7 @@ const templateNameMap = ref<Map<string, string>>(new Map());
 
 async function loadTemplateNames() {
   try {
-    const res = await templateApi.list({ page: 1, pageSize: 1000 });
+    const res = await templateApi.list({ page: 1, pageSize: 1000, locale: locale.value });
     const result: DeviceTemplateListResult = res.data;
     const list = result?.data || [];
     const map = new Map<string, string>();
@@ -231,6 +231,11 @@ function getTemplateName(templateId?: string): string {
   if (!templateId) return '';
   return templateNameMap.value.get(String(templateId)) || templateId;
 }
+
+// Keep the "template" info in sync with the active UI language
+watch(locale, () => {
+  loadTemplateNames();
+});
 
 const deviceDriver = computed(() => (device.value as any)?.driver || '');
 const deviceConnection = computed(() => {

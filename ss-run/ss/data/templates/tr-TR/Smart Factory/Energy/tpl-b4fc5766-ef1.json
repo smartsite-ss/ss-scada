@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "1.0",
+  "templateType": "device_tag_template",
+  "id": "tpl-b4fc5766-ef1",
+  "name": "Enerji Ölçümü Sanal Şablonu",
+  "description": "Enerji sayacı sanal şablonu (gerilim / akım / güç / enerji tüketimi)",
+  "deviceType": "virtual",
+  "deviceModel": "virtual",
+  "version": "1.0.0",
+  "status": "draft",
+  "isDefault": false,
+  "authorId": "737532a5-77c3-44ac-8f70-1719e207fba7",
+  "tags": [
+    "Enerji",
+    "Ölçüm",
+    "Sanal Cihaz",
+    "Akıllı Fabrika"
+  ],
+  "industry": "Smart Factory",
+  "category": "Energy",
+  "protocol": {
+    "type": "virtual",
+    "config": {}
+  },
+  "variables": [
+    {
+      "name": "Gerilim",
+      "address": "V_VOLT",
+      "dataType": "float32",
+      "unit": "V",
+      "minValue": 215,
+      "maxValue": 245,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "9ae8d956-642f-4e60-9dde-923604142ed1"
+    },
+    {
+      "name": "Akım",
+      "address": "V_CURRENT",
+      "dataType": "float32",
+      "unit": "A",
+      "minValue": 5,
+      "maxValue": 40,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "68ac4ad3-83cc-4db4-9513-583be7e58d70"
+    },
+    {
+      "name": "Güç",
+      "address": "V_EPOWER",
+      "dataType": "float32",
+      "unit": "kW",
+      "minValue": 60,
+      "maxValue": 130,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "cda44147-3be8-463a-ada4-8e95adaa78c7"
+    },
+    {
+      "name": "Enerji Tüketimi",
+      "address": "V_ENERGY",
+      "dataType": "float32",
+      "unit": "kWh",
+      "minValue": 0,
+      "maxValue": 100000,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "923d388a-4373-4148-8cd5-543400bb0333"
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-09-03T13:42:48.380Z",
+    "updatedAt": "2026-11-16T03:01:46.597Z",
+    "linkedDevices": 0,
+    "usageCount": 0,
+    "rating": 0
+  }
+}

@@ -161,7 +161,7 @@ export class TemplateIndexService {
       totalTemplates,
       totalIndustries: industries.length,
       totalCategories: industries.reduce((sum, ind) => sum + ind.categories.length, 0),
-      description: 'Smart SCADA 设备模板库树形索引 - 按行业/设备类型双级目录组织',
+      description: 'Smart SCADA device template tree index - organized by industry and device type',
       rootPath: basePath,
       industries,
     };
@@ -194,7 +194,7 @@ export class TemplateIndexService {
       totalTemplates: 0,
       totalIndustries: 0,
       totalCategories: 0,
-      description: 'Smart SCADA 设备模板库树形索引',
+      description: 'Smart SCADA device template tree index',
       rootPath: this.templatesBasePath,
       industries: [],
     };

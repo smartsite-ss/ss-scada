@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "1.0",
+  "templateType": "device_tag_template",
+  "id": "tpl-66992be7-0ef",
+  "name": "HVAC Water Pump & Cooling Tower Template",
+  "description": "Central air-conditioning water pump / cooling tower virtual template (water flow / power / inlet temperature / status)",
+  "deviceType": "virtual",
+  "deviceModel": "virtual",
+  "version": "1.0",
+  "status": "draft",
+  "isDefault": false,
+  "authorId": "ai-assistant",
+  "tags": [
+    "HVAC",
+    "Water Pump",
+    "Cooling Tower",
+    "Virtual Device"
+  ],
+  "industry": "Custom Templates",
+  "category": "General",
+  "protocol": {
+    "type": "virtual",
+    "config": {}
+  },
+  "variables": [
+    {
+      "name": "flow",
+      "label": "Water Flow",
+      "address": "40014",
+      "dataType": "float32",
+      "unit": "m³/h",
+      "guid": "340a681b-ead0-456e-8f5c-f0b344c0d46a"
+    },
+    {
+      "name": "power",
+      "label": "Power",
+      "address": "40015",
+      "dataType": "float32",
+      "unit": "kW",
+      "guid": "19e55550-ef5a-4cd9-89a1-3d5ac97365f5"
+    },
+    {
+      "name": "inletTemp",
+      "label": "Inlet Water Temperature",
+      "address": "40016",
+      "dataType": "float32",
+      "unit": "℃",
+      "guid": "94145c52-fbcc-44a9-93e4-1c11b914611c"
+    },
+    {
+      "name": "status",
+      "label": "Running Status",
+      "address": "40017",
+      "dataType": "bool",
+      "unit": "",
+      "guid": "dba9f18d-fb36-4f47-90d2-46d12070f28f"
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-09-06T10:40:53.444Z",
+    "updatedAt": "2026-11-16T02:55:48.655Z",
+    "linkedDevices": 0,
+    "usageCount": 0,
+    "rating": 0
+  }
+}

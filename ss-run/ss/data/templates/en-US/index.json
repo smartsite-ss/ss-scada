@@ -1,12 +1,360 @@
 {
   "schemaVersion": "2.0",
-  "lastUpdated": "2026-09-20T11:21:04.391Z",
-  "totalTemplates": 8,
-  "totalIndustries": 5,
-  "totalCategories": 8,
-  "description": "Smart SCADA 设备模板库树形索引 - 按行业/设备类型双级目录组织",
-  "rootPath": "F:\\work\\smartdata\\202603_trace\\trunk\\code\\ss-v7\\ss-run\\ss\\data\\templates\\en-US",
+  "lastUpdated": "2026-11-16T03:01:46.719Z",
+  "totalTemplates": 28,
+  "totalIndustries": 8,
+  "totalCategories": 13,
+  "description": "Smart SCADA device template tree index - organized by industry and device type",
+  "rootPath": "f:\\work\\smartdata\\202603_trace\\trunk\\code\\ss-scada\\ss-run\\ss\\data\\templates\\en-US",
   "industries": [
+    {
+      "type": "industry",
+      "name": "Custom Templates",
+      "path": "Custom Templates",
+      "templateCount": 16,
+      "categories": [
+        {
+          "type": "category",
+          "name": "General",
+          "path": "Custom Templates/General",
+          "templateCount": 16,
+          "templates": [
+            {
+              "type": "template",
+              "id": "tpl-76ffb9c5-6ff",
+              "name": "Energy Management Electricity Meter Template",
+              "fileName": "tpl-76ffb9c5-6ff.json",
+              "relativePath": "Custom Templates/General/tpl-76ffb9c5-6ff.json",
+              "deviceType": "virtual",
+              "deviceModel": "virtual",
+              "version": "1.0",
+              "status": "draft",
+              "isDefault": false,
+              "variableCount": 4,
+              "tags": [
+                "Energy Management",
+                "Electricity Meter",
+                "Virtual Device"
+              ],
+              "createdAt": "2026-09-04T04:11:47.612Z",
+              "updatedAt": "2026-11-16T02:55:48.655Z"
+            },
+            {
+              "type": "template",
+              "id": "tpl-4d2b0ce2-efd",
+              "name": "Energy Management Gas Meter Template",
+              "fileName": "tpl-4d2b0ce2-efd.json",
+              "relativePath": "Custom Templates/General/tpl-4d2b0ce2-efd.json",
+              "deviceType": "virtual",
+              "deviceModel": "virtual",
+              "version": "1.0",
+              "status": "draft",
+              "isDefault": false,
+              "variableCount": 2,
+              "tags": [
+                "Energy Management",
+                "Gas Meter",
+                "Virtual Device"
+              ],
+              "createdAt": "2026-09-04T04:11:47.738Z",
+              "updatedAt": "2026-11-16T02:55:48.653Z"
+            },
+            {
+              "type": "template",
+              "id": "tpl-dfbfa0f3-190",
+              "name": "Energy Management Gateway Template",
+              "fileName": "tpl-dfbfa0f3-190.json",
+              "relativePath": "Custom Templates/General/tpl-dfbfa0f3-190.json",
+              "deviceType": "virtual",
+              "deviceModel": "virtual",
+              "version": "1.0",
+              "status": "draft",
+              "isDefault": false,
+              "variableCount": 2,
+              "tags": [
+                "Energy Management",
+                "Gateway",
+                "Virtual Device"
+              ],
+              "createdAt": "2026-09-04T04:11:47.791Z",
+              "updatedAt": "2026-11-16T02:55:48.659Z"
+            },
+            {
+              "type": "template",
+              "id": "tpl-4562d77f-3fb",
+              "name": "Energy Management Water Meter Template",
+              "fileName": "tpl-4562d77f-3fb.json",
+              "relativePath": "Custom Templates/General/tpl-4562d77f-3fb.json",
+              "deviceType": "virtual",
+              "deviceModel": "virtual",
+              "version": "1.0",
+              "status": "draft",
+              "isDefault": false,
+              "variableCount": 2,
+              "tags": [
+                "Energy Management",
+                "Water Meter",
+                "Virtual Device"
+              ],
+              "createdAt": "2026-09-04T04:11:47.681Z",
+              "updatedAt": "2026-11-16T02:55:48.650Z"
+            },
+            {
+              "type": "template",
+              "id": "tpl-f0d7b122-281",
+              "name": "Flue Gas Auxiliary Equipment Virtual Template",
+              "fileName": "tpl-f0d7b122-281.json",
+              "relativePath": "Custom Templates/General/tpl-f0d7b122-281.json",
+              "deviceType": "virtual",
+              "deviceModel": "virtual",
+              "version": "1.0",
+              "status": "draft",
+              "isDefault": false,
+              "variableCount": 4,
+              "tags": [
+                "Flue Gas",
+                "Auxiliary Equipment",
+                "Power Plant",
+                "Virtual Device"
+              ],
+              "createdAt": "2026-09-10T15:43:53.186Z",
+              "updatedAt": "2026-11-16T02:55:48.660Z"
+            },
+            {
+              "type": "template",
+              "id": "tpl-c55111a3-bb0",
+              "name": "Flue Gas Fan Virtual Template",
+              "fileName": "tpl-c55111a3-bb0.json",
+              "relativePath": "Custom Templates/General/tpl-c55111a3-bb0.json",
+              "deviceType": "virtual",
+              "deviceModel": "virtual",
+              "version": "1.0",
+              "status": "draft",
+              "isDefault": false,
+              "variableCount": 6,
+              "tags": [
+                "Flue Gas",
+                "Fan",
+                "Power Plant",
+                "Virtual Device"
+              ],
+              "createdAt": "2026-09-10T15:43:49.019Z",
+              "updatedAt": "2026-11-16T02:55:48.658Z"
+            },
+            {
+              "type": "template",
+              "id": "tpl-a20ee558-c4f",
+              "name": "HVAC Central Chiller Unit Template",
+              "fileName": "tpl-a20ee558-c4f.json",
+              "relativePath": "Custom Templates/General/tpl-a20ee558-c4f.json",
+              "deviceType": "virtual",
+              "deviceModel": "virtual",
+              "version": "1.0",
+              "status": "draft",
+              "isDefault": false,
+              "variableCount": 13,
+              "tags": [
+                "HVAC",
+                "Chiller",
+                "Central Air Conditioning",
+                "Virtual Device"
+              ],
+              "createdAt": "2026-09-06T10:40:53.333Z",
+              "updatedAt": "2026-11-16T02:55:48.656Z"
+            },
+            {
+              "type": "template",
+              "id": "tpl-3e2ebf3e-1c7",
+              "name": "HVAC Terminal Environment Template",
+              "fileName": "tpl-3e2ebf3e-1c7.json",
+              "relativePath": "Custom Templates/General/tpl-3e2ebf3e-1c7.json",
+              "deviceType": "virtual",
+              "deviceModel": "virtual",
+              "version": "1.0",
+              "status": "draft",
+              "isDefault": false,
+              "variableCount": 6,
+              "tags": [
+                "HVAC",
+                "Terminal",
+                "Environment",
+                "Virtual Device"
+              ],
+              "createdAt": "2026-09-06T10:40:53.538Z",
+              "updatedAt": "2026-11-16T02:55:48.649Z"
+            },
+            {
+              "type": "template",
+              "id": "tpl-66992be7-0ef",
+              "name": "HVAC Water Pump & Cooling Tower Template",
+              "fileName": "tpl-66992be7-0ef.json",
+              "relativePath": "Custom Templates/General/tpl-66992be7-0ef.json",
+              "deviceType": "virtual",
+              "deviceModel": "virtual",
+              "version": "1.0",
+              "status": "draft",
+              "isDefault": false,
+              "variableCount": 4,
+              "tags": [
+                "HVAC",
+                "Water Pump",
+                "Cooling Tower",
+                "Virtual Device"
+              ],
+              "createdAt": "2026-09-06T10:40:53.444Z",
+              "updatedAt": "2026-11-16T02:55:48.655Z"
+            },
+            {
+              "type": "template",
+              "id": "tpl-0528fcf1-1d8",
+              "name": "SUPCON ECS-700 DCS Collection Template (v1.1.0)",
+              "fileName": "tpl-0528fcf1-1d8.json",
+              "relativePath": "Custom Templates/General/tpl-0528fcf1-1d8.json",
+              "deviceType": "opc_ua",
+              "deviceModel": "opc_ua",
+              "version": "1.1.0",
+              "status": "draft",
+              "isDefault": false,
+              "variableCount": 5,
+              "tags": [
+                "SUPCON",
+                "ECS-700",
+                "DCS",
+                "OPC UA",
+                "Distributed Control System"
+              ],
+              "createdAt": "2026-07-28T09:24:05.421Z",
+              "updatedAt": "2026-11-16T02:55:48.647Z"
+            },
+            {
+              "type": "template",
+              "id": "tpl-28ec2dc2-3d2",
+              "name": "SUPCON ECS-700 DCS Collection Template (v1.1.0)",
+              "fileName": "tpl-28ec2dc2-3d2.json",
+              "relativePath": "Custom Templates/General/tpl-28ec2dc2-3d2.json",
+              "deviceType": "opc_ua",
+              "deviceModel": "opc_ua",
+              "version": "1.1.0",
+              "status": "draft",
+              "isDefault": false,
+              "variableCount": 5,
+              "tags": [
+                "SUPCON",
+                "ECS-700",
+                "DCS",
+                "OPC UA",
+                "Distributed Control System"
+              ],
+              "createdAt": "2026-07-28T07:05:33.345Z",
+              "updatedAt": "2026-11-16T02:55:48.648Z"
+            },
+            {
+              "type": "template",
+              "id": "tpl-658f5b0d-b8a",
+              "name": "SUPCON ECS-700 DCS Collection Template (v2.1.0)",
+              "fileName": "tpl-658f5b0d-b8a.json",
+              "relativePath": "Custom Templates/General/tpl-658f5b0d-b8a.json",
+              "deviceType": "opc_ua",
+              "deviceModel": "opc_ua",
+              "version": "1.1.0",
+              "status": "draft",
+              "isDefault": false,
+              "variableCount": 6,
+              "tags": [
+                "SUPCON",
+                "ECS-700",
+                "DCS",
+                "OPC UA",
+                "Distributed Control System"
+              ],
+              "createdAt": "2026-07-28T09:32:48.265Z",
+              "updatedAt": "2026-11-16T02:55:48.641Z"
+            },
+            {
+              "type": "template",
+              "id": "tpl-4631108c-be4",
+              "name": "Wastewater Pump Unit Template",
+              "fileName": "tpl-4631108c-be4.json",
+              "relativePath": "Custom Templates/General/tpl-4631108c-be4.json",
+              "deviceType": "undefined",
+              "deviceModel": "undefined",
+              "version": "1.0",
+              "status": "draft",
+              "isDefault": false,
+              "variableCount": 3,
+              "tags": [
+                "Wastewater",
+                "Pump",
+                "Virtual Device"
+              ],
+              "createdAt": "2026-09-06T15:06:05.631Z",
+              "updatedAt": "2026-11-16T02:55:48.652Z"
+            },
+            {
+              "type": "template",
+              "id": "tpl-59601d88-d47",
+              "name": "Wastewater Tank Template",
+              "fileName": "tpl-59601d88-d47.json",
+              "relativePath": "Custom Templates/General/tpl-59601d88-d47.json",
+              "deviceType": "undefined",
+              "deviceModel": "undefined",
+              "version": "1.0",
+              "status": "draft",
+              "isDefault": false,
+              "variableCount": 5,
+              "tags": [
+                "Wastewater",
+                "Tank",
+                "Virtual Device"
+              ],
+              "createdAt": "2026-09-06T15:06:05.478Z",
+              "updatedAt": "2026-11-16T02:55:48.654Z"
+            },
+            {
+              "type": "template",
+              "id": "tpl-c2208c2c-a46",
+              "name": "Water Quality Analysis Template",
+              "fileName": "tpl-c2208c2c-a46.json",
+              "relativePath": "Custom Templates/General/tpl-c2208c2c-a46.json",
+              "deviceType": "undefined",
+              "deviceModel": "undefined",
+              "version": "1.0",
+              "status": "draft",
+              "isDefault": false,
+              "variableCount": 4,
+              "tags": [
+                "Water Quality",
+                "Analysis",
+                "Virtual Device"
+              ],
+              "createdAt": "2026-09-06T15:06:05.762Z",
+              "updatedAt": "2026-11-16T02:55:48.657Z"
+            },
+            {
+              "type": "template",
+              "id": "tpl-dc812fe4-921",
+              "name": "ZZ Calculated Variable Verification Template",
+              "fileName": "tpl-dc812fe4-921.json",
+              "relativePath": "Custom Templates/General/tpl-dc812fe4-921.json",
+              "deviceType": "virtual",
+              "deviceModel": "virtual",
+              "version": "1.0",
+              "status": "draft",
+              "isDefault": false,
+              "variableCount": 3,
+              "tags": [
+                "Calculated Variable",
+                "Verification",
+                "Cron",
+                "Virtual Device"
+              ],
+              "createdAt": "2026-09-16T10:01:45.426Z",
+              "updatedAt": "2026-11-16T02:55:48.659Z"
+            }
+          ]
+        }
+      ]
+    },
     {
       "type": "industry",
       "name": "Energy & Power",
@@ -91,8 +439,8 @@
               "type": "template",
               "id": "tpl-th-sensor-modbus",
               "name": "Modbus Temperature & Humidity Sensor Template",
-              "fileName": "温湿度传感器.json",
-              "relativePath": "Environmental Monitoring/Environmental Sensors/温湿度传感器.json",
+              "fileName": "temperature-humidity-sensor.json",
+              "relativePath": "Environmental Monitoring/Environmental Sensors/temperature-humidity-sensor.json",
               "deviceType": "modbus_tcp",
               "deviceModel": "TH_SENSOR_MODBUS",
               "version": "1.0.0",
@@ -243,6 +591,142 @@
               ],
               "createdAt": "2026-06-09T00:00:00.000Z",
               "updatedAt": "2026-06-09T00:00:00.000Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "industry",
+      "name": "Metrics Calculation",
+      "path": "Metrics Calculation",
+      "templateCount": 1,
+      "categories": [
+        {
+          "type": "category",
+          "name": "Calculated Variables",
+          "path": "Metrics Calculation/Calculated Variables",
+          "templateCount": 1,
+          "templates": [
+            {
+              "type": "template",
+              "id": "tpl-calc-smart-site",
+              "name": "Smart Site Metrics Calculation Template (Built-in)",
+              "fileName": "calc-smart-site.json",
+              "relativePath": "Metrics Calculation/Calculated Variables/calc-smart-site.json",
+              "deviceType": "calc",
+              "deviceModel": "calc",
+              "version": "1.0.0",
+              "status": "published",
+              "isDefault": true,
+              "variableCount": 10,
+              "tags": [
+                "Built-in",
+                "Calculated Variables",
+                "Metrics Calculation",
+                "Smart Site",
+                "CPU",
+                "Memory",
+                "Disk",
+                "System Time"
+              ],
+              "createdAt": "2026-09-20T00:00:00.000Z",
+              "updatedAt": "2026-11-16T02:55:48.644Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "industry",
+      "name": "Smart Factory",
+      "path": "Smart Factory",
+      "templateCount": 3,
+      "categories": [
+        {
+          "type": "category",
+          "name": "Energy",
+          "path": "Smart Factory/Energy",
+          "templateCount": 1,
+          "templates": [
+            {
+              "type": "template",
+              "id": "tpl-b4fc5766-ef1",
+              "name": "Energy Metering Virtual Template",
+              "fileName": "tpl-b4fc5766-ef1.json",
+              "relativePath": "Smart Factory/Energy/tpl-b4fc5766-ef1.json",
+              "deviceType": "virtual",
+              "deviceModel": "virtual",
+              "version": "1.0.0",
+              "status": "draft",
+              "isDefault": false,
+              "variableCount": 4,
+              "tags": [
+                "Energy",
+                "Metering",
+                "Virtual Device",
+                "Smart Factory"
+              ],
+              "createdAt": "2026-09-03T13:42:48.380Z",
+              "updatedAt": "2026-11-16T02:55:48.646Z"
+            }
+          ]
+        },
+        {
+          "type": "category",
+          "name": "Integration",
+          "path": "Smart Factory/Integration",
+          "templateCount": 1,
+          "templates": [
+            {
+              "type": "template",
+              "id": "tpl-70a21ac0-9e9",
+              "name": "MES Integration Virtual Template",
+              "fileName": "tpl-70a21ac0-9e9.json",
+              "relativePath": "Smart Factory/Integration/tpl-70a21ac0-9e9.json",
+              "deviceType": "virtual",
+              "deviceModel": "virtual",
+              "version": "1.0.0",
+              "status": "draft",
+              "isDefault": false,
+              "variableCount": 2,
+              "tags": [
+                "MES",
+                "Integration",
+                "Virtual Device",
+                "Smart Factory"
+              ],
+              "createdAt": "2026-09-03T13:42:48.417Z",
+              "updatedAt": "2026-11-16T02:55:48.646Z"
+            }
+          ]
+        },
+        {
+          "type": "category",
+          "name": "Production Line Equipment",
+          "path": "Smart Factory/Production Line Equipment",
+          "templateCount": 1,
+          "templates": [
+            {
+              "type": "template",
+              "id": "tpl-98ad5f09-f2d",
+              "name": "Production Line Equipment Virtual Template",
+              "fileName": "tpl-98ad5f09-f2d.json",
+              "relativePath": "Smart Factory/Production Line Equipment/tpl-98ad5f09-f2d.json",
+              "deviceType": "virtual",
+              "deviceModel": "virtual",
+              "version": "1.0.0",
+              "status": "draft",
+              "isDefault": false,
+              "variableCount": 6,
+              "tags": [
+                "Production Line",
+                "Virtual Device",
+                "Smart Factory",
+                "Equipment"
+              ],
+              "createdAt": "2026-09-03T13:42:48.324Z",
+              "updatedAt": "2026-11-16T02:55:48.645Z"
             }
           ]
         }

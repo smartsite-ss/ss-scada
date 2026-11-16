@@ -814,6 +814,11 @@ onMounted(async () => {
   await loadPlugins();
 });
 
+// Reload the template tree when the UI language changes while the dialog is open
+watch(locale, () => {
+  if (props.visible) loadTemplateTree();
+});
+
 watch(() => props.device, (val) => {
   activeTab.value = 'basic';
   if (val) {

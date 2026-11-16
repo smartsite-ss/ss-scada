@@ -1,11 +1,11 @@
 {
   "schemaVersion": "2.0",
-  "lastUpdated": "2026-09-20T11:21:04.403Z",
-  "totalTemplates": 33,
+  "lastUpdated": "2026-11-16T03:01:46.756Z",
+  "totalTemplates": 34,
   "totalIndustries": 13,
   "totalCategories": 32,
-  "description": "Smart SCADA 设备模板库树形索引 - 按行业/设备类型双级目录组织",
-  "rootPath": "F:\\work\\smartdata\\202603_trace\\trunk\\code\\ss-v7\\ss-run\\ss\\data\\templates\\zh-CN",
+  "description": "Smart SCADA device template tree index - organized by industry and device type",
+  "rootPath": "f:\\work\\smartdata\\202603_trace\\trunk\\code\\ss-scada\\ss-run\\ss\\data\\templates\\zh-CN",
   "industries": [
     {
       "type": "industry",
@@ -686,14 +686,30 @@
       "type": "industry",
       "name": "自定义模板",
       "path": "自定义模板",
-      "templateCount": 16,
+      "templateCount": 17,
       "categories": [
         {
           "type": "category",
           "name": "通用",
           "path": "自定义模板/通用",
-          "templateCount": 16,
+          "templateCount": 17,
           "templates": [
+            {
+              "type": "template",
+              "id": "tpl-23fdb84d-983",
+              "name": "测试模板_20260715_155000",
+              "fileName": "tpl-23fdb84d-983.json",
+              "relativePath": "自定义模板/通用/tpl-23fdb84d-983.json",
+              "deviceType": "modbus_tcp",
+              "deviceModel": "modbus_tcp",
+              "version": "1.0.0",
+              "status": "draft",
+              "isDefault": false,
+              "variableCount": 0,
+              "tags": [],
+              "createdAt": "2026-07-14T23:58:42.390Z",
+              "updatedAt": "2026-07-14T23:58:42.391Z"
+            },
             {
               "type": "template",
               "id": "tpl-c55111a3-bb0",

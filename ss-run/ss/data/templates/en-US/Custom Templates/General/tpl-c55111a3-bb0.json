@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "1.0",
+  "templateType": "device_tag_template",
+  "id": "tpl-c55111a3-bb0",
+  "name": "Flue Gas Fan Virtual Template",
+  "description": "Power plant flue gas system fan virtual template (running status / current / frequency / opening / outlet temperature / outlet pressure)",
+  "deviceType": "virtual",
+  "deviceModel": "virtual",
+  "version": "1.0",
+  "status": "draft",
+  "isDefault": false,
+  "authorId": "ai-assistant",
+  "tags": [
+    "Flue Gas",
+    "Fan",
+    "Power Plant",
+    "Virtual Device"
+  ],
+  "industry": "Custom Templates",
+  "category": "General",
+  "protocol": {
+    "type": "virtual",
+    "config": {}
+  },
+  "variables": [
+    {
+      "name": "Running Status",
+      "label": "Running Status",
+      "address": "0",
+      "dataType": "int",
+      "guid": "018a61a1-8616-4801-bd09-bc7f31d80394"
+    },
+    {
+      "name": "Current",
+      "label": "Current",
+      "address": "4",
+      "dataType": "float",
+      "guid": "b1b517e1-c724-4d3e-98e8-e6ad91368925"
+    },
+    {
+      "name": "Frequency",
+      "label": "Frequency",
+      "address": "8",
+      "dataType": "float",
+      "guid": "fd1a4dd4-0160-4342-a42c-8cb7bc3a2892"
+    },
+    {
+      "name": "Opening",
+      "label": "Opening",
+      "address": "12",
+      "dataType": "float",
+      "guid": "c453e759-eed7-4a3b-81d0-c5d98fe1710d"
+    },
+    {
+      "name": "Outlet Temperature",
+      "label": "Outlet Temperature",
+      "address": "16",
+      "dataType": "float",
+      "guid": "ecebaad2-0232-472b-8e55-e41414969a6f"
+    },
+    {
+      "name": "Outlet Pressure",
+      "label": "Outlet Pressure",
+      "address": "20",
+      "dataType": "float",
+      "guid": "bce07e22-dd85-46be-8306-cff58c064149"
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-09-10T15:43:49.019Z",
+    "updatedAt": "2026-11-16T02:55:48.658Z",
+    "linkedDevices": 0,
+    "usageCount": 0,
+    "rating": 0
+  }
+}

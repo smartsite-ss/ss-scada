@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "1.0",
+  "templateType": "device_tag_template",
+  "id": "tpl-4562d77f-3fb",
+  "name": "Energy Management Water Meter Template",
+  "description": "Water meter virtual template (instantaneous flow / cumulative usage)",
+  "deviceType": "virtual",
+  "deviceModel": "virtual",
+  "version": "1.0",
+  "status": "draft",
+  "isDefault": false,
+  "authorId": "ai-assistant",
+  "tags": [
+    "Energy Management",
+    "Water Meter",
+    "Virtual Device"
+  ],
+  "industry": "Custom Templates",
+  "category": "General",
+  "protocol": {
+    "type": "virtual",
+    "config": {}
+  },
+  "variables": [
+    {
+      "name": "flow",
+      "label": "Instantaneous Flow",
+      "address": "V_FLOW",
+      "dataType": "float32",
+      "unit": "m3/h",
+      "minValue": 5,
+      "maxValue": 60,
+      "simulationMode": 1,
+      "guid": "2aa0fa08-e6c4-4ea8-a3b7-2fa2b5d7624a"
+    },
+    {
+      "name": "usage",
+      "label": "Cumulative Usage",
+      "address": "V_USAGE",
+      "dataType": "float32",
+      "unit": "m3",
+      "minValue": 0,
+      "maxValue": 50000,
+      "simulationMode": 1,
+      "guid": "9e0768ac-3c7c-4c3e-bcdb-29782d5f399a"
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-09-04T04:11:47.681Z",
+    "updatedAt": "2026-11-16T02:55:48.650Z",
+    "linkedDevices": 0,
+    "usageCount": 0,
+    "rating": 0
+  }
+}

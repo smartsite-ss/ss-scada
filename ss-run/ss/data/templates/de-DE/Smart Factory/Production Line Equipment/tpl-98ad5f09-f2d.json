@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "1.0",
+  "templateType": "device_tag_template",
+  "id": "tpl-98ad5f09-f2d",
+  "name": "Virtuelle Vorlage für Produktionslinienanlagen",
+  "description": "Virtuelle Vorlage für Produktionslinien (Status / Ausbringung / Taktzeit / Temperatur / Leistung / Laufzeit)",
+  "deviceType": "virtual",
+  "deviceModel": "virtual",
+  "version": "1.0.0",
+  "status": "draft",
+  "isDefault": false,
+  "authorId": "737532a5-77c3-44ac-8f70-1719e207fba7",
+  "tags": [
+    "Produktionslinie",
+    "Virtuelles Gerät",
+    "Smart Factory",
+    "Anlage"
+  ],
+  "industry": "Smart Factory",
+  "category": "Production Line Equipment",
+  "protocol": {
+    "type": "virtual",
+    "config": {}
+  },
+  "variables": [
+    {
+      "name": "Betriebsstatus",
+      "address": "V_STATUS",
+      "dataType": "bool",
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "ff680b19-5f45-471a-b938-0a924fa46c3b"
+    },
+    {
+      "name": "Gesamtausbringung",
+      "address": "V_COUNT",
+      "dataType": "int32",
+      "unit": "pcs",
+      "minValue": 0,
+      "maxValue": 5000,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "b9b0556f-c9ef-4b9e-a77c-3d996729d1d3"
+    },
+    {
+      "name": "Taktzeit",
+      "address": "V_CYCLE",
+      "dataType": "float32",
+      "unit": "s",
+      "minValue": 18,
+      "maxValue": 32,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "4dd76dab-531d-4b8a-98de-f8ebe7953f96"
+    },
+    {
+      "name": "Spindeltemperatur",
+      "address": "V_TEMP",
+      "dataType": "float32",
+      "unit": "℃",
+      "minValue": 55,
+      "maxValue": 85,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "3f28e8d1-fe89-4a22-ad1c-110ee2880756"
+    },
+    {
+      "name": "Leistung",
+      "address": "V_POWER",
+      "dataType": "float32",
+      "unit": "kW",
+      "minValue": 60,
+      "maxValue": 130,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "f8e32427-e63f-478d-a524-3e9742db3fff"
+    },
+    {
+      "name": "Laufzeit",
+      "address": "V_RUNTIME",
+      "dataType": "int32",
+      "unit": "s",
+      "minValue": 0,
+      "maxValue": 86400,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "72b08572-8639-46e3-8a9b-cac918da8963"
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-09-03T13:42:48.324Z",
+    "updatedAt": "2026-11-16T03:01:46.568Z",
+    "linkedDevices": 0,
+    "usageCount": 0,
+    "rating": 0
+  }
+}

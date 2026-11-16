@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "1.0",
+  "templateType": "device_tag_template",
+  "id": "tpl-b4fc5766-ef1",
+  "name": "Mẫu ảo đo lường năng lượng",
+  "description": "Mẫu ảo đồng hồ năng lượng (điện áp / dòng điện / công suất / mức tiêu thụ năng lượng)",
+  "deviceType": "virtual",
+  "deviceModel": "virtual",
+  "version": "1.0.0",
+  "status": "draft",
+  "isDefault": false,
+  "authorId": "737532a5-77c3-44ac-8f70-1719e207fba7",
+  "tags": [
+    "Năng lượng",
+    "Đo lường",
+    "Thiết bị ảo",
+    "Nhà máy thông minh"
+  ],
+  "industry": "Smart Factory",
+  "category": "Energy",
+  "protocol": {
+    "type": "virtual",
+    "config": {}
+  },
+  "variables": [
+    {
+      "name": "Điện áp",
+      "address": "V_VOLT",
+      "dataType": "float32",
+      "unit": "V",
+      "minValue": 215,
+      "maxValue": 245,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "5c1775a2-6218-4d99-b27a-e1989b905a68"
+    },
+    {
+      "name": "Dòng điện",
+      "address": "V_CURRENT",
+      "dataType": "float32",
+      "unit": "A",
+      "minValue": 5,
+      "maxValue": 40,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "e56bfdcf-a998-4184-8746-ffdffacf713f"
+    },
+    {
+      "name": "Công suất",
+      "address": "V_EPOWER",
+      "dataType": "float32",
+      "unit": "kW",
+      "minValue": 60,
+      "maxValue": 130,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "52d4dc59-c801-4d10-bf0c-185cdfa47771"
+    },
+    {
+      "name": "Mức tiêu thụ năng lượng",
+      "address": "V_ENERGY",
+      "dataType": "float32",
+      "unit": "kWh",
+      "minValue": 0,
+      "maxValue": 100000,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "4d8d7c65-f1b2-4a7f-8f4a-5fa9b3f59930"
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-09-03T13:42:48.380Z",
+    "updatedAt": "2026-11-16T03:01:46.601Z",
+    "linkedDevices": 0,
+    "usageCount": 0,
+    "rating": 0
+  }
+}

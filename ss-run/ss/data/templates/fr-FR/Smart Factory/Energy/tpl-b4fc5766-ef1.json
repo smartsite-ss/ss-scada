@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "1.0",
+  "templateType": "device_tag_template",
+  "id": "tpl-b4fc5766-ef1",
+  "name": "Modèle virtuel de mesure d'énergie",
+  "description": "Modèle virtuel de compteur d'énergie (tension / courant / puissance / consommation)",
+  "deviceType": "virtual",
+  "deviceModel": "virtual",
+  "version": "1.0.0",
+  "status": "draft",
+  "isDefault": false,
+  "authorId": "737532a5-77c3-44ac-8f70-1719e207fba7",
+  "tags": [
+    "Énergie",
+    "Mesure",
+    "Appareil virtuel",
+    "Usine intelligente"
+  ],
+  "industry": "Smart Factory",
+  "category": "Energy",
+  "protocol": {
+    "type": "virtual",
+    "config": {}
+  },
+  "variables": [
+    {
+      "name": "Tension",
+      "address": "V_VOLT",
+      "dataType": "float32",
+      "unit": "V",
+      "minValue": 215,
+      "maxValue": 245,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "2dc18bb2-8dc7-48ef-9b08-8067858ffcd4"
+    },
+    {
+      "name": "Courant",
+      "address": "V_CURRENT",
+      "dataType": "float32",
+      "unit": "A",
+      "minValue": 5,
+      "maxValue": 40,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "576b7f20-0c79-4b4d-b1c0-3d8412d5d038"
+    },
+    {
+      "name": "Puissance",
+      "address": "V_EPOWER",
+      "dataType": "float32",
+      "unit": "kW",
+      "minValue": 60,
+      "maxValue": 130,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "952d611f-b8e5-4117-bf77-f727988e18a7"
+    },
+    {
+      "name": "Consommation d'énergie",
+      "address": "V_ENERGY",
+      "dataType": "float32",
+      "unit": "kWh",
+      "minValue": 0,
+      "maxValue": 100000,
+      "simulationMode": 1,
+      "enabled": true,
+      "guid": "72175566-efff-44f6-b08c-09a4f84096f2"
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-09-03T13:42:48.380Z",
+    "updatedAt": "2026-11-16T03:01:46.578Z",
+    "linkedDevices": 0,
+    "usageCount": 0,
+    "rating": 0
+  }
+}

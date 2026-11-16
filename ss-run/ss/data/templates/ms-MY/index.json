@@ -1,0 +1,106 @@
+{
+  "schemaVersion": "2.0",
+  "lastUpdated": "2026-11-16T03:01:46.733Z",
+  "totalTemplates": 3,
+  "totalIndustries": 1,
+  "totalCategories": 3,
+  "description": "Smart SCADA device template tree index - organized by industry and device type",
+  "rootPath": "f:\\work\\smartdata\\202603_trace\\trunk\\code\\ss-scada\\ss-run\\ss\\data\\templates\\ms-MY",
+  "industries": [
+    {
+      "type": "industry",
+      "name": "Smart Factory",
+      "path": "Smart Factory",
+      "templateCount": 3,
+      "categories": [
+        {
+          "type": "category",
+          "name": "Energy",
+          "path": "Smart Factory/Energy",
+          "templateCount": 1,
+          "templates": [
+            {
+              "type": "template",
+              "id": "tpl-b4fc5766-ef1",
+              "name": "Templat Maya Pengukuran Tenaga",
+              "fileName": "tpl-b4fc5766-ef1.json",
+              "relativePath": "Smart Factory/Energy/tpl-b4fc5766-ef1.json",
+              "deviceType": "virtual",
+              "deviceModel": "virtual",
+              "version": "1.0.0",
+              "status": "draft",
+              "isDefault": false,
+              "variableCount": 4,
+              "tags": [
+                "Tenaga",
+                "Pengukuran",
+                "Peranti Maya",
+                "Kilang Pintar"
+              ],
+              "createdAt": "2026-09-03T13:42:48.380Z",
+              "updatedAt": "2026-11-16T03:01:46.586Z"
+            }
+          ]
+        },
+        {
+          "type": "category",
+          "name": "Integration",
+          "path": "Smart Factory/Integration",
+          "templateCount": 1,
+          "templates": [
+            {
+              "type": "template",
+              "id": "tpl-70a21ac0-9e9",
+              "name": "Templat Maya Integrasi MES",
+              "fileName": "tpl-70a21ac0-9e9.json",
+              "relativePath": "Smart Factory/Integration/tpl-70a21ac0-9e9.json",
+              "deviceType": "virtual",
+              "deviceModel": "virtual",
+              "version": "1.0.0",
+              "status": "draft",
+              "isDefault": false,
+              "variableCount": 2,
+              "tags": [
+                "MES",
+                "Integrasi",
+                "Peranti Maya",
+                "Kilang Pintar"
+              ],
+              "createdAt": "2026-09-03T13:42:48.417Z",
+              "updatedAt": "2026-11-16T03:01:46.585Z"
+            }
+          ]
+        },
+        {
+          "type": "category",
+          "name": "Production Line Equipment",
+          "path": "Smart Factory/Production Line Equipment",
+          "templateCount": 1,
+          "templates": [
+            {
+              "type": "template",
+              "id": "tpl-98ad5f09-f2d",
+              "name": "Templat Maya Peralatan Barisan Pengeluaran",
+              "fileName": "tpl-98ad5f09-f2d.json",
+              "relativePath": "Smart Factory/Production Line Equipment/tpl-98ad5f09-f2d.json",
+              "deviceType": "virtual",
+              "deviceModel": "virtual",
+              "version": "1.0.0",
+              "status": "draft",
+              "isDefault": false,
+              "variableCount": 6,
+              "tags": [
+                "Barisan Pengeluaran",
+                "Peranti Maya",
+                "Kilang Pintar",
+                "Peralatan"
+              ],
+              "createdAt": "2026-09-03T13:42:48.324Z",
+              "updatedAt": "2026-11-16T03:01:46.583Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

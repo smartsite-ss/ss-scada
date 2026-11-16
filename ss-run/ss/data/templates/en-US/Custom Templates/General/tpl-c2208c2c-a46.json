@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "1.0",
+  "templateType": "device_tag_template",
+  "id": "tpl-c2208c2c-a46",
+  "name": "Water Quality Analysis Template",
+  "description": "Water quality analysis virtual template (pH / COD / ammonia nitrogen / turbidity)",
+  "deviceType": "undefined",
+  "deviceModel": "undefined",
+  "version": "1.0",
+  "status": "draft",
+  "isDefault": false,
+  "authorId": "ai-assistant",
+  "tags": [
+    "Water Quality",
+    "Analysis",
+    "Virtual Device"
+  ],
+  "industry": "Custom Templates",
+  "category": "General",
+  "protocol": {
+    "type": "undefined",
+    "config": {}
+  },
+  "variables": [
+    {
+      "name": "pH",
+      "label": "pH",
+      "address": "32",
+      "dataType": "float",
+      "guid": "0f60a1e0-a3b8-48fb-90d2-5b9250530b20"
+    },
+    {
+      "name": "COD",
+      "label": "COD",
+      "address": "36",
+      "dataType": "float",
+      "guid": "2ef442f8-8f20-4424-bccd-5632334146e5"
+    },
+    {
+      "name": "Ammonia Nitrogen",
+      "label": "Ammonia Nitrogen",
+      "address": "40",
+      "dataType": "float",
+      "guid": "d46c790d-3bf5-4d67-b23d-98fc6e783c05"
+    },
+    {
+      "name": "Turbidity",
+      "label": "Turbidity",
+      "address": "44",
+      "dataType": "float",
+      "guid": "dcb9b8a5-ef88-4633-b693-01a0e46cebd3"
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-09-06T15:06:05.762Z",
+    "updatedAt": "2026-11-16T02:55:48.657Z",
+    "linkedDevices": 0,
+    "usageCount": 0,
+    "rating": 0
+  }
+}
