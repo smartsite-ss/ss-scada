@@ -947,6 +947,8 @@ function switchTheme(theme: string) {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex: 1;
+  min-width: 0;
 }
 
 .topbar-logo {
@@ -975,19 +977,32 @@ function switchTheme(theme: string) {
   display: flex;
   align-items: center;
   gap: 2px;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .topbar-nav-item {
-  padding: 8px 14px;
+  /* Long labels wrap inside the item (at most two lines) instead of overflowing the header */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+
+  min-width: 0;
+  padding: 6px 12px;
   border-radius: 6px;
   font-size: 13px;
   font-weight: 500;
+  line-height: 18px;
+  text-align: center;
   color: var(--header-text);
   opacity: 0.75;
   text-decoration: none;
   transition: all 0.2s ease;
-  white-space: nowrap;
+  white-space: normal;
   position: relative;
+  box-sizing: border-box;
 }
 
 .topbar-nav-item:hover {
@@ -1017,6 +1032,8 @@ function switchTheme(theme: string) {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
+  margin-left: 12px;
 }
 
 .topbar-btn {

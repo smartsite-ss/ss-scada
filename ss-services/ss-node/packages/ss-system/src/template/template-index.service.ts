@@ -59,17 +59,23 @@ export interface TemplateTreeIndex {
 export interface CreateCategoryDto {
   industryName: string;
   categoryName: string;
+  /** Target language directory (e.g. zh-CN / en-US); omitted = legacy root directory */
+  locale?: string;
 }
 
 export interface RenameCategoryDto {
   industryName: string;
   oldCategoryName: string;
   newCategoryName: string;
+  /** Target language directory (e.g. zh-CN / en-US); omitted = legacy root directory */
+  locale?: string;
 }
 
 export interface DeleteCategoryDto {
   industryName: string;
   categoryName: string;
+  /** Target language directory (e.g. zh-CN / en-US); omitted = legacy root directory */
+  locale?: string;
 }
 
 @Injectable()
@@ -326,17 +332,30 @@ export class TemplateIndexService {
   // ===== Directory structure management operations =====
 
   /**
+   * Resolve the base directory for a locale.
+   * Uses templates/{locale}/ when it exists; falls back to the legacy root directory.
+   */
+  private resolveLocaleBase(locale?: string): string {
+    if (!locale) return this.templatesBasePath;
+    const localePath = path.join(this.templatesBasePath, locale);
+    if (fs.existsSync(localePath)) return localePath;
+    this.logger.warn(`Locale directory does not exist: ${localePath}, falling back to root directory`);
+    return this.templatesBasePath;
+  }
+
+  /**
    * Create a category directory (a subdirectory under an industry)
    */
   async createCategory(dto: CreateCategoryDto): Promise<{ success: boolean; path: string }> {
-    const dirPath = path.join(this.templatesBasePath, dto.industryName, dto.categoryName);
+    const basePath = this.resolveLocaleBase(dto.locale);
+    const dirPath = path.join(basePath, dto.industryName, dto.categoryName);
 
     if (fs.existsSync(dirPath)) {
       throw new Error(`分类目录已存在: ${dto.categoryName}`);
     }
 
     // Ensure the industry directory exists
-    const industryPath = path.join(this.templatesBasePath, dto.industryName);
+    const industryPath = path.join(basePath, dto.industryName);
     if (!fs.existsSync(industryPath)) {
       fs.mkdirSync(industryPath, { recursive: true });
     }
@@ -348,7 +367,9 @@ export class TemplateIndexService {
 
     return {
       success: true,
-      path: path.join(dto.industryName, dto.categoryName).replace(/\\/g, '/'),
+      path: path
+        .join(dto.locale || '', dto.industryName, dto.categoryName)
+        .replace(/\\/g, '/'),
     };
   }
 
@@ -358,8 +379,9 @@ export class TemplateIndexService {
   async renameCategory(
     dto: RenameCategoryDto,
   ): Promise<{ success: boolean; oldPath: string; newPath: string }> {
-    const oldPath = path.join(this.templatesBasePath, dto.industryName, dto.oldCategoryName);
-    const newPath = path.join(this.templatesBasePath, dto.industryName, dto.newCategoryName);
+    const basePath = this.resolveLocaleBase(dto.locale);
+    const oldPath = path.join(basePath, dto.industryName, dto.oldCategoryName);
+    const newPath = path.join(basePath, dto.industryName, dto.newCategoryName);
 
     if (!fs.existsSync(oldPath)) {
       throw new Error(`分类目录不存在: ${dto.oldCategoryName}`);
@@ -379,8 +401,12 @@ export class TemplateIndexService {
 
     return {
       success: true,
-      oldPath: path.join(dto.industryName, dto.oldCategoryName).replace(/\\/g, '/'),
-      newPath: path.join(dto.industryName, dto.newCategoryName).replace(/\\/g, '/'),
+      oldPath: path
+        .join(dto.locale || '', dto.industryName, dto.oldCategoryName)
+        .replace(/\\/g, '/'),
+      newPath: path
+        .join(dto.locale || '', dto.industryName, dto.newCategoryName)
+        .replace(/\\/g, '/'),
     };
   }
 
@@ -388,7 +414,8 @@ export class TemplateIndexService {
    * Delete a category directory
    */
   async deleteCategory(dto: DeleteCategoryDto): Promise<{ success: boolean }> {
-    const dirPath = path.join(this.templatesBasePath, dto.industryName, dto.categoryName);
+    const basePath = this.resolveLocaleBase(dto.locale);
+    const dirPath = path.join(basePath, dto.industryName, dto.categoryName);
 
     if (!fs.existsSync(dirPath)) {
       throw new Error(`分类目录不存在: ${dto.categoryName}`);

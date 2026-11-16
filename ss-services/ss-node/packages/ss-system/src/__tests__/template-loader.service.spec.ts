@@ -364,9 +364,9 @@ describe('TemplateLoaderService', () => {
     });
 
     it('TC-LOAD-060: should search by name', () => {
-      const result = service.searchTemplates('Mitsubishi');
+      const result = service.searchTemplates('三菱');
       expect(result).toHaveLength(1);
-      expect(result[0].name).toContain('Mitsubishi');
+      expect(result[0].name).toContain('三菱');
       expect(result[0].id).toBe('tpl-mitsubishi');
     });
 

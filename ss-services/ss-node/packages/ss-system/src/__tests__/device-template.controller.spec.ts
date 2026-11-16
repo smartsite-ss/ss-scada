@@ -58,8 +58,8 @@ jest.mock('../template/template-index.service');
 describe('DeviceTemplateController', () => {
   let controller: DeviceTemplateController;
   let mockTemplateService: Record<string, jest.Mock>;
-  let _mockTemplateLoader: Record<string, jest.Mock>;
-  let _mockIndexService: Record<string, jest.Mock>;
+  let mockLoaderService: Record<string, jest.Mock>;
+  let mockIndexService: Record<string, jest.Mock>;
 
   beforeAll(() => {
     // Ensure mocked TemplateLoaderService has the needed methods
@@ -109,6 +109,8 @@ describe('DeviceTemplateController', () => {
     }).compile();
 
     controller = module.get<DeviceTemplateController>(DeviceTemplateController);
+    mockLoaderService = module.get(TemplateLoaderService) as any;
+    mockIndexService = module.get(TemplateIndexService) as any;
   });
 
   const mockReq = (userId?: string) => ({ user: { id: userId || 'user-001' } });
@@ -123,7 +125,7 @@ describe('DeviceTemplateController', () => {
       const result = await controller.create(dto as any, mockReq('user-001'));
 
       expect(result).toEqual(saved);
-      expect(mockTemplateService.create).toHaveBeenCalledWith(dto, 'user-001');
+      expect(mockTemplateService.create).toHaveBeenCalledWith(dto, 'user-001', undefined);
     });
 
     it('TC-DTC-002: should fallback authorId to system', async () => {
@@ -132,7 +134,7 @@ describe('DeviceTemplateController', () => {
 
       const result = await controller.create(dto as any, {});
       expect((result as any).authorId).toBe('system');
-      expect(mockTemplateService.create).toHaveBeenCalledWith(dto, 'system');
+      expect(mockTemplateService.create).toHaveBeenCalledWith(dto, 'system', undefined);
     });
   });
 
@@ -295,7 +297,7 @@ describe('DeviceTemplateController', () => {
     it('TC-DTC-050: should remove template', async () => {
       mockTemplateService.remove.mockResolvedValue(undefined);
       await controller.remove('tpl-001');
-      expect(mockTemplateService.remove).toHaveBeenCalledWith('tpl-001');
+      expect(mockTemplateService.remove).toHaveBeenCalledWith('tpl-001', undefined);
     });
   });
 
@@ -304,7 +306,7 @@ describe('DeviceTemplateController', () => {
     it('TC-DTC-060: should publish a template', async () => {
       mockTemplateService.publish.mockResolvedValue({ id: 'tpl-001', status: 'published' });
       expect(await controller.publish('tpl-001')).toEqual({ id: 'tpl-001', status: 'published' });
-      expect(mockTemplateService.publish).toHaveBeenCalledWith('tpl-001');
+      expect(mockTemplateService.publish).toHaveBeenCalledWith('tpl-001', undefined);
     });
   });
 
@@ -316,7 +318,7 @@ describe('DeviceTemplateController', () => {
         id: 'tpl-001',
         status: 'deprecated',
       });
-      expect(mockTemplateService.deprecate).toHaveBeenCalledWith('tpl-001');
+      expect(mockTemplateService.deprecate).toHaveBeenCalledWith('tpl-001', undefined);
     });
   });
 
@@ -326,7 +328,7 @@ describe('DeviceTemplateController', () => {
       const cloned = { id: 'tpl-002', name: 'Template-A (v1.1)', version: '1.1' };
       mockTemplateService.clone.mockResolvedValue(cloned);
       expect(await controller.clone('tpl-001', mockReq('user-002'))).toEqual(cloned);
-      expect(mockTemplateService.clone).toHaveBeenCalledWith('tpl-001', 'user-002');
+      expect(mockTemplateService.clone).toHaveBeenCalledWith('tpl-001', 'user-002', undefined);
     });
   });
 
@@ -361,6 +363,90 @@ describe('DeviceTemplateController', () => {
       mockTemplateService.sync.mockResolvedValue(result);
       const r = await controller.sync('tpl-001', {} as any);
       expect(r.errors).toHaveLength(1);
+    });
+  });
+
+  // ==================== locale pass-through ====================
+  describe('locale pass-through', () => {
+    it('TC-DTC-200: create should forward the locale to the service', async () => {
+      const dto = { name: 'Template-A', deviceType: 'opcua', description: 'Test' };
+      mockTemplateService.create.mockResolvedValue({ id: 'tpl-1' });
+      await controller.create(dto as any, mockReq(), 'en-US');
+      expect(mockTemplateService.create).toHaveBeenCalledWith(dto, 'user-001', 'en-US');
+    });
+
+    it('TC-DTC-201: remove/publish/deprecate/clone should forward the locale', async () => {
+      mockTemplateService.remove.mockResolvedValue(undefined);
+      mockTemplateService.publish.mockResolvedValue({ id: 'tpl-001' });
+      mockTemplateService.deprecate.mockResolvedValue({ id: 'tpl-001' });
+      mockTemplateService.clone.mockResolvedValue({ id: 'tpl-002' });
+
+      await controller.remove('tpl-001', 'en-US');
+      await controller.publish('tpl-001', 'en-US');
+      await controller.deprecate('tpl-001', 'en-US');
+      await controller.clone('tpl-001', mockReq('user-002'), 'en-US');
+
+      expect(mockTemplateService.remove).toHaveBeenCalledWith('tpl-001', 'en-US');
+      expect(mockTemplateService.publish).toHaveBeenCalledWith('tpl-001', 'en-US');
+      expect(mockTemplateService.deprecate).toHaveBeenCalledWith('tpl-001', 'en-US');
+      expect(mockTemplateService.clone).toHaveBeenCalledWith('tpl-001', 'user-002', 'en-US');
+    });
+
+    it('TC-DTC-202: createCategory should merge the locale into the dto', async () => {
+      mockIndexService.createCategory.mockResolvedValue({ success: true, path: 'en-US/Ind/Cat' });
+
+      const result = await controller.createCategory(
+        { industryName: 'Ind', categoryName: 'Cat' } as any,
+        'en-US',
+      );
+
+      expect(mockIndexService.createCategory).toHaveBeenCalledWith({
+        industryName: 'Ind',
+        categoryName: 'Cat',
+        locale: 'en-US',
+      });
+      expect((result as any).code).toBe(200);
+    });
+
+    it('TC-DTC-203: renameCategory should merge the locale into the dto', async () => {
+      mockIndexService.renameCategory.mockResolvedValue({ success: true });
+
+      await controller.renameCategory(
+        { industryName: 'Ind', oldCategoryName: 'Old', newCategoryName: 'New' } as any,
+        'zh-CN',
+      );
+
+      expect(mockIndexService.renameCategory).toHaveBeenCalledWith({
+        industryName: 'Ind',
+        oldCategoryName: 'Old',
+        newCategoryName: 'New',
+        locale: 'zh-CN',
+      });
+    });
+
+    it('TC-DTC-204: deleteCategory should pass the locale through', async () => {
+      mockIndexService.deleteCategory.mockResolvedValue({ success: true });
+
+      await controller.deleteCategory('Ind', 'Cat', 'en-US');
+
+      expect(mockIndexService.deleteCategory).toHaveBeenCalledWith({
+        industryName: 'Ind',
+        categoryName: 'Cat',
+        locale: 'en-US',
+      });
+    });
+
+    it('TC-DTC-205: rebuildIndex should rebuild from directories and reload the loader', async () => {
+      mockIndexService.rebuildIndex.mockReturnValue({ industries: [] });
+      mockLoaderService.reload.mockResolvedValue({ locales: ['zh-CN'], count: 0 });
+      mockLoaderService.getIndex.mockReturnValue({ industries: [] });
+      mockLoaderService.resolveLocale.mockReturnValue('zh-CN');
+
+      const result = await controller.rebuildIndex('zh-CN');
+
+      expect(mockIndexService.rebuildIndex).toHaveBeenCalled();
+      expect(mockLoaderService.reload).toHaveBeenCalled();
+      expect((result as any).code).toBe(200);
     });
   });
 });

@@ -2145,7 +2145,7 @@ async function contextDeleteCategory() {
   );
   if (!confirmed) return;
   try {
-    await templateApi.deleteCategory(contextMenu.value.industryName, name);
+    await templateApi.deleteCategory(contextMenu.value.industryName, name, locale.value);
     showSuccess(t('system.deviceTemplate.directory.deleteSuccess', { name }));
     await afterDirectoryChange();
   } catch (e: unknown) {
@@ -2177,7 +2177,7 @@ async function contextPasteTemplateToCategory() {
   if (!industryName || !categoryName) return;
   try {
     // 1. Clone the template (backend generateId() generates a new ID)
-    const cloned = await templateStore.cloneTemplate(copiedTemplateId.value);
+    const cloned = await templateStore.cloneTemplate(copiedTemplateId.value, locale.value);
     // 2. Update to the target category directory
     await templateStore.updateTemplate(cloned.id, {
       industry: industryName,
@@ -2200,7 +2200,7 @@ async function contextPublishTemplate() {
   const confirmed = await showConfirm(t('system.deviceTemplate.confirmPublish'), t('system.messageBox.confirm'));
   if (!confirmed) return;
   try {
-    await templateStore.publishTemplate(tpl.id);
+    await templateStore.publishTemplate(tpl.id, locale.value);
     showSuccess(t('system.deviceTemplate.publishSuccess'));
     await refreshAll();
   } catch (e: unknown) {
@@ -2218,7 +2218,7 @@ async function contextDeprecateTemplate() {
   const confirmed = await showConfirm(t('system.deviceTemplate.confirmDeprecate'), t('system.messageBox.confirm'));
   if (!confirmed) return;
   try {
-    await templateStore.deprecateTemplate(tpl.id);
+    await templateStore.deprecateTemplate(tpl.id, locale.value);
     showSuccess(t('system.deviceTemplate.deprecateSuccess'));
     await refreshAll();
   } catch (e: unknown) {
@@ -2239,7 +2239,7 @@ async function contextDeleteTemplate() {
   );
   if (!confirmed) return;
   try {
-    await templateStore.deleteTemplate(tpl.id);
+    await templateStore.deleteTemplate(tpl.id, locale.value);
     showSuccess(t('system.deviceTemplate.deleteSuccess'));
     if (selectedTemplate.value?.id === tpl.id) {
       selectedTemplate.value = null;
@@ -2315,7 +2315,7 @@ async function submitForm() {
         category: form.value.category,
         version: form.value.version,
         tags: form.value.tags,
-      });
+      }, locale.value);
       showSuccess(t('system.deviceTemplate.createSuccess', { name: form.value.name }));
     }
     closeFormModal();
@@ -2346,7 +2346,7 @@ async function doImport() {
   if (!importJsonText.value) return;
   try {
     const data = JSON.parse(importJsonText.value);
-    await templateApi.importTemplate(data);
+    await templateApi.importTemplate(data, locale.value);
     importResult.value = { valid: true };
     showSuccess(t('system.deviceTemplate.importSuccess'));
     await refreshAll();
@@ -2386,7 +2386,7 @@ async function handleRebuildIndex() {
   if (!confirmed) return;
   rebuilding.value = true;
   try {
-    const res = await templateApi.rebuildIndex();
+    const res = await templateApi.rebuildIndex(locale.value);
     const data = (res as { data?: { totalTemplates?: number } })?.data;
     showSuccess(t('system.deviceTemplate.rebuildSuccess', { count: data?.totalTemplates || 0 }));
     const reloadRes = await templateApi.reload();
@@ -2422,14 +2422,14 @@ async function submitCategoryDialog() {
       await templateApi.createCategory({
         industryName: categoryDialogForm.value.industryName,
         categoryName: name,
-      });
+      }, locale.value);
       showSuccess(t('system.deviceTemplate.directory.createSuccess', { name }));
     } else {
       await templateApi.renameCategory({
         industryName: categoryDialogForm.value.industryName,
         oldCategoryName: categoryDialogForm.value.categoryName,
         newCategoryName: name,
-      });
+      }, locale.value);
       showSuccess(t('system.deviceTemplate.directory.renameSuccess', { name }));
     }
     await afterDirectoryChange();
@@ -2620,7 +2620,7 @@ async function submitVarEdit() {
 
 /** Common handling after a directory change */
 async function afterDirectoryChange() {
-  await templateApi.rebuildIndex();
+  await templateApi.rebuildIndex(locale.value);
   const reloadRes = await templateApi.reload();
   showSuccess(t('system.deviceTemplate.reloadSuccess', { count: (reloadRes as { data?: { loaded?: number } })?.data?.loaded || 0 }));
   await loadLibrary();

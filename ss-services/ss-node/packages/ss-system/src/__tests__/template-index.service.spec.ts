@@ -134,7 +134,7 @@ describe('TemplateIndexService', () => {
       expect(tpl1.name).toBe('西门子 S7-1200');
       expect(tpl1.variableCount).toBe(10);
       expect(tpl1.tags).toEqual(['西门子', 'PLC']);
-      expect(tpl1.relativePath).toBe('工业自动化/PLC控制器/siemens-s7-1200.json');
+      expect(tpl1.relativePath).toBe('工业自动化/PLC controller/siemens-s7-1200.json');
 
       // Verify index.json has been written
       const indexPath = path.join(TEST_BASE, 'index.json');
@@ -352,6 +352,92 @@ describe('TemplateIndexService', () => {
           categoryName: '不存在的分类',
         }),
       ).rejects.toThrow('分类目录不存在');
+    });
+  });
+
+  describe('locale-aware category CRUD', () => {
+    it('TC-IDX-060: should create category inside the given locale directory', async () => {
+      ensureDir(path.join(TEST_BASE, 'zh-CN', '工业自动化'));
+
+      const result = await indexService.createCategory({
+        industryName: '工业自动化',
+        categoryName: '新分类',
+        locale: 'zh-CN',
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.path).toBe('zh-CN/工业自动化/新分类');
+      expect(fs.existsSync(path.join(TEST_BASE, 'zh-CN', '工业自动化', '新分类'))).toBe(true);
+      // Must not be created in the legacy root directory
+      expect(fs.existsSync(path.join(TEST_BASE, '工业自动化', '新分类'))).toBe(false);
+
+      // The zh-CN index must include the new category after the rebuild
+      const zhIndexPath = path.join(TEST_BASE, 'zh-CN', 'index.json');
+      expect(fs.existsSync(zhIndexPath)).toBe(true);
+      const zhIndex = JSON.parse(fs.readFileSync(zhIndexPath, 'utf-8'));
+      const industry = zhIndex.industries.find((i: any) => i.name === '工业自动化');
+      expect(industry.categories.some((c: any) => c.name === '新分类')).toBe(true);
+    });
+
+    it('TC-IDX-061: should throw when the category already exists in the locale directory', async () => {
+      ensureDir(path.join(TEST_BASE, 'zh-CN', '工业自动化', '已存在分类'));
+
+      await expect(
+        indexService.createCategory({
+          industryName: '工业自动化',
+          categoryName: '已存在分类',
+          locale: 'zh-CN',
+        }),
+      ).rejects.toThrow('分类目录已存在');
+    });
+
+    it('TC-IDX-062: should rename category inside the given locale directory', async () => {
+      writeFile(
+        path.join(TEST_BASE, 'en-US', 'Industrial Automation', 'Old Category', 'tpl.json'),
+        makeTemplateData({ id: 'tpl1', name: 'TPL1', variables: Array(1).fill({}) }),
+      );
+
+      const result = await indexService.renameCategory({
+        industryName: 'Industrial Automation',
+        oldCategoryName: 'Old Category',
+        newCategoryName: 'New Category',
+        locale: 'en-US',
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.oldPath).toBe('en-US/Industrial Automation/Old Category');
+      expect(fs.existsSync(path.join(TEST_BASE, 'en-US', 'Industrial Automation', 'Old Category'))).toBe(false);
+      expect(fs.existsSync(path.join(TEST_BASE, 'en-US', 'Industrial Automation', 'New Category'))).toBe(true);
+
+      // Template metadata updated in place
+      const tplPath = path.join(TEST_BASE, 'en-US', 'Industrial Automation', 'New Category', 'tpl.json');
+      const tplContent = JSON.parse(fs.readFileSync(tplPath, 'utf-8'));
+      expect(tplContent.category).toBe('New Category');
+    });
+
+    it('TC-IDX-063: should delete category inside the given locale directory', async () => {
+      ensureDir(path.join(TEST_BASE, 'zh-CN', '工业自动化', '待删除分类'));
+
+      const result = await indexService.deleteCategory({
+        industryName: '工业自动化',
+        categoryName: '待删除分类',
+        locale: 'zh-CN',
+      });
+
+      expect(result.success).toBe(true);
+      expect(fs.existsSync(path.join(TEST_BASE, 'zh-CN', '工业自动化', '待删除分类'))).toBe(false);
+    });
+
+    it('TC-IDX-064: should fall back to the root directory when the locale directory is missing', async () => {
+      const result = await indexService.createCategory({
+        industryName: '工业自动化',
+        categoryName: '回退分类',
+        locale: 'ja-JP',
+      });
+
+      expect(result.success).toBe(true);
+      expect(fs.existsSync(path.join(TEST_BASE, '工业自动化', '回退分类'))).toBe(true);
+      expect(fs.existsSync(path.join(TEST_BASE, 'ja-JP'))).toBe(false);
     });
   });
 

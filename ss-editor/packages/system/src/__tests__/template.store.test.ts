@@ -535,6 +535,37 @@ describe('useTemplateStore', () => {
     });
   });
 
+  describe('locale pass-through', () => {
+    it('should forward locale to create/delete/publish/deprecate/clone/getById', async () => {
+      const { templateApi } = await import('../api/modules/template.api');
+      (templateApi.create as any).mockResolvedValueOnce({ data: mockTemplate({ id: 'tpl-new' }) });
+      (templateApi.delete as any).mockResolvedValueOnce(undefined);
+      (templateApi.publish as any).mockResolvedValueOnce({
+        data: mockTemplate({ id: 'tpl-1', status: 'published' }),
+      });
+      (templateApi.deprecate as any).mockResolvedValueOnce({
+        data: mockTemplate({ id: 'tpl-1', status: 'deprecated' }),
+      });
+      (templateApi.clone as any).mockResolvedValueOnce({ data: mockTemplate({ id: 'tpl-clone' }) });
+      (templateApi.getById as any).mockResolvedValueOnce({ data: mockTemplate({ id: 'tpl-1' }) });
+
+      const store = useTemplateStore();
+      await store.createTemplate({ name: 'New', deviceType: 'modbus_tcp' } as any, 'en-US');
+      await store.deleteTemplate('tpl-1', 'en-US');
+      await store.publishTemplate('tpl-1', 'en-US');
+      await store.deprecateTemplate('tpl-1', 'en-US');
+      await store.cloneTemplate('tpl-1', 'en-US');
+      await store.fetchTemplate('tpl-1', 'en-US');
+
+      expect(templateApi.create).toHaveBeenCalledWith(expect.any(Object), 'en-US');
+      expect(templateApi.delete).toHaveBeenCalledWith('tpl-1', 'en-US');
+      expect(templateApi.publish).toHaveBeenCalledWith('tpl-1', 'en-US');
+      expect(templateApi.deprecate).toHaveBeenCalledWith('tpl-1', 'en-US');
+      expect(templateApi.clone).toHaveBeenCalledWith('tpl-1', 'en-US');
+      expect(templateApi.getById).toHaveBeenCalledWith('tpl-1', 'en-US');
+    });
+  });
+
   describe('allTags computed', () => {
     it('should aggregate unique tags from all templates sorted', async () => {
       const { templateApi } = await import('../api/modules/template.api');

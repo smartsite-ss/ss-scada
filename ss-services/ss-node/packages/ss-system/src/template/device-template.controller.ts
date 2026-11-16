@@ -42,9 +42,14 @@ export class DeviceTemplateController {
   @Post()
   @WriteRoles()
   @ApiOperation({ summary: '创建设备采集变量模板' })
-  create(@Body() dto: CreateDeviceTemplateDto, @Req() req: any): Promise<TemplateResponse> {
+  @ApiQuery({ name: 'locale', required: false, description: '目标语言目录，如 zh-CN / en-US，默认 zh-CN' })
+  create(
+    @Body() dto: CreateDeviceTemplateDto,
+    @Req() req: any,
+    @Query('locale') locale?: string,
+  ): Promise<TemplateResponse> {
     const authorId = req.user?.id || 'system';
-    return this.templateService.create(dto, authorId);
+    return this.templateService.create(dto, authorId, locale);
   }
 
   @Get()
@@ -165,31 +170,39 @@ export class DeviceTemplateController {
 
   @Delete(':templateId')
   @Roles(UserRole.ADMIN)
-  @ApiOperation({ summary: '删除模板' })
-  remove(@Param('templateId') templateId: string) {
-    return this.templateService.remove(templateId);
+  @ApiOperation({ summary: '删除模板（删除所有语言目录下的同名模板文件）' })
+  @ApiQuery({ name: 'locale', required: false })
+  remove(@Param('templateId') templateId: string, @Query('locale') locale?: string) {
+    return this.templateService.remove(templateId, locale);
   }
 
   @Patch(':templateId/publish')
   @WriteRoles()
-  @ApiOperation({ summary: '发布模板' })
-  publish(@Param('templateId') templateId: string): Promise<TemplateResponse> {
-    return this.templateService.publish(templateId);
+  @ApiOperation({ summary: '发布模板（支持 locale 参数）' })
+  @ApiQuery({ name: 'locale', required: false })
+  publish(@Param('templateId') templateId: string, @Query('locale') locale?: string): Promise<TemplateResponse> {
+    return this.templateService.publish(templateId, locale);
   }
 
   @Patch(':templateId/deprecate')
   @WriteRoles()
-  @ApiOperation({ summary: '弃用模板' })
-  deprecate(@Param('templateId') templateId: string): Promise<TemplateResponse> {
-    return this.templateService.deprecate(templateId);
+  @ApiOperation({ summary: '弃用模板（支持 locale 参数）' })
+  @ApiQuery({ name: 'locale', required: false })
+  deprecate(@Param('templateId') templateId: string, @Query('locale') locale?: string): Promise<TemplateResponse> {
+    return this.templateService.deprecate(templateId, locale);
   }
 
   @Post(':templateId/clone')
   @WriteRoles()
-  @ApiOperation({ summary: '克隆模板' })
-  clone(@Param('templateId') templateId: string, @Req() req: any): Promise<TemplateResponse> {
+  @ApiOperation({ summary: '克隆模板（支持 locale 参数）' })
+  @ApiQuery({ name: 'locale', required: false })
+  clone(
+    @Param('templateId') templateId: string,
+    @Req() req: any,
+    @Query('locale') locale?: string,
+  ): Promise<TemplateResponse> {
     const authorId = req.user?.id || 'system';
-    return this.templateService.clone(templateId, authorId);
+    return this.templateService.clone(templateId, authorId, locale);
   }
 
   @Post(':templateId/apply')
@@ -265,23 +278,26 @@ export class DeviceTemplateController {
 
   @Post('index/rebuild')
   @Roles(UserRole.ADMIN)
-  @ApiOperation({ summary: '从目录结构重建指定语言的 index.json 文件' })
+  @ApiOperation({ summary: '从目录结构重建 index.json（根目录 + 所有语言子目录）并重载缓存' })
   async rebuildIndex(@Query('locale') locale?: string) {
-    // Multi-language: rebuild and reload the index for the given language, default zh-CN
-    const index = await this.templateLoader.rebuildAndReload(locale);
+    // Rebuild from the directory structure (root + every BCP 47 locale directory), then reload the caches
+    this.indexService.rebuildIndex();
+    await this.templateLoader.reload();
+    const index = this.templateLoader.getIndex(locale);
     return {
       code: 200,
       data: index,
-      message: `Index rebuilt for locale: ${(index as any)._locale || 'zh-CN'}`,
+      message: `Index rebuilt for locale: ${this.templateLoader.resolveLocale(locale)}`,
       timestamp: new Date().toISOString(),
     };
   }
 
   @Post('index/directory/category')
   @Roles(UserRole.ADMIN)
-  @ApiOperation({ summary: '创建分类目录（在行业下创建子目录）' })
-  async createCategory(@Body() dto: CreateCategoryDto) {
-    const result = await this.indexService.createCategory(dto);
+  @ApiOperation({ summary: '创建分类目录（在行业下创建子目录，支持 locale）' })
+  @ApiQuery({ name: 'locale', required: false })
+  async createCategory(@Body() dto: CreateCategoryDto, @Query('locale') locale?: string) {
+    const result = await this.indexService.createCategory({ ...dto, locale: dto.locale || locale });
     return {
       code: 200,
       data: result,
@@ -292,9 +308,10 @@ export class DeviceTemplateController {
 
   @Patch('index/directory/category')
   @Roles(UserRole.ADMIN)
-  @ApiOperation({ summary: '重命名分类目录' })
-  async renameCategory(@Body() dto: RenameCategoryDto) {
-    const result = await this.indexService.renameCategory(dto);
+  @ApiOperation({ summary: '重命名分类目录（支持 locale）' })
+  @ApiQuery({ name: 'locale', required: false })
+  async renameCategory(@Body() dto: RenameCategoryDto, @Query('locale') locale?: string) {
+    const result = await this.indexService.renameCategory({ ...dto, locale: dto.locale || locale });
     return {
       code: 200,
       data: result,
@@ -305,12 +322,14 @@ export class DeviceTemplateController {
 
   @Delete('index/directory/category')
   @Roles(UserRole.ADMIN)
-  @ApiOperation({ summary: '删除分类目录（仅空目录）' })
+  @ApiOperation({ summary: '删除分类目录（仅空目录，支持 locale）' })
+  @ApiQuery({ name: 'locale', required: false })
   async deleteCategory(
     @Query('industryName') industryName: string,
     @Query('categoryName') categoryName: string,
+    @Query('locale') locale?: string,
   ) {
-    const result = await this.indexService.deleteCategory({ industryName, categoryName });
+    const result = await this.indexService.deleteCategory({ industryName, categoryName, locale });
     return {
       code: 200,
       data: result,
@@ -321,10 +340,12 @@ export class DeviceTemplateController {
 
   @Post('import')
   @WriteRoles()
-  @ApiOperation({ summary: '导入模板（JSON 数据）' })
+  @ApiOperation({ summary: '导入模板（JSON 数据，支持 locale）' })
+  @ApiQuery({ name: 'locale', required: false })
   async importTemplate(
     @Body() data: Record<string, any>,
     @Req() req: any,
+    @Query('locale') locale?: string,
   ): Promise<TemplateResponse> {
     const authorId = req.user?.id || 'system';
     const dto: CreateDeviceTemplateDto = {
@@ -335,6 +356,6 @@ export class DeviceTemplateController {
       variables: data.variables || [],
       tags: data.tags || [],
     };
-    return this.templateService.create(dto, authorId);
+    return this.templateService.create(dto, authorId, locale);
   }
 }

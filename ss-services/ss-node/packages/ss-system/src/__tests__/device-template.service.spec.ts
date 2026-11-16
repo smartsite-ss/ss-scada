@@ -401,6 +401,8 @@ describe('DeviceTemplateService', () => {
       loadAllTemplates: jest.fn(),
       getTemplateById: jest.fn(),
       resolveLocale: jest.fn().mockReturnValue('zh-CN'),
+      getSupportedLocales: jest.fn().mockReturnValue(['zh-CN', 'en-US']),
+      getDefaultLocale: jest.fn().mockReturnValue('zh-CN'),
     };
 
     // Mock TemplateIndexService
@@ -452,6 +454,19 @@ describe('DeviceTemplateService', () => {
       expect(fs.renameSync).toHaveBeenCalled();
       expect(mockTemplateLoader.reload).toHaveBeenCalled();
       expect(mockIndexService.rebuildIndex).toHaveBeenCalled();
+    });
+
+    it('TC-DTM-006: should write the template file into the given locale directory', async () => {
+      const dto = makeCreateDto({ industry: 'Industrial Automation', category: 'PLC controller' });
+      (fs.writeFileSync as jest.Mock).mockClear();
+
+      await service.create(dto as any, 'author-001', 'en-US');
+
+      const writtenPaths = (fs.writeFileSync as jest.Mock).mock.calls.map((c) => String(c[0]));
+      const localePath = writtenPaths.find((p) => p.includes('/en-US/'));
+      expect(localePath).toBeDefined();
+      expect(localePath).toContain('Industrial Automation');
+      expect(localePath).toContain('PLC controller');
     });
 
     it('TC-DTM-002: should throw BadRequestException when duplicate name exists', async () => {
@@ -979,6 +994,27 @@ describe('DeviceTemplateService', () => {
 
       expect(fs.unlinkSync).toHaveBeenCalled();
       expect(mockTemplateLoader.reload).toHaveBeenCalled();
+    });
+
+    it('TC-DTM-053: should delete the same template from all locale directories', async () => {
+      const zhTemplate = makeLoadedTemplate({
+        id: 'template-001',
+        filePath: '/templates/zh-CN/ind/cat/template-001.json',
+      });
+      const enTemplate = makeLoadedTemplate({
+        id: 'template-001',
+        filePath: '/templates/en-US/ind/cat/template-001.json',
+      });
+      mockTemplateLoader.getTemplate.mockImplementation((_id: string, locale?: string) =>
+        locale === 'en-US' ? enTemplate : zhTemplate,
+      );
+      mockDeviceRepo.count!.mockResolvedValue(0);
+
+      await service.remove('template-001');
+
+      const deletedPaths = (fs.unlinkSync as jest.Mock).mock.calls.map((c) => c[0]);
+      expect(deletedPaths).toContain('/templates/zh-CN/ind/cat/template-001.json');
+      expect(deletedPaths).toContain('/templates/en-US/ind/cat/template-001.json');
     });
 
     it('TC-DTM-051: should throw when template has linked devices', async () => {

@@ -259,11 +259,24 @@ export class DeviceTemplateService {
   /**
    * Delete the template JSON file
    */
-  private deleteTemplateFile(id: string): void {
-    const loaded = this.templateLoader.getTemplate(id);
-    if (loaded?.filePath && fs.existsSync(loaded.filePath)) {
-      fs.unlinkSync(loaded.filePath);
-      this.logger.log(`Template JSON file deleted: ${loaded.filePath}`);
+  private deleteTemplateFile(id: string, locale?: string): void {
+    // A template id may exist in multiple language directories; delete them all by default
+    const supported = this.templateLoader.getSupportedLocales();
+    const locales = locale
+      ? [locale]
+      : supported.length > 0
+        ? supported
+        : [this.templateLoader.getDefaultLocale()];
+
+    const deleted = new Set<string>();
+    for (const lang of locales) {
+      const loaded = this.templateLoader.getTemplate(id, lang);
+      const filePath = loaded?.filePath;
+      if (filePath && !deleted.has(filePath) && fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+        deleted.add(filePath);
+        this.logger.log(`Template JSON file deleted: ${filePath}`);
+      }
     }
   }
 
@@ -285,7 +298,7 @@ export class DeviceTemplateService {
 
   // ===== Template CRUD =====
 
-  async create(dto: CreateDeviceTemplateDto, authorId: string): Promise<TemplateResponse> {
+  async create(dto: CreateDeviceTemplateDto, authorId: string, locale?: string): Promise<TemplateResponse> {
     if (this.checkNameExists(dto.name)) {
       throw new BadRequestException('模板名称已存在');
     }
@@ -309,7 +322,7 @@ export class DeviceTemplateService {
       updatedAt: now,
     };
 
-    this.writeTemplateFile(template);
+    this.writeTemplateFile(template, locale);
     await this.refreshAfterWrite();
 
     return template;
@@ -398,20 +411,20 @@ export class DeviceTemplateService {
     return template;
   }
 
-  async remove(id: string): Promise<void> {
-    const _template = await this.findById(id);
+  async remove(id: string, locale?: string): Promise<void> {
+    const _template = await this.findById(id, locale);
 
     const devices = await this.findDevicesByTemplateId(id);
     if (devices.length > 0) {
       throw new BadRequestException('模板已关联设备，无法删除（请先解绑或弃用）');
     }
 
-    this.deleteTemplateFile(id);
+    this.deleteTemplateFile(id, locale);
     await this.refreshAfterWrite();
   }
 
-  async publish(id: string): Promise<TemplateResponse> {
-    const template = await this.findById(id);
+  async publish(id: string, locale?: string): Promise<TemplateResponse> {
+    const template = await this.findById(id, locale);
     if (template.status === TemplateStatus.PUBLISHED) {
       throw new BadRequestException('模板已发布，不可重复发布');
     }
@@ -421,28 +434,28 @@ export class DeviceTemplateService {
     template.status = TemplateStatus.PUBLISHED;
     template.updatedAt = new Date();
 
-    this.writeTemplateFile(template);
+    this.writeTemplateFile(template, locale);
     await this.refreshAfterWrite();
 
     return template;
   }
 
-  async deprecate(id: string): Promise<TemplateResponse> {
-    const template = await this.findById(id);
+  async deprecate(id: string, locale?: string): Promise<TemplateResponse> {
+    const template = await this.findById(id, locale);
     if (template.status === TemplateStatus.DEPRECATED) {
       throw new BadRequestException('模板已弃用');
     }
     template.status = TemplateStatus.DEPRECATED;
     template.updatedAt = new Date();
 
-    this.writeTemplateFile(template);
+    this.writeTemplateFile(template, locale);
     await this.refreshAfterWrite();
 
     return template;
   }
 
-  async clone(id: string, authorId: string): Promise<TemplateResponse> {
-    const source = await this.findById(id);
+  async clone(id: string, authorId: string, locale?: string): Promise<TemplateResponse> {
+    const source = await this.findById(id, locale);
 
     const versionParts = (source.version || '1.0').split('.');
     versionParts[1] = String(Number(versionParts[1] || 0) + 1);
@@ -465,7 +478,7 @@ export class DeviceTemplateService {
       updatedAt: now,
     };
 
-    this.writeTemplateFile(cloned);
+    this.writeTemplateFile(cloned, locale);
     await this.refreshAfterWrite();
 
     return cloned;

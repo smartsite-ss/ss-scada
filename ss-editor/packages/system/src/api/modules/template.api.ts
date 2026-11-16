@@ -196,8 +196,10 @@ export const templateApi = {
     return client.get(`${templatesBase}/${templateId}/devices`).then((res) => res.data);
   },
 
-  create(dto: CreateDeviceTemplateDto): Promise<ApiResponse<DeviceTemplate>> {
-    return client.post(templatesBase, dto).then((res) => res.data);
+  create(dto: CreateDeviceTemplateDto, locale?: string): Promise<ApiResponse<DeviceTemplate>> {
+    return client.post(templatesBase, dto, {
+      params: locale ? { locale } : undefined,
+    }).then((res) => res.data);
   },
 
   update(templateId: string, dto: UpdateDeviceTemplateDto, locale?: string): Promise<ApiResponse<DeviceTemplate>> {
@@ -206,20 +208,28 @@ export const templateApi = {
     }).then((res) => res.data);
   },
 
-  delete(templateId: string): Promise<void> {
-    return client.delete(`${templatesBase}/${templateId}`);
+  delete(templateId: string, locale?: string): Promise<void> {
+    return client.delete(`${templatesBase}/${templateId}`, {
+      params: locale ? { locale } : undefined,
+    });
   },
 
-  publish(templateId: string): Promise<ApiResponse<DeviceTemplate>> {
-    return client.patch(`${templatesBase}/${templateId}/publish`).then((res) => res.data);
+  publish(templateId: string, locale?: string): Promise<ApiResponse<DeviceTemplate>> {
+    return client.patch(`${templatesBase}/${templateId}/publish`, undefined, {
+      params: locale ? { locale } : undefined,
+    }).then((res) => res.data);
   },
 
-  deprecate(templateId: string): Promise<ApiResponse<DeviceTemplate>> {
-    return client.patch(`${templatesBase}/${templateId}/deprecate`).then((res) => res.data);
+  deprecate(templateId: string, locale?: string): Promise<ApiResponse<DeviceTemplate>> {
+    return client.patch(`${templatesBase}/${templateId}/deprecate`, undefined, {
+      params: locale ? { locale } : undefined,
+    }).then((res) => res.data);
   },
 
-  clone(templateId: string): Promise<ApiResponse<DeviceTemplate>> {
-    return client.post(`${templatesBase}/${templateId}/clone`).then((res) => res.data);
+  clone(templateId: string, locale?: string): Promise<ApiResponse<DeviceTemplate>> {
+    return client.post(`${templatesBase}/${templateId}/clone`, undefined, {
+      params: locale ? { locale } : undefined,
+    }).then((res) => res.data);
   },
 
   apply(templateId: string, dto: ApplyTemplateDto): Promise<ApiResponse<ApplyTemplateResult>> {
@@ -265,19 +275,27 @@ export const templateApi = {
     return client.get(`${templatesBase}/index/structure`).then((res) => res.data);
   },
 
-  rebuildIndex(): Promise<ApiResponse<any>> {
-    return client.post(`${templatesBase}/index/rebuild`).then((res) => res.data);
+  rebuildIndex(locale?: string): Promise<ApiResponse<any>> {
+    return client.post(`${templatesBase}/index/rebuild`, undefined, {
+      params: locale ? { locale } : undefined,
+    }).then((res) => res.data);
   },
 
-  createCategory(dto: { industryName: string; categoryName: string }): Promise<ApiResponse<any>> {
-    return client.post(`${templatesBase}/index/directory/category`, dto).then((res) => res.data);
+  createCategory(dto: { industryName: string; categoryName: string }, locale?: string): Promise<ApiResponse<any>> {
+    return client.post(`${templatesBase}/index/directory/category`, dto, {
+      params: locale ? { locale } : undefined,
+    }).then((res) => res.data);
   },
 
-  renameCategory(dto: { industryName: string; oldCategoryName: string; newCategoryName: string }): Promise<ApiResponse<any>> {
-    return client.patch(`${templatesBase}/index/directory/category`, dto).then((res) => res.data);
+  renameCategory(dto: { industryName: string; oldCategoryName: string; newCategoryName: string }, locale?: string): Promise<ApiResponse<any>> {
+    return client.patch(`${templatesBase}/index/directory/category`, dto, {
+      params: locale ? { locale } : undefined,
+    }).then((res) => res.data);
   },
 
-  deleteCategory(industryName: string, categoryName: string): Promise<ApiResponse<any>> {
-    return client.delete(`${templatesBase}/index/directory/category`, { params: { industryName, categoryName } }).then((res) => res.data);
+  deleteCategory(industryName: string, categoryName: string, locale?: string): Promise<ApiResponse<any>> {
+    return client.delete(`${templatesBase}/index/directory/category`, {
+      params: { industryName, categoryName, ...(locale ? { locale } : {}) },
+    }).then((res) => res.data);
   },
 };

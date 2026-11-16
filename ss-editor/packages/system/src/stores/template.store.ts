@@ -72,11 +72,11 @@ export const useTemplateStore = defineStore('template', () => {
     }
   }
 
-  async function fetchTemplate(id: string) {
+  async function fetchTemplate(id: string, locale?: string) {
     loading.value = true;
     error.value = null;
     try {
-      const res = await templateApi.getById(id);
+      const res = await templateApi.getById(id, locale);
       currentTemplate.value = (res as any).data ?? res;
       if (currentTemplate.value?.variables) {
         if (typeof currentTemplate.value.variables === 'string') {
@@ -91,10 +91,10 @@ export const useTemplateStore = defineStore('template', () => {
     }
   }
 
-  async function createTemplate(dto: CreateDeviceTemplateDto) {
+  async function createTemplate(dto: CreateDeviceTemplateDto, locale?: string) {
     error.value = null;
     try {
-      const res = await templateApi.create(dto);
+      const res = await templateApi.create(dto, locale);
       const template = (res as any).data ?? res;
       templates.value.unshift(template);
       pagination.value.total += 1;
@@ -120,10 +120,10 @@ export const useTemplateStore = defineStore('template', () => {
     }
   }
 
-  async function deleteTemplate(id: string) {
+  async function deleteTemplate(id: string, locale?: string) {
     error.value = null;
     try {
-      await templateApi.delete(id);
+      await templateApi.delete(id, locale);
       templates.value = templates.value.filter((t: DeviceTemplate) => t.id !== id);
       pagination.value.total = Math.max(0, pagination.value.total - 1);
       if (currentTemplate.value?.id === id) currentTemplate.value = null;
@@ -133,10 +133,10 @@ export const useTemplateStore = defineStore('template', () => {
     }
   }
 
-  async function publishTemplate(id: string) {
+  async function publishTemplate(id: string, locale?: string) {
     error.value = null;
     try {
-      const res = await templateApi.publish(id);
+      const res = await templateApi.publish(id, locale);
       const published = (res as any).data ?? res;
       const idx = templates.value.findIndex((t: DeviceTemplate) => t.id === id);
       if (idx !== -1) templates.value[idx] = published;
@@ -148,10 +148,10 @@ export const useTemplateStore = defineStore('template', () => {
     }
   }
 
-  async function deprecateTemplate(id: string) {
+  async function deprecateTemplate(id: string, locale?: string) {
     error.value = null;
     try {
-      const res = await templateApi.deprecate(id);
+      const res = await templateApi.deprecate(id, locale);
       const deprecated = (res as any).data ?? res;
       const idx = templates.value.findIndex((t: DeviceTemplate) => t.id === id);
       if (idx !== -1) templates.value[idx] = deprecated;
@@ -163,10 +163,10 @@ export const useTemplateStore = defineStore('template', () => {
     }
   }
 
-  async function cloneTemplate(id: string) {
+  async function cloneTemplate(id: string, locale?: string) {
     error.value = null;
     try {
-      const res = await templateApi.clone(id);
+      const res = await templateApi.clone(id, locale);
       const cloned = (res as any).data ?? res;
       templates.value.unshift(cloned);
       pagination.value.total += 1;
