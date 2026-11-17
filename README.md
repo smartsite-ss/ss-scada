@@ -1,311 +1,276 @@
-📖 简体中文 | 📖 [English](#-english-summary)
+**English** · [简体中文](./README.zh-CN.md)
 
-# 🌈 Smart Site — 开源 SCADA 组态软件与工业数据可视化平台
+# 🌈 Smart Site — Open-Source SCADA HMI Software & Industrial Data Visualization Platform
 
-Smart Site 是一套面向工业场景的开源 SCADA 平台：**组态编辑器（HMI / SCADA Editor）+ 数据中台 + 后端服务**一体化。支持拖拽式监控画面编辑、设备数据采集（Modbus / OPC UA / MQTT / Siemens S7）、数据标签与模板、报警引擎、脚本引擎、报表、时序数据存储与多语言国际化。
+Smart Site is an open-source SCADA platform for industrial scenarios: an integrated **HMI / SCADA editor + data middle platform + backend services**. It supports drag-and-drop monitoring screen editing, device data acquisition (Modbus / OPC UA / MQTT / Siemens S7), data tags and templates, an alarm engine, a script engine, reporting, time-series data storage, and multi-language internationalization.
 
+![Smart Site platform overview](docs/images/SmartSiteLite-EN.gif)
 
-![Smart Site 平台概览](docs/images/SmartSiteLite.gif)
-
-> ✨✨✨ **在线演示** ✨✨✨
+> ✨✨✨ **Online Demo** ✨✨✨
 >
-> - **访问地址**：<https://smartsite.top/>
-> - **测试账号**：`test` / `test`（登录即可体验组态编辑器与数据中台全部功能）
+> - **URL**: <https://smartsite.top/>
+> - **Test account**: `test` / `test` (log in to explore all features of the HMI editor and data middle platform)
 >
-> 演示站点为公开共享实例，工艺画面与数据均为模拟产生，仅用于功能体验，请勿写入重要业务数据。
+> The demo site is a public shared instance. All process screens and data are simulated and are for feature evaluation only — please do not write important business data.
 
-如果这个项目对您有帮助，欢迎点一个 **Star** ⭐️ 支持，您的关注是我们持续更新的动力 🚀
+If this project helps you, please give it a **Star** ⭐️ — your support keeps us updating 🚀
 
 ---
 
-## 🎯 Smart Site 想解决什么？
+## 🎯 What Problems Does Smart Site Solve?
 
-针对传统组态软件的五大痛点，逐一给出答案：
+Answers to the five major pain points of traditional HMI/SCADA software:
 
-| 传统组态软件的痛点 | Smart Site 的答案 |
+| Pain point of traditional SCADA | Smart Site's answer |
 | --- | --- |
-| **点位授权**：按点数收费，项目越大成本越高 | 开源免费（Apache-2.0），**无点位数限制**，无授权锁 |
-| **信创支持**：依赖 Windows + IE / ActiveX，国产化适配困难 | 全栈 Web 技术栈（Node.js + Vue3），支持 **Linux 部署与国产化环境**，浏览器即用，无 ActiveX 依赖 |
-| **使用复杂**：工程管理器、IO 服务器、组态编辑器、组态运行器、历史数据服务器……多进程多组件，安装运维成本高 | **单包一体化**：采集、组态、运行、历史库融为一体，解压即用（Windows 单包 / Docker），双击 `start.bat` 上线 |
-| **Web 能力不完整**：仅客户端所见即所得，Web 端发布效果打折 | **原生 Web 架构**：编辑器与运行端均基于浏览器，**所见即所得**，桌面 / 移动端一致体验 |
-| **扩展性封闭**：闭源黑盒，AI 时代难以集成与二次开发 | 面向 AGI 时代的模块化设计——**统一为先、简单至上**：数据采集插件化 + 进程隔离化，显示图元插件化 + 目录化，前后端脚本分离化，每个环节皆可独立扩展 |
+| **Point-count licensing**: charged per tag, cost grows with project size | Open source and free (Apache-2.0), **unlimited tags**, no license lock |
+| **Xinchuang (domestic IT) support**: depends on Windows + IE / ActiveX, hard to adapt domestically | Full web stack (Node.js + Vue3), supports **Linux deployment and domestic environments**, browser-based, no ActiveX dependency |
+| **Complexity**: project manager, IO server, HMI editor, runtime, historian… multiple processes and components, costly to install and maintain | **Single integrated package**: acquisition, configuration, runtime and historian in one, ready to run out of the box (Windows single package / Docker), double-click `start.bat` to go online |
+| **Incomplete web capabilities**: WYSIWYG only in the client, degraded web publishing | **Native web architecture**: both editor and runtime are browser-based, **WYSIWYG**, consistent desktop / mobile experience |
+| **Closed extensibility**: closed source black box, hard to integrate or extend in the AI era | Modular design for the AGI era — **unified first, simplicity first**: pluggable and process-isolated data acquisition, directory-based pluggable display primitives, separated front/back-end scripting, every stage independently extensible |
 
-同时覆盖组态工程的日常场景：
+It also covers day-to-day SCADA engineering scenarios:
 
-- 工厂 / 水厂 / 电厂 / 泵站等**监控大屏与 HMI 画面**的零代码组态搭建
-- Modbus、OPC UA、MQTT、S7 等**多协议设备数据采集**与统一管理
-- 设备数据的**实时监测、历史曲线与报警**（确认 / 恢复 / 分析）
-- 行业模板与画布模板**复用**，快速复制同类工程
+- Zero-code configuration of **monitoring dashboards and HMI screens** for factories / water plants / power plants / pump stations
+- **Multi-protocol device data acquisition** and unified management for Modbus, OPC UA, MQTT, S7, etc.
+- **Real-time monitoring, historical trends and alarms** for device data (acknowledge / clear / analyze)
+- **Reuse of industry templates and canvas templates** to quickly replicate similar projects
 
-## ✨ 为什么选择 Smart Site？
+## ✨ Why Choose Smart Site?
 
-| 能力亮点 | 说明 |
+| Highlight | Description |
 | --- | --- |
-| 🎨 拖拽式组态 | 图元库（工业 / 电力 / SVG / 3D / 图表等）+ 画布模板 + 布局模板，所见即所得 |
-| 🔌 多协议采集 | Modbus TCP/RTU、OPC UA、MQTT、Siemens S7、Virtual 模拟器，插件化扩展 |
-| 📈 实时 + 历史一体 | WebSocket 实时推送、InfluxDB / SQLite 时序存储、历史曲线与聚合查询 |
-| 🚨 完整报警引擎 | 报警规则 / 延迟消抖 / 确认清除 / 屏蔽 / 事件中心 / 告警数据分析 |
-| 🧩 开放扩展 | 图元插件 SDK、脚本引擎（Monaco）、外部数据源、REST API + WebSocket |
-| 📦 开箱即用 | Windows 单包发布（免安装免编译）、Docker 化部署、初始化向导 |
+| 🎨 Drag-and-drop configuration | Primitive library (industrial / power / SVG / 3D / charts, etc.) + canvas templates + layout templates, WYSIWYG |
+| 🔌 Multi-protocol acquisition | Modbus TCP/RTU, OPC UA, MQTT, Siemens S7, Virtual simulator, pluggable collectors |
+| 📈 Real-time + historian in one | WebSocket real-time push, InfluxDB / SQLite time-series storage, historical curves and aggregate queries |
+| 🚨 Complete alarm engine | Alarm rules / delay debounce / acknowledge & clear / masking / event center / alarm data analysis |
+| 🧩 Open extensibility | Primitive plugin SDK, script engine (Monaco), external data sources, REST API + WebSocket |
+| 📦 Ready out of the box | Windows single-package release (no install, no build), Docker deployment, initialization wizard |
 
-## ✨ 核心功能
+## ✨ Core Features
 
-| 功能模块 | 描述 |
+| Module | Description |
 | --- | --- |
-| 组态编辑器 | 拖拽式画面编辑、图元数据绑定、动画 / 轮播 / 运行预览、多页面管理 |
-| 图元与素材库 | 工业图元插件（分类启停）、动图 / PNG / 指示灯 / 开关按钮图库、画布 / 布局模板 |
-| 数据中台 | 项目管理、页面管理、设备管理（设备树 / 分组 / 状态）、系统概览 |
-| 设备采集 | 采集器插件管理、Pipeline 指标监控、设备模板点表库（DCS / PLC 行业模板） |
-| 数据标签 | 点表配置、量程 / 死区 / 换算、数据类型与读写方向、实时值与质量 |
-| 报警与事件 | 报警规则、报警记录（确认 / 清除 / 屏蔽）、事件历史、告警变量分析 |
-| 脚本引擎 | Monaco 在线编辑、定时 / 事件触发、运行监控与审计 |
-| 报表系统 | 报表方案、汇总与明细（行列透视）、Excel 导出 |
-| 历史数据 | 多变量历史曲线、聚合间隔、查询方案保存 |
-| 系统管理 | 用户 / 角色权限、菜单、审计日志、数据库运维、基础服务管理（启停 / 健康检查） |
-| 国际化 | 中 / 英 / 繁多语言、明暗主题 |
+| HMI editor | Drag-and-drop screen editing, primitive data binding, animation / carousel / runtime preview, multi-page management |
+| Primitives & assets | Industrial primitive plugins (per-category enable/disable), animated GIF / PNG / indicator light / switch button galleries, canvas / layout templates |
+| Data middle platform | Project management, page management, device management (device tree / groups / status), system overview |
+| Device acquisition | Collector plugin management, Pipeline metric monitoring, device template tag library (DCS / PLC industry templates) |
+| Data tags | Tag configuration, scale / deadband / conversion, data type and read-write direction, real-time value and quality |
+| Alarms & events | Alarm rules, alarm records (acknowledge / clear / mask), event history, alarm variable analysis |
+| Script engine | Monaco online editing, timer / event triggers, runtime monitoring and audit |
+| Reporting | Report schemes, summary and detail (row/column pivot), Excel export |
+| Historical data | Multi-variable historical curves, aggregation intervals, saved query schemes |
+| System management | User / role permissions, menus, audit logs, database operations, base service management (start/stop / health check) |
+| Internationalization | Chinese / English / multi-language support, light and dark themes |
 
-## 🛠️ 技术栈
+## 🛠️ Tech Stack
 
-| 分层 | 技术 |
+| Layer | Technology |
 | --- | --- |
-| 前端 | Vue 3 · TypeScript · Vite · Pinia · Konva（画布渲染）· vue-i18n · Naive UI |
-| 后端 | NestJS · TypeORM · SQLite / InfluxDB · Socket.IO · JWT + RBAC |
-| 协议采集 | modbus-serial · node-opcua · mqtt · snap7 类 S7 驱动 · 虚拟模拟器 |
-| 工程 | pnpm monorepo · Vitest / Jest · Playwright E2E · Windows 单包发布器 |
+| Frontend | Vue 3 · TypeScript · Vite · Pinia · Konva (canvas rendering) · vue-i18n · Naive UI |
+| Backend | NestJS · TypeORM · SQLite / InfluxDB · Socket.IO · JWT + RBAC |
+| Protocol acquisition | modbus-serial · node-opcua · mqtt · snap7-like S7 driver · virtual simulator |
+| Engineering | pnpm monorepo · Vitest / Jest · Playwright E2E · Windows single-package releaser |
 
-## 🏗️ 环境要求
+## 🏗️ Requirements
 
-| 环境 | 要求 | 说明 |
+| Environment | Requirement | Notes |
 | --- | --- | --- |
-| Node.js | ≥ 18（建议 20 LTS） | 前后端构建与运行 |
-| pnpm | ≥ 8 | 包管理器（monorepo 工作区） |
-| 操作系统 | Windows / Linux | 开发与部署均支持 |
-| InfluxDB 2.7+ | 可选 | 时序数据存储（不装则回落 SQLite） |
-| Redis | 可选 | 实时数据缓存（不装则回落内存） |
+| Node.js | ≥ 18 (20 LTS recommended) | Build and run frontend and backend |
+| pnpm | ≥ 8 | Package manager (monorepo workspace) |
+| OS | Windows / Linux | Both development and deployment supported |
+| InfluxDB 2.7+ | Optional | Time-series storage (falls back to SQLite if absent) |
+| Redis | Optional | Real-time data cache (falls back to memory if absent) |
 
-## 🚀 快速开始
+## 🚀 Quick Start
 
-- **免安装体验（Windows）**：下载已打包版本，解压直接运行 → <https://smartsite.top/downloads/ss-o/win-ss-v7.0.1.zip>
-- **源码部署**：完整的安装、启动、构建与部署指南 👉 [`docs/zh-CN/01-getting-started.md`](./docs/zh-CN/01-getting-started.md)（开发规范见 [`AGENTS.md`](./AGENTS.md)）
+- **No-install trial (Windows)**: download the prebuilt package, unzip and run → <https://smartsite.top/downloads/ss-o/win-ss-v7.0.1.zip>
+- **Build from source**: full installation, startup, build and deployment guide 👉 [`docs/zh-CN/01-getting-started.md`](./docs/zh-CN/01-getting-started.md) (see [`AGENTS.md`](./AGENTS.md) for development conventions)
 
 ```powershell
-# 源码启动（推荐使用 bin/ 脚本，勿直接 pnpm dev）
-.\bin\start.bat        # 全栈：编辑器 5173 + 后端 3000
-.\bin\start-data.bat   # 仅数据中台（前端 5175 / 后端 4000）
-.\bin\start-scada.bat  # 仅组态编辑器（前端 5174 / 后端 4100）
+# Start from source (use the bin/ scripts; do not run pnpm dev directly)
+.\bin\start.bat        # Full stack: editor 5173 + backend 3000
+.\bin\start-data.bat   # Data middle platform only (frontend 5175 / backend 4000)
+.\bin\start-scada.bat  # HMI editor only (frontend 5174 / backend 4100)
 ```
 
-## 🚨 版本说明：开源版与商业版
+## 🚨 Editions: Open Source vs Commercial
 
-Smart Site 采用 **开源版 + 商业版** 双轨模式：
-
-| | 开源版（本仓库） | 商业版 |
-| --- | --- | --- |
-| 授权 | Apache-2.0，免费商用（保留版权声明） | 商业授权，含品牌定制 / 去 Logo 授权 |
-| 组态与采集 | 组态编辑器 + 数据中台 + 多协议采集，**全部核心功能** | 在开源版基础上按需扩展 |
-| RAG 知识库 | — | ✅ 内置 RAG 知识库：工程文档 / 手册 / FAQ 的智能检索与问答 |
-| 脚本能力 | 基础脚本（定时触发、在线编辑） | ✅ 前后端完整脚本能力：更丰富的 API 与触发方式、服务端任务编排 |
-| AI 能力 | — | ✅ AI 接入深度集成：生成与优化工程数据（设备 / 点表 / 报警规则）、AI 生成组态页面 |
-| 多语言 | 中 / 英文基础支持 | ✅ 多语言深度支持：语种扩展、术语库与翻译管理 |
-| 服务 | 社区支持（Gitee / GitHub Issue） | 专属技术支持与 SLA、培训、定制开发 |
-| 适用 | 个人学习、中小项目、产品验证 | 企业级交付、批量部署、行业深度定制 |
-
-**商业合作 / 技术咨询联系方式**：
-
-<table>
-  <tr>
-    <td align="center"><img src="docs/contact/official-account.jpg" width="258"/><br/><strong>微信公众号</strong><br/>产品动态与更新通知</td>
-    <td align="center"><img src="docs/contact/video-account.jpg" width="258"/><br/><strong>视频号</strong><br/>产品演示与使用教程</td>
-    <td align="center"><img src="docs/contact/developer-wechat.png" width="258"/><br/><strong>开发者微信</strong><br/>技术交流与商务咨询</td>
-  </tr>
-</table>
-
-**联系电话**：15116488853（技术咨询与商务合作）
-
-> 如果本项目对您有帮助，欢迎 **关注公众号与视频号**，并帮忙 **点赞、转发** 给更多有需要的朋友。
-
----
-
-## 📖 English Summary
-
-**Smart Site (SS)** is an open-source SCADA and industrial data visualization platform: a drag-and-drop HMI/SCADA editor, a data middle platform, and backend services in one solution.
-
-**What problems it solves** (vs. traditional SCADA/HMI software):
-
-1. **No point-count licensing** — free and open source, unlimited tags
-2. **Xinchuang (domestic IT) ready** — full web stack (Node.js + Vue3), runs on Linux/browsers, no ActiveX/IE dependency
-3. **Dramatically simpler** — acquisition, configuration, runtime and historian unified in one single package instead of multiple components (project manager / IO server / runtime / historian); unzip and run
-4. **True web & WYSIWYG** — editor and runtime are both browser-native, consistent on desktop and mobile
-5. **AGI-era extensibility** — modular by design ("unified first, simplicity first"): pluggable & process-isolated data collection, directory-based pluggable graphics primitives, separated front/back-end scripting
-
-- **Online demo**: <https://smartsite.top/> (account `test` / password `test`)
-- **Device acquisition**: Modbus TCP/RTU, OPC UA, MQTT, Siemens S7, plugin-based collectors
-- **Core features**: HMI editor, data tags & device templates, alarm engine, script engine, reporting, historical trends, i18n (zh/en/zh-TW), light/dark themes
-- **Tech stack**: Vue 3 + Vite + Konva / NestJS + TypeORM + SQLite/InfluxDB + Socket.IO
-- **Quick start**: download the prebuilt Windows package (<https://smartsite.top/downloads/ss-o/win-ss-v7.0.1.zip>) and run `start.bat`, or build from source — see [`docs/zh-CN/01-getting-started.md`](./docs/zh-CN/01-getting-started.md)
-
-### Editions: Open Source vs Commercial
+Smart Site uses a dual-track **open source + commercial** model:
 
 | | Open Source (this repo) | Commercial |
 | --- | --- | --- |
 | License | Apache-2.0, free for commercial use (keep copyright notice) | Commercial license incl. white-label / logo removal |
-| HMI & acquisition | Full core features (editor + data platform + multi-protocol acquisition) | Enterprise extensions on demand |
-| RAG knowledge base | — | ✅ Built-in RAG: intelligent retrieval & Q&A over engineering docs / manuals / FAQ |
-| Scripting | Basic scripts (timer triggers, online editing) | ✅ Full front & back-end scripting: richer APIs & triggers, server-side task orchestration |
-| AI integration | — | ✅ Deep AI integration: generate & refine engineering data (devices / tags / alarm rules), AI-generated HMI pages |
-| Multi-language | Basic zh / en support | ✅ Extended languages, terminology base & translation management |
-| Support | Community (Gitee / GitHub issues) | Dedicated support & SLA, training, custom development |
+| HMI & acquisition | HMI editor + data middle platform + multi-protocol acquisition, **all core features** | Enterprise extensions on demand |
+| RAG knowledge base | — | ✅ Built-in RAG knowledge base: intelligent retrieval and Q&A over engineering docs / manuals / FAQ |
+| Scripting | Basic scripts (timer triggers, online editing) | ✅ Full front & back-end scripting: richer APIs and triggers, server-side task orchestration |
+| AI capabilities | — | ✅ Deep AI integration: generate and refine engineering data (devices / tags / alarm rules), AI-generated HMI pages |
+| Multi-language | Basic Chinese / English support | ✅ Extended language support: language expansion, terminology base and translation management |
+| Support | Community (Gitee / GitHub issues) | Dedicated technical support and SLA, training, custom development |
+| Use case | Personal learning, small & medium projects, product validation | Enterprise delivery, bulk deployment, deep industry customization |
 
-**Contact**: 15116488853 · WeChat QR codes below · <https://smartsite.top/>
+**Commercial cooperation / technical consulting contacts**:
+
+<table>
+  <tr>
+    <td align="center"><img src="docs/contact/official-account.jpg" width="258"/><br/><strong>Official WeChat Account</strong><br/>Product news and updates</td>
+    <td align="center"><img src="docs/contact/video-account.jpg" width="258"/><br/><strong>Video Account</strong><br/>Product demos and tutorials</td>
+    <td align="center"><img src="docs/contact/developer-wechat.png" width="258"/><br/><strong>Developer WeChat</strong><br/>Technical exchange and business consulting</td>
+  </tr>
+</table>
+
+**Phone**: 15116488853 (technical consulting and business cooperation)
+
+> If this project helps you, please **follow our official and video accounts**, and **like & share** it with more people who need it.
 
 ---
 
-## 🖼️ 系统截图
+## 🖼️ Screenshots
 
-以下为系统运行界面截图（图片位于仓库 `docs/screenshots/` 目录，对应线上演示站点 <https://smartsite.top/> 的实际界面，在 Gitee 上可直接查看），每张截图前附对应功能说明。
+Below are runtime interface screenshots (stored in the repository's `docs/screenshots/` directory, corresponding to the live demo site at <https://smartsite.top/> and directly viewable on Gitee). Each screenshot is preceded by a short description of the featured function.
 
-**01 · 组态编辑器：污水处理预沉池系统（画面编辑）** —— 顶部工具栏 / 左侧图元库 / 中央画布 / 右侧属性面板，拖拽式组态与数据标签绑定。
+**01 · HMI editor: wastewater sedimentation tank system (screen editing)** — top toolbar / left primitive library / central canvas / right property panel; drag-and-drop configuration and data tag binding.
 
-![界面截图 1](docs/screenshots/screenshot-01.png)
+![Screenshot 1](docs/screenshots/screenshot-01.png)
 
-**02 · 图元属性与样式设置** —— 选中图元后右侧 COMPONENT PROPERTIES 面板（Style / Data / Interaction）：位置 / 尺寸 / 旋转 / 缩放与 z-index、图元类型、描边与填充色、文本字号 / 字重 / 对齐等；画面为 1 号机组风烟系统，风机 / 烟道 / 电机等图元绑定实时值（6/24）。
+**02 · Primitive properties and style settings** — after selecting a primitive, the right COMPONENT PROPERTIES panel (Style / Data / Interaction): position / size / rotation / scale and z-index, primitive type, stroke and fill colors, text font size / weight / alignment, etc.; the screen shows Unit 1 fan-flue gas system, with fans / flues / motors bound to real-time values (6/24).
 
-![界面截图 2](docs/screenshots/screenshot-02.png)
+![Screenshot 2](docs/screenshots/screenshot-02.png)
 
-**03 · 多语言界面（英文）** —— 编辑器支持中 / 英文切换；浅色主题下的预沉池工艺监控画面与背景应用色设置。
+**03 · Multi-language interface (English)** — the editor supports Chinese / English switching; sedimentation tank process monitoring screen and background application color settings in the light theme.
 
-![界面截图 3](docs/screenshots/screenshot-03.png)
+![Screenshot 3](docs/screenshots/screenshot-03.png)
 
-**04 · 自来水厂 SCADA 系统** —— 加氯系统工艺流程画面编辑：构筑物、管路、仪表等图元组合与实时参数标注。
+**04 · Waterworks SCADA system** — chlorine dosing process screen editing: structures, pipelines, instruments and other primitives combined with real-time parameter annotations.
 
-![界面截图 4](docs/screenshots/screenshot-04.png)
+![Screenshot 4](docs/screenshots/screenshot-04.png)
 
-**05 · 画布属性与背景设置** —— 右侧 CANVAS PROPERTIES（Properties / Timers / JSON）：画布尺寸（宽 1904 × 高 874）、布局模板、背景图片上传 / 背景色、应用类型（Application Color）、渲染模式（Canvas 原生渲染 / DOM 渲染）、框选方式（DOM 选择框）与运行时视口适配；画面为 5 号机组发变组接线图。
+**05 · Canvas properties and background settings** — right CANVAS PROPERTIES (Properties / Timers / JSON): canvas size (width 1904 × height 874), layout templates, background image upload / background color, application type (Application Color), rendering mode (native Canvas rendering / DOM rendering), selection mode (DOM selection box) and runtime viewport adaptation; the screen shows the Unit 5 generator-transformer wiring diagram.
 
-![界面截图 5](docs/screenshots/screenshot-05.png)
+![Screenshot 5](docs/screenshots/screenshot-05.png)
 
-**06 · 变电站配电一次图** —— 母线与配电间隔图元，电压 / 功率等遥测数据实时监测。
+**06 · Substation power distribution primary diagram** — busbar and distribution bay primitives, with real-time monitoring of telemetry such as voltage / power.
 
-![界面截图 6](docs/screenshots/screenshot-06.png)
+![Screenshot 6](docs/screenshots/screenshot-06.png)
 
-**07 · 定时器与脚本引擎** —— 定时器触发器与间隔配置，Monaco 脚本编辑器（API 代码补全）与脚本调试面板。
+**07 · Timers and script engine** — timer triggers and interval configuration, Monaco script editor (API code completion) and script debugging panel.
 
-![界面截图 7](docs/screenshots/screenshot-07.png)
+![Screenshot 7](docs/screenshots/screenshot-07.png)
 
-**08 · 运行预览：压缩机 K101A** —— 发布后画面运行态，底部多页面轮播切换（6/24）。
+**08 · Runtime preview: compressor K101A** — published screen in runtime mode, with multi-page carousel switching at the bottom (6/24).
 
-![界面截图 8](docs/screenshots/screenshot-08.png)
+![Screenshot 8](docs/screenshots/screenshot-08.png)
 
-**09 · 污水处理站监控工程（运行态）** —— 全厂工艺流程运行画面，多页面轮播浏览（5/24）。
+**09 · Wastewater treatment station monitoring project (runtime)** — full-plant process flow runtime screen, browsed via multi-page carousel (5/24).
 
-![界面截图 9](docs/screenshots/screenshot-09.png)
+![Screenshot 9](docs/screenshots/screenshot-09.png)
 
-**10 · 污水处理预沉池系统（运行态）** —— 预沉池 / 调节池 / 提升泵运行状态与 PH 等实时值（11/24）。
+**10 · Wastewater sedimentation tank system (runtime)** — sedimentation tank / equalization tank / lift pump running status and real-time values such as PH (11/24).
 
-![界面截图 10](docs/screenshots/screenshot-10.png)
+![Screenshot 10](docs/screenshots/screenshot-10.png)
 
-**11 · 1号机组发风烟系统（运行态）** —— 风机运行状态与电流 / 温度实时监测（17/24）。
+**11 · Unit 1 fan-flue gas system (runtime)** — fan running status and real-time monitoring of current / temperature (17/24).
 
-![界面截图 11](docs/screenshots/screenshot-11.png)
+![Screenshot 11](docs/screenshots/screenshot-11.png)
 
-**12 · 数据中台 · 系统概览** —— 设备统计（在线 / 离线 / 告警）、设备状态分布、最近报警活动与快捷入口。
+**12 · Data middle platform · System overview** — device statistics (online / offline / alarm), device status distribution, recent alarm activity and quick entries.
 
-![界面截图 12](docs/screenshots/screenshot-12.png)
+![Screenshot 12](docs/screenshots/screenshot-12.png)
 
-**13 · 数据中台 · 项目管理** —— 项目卡片（状态 / 页面数 / 占用 / 版本），管理、设为默认、一键打开编辑器。
+**13 · Data middle platform · Project management** — project cards (status / page count / size / version), with manage, set as default, and one-click editor opening.
 
-![界面截图 13](docs/screenshots/screenshot-13.png)
+![Screenshot 13](docs/screenshots/screenshot-13.png)
 
-**14 · 数据中台 · 页面管理** —— 项目下页面缩略图列表，支持编辑 / 预览（24 个页面）。
+**14 · Data middle platform · Page management** — thumbnail list of pages under a project, supporting edit / preview (24 pages).
 
-![界面截图 14](docs/screenshots/screenshot-14.png)
+![Screenshot 14](docs/screenshots/screenshot-14.png)
 
-**15 · 数据中台 · 设备管理** —— 设备树分组 + 设备卡片（协议 / 地址 / 采集周期 / 点表数 / 最新上传时间），在线状态与启停。
+**15 · Data middle platform · Device management** — device tree groups + device cards (protocol / address / acquisition interval / tag count / latest upload time), online status and start/stop.
 
-![界面截图 15](docs/screenshots/screenshot-15.png)
+![Screenshot 15](docs/screenshots/screenshot-15.png)
 
-**16 · 设备详情 · 实时数据** —— 数据标签列表（地址 / 数据类型 / 读写 / 扫描周期 / 当前值 / 质量），WebSocket 实时推送、采集暂停 / 恢复、历史数据查看。
+**16 · Device details · Real-time data** — data tag list (address / data type / read-write / scan interval / current value / quality), WebSocket real-time push, acquisition pause / resume, historical data view.
 
-![界面截图 16](docs/screenshots/screenshot-16.png)
+![Screenshot 16](docs/screenshots/screenshot-16.png)
 
-**17 · 设备详情 · 历史数据** —— 多变量历史曲线查询：时间范围、聚合间隔、自动刷新与查询方案保存。
+**17 · Device details · Historical data** — multi-variable historical curve query: time range, aggregation interval, auto-refresh and saved query schemes.
 
-![界面截图 17](docs/screenshots/screenshot-17.png)
+![Screenshot 17](docs/screenshots/screenshot-17.png)
 
-**18 · 采集管理** —— 采集器插件卡片（计算量 / Modbus TCP·RTU / S7 PLC / Virtual / MQTT / OPC UA）：运行状态、消息与错误统计、停用 / 重启 / 监控、全局 Pipeline 监控。
+**18 · Acquisition management** — collector plugin cards (calculated variables / Modbus TCP·RTU / S7 PLC / Virtual / MQTT / OPC UA): running status, message and error statistics, disable / restart / monitor, global Pipeline monitoring.
 
-![界面截图 18](docs/screenshots/screenshot-18.png)
+![Screenshot 18](docs/screenshots/screenshot-18.png)
 
-**19 · 事件中心 · 历史事件** —— 报警记录列表（级别 / 告警类型 / 状态 / 处理方式），支持确认 / 清除 / 查看数据。
+**19 · Event center · Historical events** — alarm record list (level / alarm type / status / handling method), supporting acknowledge / clear / view data.
 
-![界面截图 19](docs/screenshots/screenshot-19.png)
+![Screenshot 19](docs/screenshots/screenshot-19.png)
 
-**20 · 告警变量数据分析** —— 告警前后时段曲线、上限线与告警点 / 恢复点标注。
+**20 · Alarm variable data analysis** — curves for the periods before and after an alarm, upper limit line, and annotations for alarm / recovery points.
 
-![界面截图 20](docs/screenshots/screenshot-20.png)
+![Screenshot 20](docs/screenshots/screenshot-20.png)
 
-**21 · 脚本管理** —— Monaco 在线脚本编辑与运行监控（状态 / 触发类型 / 定时执行：每分钟 · 每5分钟 · 每15分钟 · 每小时）。
+**21 · Script management** — Monaco online script editing and runtime monitoring (status / trigger type / scheduled execution: every minute · every 5 minutes · every 15 minutes · hourly).
 
-![界面截图 21](docs/screenshots/screenshot-21.png)
+![Screenshot 21](docs/screenshots/screenshot-21.png)
 
-**22 · 报表管理 · 报表汇总** —— 报表方案与聚合周期（按天），指标汇总卡片 + 行列透视，一键导出 Excel。
+**22 · Report management · Report summary** — report schemes and aggregation period (by day), metric summary cards + row/column pivot, one-click Excel export.
 
-![界面截图 22](docs/screenshots/screenshot-22.png)
+![Screenshot 22](docs/screenshots/screenshot-22.png)
 
-**23 · 报表管理 · 报表明细** —— 指标 × 日期矩阵明细，支持行列切换与导出。
+**23 · Report management · Report detail** — metric × date matrix detail, supporting row/column switching and export.
 
-![界面截图 23](docs/screenshots/screenshot-23.png)
+![Screenshot 23](docs/screenshots/screenshot-23.png)
 
-**24 · 设备模板管理** —— 行业模板点表库（如中控 ECS-700 DCS）：点位 / 地址 / 数据类型 / 读写 / 扫描周期，按行业分类复用。
+**24 · Device template management** — industry template tag library (e.g. SUPCON ECS-700 DCS): tag / address / data type / read-write / scan interval, reused by industry category.
 
-![界面截图 24](docs/screenshots/screenshot-24.png)
+![Screenshot 24](docs/screenshots/screenshot-24.png)
 
-**25 · 组态管理 · 画布模板** —— 内置画布模板（报警中心 / 仪表盘 / 数据大屏 / 能源管理 BMS / 暖通机房 / 工业监控 / 登录页 / 移动端 H5 / OEE 看板等），一键套用。
+**25 · HMI management · Canvas templates** — built-in canvas templates (alarm center / dashboard / data screen / energy management BMS / HVAC room / industrial monitoring / login page / mobile H5 / OEE board, etc.), ready to apply.
 
-![界面截图 25](docs/screenshots/screenshot-25.png)
+![Screenshot 25](docs/screenshots/screenshot-25.png)
 
-**26 · 组态管理 · 布局模板** —— 系统布局模板（标准监控 / 大屏可视化 / 顶部导航 / 浅色看板 / 左侧导航），预览 / 编辑 / 属性配置。
+**26 · HMI management · Layout templates** — system layout templates (standard monitoring / big-screen visualization / top navigation / light board / left navigation), with preview / edit / property configuration.
 
-![界面截图 26](docs/screenshots/screenshot-26.png)
+![Screenshot 26](docs/screenshots/screenshot-26.png)
 
-**27 · 组态管理 · 图库（动图 GIF）** —— 风机、火焰等动图素材，支持分类管理与上传。
+**27 · HMI management · Gallery (animated GIF)** — animated assets such as fans and flames, with category management and upload support.
 
-![界面截图 27](docs/screenshots/screenshot-27.png)
+![Screenshot 27](docs/screenshots/screenshot-27.png)
 
-**28 · 组态管理 · 图库（工业 PNG 素材）** —— 泵、电机、罐体、管道等行业分类素材库。
+**28 · HMI management · Gallery (industrial PNG assets)** — industry-categorized asset library of pumps, motors, tanks, pipes, etc.
 
-![界面截图 28](docs/screenshots/screenshot-28.png)
+![Screenshot 28](docs/screenshots/screenshot-28.png)
 
-**29 · 组态管理 · 图库（指示灯 / 信号灯素材）** —— 指示灯、报警灯等状态图元素材。
+**29 · HMI management · Gallery (indicator / signal light assets)** — status primitives such as indicator lights and alarm lights.
 
-![界面截图 29](docs/screenshots/screenshot-29.png)
+![Screenshot 29](docs/screenshots/screenshot-29.png)
 
-**30 · 组态管理 · 图库（开关 / 按钮素材）** —— 旋钮、ON/OFF 开关、按钮等交互素材。
+**30 · HMI management · Gallery (switch / button assets)** — interactive assets such as knobs, ON/OFF switches and buttons.
 
-![界面截图 30](docs/screenshots/screenshot-30.png)
+![Screenshot 30](docs/screenshots/screenshot-30.png)
 
-**31 · 组态管理 · 图元插件管理** —— 按分类（基础 / 图表 / 工业 / SVG / 3D / 电力 / 矿产…）启停图元插件。
+**31 · HMI management · Primitive plugin management** — enable / disable primitive plugins by category (basic / charts / industrial / SVG / 3D / power / mining, etc.).
 
-![界面截图 31](docs/screenshots/screenshot-31.png)
+![Screenshot 31](docs/screenshots/screenshot-31.png)
 
-**32 · 系统管理 · 数据库运行** —— 系统库与各项目 SQLite（大小 / 表数量 / 备份时间），支持清空事件表 / 日志表、收缩数据库。
+**32 · System management · Database operations** — system database and per-project SQLite databases (size / table count / backup time), supporting clearing event / log tables and database shrinking.
 
-![界面截图 32](docs/screenshots/screenshot-32.png)
+![Screenshot 32](docs/screenshots/screenshot-32.png)
 
-**33 · 系统管理 · 基础服务管理** —— Redis / InfluxDB / NanoMQ / Nginx 等基础服务的启停、重启、配置、日志与健康检查。
+**33 · System management · Base service management** — start / stop / restart / configure / view logs / health check for base services such as Redis / InfluxDB / NanoMQ / Nginx.
 
-![界面截图 33](docs/screenshots/screenshot-33.png)
+![Screenshot 33](docs/screenshots/screenshot-33.png)
 
-**34 · 系统管理 · 系统健康** —— 队列检查（数据库 / InfluxDB / 内存 / 磁盘）、CPU / 内存指标、磁盘分区与运行环境信息。
+**34 · System management · System health** — queue checks (database / InfluxDB / memory / disk), CPU / memory metrics, disk partitions and runtime environment information.
 
-![界面截图 34](docs/screenshots/screenshot-34.png)
+![Screenshot 34](docs/screenshots/screenshot-34.png)
 
-**35 · 采集管理 · Pipeline 指标监控** —— 采集总量 / 错误数 / 活跃连接 / 平均处理时间 / 运行时长，变量指标实时值与追踪查看。
+**35 · Acquisition management · Pipeline metric monitoring** — total acquisitions / error count / active connections / average processing time / uptime, with real-time values and trace viewing for variable metrics.
 
-![界面截图 35](docs/screenshots/screenshot-35.png)
+![Screenshot 35](docs/screenshots/screenshot-35.png)
 
 ---
 
-## 许可证 / License
+## License
 
 [Apache-2.0](./LICENSE)
