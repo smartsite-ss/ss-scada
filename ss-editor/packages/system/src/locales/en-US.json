@@ -144,7 +144,11 @@
       "systemLogs": "System Logs",
       "projectList": "Project List",
       "pageManagement": "Page Management",
-      "preview": "Page Preview"
+      "preview": "Page Preview",
+      "alarmRules": "Alarm Rules",
+      "businessReports": "Business Reports",
+      "mcpManager": "MCP Manager",
+      "scheduledTasks": "Scheduled Tasks"
     },
     "gallery": {
       "selectFormat": "Select Format",

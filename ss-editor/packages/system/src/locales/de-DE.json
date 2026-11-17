@@ -144,7 +144,11 @@
       "systemLogs": "Systemprotokolle",
       "projectList": "Projektliste",
       "pageManagement": "Seitenverwaltung",
-      "preview": "Seitenvorschau"
+      "preview": "Seitenvorschau",
+      "alarmRules": "Alarmregeln",
+      "businessReports": "Geschäftsberichte",
+      "mcpManager": "MCP-Verwaltung",
+      "scheduledTasks": "Geplante Aufgaben"
     },
     "gallery": {
       "selectFormat": "Format auswählen",

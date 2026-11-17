@@ -144,7 +144,11 @@
       "systemLogs": "Sistem günlükleri",
       "projectList": "Proje listesi",
       "pageManagement": "Sayfa yönetimi",
-      "preview": "Sayfa önizlemesi"
+      "preview": "Sayfa önizlemesi",
+      "alarmRules": "Alarm Kuralları",
+      "businessReports": "İş Raporları",
+      "mcpManager": "MCP Yönetimi",
+      "scheduledTasks": "Zamanlanmış Görevler"
     },
     "gallery": {
       "selectFormat": "Biçim seç",

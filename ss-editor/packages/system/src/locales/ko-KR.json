@@ -144,7 +144,11 @@
       "systemLogs": "시스템 로그",
       "projectList": "프로젝트 목록",
       "pageManagement": "페이지 관리",
-      "preview": "페이지 미리보기"
+      "preview": "페이지 미리보기",
+      "alarmRules": "경보 규칙",
+      "businessReports": "비즈니스 보고서",
+      "mcpManager": "MCP 관리",
+      "scheduledTasks": "예약 작업"
     },
     "gallery": {
       "selectFormat": "형식 선택",

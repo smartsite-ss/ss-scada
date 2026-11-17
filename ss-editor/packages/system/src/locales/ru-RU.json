@@ -144,7 +144,11 @@
       "systemLogs": "Системный журнал",
       "projectList": "Список проектов",
       "pageManagement": "Управление страницами",
-      "preview": "Предпросмотр страницы"
+      "preview": "Предпросмотр страницы",
+      "alarmRules": "Правила тревог",
+      "businessReports": "Бизнес-отчёты",
+      "mcpManager": "Управление MCP",
+      "scheduledTasks": "Запланированные задачи"
     },
     "gallery": {
       "selectFormat": "Выберите формат",

@@ -144,7 +144,11 @@
       "systemLogs": "系统日志",
       "projectList": "项目列表",
       "pageManagement": "页面管理",
-      "preview": "页面预览"
+      "preview": "页面预览",
+      "alarmRules": "报警规则",
+      "businessReports": "业务报表",
+      "mcpManager": "MCP 管理",
+      "scheduledTasks": "定时任务"
     },
     "gallery": {
       "selectFormat": "选择格式",

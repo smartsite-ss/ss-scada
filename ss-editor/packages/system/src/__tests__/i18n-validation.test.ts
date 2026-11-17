@@ -129,6 +129,8 @@ describe('i18n Validation', () => {
         'IP', 'ID', 'MB', 'ENV', 'URL', 'User-Agent',
         // Technical terms in WS monitoring / system configuration
         'Socket ID', 'i18n Key', 'Token', 'Bucket', 'API Key',
+        // Fixed system health status label
+        'SYSTEM READY',
       ];
       const unallowed = pureEnglishValues.filter(v => !allowedEnglish.includes(v));
       expect(unallowed).toEqual([]);

@@ -144,7 +144,11 @@
       "systemLogs": "Journal système",
       "projectList": "Liste des projets",
       "pageManagement": "Gestion des pages",
-      "preview": "Aperçu de la page"
+      "preview": "Aperçu de la page",
+      "alarmRules": "Règles d'alarme",
+      "businessReports": "Rapports métier",
+      "mcpManager": "Gestion MCP",
+      "scheduledTasks": "Tâches planifiées"
     },
     "gallery": {
       "selectFormat": "Choisir le format",

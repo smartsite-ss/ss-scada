@@ -144,7 +144,11 @@
       "systemLogs": "Log Sistem",
       "projectList": "Daftar Proyek",
       "pageManagement": "Manajemen Halaman",
-      "preview": "Pratinjau Halaman"
+      "preview": "Pratinjau Halaman",
+      "alarmRules": "Aturan Alarm",
+      "businessReports": "Laporan Bisnis",
+      "mcpManager": "Manajemen MCP",
+      "scheduledTasks": "Tugas Terjadwal"
     },
     "gallery": {
       "selectFormat": "Pilih format",

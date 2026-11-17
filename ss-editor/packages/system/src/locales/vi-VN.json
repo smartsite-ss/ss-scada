@@ -144,7 +144,11 @@
       "systemLogs": "Nhật ký hệ thống",
       "projectList": "Danh sách dự án",
       "pageManagement": "Quản lý trang",
-      "preview": "Xem trước trang"
+      "preview": "Xem trước trang",
+      "alarmRules": "Quy tắc báo động",
+      "businessReports": "Báo cáo kinh doanh",
+      "mcpManager": "Quản lý MCP",
+      "scheduledTasks": "Tác vụ lên lịch"
     },
     "gallery": {
       "selectFormat": "Chọn định dạng",
