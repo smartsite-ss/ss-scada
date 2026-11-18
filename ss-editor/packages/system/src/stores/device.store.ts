@@ -36,11 +36,18 @@ export const useDeviceStore = defineStore('device', () => {
 
   const hasDevices = computed(() => devices.value.length > 0);
 
-  async function fetchDevices(projectId: string, page = 1, pageSize = 20, keyword?: string, groupId?: string) {
+  async function fetchDevices(
+    projectId: string,
+    page = 1,
+    pageSize = 20,
+    keyword?: string,
+    groupId?: string,
+    groupIds?: string[],
+  ) {
     loading.value = true;
     error.value = null;
     try {
-      const res = await deviceApi.list(projectId, { page, pageSize, keyword, groupId });
+      const res = await deviceApi.list(projectId, { page, pageSize, keyword, groupId, groupIds });
       devices.value = res.data || [];
       pagination.value = res.pagination || { page: 1, pageSize: 20, total: 0, totalPages: 0 };
     } catch (e: any) {
@@ -53,9 +60,16 @@ export const useDeviceStore = defineStore('device', () => {
   /**
    * Silently refresh the device list (no loading shown; used to periodically refresh lastOnlineAt / lastDataAt and similar fields)
    */
-  async function silentRefreshDevices(projectId: string, page = 1, pageSize = 20, keyword?: string, groupId?: string) {
+  async function silentRefreshDevices(
+    projectId: string,
+    page = 1,
+    pageSize = 20,
+    keyword?: string,
+    groupId?: string,
+    groupIds?: string[],
+  ) {
     try {
-      const res = await deviceApi.list(projectId, { page, pageSize, keyword, groupId });
+      const res = await deviceApi.list(projectId, { page, pageSize, keyword, groupId, groupIds });
       devices.value = res.data || [];
       pagination.value = res.pagination || { page: 1, pageSize: 20, total: 0, totalPages: 0 };
     } catch {

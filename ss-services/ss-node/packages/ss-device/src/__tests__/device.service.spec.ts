@@ -21,7 +21,7 @@ import { DataSource } from 'typeorm';
 import { DeviceStatus, DeviceType } from '@ss-node/ss-sdk';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { DataPointCacheService, ProjectDatabaseService } from '@ss-node/ss-core';
+import { AuthorizationService, DataPointCacheService, ProjectDatabaseService } from '@ss-node/ss-core';
 import { ChannelConfigService } from '../channel/channel-config.service';
 
 type MockRepository<T = any> = Partial<Record<keyof Repository<T>, jest.Mock>>;
@@ -46,6 +46,7 @@ describe('DeviceService', () => {
   let mockDataSource: Partial<DataSource>;
   let mockProjectDbService: Partial<ProjectDatabaseService>;
   let mockI18nService: Partial<I18nService>;
+  let mockAuthorizationService: { addDeviceAuth: jest.Mock; getAccessibleDeviceIds: jest.Mock };
 
   const projectId = 'proj-001';
 
@@ -102,6 +103,11 @@ describe('DeviceService', () => {
       }),
     };
 
+    mockAuthorizationService = {
+      addDeviceAuth: jest.fn().mockResolvedValue(undefined),
+      getAccessibleDeviceIds: jest.fn().mockResolvedValue(['*']),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         DeviceService,
@@ -113,6 +119,7 @@ describe('DeviceService', () => {
         { provide: ConfigService, useValue: { get: jest.fn().mockReturnValue('unified') } },
         { provide: DataPointCacheService, useValue: { updateLatestValue: jest.fn() } },
         { provide: ChannelConfigService, useValue: { validate: jest.fn().mockReturnValue(true) } },
+        { provide: AuthorizationService, useValue: mockAuthorizationService },
       ],
     }).compile();
 
@@ -161,6 +168,49 @@ describe('DeviceService', () => {
       expect(deviceRepo.findOne).toHaveBeenCalledWith({
         where: { deviceCode: 'temp-hum-001', projectId },
       });
+    });
+  });
+
+  describe('TC-DEV-002b: auto-authorize the creator role', () => {
+    const dto = {
+      deviceCode: 'temp-hum-001',
+      deviceName: '温湿度001',
+      templateId: 'tpl-001',
+      driver: 'modbus' as any,
+      connection: { protocol: 'modbus_tcp', host: '192.168.1.1', port: 502 },
+    };
+
+    beforeEach(() => {
+      deviceRepo.findOne!.mockResolvedValue(null);
+      deviceRepo.create!.mockReturnValue(mockDevice);
+      deviceRepo.save!.mockResolvedValue(mockDevice);
+      mockAuthorizationService.addDeviceAuth.mockClear();
+    });
+
+    it('should grant write permission on the new device to the creator role', async () => {
+      await service.create(dto, projectId, 'role-test');
+
+      expect(mockAuthorizationService.addDeviceAuth).toHaveBeenCalledWith({
+        roleId: 'role-test',
+        projectId,
+        deviceId: mockDevice.id,
+        permission: 'write',
+      });
+    });
+
+    it('should skip the grant when no creator role is provided', async () => {
+      await service.create(dto, projectId);
+
+      expect(mockAuthorizationService.addDeviceAuth).not.toHaveBeenCalled();
+    });
+
+    it('should still return the device when the grant fails', async () => {
+      mockAuthorizationService.addDeviceAuth.mockRejectedValueOnce(new Error('grant failed'));
+
+      const result = await service.create(dto, projectId, 'role-test');
+
+      expect(result).toEqual(mockDevice);
+      expect(mockAuthorizationService.addDeviceAuth).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -1143,6 +1193,25 @@ describe('DeviceService', () => {
 
       const callArgs = deviceRepo.findAndCount!.mock.calls[0][0];
       expect(callArgs.where).toHaveProperty('groupId', 'grp-001');
+    });
+
+    it('should filter devices by several group ids', async () => {
+      deviceRepo.findAndCount!.mockResolvedValue([[mockDevice], 1]);
+
+      await service.findAll(projectId, { groupIds: ['grp-001', 'grp-002'] });
+
+      const callArgs = deviceRepo.findAndCount!.mock.calls[0][0];
+      expect(callArgs.where.groupId.value).toEqual(['grp-001', 'grp-002']);
+      expect(callArgs.where.groupId).not.toBe('grp-001');
+    });
+
+    it('should prefer groupIds over a single groupId', async () => {
+      deviceRepo.findAndCount!.mockResolvedValue([[mockDevice], 1]);
+
+      await service.findAll(projectId, { groupId: 'grp-single', groupIds: ['grp-001'] });
+
+      const callArgs = deviceRepo.findAndCount!.mock.calls[0][0];
+      expect(callArgs.where.groupId.value).toEqual(['grp-001']);
     });
   });
 });

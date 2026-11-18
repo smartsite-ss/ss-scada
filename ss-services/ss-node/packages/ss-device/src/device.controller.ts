@@ -53,8 +53,14 @@ export class DeviceController {
   @Post()
   @Roles(UserRole.ADMIN, UserRole.USER)
   @ApiOperation({ summary: '创建设备' })
-  create(@Param('projectId') projectId: string, @Body() createDeviceDto: CreateDeviceDto) {
-    return this.deviceService.create(createDeviceDto, projectId);
+  create(
+    @Param('projectId') projectId: string,
+    @Body() createDeviceDto: CreateDeviceDto,
+    @Req() req?: any,
+  ) {
+    // ADMIN bypasses device-level authorization, so only regular roles need the auto-grant
+    const creatorRoleId = req?.user?.role === UserRole.ADMIN ? undefined : req?.user?.roleId;
+    return this.deviceService.create(createDeviceDto, projectId, creatorRoleId);
   }
 
   @Get()
@@ -150,16 +156,26 @@ export class DeviceController {
   @Post('import/csv')
   @Roles(UserRole.ADMIN, UserRole.USER)
   @ApiOperation({ summary: '从CSV导入设备' })
-  async importCsv(@Param('projectId') projectId: string, @Body() body: { content: string }) {
-    const result = await this.importExportService.importFromCsv(projectId, body.content);
+  async importCsv(
+    @Param('projectId') projectId: string,
+    @Body() body: { content: string },
+    @Req() req?: any,
+  ) {
+    const creatorRoleId = req?.user?.role === UserRole.ADMIN ? undefined : req?.user?.roleId;
+    const result = await this.importExportService.importFromCsv(projectId, body.content, creatorRoleId);
     return { code: 0, data: result, message: result.success ? 'ok' : 'partial' };
   }
 
   @Post('import/json')
   @Roles(UserRole.ADMIN, UserRole.USER)
   @ApiOperation({ summary: '从JSON导入设备' })
-  async importJson(@Param('projectId') projectId: string, @Body() body: { data: any[] }) {
-    const result = await this.importExportService.importFromJson(projectId, body.data);
+  async importJson(
+    @Param('projectId') projectId: string,
+    @Body() body: { data: any[] },
+    @Req() req?: any,
+  ) {
+    const creatorRoleId = req?.user?.role === UserRole.ADMIN ? undefined : req?.user?.roleId;
+    const result = await this.importExportService.importFromJson(projectId, body.data, creatorRoleId);
     return { code: 0, data: result, message: result.success ? 'ok' : 'partial' };
   }
 

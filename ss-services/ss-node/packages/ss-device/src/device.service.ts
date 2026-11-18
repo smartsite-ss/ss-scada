@@ -180,7 +180,7 @@ export class DeviceService {
     };
   }
 
-  async create(createDeviceDto: CreateDeviceDto, projectId: string): Promise<Device> {
+  async create(createDeviceDto: CreateDeviceDto, projectId: string, creatorRoleId?: string): Promise<Device> {
     const { deviceRepo, dataTagRepo } = await this.getRepos(projectId);
 
     // Check deviceCode uniqueness
@@ -271,6 +271,23 @@ export class DeviceService {
       }
     }
 
+    // Auto-authorize the creator's role: without a device-level grant the new device is filtered out of the list
+    if (creatorRoleId && this.authorizationService) {
+      try {
+        await this.authorizationService.addDeviceAuth({
+          roleId: creatorRoleId,
+          projectId,
+          deviceId: saved.id,
+          permission: 'write',
+        });
+        this.logger.log(`Device ${saved.id} auto-authorized for creator role ${creatorRoleId}`);
+      } catch (err) {
+        this.logger.warn(
+          `Failed to auto-authorize device ${saved.id} for role ${creatorRoleId}: ${(err as Error).message}`,
+        );
+      }
+    }
+
     // Notify the collection layer: device created; needs connection + collection-task registration
     this.eventBus?.emit('device.created', {
       deviceId: saved.id,
@@ -319,7 +336,10 @@ export class DeviceService {
     if (query?.type) {
       baseWhere.type = query.type;
     }
-    if (query?.groupId) {
+    if (query?.groupIds?.length) {
+      // A parent group selection expands to all of its descendant groups
+      baseWhere.groupId = In(query.groupIds);
+    } else if (query?.groupId) {
       baseWhere.groupId = query.groupId;
     }
 

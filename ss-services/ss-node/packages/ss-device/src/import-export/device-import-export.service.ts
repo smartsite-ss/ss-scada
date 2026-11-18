@@ -60,7 +60,11 @@ export class DeviceImportExportService {
   /**
    * Import devices from CSV content
    */
-  async importFromCsv(projectId: string, csvContent: string): Promise<ImportResult> {
+  async importFromCsv(
+    projectId: string,
+    csvContent: string,
+    creatorRoleId?: string,
+  ): Promise<ImportResult> {
     const lines = csvContent.trim().split('\n');
     if (lines.length < 2) {
       return {
@@ -117,7 +121,7 @@ export class DeviceImportExportService {
           await this.deviceService.update(existing.data[0].id, dto as any, projectId);
           updated++;
         } else {
-          await this.deviceService.create(dto, projectId);
+          await this.deviceService.create(dto, projectId, creatorRoleId);
           created++;
         }
       } catch (err: any) {
@@ -139,7 +143,11 @@ export class DeviceImportExportService {
   /**
    * Import devices from JSON array
    */
-  async importFromJson(projectId: string, jsonData: DeviceExportRow[]): Promise<ImportResult> {
+  async importFromJson(
+    projectId: string,
+    jsonData: DeviceExportRow[],
+    creatorRoleId?: string,
+  ): Promise<ImportResult> {
     const errors: ImportError[] = [];
     let created = 0;
     let updated = 0;
@@ -177,7 +185,7 @@ export class DeviceImportExportService {
           await this.deviceService.update(existing.data[0].id, dto as any, projectId);
           updated++;
         } else {
-          await this.deviceService.create(dto, projectId);
+          await this.deviceService.create(dto, projectId, creatorRoleId);
           created++;
         }
       } catch (err: any) {

@@ -114,6 +114,25 @@ describe('useDeviceStore', () => {
       });
     });
 
+    it('should pass groupIds through to the API', async () => {
+      const { deviceApi } = await import('../../api/modules/device.api');
+      (deviceApi.list as any).mockResolvedValueOnce({
+        data: [],
+        pagination: { ...mockPagination, total: 0 },
+      });
+
+      const store = useDeviceStore();
+      await store.fetchDevices('proj-1', 1, 20, undefined, undefined, ['g1', 'g2']);
+
+      expect(deviceApi.list).toHaveBeenCalledWith('proj-1', {
+        page: 1,
+        pageSize: 20,
+        keyword: undefined,
+        groupId: undefined,
+        groupIds: ['g1', 'g2'],
+      });
+    });
+
     it('should keep groupId on silent refresh', async () => {
       const { deviceApi } = await import('../../api/modules/device.api');
       (deviceApi.list as any).mockResolvedValueOnce({

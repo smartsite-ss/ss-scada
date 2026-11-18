@@ -149,7 +149,7 @@
           <h1 class="page-title">
             {{ $t('system.devices.title') }}
           </h1>
-          <span class="device-count">{{ $t('system.devices.deviceCount', { count: displayTotal }) }}</span>
+          <span class="device-count">{{ $t('system.devices.deviceCount', { count: total }) }}</span>
         </div>
         <div class="toolbar">
           <div class="search-box">
@@ -559,7 +559,7 @@
                 stroke-linejoin="round"
               ><polyline points="15 18 9 12 15 6" /></svg>
             </button>
-            <span class="card-page-info">{{ currentPage }} / {{ totalPages }} · {{ $t('system.devices.deviceCount', { count: displayTotal }) }}</span>
+            <span class="card-page-info">{{ currentPage }} / {{ totalPages }} · {{ $t('system.devices.deviceCount', { count: total }) }}</span>
             <button
               class="btn btn-secondary card-page-btn"
               :disabled="currentPage >= totalPages"
@@ -1168,7 +1168,7 @@ function setViewMode(mode: DeviceViewMode) {
   viewMode.value = mode;
 }
 
-const totalPages = computed(() => Math.max(1, Math.ceil(displayTotal.value / pageSize.value)));
+const totalPages = computed(() => Math.max(1, Math.ceil(total.value / pageSize.value)));
 const hasDeviceData = computed(() => !!projectId.value && visibleDevices.value.length > 0);
 
 function goToCardPage(page: number) {
@@ -1261,8 +1261,6 @@ const visibleDevices = computed(() => {
   if (!ids) return devices.value;
   return devices.value.filter((device) => !!device.groupId && ids.has(device.groupId));
 });
-
-const displayTotal = computed(() => (isBranchSelection.value ? visibleDevices.value.length : total.value));
 
 /** Card view sections, ordered by the group tree with ungrouped devices last. */
 const deviceGroupSections = computed<DeviceGroupSection[]>(() =>
@@ -1431,15 +1429,17 @@ function onDevicePageChange(event: PageChangeEvent) {
 
 async function fetchData() {
   if (!projectId.value) return;
-  // A leaf group can be filtered by the backend; a branch selection needs the full list for client-side descendant filtering.
-  const groupId = selectedGroupId.value && !isBranchSelection.value ? selectedGroupId.value : undefined;
-  const requestedPageSize = isBranchSelection.value ? Math.max(pageSize.value, 1000) : pageSize.value;
+  // Leaf selection filters one group; a branch selection expands to all descendant groups on the server side
+  const ids = selectedGroupIds.value;
+  const groupId = ids && !isBranchSelection.value ? selectedGroupId.value : undefined;
+  const groupIds = ids && isBranchSelection.value ? [...ids] : undefined;
   await deviceStore.fetchDevices(
     projectId.value,
     currentPage.value,
-    requestedPageSize,
+    pageSize.value,
     searchQuery.value || undefined,
     groupId,
+    groupIds,
   );
 }
 
@@ -1451,14 +1451,16 @@ function startAutoRefresh() {
   stopAutoRefresh();
   refreshTimer = setInterval(() => {
     if (projectId.value) {
-      const groupId = selectedGroupId.value && !isBranchSelection.value ? selectedGroupId.value : undefined;
-      const requestedPageSize = isBranchSelection.value ? Math.max(pageSize.value, 1000) : pageSize.value;
+      const ids = selectedGroupIds.value;
+      const groupId = ids && !isBranchSelection.value ? selectedGroupId.value : undefined;
+      const groupIds = ids && isBranchSelection.value ? [...ids] : undefined;
       deviceStore.silentRefreshDevices(
         projectId.value,
         currentPage.value,
-        requestedPageSize,
+        pageSize.value,
         searchQuery.value || undefined,
         groupId,
+        groupIds,
       );
     }
   }, REFRESH_INTERVAL_MS);

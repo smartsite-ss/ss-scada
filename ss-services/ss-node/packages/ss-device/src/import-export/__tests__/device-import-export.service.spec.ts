@@ -224,7 +224,21 @@ describe('DeviceImportExportService', () => {
       expect(deviceService.create).toHaveBeenCalledWith(
         expect.objectContaining({ deviceName: '设备,含逗号' }),
         projectId,
+        undefined,
       );
+    });
+
+    it('should pass the creator role through to device creation', async () => {
+      (deviceService.findAll as jest.Mock).mockResolvedValueOnce({ data: [], pagination: {} });
+      (deviceService.create as jest.Mock).mockResolvedValue({ id: 'dev-role', deviceCode: 'role-dev' });
+
+      const csvContent = `deviceCode,deviceName,type,driver
+"role-dev","Role Device","modbus_tcp","modbus"`;
+
+      const result = await service.importFromCsv(projectId, csvContent, 'role-test');
+
+      expect(result.created).toBe(1);
+      expect(deviceService.create).toHaveBeenCalledWith(expect.anything(), projectId, 'role-test');
     });
 
     it('should handle CSV with special characters', async () => {
@@ -244,6 +258,7 @@ describe('DeviceImportExportService', () => {
       expect(deviceService.create).toHaveBeenCalledWith(
         expect.objectContaining({ deviceName: '设备"引号"测试' }),
         projectId,
+        undefined,
       );
     });
 
@@ -397,6 +412,7 @@ describe('DeviceImportExportService', () => {
       expect(deviceService.create).toHaveBeenCalledWith(
         expect.objectContaining({ deviceName: 'fallback-dev' }),
         projectId,
+        undefined,
       );
     });
   });
