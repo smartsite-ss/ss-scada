@@ -17,9 +17,9 @@ Smart Site is an open-source SCADA platform for industrial scenarios: an integra
 
 ### ⭐️ Star Smart Site — help more people discover it!
 
-[![GitHub Stars](https://img.shields.io/github/stars/smartsite-ss/ss-scada?style=for-the-badge&logo=github&label=Star%20on%20GitHub&color=ffd700)](https://github.com/smartsite-ss/ss-scada) [![Gitee Star](https://img.shields.io/badge/Gitee-%E2%98%85%20Star-red?style=for-the-badge)](https://gitee.com/stuhu/ss-scada)
+[**⭐ Star on GitHub**](https://github.com/smartsite-ss/ss-scada) &nbsp;·&nbsp; [**⭐ Star on Gitee**](https://gitee.com/stuhu/ss-scada)
 
-If Smart Site helps you, please give it a **Star** ⭐️ — one click helps more people discover it, and your support keeps us improving 🚀
+If Smart Site helps you, follow the links above to open the project page and hit **Star** ⭐️ — one click helps more people discover it, and your support keeps us improving 🚀
 
 </div>
 
