@@ -2742,8 +2742,14 @@ onActivated(() => {
 .device-cards {
   flex: 1;
   min-height: 0;
+  min-width: 0;
+  width: 100%;
   overflow-y: auto;
   margin: 0 24px 16px;
+}
+
+.device-group-section {
+  width: 100%;
 }
 
 .device-group-section + .device-group-section {
@@ -2770,7 +2776,8 @@ onActivated(() => {
 
 .device-card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  width: 100%;
   gap: 16px;
   align-content: start;
 }
