@@ -25,3 +25,9 @@ bin/release-notes/v7.0.3.en.md        # GitHub 英文说明（可选）
 
 > 注意：本仓库强制英文提交信息，所以自动生成的中文说明里"更新内容"条目仍是英文原文；
 > 提供覆盖文件后即为全中文文案。覆盖文件是版本归档的一部分，建议随 tag 一起提交。
+
+**覆盖文件请保留以下两块内容**（自动生成的版本会写入，手写的需要自己维护）：
+
+- 注意事项：附件 >100 MB 请到官方站下载、运行数据在解压目录需先备份、端口占用按控制台提示或改 `start.bat`；
+- 相关下载：带版本号的官方 zip 链接（`https://smartsite.top/downloads/ss-o/win-ss-<tag>.zip`，
+  可用 `--download-base=<url>` 改前缀）、GitHub Releases 与 Gitee Releases 页面链接。

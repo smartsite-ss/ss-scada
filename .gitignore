@@ -109,6 +109,10 @@ ss-run/_replica-archive/**
 
 # Local-only scripts (not uploaded to remotes)
 bin/push-remote.bat
+bin/pack-release.bat
+bin/pack-release.cjs
+bin/publish-release.bat
+bin/publish-release.cjs
 
 # Release uploader credentials (GitHub / Gitee tokens, never commit)
 bin/release.local.env
@@ -117,3 +121,6 @@ bin/release.local.env
 ss-run/ss/rtdb/
 
 bin/publish-release/**
+bin/release-notes/**
+
+docs-e/**
