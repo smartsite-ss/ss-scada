@@ -109,6 +109,7 @@ export const deviceApi = {
       search: params.keyword,
       sortBy: params.sortBy,
       sortOrder: params.sortOrder,
+      groupId: params.groupId,
     } : undefined;
     return client.get(buildUrl(projectId, ''), { params: queryParams }).then((res) => res.data);
   },

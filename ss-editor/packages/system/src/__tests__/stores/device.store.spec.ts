@@ -95,6 +95,42 @@ describe('useDeviceStore', () => {
       expect(store.error).toBeTruthy();
       expect(store.loading).toBe(false);
     });
+
+    it('should pass groupId through to the API', async () => {
+      const { deviceApi } = await import('../../api/modules/device.api');
+      (deviceApi.list as any).mockResolvedValueOnce({
+        data: [],
+        pagination: { ...mockPagination, total: 0 },
+      });
+
+      const store = useDeviceStore();
+      await store.fetchDevices('proj-1', 1, 20, undefined, 'group-1');
+
+      expect(deviceApi.list).toHaveBeenCalledWith('proj-1', {
+        page: 1,
+        pageSize: 20,
+        keyword: undefined,
+        groupId: 'group-1',
+      });
+    });
+
+    it('should keep groupId on silent refresh', async () => {
+      const { deviceApi } = await import('../../api/modules/device.api');
+      (deviceApi.list as any).mockResolvedValueOnce({
+        data: [],
+        pagination: { ...mockPagination, total: 0 },
+      });
+
+      const store = useDeviceStore();
+      await store.silentRefreshDevices('proj-1', 1, 20, undefined, 'group-2');
+
+      expect(deviceApi.list).toHaveBeenCalledWith('proj-1', {
+        page: 1,
+        pageSize: 20,
+        keyword: undefined,
+        groupId: 'group-2',
+      });
+    });
   });
 
   describe('fetchDevice', () => {

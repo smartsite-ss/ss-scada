@@ -149,7 +149,7 @@
           <h1 class="page-title">
             {{ $t('system.devices.title') }}
           </h1>
-          <span class="device-count">{{ $t('system.devices.deviceCount', { count: total }) }}</span>
+          <span class="device-count">{{ $t('system.devices.deviceCount', { count: displayTotal }) }}</span>
         </div>
         <div class="toolbar">
           <div class="search-box">
@@ -392,9 +392,18 @@
           v-if="viewMode === 'card'"
           class="device-cards"
         >
-          <div class="device-card-grid">
+          <section
+            v-for="section in deviceGroupSections"
+            :key="section.id"
+            class="device-group-section"
+          >
+            <div class="device-group-header">
+              <span class="device-group-title">{{ section.name }}</span>
+              <span class="device-group-count">{{ $t('system.devices.deviceCount', { count: section.devices.length }) }}</span>
+            </div>
+            <div class="device-card-grid">
             <div
-              v-for="device in devices"
+              v-for="device in section.devices"
               :key="device.id"
               class="device-card"
             >
@@ -527,6 +536,7 @@
               </div>
             </div>
           </div>
+          </section>
 
           <div
             v-if="totalPages > 1"
@@ -549,7 +559,7 @@
                 stroke-linejoin="round"
               ><polyline points="15 18 9 12 15 6" /></svg>
             </button>
-            <span class="card-page-info">{{ currentPage }} / {{ totalPages }} · {{ $t('system.devices.deviceCount', { count: total }) }}</span>
+            <span class="card-page-info">{{ currentPage }} / {{ totalPages }} · {{ $t('system.devices.deviceCount', { count: displayTotal }) }}</span>
             <button
               class="btn btn-secondary card-page-btn"
               :disabled="currentPage >= totalPages"
@@ -574,7 +584,7 @@
       <SmartTable
         v-show="viewMode === 'list' && hasDeviceData"
         table-id="device-list"
-        :data="devices"
+        :data="visibleDevices"
         :columns="deviceColumns"
         :loading="loading"
         :pagination="devicePaginationConfig"
@@ -1122,6 +1132,8 @@ import type { SmartTableColumn, PageChangeEvent, PaginationConfig } from '../../
 import { templateApi } from '../../api/modules/template.api';
 import { SsLoading } from '@scada-editor/shared';
 import { useProjectContext } from '../../composables/useProjectContext';
+import { collectGroupBranchIds, buildDeviceGroupSections } from './device-list.utils';
+import type { DeviceGroupSection } from './device-list.utils';
 
 /** Group info in a tree node (incomplete fields from DeviceTree.group) */
 interface TreeGroup {
@@ -1156,8 +1168,8 @@ function setViewMode(mode: DeviceViewMode) {
   viewMode.value = mode;
 }
 
-const totalPages = computed(() => Math.max(1, Math.ceil(total.value / pageSize.value)));
-const hasDeviceData = computed(() => !!projectId.value && devices.value.length > 0);
+const totalPages = computed(() => Math.max(1, Math.ceil(displayTotal.value / pageSize.value)));
+const hasDeviceData = computed(() => !!projectId.value && visibleDevices.value.length > 0);
 
 function goToCardPage(page: number) {
   if (page < 1 || page > totalPages.value || page === currentPage.value) return;
@@ -1234,6 +1246,33 @@ const devices = computed(() => deviceStore.devices);
 const loading = computed(() => deviceStore.loading);
 const total = computed(() => deviceStore.pagination.total);
 const _totalPages = computed(() => deviceStore.pagination.totalPages);
+
+/** Selected group plus all its descendant groups (parent nodes should show their whole branch). */
+const selectedGroupIds = computed<Set<string> | null>(() => {
+  const root = selectedGroupId.value;
+  return root ? collectGroupBranchIds(root, projectGroupTrees.value.get(projectId.value) || []) : null;
+});
+
+const isBranchSelection = computed(() => (selectedGroupIds.value?.size ?? 0) > 1);
+
+/** Devices rendered on the right; the tree selection narrows them down to the chosen branch. */
+const visibleDevices = computed(() => {
+  const ids = selectedGroupIds.value;
+  if (!ids) return devices.value;
+  return devices.value.filter((device) => !!device.groupId && ids.has(device.groupId));
+});
+
+const displayTotal = computed(() => (isBranchSelection.value ? visibleDevices.value.length : total.value));
+
+/** Card view sections, ordered by the group tree with ungrouped devices last. */
+const deviceGroupSections = computed<DeviceGroupSection[]>(() =>
+  buildDeviceGroupSections(
+    visibleDevices.value,
+    getProjectGroups(projectId.value),
+    t('system.devices.noGroup'),
+    groupName,
+  ),
+);
 
 function deviceDeviceCode(device: Device): string {
   return device.deviceCode || device.id;
@@ -1392,7 +1431,16 @@ function onDevicePageChange(event: PageChangeEvent) {
 
 async function fetchData() {
   if (!projectId.value) return;
-  await deviceStore.fetchDevices(projectId.value, currentPage.value, pageSize.value, searchQuery.value || undefined);
+  // A leaf group can be filtered by the backend; a branch selection needs the full list for client-side descendant filtering.
+  const groupId = selectedGroupId.value && !isBranchSelection.value ? selectedGroupId.value : undefined;
+  const requestedPageSize = isBranchSelection.value ? Math.max(pageSize.value, 1000) : pageSize.value;
+  await deviceStore.fetchDevices(
+    projectId.value,
+    currentPage.value,
+    requestedPageSize,
+    searchQuery.value || undefined,
+    groupId,
+  );
 }
 
 /** Periodic silent refresh (updates real-time fields like lastOnlineAt / lastDataAt) */
@@ -1403,7 +1451,15 @@ function startAutoRefresh() {
   stopAutoRefresh();
   refreshTimer = setInterval(() => {
     if (projectId.value) {
-      deviceStore.silentRefreshDevices(projectId.value, currentPage.value, pageSize.value, searchQuery.value || undefined);
+      const groupId = selectedGroupId.value && !isBranchSelection.value ? selectedGroupId.value : undefined;
+      const requestedPageSize = isBranchSelection.value ? Math.max(pageSize.value, 1000) : pageSize.value;
+      deviceStore.silentRefreshDevices(
+        projectId.value,
+        currentPage.value,
+        requestedPageSize,
+        searchQuery.value || undefined,
+        groupId,
+      );
     }
   }, REFRESH_INTERVAL_MS);
 }
@@ -2686,6 +2742,28 @@ onActivated(() => {
   min-height: 0;
   overflow-y: auto;
   margin: 0 24px 16px;
+}
+
+.device-group-section + .device-group-section {
+  margin-top: 22px;
+}
+
+.device-group-header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 6px 0 12px;
+}
+
+.device-group-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.device-group-count {
+  font-size: 12px;
+  color: var(--text-secondary);
 }
 
 .device-card-grid {

@@ -25,6 +25,8 @@ export interface PaginationParams {
   keyword?: string;
   sortBy?: string;
   sortOrder?: 'ASC' | 'DESC';
+  /** Filter devices by an exact group id */
+  groupId?: string;
 }
 
 export interface PaginationInfo {
