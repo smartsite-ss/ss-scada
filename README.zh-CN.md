@@ -14,7 +14,15 @@ Smart Site 是一套面向工业场景的开源 SCADA 平台：**组态编辑器
 >
 > 演示站点为公开共享实例，工艺画面与数据均为模拟产生，仅用于功能体验，请勿写入重要业务数据。
 
-如果这个项目对您有帮助，欢迎点一个 **Star** ⭐️ 支持，您的关注是我们持续更新的动力 🚀
+<div align="center">
+
+### ⭐️ 给 Smart Site 点个 Star，让更多人发现它！
+
+[![GitHub Stars](https://img.shields.io/github/stars/smartsite-ss/ss-scada?style=for-the-badge&logo=github&label=Star%20on%20GitHub&color=ffd700)](https://github.com/smartsite-ss/ss-scada) [![Gitee Star](https://img.shields.io/badge/Gitee-%E2%98%85%20Star-red?style=for-the-badge)](https://gitee.com/stuhu/ss-scada)
+
+如果 Smart Site 对您有帮助，请动动手指点一个 **Star** ⭐️ —— 一次点击就能帮助更多人发现它，也是我们持续更新与优化的动力 🚀
+
+</div>
 
 ---
 
