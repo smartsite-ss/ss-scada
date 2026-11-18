@@ -53,7 +53,8 @@ export type EventType =
   | 'project:enabled'
   | 'project:disabled'
   | 'template.devices-synced'
-  | 'timer:configChanged';
+  | 'timer:configChanged'
+  | 'base-service.started';
 
 /**
  * Data-point change event
@@ -317,6 +318,17 @@ export interface EventPayloadMap {
   'project:disabled': ProjectDisabledEvent;
   'template.devices-synced': TemplateDevicesSyncedEvent;
   'timer:configChanged': TimerConfigChangedEvent;
+  'base-service.started': BaseServiceStartedEvent;
+}
+
+/** Base service (Redis/InfluxDB/NanoMQ/...) started or finished its one-click initialization */
+export interface BaseServiceStartedEvent {
+  /** Service name as stored in the base_services table, e.g. 'influxdb' */
+  name: string;
+  /** OS process id when the event comes from a start action */
+  pid?: number;
+  /** 'start' for a plain start/restart, 'setup' when it follows a one-click initialization */
+  reason?: 'start' | 'setup';
 }
 
 export interface RoomEvent {

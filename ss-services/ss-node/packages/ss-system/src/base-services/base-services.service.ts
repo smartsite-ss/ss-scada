@@ -9,6 +9,7 @@ import {
   BadRequestException,
   ConflictException,
   InternalServerErrorException,
+  Optional,
   OnModuleInit,
   OnModuleDestroy,
 } from '@nestjs/common';
@@ -16,7 +17,7 @@ import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ChildProcess, spawn, exec } from 'child_process';
-import { PathResolverService } from '@ss-node/ss-core';
+import { EventBusService, PathResolverService } from '@ss-node/ss-core';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as net from 'net';
@@ -171,6 +172,7 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
     @InjectRepository(BaseServiceEntity)
     private readonly serviceRepo: Repository<BaseServiceEntity>,
     private readonly pathResolver: PathResolverService,
+    @Optional() private readonly eventBus?: EventBusService,
   ) {}
 
   async onModuleInit(): Promise<void> {
@@ -806,6 +808,10 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
         await new Promise((r) => setTimeout(r, 500));
       }
 
+      // Let dependent modules react to the (re)start, e.g. InfluxBucketService creates the
+      // per-project buckets that were missing while InfluxDB was down
+      this.notifyServiceStarted(name, pid);
+
       return {
         success: true,
         name,
@@ -1034,6 +1040,25 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
   }
 
   // ==================== Private utility methods ====================
+
+  /**
+   * Publish `base-service.started` after a service became available.
+   *
+   * Subscribers (e.g. InfluxBucketService) use it to run follow-up provisioning
+   * immediately instead of waiting for the next write or health-check cycle.
+   */
+  private notifyServiceStarted(
+    name: string,
+    pid?: number,
+    reason: 'start' | 'setup' = 'start',
+  ): void {
+    if (!this.eventBus) return;
+    try {
+      this.eventBus.emit('base-service.started', { name, pid, reason });
+    } catch (err: any) {
+      this.logger.warn(`Failed to emit base-service.started for ${name}: ${err.message}`);
+    }
+  }
 
   /** Ensure a directory exists */
   private ensureDir(dir: string): void {
@@ -1330,6 +1355,10 @@ export class BaseServicesService implements OnModuleInit, OnModuleDestroy {
         if (envWritten) {
           this.logger.log('InfluxDB token written to .env file');
         }
+
+        // Notify subscribers so the per-project buckets are created right away
+        // (the default bucket only exists at this point)
+        this.notifyServiceStarted('influxdb', undefined, 'setup');
 
         return {
           success: true,
@@ -1816,40 +1845,58 @@ schema.measurements(bucket: "${bucketName}")
   }
 
   /**
-   * Write the generated InfluxDB token into the .env file
-   * Search order: .env.dev → .env.base → .env
-   * Write rule: replace the existing INFLUXDB_TOKEN=... line, or append to the end of the file
+   * Env files in load-priority order (same chain as app.module's buildEnvFilePaths):
+   * production: process.cwd()/.env
+   * development: .env.local → .env.{APP_PRODUCT_MODE|APP_ENV|dev} → .env.base → .env
    */
-  private writeInfluxTokenToEnv(token: string): boolean {
+  private getInfluxTokenEnvFiles(): string[] {
+    if (process.env.NODE_ENV === 'production') {
+      const cwdEnv = path.resolve(process.cwd(), '.env');
+      if (fs.existsSync(cwdEnv)) return [cwdEnv];
+    }
+
     const projectRoot = this.getProjectRoot();
-    const envFiles = [
-      path.join(projectRoot, '.env.dev'),
+    const productMode = process.env.APP_PRODUCT_MODE || process.env.APP_ENV || 'dev';
+    return [
+      path.join(projectRoot, '.env.local'),
+      path.join(projectRoot, `.env.${productMode}`),
       path.join(projectRoot, '.env.base'),
       path.join(projectRoot, '.env'),
     ];
+  }
 
-    for (const envFile of envFiles) {
-      if (!fs.existsSync(envFile)) continue;
+  /**
+   * Write the generated InfluxDB token into the .env file that actually takes effect.
+   *
+   * Only the first existing file of the load chain can override the value, so writing to a
+   * lower-priority file (e.g. .env.base while .env.data exists) used to be silently
+   * overridden after the next restart — the backend then talked to InfluxDB with a stale
+   * token and could no longer create buckets. When no file exists, .env.local is created.
+   *
+   * Write rule: replace the existing INFLUXDB_TOKEN=... line, or append it at the end.
+   */
+  private writeInfluxTokenToEnv(token: string): boolean {
+    const candidates = this.getInfluxTokenEnvFiles();
+    const envFile = candidates.find((f) => fs.existsSync(f)) || candidates[0];
 
-      try {
-        let content = fs.readFileSync(envFile, 'utf-8');
+    try {
+      let content = fs.existsSync(envFile) ? fs.readFileSync(envFile, 'utf-8') : '';
 
-        if (content.includes('INFLUXDB_TOKEN=')) {
-          // Replace the existing token
-          content = content.replace(/^INFLUXDB_TOKEN=.*$/m, `INFLUXDB_TOKEN=${token}`);
-        } else {
-          // Append to the end of the file
-          content = content.trimEnd() + `\nINFLUXDB_TOKEN=${token}\n`;
-        }
-
-        fs.writeFileSync(envFile, content, 'utf-8');
-        this.logger.log(`Token written to: ${envFile}`);
-        return true;
-      } catch (err: any) {
-        this.logger.warn(`Failed to write token to ${envFile}: ${err.message}`);
+      if (/^INFLUXDB_TOKEN=/m.test(content)) {
+        // Replace the existing token
+        content = content.replace(/^INFLUXDB_TOKEN=.*$/m, `INFLUXDB_TOKEN=${token}`);
+      } else {
+        // Append to the end of the file
+        content = content.trimEnd() + `\nINFLUXDB_TOKEN=${token}\n`;
       }
-    }
 
-    return false;
+      this.ensureDir(path.dirname(envFile));
+      fs.writeFileSync(envFile, content, 'utf-8');
+      this.logger.log(`Token written to: ${envFile}`);
+      return true;
+    } catch (err: any) {
+      this.logger.warn(`Failed to write token to ${envFile}: ${err.message}`);
+      return false;
+    }
   }
 }

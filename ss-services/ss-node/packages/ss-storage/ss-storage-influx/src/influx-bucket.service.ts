@@ -14,6 +14,13 @@ import {
 } from '@nestjs/common';
 import { EventBusService, EventLogService, PathResolverService } from '@ss-node/ss-core';
 
+/** Result counters of one project-bucket provisioning pass */
+export interface ProjectBucketProvisionSummary {
+  total: number;
+  ready: number;
+  failed: number;
+}
+
 /**
  * InfluxDB bucket management service
  *
@@ -23,6 +30,8 @@ import { EventBusService, EventLogService, PathResolverService } from '@ss-node/
  * - Write routing: projectId → bucket name mapping
  * - Fallback: fall back to the default bucket when bucket creation fails / InfluxDB is unavailable
  * - CODE-04: periodic health check so influxAvailable flips back to true after InfluxDB recovers
+ * - Provisioning triggers: startup, project.created, InfluxDB base service (re)started / setup,
+ *   health-check recovery and a periodic sweep (self-heals projects added while it was down)
  */
 @Injectable()
 export class InfluxBucketService implements OnModuleInit, OnApplicationBootstrap, OnModuleDestroy {
@@ -43,6 +52,18 @@ export class InfluxBucketService implements OnModuleInit, OnApplicationBootstrap
   private readonly healthCheckIntervalMs = 60_000;
   /** CODE-04: health check per-fetch timeout (ms) */
   private readonly healthCheckTimeoutMs = 5000;
+
+  /** Periodic provisioning sweep: creates buckets for projects added while InfluxDB was down */
+  private provisionSweepTimer: NodeJS.Timeout | null = null;
+  /** Provisioning sweep interval (ms) */
+  private readonly provisionSweepIntervalMs = 5 * 60_000;
+  /** In-flight provisioning pass (single-flight so concurrent triggers share one pass) */
+  private provisioning: Promise<ProjectBucketProvisionSummary> | null = null;
+
+  /** Set when InfluxDB rejects INFLUXDB_TOKEN (HTTP 401/403): retries pause until the token is fixed */
+  private authRejected = false;
+  /** The token rejection has already been logged (avoids per-minute log spam) */
+  private authErrorLogged = false;
 
   /** CODE-05: regular API fetch timeout (ms) */
   private readonly fetchTimeoutMs = 5000;
@@ -79,9 +100,19 @@ export class InfluxBucketService implements OnModuleInit, OnApplicationBootstrap
     }));
     this.logger.log('InfluxBucketService initialized — listening for project.created');
 
+    // InfluxDB started/restarted (or finished one-click setup) from the base-services page:
+    // provision immediately instead of waiting for the next write or sweep
+    this.eventBus.on('base-service.started', (payload: { name?: string; reason?: string }) => {
+      if (payload?.name !== 'influxdb') return;
+      void this.handleInfluxServiceStarted(payload.reason || 'start');
+    });
+
     // CODE-04: start the periodic health check so influxAvailable can flip back to true after InfluxDB recovers
     // (the original implementation never called markAvailable() automatically, so one failure permanently fell back to the default bucket)
     this.startHealthCheck();
+
+    // Self-heal: pick up projects whose bucket creation was skipped while InfluxDB was unreachable
+    this.startProvisionSweep();
   }
 
   /**
@@ -92,9 +123,51 @@ export class InfluxBucketService implements OnModuleInit, OnApplicationBootstrap
    * reused, only missing ones are created.
    */
   onApplicationBootstrap(): void {
-    void this.ensureBucketsForAllProjects().catch((err: Error) => {
+    void this.provisionProjectBuckets('startup').catch((err: Error) => {
       this.logger.warn(`Startup bucket provisioning failed: ${err.message}`);
     });
+  }
+
+  /**
+   * React to an InfluxDB base-service (re)start or completed setup.
+   *
+   * A (re)started instance may come with a fresh data dir / token, so the previous
+   * auth-rejection state is dropped and provisioning runs again.
+   */
+  private async handleInfluxServiceStarted(reason: string): Promise<void> {
+    this.influxAvailable = true;
+    this.authRejected = false;
+    this.authErrorLogged = false;
+    this.logger.log(
+      `InfluxDB service ${reason === 'setup' ? 'setup completed' : 'started'} — provisioning project buckets`,
+    );
+
+    try {
+      await this.provisionProjectBuckets(`base-service-${reason}`);
+    } catch (err) {
+      this.logger.warn(
+        `Bucket provisioning after InfluxDB ${reason} failed: ${(err as Error).message}`,
+      );
+    }
+  }
+
+  /**
+   * Run one provisioning pass without overlapping an already running one.
+   *
+   * Triggers (startup, project.created, base-service.started, health recovery, sweep)
+   * may fire close together; sharing a single pass keeps the HTTP footprint small.
+   */
+  async provisionProjectBuckets(reason: string): Promise<ProjectBucketProvisionSummary> {
+    if (this.provisioning) return this.provisioning;
+
+    this.logger.debug(`Project bucket provisioning pass started (${reason})`);
+    const pass = this.ensureBucketsForAllProjects().finally(() => {
+      // Only clear our own pass (a newer one may have been registered while awaiting)
+      if (this.provisioning === pass) this.provisioning = null;
+    });
+
+    this.provisioning = pass;
+    return pass;
   }
 
   /**
@@ -102,17 +175,21 @@ export class InfluxBucketService implements OnModuleInit, OnApplicationBootstrap
    *
    * @returns summary counters for logging/testing
    */
-  async ensureBucketsForAllProjects(): Promise<{
-    total: number;
-    ready: number;
-    failed: number;
-  }> {
-    const summary = { total: 0, ready: 0, failed: 0 };
+  async ensureBucketsForAllProjects(): Promise<ProjectBucketProvisionSummary> {
+    const summary: ProjectBucketProvisionSummary = { total: 0, ready: 0, failed: 0 };
 
     if (!(process.env.INFLUXDB_TOKEN || '')) {
       this.logger.warn(
-        'INFLUXDB_TOKEN not configured — skipping project bucket provisioning at startup',
+        'INFLUXDB_TOKEN not configured — skipping project bucket provisioning',
       );
+      return summary;
+    }
+
+    // The token was rejected by the running instance: retrying every project only spams
+    // errors. Retries resume after the service is restarted/re-initialized or the token
+    // is accepted again by the health probe.
+    if (this.authRejected) {
+      this.logger.debug('INFLUXDB_TOKEN rejected earlier — skipping project bucket provisioning');
       return summary;
     }
 
@@ -135,7 +212,7 @@ export class InfluxBucketService implements OnModuleInit, OnApplicationBootstrap
     }
 
     this.logger.log(
-      `Startup bucket provisioning: ${summary.ready}/${summary.total} project bucket(s) ready` +
+      `Project bucket provisioning: ${summary.ready}/${summary.total} project bucket(s) ready` +
         (summary.failed > 0 ? `, ${summary.failed} failed` : ''),
     );
     return summary;
@@ -186,26 +263,71 @@ export class InfluxBucketService implements OnModuleInit, OnApplicationBootstrap
       clearInterval(this.healthCheckTimer);
       this.healthCheckTimer = null;
     }
+    if (this.provisionSweepTimer) {
+      clearInterval(this.provisionSweepTimer);
+      this.provisionSweepTimer = null;
+    }
+  }
+
+  /**
+   * Periodic provisioning sweep.
+   *
+   * Covers the cases the event-driven triggers cannot see: InfluxDB was started before the
+   * backend (so the startup pass failed), a project directory was created without emitting
+   * project.created, or the previous pass hit a transient error. Project ids already known to
+   * have a bucket are served from the in-memory cache, so a healthy sweep issues no HTTP calls.
+   */
+  private startProvisionSweep(): void {
+    this.provisionSweepTimer = setInterval(() => {
+      void this.provisionProjectBuckets('periodic-sweep').catch((err: Error) => {
+        this.logger.warn(`Periodic bucket provisioning failed: ${err.message}`);
+      });
+    }, this.provisionSweepIntervalMs);
+    // The sweep must not prevent the process from exiting normally
+    if (this.provisionSweepTimer.unref) {
+      this.provisionSweepTimer.unref();
+    }
   }
 
   /**
    * CODE-04: periodic health probe — InfluxDB /health returning 200 restores influxAvailable,
    * so subsequent bucket creation requests are no longer skipped. Only fetches when unavailable, avoiding extra load in the healthy state.
+   *
+   * When the token was rejected the probe additionally verifies an authenticated request:
+   * /health answers 200 even with a bad token, so without this check the service would flap
+   * between "available" and "auth rejected" every minute. After recovery a provisioning pass
+   * runs immediately so buckets that were skipped while InfluxDB was down are created.
    */
   private startHealthCheck(): void {
     this.healthCheckTimer = setInterval(async () => {
-      if (this.influxAvailable) return; // already available, no probing needed
+      // Probe while unreachable, and also while the token is rejected (the token may have been fixed)
+      if (this.influxAvailable && !this.authRejected) return;
       try {
         const url = process.env.INFLUXDB_URL || 'http://localhost:8086';
         const response = await fetch(`${url}/health`, {
           signal: AbortSignal.timeout(this.healthCheckTimeoutMs),
         });
-        if (response.ok) {
+        if (!response.ok) return;
+
+        if (this.authRejected) {
+          if (!(await this.probeAuthorization())) return; // token still rejected, stay quiet
+          this.authRejected = false;
+          this.authErrorLogged = false;
+          this.logger.warn('InfluxDB token accepted again — resuming project bucket provisioning');
+        }
+
+        const wasUnavailable = !this.influxAvailable;
+        this.influxAvailable = true;
+        if (wasUnavailable) {
           this.logger.warn(
             'InfluxDB health check passed — restoring influxAvailable, bucket creation will resume',
           );
-          this.influxAvailable = true;
         }
+
+        // Create the buckets that were skipped while InfluxDB was unreachable
+        void this.provisionProjectBuckets('health-recovered').catch((err: Error) => {
+          this.logger.warn(`Bucket provisioning after recovery failed: ${err.message}`);
+        });
       } catch {
         // Still unreachable, keep influxAvailable=false and wait for the next probe
       }
@@ -225,8 +347,9 @@ export class InfluxBucketService implements OnModuleInit, OnApplicationBootstrap
   async getBucket(projectId: string): Promise<string> {
     const bucket = this.getBucketName(projectId);
 
-    // Fallback: if InfluxDB is known to be unavailable, return the default bucket directly
-    if (!this.influxAvailable) {
+    // Fallback: if InfluxDB is unavailable (or the token is rejected), return the default bucket
+    // directly — retrying on every write batch would only spam errors
+    if (!this.influxAvailable || this.authRejected) {
       return this.getDefaultBucket();
     }
 
@@ -246,9 +369,11 @@ export class InfluxBucketService implements OnModuleInit, OnApplicationBootstrap
     return process.env.INFLUXDB_BUCKET || 'ss_node_data';
   }
 
-  /** Reset the availability flag (for retry after the health check recovers) */
+  /** Reset the availability flags (retry after the health check recovers or the service restarts) */
   markAvailable(): void {
     this.influxAvailable = true;
+    this.authRejected = false;
+    this.authErrorLogged = false;
   }
 
   // ──────────── Internal methods ────────────
@@ -312,7 +437,7 @@ export class InfluxBucketService implements OnModuleInit, OnApplicationBootstrap
       // Step 2: create the bucket
       const orgId = await this.getOrgId(url, token, org);
       if (!orgId) {
-        this.influxAvailable = false;
+        await this.handleProvisionFailure(bucket, `cannot resolve org "${org}"`);
         return false;
       }
 
@@ -345,15 +470,71 @@ export class InfluxBucketService implements OnModuleInit, OnApplicationBootstrap
       }
 
       const errorBody = await response.text().catch(() => 'unknown');
-      this.logger.error(
-        `Failed to create bucket "${bucket}": HTTP ${response.status} ${errorBody}`,
+      await this.handleProvisionFailure(
+        bucket,
+        `bucket creation returned HTTP ${response.status} ${errorBody}`,
+        response.status,
       );
-      this.influxAvailable = false;
       return false;
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'Unknown error';
       this.logger.error(`InfluxDB bucket creation error for "${bucket}": ${errorMsg}`);
       this.influxAvailable = false;
+      return false;
+    }
+  }
+
+  /**
+   * Handle a failed bucket-provisioning request.
+   *
+   * A rejected token (401/403) must not fall back into the normal "unreachable" retry loop:
+   * /health keeps answering 200, so the service would flip back to available every minute and
+   * retry every project. Auth failures are therefore reported once and only retried when the
+   * service is restarted/re-initialized or the health probe confirms the token works again.
+   */
+  private async handleProvisionFailure(
+    bucket: string,
+    detail: string,
+    status?: number,
+  ): Promise<void> {
+    this.influxAvailable = false;
+
+    // 401/403 is auth by definition; a failed org lookup is ambiguous, so ask /api/v2/me
+    const authSuspected =
+      status === 401 || status === 403 || (!status && !(await this.probeAuthorization()));
+
+    if (!authSuspected) {
+      this.logger.error(`Failed to create bucket "${bucket}": ${detail}`);
+      return;
+    }
+
+    this.authRejected = true;
+    if (this.authErrorLogged) return;
+
+    this.authErrorLogged = true;
+    this.logger.error(
+      `InfluxDB rejected the configured INFLUXDB_TOKEN (org="${process.env.INFLUXDB_ORG || 'ss-org'}") — ` +
+        `project buckets cannot be created (${detail}). Verify INFLUXDB_TOKEN matches the running ` +
+        `InfluxDB instance or re-run the one-click InfluxDB setup; provisioning is paused until then.`,
+    );
+  }
+
+  /**
+   * Verify that INFLUXDB_TOKEN is accepted by the running InfluxDB instance.
+   * GET /api/v2/me is authenticated, unlike /health.
+   */
+  private async probeAuthorization(): Promise<boolean> {
+    const url = process.env.INFLUXDB_URL || 'http://localhost:8086';
+    const token = process.env.INFLUXDB_TOKEN || '';
+    if (!token) return false;
+
+    try {
+      const response = await fetch(`${url}/api/v2/me`, {
+        headers: { Authorization: `Token ${token}` },
+        signal: AbortSignal.timeout(this.fetchTimeoutMs),
+      });
+      return response.ok;
+    } catch {
       return false;
     }
   }

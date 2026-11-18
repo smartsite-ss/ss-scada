@@ -13,9 +13,24 @@ import { InfluxBucketService } from '../influx-bucket.service';
 // ============================================================
 
 function makeService(): InfluxBucketService {
-  const eventBus = { on: jest.fn(), emit: jest.fn() };
+  return makeServiceWithEventBus().service;
+}
+
+/** Build a service plus the registered event handlers, so tests can trigger events */
+function makeServiceWithEventBus(): {
+  service: InfluxBucketService;
+  handlers: Map<string, (payload: any) => void>;
+} {
+  const handlers = new Map<string, (payload: any) => void>();
+  const eventBus = {
+    on: jest.fn((eventType: string, handler: (payload: any) => void) => {
+      handlers.set(eventType, handler);
+    }),
+    emit: jest.fn(),
+  };
   const pathResolver = { resolve: jest.fn((p: string) => p) };
-  return new InfluxBucketService(eventBus as any, undefined, pathResolver as any);
+  const service = new InfluxBucketService(eventBus as any, undefined, pathResolver as any);
+  return { service, handlers };
 }
 
 function makeProjectDirs(root: string, names: string[]): void {
@@ -55,6 +70,11 @@ function createdBucketNames(fetchMock: jest.Mock): string[] {
   return fetchMock.mock.calls
     .filter(([url, init]) => String(url).includes('/api/v2/buckets') && init?.method === 'POST')
     .map(([, init]) => JSON.parse(init.body).name);
+}
+
+/** Flush pending microtasks (the global jest setup enables fake timers, so setTimeout is unusable) */
+async function flushMicrotasks(times = 20): Promise<void> {
+  for (let i = 0; i < times; i++) await Promise.resolve();
 }
 
 // ============================================================
@@ -168,5 +188,91 @@ describe('InfluxBucketService startup provisioning', () => {
 
     expect(() => service.onApplicationBootstrap()).not.toThrow();
     await Promise.resolve();
+  });
+
+  it('Should provision project buckets when the InfluxDB base service reports started', async () => {
+    makeProjectDirs(tempDir, ['proj-a', 'proj-b']);
+    const fetchMock = makeFetchMock([]);
+    global.fetch = fetchMock as any;
+
+    const { service, handlers } = makeServiceWithEventBus();
+    service.onModuleInit();
+    const handler = handlers.get('base-service.started');
+    expect(handler).toBeDefined();
+
+    // Unrelated services must not trigger provisioning
+    handler!({ name: 'redis' });
+    await flushMicrotasks();
+    expect(createdBucketNames(fetchMock)).toEqual([]);
+
+    handler!({ name: 'influxdb', reason: 'start' });
+    await flushMicrotasks();
+    expect(createdBucketNames(fetchMock)).toEqual([
+      'ss_node_data_proj-a',
+      'ss_node_data_proj-b',
+    ]);
+
+    service.onModuleDestroy();
+  });
+
+  it('Should provision project buckets after a completed InfluxDB setup event', async () => {
+    makeProjectDirs(tempDir, ['proj-a']);
+    const fetchMock = makeFetchMock([]);
+    global.fetch = fetchMock as any;
+
+    const { service, handlers } = makeServiceWithEventBus();
+    service.onModuleInit();
+
+    handlers.get('base-service.started')!({ name: 'influxdb', reason: 'setup' });
+    await flushMicrotasks();
+
+    expect(createdBucketNames(fetchMock)).toEqual(['ss_node_data_proj-a']);
+    service.onModuleDestroy();
+  });
+
+  it('Should pause provisioning and log a rejected token only once', async () => {
+    makeProjectDirs(tempDir, ['proj-a', 'proj-b']);
+    const fetchMock = jest.fn(async () => ({
+      ok: false,
+      status: 401,
+      json: async () => ({}),
+      text: async () => 'unauthorized access',
+    }));
+    global.fetch = fetchMock as any;
+
+    const service = makeService();
+    const first = await service.ensureBucketsForAllProjects();
+    const callsAfterFirstPass = fetchMock.mock.calls.length;
+    const second = await service.ensureBucketsForAllProjects();
+
+    expect(first.ready).toBe(0);
+    expect(first.failed).toBe(2);
+    expect(second.ready).toBe(0);
+    // Auth rejection pauses retries: the second pass performs no HTTP calls
+    expect(fetchMock.mock.calls.length).toBe(callsAfterFirstPass);
+
+    const errorSpy = Logger.prototype.error as unknown as jest.Mock;
+    const authErrors = errorSpy.mock.calls.filter((args) =>
+      String(args[0]).includes('INFLUXDB_TOKEN'),
+    );
+    expect(authErrors).toHaveLength(1);
+  });
+
+  it('Should fall back to the default bucket without HTTP calls when the token is rejected', async () => {
+    makeProjectDirs(tempDir, ['proj-a']);
+    const fetchMock = jest.fn(async () => ({
+      ok: false,
+      status: 401,
+      json: async () => ({}),
+      text: async () => 'unauthorized access',
+    }));
+    global.fetch = fetchMock as any;
+
+    const service = makeService();
+    await service.ensureBucketsForAllProjects();
+    const callsAfterFirstPass = fetchMock.mock.calls.length;
+
+    expect(await service.getBucket('proj-a')).toBe('ss_node_data');
+    expect(fetchMock.mock.calls.length).toBe(callsAfterFirstPass);
   });
 });

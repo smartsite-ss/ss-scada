@@ -80,6 +80,70 @@ export class DeviceLoadingService {
   }
 
   /**
+   * Track a single device created at runtime (driven by the `device.created` event)
+   *
+   * Applies the same filters as the startup scan (driver configured, plugin registered and
+   * active), so a device that cannot be collected never gets a scheduler task.
+   *
+   * @param projectName the project the device belongs to
+   * @param deviceId the device ID
+   * @returns the tracked device plus its protocol, or the reason the device was skipped
+   */
+  async trackSingleDevice(
+    projectName: string,
+    deviceId: string,
+  ): Promise<{ device?: Device; protocol?: string; skippedReason?: string }> {
+    let ds: DataSource;
+    try {
+      ds = await this.projectDbService.getSystemDb(projectName);
+    } catch (err) {
+      const reason = `project database unavailable: ${(err as Error).message}`;
+      this.logger.warn(`Device ${deviceId}: ${reason}`);
+      return { skippedReason: reason };
+    }
+
+    const device = await ds.getRepository(Device).findOne({ where: { id: deviceId } });
+    if (!device) {
+      const reason = 'device not found in the project database';
+      this.logger.warn(`Device ${deviceId}: ${reason}`);
+      return { skippedReason: reason };
+    }
+
+    const protocol = (device.driver || '').toLowerCase();
+    if (!protocol) {
+      const reason = 'no driver/protocol configured';
+      this.logger.warn(`Device ${deviceId} (${device.deviceName}): ${reason}`);
+      return { skippedReason: reason };
+    }
+
+    if (!this.pluginRegistry) {
+      const reason = 'PluginRegistry not available';
+      this.logger.warn(`Device ${deviceId} (${device.deviceName}): skipped — ${reason}`);
+      return { skippedReason: reason };
+    }
+
+    const plugin = this.pluginRegistry.getPlugin(protocol);
+    if (!plugin) {
+      const reason = `plugin "${protocol}" not found in registry`;
+      this.logger.warn(`Device ${deviceId} (${device.deviceName}): skipped — ${reason}`);
+      return { skippedReason: reason };
+    }
+
+    if (plugin.status !== 'active') {
+      const reason = `plugin "${protocol}" status is "${plugin.status}" (expected "active")`;
+      this.logger.warn(`Device ${deviceId} (${device.deviceName}): skipped — ${reason}`);
+      return { skippedReason: reason };
+    }
+
+    this.ensureDeviceTracked(device, protocol, projectName);
+    this.logger.log(
+      `Device ${deviceId} (${device.deviceName}) tracked at runtime, protocol="${protocol}"`,
+    );
+
+    return { device, protocol };
+  }
+
+  /**
    * Reload devices for a specific protocol (called after a plugin is activated)
    *
    * @param protocol the protocol name

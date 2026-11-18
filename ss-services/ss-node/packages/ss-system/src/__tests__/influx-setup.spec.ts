@@ -3,15 +3,22 @@
 // Contact: zkxxa@qq.com, zcwebms@gmail.com
 
 import { Logger } from '@nestjs/common';
+import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
 import { BaseServicesService } from '../base-services/base-services.service';
 
 // ============================================================
 // Helpers
 // ============================================================
 
-function makeService(): BaseServicesService {
+/**
+ * Build the service with a temporary project root, so writing the generated token
+ * never touches the real .env files of the repository.
+ */
+function makeService(projectRoot: string = process.cwd()): BaseServicesService {
   const configService = { get: jest.fn().mockReturnValue(undefined), set: jest.fn() };
-  const pathResolver = { getProjectRoot: jest.fn().mockReturnValue(process.cwd()) };
+  const pathResolver = { getProjectRoot: jest.fn().mockReturnValue(projectRoot) };
   return new BaseServicesService(configService as any, {} as any, pathResolver as any);
 }
 
@@ -48,27 +55,35 @@ function setupRequestBody(fetchMock: jest.Mock): any | undefined {
 // ============================================================
 
 describe('BaseServicesService InfluxDB setup', () => {
+  let tempDir: string;
+
   beforeEach(() => {
     jest.spyOn(Logger.prototype, 'log').mockImplementation();
     jest.spyOn(Logger.prototype, 'debug').mockImplementation();
     jest.spyOn(Logger.prototype, 'warn').mockImplementation();
     jest.spyOn(Logger.prototype, 'error').mockImplementation();
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'influx-setup-test-'));
     process.env.INFLUXDB_URL = 'http://influx.test:8086';
     process.env.INFLUXDB_ORG = 'ss-org';
     process.env.INFLUXDB_BUCKET = 'ss_node_data';
     delete process.env.INFLUXDB_INIT_PASSWORD;
     delete process.env.INFLUXDB_INIT_USERNAME;
     delete process.env.INFLUXDB_TOKEN;
+    delete process.env.APP_PRODUCT_MODE;
+    delete process.env.APP_ENV;
   });
 
   afterEach(() => {
     jest.restoreAllMocks();
+    fs.rmSync(tempDir, { recursive: true, force: true });
     delete process.env.INFLUXDB_URL;
     delete process.env.INFLUXDB_ORG;
     delete process.env.INFLUXDB_BUCKET;
     delete process.env.INFLUXDB_INIT_PASSWORD;
     delete process.env.INFLUXDB_INIT_USERNAME;
     delete process.env.INFLUXDB_TOKEN;
+    delete process.env.APP_PRODUCT_MODE;
+    delete process.env.APP_ENV;
     global.fetch = undefined as any;
   });
 
@@ -76,7 +91,7 @@ describe('BaseServicesService InfluxDB setup', () => {
     const fetchMock = makeFetchMock({ initialized: false });
     global.fetch = fetchMock as any;
 
-    const result = await makeService().setupInfluxDB();
+    const result = await makeService(tempDir).setupInfluxDB();
 
     const body = setupRequestBody(fetchMock);
     expect(result.success).toBe(true);
@@ -89,7 +104,7 @@ describe('BaseServicesService InfluxDB setup', () => {
     const fetchMock = makeFetchMock({ initialized: false });
     global.fetch = fetchMock as any;
 
-    const result = await makeService().setupInfluxDB();
+    const result = await makeService(tempDir).setupInfluxDB();
 
     expect(result.success).toBe(false);
     expect(result.message).toContain('8-72');
@@ -100,7 +115,7 @@ describe('BaseServicesService InfluxDB setup', () => {
     const fetchMock = makeFetchMock({ initialized: false });
     global.fetch = fetchMock as any;
 
-    const result = await makeService().setupInfluxDB({ password: 'CustomPass@2026' });
+    const result = await makeService(tempDir).setupInfluxDB({ password: 'CustomPass@2026' });
 
     expect(result.success).toBe(true);
     expect(setupRequestBody(fetchMock).password).toBe('CustomPass@2026');
@@ -110,7 +125,7 @@ describe('BaseServicesService InfluxDB setup', () => {
     const fetchMock = makeFetchMock({ initialized: false, token: 'fresh-token-abc' });
     global.fetch = fetchMock as any;
 
-    await makeService().setupInfluxDB();
+    await makeService(tempDir).setupInfluxDB();
 
     expect(process.env.INFLUXDB_TOKEN).toBe('fresh-token-abc');
   });
@@ -119,10 +134,41 @@ describe('BaseServicesService InfluxDB setup', () => {
     const fetchMock = makeFetchMock({ initialized: true });
     global.fetch = fetchMock as any;
 
-    const result = await makeService().setupInfluxDB();
+    const result = await makeService(tempDir).setupInfluxDB();
 
     expect(result.success).toBe(true);
     expect(result.message).toContain('无需重复');
     expect(setupRequestBody(fetchMock)).toBeUndefined();
+  });
+
+  it('Should write the token to the env file that wins the load order', async () => {
+    process.env.APP_PRODUCT_MODE = 'data';
+    fs.writeFileSync(path.join(tempDir, '.env.data'), 'INFLUXDB_TOKEN=stale-token\n');
+    fs.writeFileSync(path.join(tempDir, '.env.base'), 'INFLUXDB_TOKEN=base-token\n');
+    const fetchMock = makeFetchMock({ initialized: false, token: 'fresh-token-abc' });
+    global.fetch = fetchMock as any;
+
+    const result = await makeService(tempDir).setupInfluxDB();
+
+    expect(result.success).toBe(true);
+    // .env.data has higher priority than .env.base, so it must carry the new token
+    expect(fs.readFileSync(path.join(tempDir, '.env.data'), 'utf-8')).toContain(
+      'INFLUXDB_TOKEN=fresh-token-abc',
+    );
+    // The lower-priority file is left untouched
+    expect(fs.readFileSync(path.join(tempDir, '.env.base'), 'utf-8')).toContain(
+      'INFLUXDB_TOKEN=base-token',
+    );
+  });
+
+  it('Should create .env.local when no env file exists yet', async () => {
+    const fetchMock = makeFetchMock({ initialized: false, token: 'fresh-token-abc' });
+    global.fetch = fetchMock as any;
+
+    await makeService(tempDir).setupInfluxDB();
+
+    const localEnv = path.join(tempDir, '.env.local');
+    expect(fs.existsSync(localEnv)).toBe(true);
+    expect(fs.readFileSync(localEnv, 'utf-8')).toContain('INFLUXDB_TOKEN=fresh-token-abc');
   });
 });

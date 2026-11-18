@@ -29,6 +29,14 @@ import { TaskRegistrationService } from './task-registration.service';
 import { DevicePersistenceService } from './device-persistence.service';
 import { PluginEventAdapter } from './plugin-event-adapter';
 
+/** Payload of the `device.created` / `device.deleted` events emitted by DeviceService */
+interface DeviceLifecycleEvent {
+  deviceId: string;
+  projectId: string;
+  protocol?: string;
+  timestamp?: number;
+}
+
 /**
  * Collector bootstrap (coordination layer)
  *
@@ -219,6 +227,10 @@ export class DeviceCollectorBootstrap
     // Subscribe to plugin lifecycle events (activate/deactivate)
     this.pluginEventAdapter.subscribeToPluginEvents();
 
+    // Subscribe to single-device lifecycle events, so a device created while the server is
+    // running is scheduled immediately instead of waiting for a restart / project event
+    this.subscribeToDeviceLifecycleEvents();
+
     // Start periodic persistence
     this.devicePersistenceService.startPeriodicPersistence();
 
@@ -272,6 +284,148 @@ export class DeviceCollectorBootstrap
   // -----------------------------------------------------------------------
   //  Project enable-state change (dynamic start/stop of collection)
   // -----------------------------------------------------------------------
+
+  // -----------------------------------------------------------------------
+  //  Runtime single-device lifecycle (create / delete while running)
+  // -----------------------------------------------------------------------
+
+  /**
+   * Subscribe to single-device lifecycle events
+   *
+   * A device created through the REST API only emits `device.created`; without a subscription
+   * here no scheduler task is ever registered for it, so the device stays offline until the
+   * next restart (or until a project/plugin/tag event happens to reload it).
+   */
+  private subscribeToDeviceLifecycleEvents(): void {
+    this.eventBus.on(
+      'device.created',
+      this.wrapHandler(
+        'device.created',
+        'DeviceCollectorBootstrap',
+        async (event: DeviceLifecycleEvent): Promise<Record<string, any>> =>
+          this.scheduleRuntimeDevice(event),
+      ),
+    );
+
+    this.eventBus.on(
+      'device.deleted',
+      this.wrapHandler(
+        'device.deleted',
+        'DeviceCollectorBootstrap',
+        async (event: DeviceLifecycleEvent): Promise<Record<string, any>> =>
+          this.unscheduleRuntimeDevice(event),
+      ),
+    );
+
+    this.logger.log('Runtime device lifecycle subscriptions initialized');
+  }
+
+  /**
+   * Schedule a device created while the server is running
+   *
+   * Mirrors the startup path: track the device -> register its collection tasks -> mark it
+   * dirty so the status row is persisted. Projects that are not enabled for collection are
+   * skipped, exactly like the startup scan does.
+   */
+  private async scheduleRuntimeDevice(
+    event: DeviceLifecycleEvent,
+  ): Promise<Record<string, any>> {
+    const { deviceId, projectId } = event;
+    this.logger.log(`Event "device.created" received: ${deviceId} (project "${projectId}")`);
+
+    if (!this.isProjectEnabled(projectId)) {
+      this.logger.warn(
+        `Device ${deviceId}: project "${projectId}" is not enabled for collection — task registration skipped`,
+      );
+      return { deviceId, projectId, tasksRegistered: 0, reason: 'project_disabled' };
+    }
+
+    // A project enabled after startup may be missing from the startup scan
+    if (!this.availableProjects.includes(projectId)) {
+      this.availableProjects.push(projectId);
+      this.pluginEventAdapter.setAvailableProjects(this.availableProjects);
+    }
+
+    const tracked = await this.deviceLoadingService.trackSingleDevice(projectId, deviceId);
+    if (!tracked.device || !tracked.protocol) {
+      return {
+        deviceId,
+        projectId,
+        tasksRegistered: 0,
+        reason: tracked.skippedReason || 'device_not_schedulable',
+      };
+    }
+
+    const ds = await this.projectDbService.getSystemDb(projectId);
+    const tagRepo = ds.getRepository(DataTag);
+
+    // A replayed/duplicated event must not leak a second task set: rebuild instead of appending
+    if (this.taskRegistrationService.hasDeviceTasks(deviceId)) {
+      await this.taskRegistrationService.reloadDeviceTasks(
+        deviceId,
+        projectId,
+        tracked.protocol,
+        tracked.device,
+        tagRepo,
+      );
+    } else {
+      await this.taskRegistrationService.registerTasksForDevice(
+        tracked.device,
+        tracked.protocol,
+        tagRepo,
+        projectId,
+      );
+    }
+
+    // Persist status/lastDataAt changes for the freshly scheduled device
+    this.devicePersistenceService.markDeviceDirty(deviceId);
+
+    const totalTasks = this.taskRegistrationService.getTaskCount();
+    this.logger.log(
+      `Device "${tracked.device.deviceName}" (${deviceId}) scheduled at runtime ` +
+        `(protocol="${tracked.protocol}", total tasks: ${totalTasks})`,
+    );
+
+    return {
+      deviceId,
+      projectId,
+      protocol: tracked.protocol,
+      tasksRegistered: 1,
+      totalTasks,
+    };
+  }
+
+  /**
+   * Stop the collection tasks of a device deleted while the server is running
+   */
+  private async unscheduleRuntimeDevice(
+    event: DeviceLifecycleEvent,
+  ): Promise<Record<string, any>> {
+    const { deviceId } = event;
+    const stopped = this.taskRegistrationService.stopDeviceTasks(deviceId);
+    this.deviceStateManager.unregisterDevice(deviceId);
+
+    this.logger.log(
+      `Event "device.deleted" received: ${deviceId} — ${stopped} tasks stopped, state unregistered`,
+    );
+
+    return { deviceId, tasksStopped: stopped, deviceUnregistered: true };
+  }
+
+  /**
+   * Whether a project is enabled for collection (projectinfo.json enabled === true)
+   */
+  private isProjectEnabled(projectName: string): boolean {
+    if (!projectName) return false;
+    try {
+      const infoPath = path.join(this.resolveProjectsDir(), projectName, 'projectinfo.json');
+      if (!fs.existsSync(infoPath)) return false;
+      const info = JSON.parse(fs.readFileSync(infoPath, 'utf-8'));
+      return info.enabled === true;
+    } catch {
+      return false;
+    }
+  }
 
   /**
    * Subscribe to project enable-state change events

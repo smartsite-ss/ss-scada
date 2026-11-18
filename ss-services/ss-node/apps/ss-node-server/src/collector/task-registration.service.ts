@@ -164,6 +164,25 @@ export class TaskRegistrationService {
   }
 
   /**
+   * Stop the collection tasks of a single device (device deleted at runtime)
+   *
+   * Unregisters every scheduler task of the device and drops its device->task mapping.
+   *
+   * @returns the number of scheduler tasks that were stopped
+   */
+  stopDeviceTasks(deviceId: string): number {
+    const taskIds = this.deviceTaskMap.get(deviceId);
+    if (!taskIds || taskIds.length === 0) return 0;
+
+    for (const taskId of taskIds) {
+      this.scheduler.unregisterTask(taskId);
+    }
+    this.deviceTaskMap.delete(deviceId);
+    this.logger.log(`Device ${deviceId}: ${taskIds.length} tasks stopped (device removed)`);
+    return taskIds.length;
+  }
+
+  /**
    * Stop the collection tasks of a group of devices (called when a project is disabled)
    *
    * Unregisters all scheduler tasks and cleans deviceTaskMap.

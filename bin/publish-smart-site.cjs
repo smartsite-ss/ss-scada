@@ -631,6 +631,12 @@ console.log(`  Start      : ${path.join(T, 'start.bat')}`);
 console.log(`  Self test  : ${path.join(T, 'self-test.bat')}`);
 console.log(`  URL        : http://localhost:${opt.port}/`);
 console.log(`  Health     : http://localhost:${opt.port}/api/v1/system/health`);
+if (opt.zip) {
+  // Next step of the release flow (see docs-e/publish/Releases发布方案-GitHub与Gitee.md)
+  console.log(
+    `  Release it : bin\\publish-release.bat --tag=<tag> --dry-run   (then drop --dry-run to publish)`,
+  );
+}
 if (selfTestResult) {
   console.log(
     `  Build self-test: ${
