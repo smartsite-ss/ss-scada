@@ -392,18 +392,9 @@
           v-if="viewMode === 'card'"
           class="device-cards"
         >
-          <section
-            v-for="section in deviceGroupSections"
-            :key="section.id"
-            class="device-group-section"
-          >
-            <div class="device-group-header">
-              <span class="device-group-title">{{ section.name }}</span>
-              <span class="device-group-count">{{ $t('system.devices.deviceCount', { count: section.devices.length }) }}</span>
-            </div>
-            <div class="device-card-grid">
+          <div class="device-card-grid">
             <div
-              v-for="device in section.devices"
+              v-for="device in orderedDevices"
               :key="device.id"
               class="device-card"
             >
@@ -536,7 +527,6 @@
               </div>
             </div>
           </div>
-          </section>
 
           <div
             v-if="totalPages > 1"
@@ -1270,6 +1260,11 @@ const deviceGroupSections = computed<DeviceGroupSection[]>(() =>
     t('system.devices.noGroup'),
     groupName,
   ),
+);
+
+/** Flattened device list for the unified card grid, kept in group-tree order. */
+const orderedDevices = computed<Device[]>(() =>
+  deviceGroupSections.value.flatMap((section) => section.devices),
 );
 
 function deviceDeviceCode(device: Device): string {
@@ -2743,7 +2738,6 @@ onActivated(() => {
   flex: 1;
   min-height: 0;
   min-width: 0;
-  width: 100%;
   overflow-y: auto;
   margin: 0 24px 16px;
 }
@@ -2776,7 +2770,7 @@ onActivated(() => {
 
 .device-card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   width: 100%;
   gap: 16px;
   align-content: start;
