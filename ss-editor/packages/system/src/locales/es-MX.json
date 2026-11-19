@@ -162,7 +162,11 @@
       "uploadSuccess": "Imagen subida correctamente",
       "deleteSuccess": "Eliminado correctamente",
       "loadFailed": "Error al cargar",
-      "uploadFailed": "Error al subir"
+      "uploadFailed": "Error al subir",
+      "clickToPreview": "Haga clic para ver",
+      "closePreview": "Cerrar vista previa",
+      "prevImage": "Anterior",
+      "nextImage": "Siguiente"
     },
     "kb": {
       "contents": "Contenido",

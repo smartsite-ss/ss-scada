@@ -162,7 +162,11 @@
       "uploadSuccess": "อัปโหลดสำเร็จ",
       "deleteSuccess": "ลบสำเร็จ",
       "loadFailed": "โหลดไม่สำเร็จ",
-      "uploadFailed": "อัปโหลดไม่สำเร็จ"
+      "uploadFailed": "อัปโหลดไม่สำเร็จ",
+      "clickToPreview": "คลิกเพื่อดูตัวอย่าง",
+      "closePreview": "ปิดตัวอย่าง",
+      "prevImage": "ก่อนหน้า",
+      "nextImage": "ถัดไป"
     },
     "kb": {
       "contents": "สารบัญ",

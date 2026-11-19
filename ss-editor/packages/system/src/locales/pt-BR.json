@@ -162,7 +162,11 @@
       "uploadSuccess": "Imagem enviada com sucesso",
       "deleteSuccess": "Imagem excluída com sucesso",
       "loadFailed": "Falha ao carregar",
-      "uploadFailed": "Falha no envio"
+      "uploadFailed": "Falha no envio",
+      "clickToPreview": "Clique para visualizar",
+      "closePreview": "Fechar visualização",
+      "prevImage": "Anterior",
+      "nextImage": "Próximo"
     },
     "kb": {
       "contents": "Sumário",

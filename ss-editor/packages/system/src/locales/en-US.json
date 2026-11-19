@@ -162,7 +162,11 @@
       "uploadSuccess": "Uploaded",
       "deleteSuccess": "Deleted",
       "loadFailed": "Load failed",
-      "uploadFailed": "Upload failed"
+      "uploadFailed": "Upload failed",
+      "clickToPreview": "Click to preview",
+      "closePreview": "Close preview",
+      "prevImage": "Previous",
+      "nextImage": "Next"
     },
     "kb": {
       "contents": "Contents",

@@ -1,6 +1,6 @@
 {
-  "processId": 33864,
-  "startedAt": "2026-11-18T23:38:02.044Z",
+  "processId": 4328,
+  "startedAt": "2026-11-19T23:33:53.139Z",
   "workingDirectory": "F:\\work\\smartdata\\202603_trace\\trunk\\code\\ss-scada\\ss-services\\ss-node\\apps\\ss-node-server",
   "entry": "F:\\work\\smartdata\\202603_trace\\trunk\\code\\ss-scada\\ss-services\\ss-node\\apps\\ss-node-server\\dist\\main"
 }

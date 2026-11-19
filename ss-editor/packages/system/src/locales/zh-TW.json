@@ -162,7 +162,11 @@
       "uploadSuccess": "上傳成功",
       "deleteSuccess": "刪除成功",
       "loadFailed": "載入失敗",
-      "uploadFailed": "上傳失敗"
+      "uploadFailed": "上傳失敗",
+      "clickToPreview": "點擊預覽",
+      "closePreview": "關閉預覽",
+      "prevImage": "上一張",
+      "nextImage": "下一張"
     },
     "kb": {
       "contents": "目錄",

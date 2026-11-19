@@ -162,7 +162,11 @@
       "uploadSuccess": "Téléversement réussi",
       "deleteSuccess": "Suppression réussie",
       "loadFailed": "Échec du chargement",
-      "uploadFailed": "Échec du téléversement"
+      "uploadFailed": "Échec du téléversement",
+      "clickToPreview": "Cliquer pour prévisualiser",
+      "closePreview": "Fermer l'aperçu",
+      "prevImage": "Précédent",
+      "nextImage": "Suivant"
     },
     "kb": {
       "contents": "Sommaire",

@@ -162,7 +162,11 @@
       "uploadSuccess": "Erfolgreich hochgeladen",
       "deleteSuccess": "Erfolgreich gelöscht",
       "loadFailed": "Laden fehlgeschlagen",
-      "uploadFailed": "Hochladen fehlgeschlagen"
+      "uploadFailed": "Hochladen fehlgeschlagen",
+      "clickToPreview": "Zum Vorschaubild klicken",
+      "closePreview": "Vorschau schließen",
+      "prevImage": "Zurück",
+      "nextImage": "Weiter"
     },
     "kb": {
       "contents": "Inhalt",

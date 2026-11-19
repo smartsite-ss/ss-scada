@@ -162,7 +162,11 @@
       "uploadSuccess": "Tải lên thành công",
       "deleteSuccess": "Xóa thành công",
       "loadFailed": "Tải dữ liệu thất bại",
-      "uploadFailed": "Tải lên thất bại"
+      "uploadFailed": "Tải lên thất bại",
+      "clickToPreview": "Nhấn để xem trước",
+      "closePreview": "Đóng xem trước",
+      "prevImage": "Trước",
+      "nextImage": "Tiếp"
     },
     "kb": {
       "contents": "Mục lục",

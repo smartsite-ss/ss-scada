@@ -162,7 +162,11 @@
       "uploadSuccess": "Yükleme başarılı",
       "deleteSuccess": "Silme başarılı",
       "loadFailed": "Yükleme başarısız",
-      "uploadFailed": "Görsel yüklenemedi"
+      "uploadFailed": "Görsel yüklenemedi",
+      "clickToPreview": "Önizlemek için tıklayın",
+      "closePreview": "Önizlemeyi kapat",
+      "prevImage": "Önceki",
+      "nextImage": "Sonraki"
     },
     "kb": {
       "contents": "İçindekiler",

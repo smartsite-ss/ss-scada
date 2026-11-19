@@ -114,7 +114,9 @@
               :src="img.url"
               :alt="img.fileName"
               class="image-thumb"
+              :title="$t('system.gallery.clickToPreview')"
               loading="lazy"
+              @click="openPreview(img.fileName)"
             >
             <figcaption class="image-meta">
               <span
@@ -167,11 +169,59 @@
         </div>
       </div>
     </div>
+
+    <!-- ========== Image preview modal ========== -->
+    <div
+      v-if="previewVisible"
+      class="preview-overlay"
+      @click.self="closePreview"
+    >
+      <button
+        class="preview-close"
+        :title="$t('system.gallery.closePreview')"
+        @click="closePreview"
+      >
+        ✕
+      </button>
+      <button
+        v-if="images.length > 1"
+        class="preview-nav preview-prev"
+        :title="$t('system.gallery.prevImage')"
+        @click="stepPreview(-1)"
+      >
+        ‹
+      </button>
+      <div
+        class="preview-stage"
+        @click.self="closePreview"
+      >
+        <img
+          :src="previewUrl"
+          :alt="previewName"
+          class="preview-image"
+        >
+      </div>
+      <button
+        v-if="images.length > 1"
+        class="preview-nav preview-next"
+        :title="$t('system.gallery.nextImage')"
+        @click="stepPreview(1)"
+      >
+        ›
+      </button>
+      <div class="preview-caption">
+        <span class="preview-name">{{ previewName }}</span>
+        <span
+          v-if="images.length > 1"
+          class="preview-counter"
+        >{{ previewIndex + 1 }} / {{ images.length }}</span>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { galleryApi } from '../../api/modules/gallery.api';
 import type { GalleryFormat, GalleryCategory, GalleryImage } from '../../api/modules/gallery.api';
 import { usePermission } from '../../composables/usePermission';
@@ -194,9 +244,48 @@ const uploadDialogVisible = ref(false);
 const uploadCategory = ref('');
 const uploadFileInput = ref<HTMLInputElement | null>(null);
 
+// ===== Image preview state =====
+const previewVisible = ref(false);
+const previewIndex = ref(0);
+const previewUrl = computed(() => images.value[previewIndex.value]?.url ?? '');
+const previewName = computed(() => images.value[previewIndex.value]?.fileName ?? '');
+
 onMounted(async () => {
   await loadFormats();
+  window.addEventListener('keydown', onPreviewKeydown);
 });
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', onPreviewKeydown);
+});
+
+function openPreview(fileName: string) {
+  const index = images.value.findIndex((img) => img.fileName === fileName);
+  if (index < 0) return;
+  previewIndex.value = index;
+  previewVisible.value = true;
+}
+
+function closePreview() {
+  previewVisible.value = false;
+}
+
+function stepPreview(step: number) {
+  if (images.value.length === 0) return;
+  const count = images.value.length;
+  previewIndex.value = (previewIndex.value + step + count) % count;
+}
+
+function onPreviewKeydown(event: KeyboardEvent) {
+  if (!previewVisible.value) return;
+  if (event.key === 'Escape') {
+    closePreview();
+  } else if (event.key === 'ArrowLeft') {
+    stepPreview(-1);
+  } else if (event.key === 'ArrowRight') {
+    stepPreview(1);
+  }
+}
 
 async function loadFormats() {
   try {
@@ -567,6 +656,7 @@ function formatSize(size: number): string {
   object-fit: contain;
   background: color-mix(in srgb, var(--background) 60%, transparent);
   padding: 8px;
+  cursor: zoom-in;
 }
 
 .image-meta {
@@ -650,5 +740,113 @@ function formatSize(size: number): string {
   display: flex;
   justify-content: flex-end;
   gap: 8px;
+}
+
+/* ===== Image preview modal ===== */
+.preview-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+}
+
+.preview-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 88vw;
+  max-height: 82vh;
+  padding: 24px 72px;
+}
+
+.preview-image {
+  max-width: 100%;
+  max-height: 76vh;
+  object-fit: contain;
+  border-radius: 6px;
+  box-shadow: 0 8px 48px rgba(0, 0, 0, 0.6);
+}
+
+.preview-close {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.preview-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.preview-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 48px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 40px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.preview-nav:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.preview-prev {
+  left: 24px;
+}
+
+.preview-next {
+  right: 24px;
+}
+
+.preview-caption {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 18px;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-size: 13px;
+  max-width: 80vw;
+}
+
+.preview-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.preview-counter {
+  opacity: 0.75;
+  white-space: nowrap;
 }
 </style>

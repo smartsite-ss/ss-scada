@@ -162,7 +162,11 @@
       "uploadSuccess": "Berhasil diunggah",
       "deleteSuccess": "Berhasil dihapus",
       "loadFailed": "Gagal memuat",
-      "uploadFailed": "Gagal mengunggah"
+      "uploadFailed": "Gagal mengunggah",
+      "clickToPreview": "Klik untuk pratinjau",
+      "closePreview": "Tutup pratinjau",
+      "prevImage": "Sebelumnya",
+      "nextImage": "Berikutnya"
     },
     "kb": {
       "contents": "Daftar Isi",

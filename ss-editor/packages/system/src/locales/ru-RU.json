@@ -162,7 +162,11 @@
       "uploadSuccess": "Загружено",
       "deleteSuccess": "Удалено",
       "loadFailed": "Не удалось загрузить",
-      "uploadFailed": "Не удалось загрузить изображение"
+      "uploadFailed": "Не удалось загрузить изображение",
+      "clickToPreview": "Нажмите для предпросмотра",
+      "closePreview": "Закрыть предпросмотр",
+      "prevImage": "Назад",
+      "nextImage": "Вперёд"
     },
     "kb": {
       "contents": "Содержание",

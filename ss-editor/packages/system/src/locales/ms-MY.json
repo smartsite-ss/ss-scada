@@ -162,7 +162,11 @@
       "uploadSuccess": "Berjaya dimuat naik",
       "deleteSuccess": "Berjaya dipadam",
       "loadFailed": "Gagal memuatkan",
-      "uploadFailed": "Gagal memuat naik"
+      "uploadFailed": "Gagal memuat naik",
+      "clickToPreview": "Klik untuk pratonton",
+      "closePreview": "Tutup pratonton",
+      "prevImage": "Sebelumnya",
+      "nextImage": "Seterusnya"
     },
     "kb": {
       "contents": "Kandungan",

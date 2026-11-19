@@ -162,7 +162,11 @@
       "uploadSuccess": "アップロードしました",
       "deleteSuccess": "削除しました",
       "loadFailed": "読み込みに失敗しました",
-      "uploadFailed": "アップロードに失敗しました"
+      "uploadFailed": "アップロードに失敗しました",
+      "clickToPreview": "クリックしてプレビュー",
+      "closePreview": "プレビューを閉じる",
+      "prevImage": "前へ",
+      "nextImage": "次へ"
     },
     "kb": {
       "contents": "目次",
