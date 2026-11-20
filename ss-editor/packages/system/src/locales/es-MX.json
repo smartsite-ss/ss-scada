@@ -166,7 +166,13 @@
       "clickToPreview": "Haga clic para ver",
       "closePreview": "Cerrar vista previa",
       "prevImage": "Anterior",
-      "nextImage": "Siguiente"
+      "nextImage": "Siguiente",
+      "download": "Descargar",
+      "importImages": "Importar imágenes",
+      "multiSelectHint": "Puede seleccionar varias imágenes para importar a la vez",
+      "importing": "Importando",
+      "importSuccess": "Se importaron {count} imagen(es)",
+      "importPartial": "Importación finalizada: {success} exitosas, {failed} fallidas"
     },
     "kb": {
       "contents": "Contenido",

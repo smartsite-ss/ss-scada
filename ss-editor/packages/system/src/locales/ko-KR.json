@@ -166,7 +166,13 @@
       "clickToPreview": "클릭하여 미리보기",
       "closePreview": "미리보기 닫기",
       "prevImage": "이전",
-      "nextImage": "다음"
+      "nextImage": "다음",
+      "download": "다운로드",
+      "importImages": "이미지 가져오기",
+      "multiSelectHint": "한 번에 여러 이미지를 선택하여 가져올 수 있습니다",
+      "importing": "가져오는 중",
+      "importSuccess": "{count}개의 이미지를 가져왔습니다",
+      "importPartial": "가져오기 완료: 성공 {success}개, 실패 {failed}개"
     },
     "kb": {
       "contents": "목차",

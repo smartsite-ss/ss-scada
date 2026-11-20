@@ -166,7 +166,13 @@
       "clickToPreview": "Click to preview",
       "closePreview": "Close preview",
       "prevImage": "Previous",
-      "nextImage": "Next"
+      "nextImage": "Next",
+      "download": "Download",
+      "importImages": "Import Images",
+      "multiSelectHint": "You can select multiple images to import at once",
+      "importing": "Importing",
+      "importSuccess": "Imported {count} image(s)",
+      "importPartial": "Import finished: {success} succeeded, {failed} failed"
     },
     "kb": {
       "contents": "Contents",

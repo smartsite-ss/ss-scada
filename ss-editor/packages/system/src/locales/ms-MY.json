@@ -166,7 +166,13 @@
       "clickToPreview": "Klik untuk pratonton",
       "closePreview": "Tutup pratonton",
       "prevImage": "Sebelumnya",
-      "nextImage": "Seterusnya"
+      "nextImage": "Seterusnya",
+      "download": "Muat turun",
+      "importImages": "Import Imej",
+      "multiSelectHint": "Anda boleh memilih berbilang imej untuk diimport serentak",
+      "importing": "Mengimport",
+      "importSuccess": "{count} imej berjaya diimport",
+      "importPartial": "Import selesai: {success} berjaya, {failed} gagal"
     },
     "kb": {
       "contents": "Kandungan",

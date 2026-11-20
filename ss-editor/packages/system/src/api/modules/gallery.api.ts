@@ -70,4 +70,10 @@ export const galleryApi = {
     const params = new URLSearchParams({ format, category, fileName });
     return `${client.defaults.baseURL}/gallery/image?${params.toString()}`;
   },
+
+  /** Construct the download URL (backend GET /gallery/download endpoint, forces single-file download) */
+  buildDownloadUrl(format: string, category: string, fileName: string): string {
+    const params = new URLSearchParams({ format, category, fileName });
+    return `${client.defaults.baseURL}/gallery/download?${params.toString()}`;
+  },
 };

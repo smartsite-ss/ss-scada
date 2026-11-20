@@ -166,7 +166,13 @@
       "clickToPreview": "點擊預覽",
       "closePreview": "關閉預覽",
       "prevImage": "上一張",
-      "nextImage": "下一張"
+      "nextImage": "下一張",
+      "download": "下載",
+      "importImages": "匯入圖片",
+      "multiSelectHint": "可一次選擇多張圖片批次匯入",
+      "importing": "正在匯入",
+      "importSuccess": "成功匯入 {count} 張圖片",
+      "importPartial": "匯入完成：成功 {success} 張，失敗 {failed} 張"
     },
     "kb": {
       "contents": "目錄",

@@ -166,7 +166,13 @@
       "clickToPreview": "Nhấn để xem trước",
       "closePreview": "Đóng xem trước",
       "prevImage": "Trước",
-      "nextImage": "Tiếp"
+      "nextImage": "Tiếp",
+      "download": "Tải xuống",
+      "importImages": "Nhập hình ảnh",
+      "multiSelectHint": "Bạn có thể chọn nhiều hình ảnh để nhập cùng lúc",
+      "importing": "Đang nhập",
+      "importSuccess": "Đã nhập {count} hình ảnh",
+      "importPartial": "Nhập xong: {success} thành công, {failed} thất bại"
     },
     "kb": {
       "contents": "Mục lục",

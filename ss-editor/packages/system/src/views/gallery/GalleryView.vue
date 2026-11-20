@@ -124,6 +124,14 @@
                 :title="img.fileName"
               >{{ img.fileName }}</span>
               <span class="image-size">{{ formatSize(img.size) }}</span>
+              <a
+                class="btn-icon btn-download"
+                :href="downloadUrl(img.fileName)"
+                :title="$t('system.gallery.download')"
+                :download="img.fileName"
+              >
+                ↓
+              </a>
               <button
                 v-if="isAdmin"
                 class="btn-icon btn-danger"
@@ -145,7 +153,7 @@
       @click.self="uploadDialogVisible = false"
     >
       <div class="dialog">
-        <h3>{{ $t('system.gallery.upload') }}</h3>
+        <h3>{{ $t('system.gallery.importImages') }}</h3>
         <label class="dialog-label">{{ $t('system.gallery.selectCategory') }}</label>
         <input
           v-model="uploadCategory"
@@ -156,12 +164,19 @@
           ref="uploadFileInput"
           type="file"
           accept="image/*"
+          multiple
           class="file-input"
           @change="onImageSelected"
         >
+        <p class="import-hint">{{ $t('system.gallery.multiSelectHint') }}</p>
+        <div
+          v-if="importing"
+          class="import-progress"
+        >{{ $t('system.gallery.importing') }} {{ importDone }}/{{ importTotal }}</div>
         <div class="dialog-actions">
           <button
             class="btn btn-sm btn-secondary"
+            :disabled="importing"
             @click="uploadDialogVisible = false"
           >
             {{ $t('common.cancel') }}
@@ -243,6 +258,9 @@ const loadingImages = ref(false);
 const uploadDialogVisible = ref(false);
 const uploadCategory = ref('');
 const uploadFileInput = ref<HTMLInputElement | null>(null);
+const importing = ref(false);
+const importDone = ref(0);
+const importTotal = ref(0);
 
 // ===== Image preview state =====
 const previewVisible = ref(false);
@@ -359,32 +377,54 @@ function openUploadDialog() {
   uploadDialogVisible.value = true;
 }
 
+function downloadUrl(fileName: string): string {
+  return galleryApi.buildDownloadUrl(selectedFormat.value, selectedCategory.value, fileName);
+}
+
 async function onImageSelected(event: Event) {
   const input = event.target as HTMLInputElement;
-  const file = input.files?.[0];
-  if (!file) return;
+  const files = Array.from(input.files ?? []);
+  if (files.length === 0) return;
   const category = uploadCategory.value.trim() || selectedCategory.value;
   if (!category) {
     showError(t('system.gallery.selectCategory'));
+    input.value = '';
     return;
   }
+
+  importing.value = true;
+  importDone.value = 0;
+  importTotal.value = files.length;
+  let succeeded = 0;
+  let failed = 0;
   try {
-    const base64 = await fileToBase64(file);
-    await galleryApi.uploadImage({
-      format: selectedFormat.value,
-      category,
-      fileName: file.name,
-      base64,
-    });
-    uploadDialogVisible.value = false;
-    showSuccess(t('system.gallery.uploadSuccess'));
-    // If uploaded to a new category, refresh the category list
-    await loadCategories();
-  } catch (e: any) {
-    if (!e._errorHandled) {
-      showError(e?.message || t('system.gallery.uploadFailed'));
+    for (const file of files) {
+      try {
+        const base64 = await fileToBase64(file);
+        await galleryApi.uploadImage({
+          format: selectedFormat.value,
+          category,
+          fileName: file.name,
+          base64,
+        });
+        succeeded++;
+      } catch {
+        failed++;
+      } finally {
+        importDone.value++;
+      }
     }
+    uploadDialogVisible.value = false;
+    if (failed === 0) {
+      showSuccess(t('system.gallery.importSuccess', { count: succeeded }));
+    } else {
+      showError(t('system.gallery.importPartial', { success: succeeded, failed }));
+    }
+    // Refresh category list (handles import into a new category) and images
+    await loadCategories();
+    await loadImages();
   } finally {
+    importing.value = false;
     input.value = '';
   }
 }
@@ -537,6 +577,28 @@ function formatSize(size: number): string {
 .btn-danger:hover {
   color: var(--status-error);
   background: color-mix(in srgb, var(--status-error) 10%, transparent);
+}
+
+.btn-download {
+  text-decoration: none;
+  font-size: 15px;
+}
+
+.btn-download:hover {
+  color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
+}
+
+.import-hint {
+  margin: -4px 0 12px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.import-progress {
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: var(--primary);
 }
 
 /* ===== Main body ===== */

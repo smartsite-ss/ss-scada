@@ -166,7 +166,13 @@
       "clickToPreview": "Önizlemek için tıklayın",
       "closePreview": "Önizlemeyi kapat",
       "prevImage": "Önceki",
-      "nextImage": "Sonraki"
+      "nextImage": "Sonraki",
+      "download": "İndir",
+      "importImages": "Görsel içe aktar",
+      "multiSelectHint": "Aynı anda birden fazla görsel seçip içe aktarabilirsiniz",
+      "importing": "İçe aktarılıyor",
+      "importSuccess": "{count} görsel içe aktarıldı",
+      "importPartial": "İçe aktarma tamamlandı: {success} başarılı, {failed} başarısız"
     },
     "kb": {
       "contents": "İçindekiler",

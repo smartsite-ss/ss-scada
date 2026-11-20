@@ -166,7 +166,13 @@
       "clickToPreview": "คลิกเพื่อดูตัวอย่าง",
       "closePreview": "ปิดตัวอย่าง",
       "prevImage": "ก่อนหน้า",
-      "nextImage": "ถัดไป"
+      "nextImage": "ถัดไป",
+      "download": "ดาวน์โหลด",
+      "importImages": "นำเข้ารูปภาพ",
+      "multiSelectHint": "สามารถเลือกหลายรูปพร้อมกันเพื่อนำเข้าได้",
+      "importing": "กำลังนำเข้า",
+      "importSuccess": "นำเข้า {count} รูปสำเร็จ",
+      "importPartial": "นำเข้าเสร็จแล้ว: สำเร็จ {success} รูป, ล้มเหลว {failed} รูป"
     },
     "kb": {
       "contents": "สารบัญ",

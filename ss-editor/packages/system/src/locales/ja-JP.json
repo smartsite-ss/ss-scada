@@ -166,7 +166,13 @@
       "clickToPreview": "クリックしてプレビュー",
       "closePreview": "プレビューを閉じる",
       "prevImage": "前へ",
-      "nextImage": "次へ"
+      "nextImage": "次へ",
+      "download": "ダウンロード",
+      "importImages": "画像をインポート",
+      "multiSelectHint": "一度に複数の画像を選択してインポートできます",
+      "importing": "インポート中",
+      "importSuccess": "{count} 枚の画像をインポートしました",
+      "importPartial": "インポート完了：成功 {success} 枚、失敗 {failed} 枚"
     },
     "kb": {
       "contents": "目次",

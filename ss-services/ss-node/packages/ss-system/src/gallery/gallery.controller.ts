@@ -15,6 +15,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiQuery } from '@nestjs/swagger';
 import type { Response } from 'express';
+import * as path from 'path';
 import { JwtAuthGuard, RolesGuard, Roles, UserRole } from '@ss-node/ss-core';
 import { GalleryService } from './gallery.service';
 import { GalleryFormat, GalleryCategory, GalleryImage } from './gallery.types';
@@ -76,6 +77,25 @@ export class GalleryController {
     }
     const resolved = this.galleryService.resolveImagePath(format, category, fileName);
     res.sendFile(resolved);
+  }
+
+  @Get('download')
+  @ApiOperation({ summary: '下载单张图片（一次一个文件）' })
+  @ApiQuery({ name: 'format', required: true, description: '格式目录名' })
+  @ApiQuery({ name: 'category', required: true, description: '分类目录名' })
+  @ApiQuery({ name: 'fileName', required: true, description: '文件名' })
+  async downloadImage(
+    @Query('format') format: string,
+    @Query('category') category: string,
+    @Query('fileName') fileName: string,
+    @Res() res: Response,
+  ): Promise<void> {
+    if (!format || !category || !fileName) {
+      throw new BadRequestException('Missing format/category/fileName query');
+    }
+    const resolved = this.galleryService.resolveImagePath(format, category, fileName);
+    // res.download sets Content-Disposition: attachment, forcing a single-file download
+    res.download(resolved, path.basename(resolved));
   }
 
   @Post('upload')

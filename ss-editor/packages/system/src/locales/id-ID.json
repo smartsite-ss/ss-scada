@@ -166,7 +166,13 @@
       "clickToPreview": "Klik untuk pratinjau",
       "closePreview": "Tutup pratinjau",
       "prevImage": "Sebelumnya",
-      "nextImage": "Berikutnya"
+      "nextImage": "Berikutnya",
+      "download": "Unduh",
+      "importImages": "Impor Gambar",
+      "multiSelectHint": "Anda dapat memilih beberapa gambar untuk diimpor sekaligus",
+      "importing": "Mengimpor",
+      "importSuccess": "{count} gambar berhasil diimpor",
+      "importPartial": "Impor selesai: {success} berhasil, {failed} gagal"
     },
     "kb": {
       "contents": "Daftar Isi",

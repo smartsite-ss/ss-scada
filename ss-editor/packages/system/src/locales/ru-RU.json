@@ -166,7 +166,13 @@
       "clickToPreview": "Нажмите для предпросмотра",
       "closePreview": "Закрыть предпросмотр",
       "prevImage": "Назад",
-      "nextImage": "Вперёд"
+      "nextImage": "Вперёд",
+      "download": "Скачать",
+      "importImages": "Импорт изображений",
+      "multiSelectHint": "Можно выбрать несколько изображений для импорта одновременно",
+      "importing": "Импорт",
+      "importSuccess": "Импортировано изображений: {count}",
+      "importPartial": "Импорт завершён: успешно {success}, ошибка {failed}"
     },
     "kb": {
       "contents": "Содержание",
