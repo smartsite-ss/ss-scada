@@ -393,7 +393,7 @@ importers:
         specifier: workspace:*
         version: link:../../ss-core
       express:
-        specifier: ^4.18.0
+        specifier: ^4.21.0
         version: 4.22.2
       winston:
         specifier: ^3.11.0
