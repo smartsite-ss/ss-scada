@@ -1,4 +1,4 @@
-[English](./README.md) · **简体中文**
+[English](./README.md) · **简体中文** · [日本語](./README.ja.md) · [Deutsch](./README.de.md) · [Español](./README.es.md)
 
 # 🌈 Smart Site — 开源 SCADA 组态软件与工业数据可视化平台
 

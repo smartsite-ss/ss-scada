@@ -98,13 +98,18 @@ tmp-check-db.js
 
 # AI tool directories (not uploaded to git)
 .codebuddy/
-.github/
+.github/**
+# Publish only the README i18n workflow; the rest of .github stays local-only
+!.github/workflows/
+.github/workflows/*
+!.github/workflows/readme-i18n-ci.yml
 .qoder/
 .trae/
 
 docs-e/**
 temp/**
 scripts/**
+!scripts/check-readme-i18n.mjs
 ss-run/_replica-archive/**
 
 # Local-only scripts (not uploaded to remotes)

@@ -15,7 +15,8 @@
     "build:web:scada": "cd ss-editor && pnpm build:web:scada",
     "build:web:data": "cd ss-editor && pnpm build:web:data",
     "build:server": "cd ss-services/ss-node && pnpm --filter ss-node-server build",
-    "build:all": "pnpm build:server && pnpm build:web:full && pnpm build:web:scada && pnpm build:web:data"
+    "build:all": "pnpm build:server && pnpm build:web:full && pnpm build:web:scada && pnpm build:web:data",
+    "check:readme": "node scripts/check-readme-i18n.mjs"
   },
   "devDependencies": {
     "@types/node": "^25.7.0",

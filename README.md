@@ -1,4 +1,4 @@
-**English** · [简体中文](./README.zh-CN.md)
+**English** · [简体中文](./README.zh-CN.md) · [日本語](./README.ja.md) · [Deutsch](./README.de.md) · [Español](./README.es.md)
 
 # 🌈 Smart Site — Open-Source SCADA HMI Software & Industrial Data Visualization Platform
 
@@ -93,7 +93,7 @@ It also covers day-to-day SCADA engineering scenarios:
 ## 🚀 Quick Start
 
 - **No-install trial (Windows)**: download the prebuilt package, unzip and run → <https://smartsite.top/downloads/ss-o/win-ss-v7.0.1.zip>
-- **Build from source**: full installation, startup, build and deployment guide 👉 [`docs/zh-CN/01-getting-started.md`](./docs/zh-CN/01-getting-started.md) (see [`AGENTS.md`](./AGENTS.md) for development conventions)
+- **Build from source**: full installation, startup, build and deployment guide 👉 [`docs/en/01-getting-started.md`](./docs/en/01-getting-started.md) (see [`AGENTS.md`](./AGENTS.md) for development conventions)
 
 ```powershell
 # Start from source (use the bin/ scripts; do not run pnpm dev directly)

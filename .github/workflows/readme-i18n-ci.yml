@@ -1,0 +1,45 @@
+name: README i18n CI
+
+on:
+  pull_request:
+    paths:
+      - "README.md"
+      - "README.zh-CN.md"
+      - "README.ja.md"
+      - "README.de.md"
+      - "README.es.md"
+      - "docs/**"
+      - "scripts/check-readme-i18n.mjs"
+      - ".github/workflows/readme-i18n-ci.yml"
+  push:
+    branches:
+      - master
+      - main
+    paths:
+      - "README.md"
+      - "README.zh-CN.md"
+      - "README.ja.md"
+      - "README.de.md"
+      - "README.es.md"
+      - "docs/**"
+      - "scripts/check-readme-i18n.mjs"
+      - ".github/workflows/readme-i18n-ci.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  readme-i18n:
+    name: README languages consistency
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Check README translations
+        run: node scripts/check-readme-i18n.mjs
