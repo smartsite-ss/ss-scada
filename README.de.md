@@ -4,6 +4,8 @@
 
 Smart Site ist eine Open-Source-SCADA-Plattform für industrielle Anwendungen: **HMI-/SCADA-Editor, Datenplattform und Backend-Services** in einem integrierten System. Unterstützt werden Drag-and-Drop-Konfiguration von Prozessbildern, Gerätedatenerfassung (Modbus / OPC UA / MQTT / Siemens S7), Tags und Vorlagen, eine Alarm-Engine, eine Script-Engine, Berichte, Zeitreihenspeicherung und Mehrsprachigkeit.
 
+> **Auch bekannt als SS Industrial Cloud** — die kommerzielle Plattform wird unter dieser Marke veröffentlicht; **Smart Site** ist der Name des Open-Source-Projekts für dasselbe Produkt.
+
 ![Smart Site Plattformübersicht](docs/images/SmartSiteLite-EN.gif)
 
 > ✨✨✨ **Online-Demo** ✨✨✨
