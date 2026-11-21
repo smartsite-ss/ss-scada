@@ -10,7 +10,7 @@ Smart Site ist eine Open-Source-SCADA-Plattform für industrielle Anwendungen: *
 
 > ✨✨✨ **Online-Demo** ✨✨✨
 >
-> - **URL**: <https://smartsite.top/>
+> - **URL**: <https://smartsite.top/?lang=de>
 > - **Testkonto**: `test` / `test` (alle Funktionen von HMI-Editor und Datenplattform testen)
 >
 > Die Demo ist eine öffentlich geteilte Instanz. Alle Prozessbilder und Daten sind simuliert und dienen ausschließlich der Funktionsbewertung. Bitte keine wichtigen Geschäftsdaten eingeben.

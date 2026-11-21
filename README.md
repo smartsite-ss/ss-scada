@@ -10,7 +10,7 @@ Smart Site is an open-source SCADA platform for industrial scenarios: an integra
 
 > ✨✨✨ **Online Demo** ✨✨✨
 >
-> - **URL**: <https://smartsite.top/>
+> - **URL**: <https://smartsite.top/?lang=en>
 > - **Test account**: `test` / `test` (log in to explore all features of the HMI editor and data middle platform)
 >
 > The demo site is a public shared instance. All process screens and data are simulated and are for feature evaluation only — please do not write important business data.
@@ -137,7 +137,7 @@ Smart Site uses a dual-track **open source + commercial** model:
 
 ## 🖼️ Screenshots
 
-Below are runtime interface screenshots (stored in the repository's `docs/screenshots/` directory, corresponding to the live demo site at <https://smartsite.top/> and directly viewable on Gitee). Each screenshot is preceded by a short description of the featured function.
+Below are runtime interface screenshots (stored in the repository's `docs/screenshots/` directory, corresponding to the live demo site at <https://smartsite.top/?lang=en> and directly viewable on Gitee). Each screenshot is preceded by a short description of the featured function.
 
 **01 · HMI editor: wastewater sedimentation tank system (screen editing)** — top toolbar / left primitive library / central canvas / right property panel; drag-and-drop configuration and data tag binding.
 
